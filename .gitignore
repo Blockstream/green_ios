@@ -4,5 +4,4 @@
 
 !.gitignore
 /build/
-/autobahn-cpp/
 /thirdparty/
