@@ -3,6 +3,7 @@
 #
 
 !.gitignore
-/build/
+/build-gcc/
+/build-clang/
 /thirdparty/
-/src/wally
+/src/wally/

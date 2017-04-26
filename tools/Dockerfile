@@ -1,0 +1,2 @@
+FROM debian:jessie-slim
+RUN apt-get update -y && apt-get upgrade -y && apt-get install wget autoconf pkg-config libssl-dev -y && echo "deb http://ftp.us.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list.d/stretch.list && printf "Package: *\nPin: release a=stretch\nPin-Priority: 100" > /etc/apt/preferences.d/stretch && apt-get update -y && apt-get install -t stretch build-essential meson ninja-build clang libboost-all-dev -y

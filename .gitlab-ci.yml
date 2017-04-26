@@ -1,0 +1,16 @@
+test_gcc:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --gcc
+
+test_clang:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --clang
+

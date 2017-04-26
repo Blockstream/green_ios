@@ -2,6 +2,7 @@
 set -e
 
 cd "${MESON_SOURCE_ROOT}/src/wally"
+./tools/cleanup.sh
 ./tools/autogen.sh
 ./configure
-make
+make -j$NUM_JOBS

@@ -1,9 +1,9 @@
-project('sdk', 'cpp', meson_version : '>= 0.39.1', default_options : ['cpp_std=c++14'])
+project('sdk', 'cpp', meson_version : '>= 0.37.1', default_options : ['cpp_std=c++14'])
 
 # dependencies
 compiler = meson.get_compiler('cpp')
 
-ssldep = dependency('openssl', version : '>= 1.0.2')
+ssldep = dependency('openssl', version : '>= 1.0.1')
 boostdep = dependency('boost', modules : ['asio', 'system', 'thread'])
 
 run_target('wally', command : 'tools/buildwally.sh')
