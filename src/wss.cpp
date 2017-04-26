@@ -48,9 +48,11 @@ int main(int argc, char** argv)
                 return ctx;
             });
 
+        std::cerr << "Connecting to " << DEFAULT_TLS_ENDPOINT << "...\n";
         auto transport = std::make_shared<autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_tls_client>>(
             ws_client, DEFAULT_TLS_ENDPOINT, debug);
 #else
+        std::cerr << "Connecting to " << DEFAULT_ENDPOINT << "...\n";
         auto transport = std::make_shared<autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_client>>(
             ws_client, DEFAULT_ENDPOINT, debug);
 #endif
