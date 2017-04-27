@@ -5,3 +5,4 @@
 !.gitignore
 /build/
 /thirdparty/
+/src/wally

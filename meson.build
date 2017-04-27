@@ -6,6 +6,8 @@ compiler = meson.get_compiler('cpp')
 ssldep = dependency('openssl', version : '>= 1.0.2')
 boostdep = dependency('boost', modules : ['asio', 'system', 'thread'])
 
+run_target('wally', command : 'src/buildwally.sh')
+
 # includes
 autobahn_inc_dir = 'thirdparty/autobahn-cpp'
 websocketpp_inc_dir = 'thirdparty/websocketpp-0.7.0'
