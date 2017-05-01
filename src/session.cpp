@@ -57,11 +57,12 @@ namespace sdk {
         }
 
         void connect(const std::string& endpoint);
+        void subscribe(const std::string& topic, auto&& handler);
 
     private:
         boost::asio::io_service _io;
         client _client;
-        std::unique_ptr<transport> _transport;
+        std::shared_ptr<transport> _transport;
         std::shared_ptr<autobahn::wamp_session> _session;
 
         event_loop_controller _controller;
@@ -77,7 +78,7 @@ namespace sdk {
 
         _session = std::make_shared<autobahn::wamp_session>(_io, _debug);
 
-        _transport = std::make_unique<transport>(_client, endpoint, _debug);
+        _transport = std::make_shared<transport>(_client, endpoint, _debug);
         _transport->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(_session));
 
         boost::future<void> connect_future;
@@ -96,6 +97,18 @@ namespace sdk {
         });
 
         connect_future.get();
+        start_future.get();
+        join_future.get();
+    }
+
+    void session::session_impl::subscribe(const std::string& topic, auto&& handler)
+    {
+        auto subscribe_future = _session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
+                                    .then([&](boost::future<autobahn::wamp_subscription> subscription) {
+                                        std::cerr << "subscribed to topic:" << subscription.get().id() << std::endl;
+                                    });
+
+        subscribe_future.get();
     }
 
     void session::connect(const std::string& endpoint, bool debug)
@@ -112,6 +125,15 @@ namespace sdk {
     void session::disconnect()
     {
         _impl.reset();
+    }
+
+    void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
+    {
+        try {
+            _impl->subscribe(topic, handler);
+        } catch (const std::exception& ex) {
+            std::cerr << ex.what() << std::endl;
+        }
     }
 }
 }

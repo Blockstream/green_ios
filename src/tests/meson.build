@@ -1,7 +1,8 @@
-wss_connect = executable('wss_connect', 'wss_connect.cpp',
+exe_names = ['wss_connect', 'wss_subscribe']
+foreach name : exe_names
+    exe = executable(name, name + '.cpp',
                          include_directories : incdir,
-                         dependencies : [boostdep, ssldep, libga_dependency],
-                         cpp_args : ['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations'])
-
-test('wss_connect', wss_connect)
+                         dependencies : [boostdep, ssldep, libga_dependency])
+    test(name, exe)
+endforeach
 
