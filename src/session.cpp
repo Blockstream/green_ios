@@ -29,7 +29,7 @@ namespace sdk {
         explicit event_loop_controller(boost::asio::io_service& io)
             : _work_guard(std::make_unique<boost::asio::io_service::work>(io))
         {
-            _run_thread = std::move(std::thread([&] { io.run(); }));
+            _run_thread = std::thread([&] { io.run(); });
         }
 
         ~event_loop_controller()
@@ -57,7 +57,7 @@ namespace sdk {
         }
 
         void connect(const std::string& endpoint);
-        void subscribe(const std::string& topic, auto&& handler);
+        void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
         boost::asio::io_service _io;
@@ -101,7 +101,7 @@ namespace sdk {
         join_future.get();
     }
 
-    void session::session_impl::subscribe(const std::string& topic, auto&& handler)
+    void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
         auto subscribe_future = _session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
                                     .then([&](boost::future<autobahn::wamp_subscription> subscription) {
