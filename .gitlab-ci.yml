@@ -14,9 +14,24 @@ test_clang:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
+test_clang_ndk_multiarch:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk-multiarch
+
 test_osx_clang:
   tags:
     - osx
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
+
+test_osx_clang_ndk:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk-multiarch
