@@ -6,6 +6,8 @@ compiler = meson.get_compiler('cpp')
 ssldep = dependency('openssl', version : '>= 1.0.1')
 boostdep = dependency('boost', modules : ['asio', 'system', 'thread'])
 
+clang_format = find_program('clang-format', required : false)
+
 run_target('wally', command : 'tools/buildwally.sh')
 
 # includes
