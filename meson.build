@@ -8,6 +8,7 @@ boostdep = dependency('boost', modules : ['asio', 'system', 'thread'])
 
 clang_format = find_program('clang-format', required : false)
 
+run_command('tools/buildwally.sh')
 run_target('wally', command : 'tools/buildwally.sh')
 
 # includes

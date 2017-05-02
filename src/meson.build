@@ -12,7 +12,7 @@ if clang_format.found()
 endif
 
 wally_path = join_paths(meson.current_source_dir(), 'wally', 'src', '.libs')
-libwally_obj = compiler.find_library('wallycore', dirs : [wally_path], required : false)
+libwally_obj = compiler.find_library('wallycore', dirs : [wally_path])
 libwally_linkargs = '-Wl,-rpath,' + wally_path
 
 # FIXME: needs both options (shared and static). meson won't allow a version kw arg for library.

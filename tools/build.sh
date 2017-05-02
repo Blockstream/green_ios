@@ -24,7 +24,6 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
     fi
 
     cd build-gcc
-    $NINJA -j$NUM_JOBS wally
     $NINJA -j$NUM_JOBS
     cd ..
 fi
@@ -37,6 +36,5 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
     fi
 
     cd build-clang
-    $NINJA -j$NUM_JOBS wally
     $NINJA -j$NUM_JOBS
 fi
