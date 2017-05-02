@@ -1,5 +1,8 @@
+#include <algorithm>
+#include <array>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 
 #include <autobahn/autobahn.hpp>
 #include <autobahn/wamp_websocketpp_websocket_transport.hpp>
@@ -7,6 +10,12 @@
 #include <websocketpp/client.hpp>
 #include <websocketpp/config/asio_client.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
+
+extern "C" {
+#include <wally_bip32.h>
+#include <wally_bip39.h>
+#include <wally_core.h>
+}
 
 #include "session.hpp"
 
@@ -57,6 +66,7 @@ namespace sdk {
         }
 
         void connect(const std::string& endpoint);
+        void login(const std::string& mnemonic);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
@@ -101,6 +111,35 @@ namespace sdk {
         join_future.get();
     }
 
+    void session::session_impl::login(const std::string& mnemonic)
+    {
+        std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
+        size_t written = 0;
+        bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written);
+
+        const ext_key* p = nullptr;
+        bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p);
+
+        std::unique_ptr<const ext_key, decltype(&bip32_key_free)> master_key(p, &bip32_key_free);
+
+        std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh;
+        vpkh[0] = 111;
+        std::copy(master_key->hash160, master_key->hash160 + sizeof(master_key->hash160), vpkh.begin() + 1);
+
+        char* q = nullptr;
+        wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q);
+        std::unique_ptr<char, decltype(&wally_free_string)> base58_pkh(q, &wally_free_string);
+
+        std::tuple<std::string> challenge_arguments{ std::string(q) };
+        std::string challenge;
+        auto call_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments).then([&](boost::future<autobahn::wamp_call_result> result) {
+            challenge = result.get().argument<std::string>(0);
+            std::cerr << challenge << std::endl;
+        });
+
+        call_future.get();
+    }
+
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
         auto subscribe_future = _session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
@@ -125,6 +164,15 @@ namespace sdk {
     void session::disconnect()
     {
         _impl.reset();
+    }
+
+    void session::login(const std::string& mnemonic)
+    {
+        try {
+            _impl->login(mnemonic);
+        } catch (const std::exception& ex) {
+            std::cerr << ex.what() << std::endl;
+        }
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)

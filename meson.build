@@ -15,8 +15,9 @@ autobahn_inc_dir = 'thirdparty/autobahn-cpp'
 websocketpp_inc_dir = 'thirdparty/websocketpp-0.7.0'
 msgpack_inc_dir = 'thirdparty/msgpack-2.1.1/include'
 sdk_inc_dir = 'src'
+wally_inc_dir = 'src/wally/include'
 
-incdir = include_directories([autobahn_inc_dir, msgpack_inc_dir, websocketpp_inc_dir, sdk_inc_dir])
+incdir = include_directories([autobahn_inc_dir, msgpack_inc_dir, websocketpp_inc_dir, sdk_inc_dir, wally_inc_dir])
 
 # builds
 subdirs = ['src']

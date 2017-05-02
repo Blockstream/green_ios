@@ -23,6 +23,8 @@ namespace sdk {
         void connect(const std::string& endpoint, bool debug = false);
         void disconnect();
 
+        void login(const std::string& mnemonic);
+
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
