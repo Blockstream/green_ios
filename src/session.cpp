@@ -15,8 +15,10 @@ extern "C" {
 #include <wally_bip32.h>
 #include <wally_bip39.h>
 #include <wally_core.h>
+#include <wally_crypto.h>
 }
 
+#include "assertion.hpp"
 #include "session.hpp"
 
 namespace ga {
@@ -31,6 +33,9 @@ namespace sdk {
 #endif
 
     using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context>;
+
+    using wally_ext_key_ptr = std::unique_ptr<const ext_key, decltype(&bip32_key_free)>;
+    using wally_string_ptr = std::unique_ptr<char, decltype(&wally_free_string)>;
 
     const std::string DEFAULT_REALM("realm1");
 
@@ -70,6 +75,9 @@ namespace sdk {
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
+        wally_string_ptr sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge) const;
+
+    private:
         boost::asio::io_service _io;
         client _client;
         std::shared_ptr<transport> _transport;
@@ -91,53 +99,83 @@ namespace sdk {
         _transport = std::make_shared<transport>(_client, endpoint, _debug);
         _transport->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(_session));
 
-        boost::future<void> connect_future;
-        boost::future<void> start_future;
-        boost::future<void> join_future;
+        std::array<boost::future<void>, 3> futures;
 
-        connect_future = _transport->connect().then([&](boost::future<void> connected) {
+        futures[0] = _transport->connect().then([&](boost::future<void> connected) {
             connected.get();
-            start_future = _session->start().then([&](boost::future<void> started) {
+            futures[1] = _session->start().then([&](boost::future<void> started) {
                 started.get();
 
-                join_future = _session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) {
+                futures[2] = _session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) {
                     joined.get();
                 });
             });
         });
 
-        connect_future.get();
-        start_future.get();
-        join_future.get();
+        for (auto&& f : futures) {
+            f.get();
+        }
+    }
+
+    wally_string_ptr session::session_impl::sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge) const
+    {
+        const uint32_t child_num = 0x4741b11e;
+        const ext_key* r = nullptr;
+        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(master_key.get(), &child_num, 1, BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r) == WALLY_OK);
+        wally_ext_key_ptr login_key(r, &bip32_key_free);
+
+        const std::string challenge_ext = "greenaddress.it      login " + challenge;
+        std::array<unsigned char, EC_MESSAGE_HASH_LEN> msg{ { 0 } };
+        size_t written = 0;
+        GA_SDK_RUNTIME_ASSERT(wally_format_bitcoin_message(reinterpret_cast<const unsigned char*>(challenge.data()), challenge.length(), BITCOIN_MESSAGE_FLAG_HASH, msg.data(), msg.size(), &written) == WALLY_OK);
+
+        std::array<unsigned char, EC_SIGNATURE_LEN> sig{ { 0 } };
+        GA_SDK_RUNTIME_ASSERT(wally_ec_sig_from_bytes(login_key->priv_key + 1, sizeof(login_key->priv_key) - 1, msg.data(), msg.size(), EC_FLAG_ECDSA, sig.data(), sig.size()) == WALLY_OK);
+
+        std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN> der{ { 0 } };
+        GA_SDK_RUNTIME_ASSERT(wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written) == WALLY_OK);
+
+        char* s = nullptr;
+        GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(der.data(), written, &s) == WALLY_OK);
+
+        return wally_string_ptr(s, &wally_free_string);
     }
 
     void session::session_impl::login(const std::string& mnemonic)
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
-        bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written);
+        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
 
         const ext_key* p = nullptr;
-        bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p);
+        GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p) == WALLY_OK);
+        wally_ext_key_ptr master_key(p, &bip32_key_free);
 
-        std::unique_ptr<const ext_key, decltype(&bip32_key_free)> master_key(p, &bip32_key_free);
-
-        std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh;
+        std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh{ { 0 } };
         vpkh[0] = 111;
         std::copy(master_key->hash160, master_key->hash160 + sizeof(master_key->hash160), vpkh.begin() + 1);
 
         char* q = nullptr;
-        wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q);
-        std::unique_ptr<char, decltype(&wally_free_string)> base58_pkh(q, &wally_free_string);
+        GA_SDK_RUNTIME_ASSERT(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
+        wally_string_ptr base58_pkh(q, &wally_free_string);
 
         std::tuple<std::string> challenge_arguments{ std::string(q) };
         std::string challenge;
-        auto call_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments).then([&](boost::future<autobahn::wamp_call_result> result) {
+        auto get_challenge_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments).then([&](boost::future<autobahn::wamp_call_result> result) {
             challenge = result.get().argument<std::string>(0);
             std::cerr << challenge << std::endl;
         });
 
-        call_future.get();
+        get_challenge_future.get();
+
+        auto hexder = sign_challenge(std::move(master_key), challenge);
+
+        std::tuple<std::string, bool, std::string, std::string, std::string> authenticate_arguments{ std::string(hexder.get()), false, std::string("GA"), std::string("fake_dev_id"), std::string("[sw]") };
+        auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments).then([&](boost::future<autobahn::wamp_call_result> result) {
+            result.get();
+        });
+
+        authenticate_future.get();
     }
 
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)

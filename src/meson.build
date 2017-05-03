@@ -5,7 +5,7 @@ endif
 
 add_global_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
 
-sources = ['session.hpp', 'session.cpp']
+sources = ['assertion.hpp', 'assertion.cpp', 'session.hpp', 'session.cpp']
 
 if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
