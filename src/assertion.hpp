@@ -10,7 +10,7 @@ namespace sdk {
 
 #define GA_SDK_STRINGIFY_(x) #x
 #define GA_SDK_STRINGIFY(x) GA_SDK_STRINGIFY_(x)
-#define GA_SDK_RUNTIME_ASSERT(condition) \
+#define GA_SDK_RUNTIME_ASSERT(condition)                                                                               \
     ga::sdk::runtime_assert(condition, __FILE__, __func__, GA_SDK_STRINGIFY(__LINE__))
 
 #endif

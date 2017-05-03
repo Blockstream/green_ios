@@ -65,10 +65,7 @@ namespace sdk {
             _client.init_asio(&_io);
         }
 
-        ~session_impl()
-        {
-            _io.stop();
-        }
+        ~session_impl() { _io.stop(); }
 
         void connect(const std::string& endpoint);
         void login(const std::string& mnemonic);
@@ -106,9 +103,7 @@ namespace sdk {
             futures[1] = _session->start().then([&](boost::future<void> started) {
                 started.get();
 
-                futures[2] = _session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) {
-                    joined.get();
-                });
+                futures[2] = _session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) { joined.get(); });
             });
         });
 
@@ -117,23 +112,31 @@ namespace sdk {
         }
     }
 
-    wally_string_ptr session::session_impl::sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge) const
+    wally_string_ptr session::session_impl::sign_challenge(
+        wally_ext_key_ptr master_key, const std::string& challenge) const
     {
         const uint32_t child_num = 0x4741b11e;
         const ext_key* r = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(master_key.get(), &child_num, 1, BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(
+                                  master_key.get(), &child_num, 1, BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r)
+            == WALLY_OK);
         wally_ext_key_ptr login_key(r, &bip32_key_free);
 
         const std::string challenge_ext = "greenaddress.it      login " + challenge;
         std::array<unsigned char, EC_MESSAGE_HASH_LEN> msg{ { 0 } };
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(wally_format_bitcoin_message(reinterpret_cast<const unsigned char*>(challenge.data()), challenge.length(), BITCOIN_MESSAGE_FLAG_HASH, msg.data(), msg.size(), &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_format_bitcoin_message(reinterpret_cast<const unsigned char*>(challenge.data()),
+                                  challenge.length(), BITCOIN_MESSAGE_FLAG_HASH, msg.data(), msg.size(), &written)
+            == WALLY_OK);
 
         std::array<unsigned char, EC_SIGNATURE_LEN> sig{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(wally_ec_sig_from_bytes(login_key->priv_key + 1, sizeof(login_key->priv_key) - 1, msg.data(), msg.size(), EC_FLAG_ECDSA, sig.data(), sig.size()) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_ec_sig_from_bytes(login_key->priv_key + 1, sizeof(login_key->priv_key) - 1,
+                                  msg.data(), msg.size(), EC_FLAG_ECDSA, sig.data(), sig.size())
+            == WALLY_OK);
 
         std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN> der{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(
+            wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written) == WALLY_OK);
 
         char* s = nullptr;
         GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(der.data(), written, &s) == WALLY_OK);
@@ -145,10 +148,12 @@ namespace sdk {
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(
+            bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
 
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(
+            bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p) == WALLY_OK);
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
         std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh{ { 0 } };
@@ -161,19 +166,21 @@ namespace sdk {
 
         std::tuple<std::string> challenge_arguments{ std::string(q) };
         std::string challenge;
-        auto get_challenge_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments).then([&](boost::future<autobahn::wamp_call_result> result) {
-            challenge = result.get().argument<std::string>(0);
-            std::cerr << challenge << std::endl;
-        });
+        auto get_challenge_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments)
+                                        .then([&](boost::future<autobahn::wamp_call_result> result) {
+                                            challenge = result.get().argument<std::string>(0);
+                                            std::cerr << challenge << std::endl;
+                                        });
 
         get_challenge_future.get();
 
         auto hexder = sign_challenge(std::move(master_key), challenge);
 
-        std::tuple<std::string, bool, std::string, std::string, std::string> authenticate_arguments{ std::string(hexder.get()), false, std::string("GA"), std::string("fake_dev_id"), std::string("[sw]") };
-        auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments).then([&](boost::future<autobahn::wamp_call_result> result) {
-            result.get();
-        });
+        std::tuple<std::string, bool, std::string, std::string, std::string> authenticate_arguments{
+            std::string(hexder.get()), false, std::string("GA"), std::string("fake_dev_id"), std::string("[sw]")
+        };
+        auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
+                                       .then([&](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         authenticate_future.get();
     }
@@ -199,10 +206,7 @@ namespace sdk {
         }
     }
 
-    void session::disconnect()
-    {
-        _impl.reset();
-    }
+    void session::disconnect() { _impl.reset(); }
 
     void session::login(const std::string& mnemonic)
     {
