@@ -8,7 +8,14 @@ boostdep = dependency('boost', modules : ['asio', 'system', 'thread'])
 
 clang_format = find_program('clang-format', required : false)
 
-run_command('tools/buildwally.sh')
+wally_path = join_paths(meson.current_source_dir(), 'src', 'wally', 'src', '.libs')
+libwally_obj = compiler.find_library('wallycore', dirs : [wally_path], required : false)
+if not libwally_obj.found()
+    message('Building wallycore...')
+    run_command('tools/buildwally.sh')
+    libwally_obj = compiler.find_library('wallycore', dirs : [wally_path])
+endif
+
 run_target('wally', command : 'tools/buildwally.sh')
 
 # includes
