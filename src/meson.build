@@ -11,19 +11,21 @@ if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
-libwally_linkargs = '-Wl,-rpath,' + wally_path
+boost_linkargs = '-Wl,-rpath,' + boost_lib_path
+wally_linkargs = '-Wl,-rpath,' + wally_path
 
 # FIXME: needs both options (shared and static). meson won't allow a version kw arg for library.
 libga = shared_library('greenaddress', sources,
             version : '0.1.0',
             include_directories : incdir,
-            link_args : libwally_linkargs,
-            dependencies : [boostdep, ssldep, libwally_obj])
+            link_args : [boost_linkargs, wally_linkargs],
+            dependencies : [boost_system_obj, boost_thread_obj, pthread_dep, ssldep, wally_obj])
 
 libga_dep = declare_dependency(
             include_directories : incdir,
             link_with : libga,
-            dependencies : [boostdep, ssldep, libwally_obj])
+            link_args : [boost_linkargs, wally_linkargs],
+            dependencies : [boost_system_obj, boost_thread_obj, pthread_dep, ssldep, wally_obj])
 
 # tests
 subdirs = ['tests']

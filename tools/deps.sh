@@ -5,6 +5,7 @@ SHA256SUM_AUTOBAHN=612e0f9fea274ee7a2b3873c7ab86ba82c5ed24a4aa4f125cdeb155c21656
 SHA256SUM_WEBSOCKETPP=07b3364ad30cda022d91759d4b83ff902e1ebadb796969e58b59caa535a03923
 SHA256SUM_MSGPACK=fce702408f0d228a1b9dcab69590d6a94d3938f694b95c9e5e6249617e98d83f
 SHA256SUM_WALLYCORE=fd0afe9cd485fa9f18c28af7f4e3b4e33eebbe075cbaa4b1c5b2ee1eca99718d
+SHA256SUM_BOOST=0445c22a5ef3bd69f5dfb48354978421a85ab395254a26b1ffb0aa1bfd63a108
 
 if [ ! -d "thirdparty" ]; then
   mkdir thirdparty
@@ -30,6 +31,15 @@ if [ ! -d "thirdparty/msgpack-2.1.1" ]; then
     echo "${SHA256SUM_MSGPACK} msgpack-2.1.1.tar.gz" | sha256sum --check && \
     tar -zxvf msgpack-2.1.1.tar.gz -C ./thirdparty/ && \
     rm -f msgpack-2.1.1.tar.gz
+fi
+
+if [ ! -d "thirdparty/boost_1_64_0" ]; then
+    wget -O boost-1.64.0.tar.gz https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz
+    echo "${SHA256SUM_BOOST} boost-1.64.0.tar.gz" | sha256sum --check && \
+    tar -zxvf boost-1.64.0.tar.gz -C ./thirdparty/ && \
+    mkdir -p thirdparty/boost_1_64_0/build/include && \
+    mkdir -p thirdparty/boost_1_64_0/build/lib && \
+    rm -f boost-1.64.0.tar.gz
 fi
 
 if [ ! -d "src/wally" ]; then
