@@ -14,6 +14,7 @@ fi
 
 export CFLAGS="$CFLAGS -O3" # Must  add optimisation flags for secp
 export CPPFLAGS="$CFLAGS"
+export BOOST_ROOT="$PWD/thirdparty/boost_1_64_0/build"
 
 if [ \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
     export CXX=g++

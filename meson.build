@@ -7,24 +7,23 @@ ssldep = dependency('openssl', version : '>= 1.0.1')
 
 clang_format = find_program('clang-format', required : false)
 
-pthread_dep = compiler.find_library('pthread')
+threads_dep = dependency('threads')
+boost_dep = dependency('boost', modules : ['system', 'thread'], required : false)
 
-boost_lib_path = join_paths(meson.current_source_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'lib')
-boost_thread_obj = compiler.find_library('boost_thread', dirs : [boost_lib_path], required : false)
-boost_system_obj = compiler.find_library('boost_system', dirs : [boost_lib_path], required : false)
-if not boost_thread_obj.found() or not boost_system_obj.found()
+if not boost_dep.found()
     message('Building boost...')
     run_command('tools/buildboost.sh')
-    boost_thread_obj = compiler.find_library('boost_thread', dirs : [boost_lib_path])
-    boost_system_obj = compiler.find_library('boost_system', dirs : [boost_lib_path])
+    boost_dep = dependency('boost', modules : ['system', 'thread'])
 endif
 
-wally_path = join_paths(meson.current_source_dir(), 'src', 'wally', 'src', '.libs')
-wally_obj = compiler.find_library('wallycore', dirs : [wally_path], required : false)
+boost_lib_path = join_paths(meson.current_source_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'lib')
+wally_lib_path = join_paths(meson.current_source_dir(), 'src', 'wally', 'src', '.libs')
+
+wally_obj = compiler.find_library('wallycore', dirs : [wally_lib_path], required : false)
 if not wally_obj.found()
     message('Building wallycore...')
     run_command('tools/buildwally.sh')
-    wally_obj = compiler.find_library('wallycore', dirs : [wally_path])
+    compiler.find_library('wallycore', dirs : [wally_lib_path])
 endif
 
 run_target('boost', command : 'tools/buildboost.sh')
