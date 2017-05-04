@@ -15,6 +15,7 @@ fi
 export CFLAGS="$CFLAGS -O3" # Must  add optimisation flags for secp
 export CPPFLAGS="$CFLAGS"
 export BOOST_ROOT="$PWD/thirdparty/boost_1_64_0/build"
+export PKG_CONFIG_PATH="$PWD/thirdparty/openssl-1.0.2k/build/lib/pkgconfig":$PKG_CONFIG_PATH
 
 if [ \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
     export CXX=g++

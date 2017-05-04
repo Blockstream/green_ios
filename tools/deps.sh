@@ -6,6 +6,7 @@ SHA256SUM_WEBSOCKETPP=07b3364ad30cda022d91759d4b83ff902e1ebadb796969e58b59caa535
 SHA256SUM_MSGPACK=fce702408f0d228a1b9dcab69590d6a94d3938f694b95c9e5e6249617e98d83f
 SHA256SUM_WALLYCORE=fd0afe9cd485fa9f18c28af7f4e3b4e33eebbe075cbaa4b1c5b2ee1eca99718d
 SHA256SUM_BOOST=0445c22a5ef3bd69f5dfb48354978421a85ab395254a26b1ffb0aa1bfd63a108
+SHA256SUM_OPENSSL=8173c6a6d6ab314e5e81e9cd1e1632f98586a14d7807697fd24155f162292229
 
 if [ ! -d "thirdparty" ]; then
   mkdir thirdparty
@@ -37,9 +38,18 @@ if [ ! -d "thirdparty/boost_1_64_0" ]; then
     wget -O boost-1.64.0.tar.gz https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz
     echo "${SHA256SUM_BOOST} boost-1.64.0.tar.gz" | sha256sum --check && \
     tar -zxvf boost-1.64.0.tar.gz -C ./thirdparty/ && \
-    mkdir -p thirdparty/boost_1_64_0/build/include && \
-    mkdir -p thirdparty/boost_1_64_0/build/lib && \
+    mkdir thirdparty/boost_1_64_0/build/include && \
+    mkdir thirdparty/boost_1_64_0/build/lib && \
     rm -f boost-1.64.0.tar.gz
+fi
+
+if [ ! -d "thirdparty/openssl-1.0.2k" ]; then
+    wget -O openssl-1.0.2k.tar.gz https://github.com/openssl/openssl/archive/OpenSSL_1_0_2k.tar.gz
+    echo "${SHA256SUM_OPENSSL} openssl-1.0.2k.tar.gz" | sha256sum --check && \
+    tar -zxvf openssl-1.0.2k.tar.gz -C ./thirdparty/ && \
+    mv thirdparty/openssl* thirdparty/openssl-1.0.2k && \
+    mkdir thirdparty/openssl-1.0.2k/build && \
+    rm -f openssl-1.0.2k.tar.gz
 fi
 
 if [ ! -d "src/wally" ]; then
