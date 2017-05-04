@@ -8,8 +8,10 @@ ssldep = dependency('openssl', version : '>= 1.0.1')
 clang_format = find_program('clang-format', required : false)
 
 threads_dep = dependency('threads')
-boost_dep = dependency('boost', modules : ['system', 'thread'], required : false)
+
+
 boost_lib_dir = join_paths(meson.current_source_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'lib')
+boost_dep = dependency('boost', modules : ['system', 'thread'], required : false)
 if not boost_dep.found()
     message('Building boost...')
     run_command('tools/buildboost.sh')
@@ -24,6 +26,7 @@ if not wally_lib.found()
     compiler.find_library('wallycore', dirs : [wally_lib_dir])
 endif
 
+openssl_lib_dir = join_paths(meson.current_source_dir(), 'thirdparty', 'openssl-1.0.2k', 'build', 'lib')
 openssl_dep = dependency('openssl', version : '>= 9.9.9', required : false)
 if not openssl_dep.found()
     message('Building openssl...')

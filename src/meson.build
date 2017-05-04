@@ -6,6 +6,7 @@ endif
 add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
 add_project_link_arguments(['-Wl,-rpath,' + wally_lib_dir, '-L' + wally_lib_dir, '-lwallycore'], language : 'cpp')
 add_project_link_arguments(['-Wl,-rpath,' + boost_lib_dir], language : 'cpp')
+add_project_link_arguments(['-Wl,-rpath,' + openssl_lib_dir], language : 'cpp')
 
 sources = ['assertion.hpp', 'assertion.cpp', 'session.hpp', 'session.cpp']
 
