@@ -73,6 +73,13 @@ namespace sdk {
     private:
         static wally_string_ptr sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge);
 
+        static inline wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
+        {
+            char* s = nullptr;
+            GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
+            return wally_string_ptr(s, &wally_free_string);
+        }
+
     private:
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
         template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
@@ -166,10 +173,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(
             wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written) == WALLY_OK);
 
-        char* s = nullptr;
-        GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(der.data(), written, &s) == WALLY_OK);
-
-        return wally_string_ptr(s, &wally_free_string);
+        return hex_from_bytes(der.data(), written);
     }
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& salt)
@@ -197,23 +201,15 @@ namespace sdk {
             bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p) == WALLY_OK);
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
-        char* q = nullptr;
-        GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(master_key->pub_key, sizeof(master_key->pub_key), &q) == WALLY_OK);
-        wally_string_ptr pub_key(q, &wally_free_string);
+        auto pub_key = hex_from_bytes(master_key->pub_key, sizeof(master_key->pub_key));
+        auto chain_code = hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code));
+        auto hex_path = hex_from_bytes(path.data(), path.size());
 
-        char* r = nullptr;
-        GA_SDK_RUNTIME_ASSERT(
-            wally_hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code), &r) == WALLY_OK);
-        wally_string_ptr chain_code(r, &wally_free_string);
-
-        char* s = nullptr;
-        GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(path.data(), path.size(), &s) == WALLY_OK);
-        wally_string_ptr hex_path(s, &wally_free_string);
-
-        std::tuple<std::string, std::string, std::string, std::string> register_arguments
-            = std::make_tuple(pub_key.get(), chain_code.get(), "[sw]", hex_path.get());
+        auto register_arguments = std::make_tuple(pub_key.get(), chain_code.get(), "[sw]", hex_path.get());
         auto register_future = _session->call("com.greenaddress.login.register", register_arguments)
-                                   .then([&](boost::future<autobahn::wamp_call_result> result) { result.get(); });
+                                   .then([&](boost::future<autobahn::wamp_call_result> result) {
+                                       GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
+                                   });
 
         register_future.get();
     }
@@ -238,7 +234,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
         wally_string_ptr base58_pkh(q, &wally_free_string);
 
-        std::tuple<std::string> challenge_arguments{ std::string(q) };
+        auto challenge_arguments = std::make_tuple(base58_pkh.get());
         std::string challenge;
         auto get_challenge_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments)
                                         .then([&](boost::future<autobahn::wamp_call_result> result) {
@@ -250,10 +246,8 @@ namespace sdk {
 
         auto hexder = sign_challenge(std::move(master_key), challenge);
 
-        std::tuple<std::string, bool, std::string, std::string, std::string> authenticate_arguments{
-            std::string(hexder.get()), false, std::string("GA"), std::string("fake_dev_id"), std::string("[sw]")
-        };
-
+        auto authenticate_arguments
+            = std::make_tuple(hexder.get(), false, std::string("GA"), std::string("fake_dev_id"), std::string("[sw]"));
         bool succeeded = true;
         auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([&](boost::future<autobahn::wamp_call_result> result) {
