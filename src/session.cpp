@@ -1,15 +1,17 @@
 #include <algorithm>
 #include <array>
 #include <thread>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
+
+#include <boost/variant.hpp>
 
 #include <autobahn/autobahn.hpp>
 #include <autobahn/wamp_websocketpp_websocket_transport.hpp>
 
 #include <websocketpp/client.hpp>
 #include <websocketpp/config/asio_client.hpp>
-#include <websocketpp/config/asio_no_tls_client.hpp>
 
 extern "C" {
 #include <wally_bip32.h>
@@ -23,15 +25,10 @@ extern "C" {
 
 namespace ga {
 namespace sdk {
-
-#ifdef WITH_TLS
-    using client = websocketpp::client<websocketpp::config::asio_tls_client>;
-    using transport = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_tls_client>;
-#else
-    using transport = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_client>;
     using client = websocketpp::client<websocketpp::config::asio_client>;
-#endif
-
+    using client_tls = websocketpp::client<websocketpp::config::asio_tls_client>;
+    using transport = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_client>;
+    using transport_tls = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_tls_client>;
     using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context>;
 
     using wally_ext_key_ptr = std::unique_ptr<const ext_key, decltype(&bip32_key_free)>;
@@ -58,11 +55,12 @@ namespace sdk {
 
     class session::session_impl {
     public:
-        explicit session_impl(bool debug)
+        explicit session_impl(bool debug, bool tls)
             : _controller(_io)
             , _debug(debug)
+            , _tls(tls)
         {
-            _client.init_asio(&_io);
+            _tls ? make_client<client_tls>() : (make_client<client>());
         }
 
         ~session_impl() { _io.stop(); }
@@ -75,41 +73,71 @@ namespace sdk {
         wally_string_ptr sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge) const;
 
     private:
+        template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
+        template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
+        {
+            // FIXME: these options need to be checked.
+            boost::get<std::shared_ptr<T>>(_client)->set_tls_init_handler([](websocketpp::connection_hdl) {
+                context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv1);
+                ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2
+                    | boost::asio::ssl::context::single_dh_use);
+                return ctx;
+            });
+        }
+
+        template <typename T> void make_client()
+        {
+            _client = std::make_shared<T>();
+            boost::get<std::shared_ptr<T>>(_client)->init_asio(&_io);
+            set_tls_init_handler<T>();
+        }
+
+        template <typename T> void make_transport(const std::string& endpoint)
+        {
+            using client_type
+                = std::shared_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
+
+            _transport = std::make_shared<T>(*boost::get<client_type>(_client), endpoint, _debug),
+            boost::get<std::shared_ptr<T>>(_transport)
+                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(_session));
+        }
+
+        template <typename T> void connect_to_endpoint() const
+        {
+            std::array<boost::future<void>, 3> futures;
+
+            futures[0] = boost::get<std::shared_ptr<T>>(_transport)->connect().then([&](boost::future<void> connected) {
+                connected.get();
+                futures[1] = _session->start().then([&](boost::future<void> started) {
+                    started.get();
+                    futures[2]
+                        = _session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) { joined.get(); });
+                });
+            });
+
+            for (auto&& f : futures) {
+                f.get();
+            }
+        }
+
+    private:
         boost::asio::io_service _io;
-        client _client;
-        std::shared_ptr<transport> _transport;
+        boost::variant<std::shared_ptr<client>, std::shared_ptr<client_tls>> _client;
+        boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> _transport;
         std::shared_ptr<autobahn::wamp_session> _session;
 
         event_loop_controller _controller;
 
         bool _debug;
+        bool _tls;
     };
 
     void session::session_impl::connect(const std::string& endpoint)
     {
-        if (_transport || _session) {
-            return;
-        }
-
         _session = std::make_shared<autobahn::wamp_session>(_io, _debug);
 
-        _transport = std::make_shared<transport>(_client, endpoint, _debug);
-        _transport->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(_session));
-
-        std::array<boost::future<void>, 3> futures;
-
-        futures[0] = _transport->connect().then([&](boost::future<void> connected) {
-            connected.get();
-            futures[1] = _session->start().then([&](boost::future<void> started) {
-                started.get();
-
-                futures[2] = _session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) { joined.get(); });
-            });
-        });
-
-        for (auto&& f : futures) {
-            f.get();
-        }
+        _tls ? make_transport<transport_tls>(endpoint) : make_transport<transport>(endpoint);
+        _tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
     }
 
     wally_string_ptr session::session_impl::sign_challenge(
@@ -197,7 +225,7 @@ namespace sdk {
 
     void session::connect(const std::string& endpoint, bool debug)
     {
-        _impl = std::make_shared<session::session_impl>(debug);
+        _impl = std::make_shared<session::session_impl>(debug, false);
 
         try {
             _impl->connect(endpoint);
