@@ -23,6 +23,7 @@ namespace sdk {
         void connect(const std::string& endpoint, bool debug = false);
         void disconnect();
 
+        void register_user(const std::string& mnemonic, const std::string& salt = "greenaddress_path");
         void login(const std::string& mnemonic);
 
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
