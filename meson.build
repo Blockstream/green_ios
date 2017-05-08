@@ -3,6 +3,21 @@ project('sdk', 'cpp', meson_version : '>= 0.37.1', default_options : ['cpp_std=c
 # dependencies
 compiler = meson.get_compiler('cpp')
 
+check_headers = [
+    'sys/syscall.h',
+    'unistd.h',
+    'algorithm',
+    'array',
+    'thread',
+    'type_traits',
+    'unordered_map',
+    'vector'
+]
+
+foreach h : check_headers
+  compiler.has_header(h)
+endforeach
+
 ssldep = dependency('openssl', version : '>= 1.0.1')
 
 clang_format = find_program('clang-format', required : false)
