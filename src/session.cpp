@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 
 #include <autobahn/autobahn.hpp>
@@ -73,11 +74,29 @@ namespace sdk {
     private:
         static wally_string_ptr sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge);
 
-        static inline wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
+        static wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
         {
             char* s = nullptr;
             GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
             return wally_string_ptr(s, &wally_free_string);
+        }
+
+        // FIXME: too slow. lacks validation.
+        static std::array<unsigned char, 32> uint256_to_base256(const std::string& bytes)
+        {
+            constexpr size_t base = 256;
+
+            std::array<unsigned char, 32> repr = { { 0 } };
+
+            size_t i = repr.size() - 1;
+
+            boost::multiprecision::uint256_t num(bytes);
+            while (num != 0) {
+                auto mod = num % base;
+                num = num / base;
+                repr[i--] = static_cast<unsigned char>(mod);
+            }
+            return repr;
         }
 
     private:
@@ -136,6 +155,8 @@ namespace sdk {
 
         event_loop_controller _controller;
 
+        std::unordered_map<std::string, msgpack::object> _login_data;
+
         bool _debug;
         bool _tls;
     };
@@ -157,19 +178,14 @@ namespace sdk {
             == WALLY_OK);
         wally_ext_key_ptr login_key(r, &bip32_key_free);
 
-        const std::string challenge_ext = "greenaddress.it      login " + challenge;
-        std::array<unsigned char, EC_MESSAGE_HASH_LEN> msg{ { 0 } };
-        size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(wally_format_bitcoin_message(reinterpret_cast<const unsigned char*>(challenge.data()),
-                                  challenge.length(), BITCOIN_MESSAGE_FLAG_HASH, msg.data(), msg.size(), &written)
-            == WALLY_OK);
-
+        const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig{ { 0 } };
         GA_SDK_RUNTIME_ASSERT(wally_ec_sig_from_bytes(login_key->priv_key + 1, sizeof(login_key->priv_key) - 1,
-                                  msg.data(), msg.size(), EC_FLAG_ECDSA, sig.data(), sig.size())
+                                  challenge_hash.data(), challenge_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size())
             == WALLY_OK);
 
         std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN> der{ { 0 } };
+        size_t written = 0;
         GA_SDK_RUNTIME_ASSERT(
             wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written) == WALLY_OK);
 
@@ -244,14 +260,13 @@ namespace sdk {
 
         get_challenge_future.get();
 
-        auto hexder = sign_challenge(std::move(master_key), challenge);
+        const auto hexder = sign_challenge(std::move(master_key), challenge);
 
         auto authenticate_arguments
-            = std::make_tuple(hexder.get(), false, std::string("GA"), std::string("fake_dev_id"), std::string("[sw]"));
-        bool succeeded = true;
+            = std::make_tuple(hexder.get(), false, "GA", std::string("fake_dev_id"), std::string("[sw]"));
         auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([&](boost::future<autobahn::wamp_call_result> result) {
-                                           succeeded = result.get().argument<bool>(0);
+                                           _login_data = result.get().argument<decltype(_login_data)>(0);
                                        });
 
         authenticate_future.get();
