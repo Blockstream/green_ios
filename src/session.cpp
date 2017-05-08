@@ -1,3 +1,6 @@
+#include <sys/syscall.h>
+#include <unistd.h>
+
 #include <algorithm>
 #include <array>
 #include <thread>
@@ -37,6 +40,28 @@ namespace sdk {
 
     const std::string DEFAULT_REALM("realm1");
 
+    namespace {
+        wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
+        {
+            char* s = nullptr;
+            GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
+            return wally_string_ptr(s, &wally_free_string);
+        }
+
+        // FIXME: too slow. lacks validation.
+        std::array<unsigned char, 32> uint256_to_base256(const std::string& bytes)
+        {
+            constexpr size_t base = 256;
+
+            std::array<unsigned char, 32> repr = { { 0 } };
+            size_t i = repr.size() - 1;
+            for (boost::multiprecision::checked_uint256_t num(bytes); num; num = num / base, --i)
+                repr[i] = static_cast<unsigned char>(num % base);
+
+            return repr;
+        }
+    }
+
     struct event_loop_controller {
         explicit event_loop_controller(boost::asio::io_service& io)
             : _work_guard(std::make_unique<boost::asio::io_service::work>(io))
@@ -67,37 +92,13 @@ namespace sdk {
         ~session_impl() { _io.stop(); }
 
         void connect(const std::string& endpoint);
-        void register_user(const std::string& mnemonic, const std::string& salt);
-        void login(const std::string& mnemonic);
+        void register_user(const std::string& mnemonic, const std::string& salt, const std::string& user_agent);
+        void login(const std::string& mnemonic, bool multiple_login, const std::string& user_agent);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
-        static wally_string_ptr sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge);
-
-        static wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
-        {
-            char* s = nullptr;
-            GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
-            return wally_string_ptr(s, &wally_free_string);
-        }
-
-        // FIXME: too slow. lacks validation.
-        static std::array<unsigned char, 32> uint256_to_base256(const std::string& bytes)
-        {
-            constexpr size_t base = 256;
-
-            std::array<unsigned char, 32> repr = { { 0 } };
-
-            size_t i = repr.size() - 1;
-
-            boost::multiprecision::uint256_t num(bytes);
-            while (num != 0) {
-                auto mod = num % base;
-                num = num / base;
-                repr[i--] = static_cast<unsigned char>(mod);
-            }
-            return repr;
-        }
+        static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
+            wally_ext_key_ptr master_key, const std::string& challenge);
 
     private:
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
@@ -169,14 +170,23 @@ namespace sdk {
         _tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
     }
 
-    wally_string_ptr session::session_impl::sign_challenge(wally_ext_key_ptr master_key, const std::string& challenge)
+    std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
+        wally_ext_key_ptr master_key, const std::string& challenge)
     {
-        const uint32_t child_num = 0x4741b11e;
-        const ext_key* r = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(
-                                  master_key.get(), &child_num, 1, BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r)
-            == WALLY_OK);
-        wally_ext_key_ptr login_key(r, &bip32_key_free);
+        // FIXME: Android (move to wally?)
+        std::array<unsigned char, 8> random_path;
+        GA_SDK_RUNTIME_ASSERT(syscall(SYS_getrandom, random_path.data(), random_path.size(), 0) == random_path.size());
+
+        wally_ext_key_ptr login_key = std::move(master_key);
+        for (size_t i = 0; i < random_path.size() / 2; ++i) {
+            const ext_key* r = nullptr;
+            const uint32_t current_child_num = random_path[i * 2] * 256 + random_path[i * 2 + 1];
+            GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(login_key.get(), &current_child_num, 1,
+                                      BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r)
+                == WALLY_OK);
+
+            login_key = wally_ext_key_ptr(r, &bip32_key_free);
+        }
 
         const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig{ { 0 } };
@@ -189,10 +199,11 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(
             wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written) == WALLY_OK);
 
-        return hex_from_bytes(der.data(), written);
+        return { hex_from_bytes(der.data(), written), hex_from_bytes(random_path.data(), random_path.size()) };
     }
 
-    void session::session_impl::register_user(const std::string& mnemonic, const std::string& salt)
+    void session::session_impl::register_user(
+        const std::string& mnemonic, const std::string& user_agent, const std::string& salt)
     {
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> hash{ { 0 } };
         GA_SDK_RUNTIME_ASSERT(
@@ -221,7 +232,8 @@ namespace sdk {
         auto chain_code = hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code));
         auto hex_path = hex_from_bytes(path.data(), path.size());
 
-        auto register_arguments = std::make_tuple(pub_key.get(), chain_code.get(), "[sw]", hex_path.get());
+        auto register_arguments
+            = std::make_tuple(pub_key.get(), chain_code.get(), user_agent + "_ga_sdk", hex_path.get());
         auto register_future = _session->call("com.greenaddress.login.register", register_arguments)
                                    .then([&](boost::future<autobahn::wamp_call_result> result) {
                                        GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
@@ -230,7 +242,7 @@ namespace sdk {
         register_future.get();
     }
 
-    void session::session_impl::login(const std::string& mnemonic)
+    void session::session_impl::login(const std::string& mnemonic, bool multiple_login, const std::string& user_agent)
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
@@ -260,10 +272,10 @@ namespace sdk {
 
         get_challenge_future.get();
 
-        const auto hexder = sign_challenge(std::move(master_key), challenge);
+        auto hexder_path = sign_challenge(std::move(master_key), challenge);
 
-        auto authenticate_arguments
-            = std::make_tuple(hexder.get(), false, "GA", std::string("fake_dev_id"), std::string("[sw]"));
+        auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), multiple_login, hexder_path.second.get(),
+            std::string("fake_dev_id"), user_agent + "_ga_sdk");
         auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([&](boost::future<autobahn::wamp_call_result> result) {
                                            _login_data = result.get().argument<decltype(_login_data)>(0);
@@ -295,19 +307,19 @@ namespace sdk {
 
     void session::disconnect() { _impl.reset(); }
 
-    void session::register_user(const std::string& mnemonic, const std::string& salt)
+    void session::register_user(const std::string& mnemonic, const std::string& user_agent, const std::string& salt)
     {
         try {
-            _impl->register_user(mnemonic, salt);
+            _impl->register_user(mnemonic, user_agent, salt);
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
         }
     }
 
-    void session::login(const std::string& mnemonic)
+    void session::login(const std::string& mnemonic, bool multiple_login, const std::string& user_agent)
     {
         try {
-            _impl->login(mnemonic);
+            _impl->login(mnemonic, multiple_login, user_agent);
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
         }
