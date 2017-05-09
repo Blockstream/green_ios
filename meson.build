@@ -8,6 +8,7 @@ check_headers = [
     'unistd.h',
     'algorithm',
     'array',
+    'memory',
     'thread',
     'type_traits',
     'unordered_map',
