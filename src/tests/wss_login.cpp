@@ -16,7 +16,7 @@ int main(int argc, char** argv)
         ga::sdk::session session;
         session.connect(DEFAULT_ENDPOINT, true);
         session.register_user(DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
-        session.login(DEFAULT_MNEMONIC, false, DEFAULT_USER_AGENT);
+        session.login(DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

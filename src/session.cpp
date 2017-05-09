@@ -94,8 +94,8 @@ namespace sdk {
         ~session_impl() { _io.stop(); }
 
         void connect(const std::string& endpoint);
-        void register_user(const std::string& mnemonic, const std::string& salt, const std::string& user_agent);
-        void login(const std::string& mnemonic, bool multiple_login, const std::string& user_agent);
+        void register_user(const std::string& mnemonic, const std::string& user_agent);
+        void login(const std::string& mnemonic, const std::string& user_agent);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
@@ -204,14 +204,12 @@ namespace sdk {
         return { hex_from_bytes(der.data(), written), hex_from_bytes(random_path.data(), random_path.size()) };
     }
 
-    void session::session_impl::register_user(
-        const std::string& mnemonic, const std::string& user_agent, const std::string& salt)
+    void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
+        unsigned char salt[] = "greenaddress_path";
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> hash{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(
-            wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(mnemonic.data()), mnemonic.length(),
-                const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(salt.data())), salt.length(), 0, 2048,
-                hash.data(), hash.size())
+        GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(mnemonic.data()),
+                                  mnemonic.length(), salt, sizeof(salt), 0, 2048, hash.data(), hash.size())
             == WALLY_OK);
 
         const std::string key = "GreenAddress.it HD wallet path";
@@ -244,7 +242,7 @@ namespace sdk {
         register_future.get();
     }
 
-    void session::session_impl::login(const std::string& mnemonic, bool multiple_login, const std::string& user_agent)
+    void session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
@@ -276,7 +274,7 @@ namespace sdk {
 
         auto hexder_path = sign_challenge(std::move(master_key), challenge);
 
-        auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), multiple_login, hexder_path.second.get(),
+        auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), user_agent + "_ga_sdk");
         auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([&](boost::future<autobahn::wamp_call_result> result) {
@@ -309,19 +307,19 @@ namespace sdk {
 
     void session::disconnect() { _impl.reset(); }
 
-    void session::register_user(const std::string& mnemonic, const std::string& user_agent, const std::string& salt)
+    void session::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
         try {
-            _impl->register_user(mnemonic, user_agent, salt);
+            _impl->register_user(mnemonic, user_agent);
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
         }
     }
 
-    void session::login(const std::string& mnemonic, bool multiple_login, const std::string& user_agent)
+    void session::login(const std::string& mnemonic, const std::string& user_agent)
     {
         try {
-            _impl->login(mnemonic, multiple_login, user_agent);
+            _impl->login(mnemonic, user_agent);
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
         }
