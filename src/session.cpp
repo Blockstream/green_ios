@@ -25,6 +25,7 @@ extern "C" {
 }
 
 #include "assertion.hpp"
+#include "session.h"
 #include "session.hpp"
 
 namespace ga {
@@ -55,8 +56,9 @@ namespace sdk {
 
             std::array<unsigned char, 32> repr = { { 0 } };
             size_t i = repr.size() - 1;
-            for (boost::multiprecision::checked_uint256_t num(bytes); num; num = num / base, --i)
+            for (boost::multiprecision::checked_uint256_t num(bytes); num; num = num / base, --i) {
                 repr[i] = static_cast<unsigned char>(num % base);
+            }
 
             return repr;
         }
@@ -334,4 +336,15 @@ namespace sdk {
         }
     }
 }
+}
+
+struct GA_session : public ga::sdk::session {
+};
+
+struct GA_session* GA_create_session() { return new GA_session(); }
+
+void GA_destroy_session(struct GA_session* session)
+{
+    delete session;
+    session = nullptr;
 }
