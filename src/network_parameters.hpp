@@ -22,7 +22,7 @@ namespace sdk {
         }
 
 #ifdef __clang__
-#define DEFINE_NETWORK_STRING_PARAM(name, s) decltype(constant_string(s)) name = constant_string(s)
+#define DEFINE_NETWORK_STRING_PARAM(name, s) const std::string name = s
 #else
 #define DEFINE_NETWORK_STRING_PARAM(name, s) static constexpr auto name = constant_string(s)
 #endif
@@ -49,6 +49,8 @@ namespace sdk {
     {
         return make_string(s, std::make_index_sequence<std::tuple_size<T>::value>());
     }
+
+    inline std::string make_string(const std::string& s) { return s; }
 
     class network_parameters {
     public:
