@@ -6,6 +6,8 @@
 
 #include <autobahn/wamp_event_handler.hpp>
 
+#include "network_parameters.hpp"
+
 namespace ga {
 namespace sdk {
 
@@ -20,7 +22,7 @@ namespace sdk {
         session& operator=(const session&) = delete;
         session& operator=(session&&) = delete;
 
-        void connect(const std::string& endpoint, bool debug = false);
+        void connect(network_parameters params, bool debug = false);
         void disconnect();
 
         void register_user(const std::string& mnemonic, const std::string& user_agent);

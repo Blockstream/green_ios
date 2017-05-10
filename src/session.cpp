@@ -294,11 +294,11 @@ namespace sdk {
         subscribe_future.get();
     }
 
-    void session::connect(const std::string& endpoint, bool debug)
+    void session::connect(network_parameters params, bool debug)
     {
         _impl = std::make_shared<session::session_impl>(debug, false);
 
-        _impl->connect(endpoint);
+        _impl->connect(params.gait_wamp_url());
     }
 
     void session::disconnect() { _impl.reset(); }
@@ -364,8 +364,10 @@ void GA_destroy_session(struct GA_session* session)
 }
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_connect,
-    [](struct GA_session* session, const char* endpoint, int debug) { session->connect(endpoint, debug != 0); },
-    const char*, endpoint, int, debug)
+    [](struct GA_session* session, int network, int debug) {
+        session->connect(ga::sdk::make_regtest_network(), debug != 0);
+    },
+    int, network, int, debug)
 
 GA_SDK_DEFINE_C_FUNCTION_0(GA_disconnect, [](struct GA_session* session) { session->disconnect(); })
 
