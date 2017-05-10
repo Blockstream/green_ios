@@ -11,7 +11,7 @@ extern "C" {
 
 struct GA_session;
 
-struct GA_session* GA_create_session();
+int GA_create_session(struct GA_session** session);
 
 void GA_destroy_session(struct GA_session*);
 

@@ -337,7 +337,25 @@ template <typename F, typename... Args> auto c_invoke(F&& f, struct GA_session* 
 struct GA_session : public ga::sdk::session {
 };
 
-struct GA_session* GA_create_session() { return new GA_session(); }
+#define GA_SDK_DEFINE_C_FUNCTION_0(c_function_name, c_function_body)                                                   \
+    int c_function_name(struct GA_session* session) { return c_invoke(c_function_body, session); }
+
+#define GA_SDK_DEFINE_C_FUNCTION_2(c_function_name, c_function_body, T1, ARG1, T2, ARG2)                               \
+    int c_function_name(struct GA_session* session, T1 ARG1, T2 ARG2)                                                  \
+    {                                                                                                                  \
+        return c_invoke(c_function_body, session, ARG1, ARG2);                                                         \
+    }
+
+int GA_create_session(struct GA_session** session)
+{
+    try {
+        GA_SDK_RUNTIME_ASSERT(session);
+        *session = new GA_session();
+        return GA_OK;
+    } catch (const std::exception& ex) {
+        return GA_ERROR;
+    }
+}
 
 void GA_destroy_session(struct GA_session* session)
 {
@@ -345,27 +363,18 @@ void GA_destroy_session(struct GA_session* session)
     session = nullptr;
 }
 
-#define GA_SDK_DECLARE_C_FUNCTION_0(c_function_name, c_function_body)                                                  \
-    int c_function_name(struct GA_session* session) { return c_invoke(c_function_body, session); }
-
-#define GA_SDK_DECLARE_C_FUNCTION_2(c_function_name, c_function_body, T1, ARG1, T2, ARG2)                              \
-    int c_function_name(struct GA_session* session, T1 ARG1, T2 ARG2)                                                  \
-    {                                                                                                                  \
-        return c_invoke(c_function_body, session, ARG1, ARG2);                                                         \
-    }
-
-GA_SDK_DECLARE_C_FUNCTION_2(GA_connect,
+GA_SDK_DEFINE_C_FUNCTION_2(GA_connect,
     [](struct GA_session* session, const char* endpoint, int debug) { session->connect(endpoint, debug != 0); },
     const char*, endpoint, int, debug)
 
-GA_SDK_DECLARE_C_FUNCTION_0(GA_disconnect, [](struct GA_session* session) { session->disconnect(); })
+GA_SDK_DEFINE_C_FUNCTION_0(GA_disconnect, [](struct GA_session* session) { session->disconnect(); })
 
-GA_SDK_DECLARE_C_FUNCTION_2(GA_register_user,
+GA_SDK_DEFINE_C_FUNCTION_2(GA_register_user,
     [](struct GA_session* session, const char* mnemonic, const char* user_agent) {
         session->register_user(mnemonic, user_agent);
     },
     const char*, mnemonic, const char*, user_agent)
 
-GA_SDK_DECLARE_C_FUNCTION_2(GA_login, [](struct GA_session* session, const char* mnemonic,
-                                          const char* user_agent) { session->login(mnemonic, user_agent); },
+GA_SDK_DEFINE_C_FUNCTION_2(GA_login, [](struct GA_session* session, const char* mnemonic,
+                                         const char* user_agent) { session->login(mnemonic, user_agent); },
     const char*, mnemonic, const char*, user_agent);

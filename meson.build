@@ -5,7 +5,9 @@ compiler = meson.get_compiler('cpp')
 
 check_headers = [
     'sys/syscall.h',
+    'malloc.h',
     'unistd.h',
+# c++ specific. stdlib should be installed anyhow
     'algorithm',
     'array',
     'memory',

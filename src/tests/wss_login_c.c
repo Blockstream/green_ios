@@ -1,3 +1,4 @@
+#include <malloc.h>
 #include "session.h"
 
 const char* DEFAULT_ENDPOINT = "ws://localhost:8080/v2/ws";
@@ -9,7 +10,8 @@ int main(int argc, char* argv[])
 {
     int ret = GA_OK;
 
-    struct GA_session* session = GA_create_session();
+    struct GA_session* session = NULL;
+    ret = GA_create_session(&session);
 
     ret = GA_connect(session, DEFAULT_ENDPOINT, 0);
     ret = GA_register_user(session, DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
