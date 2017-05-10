@@ -81,7 +81,7 @@ namespace sdk {
         std::unique_ptr<boost::asio::io_service::work> _work_guard;
     };
 
-    class session::session_impl {
+    class session::session_impl final {
     public:
         explicit session_impl(bool debug, bool tls)
             : _controller(_io)

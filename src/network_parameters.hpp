@@ -27,7 +27,7 @@ namespace sdk {
 #define DEFINE_NETWORK_STRING_PARAM(name, s) static constexpr auto name = constant_string(s)
 #endif
 
-        struct regtest_parameters {
+        struct regtest_parameters final {
             DEFINE_NETWORK_STRING_PARAM(gait_wamp_url, "ws://localhost:8080/v2/ws");
             DEFINE_NETWORK_STRING_PARAM(gait_wamp_cert_pins, "");
             DEFINE_NETWORK_STRING_PARAM(block_explorer_address, "http://192.168.56.1:8080/address/");
@@ -52,7 +52,7 @@ namespace sdk {
 
     inline std::string make_string(const std::string& s) { return s; }
 
-    class network_parameters {
+    class network_parameters final {
     public:
         template <typename params>
         network_parameters(params p)
