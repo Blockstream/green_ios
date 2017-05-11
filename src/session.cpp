@@ -261,7 +261,7 @@ namespace sdk {
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
         std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh{ { 0 } };
-        vpkh[0] = 111;
+        vpkh[0] = _params.main_net() ? 0 : 111;
         std::copy(master_key->hash160, master_key->hash160 + sizeof(master_key->hash160), vpkh.begin() + 1);
 
         char* q = nullptr;
