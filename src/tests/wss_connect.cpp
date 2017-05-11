@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 {
     try {
         ga::sdk::session session;
-        session.connect(ga::sdk::make_regtest_network());
+        session.connect(ga::sdk::make_localtest_network());
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

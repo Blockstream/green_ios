@@ -21,16 +21,26 @@ namespace sdk {
             return constant_string(s, std::make_index_sequence<N - 1>());
         }
 
-#ifdef __clang__
 #define DEFINE_NETWORK_STRING_PARAM(name, s) const std::string name = s
-#else
-#define DEFINE_NETWORK_STRING_PARAM(name, s) static constexpr auto name = constant_string(s)
-#endif
 
         struct regtest_parameters final {
-            DEFINE_NETWORK_STRING_PARAM(gait_wamp_url, "ws://localhost:8080/v2/ws");
+            DEFINE_NETWORK_STRING_PARAM(gait_wamp_url, "ws://10.0.2.2:8080/v2/ws");
             DEFINE_NETWORK_STRING_PARAM(gait_wamp_cert_pins, "");
             DEFINE_NETWORK_STRING_PARAM(block_explorer_address, "http://192.168.56.1:8080/address/");
+            DEFINE_NETWORK_STRING_PARAM(block_explorer_tx, "http://192.168.56.1:8080/tx/");
+            DEFINE_NETWORK_STRING_PARAM(
+                deposit_chain_code, "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04");
+            DEFINE_NETWORK_STRING_PARAM(
+                deposit_pub_key, "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3");
+            DEFINE_NETWORK_STRING_PARAM(gait_onion, "");
+            DEFINE_NETWORK_STRING_PARAM(default_peer, "192.168.56.1:19000");
+            static constexpr bool main_net = false;
+        };
+
+        struct localtest_parameters final {
+            DEFINE_NETWORK_STRING_PARAM(gait_wamp_url, "ws://localhost:8080/v2/ws");
+            DEFINE_NETWORK_STRING_PARAM(gait_wamp_cert_pins, "");
+            DEFINE_NETWORK_STRING_PARAM(block_explorer_address, "");
             DEFINE_NETWORK_STRING_PARAM(block_explorer_tx, "");
             DEFINE_NETWORK_STRING_PARAM(deposit_chain_code, "");
             DEFINE_NETWORK_STRING_PARAM(deposit_pub_key, "");
@@ -39,6 +49,8 @@ namespace sdk {
             static constexpr bool main_net = false;
         };
     }
+
+#undef DEFINE_NETWORK_STRING_PARAM
 
     template <typename T, size_t... I> inline std::string make_string(T s, std::index_sequence<I...>)
     {
@@ -50,21 +62,19 @@ namespace sdk {
         return make_string(s, std::make_index_sequence<std::tuple_size<T>::value>());
     }
 
-    inline std::string make_string(const std::string& s) { return s; }
-
     class network_parameters final {
     public:
         template <typename params>
         network_parameters(params p)
-            : _gait_wamp_url(make_string(p.gait_wamp_url))
-            , _gait_wamp_cert_pins(make_string(p.gait_wamp_cert_pins))
-            , _block_explorer_address(make_string(p.block_explorer_address))
-            , _block_explorer_tx(make_string(p.block_explorer_tx))
-            , _deposit_chain_code(make_string(p.deposit_chain_code))
-            , _deposit_pub_key(make_string(p.deposit_pub_key))
-            , _gait_onion(make_string(p.gait_onion))
-            , _default_peer(make_string(p.default_peer))
-            , _main_net(params::main_net)
+            : _gait_wamp_url(p.gait_wamp_url)
+            , _gait_wamp_cert_pins(p.gait_wamp_cert_pins)
+            , _block_explorer_address(p.block_explorer_address)
+            , _block_explorer_tx(p.block_explorer_tx)
+            , _deposit_chain_code(p.deposit_chain_code)
+            , _deposit_pub_key(p.deposit_pub_key)
+            , _gait_onion(p.gait_onion)
+            , _default_peer(p.default_peer)
+            , _main_net(p.main_net)
         {
         }
 
@@ -75,6 +85,13 @@ namespace sdk {
         network_parameters& operator=(network_parameters&&) = default;
 
         const std::string& gait_wamp_url() const { return _gait_wamp_url; }
+        const std::string& gait_wamp_cert_pins() const { return _gait_wamp_cert_pins; }
+        const std::string& block_explorer_address() const { return _block_explorer_address; }
+        const std::string& block_explorer_tx() const { return _block_explorer_tx; }
+        const std::string& deposit_chain_code() const { return _deposit_chain_code; }
+        const std::string& deposit_pub_key() const { return _deposit_pub_key; }
+        const std::string& gait_onion() const { return _gait_onion; }
+        bool main_net() const { return _main_net; }
 
     private:
         std::string _gait_wamp_url;
@@ -91,6 +108,11 @@ namespace sdk {
     inline network_parameters make_regtest_network()
     {
         return network_parameters(ga::sdk::detail::regtest_parameters());
+    }
+
+    inline network_parameters make_localtest_network()
+    {
+        return network_parameters(ga::sdk::detail::localtest_parameters());
     }
 }
 }

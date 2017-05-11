@@ -10,6 +10,7 @@ extern "C" {
 #define GA_ERROR -1
 
 #define GA_NETWORK_REGTEST 0
+#define GA_NETWORK_LOCALTEST 5
 
 struct GA_session;
 

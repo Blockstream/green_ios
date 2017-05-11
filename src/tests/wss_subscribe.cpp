@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 
     try {
         ga::sdk::session session;
-        session.connect(ga::sdk::make_regtest_network());
+        session.connect(ga::sdk::make_localtest_network());
         session.subscribe(DEFAULT_TOPIC, [&](const autobahn::wamp_event& event) {
             using topic_type = std::unordered_map<std::string, size_t>;
             auto ev = event.argument<topic_type>(0);

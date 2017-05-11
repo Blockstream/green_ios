@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 {
     try {
         ga::sdk::session session;
-        session.connect(ga::sdk::make_regtest_network(), true);
+        session.connect(ga::sdk::make_localtest_network(), true);
         session.register_user(DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
         session.login(DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
     } catch (const std::exception& e) {

@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 
@@ -83,17 +84,17 @@ namespace sdk {
 
     class session::session_impl final {
     public:
-        explicit session_impl(bool debug, bool tls)
+        explicit session_impl(network_parameters params, bool debug)
             : _controller(_io)
+            , _params(std::move(params))
             , _debug(debug)
-            , _tls(tls)
         {
-            _tls ? make_client<client_tls>() : (make_client<client>());
+            connect_with_tls() ? make_client<client_tls>() : make_client<client>();
         }
 
         ~session_impl() { _io.stop(); }
 
-        void connect(const std::string& endpoint);
+        void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
@@ -103,6 +104,8 @@ namespace sdk {
             wally_ext_key_ptr master_key, const std::string& challenge);
 
     private:
+        bool connect_with_tls() const { return boost::algorithm::starts_with(_params.gait_wamp_url(), "wss://"); }
+
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
         template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
         {
@@ -122,12 +125,12 @@ namespace sdk {
             set_tls_init_handler<T>();
         }
 
-        template <typename T> void make_transport(const std::string& endpoint)
+        template <typename T> void make_transport()
         {
             using client_type
                 = std::shared_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
 
-            _transport = std::make_shared<T>(*boost::get<client_type>(_client), endpoint, _debug),
+            _transport = std::make_shared<T>(*boost::get<client_type>(_client), _params.gait_wamp_url(), _debug),
             boost::get<std::shared_ptr<T>>(_transport)
                 ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(_session));
         }
@@ -160,16 +163,18 @@ namespace sdk {
 
         std::unordered_map<std::string, msgpack::object> _login_data;
 
+        network_parameters _params;
+
         bool _debug;
-        bool _tls;
     };
 
-    void session::session_impl::connect(const std::string& endpoint)
+    void session::session_impl::connect()
     {
         _session = std::make_shared<autobahn::wamp_session>(_io, _debug);
 
-        _tls ? make_transport<transport_tls>(endpoint) : make_transport<transport>(endpoint);
-        _tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
+        const bool tls = connect_with_tls();
+        tls ? make_transport<transport_tls>() : make_transport<transport>();
+        tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
     }
 
     std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
@@ -235,7 +240,7 @@ namespace sdk {
         auto register_arguments
             = std::make_tuple(pub_key.get(), chain_code.get(), user_agent + "_ga_sdk", hex_path.get());
         auto register_future = _session->call("com.greenaddress.login.register", register_arguments)
-                                   .then([&](boost::future<autobahn::wamp_call_result> result) {
+                                   .then([](boost::future<autobahn::wamp_call_result> result) {
                                        GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
                                    });
 
@@ -250,8 +255,9 @@ namespace sdk {
             bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
 
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(
-            bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(),
+                                  _params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
+            == WALLY_OK);
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
         std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh{ { 0 } };
@@ -265,7 +271,7 @@ namespace sdk {
         auto challenge_arguments = std::make_tuple(base58_pkh.get());
         std::string challenge;
         auto get_challenge_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments)
-                                        .then([&](boost::future<autobahn::wamp_call_result> result) {
+                                        .then([&challenge](boost::future<autobahn::wamp_call_result> result) {
                                             challenge = result.get().argument<std::string>(0);
                                             std::cerr << challenge << std::endl;
                                         });
@@ -277,7 +283,7 @@ namespace sdk {
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), user_agent + "_ga_sdk");
         auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
-                                       .then([&](boost::future<autobahn::wamp_call_result> result) {
+                                       .then([this](boost::future<autobahn::wamp_call_result> result) {
                                            _login_data = result.get().argument<decltype(_login_data)>(0);
                                        });
 
@@ -287,7 +293,7 @@ namespace sdk {
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
         auto subscribe_future = _session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
-                                    .then([&](boost::future<autobahn::wamp_subscription> subscription) {
+                                    .then([](boost::future<autobahn::wamp_subscription> subscription) {
                                         std::cerr << "subscribed to topic:" << subscription.get().id() << std::endl;
                                     });
 
@@ -296,9 +302,9 @@ namespace sdk {
 
     void session::connect(network_parameters params, bool debug)
     {
-        _impl = std::make_shared<session::session_impl>(debug, false);
+        _impl = std::make_shared<session::session_impl>(std::move(params), debug);
 
-        _impl->connect(params.gait_wamp_url());
+        _impl->connect();
     }
 
     void session::disconnect() { _impl.reset(); }
@@ -331,6 +337,7 @@ template <typename F, typename... Args> auto c_invoke(F&& f, struct GA_session* 
         std::cerr << ex.what() << std::endl;
         return GA_ERROR;
     }
+    __builtin_unreachable();
 }
 }
 
@@ -355,6 +362,7 @@ int GA_create_session(struct GA_session** session)
     } catch (const std::exception& ex) {
         return GA_ERROR;
     }
+    __builtin_unreachable();
 }
 
 void GA_destroy_session(struct GA_session* session)
@@ -365,7 +373,10 @@ void GA_destroy_session(struct GA_session* session)
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_connect,
     [](struct GA_session* session, int network, int debug) {
-        session->connect(ga::sdk::make_regtest_network(), debug != 0);
+        auto&& params = network == GA_NETWORK_REGTEST
+            ? ga::sdk::make_regtest_network()
+            : GA_NETWORK_LOCALTEST ? ga::sdk::make_localtest_network() : ga::sdk::make_localtest_network();
+        session->connect(std::move(params), debug != 0);
     },
     int, network, int, debug)
 
