@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include <autobahn/autobahn.hpp>
-
 #include "session.hpp"
 
 const std::string DEFAULT_MNEMONIC(

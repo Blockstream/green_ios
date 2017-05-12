@@ -2,6 +2,7 @@
 #define GA_SDK_NETWORK_PARAMETERS_HPP
 #pragma once
 
+#include <map>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -10,6 +11,32 @@ namespace ga {
 namespace sdk {
 
     namespace detail {
+        template <size_t N, size_t... I>
+        struct make_even_index_sequence : make_even_index_sequence<N - 2, N - 2, I...> {
+        };
+
+        template <size_t... I> struct make_even_index_sequence<0, I...> {
+            using type = std::index_sequence<I...>;
+        };
+
+        template <size_t N> using make_even_index_sequence_t = typename make_even_index_sequence<N>::type;
+
+        template <size_t N, size_t... I> struct make_odd_index_sequence : make_odd_index_sequence<N - 2, N - 1, I...> {
+        };
+
+        template <size_t... I> struct make_odd_index_sequence<0, I...> {
+            using type = std::index_sequence<I...>;
+        };
+
+        template <size_t N> using make_odd_index_sequence_t = typename make_odd_index_sequence<N>::type;
+
+        template <typename Args, size_t... I, size_t... J>
+        inline auto make_map_from_args(Args&& args, std::index_sequence<I...>, std::index_sequence<J...>)
+        {
+            return std::map<std::string, std::string>{ { std::get<I>(std::forward<Args>(args)),
+                std::get<J>(std::forward<Args>(args)) }... };
+        }
+
         template <size_t N, size_t... I>
         inline constexpr auto constant_string(const char (&s)[N], std::index_sequence<I...>)
         {
@@ -60,6 +87,14 @@ namespace sdk {
     template <typename T> inline std::string make_string(T s)
     {
         return make_string(s, std::make_index_sequence<std::tuple_size<T>::value>());
+    }
+
+    template <typename... Args> inline auto make_map_from_args(Args&&... args)
+    {
+        static_assert(sizeof...(Args) % 2 == 0, "must be even");
+        return detail::make_map_from_args(std::make_tuple(std::forward<Args>(args)...),
+            detail::make_even_index_sequence_t<sizeof...(Args)>{},
+            detail::make_odd_index_sequence_t<sizeof...(Args)>{});
     }
 
     class network_parameters final {

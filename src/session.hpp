@@ -28,7 +28,18 @@ namespace sdk {
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
 
+        template <typename... Args> void change_settings(const std::string& key, Args&&... args)
+        {
+            change_settings_helper(key, ga::sdk::make_map_from_args(std::forward<Args>(args)...));
+        }
+        void change_settings(const std::string& key, const std::map<std::string, std::string>& args)
+        {
+            change_settings_helper(key, args);
+        }
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
+
+    private:
+        void change_settings_helper(const std::string& key, const std::map<std::string, std::string>& args);
 
     private:
         class session_impl;

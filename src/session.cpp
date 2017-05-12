@@ -97,6 +97,7 @@ namespace sdk {
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
+        void change_settings(const std::string& key, const std::map<std::string, std::string>& args);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
@@ -290,6 +291,18 @@ namespace sdk {
         authenticate_future.get();
     }
 
+    void session::session_impl::change_settings(const std::string& key, const std::map<std::string, std::string>& args)
+    {
+        auto change_settings_arguments = std::make_tuple(key, args);
+        auto change_settings_future
+            = _session->call("com.greenaddress.login.change_settings", change_settings_arguments)
+                  .then([](boost::future<autobahn::wamp_call_result> result) {
+                      GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
+                  });
+
+        change_settings_future.get();
+    }
+
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
         auto subscribe_future = _session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
@@ -317,6 +330,11 @@ namespace sdk {
     void session::login(const std::string& mnemonic, const std::string& user_agent)
     {
         _impl->login(mnemonic, user_agent);
+    }
+
+    void session::change_settings_helper(const std::string& key, const std::map<std::string, std::string>& args)
+    {
+        _impl->change_settings(key, args);
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)

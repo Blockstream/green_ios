@@ -1,4 +1,9 @@
-exe_names = ['wss_connect', 'wss_login', 'wss_login_c', 'wss_subscribe']
+exe_names = ['wss_change_settings',
+             'wss_connect',
+             'wss_login',
+             'wss_login_c',
+             'wss_subscribe']
+
 sources = []
 foreach name : exe_names
     if name.endswith('_c')
