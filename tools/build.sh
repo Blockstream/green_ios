@@ -25,10 +25,12 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
         meson build-gcc
     fi
 
+    rm -fr thirdparty/*/build
     cd build-gcc
     $NINJA -j$NUM_JOBS
     cd ..
 fi
+
 
 if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
     export CXX=clang++
@@ -37,6 +39,7 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
         meson build-clang
     fi
 
+    rm -fr thirdparty/*/build
     cd build-clang
     $NINJA -j$NUM_JOBS
 fi
