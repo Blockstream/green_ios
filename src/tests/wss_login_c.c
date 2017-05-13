@@ -1,5 +1,6 @@
+#include <stdlib.h>
+
 #include "session.h"
-#include <malloc.h>
 
 const char* DEFAULT_MNEMONIC
     = "believe roast zen poorer tax chicken snap calm override french banner salmon bird sad smart ";

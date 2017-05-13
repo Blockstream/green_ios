@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <string>
 
 #include "assertion.hpp"
 

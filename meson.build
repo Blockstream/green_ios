@@ -21,8 +21,6 @@ foreach h : check_headers
   compiler.has_header(h)
 endforeach
 
-ssldep = dependency('openssl', version : '>= 1.0.1')
-
 clang_format = find_program('clang-format', required : false)
 
 threads_dep = dependency('threads')
