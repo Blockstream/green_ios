@@ -1,4 +1,5 @@
-#include <sys/syscall.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -97,7 +98,7 @@ namespace sdk {
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
-        void change_settings(const std::string& key, const std::map<std::string, std::string>& args);
+        void change_settings_helper(const std::string& key, const std::map<std::string, std::string>& args);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
@@ -181,9 +182,11 @@ namespace sdk {
     std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
         wally_ext_key_ptr master_key, const std::string& challenge)
     {
-        // FIXME: Android (move to wally?)
         std::array<unsigned char, 8> random_path;
-        GA_SDK_RUNTIME_ASSERT(syscall(SYS_getrandom, random_path.data(), random_path.size(), 0) == random_path.size());
+        const int random_device = open("/dev/urandom", O_RDONLY);
+        GA_SDK_RUNTIME_ASSERT(random_device != -1);
+        GA_SDK_RUNTIME_ASSERT(read(random_device, random_path.data(), random_path.size()) == random_path.size());
+        close(random_device);
 
         wally_ext_key_ptr login_key = std::move(master_key);
         for (size_t i = 0; i < random_path.size() / 2; ++i) {
@@ -291,7 +294,8 @@ namespace sdk {
         authenticate_future.get();
     }
 
-    void session::session_impl::change_settings(const std::string& key, const std::map<std::string, std::string>& args)
+    void session::session_impl::change_settings_helper(
+        const std::string& key, const std::map<std::string, std::string>& args)
     {
         auto change_settings_arguments = std::make_tuple(key, args);
         auto change_settings_future
@@ -334,7 +338,7 @@ namespace sdk {
 
     void session::change_settings_helper(const std::string& key, const std::map<std::string, std::string>& args)
     {
-        _impl->change_settings(key, args);
+        _impl->change_settings_helper(key, args);
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)

@@ -4,7 +4,8 @@ project('sdk', ['c', 'cpp'], meson_version : '>= 0.37.1', default_options : ['cp
 compiler = meson.get_compiler('cpp')
 
 check_headers = [
-    'sys/syscall.h',
+    'fcntl.h',
+    'sys/stat.h',
     'malloc.h',
     'unistd.h',
 # c++ specific. standard library should be installed
