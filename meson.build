@@ -57,7 +57,7 @@ run_target('wally', command : 'tools/buildwally.sh')
 
 # includes
 autobahn_inc_dir = join_paths('thirdparty', 'autobahn-cpp')
-boost_inc_dir = join_paths(meson.current_build_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'include')
+boost_inc_dir = join_paths('thirdparty', 'boost_1_64_0', 'build', 'include')
 msgpack_inc_dir = join_paths('thirdparty', 'msgpack-2.1.1', 'include')
 sdk_inc_dir = 'src'
 wally_inc_dir = join_paths('src', 'wally', 'include')
