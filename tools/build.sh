@@ -14,18 +14,18 @@ fi
 
 export CFLAGS="$CFLAGS -O3" # Must  add optimisation flags for secp
 export CPPFLAGS="$CFLAGS"
-export BOOST_ROOT="$PWD/thirdparty/boost_1_64_0/build"
-export PKG_CONFIG_PATH="$PWD/thirdparty/openssl-1.0.2k/build/lib/pkgconfig":$PKG_CONFIG_PATH
+export PKG_CONFIG_PATH_BASE=$PKG_CONFIG_PATH
 
 if [ \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
     export CXX=g++
     export CC=gcc
+    export BOOST_ROOT="$PWD/build-gcc/thirdparty/boost_1_64_0/build"
+    export PKG_CONFIG_PATH="$PWD/build-gcc/thirdparty/openssl-1.0.2k/build/lib/pkgconfig":$PKG_CONFIG_PATH_BASE
 
     if [ ! -d "build-gcc" ]; then
         meson build-gcc
     fi
 
-    rm -fr thirdparty/*/build
     cd build-gcc
     $NINJA -j$NUM_JOBS
     cd ..
@@ -35,11 +35,13 @@ fi
 if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
     export CXX=clang++
     export CC=clang
+    export BOOST_ROOT="$PWD/build-clang/thirdparty/boost_1_64_0/build"
+    export PKG_CONFIG_PATH="$PWD/build-clang/thirdparty/openssl-1.0.2k/build/lib/pkgconfig":$PKG_CONFIG_PATH_BASE
+
     if [ ! -d "build-clang" ]; then
         meson build-clang
     fi
 
-    rm -fr thirdparty/*/build
     cd build-clang
     $NINJA -j$NUM_JOBS
 fi
