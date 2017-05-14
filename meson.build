@@ -6,16 +6,7 @@ compiler = meson.get_compiler('cpp')
 check_headers = [
     'fcntl.h',
     'sys/stat.h',
-    'malloc.h',
-    'unistd.h',
-# c++ specific. standard library should be installed
-    'algorithm',
-    'array',
-    'memory',
-    'thread',
-    'type_traits',
-    'unordered_map',
-    'vector'
+    'unistd.h'
 ]
 
 foreach h : check_headers
@@ -31,7 +22,11 @@ boost_lib_dir = join_paths(meson.current_build_dir(), 'thirdparty', 'boost_1_64_
 boost_dep = dependency('boost', modules : ['system', 'thread'], required : false)
 if not boost_dep.found()
     message('Building boost...')
-    run_command('tools/buildboost.sh')
+    if not meson.is_cross_build()
+        run_command('tools/buildboost.sh')
+    else
+        run_command('tools/buildboost.sh --arm')
+    endif
     boost_dep = dependency('boost', modules : ['system', 'thread'])
 endif
 
@@ -57,11 +52,7 @@ run_target('wally', command : 'tools/buildwally.sh')
 
 # includes
 autobahn_inc_dir = join_paths('thirdparty', 'autobahn-cpp')
-if meson.version() > '0.37.1'
-    boost_inc_dir = join_paths('thirdparty', 'boost_1_64_0', 'build', 'include')
-else
-    boost_inc_dir = join_paths(meson.current_build_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'include')
-endif
+boost_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'thirdparty', 'boost_1_64_0', 'build', 'include')
 msgpack_inc_dir = join_paths('thirdparty', 'msgpack-2.1.1', 'include')
 sdk_inc_dir = 'src'
 wally_inc_dir = join_paths('src', 'wally', 'include')
