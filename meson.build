@@ -60,7 +60,7 @@ autobahn_inc_dir = join_paths('thirdparty', 'autobahn-cpp')
 if meson.version() > '0.37.1'
     boost_inc_dir = join_paths('thirdparty', 'boost_1_64_0', 'build', 'include')
 else
-    boost_inc_dir = join_paths(meson.build_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'include')
+    boost_inc_dir = join_paths(meson.current_build_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'include')
 endif
 msgpack_inc_dir = join_paths('thirdparty', 'msgpack-2.1.1', 'include')
 sdk_inc_dir = 'src'
