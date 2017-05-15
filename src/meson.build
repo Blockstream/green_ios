@@ -8,6 +8,7 @@ sources = ['assertion.hpp',
            'network_parameters.hpp',
            'session.hpp',
            'session.cpp',
+           'utils.hpp',
            'session.h']
 
 if clang_format.found()

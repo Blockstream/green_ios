@@ -7,6 +7,7 @@
 #include <autobahn/wamp_event_handler.hpp>
 
 #include "network_parameters.hpp"
+#include "utils.hpp"
 
 namespace ga {
 namespace sdk {
@@ -48,7 +49,7 @@ namespace sdk {
         {
             change_settings_helper(key, ga::sdk::make_map_from_args(std::forward<Args>(args)...));
         }
-        void change_settings(settings key, const std::map<int, int>& args) { change_settings_helper(key, args); }
+
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
