@@ -395,16 +395,25 @@ template <typename F, typename... Args> auto c_invoke(F&& f, struct GA_session* 
 }
 }
 
-struct GA_session : public ga::sdk::session {
+struct GA_session final : public ga::sdk::session {
 };
 
 #define GA_SDK_DEFINE_C_FUNCTION_0(c_function_name, c_function_body)                                                   \
     int c_function_name(struct GA_session* session) { return c_invoke(c_function_body, session); }
 
+#define GA_SDK_DEFINE_C_FUNCTION_1(c_function_name, c_function_body, T1, ARG1)                                         \
+    int c_function_name(struct GA_session* session, T1 ARG1) { return c_invoke(c_function_body, session, ARG1); }
+
 #define GA_SDK_DEFINE_C_FUNCTION_2(c_function_name, c_function_body, T1, ARG1, T2, ARG2)                               \
     int c_function_name(struct GA_session* session, T1 ARG1, T2 ARG2)                                                  \
     {                                                                                                                  \
         return c_invoke(c_function_body, session, ARG1, ARG2);                                                         \
+    }
+
+#define GA_SDK_DEFINE_C_FUNCTION_3(c_function_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3)                     \
+    int c_function_name(struct GA_session* session, T1 ARG1, T2 ARG2, T3 ARG3)                                         \
+    {                                                                                                                  \
+        return c_invoke(c_function_body, session, ARG1, ARG2, ARG3);                                                   \
     }
 
 int GA_create_session(struct GA_session** session)
@@ -445,3 +454,25 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_register_user,
 GA_SDK_DEFINE_C_FUNCTION_2(GA_login, [](struct GA_session* session, const char* mnemonic,
                                          const char* user_agent) { session->login(mnemonic, user_agent); },
     const char*, mnemonic, const char*, user_agent);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me,
+    [](struct GA_session* session, int param) {
+        namespace sdk = ga::sdk;
+        session->change_settings(sdk::settings::privacy_send_me, sdk::privacy_send_me(param));
+    },
+    int, param);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_show_as_sender,
+    [](struct GA_session* session, int param) {
+        namespace sdk = ga::sdk;
+        session->change_settings(sdk::settings::privacy_show_as_sender, sdk::privacy_show_as_sender(param));
+    },
+    int, param);
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_tx_limits,
+    [](struct GA_session* session, int is_fiat, int per_tx, int total) {
+        namespace sdk = ga::sdk;
+        session->change_settings(sdk::settings::tx_limits, sdk::tx_limits::is_fiat, is_fiat, sdk::tx_limits::per_tx,
+            per_tx, sdk::tx_limits::total, total);
+    },
+    int, is_fiat, int, per_tx, int, total);

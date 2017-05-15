@@ -1,4 +1,5 @@
 exe_names = ['wss_change_settings',
+             'wss_change_settings_c',
              'wss_connect',
              'wss_login',
              'wss_login_c',
