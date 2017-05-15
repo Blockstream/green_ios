@@ -9,6 +9,7 @@ else
     ./config --prefix="${MESON_BUILD_ROOT}/thirdparty/openssl-1.0.2k/build" shared
 fi
 
+make clean
 make depend
 make -j$NUM_JOBS
 make install
