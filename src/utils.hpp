@@ -46,7 +46,7 @@ namespace sdk {
 
     template <typename... Args> inline auto make_map_from_args(Args&&... args)
     {
-        static_assert(sizeof...(Args) % 2 == 0);
+        static_assert(sizeof...(Args) % 2 == 0, "must be even");
         return detail::make_map_from_args(
             std::make_tuple(std::forward<Args>(args)...), detail::make_even_index_sequence_t<sizeof...(Args)>{});
     }
