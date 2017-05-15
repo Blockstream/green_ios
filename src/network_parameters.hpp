@@ -21,20 +21,10 @@ namespace sdk {
 
         template <size_t N> using make_even_index_sequence_t = typename make_even_index_sequence<N>::type;
 
-        template <size_t N, size_t... I> struct make_odd_index_sequence : make_odd_index_sequence<N - 2, N - 1, I...> {
-        };
-
-        template <size_t... I> struct make_odd_index_sequence<0, I...> {
-            using type = std::index_sequence<I...>;
-        };
-
-        template <size_t N> using make_odd_index_sequence_t = typename make_odd_index_sequence<N>::type;
-
-        template <typename Args, size_t... I, size_t... J>
-        inline auto make_map_from_args(Args&& args, std::index_sequence<I...>, std::index_sequence<J...>)
+        template <typename Args, size_t... I> inline auto make_map_from_args(Args&& args, std::index_sequence<I...>)
         {
-            return std::map<std::string, std::string>{ { std::get<I>(std::forward<Args>(args)),
-                std::get<J>(std::forward<Args>(args)) }... };
+            return std::map<int, int>{ { static_cast<int>(std::get<I>(std::forward<Args>(args))),
+                static_cast<int>(std::get<I + 1>(std::forward<Args>(args))) }... };
         }
 
         template <size_t N, size_t... I>
@@ -91,16 +81,20 @@ namespace sdk {
 
     template <typename... Args> inline auto make_map_from_args(Args&&... args)
     {
-        static_assert(sizeof...(Args) % 2 == 0, "must be even");
-        return detail::make_map_from_args(std::make_tuple(std::forward<Args>(args)...),
-            detail::make_even_index_sequence_t<sizeof...(Args)>{},
-            detail::make_odd_index_sequence_t<sizeof...(Args)>{});
+        return detail::make_map_from_args(
+            std::make_tuple(std::forward<Args>(args)...), detail::make_even_index_sequence_t<sizeof...(Args)>{});
+    }
+
+    template <typename Args> inline auto make_map_from_args(Args&& args)
+    {
+        return detail::make_map_from_args(std::make_tuple(std::forward<Args>(args), std::forward<Args>(args)),
+            detail::make_even_index_sequence_t<2>{});
     }
 
     class network_parameters final {
     public:
         template <typename params>
-        network_parameters(params p)
+        explicit network_parameters(params p)
             : _gait_wamp_url(p.gait_wamp_url)
             , _gait_wamp_cert_pins(p.gait_wamp_cert_pins)
             , _block_explorer_address(p.block_explorer_address)

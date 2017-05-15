@@ -14,7 +14,10 @@ int main(int argc, char** argv)
         session.connect(ga::sdk::make_localtest_network(), true);
         session.register_user(DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
         session.login(DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
-        session.change_settings("tx_limits", "total", "0", "per_tx", "0", "is_fiat", "0");
+        session.change_settings(ga::sdk::settings::privacy_send_me, ga::sdk::privacy_send_me::private_);
+        session.change_settings(ga::sdk::settings::privacy_show_as_sender, ga::sdk::privacy_show_as_sender::public_);
+        session.change_settings(ga::sdk::settings::tx_limits, ga::sdk::tx_limits::total, 0, ga::sdk::tx_limits::per_tx,
+            0, ga::sdk::tx_limits::is_fiat, 0);
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

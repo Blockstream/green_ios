@@ -98,7 +98,7 @@ namespace sdk {
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
-        void change_settings_helper(const std::string& key, const std::map<std::string, std::string>& args);
+        void change_settings_helper(settings key, const std::map<int, int>& args);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
@@ -294,17 +294,49 @@ namespace sdk {
         authenticate_future.get();
     }
 
-    void session::session_impl::change_settings_helper(
-        const std::string& key, const std::map<std::string, std::string>& args)
+    void session::session_impl::change_settings_helper(settings key, const std::map<int, int>& args)
     {
-        auto change_settings_arguments = std::make_tuple(key, args);
-        auto change_settings_future
-            = _session->call("com.greenaddress.login.change_settings", change_settings_arguments)
-                  .then([](boost::future<autobahn::wamp_call_result> result) {
-                      GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
-                  });
+        auto&& to_args = [args](std::vector<std::string> v) {
+            std::map<std::string, int> str_args;
+            for (auto&& elem : args) {
+                str_args[v[elem.first]] = elem.second;
+            }
+            return str_args;
+        };
 
-        change_settings_future.get();
+        std::string key_str;
+        std::map<std::string, int> str_args;
+        switch (key) {
+        default:
+            __builtin_unreachable();
+        case settings::privacy_send_me:
+            key_str = "privacy.send_me";
+            break;
+        case settings::privacy_show_as_sender:
+            key_str = "privacy.show_as_sender";
+            break;
+        case settings::tx_limits:
+            key_str = "tx_limits";
+            break;
+        }
+
+        auto&& change_settings = [this, &key_str](auto arg) {
+            auto change_settings_arguments = std::make_tuple(key_str, arg);
+            auto change_settings_future
+                = _session->call("com.greenaddress.login.change_settings", change_settings_arguments)
+                      .then([](boost::future<autobahn::wamp_call_result> result) {
+                          GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
+                      });
+
+            change_settings_future.get();
+        };
+
+        if (key == settings::tx_limits) {
+            change_settings(to_args({ "is_fiat", "per_tx", "total" }));
+        } else {
+            GA_SDK_RUNTIME_ASSERT(args.size());
+            change_settings((*args.begin()).first);
+        }
     }
 
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
@@ -336,7 +368,7 @@ namespace sdk {
         _impl->login(mnemonic, user_agent);
     }
 
-    void session::change_settings_helper(const std::string& key, const std::map<std::string, std::string>& args)
+    void session::change_settings_helper(settings key, const std::map<int, int>& args)
     {
         _impl->change_settings_helper(key, args);
     }
