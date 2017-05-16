@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <array>
+#include <ctime>
 #include <thread>
 #include <type_traits>
 #include <unordered_map>
@@ -99,6 +100,8 @@ namespace sdk {
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
         void change_settings_helper(settings key, const std::map<int, int>& args);
+        void get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
+            const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
@@ -342,6 +345,45 @@ namespace sdk {
         }
     }
 
+    void session::session_impl::get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
+        const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount)
+    {
+        auto&& sort_by_str = [sort_by] {
+            switch (sort_by) {
+            default:
+                __builtin_unreachable();
+            case tx_list_sort_by::timestamp:
+                return "ts";
+            case tx_list_sort_by::timestamp_ascending:
+                return "+ts";
+            case tx_list_sort_by::timestamp_descending:
+                return "-ts";
+            case tx_list_sort_by::value:
+                return "value";
+            case tx_list_sort_by::value_ascending:
+                return "+value";
+            case tx_list_sort_by::value_descending:
+                return "-value";
+            }
+        };
+
+        auto&& date_range_str = [&date_range] {
+            // FIXME: not thread safe. perhaps use boost instead.
+            constexpr auto siz = sizeof("0000-00-00T00:00:00Z");
+            std::array<char, siz> iso_str_1;
+            std::strftime(iso_str_1.data(), iso_str_1.size(), "%FT%TZ", std::gmtime(&date_range.first));
+            std::array<char, siz> iso_str_2;
+            std::strftime(iso_str_2.data(), iso_str_2.size(), "%FT%TZ", std::gmtime(&date_range.second));
+            return std::make_pair(std::string(iso_str_1.data()), std::string(iso_str_2.data()));
+        };
+
+        auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
+        auto get_tx_list_future = _session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
+                                      .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
+
+        get_tx_list_future.get();
+    }
+
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
         auto subscribe_future = _session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
@@ -374,6 +416,12 @@ namespace sdk {
     void session::change_settings_helper(settings key, const std::map<int, int>& args)
     {
         _impl->change_settings_helper(key, args);
+    }
+
+    void session::get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
+        const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount)
+    {
+        _impl->get_tx_list(page_id, query, sort_by, date_range, subaccount);
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)

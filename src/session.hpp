@@ -2,6 +2,7 @@
 #define GA_SDK_SESSION_HPP
 #pragma once
 
+#include <ctime>
 #include <memory>
 
 #include <autobahn/wamp_event_handler.hpp>
@@ -28,6 +29,46 @@ namespace sdk {
 
     enum class tx_limits : int { is_fiat, per_tx, total };
 
+    enum class tx_list_sort_by {
+        timestamp,
+        timestamp_ascending,
+        timestamp_descending,
+        value,
+        value_ascending,
+        value_descending,
+    };
+
+    inline namespace literals {
+
+        constexpr tx_list_sort_by operator""_ts(char c)
+        {
+            switch (c) {
+            default:
+                __builtin_unreachable();
+            case '+':
+                return tx_list_sort_by::timestamp_ascending;
+            case '-':
+                return tx_list_sort_by::timestamp_descending;
+            case ' ':
+                return tx_list_sort_by::timestamp;
+            }
+        }
+
+        constexpr tx_list_sort_by operator""_value(char c)
+        {
+            switch (c) {
+            default:
+                __builtin_unreachable();
+            case '+':
+                return tx_list_sort_by::value_ascending;
+            case '-':
+                return tx_list_sort_by::value_descending;
+            case ' ':
+                return tx_list_sort_by::value;
+            }
+        }
+    }
+
     class session {
     public:
         explicit session() = default;
@@ -45,10 +86,13 @@ namespace sdk {
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
 
-        template <typename... Args> constexpr void change_settings(settings key, Args&&... args)
+        template <typename... Args> void change_settings(settings key, Args&&... args)
         {
             change_settings_helper(key, ga::sdk::make_map_from_args(std::forward<Args>(args)...));
         }
+
+        void get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
+            const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount);
 
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 

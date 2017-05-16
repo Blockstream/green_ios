@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
     struct GA_session* session = NULL;
     ret = GA_create_session(&session);
 
-    ret = GA_connect(session, GA_NETWORK_LOCALTEST, 0);
+    ret = GA_connect(session, GA_NETWORK_LOCALTEST, GA_FALSE);
     ret = GA_register_user(session, DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
     ret = GA_login(session, DEFAULT_MNEMONIC, DEFAULT_USER_AGENT);
     ret = GA_change_settings_privacy_send_me(session, GA_ADDRBOOK);
