@@ -22,8 +22,8 @@ int main(int argc, char** argv)
 
         using days = std::chrono::duration<int, std::ratio<24 * 3600>>;
 
-        auto now = std::chrono::system_clock::now();
-        auto now_28_days_before = now - days(28);
+        const auto now = std::chrono::system_clock::now();
+        const auto now_28_days_before = now - days(28);
 
         session.get_tx_list(0, "", '+'_ts,
             std::make_pair(system_clock::to_time_t(now_28_days_before), system_clock::to_time_t(now)), 0);
