@@ -1,10 +1,10 @@
-## GreenAddress C/C++ SDK
+# GreenAddress C/C++ SDK
 
 Experimental ninja build:
 
 Deps:
 
-* sudo apt-get install build-essential meson ninja-build clang wget autoconf pkg-config libssl-dev libboost-all-dev
+* sudo apt-get install build-essential meson ninja-build clang wget autoconf pkg-config
 
 To build:
 
@@ -14,5 +14,6 @@ To clean:
 
 * tools/clean.sh
 
-Currently, only small test to use autobahn to talk to ga-backend.
+To run tests (against local backend):
 
+* ninja test
