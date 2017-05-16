@@ -182,11 +182,14 @@ namespace sdk {
     std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
         wally_ext_key_ptr master_key, const std::string& challenge)
     {
+        // FIXME: check Core code.
         std::array<unsigned char, 8> random_path;
-        const int random_device = open("/dev/urandom", O_RDONLY);
+        int random_device = open("/dev/urandom", O_RDONLY);
         GA_SDK_RUNTIME_ASSERT(random_device != -1);
+        auto random_device_ptr
+            = std::unique_ptr<int, std::function<void(int*)>>(&random_device, [](int* device) { ::close(*device); });
+
         GA_SDK_RUNTIME_ASSERT(read(random_device, random_path.data(), random_path.size()) == random_path.size());
-        close(random_device);
 
         wally_ext_key_ptr login_key = std::move(master_key);
         for (size_t i = 0; i < random_path.size() / 2; ++i) {
