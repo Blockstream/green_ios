@@ -41,6 +41,7 @@ namespace sdk {
     using wally_string_ptr = std::unique_ptr<char, decltype(&wally_free_string)>;
 
     const std::string DEFAULT_REALM("realm1");
+    const std::string DEFAULT_USER_AGENT("[v2,sw]");
 
     namespace {
         wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
@@ -245,8 +246,8 @@ namespace sdk {
         auto chain_code = hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code));
         auto hex_path = hex_from_bytes(path.data(), path.size());
 
-        auto register_arguments
-            = std::make_tuple(pub_key.get(), chain_code.get(), user_agent + "_ga_sdk", hex_path.get());
+        auto register_arguments = std::make_tuple(
+            pub_key.get(), chain_code.get(), DEFAULT_USER_AGENT + user_agent + "_ga_sdk", hex_path.get());
         auto register_future = _session->call("com.greenaddress.login.register", register_arguments)
                                    .then([](boost::future<autobahn::wamp_call_result> result) {
                                        GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
@@ -289,7 +290,7 @@ namespace sdk {
         auto hexder_path = sign_challenge(std::move(master_key), challenge);
 
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
-            std::string("fake_dev_id"), user_agent + "_ga_sdk");
+            std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
         auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([this](boost::future<autobahn::wamp_call_result> result) {
                                            _login_data = result.get().argument<decltype(_login_data)>(0);

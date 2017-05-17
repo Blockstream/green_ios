@@ -83,8 +83,8 @@ namespace sdk {
         void connect(network_parameters params, bool debug = false);
         void disconnect();
 
-        void register_user(const std::string& mnemonic, const std::string& user_agent);
-        void login(const std::string& mnemonic, const std::string& user_agent);
+        void register_user(const std::string& mnemonic, const std::string& user_agent = std::string());
+        void login(const std::string& mnemonic, const std::string& user_agent = std::string());
 
         template <typename... Args> void change_settings(settings key, Args&&... args)
         {
