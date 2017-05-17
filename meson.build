@@ -30,12 +30,12 @@ if not boost_dep.found()
     boost_dep = dependency('boost', modules : ['system', 'thread'])
 endif
 
-wally_lib_dir = join_paths(meson.current_source_dir(), 'src', 'wally', 'src', '.libs')
-wally_lib = compiler.find_library('wallycore', dirs : [wally_lib_dir], required : false)
-if not wally_lib.found()
+wally_lib_dir = join_paths(meson.current_build_dir(), 'thirdparty', 'libwally-core', 'build', 'lib')
+wally_dep = dependency('wallycore', version : '>= 9.9.9', required : false)
+if not wally_dep.found()
     message('Building wallycore...')
     run_command('tools/buildwally.sh')
-    compiler.find_library('wallycore', dirs : [wally_lib_dir])
+    wally_dep = dependency('wallycore')
 endif
 
 openssl_lib_dir = join_paths(meson.current_build_dir(), 'thirdparty', 'openssl-1.0.2k', 'build', 'lib')

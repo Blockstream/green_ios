@@ -4,7 +4,7 @@ set -e
 SHA256SUM_AUTOBAHN=612e0f9fea274ee7a2b3873c7ab86ba82c5ed24a4aa4f125cdeb155c21656dca
 SHA256SUM_WEBSOCKETPP=07b3364ad30cda022d91759d4b83ff902e1ebadb796969e58b59caa535a03923
 SHA256SUM_MSGPACK=fce702408f0d228a1b9dcab69590d6a94d3938f694b95c9e5e6249617e98d83f
-SHA256SUM_WALLYCORE=fd0afe9cd485fa9f18c28af7f4e3b4e33eebbe075cbaa4b1c5b2ee1eca99718d
+SHA256SUM_WALLYCORE=12b3648742dfc79b1c594ebac6b11e9284382385bf99489a53084bcb719de356
 SHA256SUM_BOOST=0445c22a5ef3bd69f5dfb48354978421a85ab395254a26b1ffb0aa1bfd63a108
 SHA256SUM_OPENSSL=8173c6a6d6ab314e5e81e9cd1e1632f98586a14d7807697fd24155f162292229
 
@@ -56,10 +56,10 @@ if [ ! -d "thirdparty/openssl-1.0.2k" ]; then
 fi
 
 if [ ! -d "src/wally" ]; then
-    wget -O wallycore.tar.gz https://github.com/jgriffiths/libwally-core/archive/1846685f4c4a42109f180d273ec7230880531dca.tar.gz
+    wget -O wallycore.tar.gz https://github.com/jgriffiths/libwally-core/archive/08caa2c924a796f0ed53e3d4332889d4808acd33.tar.gz
     echo "${SHA256SUM_WALLYCORE}  wallycore.tar.gz" | $SHASUM --check
     tar -zxvf wallycore.tar.gz -C ./src/
-    mv src/libwally-core-1846685f4c4a42109f180d273ec7230880531dca src/wally
+    mv src/libwally-core-08caa2c924a796f0ed53e3d4332889d4808acd33 src/wally
     rm -f wallycore.tar.gz
 fi
 

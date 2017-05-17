@@ -20,12 +20,10 @@
 #include <websocketpp/client.hpp>
 #include <websocketpp/config/asio_client.hpp>
 
-extern "C" {
 #include <wally_bip32.h>
 #include <wally_bip39.h>
 #include <wally_core.h>
 #include <wally_crypto.h>
-}
 
 #include "assertion.hpp"
 #include "session.h"

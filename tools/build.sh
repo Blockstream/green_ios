@@ -20,7 +20,9 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
     export CXX=g++
     export CC=gcc
     export BOOST_ROOT="$PWD/build-gcc/thirdparty/boost_1_64_0/build"
-    export PKG_CONFIG_PATH="$PWD/build-gcc/thirdparty/openssl-1.0.2k/build/lib/pkgconfig":$PKG_CONFIG_PATH_BASE
+    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-gcc/thirdparty/openssl-1.0.2k/build/lib/pkgconfig"
+    export WALLY_PKG_CONFIG_PATH="$PWD/build-gcc/thirdparty/libwally-core/build/lib/pkgconfig"
+    export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     if [ ! -d "build-gcc" ]; then
         meson build-gcc
@@ -36,7 +38,9 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
     export CXX=clang++
     export CC=clang
     export BOOST_ROOT="$PWD/build-clang/thirdparty/boost_1_64_0/build"
-    export PKG_CONFIG_PATH="$PWD/build-clang/thirdparty/openssl-1.0.2k/build/lib/pkgconfig":$PKG_CONFIG_PATH_BASE
+    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-clang/thirdparty/openssl-1.0.2k/build/lib/pkgconfig"
+    export WALLY_PKG_CONFIG_PATH="$PWD/build-clang/thirdparty/libwally-core/build/lib/pkgconfig"
+    export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     if [ ! -d "build-clang" ]; then
         meson build-clang
