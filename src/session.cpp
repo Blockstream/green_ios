@@ -366,13 +366,19 @@ namespace sdk {
         };
 
         auto&& date_range_str = [&date_range] {
-            // FIXME: not thread safe. perhaps use boost instead.
-            constexpr auto siz = sizeof("0000-00-00T00:00:00Z");
-            std::array<char, siz> iso_str_1;
-            std::strftime(iso_str_1.data(), iso_str_1.size(), "%FT%TZ", std::gmtime(&date_range.first));
-            std::array<char, siz> iso_str_2;
-            std::strftime(iso_str_2.data(), iso_str_2.size(), "%FT%TZ", std::gmtime(&date_range.second));
-            return std::make_pair(std::string(iso_str_1.data()), std::string(iso_str_2.data()));
+            constexpr auto iso_str_siz = sizeof("0000-00-00T00:00:00Z");
+
+            std::array<char, iso_str_siz> begin_date_str = { { 0 } };
+            std::array<char, iso_str_siz> end_date_str = { { 0 } };
+
+            {
+                std::mutex m;
+                auto&& _ = std::unique_lock<std::mutex>{ m };
+                std::strftime(begin_date_str.data(), begin_date_str.size(), "%FT%TZ", std::gmtime(&date_range.first));
+                std::strftime(end_date_str.data(), end_date_str.size(), "%FT%TZ", std::gmtime(&date_range.second));
+            }
+
+            return std::make_pair(std::string(begin_date_str.data()), std::string(end_date_str.data()));
         };
 
         auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
