@@ -373,7 +373,7 @@ namespace sdk {
 
             {
                 std::mutex m;
-                auto&& _ = std::unique_lock<std::mutex>{ m };
+                std::unique_lock<std::mutex> lock{ m };
                 std::strftime(begin_date_str.data(), begin_date_str.size(), "%FT%TZ", std::gmtime(&date_range.first));
                 std::strftime(end_date_str.data(), end_date_str.size(), "%FT%TZ", std::gmtime(&date_range.second));
             }
