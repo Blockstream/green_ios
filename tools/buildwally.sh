@@ -17,7 +17,7 @@ if [ \( "$1" = "--arm" \) ]; then
     export CC=clang
     export AR="${MESON_BUILD_ROOT}/toolchain/bin/arm-linux-androideabi-ar"
     export RANLIB="${MESON_BUILD_ROOT}/toolchain/bin/arm-linux-androideabi-ranlib"
-    ./configure --host=$HOST_OS --enable-silent-rules --disable-dependency-tracking --target=arm --prefix="${MESON_BUILD_ROOT}/thirdparty/libwally-core/build"
+    ./configure --host=arm-linux-androideabi --build=$HOST_OS --enable-silent-rules --disable-dependency-tracking --target=arm-linux-androideabi --prefix="${MESON_BUILD_ROOT}/thirdparty/libwally-core/build"
     make -o configure clean -j$NUM_JOBS
     make -o configure -j$NUM_JOBS V=1
     make -o configure install
