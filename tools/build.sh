@@ -95,6 +95,8 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk-multiarch" \)
         export OPENSSL_PKG_CONFIG_PATH="$PWD/build-clang-$1/thirdparty/openssl-1.0.2k/build/lib/pkgconfig"
         export WALLY_PKG_CONFIG_PATH="$PWD/build-clang-$1/thirdparty/libwally-core/build/lib/pkgconfig"
         export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
+        export AR="$PWD/build-clang-$1/toolchain/bin/arm-linux-androideabi-ar"
+        export RANLIB="$PWD/build-clang-$1/toolchain/bin/arm-linux-androideabi-ranlib"
         rm -fr src/wally/src/.libs
         if [ ! -d "build-clang-$1" ]; then
             $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $arch --api $ANDROID_VERSION --install-dir="$PWD/build-clang-$1/toolchain" &>/dev/null

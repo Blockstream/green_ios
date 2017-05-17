@@ -2,7 +2,7 @@
 c = 'clang'
 cpp = 'clang++'
 ar = 'arm-linux-androideabi-ar'
-pkgconfig = '/usr/bin/pkg-config'
+pkgconfig = 'pkg-config'
 strip = 'strip'
 [properties]
 root = 'toolchain/arm-linux-androideabi'

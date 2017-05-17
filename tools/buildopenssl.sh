@@ -10,8 +10,6 @@ if [ \( "$1" = "--arm" \) ]; then
     else
         sed -i 's/-mandroid//g' ${MESON_SOURCE_ROOT}/thirdparty/openssl-1.0.2k/Configure
     fi
-    export AR="${MESON_BUILD_ROOT}/toolchain/bin/arm-linux-androideabi-ar"
-    export RANLIB="${MESON_BUILD_ROOT}/toolchain/bin/arm-linux-androideabi-ranlib"
     ./Configure android -march=armv7-a --prefix="${MESON_BUILD_ROOT}/thirdparty/openssl-1.0.2k/build" no-krb5  shared
 else
     if [ "$(uname)" == "Darwin" ]; then
