@@ -372,12 +372,9 @@ namespace sdk {
             std::array<char, iso_str_siz> begin_date_str = { { 0 } };
             std::array<char, iso_str_siz> end_date_str = { { 0 } };
 
-            {
-                std::mutex m;
-                std::unique_lock<std::mutex> lock{ m };
-                std::strftime(begin_date_str.data(), begin_date_str.size(), "%FT%TZ", std::gmtime(&date_range.first));
-                std::strftime(end_date_str.data(), end_date_str.size(), "%FT%TZ", std::gmtime(&date_range.second));
-            }
+            struct tm tm_;
+            std::strftime(begin_date_str.data(), begin_date_str.size(), "%FT%TZ", gmtime_r(&date_range.first, &tm_));
+            std::strftime(end_date_str.data(), end_date_str.size(), "%FT%TZ", gmtime_r(&date_range.second, &tm_));
 
             return std::make_pair(std::string(begin_date_str.data()), std::string(end_date_str.data()));
         };
