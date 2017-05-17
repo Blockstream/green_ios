@@ -22,5 +22,5 @@ fi
 make clean
 make depend
 make
-make install
+make install_sw
 
