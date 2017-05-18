@@ -14,3 +14,9 @@ test_clang:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
+test_osx_clang:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --clang
