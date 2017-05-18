@@ -14,7 +14,7 @@ feature.subfeature toolset clang : platform : : propagated link-incompatible ;
 
 rule init ( * : * )
 {
-    local target-os = [ feature.defaults target-os ] ;
+    local target-os = [ os.environ TARGET_OS ] ;
     if [ os.name ] = MACOSX && $(target-os) != android
     {
         toolset.using clang-darwin :
