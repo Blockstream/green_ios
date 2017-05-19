@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 set -e
-
 if [ "$(uname)" == "Darwin" ]; then
     export HOST_OS="x86_64-apple-darwin"
 else
@@ -10,10 +9,7 @@ cd "${MESON_SOURCE_ROOT}/src/wally"
 ./tools/cleanup.sh
 ./tools/autogen.sh
 if [ \( "$1" = "--arm" \) ]; then
-    export PATH="${MESON_BUILD_ROOT}/toolchain/bin:${PATH}"
-    export CFLAGS="-march=armv7-a -mfloat-abi=softfp -mfpu=neon -mthumb -O3"
-    export LDFLAGS="-Wl,--fix-cortex-a8"
-    export CPPFLAGS="$CFLAGS"
+    . ${MESON_SOURCE_ROOT}/tools/env.sh
     export CC=clang
     export AR="${MESON_BUILD_ROOT}/toolchain/bin/arm-linux-androideabi-ar"
     export RANLIB="${MESON_BUILD_ROOT}/toolchain/bin/arm-linux-androideabi-ranlib"
