@@ -9,6 +9,7 @@ sources = ['assertion.hpp',
            'session.hpp',
            'session.cpp',
            'utils.hpp',
+           'utils.cpp',
            'session.h']
 
 if clang_format.found()
