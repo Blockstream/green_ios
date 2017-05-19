@@ -101,7 +101,7 @@ namespace sdk {
 
     private:
         class session_impl;
-        std::shared_ptr<session_impl> _impl;
+        std::shared_ptr<session_impl> m_impl;
     };
 }
 }

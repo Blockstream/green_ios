@@ -64,32 +64,32 @@ namespace sdk {
 
     struct event_loop_controller {
         explicit event_loop_controller(boost::asio::io_service& io)
-            : work_guard_(std::make_unique<boost::asio::io_service::work>(io))
+            : m_work_guard(std::make_unique<boost::asio::io_service::work>(io))
         {
-            run_thread_ = std::thread([&] { io.run(); });
+            m_run_thread = std::thread([&] { io.run(); });
         }
 
         ~event_loop_controller()
         {
-            work_guard_.reset();
-            run_thread_.join();
+            m_work_guard.reset();
+            m_run_thread.join();
         }
 
-        std::thread run_thread_;
-        std::unique_ptr<boost::asio::io_service::work> work_guard_;
+        std::thread m_run_thread;
+        std::unique_ptr<boost::asio::io_service::work> m_work_guard;
     };
 
     class session::session_impl final {
     public:
         explicit session_impl(network_parameters params, bool debug)
-            : controller_(io_)
-            , params_(std::move(params))
-            , debug_(debug)
+            : m_controller(m_io)
+            , m_params(std::move(params))
+            , m_debug(debug)
         {
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
         }
 
-        ~session_impl() { io_.stop(); }
+        ~session_impl() { m_io.stop(); }
 
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
@@ -104,13 +104,13 @@ namespace sdk {
             wally_ext_key_ptr master_key, const std::string& challenge);
 
     private:
-        bool connect_with_tls() const { return boost::algorithm::starts_with(params_.gait_wamp_url(), "wss://"); }
+        bool connect_with_tls() const { return boost::algorithm::starts_with(m_params.gait_wamp_url(), "wss://"); }
 
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
         template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
         {
             // FIXME: these options need to be checked.
-            boost::get<std::shared_ptr<T>>(client_)->set_tls_init_handler([](websocketpp::connection_hdl) {
+            boost::get<std::shared_ptr<T>>(m_client)->set_tls_init_handler([](websocketpp::connection_hdl) {
                 context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv1);
                 ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2
                     | boost::asio::ssl::context::single_dh_use);
@@ -120,8 +120,8 @@ namespace sdk {
 
         template <typename T> void make_client()
         {
-            client_ = std::make_shared<T>();
-            boost::get<std::shared_ptr<T>>(client_)->init_asio(&io_);
+            m_client = std::make_shared<T>();
+            boost::get<std::shared_ptr<T>>(m_client)->init_asio(&m_io);
             set_tls_init_handler<T>();
         }
 
@@ -130,23 +130,25 @@ namespace sdk {
             using client_type
                 = std::shared_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
 
-            transport_ = std::make_shared<T>(*boost::get<client_type>(client_), params_.gait_wamp_url(), debug_),
-            boost::get<std::shared_ptr<T>>(transport_)
-                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(session_));
+            m_transport = std::make_shared<T>(*boost::get<client_type>(m_client), m_params.gait_wamp_url(), m_debug),
+            boost::get<std::shared_ptr<T>>(m_transport)
+                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
         }
 
         template <typename T> void connect_to_endpoint() const
         {
             std::array<boost::future<void>, 3> futures;
 
-            futures[0] = boost::get<std::shared_ptr<T>>(transport_)->connect().then([&](boost::future<void> connected) {
-                connected.get();
-                futures[1] = session_->start().then([&](boost::future<void> started) {
-                    started.get();
-                    futures[2]
-                        = session_->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) { joined.get(); });
-                });
-            });
+            futures[0]
+                = boost::get<std::shared_ptr<T>>(m_transport)->connect().then([&](boost::future<void> connected) {
+                      connected.get();
+                      futures[1] = m_session->start().then([&](boost::future<void> started) {
+                          started.get();
+                          futures[2] = m_session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) {
+                              joined.get();
+                          });
+                      });
+                  });
 
             for (auto&& f : futures) {
                 f.get();
@@ -154,23 +156,23 @@ namespace sdk {
         }
 
     private:
-        boost::asio::io_service io_;
-        boost::variant<std::shared_ptr<client>, std::shared_ptr<client_tls>> client_;
-        boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> transport_;
-        std::shared_ptr<autobahn::wamp_session> session_;
+        boost::asio::io_service m_io;
+        boost::variant<std::shared_ptr<client>, std::shared_ptr<client_tls>> m_client;
+        boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> m_transport;
+        std::shared_ptr<autobahn::wamp_session> m_session;
 
-        event_loop_controller controller_;
+        event_loop_controller m_controller;
 
-        std::unordered_map<std::string, msgpack::object> login_data_;
+        std::unordered_map<std::string, msgpack::object> m_login_data;
 
-        network_parameters params_;
+        network_parameters m_params;
 
-        bool debug_;
+        bool m_debug;
     };
 
     void session::session_impl::connect()
     {
-        session_ = std::make_shared<autobahn::wamp_session>(io_, debug_);
+        m_session = std::make_shared<autobahn::wamp_session>(m_io, m_debug);
 
         const bool tls = connect_with_tls();
         tls ? make_transport<transport_tls>() : make_transport<transport>();
@@ -193,8 +195,6 @@ namespace sdk {
             == WALLY_OK);
 
         login_key = wally_ext_key_ptr(r, &bip32_key_free);
-
-        wally_bzero(reinterpret_cast<void*>(random_path.data()), random_path.size());
 
         const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig{ { 0 } };
@@ -240,7 +240,7 @@ namespace sdk {
 
         auto register_arguments = std::make_tuple(
             pub_key.get(), chain_code.get(), DEFAULT_USER_AGENT + user_agent + "_ga_sdk", hex_path.get());
-        auto register_future = session_->call("com.greenaddress.login.register", register_arguments)
+        auto register_future = m_session->call("com.greenaddress.login.register", register_arguments)
                                    .then([](boost::future<autobahn::wamp_call_result> result) {
                                        GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
                                    });
@@ -257,12 +257,12 @@ namespace sdk {
 
         const ext_key* p = nullptr;
         GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(),
-                                  params_.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
+                                  m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
             == WALLY_OK);
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
         std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh{ { 0 } };
-        vpkh[0] = params_.main_net() ? 0 : 111;
+        vpkh[0] = m_params.main_net() ? 0 : 111;
         std::copy(master_key->hash160, master_key->hash160 + sizeof(master_key->hash160), vpkh.begin() + 1);
 
         char* q = nullptr;
@@ -271,7 +271,7 @@ namespace sdk {
 
         auto challenge_arguments = std::make_tuple(base58_pkh.get());
         std::string challenge;
-        auto get_challenge_future = session_->call("com.greenaddress.login.get_challenge", challenge_arguments)
+        auto get_challenge_future = m_session->call("com.greenaddress.login.get_challenge", challenge_arguments)
                                         .then([&challenge](boost::future<autobahn::wamp_call_result> result) {
                                             challenge = result.get().argument<std::string>(0);
                                             std::cerr << challenge << std::endl;
@@ -283,9 +283,9 @@ namespace sdk {
 
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
-        auto authenticate_future = session_->call("com.greenaddress.login.authenticate", authenticate_arguments)
+        auto authenticate_future = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([this](boost::future<autobahn::wamp_call_result> result) {
-                                           login_data_ = result.get().argument<decltype(login_data_)>(0);
+                                           m_login_data = result.get().argument<decltype(m_login_data)>(0);
                                        });
 
         authenticate_future.get();
@@ -320,7 +320,7 @@ namespace sdk {
         auto&& change_settings = [this, &key_str](auto arg) {
             auto change_settings_arguments = std::make_tuple(key_str, arg);
             auto change_settings_future
-                = session_->call("com.greenaddress.login.change_settings", change_settings_arguments)
+                = m_session->call("com.greenaddress.login.change_settings", change_settings_arguments)
                       .then([](boost::future<autobahn::wamp_call_result> result) {
                           GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
                       });
@@ -372,7 +372,7 @@ namespace sdk {
         };
 
         auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
-        auto get_tx_list_future = session_->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
+        auto get_tx_list_future = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
                                       .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         get_tx_list_future.get();
@@ -380,7 +380,7 @@ namespace sdk {
 
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
-        auto subscribe_future = session_->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
+        auto subscribe_future = m_session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
                                     .then([](boost::future<autobahn::wamp_subscription> subscription) {
                                         std::cerr << "subscribed to topic:" << subscription.get().id() << std::endl;
                                     });
@@ -390,37 +390,37 @@ namespace sdk {
 
     void session::connect(network_parameters params, bool debug)
     {
-        _impl = std::make_shared<session::session_impl>(std::move(params), debug);
+        m_impl = std::make_shared<session::session_impl>(std::move(params), debug);
 
-        _impl->connect();
+        m_impl->connect();
     }
 
-    void session::disconnect() { _impl.reset(); }
+    void session::disconnect() { m_impl.reset(); }
 
     void session::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
-        _impl->register_user(mnemonic, user_agent);
+        m_impl->register_user(mnemonic, user_agent);
     }
 
     void session::login(const std::string& mnemonic, const std::string& user_agent)
     {
-        _impl->login(mnemonic, user_agent);
+        m_impl->login(mnemonic, user_agent);
     }
 
     void session::change_settings_helper(settings key, const std::map<int, int>& args)
     {
-        _impl->change_settings_helper(key, args);
+        m_impl->change_settings_helper(key, args);
     }
 
     void session::get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
         const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount)
     {
-        _impl->get_tx_list(page_id, query, sort_by, date_range, subaccount);
+        m_impl->get_tx_list(page_id, query, sort_by, date_range, subaccount);
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
-        _impl->subscribe(topic, handler);
+        m_impl->subscribe(topic, handler);
     }
 }
 }
