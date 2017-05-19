@@ -100,7 +100,8 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk-multiarch" \)
         rm -fr src/wally/src/.libs
         if [ ! -d "build-clang-$1" ]; then
             $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $arch --api $ANDROID_VERSION --install-dir="$PWD/build-clang-$1/toolchain" &>/dev/null
-            meson build-clang-$1 --cross-file ${1}_ndk.txt
+            ./tools/make_txt.sh $PWD/build-clang-$1 > $PWD/build-clang-$1/$1_ndk.txt
+            meson build-clang-$1 --cross-file $PWD/build-clang-$1/$1_ndk.txt
         fi
         cd build-clang-$1
         $NINJA -j$NUM_JOBS
