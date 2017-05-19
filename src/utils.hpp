@@ -65,9 +65,19 @@ namespace sdk {
 
     template <std::size_t N> std::array<unsigned char, N> get_random_bytes()
     {
-        std::array<unsigned char, N> bytes;
+        std::array<unsigned char, N> bytes{ { 0 } };
         get_random_bytes(bytes.data(), bytes.size());
         return bytes;
+    }
+
+    template <typename InputIt, typename OutputIt, typename BinaryOperation>
+    void adjacent_transform(InputIt first, InputIt last, OutputIt d_first, BinaryOperation binary_op)
+    {
+        auto next = first;
+        while (next != last) {
+            auto prev = next++;
+            *d_first++ = binary_op(*prev, *next++);
+        }
     }
 }
 }

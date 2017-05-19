@@ -180,18 +180,21 @@ namespace sdk {
     std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
         wally_ext_key_ptr master_key, const std::string& challenge)
     {
-        const auto random_path = get_random_bytes<8>();
+        auto random_path = get_random_bytes<8>();
+
+        std::array<uint32_t, 4> child_num;
+        adjacent_transform(std::begin(random_path), std::end(random_path), std::begin(child_num),
+            [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
         wally_ext_key_ptr login_key = std::move(master_key);
-        for (size_t i = 0; i < random_path.size() / 2; ++i) {
-            const ext_key* r = nullptr;
-            const uint32_t current_child_num = random_path[i * 2] * 256 + random_path[i * 2 + 1];
-            GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(login_key.get(), &current_child_num, 1,
-                                      BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r)
-                == WALLY_OK);
+        const ext_key* r = nullptr;
+        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(login_key.get(), child_num.data(), child_num.size(),
+                                  BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r)
+            == WALLY_OK);
 
-            login_key = wally_ext_key_ptr(r, &bip32_key_free);
-        }
+        login_key = wally_ext_key_ptr(r, &bip32_key_free);
+
+        wally_bzero(reinterpret_cast<void*>(random_path.data()), random_path.size());
 
         const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig{ { 0 } };
