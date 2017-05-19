@@ -3,7 +3,6 @@ set -e
 cd "${MESON_SOURCE_ROOT}/thirdparty/openssl-1.0.2k"
 
 if [ \( "$1" = "--arm" \) ]; then
-    export CC=clang
     if [ "$(uname)" == "Darwin" ]; then
         gsed -i 's/-mandroid//g' ${MESON_SOURCE_ROOT}/thirdparty/openssl-1.0.2k/Configure
     else
