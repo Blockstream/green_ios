@@ -25,7 +25,11 @@ if not boost_dep.found()
     if not meson.is_cross_build()
         run_command('tools/buildboost.sh')
     else
-        run_command('tools/buildboost.sh', '--arm')
+        res = run_command('tools/buildboost.sh', '--arm')
+        output = res.stdout().strip()
+        errortxt = res.stderr().strip()
+        message(output)
+        message(errortxt)
     endif
     boost_dep = dependency('boost', modules : ['system', 'thread'])
 endif
