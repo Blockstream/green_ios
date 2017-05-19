@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <map>
+#include <string>
 
 namespace ga {
 namespace sdk {
