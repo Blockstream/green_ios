@@ -68,32 +68,32 @@ namespace sdk {
 
     struct event_loop_controller {
         explicit event_loop_controller(boost::asio::io_service& io)
-            : _work_guard(std::make_unique<boost::asio::io_service::work>(io))
+            : work_guard_(std::make_unique<boost::asio::io_service::work>(io))
         {
-            _run_thread = std::thread([&] { io.run(); });
+            run_thread_ = std::thread([&] { io.run(); });
         }
 
         ~event_loop_controller()
         {
-            _work_guard.reset();
-            _run_thread.join();
+            work_guard_.reset();
+            run_thread_.join();
         }
 
-        std::thread _run_thread;
-        std::unique_ptr<boost::asio::io_service::work> _work_guard;
+        std::thread run_thread_;
+        std::unique_ptr<boost::asio::io_service::work> work_guard_;
     };
 
     class session::session_impl final {
     public:
         explicit session_impl(network_parameters params, bool debug)
-            : _controller(_io)
-            , _params(std::move(params))
-            , _debug(debug)
+            : controller_(io_)
+            , params_(std::move(params))
+            , debug_(debug)
         {
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
         }
 
-        ~session_impl() { _io.stop(); }
+        ~session_impl() { io_.stop(); }
 
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
@@ -108,13 +108,13 @@ namespace sdk {
             wally_ext_key_ptr master_key, const std::string& challenge);
 
     private:
-        bool connect_with_tls() const { return boost::algorithm::starts_with(_params.gait_wamp_url(), "wss://"); }
+        bool connect_with_tls() const { return boost::algorithm::starts_with(params_.gait_wamp_url(), "wss://"); }
 
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
         template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
         {
             // FIXME: these options need to be checked.
-            boost::get<std::shared_ptr<T>>(_client)->set_tls_init_handler([](websocketpp::connection_hdl) {
+            boost::get<std::shared_ptr<T>>(client_)->set_tls_init_handler([](websocketpp::connection_hdl) {
                 context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv1);
                 ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2
                     | boost::asio::ssl::context::single_dh_use);
@@ -124,8 +124,8 @@ namespace sdk {
 
         template <typename T> void make_client()
         {
-            _client = std::make_shared<T>();
-            boost::get<std::shared_ptr<T>>(_client)->init_asio(&_io);
+            client_ = std::make_shared<T>();
+            boost::get<std::shared_ptr<T>>(client_)->init_asio(&io_);
             set_tls_init_handler<T>();
         }
 
@@ -134,21 +134,21 @@ namespace sdk {
             using client_type
                 = std::shared_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
 
-            _transport = std::make_shared<T>(*boost::get<client_type>(_client), _params.gait_wamp_url(), _debug),
-            boost::get<std::shared_ptr<T>>(_transport)
-                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(_session));
+            transport_ = std::make_shared<T>(*boost::get<client_type>(client_), params_.gait_wamp_url(), debug_),
+            boost::get<std::shared_ptr<T>>(transport_)
+                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(session_));
         }
 
         template <typename T> void connect_to_endpoint() const
         {
             std::array<boost::future<void>, 3> futures;
 
-            futures[0] = boost::get<std::shared_ptr<T>>(_transport)->connect().then([&](boost::future<void> connected) {
+            futures[0] = boost::get<std::shared_ptr<T>>(transport_)->connect().then([&](boost::future<void> connected) {
                 connected.get();
-                futures[1] = _session->start().then([&](boost::future<void> started) {
+                futures[1] = session_->start().then([&](boost::future<void> started) {
                     started.get();
                     futures[2]
-                        = _session->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) { joined.get(); });
+                        = session_->join(DEFAULT_REALM).then([&](boost::future<uint64_t> joined) { joined.get(); });
                 });
             });
 
@@ -158,23 +158,23 @@ namespace sdk {
         }
 
     private:
-        boost::asio::io_service _io;
-        boost::variant<std::shared_ptr<client>, std::shared_ptr<client_tls>> _client;
-        boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> _transport;
-        std::shared_ptr<autobahn::wamp_session> _session;
+        boost::asio::io_service io_;
+        boost::variant<std::shared_ptr<client>, std::shared_ptr<client_tls>> client_;
+        boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> transport_;
+        std::shared_ptr<autobahn::wamp_session> session_;
 
-        event_loop_controller _controller;
+        event_loop_controller controller_;
 
-        std::unordered_map<std::string, msgpack::object> _login_data;
+        std::unordered_map<std::string, msgpack::object> login_data_;
 
-        network_parameters _params;
+        network_parameters params_;
 
-        bool _debug;
+        bool debug_;
     };
 
     void session::session_impl::connect()
     {
-        _session = std::make_shared<autobahn::wamp_session>(_io, _debug);
+        session_ = std::make_shared<autobahn::wamp_session>(io_, debug_);
 
         const bool tls = connect_with_tls();
         tls ? make_transport<transport_tls>() : make_transport<transport>();
@@ -248,7 +248,7 @@ namespace sdk {
 
         auto register_arguments = std::make_tuple(
             pub_key.get(), chain_code.get(), DEFAULT_USER_AGENT + user_agent + "_ga_sdk", hex_path.get());
-        auto register_future = _session->call("com.greenaddress.login.register", register_arguments)
+        auto register_future = session_->call("com.greenaddress.login.register", register_arguments)
                                    .then([](boost::future<autobahn::wamp_call_result> result) {
                                        GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
                                    });
@@ -265,12 +265,12 @@ namespace sdk {
 
         const ext_key* p = nullptr;
         GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(),
-                                  _params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
+                                  params_.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
             == WALLY_OK);
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
         std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh{ { 0 } };
-        vpkh[0] = _params.main_net() ? 0 : 111;
+        vpkh[0] = params_.main_net() ? 0 : 111;
         std::copy(master_key->hash160, master_key->hash160 + sizeof(master_key->hash160), vpkh.begin() + 1);
 
         char* q = nullptr;
@@ -279,7 +279,7 @@ namespace sdk {
 
         auto challenge_arguments = std::make_tuple(base58_pkh.get());
         std::string challenge;
-        auto get_challenge_future = _session->call("com.greenaddress.login.get_challenge", challenge_arguments)
+        auto get_challenge_future = session_->call("com.greenaddress.login.get_challenge", challenge_arguments)
                                         .then([&challenge](boost::future<autobahn::wamp_call_result> result) {
                                             challenge = result.get().argument<std::string>(0);
                                             std::cerr << challenge << std::endl;
@@ -291,9 +291,9 @@ namespace sdk {
 
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
-        auto authenticate_future = _session->call("com.greenaddress.login.authenticate", authenticate_arguments)
+        auto authenticate_future = session_->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([this](boost::future<autobahn::wamp_call_result> result) {
-                                           _login_data = result.get().argument<decltype(_login_data)>(0);
+                                           login_data_ = result.get().argument<decltype(login_data_)>(0);
                                        });
 
         authenticate_future.get();
@@ -328,7 +328,7 @@ namespace sdk {
         auto&& change_settings = [this, &key_str](auto arg) {
             auto change_settings_arguments = std::make_tuple(key_str, arg);
             auto change_settings_future
-                = _session->call("com.greenaddress.login.change_settings", change_settings_arguments)
+                = session_->call("com.greenaddress.login.change_settings", change_settings_arguments)
                       .then([](boost::future<autobahn::wamp_call_result> result) {
                           GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
                       });
@@ -380,7 +380,7 @@ namespace sdk {
         };
 
         auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
-        auto get_tx_list_future = _session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
+        auto get_tx_list_future = session_->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
                                       .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         get_tx_list_future.get();
@@ -388,7 +388,7 @@ namespace sdk {
 
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
-        auto subscribe_future = _session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
+        auto subscribe_future = session_->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
                                     .then([](boost::future<autobahn::wamp_subscription> subscription) {
                                         std::cerr << "subscribed to topic:" << subscription.get().id() << std::endl;
                                     });
