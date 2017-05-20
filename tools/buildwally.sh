@@ -10,7 +10,7 @@ cd "${MESON_SOURCE_ROOT}/src/wally"
 ./tools/autogen.sh
 if [ \( "$1" = "--ndk" \) ]; then
     . ${MESON_SOURCE_ROOT}/tools/env.sh
-    ./configure --host=arm-linux-androideabi --with-sysroot="${MESON_BUILD_ROOT}/toolchain/sysroot" --build=$HOST_OS --enable-silent-rules --disable-dependency-tracking --target=arm-linux-androideabi --prefix="${MESON_BUILD_ROOT}/thirdparty/libwally-core/build"
+    ./configure --host=$SDK_PLATFORM --with-sysroot="${MESON_BUILD_ROOT}/toolchain/sysroot" --build=$HOST_OS --enable-silent-rules --disable-dependency-tracking --target=$SDK_PLATFORM --prefix="${MESON_BUILD_ROOT}/thirdparty/libwally-core/build"
     make -o configure clean -j$NUM_JOBS
     make -o configure -j$NUM_JOBS V=1
     make -o configure install

@@ -1,7 +1,7 @@
 project('sdk', ['c', 'cpp'], meson_version : '>= 0.37.1', default_options : ['cpp_std=c++14'])
 
 # dependencies
-compiler = meson.get_compiler('cpp', native : not meson.is_cross_build())
+compiler = meson.get_compiler('cpp')
 
 check_headers = [
     'fcntl.h',

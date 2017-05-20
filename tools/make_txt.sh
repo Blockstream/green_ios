@@ -4,23 +4,43 @@ set -e
 echo "[binaries]"
 echo "c = '$1/toolchain/bin/clang'"
 echo "cpp = '$1/toolchain/bin/clang++'"
-echo "ar = '$1/toolchain/bin/arm-linux-androideabi-ar'"
+echo "ar = '$1/toolchain/bin/$SDK_PLATFORM-ar'"
 echo "pkgconfig = 'pkg-config'"
-echo "strip = 'strip'"
+echo "strip = '$1/toolchain/bin/$SDK_PLATFORM-strip'"
+echo
 echo "[properties]"
-echo "root = '$1/toolchain/arm-linux-androideabi'"
+echo "root = '$1/toolchain/$SDK_PLATFORM'"
 
 echo "has_function_printf = true"
 echo "has_function_hfkerhisadf = false"
 
-echo "c_args = ['--sysroot=$1/toolchain/sysroot', '-march=armv7-a', '-mfloat-abi=softfp', '-mfpu=neon', '-mthumb']"
-echo "cpp_args = ['--sysroot=$1/toolchain/sysroot', '-march=armv7-a', '-mfloat-abi=softfp', '-mfpu=neon', '-mthumb']"
-echo "c_link_args = ['--sysroot=$1/toolchain/sysroot', '-Wl,--fix-cortex-a8']"
-echo "cpp_link_args = ['--sysroot=$1/toolchain/sysroot', '-Wl,--fix-cortex-a8']"
+echo -n "c_args = ['--sysroot=$1/toolchain/sysroot'"
+for a in $SDK_CFLAGS; do
+    echo -n ", '$a'"
+done
+echo "]"
+echo -n "cpp_args = ['--sysroot=$1/toolchain/sysroot'"
+for a in $SDK_CFLAGS; do
+    echo -n ", '$a'"
+done
+echo "]"
+echo -n "c_link_args = ['--sysroot=$1/toolchain/sysroot'"
+for a in $SDK_LDFLAGS; do
+    echo -n ", '$a'"
+done
+echo "]"
+echo -n "cpp_link_args = ['--sysroot=$1/toolchain/sysroot'"
+for a in $SDK_LDFLAGS; do
+    echo -n ", '$a'"
+done
+echo "]"
+
+echo
 
 echo "[host_machine]"
 echo "system = 'linux'"
-echo "cpu_family = 'arm'"
-echo "cpu = 'armv7'"
+echo "cpu_family = '$SDK_ARCH'"
+echo "cpu = '$SDK_ARCH'"
+#echo "cpu = '$SDK_CPU'"
 echo "endian = 'little'"
 
