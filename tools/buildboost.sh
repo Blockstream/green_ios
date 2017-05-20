@@ -4,7 +4,7 @@ boost_src_home="${MESON_SOURCE_ROOT}/thirdparty/boost_1_64_0"
 boost_bld_home="${MESON_BUILD_ROOT}/thirdparty/boost_1_64_0/build"
 cd $boost_src_home
 cp "${MESON_SOURCE_ROOT}/tools/clang.jam" "$boost_src_home/tools/build/src/tools"
-if [ \( "$1" = "--arm" \) ]; then
+if [ \( "$1" = "--ndk" \) ]; then
     export TARGET_OS=android
     . ${MESON_SOURCE_ROOT}/tools/env.sh
     echo "using clang : arm : arm-linux-androideabi-clang++ : --sysroot=$SYSROOT ;" > $boost_src_home/user-config.jam

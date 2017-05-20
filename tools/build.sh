@@ -54,7 +54,7 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
     cd ..
 fi
 
-if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk-multiarch" \) ]; then
+if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
 
     function build() {
         case $1 in

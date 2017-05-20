@@ -2,7 +2,7 @@
 set -e
 cd "${MESON_SOURCE_ROOT}/thirdparty/openssl-1.0.2k"
 openssl_prefix="${MESON_BUILD_ROOT}/thirdparty/openssl-1.0.2k/build"
-if [ \( "$1" = "--arm" \) ]; then
+if [ \( "$1" = "--ndk" \) ]; then
     if [ "$(uname)" == "Darwin" ]; then
         gsed -i 's/-mandroid//g' ${MESON_SOURCE_ROOT}/thirdparty/openssl-1.0.2k/Configure
     else

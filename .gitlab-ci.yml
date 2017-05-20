@@ -20,7 +20,7 @@ test_clang_ndk_multiarch:
     - ga
   script:
     - cd $CI_PROJECT_DIR
-    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk-multiarch
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk
 
 test_osx_clang:
   tags:
@@ -34,4 +34,4 @@ test_osx_clang_ndk:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk-multiarch
+    - ./tools/build.sh --ndk

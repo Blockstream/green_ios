@@ -8,7 +8,7 @@ fi
 cd "${MESON_SOURCE_ROOT}/src/wally"
 ./tools/cleanup.sh
 ./tools/autogen.sh
-if [ \( "$1" = "--arm" \) ]; then
+if [ \( "$1" = "--ndk" \) ]; then
     . ${MESON_SOURCE_ROOT}/tools/env.sh
     ./configure --host=arm-linux-androideabi --with-sysroot="${MESON_BUILD_ROOT}/toolchain/sysroot" --build=$HOST_OS --enable-silent-rules --disable-dependency-tracking --target=arm-linux-androideabi --prefix="${MESON_BUILD_ROOT}/thirdparty/libwally-core/build"
     make -o configure clean -j$NUM_JOBS
