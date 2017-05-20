@@ -56,6 +56,13 @@ fi
 
 if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
 
+    if [ -z "$ANDROID_NDK" ]; then
+        if [ $(which ndk-build) ]; then
+            export ANDROID_NDK=$(dirname `which ndk-build 2>/dev/null`)
+        fi
+    fi
+
+    echo ${ANDROID_NDK:?}
     function build() {
         case $1 in
             armeabi)
