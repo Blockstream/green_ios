@@ -92,6 +92,12 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
                 export SDK_CFLAGS="-mips32"
                 export SDK_LDLAGS="-mips32"
                 ;;
+            mips64)
+                export SDK_ARCH=mips
+                # FIXME: Only needed until mips32r2 is not the default in clang
+                export SDK_CFLAGS="-mxgot"
+                export SDK_LDLAGS="-mxgot"
+                ;;
             *)
                 export SDK_ARCH=$1
                 #export SDK_PLATFORM=i686-linux-android
