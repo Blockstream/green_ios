@@ -14,13 +14,37 @@ test_clang:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
-test_clang_ndk_multiarch:
+test_clang_ndk_armeabi-v7a:
   image: greenaddress/ci:latest
   tags:
     - ga
   script:
     - cd $CI_PROJECT_DIR
-    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk armeabi-v7a
+
+test_clang_ndk_arm64-v8a:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk arm64-v8a
+
+test_clang_ndk_x86_64:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86_64
+
+test_clang_ndk_mips64:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk mips64
 
 test_osx_clang:
   tags:
@@ -29,9 +53,30 @@ test_osx_clang:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
-test_osx_clang_ndk:
+test_osx_clang_ndk_armeabi-v7a:
   tags:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk
+    - ./tools/build.sh --ndk armeabi-v7a
+
+test_osx_clang_ndk_arm64-v8a:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk arm64-v8a
+
+test_osx_clang_ndk_x86_64:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk x86_64
+
+test_osx_clang_ndk_mips64:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk mips64
