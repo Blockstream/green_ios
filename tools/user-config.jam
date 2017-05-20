@@ -1,1 +1,0 @@
-using clang : arm : arm-linux-androideabi-clang++ ;
