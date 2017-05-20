@@ -89,20 +89,21 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk-multiarch" \)
         else
             export ANDROID_VERSION="14"
         fi
-
-        export BOOST_ROOT="$PWD/build-clang-$1/thirdparty/boost_1_64_0/build"
-        export PATH=$PWD/build-clang-$1/toolchain/bin:$PATH_BASE
-        export OPENSSL_PKG_CONFIG_PATH="$PWD/build-clang-$1/thirdparty/openssl-1.0.2k/build/lib/pkgconfig"
-        export WALLY_PKG_CONFIG_PATH="$PWD/build-clang-$1/thirdparty/libwally-core/build/lib/pkgconfig"
+        bld_root="$PWD/build-clang-$1"
+        bld_third_party="$bld_root/thirdparty"
+        export BOOST_ROOT="$bld_third_party/boost_1_64_0/build"
+        export PATH=$bld_root/toolchain/bin:$PATH_BASE
+        export OPENSSL_PKG_CONFIG_PATH="$bld_third_party/openssl-1.0.2k/build/lib/pkgconfig"
+        export WALLY_PKG_CONFIG_PATH="$bld_third_party/libwally-core/build/lib/pkgconfig"
         export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
-        export AR="$PWD/build-clang-$1/toolchain/bin/arm-linux-androideabi-ar"
-        export RANLIB="$PWD/build-clang-$1/toolchain/bin/arm-linux-androideabi-ranlib"
+        export AR="$bld_root/toolchain/bin/arm-linux-androideabi-ar"
+        export RANLIB="$bld_root/toolchain/bin/arm-linux-androideabi-ranlib"
         rm -fr src/wally/src/.libs
-        if [ ! -d "build-clang-$1" ]; then
-            $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $arch --api $ANDROID_VERSION --install-dir="$PWD/build-clang-$1/toolchain" &>/dev/null
-            ./tools/make_txt.sh $PWD/build-clang-$1 > $PWD/build-clang-$1/$1_ndk.txt
-            meson build-clang-$1 --cross-file $PWD/build-clang-$1/$1_ndk.txt
+        if [ ! -d "$bld_root" ]; then
+            $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $arch --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
+            ./tools/make_txt.sh $bld_root > $bld_root/$1_ndk.txt
+            meson build-clang-$1 --cross-file $bld_root/$1_ndk.txt
         fi
         cd build-clang-$1
         $NINJA -j$NUM_JOBS
