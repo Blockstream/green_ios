@@ -16,7 +16,7 @@ endforeach
 clang_format = find_program('clang-format', required : false)
 
 threads_dep = dependency('threads')
-
+m_dep = compiler.find_library('m', required : false)
 
 boost_lib_dir = join_paths(meson.current_build_dir(), 'thirdparty', 'boost_1_64_0', 'build', 'lib')
 boost_dep = dependency('boost', modules : ['system', 'thread'], required : false)

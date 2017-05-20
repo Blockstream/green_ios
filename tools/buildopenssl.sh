@@ -9,7 +9,7 @@ if [ \( "$1" = "--ndk" \) ]; then
         sed -i 's/-mandroid//g' ${MESON_SOURCE_ROOT}/thirdparty/openssl-1.0.2k/Configure
     fi
     . ${MESON_SOURCE_ROOT}/tools/env.sh
-    ./Configure android --prefix="$openssl_prefix" no-krb5  shared
+    ./Configure android --prefix="$openssl_prefix" no-krb5 shared
 else
     if [ "$(uname)" == "Darwin" ]; then
         ./Configure darwin64-x86_64-cc --prefix="$openssl_prefix" shared
@@ -20,6 +20,6 @@ fi
 
 make clean
 make depend
-make
+make 2> /dev/null
 make install_sw
 

@@ -20,12 +20,12 @@ endif
 libga = shared_library('greenaddress', sources,
             version : '0.0.0',
             include_directories : incdir,
-            dependencies : [boost_dep, threads_dep, openssl_dep, wally_dep])
+            dependencies : [boost_dep, m_dep, threads_dep, openssl_dep, wally_dep])
 
 libga_dep = declare_dependency(
             include_directories : incdir,
             link_with : libga,
-            dependencies : [boost_dep, threads_dep, openssl_dep, wally_dep])
+            dependencies : [boost_dep, m_dep, threads_dep, openssl_dep, wally_dep])
 
 # tests
 subdirs = ['tests']
