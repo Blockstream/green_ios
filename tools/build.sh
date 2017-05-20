@@ -132,7 +132,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     #all_archs="armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64"
     #all_archs="armeabi-v7a"
     #all_archs="x86"
-    all_archs="armeabi-v7a arm64-v8a"
+    all_archs="armeabi-v7a arm64-v8a x86_64"
     for a in $all_archs; do
         build $a
     done
