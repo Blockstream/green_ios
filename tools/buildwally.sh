@@ -5,7 +5,7 @@ if [ "$(uname)" == "Darwin" ]; then
 else
     export HOST_OS="i686-linux-gnu"
 fi
-cd "${MESON_SOURCE_ROOT}/src/wally"
+cd "${MESON_SOURCE_ROOT}/thirdparty/wallycore"
 ./tools/cleanup.sh
 ./tools/autogen.sh
 if [ \( "$1" = "--ndk" \) ]; then

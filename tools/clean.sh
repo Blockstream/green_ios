@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -e
 
-rm -fr build-* thirdparty src/wally
+rm -fr build-* thirdparty

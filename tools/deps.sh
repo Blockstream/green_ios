@@ -22,54 +22,23 @@ if [ ! -d "deps_cache" ]; then
   mkdir deps_cache
 fi
 
-if [ ! -d "thirdparty/autobahn-cpp" ]; then
-    if [ ! -f "deps_cache/autobahn-cpp.tar.gz " ]; then
-        wget -q -O deps_cache/autobahn-cpp.tar.gz https://github.com/crossbario/autobahn-cpp/archive/e2d4c8186bc6f3c81f1638b07ad68fcc250c4dfb.tar.gz
+function prepare_pkg() {
+    if [ ! -d "thirdparty/$1" ]; then
+        if [ ! -f "deps_cache/$1_$3.tar.gz" ]; then
+            wget -q -O deps_cache/$1_$3.tar.gz $2
+        fi
+        echo "$3  deps_cache/$1_$3.tar.gz" | $SHASUM --check
+        tar -zxf deps_cache/$1_$3.tar.gz -C ./thirdparty/
     fi
-    echo "${SHA256SUM_AUTOBAHN}  deps_cache/autobahn-cpp.tar.gz" | $SHASUM --check
-    tar -zxf deps_cache/autobahn-cpp.tar.gz -C ./thirdparty/
-    mv thirdparty/*autobahn* thirdparty/autobahn-cpp
-fi
+}
 
-if [ ! -d "thirdparty/websocketpp-0.7.0" ]; then
-    if [ ! -f "deps_cache/websocketpp-0.7.0.tar.gz" ]; then
-        wget -q -O deps_cache/websocketpp-0.7.0.tar.gz https://github.com/zaphoyd/websocketpp/archive/0.7.0.tar.gz
-    fi
-    echo "${SHA256SUM_WEBSOCKETPP}  deps_cache/websocketpp-0.7.0.tar.gz" | $SHASUM --check
-    tar -zxf deps_cache/websocketpp-0.7.0.tar.gz -C ./thirdparty/
-fi
+prepare_pkg autobahn-cpp https://github.com/crossbario/autobahn-cpp/archive/e2d4c8186bc6f3c81f1638b07ad68fcc250c4dfb.tar.gz ${SHA256SUM_AUTOBAHN}
+prepare_pkg websocketpp-0.7.0 https://github.com/zaphoyd/websocketpp/archive/0.7.0.tar.gz ${SHA256SUM_WEBSOCKETPP}
+prepare_pkg msgpack-2.1.1 https://github.com/msgpack/msgpack-c/releases/download/cpp-2.1.1/msgpack-2.1.1.tar.gz ${SHA256SUM_MSGPACK}
+prepare_pkg boost_1_64_0 https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz ${SHA256SUM_BOOST}
+prepare_pkg openssl-1.0.2k https://github.com/openssl/openssl/archive/OpenSSL_1_0_2k.tar.gz ${SHA256SUM_OPENSSL}
+prepare_pkg wallycore https://github.com/jgriffiths/libwally-core/archive/08caa2c924a796f0ed53e3d4332889d4808acd33.tar.gz ${SHA256SUM_WALLYCORE}
 
-if [ ! -d "thirdparty/msgpack-2.1.1" ]; then
-    if [ ! -f "deps_cache/msgpack-2.1.1.tar.gz" ]; then
-        wget -q -O deps_cache/msgpack-2.1.1.tar.gz https://github.com/msgpack/msgpack-c/releases/download/cpp-2.1.1/msgpack-2.1.1.tar.gz
-    fi
-    echo "${SHA256SUM_MSGPACK}  deps_cache/msgpack-2.1.1.tar.gz" | $SHASUM --check
-    tar -zxf deps_cache/msgpack-2.1.1.tar.gz -C ./thirdparty/
-fi
-
-if [ ! -d "thirdparty/boost_1_64_0" ]; then
-    if [ ! -f "deps_cache/boost-1.64.0.tar.gz" ]; then
-        wget -q -O deps_cache/boost-1.64.0.tar.gz https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz
-    fi
-    echo "${SHA256SUM_BOOST}  deps_cache/boost-1.64.0.tar.gz" | $SHASUM --check
-    tar -zxf deps_cache/boost-1.64.0.tar.gz -C ./thirdparty/
-fi
-
-if [ ! -d "thirdparty/openssl-1.0.2k" ]; then
-    if [ ! -f "deps_cache/openssl-1.0.2k.tar.gz " ]; then
-        wget -q -O deps_cache/openssl-1.0.2k.tar.gz https://github.com/openssl/openssl/archive/OpenSSL_1_0_2k.tar.gz
-    fi
-    echo "${SHA256SUM_OPENSSL}  deps_cache/openssl-1.0.2k.tar.gz" | $SHASUM --check
-    tar -zxf deps_cache/openssl-1.0.2k.tar.gz -C ./thirdparty/
-    mv thirdparty/openssl* thirdparty/openssl-1.0.2k
-fi
-
-if [ ! -d "src/wally" ]; then
-    if [ ! -f "deps_cache/wallycore.tar.gz" ]; then
-        wget -q -O deps_cache/wallycore.tar.gz https://github.com/jgriffiths/libwally-core/archive/08caa2c924a796f0ed53e3d4332889d4808acd33.tar.gz
-    fi
-    echo "${SHA256SUM_WALLYCORE}  deps_cache/wallycore.tar.gz" | $SHASUM --check
-    tar -zxf deps_cache/wallycore.tar.gz -C ./src/
-    mv src/libwally-core-08caa2c924a796f0ed53e3d4332889d4808acd33 src/wally
-fi
-
+mv thirdparty/*autobahn* thirdparty/autobahn-cpp
+mv thirdparty/openssl* thirdparty/openssl-1.0.2k
+mv thirdparty/libwally-core-08caa2c924a796f0ed53e3d4332889d4808acd33 thirdparty/wallycore

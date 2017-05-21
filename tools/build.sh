@@ -25,7 +25,7 @@ if [ \( "$(uname)" != "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; t
     export WALLY_PKG_CONFIG_PATH="$PWD/build-gcc/thirdparty/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
-    rm -fr src/wally/src/.libs
+    rm -fr thirdparty/wallycore/src/.libs
     if [ ! -d "build-gcc" ]; then
         meson build-gcc
     fi
@@ -44,7 +44,7 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
     export WALLY_PKG_CONFIG_PATH="$PWD/build-clang/thirdparty/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
-    rm -fr src/wally/src/.libs
+    rm -fr thirdparty/wallycore/src/.libs
     if [ ! -d "build-clang" ]; then
         meson build-clang
     fi
@@ -115,7 +115,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
         export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
 
-        rm -fr src/wally/src/.libs
+        rm -fr thirdparty/wallycore/src/.libs
         if [ ! -d "$bld_root" ]; then
             $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $SDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
             export SDK_PLATFORM=$(basename $(find $bld_root/toolchain/ -maxdepth 1 -type d -name "*linux-android*"))

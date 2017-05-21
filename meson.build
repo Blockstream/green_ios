@@ -77,7 +77,7 @@ boost_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'thirdparty
 openssl_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'thirdparty', 'openssl-1.0.2k', 'build', 'include')
 msgpack_inc_dir = join_paths('thirdparty', 'msgpack-2.1.1', 'include')
 sdk_inc_dir = 'src'
-wally_inc_dir = join_paths('src', 'wally', 'include')
+wally_inc_dir = join_paths('thirdparty', 'wallycore', 'include')
 websocketpp_inc_dir = join_paths('thirdparty', 'websocketpp-0.7.0')
 
 incdir = include_directories([autobahn_inc_dir, boost_inc_dir, msgpack_inc_dir, openssl_inc_dir, sdk_inc_dir, wally_inc_dir, websocketpp_inc_dir])
