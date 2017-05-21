@@ -5,6 +5,6 @@
 !.gitignore
 /build-gcc/
 /build-clang/
+/build-clang-*/
 /thirdparty/
-/src/wally/
 /deps_cache
