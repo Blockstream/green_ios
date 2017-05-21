@@ -14,6 +14,14 @@ test_clang:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
+test_clang_ndk_armeabi:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk armeabi
+
 test_clang_ndk_armeabi-v7a:
   image: greenaddress/ci:latest
   tags:
@@ -29,14 +37,6 @@ test_clang_ndk_arm64-v8a:
   script:
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk arm64-v8a
-
-test_clang_ndk_x86_64:
-  image: greenaddress/ci:latest
-  tags:
-    - ga
-  script:
-    - cd $CI_PROJECT_DIR
-    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86_64
 
 test_clang_ndk_mips:
   image: greenaddress/ci:latest
@@ -54,12 +54,35 @@ test_clang_ndk_mips64:
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk mips64
 
+test_clang_ndk_x86:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86
+
+test_clang_ndk_x86_64:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86_64
+
 test_osx_clang:
   tags:
     - osx
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
+
+test_osx_clang_ndk_armeabi:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk armeabi
 
 test_osx_clang_ndk_armeabi-v7a:
   tags:
@@ -75,13 +98,6 @@ test_osx_clang_ndk_arm64-v8a:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk arm64-v8a
 
-test_osx_clang_ndk_x86_64:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk x86_64
-
 test_osx_clang_ndk_mips:
   tags:
     - osx
@@ -95,3 +111,18 @@ test_osx_clang_ndk_mips64:
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk mips64
+
+test_osx_clang_ndk_x86:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk x86
+
+test_osx_clang_ndk_x86_64:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk x86_64
+

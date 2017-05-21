@@ -129,16 +129,10 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
         cd ..
     }
 
-    #export CXX=clang++
-    #export CC=clang
-    #all_archs="armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64"
-    #all_archs="armeabi-v7a"
-    #all_archs="x86"
-    #all_archs="mips64"
     if [ -n "$2" ]; then
         all_archs="$2"
     else
-        all_archs="armeabi-v7a arm64-v8a x86_64 mips mips64"
+        all_archs="armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64"
     fi
     for a in $all_archs; do
         build $a
