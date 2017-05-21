@@ -6,5 +6,4 @@
 /build-gcc/
 /build-clang/
 /build-clang-*/
-/thirdparty/
 /deps_cache

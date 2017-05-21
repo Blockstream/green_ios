@@ -14,21 +14,23 @@ if [ "$(uname)" == "Darwin" ]; then
     SHASUM="shasum -a 256"
 fi
 
-if [ ! -d "thirdparty" ]; then
-  mkdir thirdparty
-fi
+DEPS_BLD_DIR=$1
 
 if [ ! -d "deps_cache" ]; then
   mkdir deps_cache
 fi
 
+if [ ! -d "$DEPS_BLD_DIR" ]; then
+  mkdir $DEPS_BLD_DIR
+fi
+
 function prepare_pkg() {
-    if [ ! -d "thirdparty/$1" ]; then
+    if [ ! -d "$DEPS_BLD_DIR/$1" ]; then
         if [ ! -f "deps_cache/$1_$3.tar.gz" ]; then
             wget -q -O deps_cache/$1_$3.tar.gz $2
         fi
         echo "$3  deps_cache/$1_$3.tar.gz" | $SHASUM --check
-        tar -zxf deps_cache/$1_$3.tar.gz -C ./thirdparty/
+        tar -zxf deps_cache/$1_$3.tar.gz -C $DEPS_BLD_DIR/
     fi
 }
 
@@ -39,6 +41,11 @@ prepare_pkg boost_1_64_0 https://dl.bintray.com/boostorg/release/1.64.0/source/b
 prepare_pkg openssl-1.0.2k https://github.com/openssl/openssl/archive/OpenSSL_1_0_2k.tar.gz ${SHA256SUM_OPENSSL}
 prepare_pkg wallycore https://github.com/jgriffiths/libwally-core/archive/08caa2c924a796f0ed53e3d4332889d4808acd33.tar.gz ${SHA256SUM_WALLYCORE}
 
-mv thirdparty/*autobahn* thirdparty/autobahn-cpp
-mv thirdparty/openssl* thirdparty/openssl-1.0.2k
-mv thirdparty/libwally-core-08caa2c924a796f0ed53e3d4332889d4808acd33 thirdparty/wallycore
+function move_if() {
+    if [ ! -d "$DEPS_BLD_DIR/$2" ]; then
+        mv $DEPS_BLD_DIR/$1 $DEPS_BLD_DIR/$2
+    fi
+}
+move_if *autobahn* autobahn-cpp
+move_if openssl* openssl-1.0.2k
+move_if libwally-core-08caa2c924a796f0ed53e3d4332889d4808acd33 wallycore
