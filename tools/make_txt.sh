@@ -39,8 +39,13 @@ echo
 
 echo "[host_machine]"
 echo "system = 'linux'"
-echo "cpu_family = '$SDK_ARCH'"
-echo "cpu = '$SDK_ARCH'"
+if [ $SDK_ARCH = 'x86' ] ; then
+    echo "cpu_family = 'android-$SDK_ARCH'"
+    echo "cpu = 'android-$SDK_ARCH'"
+else
+    echo "cpu_family = '$SDK_ARCH'"
+    echo "cpu = '$SDK_ARCH'"
+fi
 #echo "cpu = '$SDK_CPU'"
 echo "endian = 'little'"
 
