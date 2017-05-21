@@ -1,3 +1,7 @@
+cache:
+  paths:
+  - deps_cache
+
 test_gcc:
   image: greenaddress/ci:latest
   tags:
