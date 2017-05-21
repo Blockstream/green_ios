@@ -70,21 +70,17 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
             armeabi)
                 export SDK_ARCH=arm
                 export SDK_CPU=armv7
-                #export SDK_PLATFORM=arm-linux-androideabi
                 export SDK_CFLAGS="-march=armv5te -mtune=xscale -msoft-float -mthumb"
                 ;;
             armeabi-v7a)
                 export SDK_ARCH=arm
                 export SDK_CPU=armv7
-                #export SDK_PLATFORM=arm-linux-androideabi
                 export SDK_CFLAGS="-march=armv7-a -mfloat-abi=softfp -mfpu=neon -mthumb"
                 export SDK_LDFLAGS="-Wl,--fix-cortex-a8"
                 ;;
             arm64-v8a)
                 export SDK_ARCH=arm64
                 export SDK_CFLAGS="-flax-vector-conversions"
-                #export SDK_PLATFORM=i686-linux-android
-                export SDK_CPU=i686
                 ;;
             mips)
                 export SDK_ARCH=mips
@@ -100,7 +96,6 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
                 ;;
             *)
                 export SDK_ARCH=$1
-                #export SDK_PLATFORM=i686-linux-android
                 export SDK_CPU=i686
         esac
 
@@ -143,7 +138,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     if [ -n "$2" ]; then
         all_archs="$2"
     else
-        all_archs="armeabi-v7a arm64-v8a x86_64 mips64"
+        all_archs="armeabi-v7a arm64-v8a x86_64 mips mips64"
     fi
     for a in $all_archs; do
         build $a

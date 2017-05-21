@@ -38,6 +38,14 @@ test_clang_ndk_x86_64:
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86_64
 
+test_clang_ndk_mips:
+  image: greenaddress/ci:latest
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk mips
+
 test_clang_ndk_mips64:
   image: greenaddress/ci:latest
   tags:
@@ -73,6 +81,13 @@ test_osx_clang_ndk_x86_64:
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk x86_64
+
+test_osx_clang_ndk_mips:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk mips
 
 test_osx_clang_ndk_mips64:
   tags:
