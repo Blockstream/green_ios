@@ -7,18 +7,23 @@ using namespace std::chrono_literals;
 
 #include <autobahn/autobahn.hpp>
 
+#include "argparser.h"
+
 #include "session.hpp"
 
 const std::string DEFAULT_TOPIC("com.greenaddress.blocks");
 
 int main(int argc, char** argv)
 {
+    struct options* options;
+    parse_cmd_line_arguments(argc, argv, &options);
+
     std::mutex mtx;
     std::condition_variable cv;
 
     try {
         ga::sdk::session session;
-        session.connect(ga::sdk::make_localtest_network());
+        session.connect(options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network());
         session.subscribe(DEFAULT_TOPIC, [&](const autobahn::wamp_event& event) {
             using topic_type = std::unordered_map<std::string, size_t>;
             auto ev = event.argument<topic_type>(0);

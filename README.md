@@ -1,19 +1,25 @@
 # GreenAddress C/C++ SDK
 
-Experimental ninja build:
+## Experimental ninja build:
 
-Deps:
+### Deps:
 
 * sudo apt-get install build-essential meson ninja-build clang wget autoconf pkg-config
 
-To build:
+### To build:
 
 * tools/build.sh
 
-To clean:
+### To clean:
 
 * tools/clean.sh
 
-To run tests (against local backend):
+### To run tests (against testnet):
+
+#### Using testnet as backend
 
 * ninja test
+
+#### Using local backend:
+
+* mesontest --test-args l

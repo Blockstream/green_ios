@@ -15,13 +15,15 @@ foreach name : exe_names
     endif
 endforeach
 
+common_sources = ['argparser.h', 'argparser.c']
+
 if clang_format.found()
-    custom_target('tests/clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
+    custom_target('tests/clang-format', input : sources + common_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
 foreach source : sources 
     exe_name = source.split('.')[0]
-    exe = executable(exe_name, source,
+    exe = executable(exe_name, [source] + common_sources,
                          include_directories : incdir,
                          dependencies : [libga_dep])
     test(exe_name, exe)

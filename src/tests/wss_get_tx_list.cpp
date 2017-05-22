@@ -2,6 +2,8 @@
 #include <ctime>
 #include <iostream>
 
+#include "argparser.h"
+
 #include "session.hpp"
 
 const std::string DEFAULT_MNEMONIC(
@@ -13,9 +15,11 @@ int main(int argc, char** argv)
     using namespace std::chrono;
     using namespace ga::sdk::literals;
 
+    struct options* options;
+    parse_cmd_line_arguments(argc, argv, &options);
     try {
         ga::sdk::session session;
-        session.connect(ga::sdk::make_localtest_network(), true);
+        session.connect(options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
 

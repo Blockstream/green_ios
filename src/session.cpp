@@ -481,9 +481,10 @@ void GA_destroy_session(struct GA_session* session)
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_connect,
     [](struct GA_session* session, int network, int debug) {
-        auto&& params = network == GA_NETWORK_REGTEST
-            ? ga::sdk::make_regtest_network()
-            : GA_NETWORK_LOCALTEST ? ga::sdk::make_localtest_network() : ga::sdk::make_localtest_network();
+        auto&& params = network == GA_NETWORK_REGTEST ? ga::sdk::make_regtest_network()
+                                                      : GA_NETWORK_LOCALTEST
+                ? ga::sdk::make_localtest_network()
+                : GA_NETWORK_TESTNET ? ga::sdk::make_testnet_network() : ga::sdk::make_testnet_network();
         session->connect(std::move(params), debug != 0);
     },
     int, network, int, debug)

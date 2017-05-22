@@ -11,8 +11,9 @@ extern "C" {
 #define GA_ERROR -1
 
 /** Network parameters to use */
-#define GA_NETWORK_REGTEST 0
-#define GA_NETWORK_LOCALTEST 5
+#define GA_NETWORK_LOCALTEST 0
+#define GA_NETWORK_REGTEST 1
+#define GA_NETWORK_TESTNET 2
 
 /** Boolean values */
 #define GA_TRUE 1
