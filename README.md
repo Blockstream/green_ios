@@ -14,9 +14,9 @@
 
 * tools/clean.sh
 
-### To run tests (against testnet):
+### To run tests:
 
-#### Using testnet as backend
+#### Using testnet as backend:
 
 * ninja test
 
