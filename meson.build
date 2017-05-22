@@ -60,15 +60,12 @@ run_target('openssl', command : 'tools/buildopenssl.sh')
 run_target('wally', command : 'tools/buildwally.sh')
 
 # includes
-autobahn_inc_dir = join_paths('autobahn-cpp')
-boost_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'boost_1_64_0', 'build', 'include')
-openssl_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'openssl-1.0.2k', 'build', 'include')
-msgpack_inc_dir = join_paths('msgpack-2.1.1', 'include')
+autobahn_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'autobahn-cpp')
+msgpack_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'msgpack-2.1.1', 'include')
 sdk_inc_dir = 'src'
-wally_inc_dir = join_paths('wallycore', 'include')
-websocketpp_inc_dir = join_paths('websocketpp-0.7.0')
+websocketpp_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'websocketpp-0.7.0')
 
-incdir = include_directories([autobahn_inc_dir, boost_inc_dir, msgpack_inc_dir, openssl_inc_dir, sdk_inc_dir, wally_inc_dir, websocketpp_inc_dir])
+incdir = include_directories([autobahn_inc_dir, msgpack_inc_dir, sdk_inc_dir, websocketpp_inc_dir])
 
 # builds
 subdirs = ['src']

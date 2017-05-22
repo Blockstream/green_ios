@@ -3,7 +3,7 @@ add_project_link_arguments(['-Wl,-rpath,' + wally_lib_dir], language : 'cpp')
 add_project_link_arguments(['-Wl,-rpath,' + boost_lib_dir], language : 'cpp')
 add_project_link_arguments(['-Wl,-rpath,' + openssl_lib_dir], language : 'cpp')
 
-if compiler.get_id() == 'clang'
+if compiler.get_id() == 'clang' and meson.is_cross_build()
     add_project_arguments(['-mxgot'], language : 'cpp')
 endif
 
