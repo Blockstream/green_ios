@@ -102,6 +102,8 @@ int GA_change_settings_privacy_show_as_sender(struct GA_session* session, int pa
  * @is_fiat One of @GA_TRUE or @GA_FALSE.
  * @per_tx Amount per transaction in satoshis.
  * @total Amount in total per transaction in satoshis.
+ *
+ * GA_ERROR if transaction limits could not be changed.
  */
 int GA_change_settings_tx_limits(struct GA_session* session, int is_fiat, int per_tx, int total);
 
