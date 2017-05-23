@@ -30,6 +30,7 @@ namespace sdk {
                 deposit_pub_key, "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3");
             DEFINE_NETWORK_STRING_PARAM(gait_onion, "gu5ke7a2aguwfqhz.onion");
             DEFINE_NETWORK_STRING_PARAM(default_peer, "");
+            static constexpr unsigned char btc_version = 111;
             static constexpr bool main_net = false;
         };
 
@@ -44,6 +45,7 @@ namespace sdk {
                 deposit_pub_key, "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3");
             DEFINE_NETWORK_STRING_PARAM(gait_onion, "");
             DEFINE_NETWORK_STRING_PARAM(default_peer, "192.168.56.1:19000");
+            static constexpr unsigned char btc_version = 111;
             static constexpr bool main_net = false;
         };
 
@@ -56,6 +58,7 @@ namespace sdk {
             DEFINE_NETWORK_STRING_PARAM(deposit_pub_key, "");
             DEFINE_NETWORK_STRING_PARAM(gait_onion, "");
             DEFINE_NETWORK_STRING_PARAM(default_peer, "");
+            static constexpr unsigned char btc_version = 111;
             static constexpr bool main_net = false;
         };
     }
@@ -75,6 +78,7 @@ namespace sdk {
             , _deposit_pub_key(p.deposit_pub_key)
             , _gait_onion(p.gait_onion)
             , _default_peer(p.default_peer)
+            , _btc_version(p.btc_version)
             , _main_net(p.main_net)
         {
         }
@@ -92,7 +96,8 @@ namespace sdk {
         const std::string& deposit_chain_code() const { return _deposit_chain_code; }
         const std::string& deposit_pub_key() const { return _deposit_pub_key; }
         const std::string& gait_onion() const { return _gait_onion; }
-        bool main_net() const { return _main_net; }
+        constexpr unsigned btc_version() { return _btc_version; }
+        constexpr bool main_net() const { return _main_net; }
 
     private:
         std::string _gait_wamp_url;
@@ -103,6 +108,7 @@ namespace sdk {
         std::string _deposit_pub_key;
         std::string _gait_onion;
         std::string _default_peer;
+        unsigned char _btc_version;
         bool _main_net;
     };
 
