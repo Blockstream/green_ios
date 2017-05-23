@@ -96,8 +96,8 @@ namespace sdk {
         const std::string& deposit_chain_code() const { return _deposit_chain_code; }
         const std::string& deposit_pub_key() const { return _deposit_pub_key; }
         const std::string& gait_onion() const { return _gait_onion; }
-        constexpr unsigned btc_version() { return _btc_version; }
-        constexpr bool main_net() const { return _main_net; }
+        unsigned char btc_version() const { return _btc_version; }
+        bool main_net() const { return _main_net; }
 
     private:
         std::string _gait_wamp_url;
