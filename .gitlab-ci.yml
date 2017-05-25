@@ -81,6 +81,13 @@ test_osx_clang:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
+test_osx_ios:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --iphone
+
 test_osx_clang_ndk_armeabi:
   tags:
     - osx
