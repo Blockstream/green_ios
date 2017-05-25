@@ -1,7 +1,7 @@
 add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
-add_project_link_arguments(['-Wl,-rpath,' + wally_lib_dir], language : 'cpp')
-add_project_link_arguments(['-Wl,-rpath,' + boost_lib_dir], language : 'cpp')
-add_project_link_arguments(['-Wl,-rpath,' + openssl_lib_dir], language : 'cpp')
+foreach libdir : subproject_libdirs
+    add_project_link_arguments(['-Wl,-rpath,' + libdir], language : 'cpp')
+endforeach
 
 if compiler.get_id() == 'clang' and meson.is_cross_build()
     add_project_arguments(['-mxgot'], language : 'cpp')
@@ -20,16 +20,18 @@ if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
+dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps
+
 # FIXME: needs both options (shared and static). meson won't allow a version kw arg for library.
 libga = shared_library('greenaddress', sources,
             version : '0.0.0',
             include_directories : incdir,
-            dependencies : [atomic_dep, boost_dep, m_dep, threads_dep, openssl_dep, wally_dep])
+            dependencies : dependencies)
 
 libga_dep = declare_dependency(
             include_directories : incdir,
             link_with : libga,
-            dependencies : [atomic_dep, boost_dep, m_dep, threads_dep, openssl_dep, wally_dep])
+            dependencies : dependencies)
 
 # tests
 subdirs = ['tests']

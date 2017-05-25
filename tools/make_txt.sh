@@ -1,51 +1,44 @@
 #!/usr/bin/env bash
 set -e
 
-echo "[binaries]"
-echo "c = '$1/toolchain/bin/clang'"
-echo "cpp = '$1/toolchain/bin/clang++'"
-echo "ar = '$1/toolchain/bin/$SDK_PLATFORM-ar'"
-echo "pkgconfig = 'pkg-config'"
-echo "strip = '$1/toolchain/bin/$SDK_PLATFORM-strip'"
-echo
-echo "[properties]"
-echo "root = '$1/toolchain/$SDK_PLATFORM'"
+function comma_separate() {
+    echo "`python -c "import sys; print('[' + ','.join(map(lambda x: '\'' + x + '\'', sys.argv[1:])) + ']')" $@`"
+}
 
-echo "has_function_printf = true"
-echo "has_function_hfkerhisadf = false"
-
-echo -n "c_args = ['--sysroot=$1/toolchain/sysroot'"
-for a in $SDK_CFLAGS; do
-    echo -n ", '$a'"
-done
-echo "]"
-echo -n "cpp_args = ['--sysroot=$1/toolchain/sysroot'"
-for a in $SDK_CFLAGS; do
-    echo -n ", '$a'"
-done
-echo "]"
-echo -n "c_link_args = ['--sysroot=$1/toolchain/sysroot'"
-for a in $SDK_LDFLAGS; do
-    echo -n ", '$a'"
-done
-echo "]"
-echo -n "cpp_link_args = ['--sysroot=$1/toolchain/sysroot'"
-for a in $SDK_LDFLAGS; do
-    echo -n ", '$a'"
-done
-echo "]"
-
-echo
-
-echo "[host_machine]"
-echo "system = 'linux'"
-if [ $SDK_ARCH = 'x86' ] ; then
-    echo "cpu_family = 'android-$SDK_ARCH'"
-    echo "cpu = 'android-$SDK_ARCH'"
+if [ \( "$3" = "android" \) ]; then
+    C_COMPILER="$1/toolchain/bin/clang"
+    CXX_COMPILER="$1/toolchain/bin/clang++"
+    STRIP="$1/toolchain/bin/$SDK_PLATFORM-strip"
+    CFLAGS=$(comma_separate "--sysroot=$1/toolchain/sysroot" $SDK_CFLAGS)
+    LDFLAGS=$(comma_separate $SDK_LDFLAGS)
+elif [ \( "$3" = "iphone" \) ]; then
+    C_COMPILER="clang"
+    CXX_COMPILER="clang++"
+    CFLAGS=$(comma_separate "-isysroot $IPHONE_SDK_PATH" "-stdlib=libc++" $SDK_CFLAGS)
+    LDFLAGS=$(comma_separate "-isysroot $IPHONE_SDK_PATH" "-stdlib=libc++" $SDK_LDFLAGS)
 else
-    echo "cpu_family = '$SDK_ARCH'"
-    echo "cpu = '$SDK_ARCH'"
+    echo "cross build type not supported" && exit 1
 fi
-#echo "cpu = '$SDK_CPU'"
-echo "endian = 'little'"
 
+cat > $2 << EOF
+
+[binaries]
+c = '$C_COMPILER'
+cpp = '$CXX_COMPILER'
+ar = '$AR'
+pkgconfig = 'pkg-config'
+strip = '$STRIP'
+
+[properties]
+target_os = '$4'
+c_args = $CFLAGS
+cpp_args = $CFLAGS
+c_link_args = $LDFLAGS
+cpp_link_args = $LDFLAGS
+
+[host_machine]
+system = 'linux'
+cpu_family = '$3-$SDK_ARCH'
+cpu = '$3-$SDK_ARCH'
+endian = 'little'
+EOF

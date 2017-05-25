@@ -10,7 +10,7 @@ check_headers = [
 ]
 
 foreach h : check_headers
-  compiler.has_header(h)
+    compiler.has_header(h)
 endforeach
 
 clang_format = find_program('clang-format', required : false)
@@ -19,45 +19,29 @@ threads_dep = dependency('threads')
 m_dep = compiler.find_library('m', required : false)
 atomic_dep = compiler.find_library('atomic', required : false)
 
-boost_lib_dir = join_paths(meson.current_build_dir(), 'boost_1_64_0', 'build', 'lib')
-boost_dep = dependency('boost', modules : ['system', 'thread'], required : false)
-if not boost_dep.found()
-    message('Building boost...')
-    if not meson.is_cross_build()
-        run_command('tools/buildboost.sh')
-    else
-        run_command('tools/buildboost.sh', '--ndk')
-    endif
-    boost_dep = dependency('boost', modules : ['system', 'thread'])
-endif
+subproject_libdirs = []
+subproject_deps = []
+subprojects = [['boost', 'boost_1_64_0', '>= 1.64.0', ['system', 'thread'], 'boost'],
+               ['wallycore', 'libwally-core', '>= 0.1', [], 'wally'],
+               ['openssl', 'openssl-1.0.2k', '>= 1.0.2', [], 'openssl']]
 
-wally_lib_dir = join_paths(meson.current_build_dir(), 'libwally-core', 'build', 'lib')
-wally_dep = dependency('wallycore', version : '>= 9.9.9', required : false)
-if not wally_dep.found()
-    message('Building wallycore...')
-    if not meson.is_cross_build()
-        run_command('tools/buildwally.sh')
-    else
-        run_command('tools/buildwally.sh', '--ndk')
+foreach sub : subprojects
+    subproject_libdirs += join_paths(meson.current_build_dir(), sub[1], 'build', 'lib')
+    dep = dependency(sub[0], modules : sub[3], version : '>= 9.9.9', required : false)
+    if not dep.found()
+        message('Building ' + sub[4] + '...')
+        if not meson.is_cross_build()
+            run_command(join_paths('tools', 'build' + sub[4] + '.sh'))
+        else
+            run_command(join_paths('tools', 'build' + sub[4] + '.sh'), '--' + meson.get_cross_property('target_os'))
+        endif
+        subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2])
     endif
-    wally_dep = dependency('wallycore')
-endif
+endforeach
 
-openssl_lib_dir = join_paths(meson.current_build_dir(), 'openssl-1.0.2k', 'build', 'lib')
-openssl_dep = dependency('openssl', version : '>= 9.9.9', required : false)
-if not openssl_dep.found()
-    message('Building openssl...')
-    if not meson.is_cross_build()
-        run_command('tools/buildopenssl.sh')
-    else
-        run_command('tools/buildopenssl.sh', '--ndk')
-    endif
-    openssl_dep = dependency('openssl', version : '>= 1.0.2')
+if meson.is_cross_build() and meson.get_cross_property('target_os') == 'iphone'
+    add_project_link_arguments(['-lboost_system', '-lboost_thread'], language : 'cpp')
 endif
-
-run_target('boost', command : 'tools/buildboost.sh')
-run_target('openssl', command : 'tools/buildopenssl.sh')
-run_target('wally', command : 'tools/buildwally.sh')
 
 # includes
 autobahn_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'autobahn-cpp')
