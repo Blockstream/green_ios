@@ -86,7 +86,7 @@ test_osx_ios:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --iphone
+    - ./tools/build.sh --iphone static
 
 test_osx_clang_ndk_armeabi:
   tags:
