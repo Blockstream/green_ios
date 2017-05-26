@@ -18,6 +18,7 @@ clang_format = find_program('clang-format', required : false)
 threads_dep = dependency('threads')
 m_dep = compiler.find_library('m', required : false)
 atomic_dep = compiler.find_library('atomic', required : false)
+dl_dep = compiler.find_library('dl', required : false)
 
 subproject_libdirs = []
 subproject_deps = []
@@ -39,9 +40,9 @@ foreach sub : subprojects
     endif
 endforeach
 
-if meson.is_cross_build() and meson.get_cross_property('target_os') == 'iphone'
-    add_project_link_arguments(['-lboost_system', '-lboost_thread'], language : 'cpp')
-endif
+subproject_deps += dependency('libsecp256k1')
+
+add_project_link_arguments(['-lboost_system', '-lboost_thread'], language : 'cpp')
 
 # includes
 autobahn_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'autobahn-cpp')
@@ -56,4 +57,3 @@ subdirs = ['src']
 foreach n : subdirs
     subdir(n)
 endforeach
-

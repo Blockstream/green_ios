@@ -11,7 +11,11 @@ if [ \( "$1" = "--ndk" \) ]; then
     echo "using clang : $SDK_ARCH : ${SDK_PLATFORM}-clang++ : --sysroot=$SYSROOT ;" > $boost_src_home/tools/build/src/user-config.jam
     ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=system,thread
     ./b2 --clean
-    ./b2 -j$NUM_JOBS --with-thread --with-system toolset=clang-${SDK_ARCH} target-os=android install
+    ./b2 -j$NUM_JOBS --with-thread --with-system toolset=clang-${SDK_ARCH} target-os=android link=static install
+    if [ "$(uname)" == "Darwin" ]; then
+       ${RANLIB} $boost_bld_home/lib/libboost_thread.a
+       ${RANLIB} $boost_bld_home/lib/libboost_system.a
+    fi
 elif [ \( "$1" = "--iphone" \) ]; then
     rm -fr "$boost_src_home/tools/build/src/user-config.jam"
     cat > "$boost_src_home/tools/build/src/user-config.jam" << EOF
@@ -35,5 +39,5 @@ EOF
 else
     ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=system,thread
     ./b2 --clean
-    ./b2 -j$NUM_JOBS --with-thread --with-system install
+    ./b2 -j$NUM_JOBS --with-thread --with-system cxxflags=-fPIC link=static install
 fi

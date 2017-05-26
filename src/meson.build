@@ -20,7 +20,7 @@ if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
-dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps
+dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
 
 # FIXME: needs both options (shared and static). meson won't allow a version kw arg for library.
 libga = shared_library('greenaddress', sources,
@@ -38,4 +38,3 @@ subdirs = ['tests']
 foreach n : subdirs
     subdir(n)
 endforeach
-

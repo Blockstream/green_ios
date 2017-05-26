@@ -9,7 +9,7 @@ if [ \( "$1" = "--ndk" \) ]; then
         sed -i 's/-mandroid//g' ${MESON_BUILD_ROOT}/openssl-1.0.2k/Configure
     fi
     . ${MESON_SOURCE_ROOT}/tools/env.sh
-    ./Configure android --prefix="$openssl_prefix" no-krb5 shared
+    ./Configure android --prefix="$openssl_prefix" no-krb5 no-shared
 elif [ \( "$1" = "--iphone" \) ]; then
     export CC=${XCODE_DEFAULT_PATH}/clang
     export CROSS_TOP="${XCODE_PATH}/Platforms/iPhoneOS.platform/Developer"
@@ -19,9 +19,10 @@ elif [ \( "$1" = "--iphone" \) ]; then
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch armv7 -miphoneos-version-min=9.0 !" "Makefile"
 else
     if [ "$(uname)" == "Darwin" ]; then
-        ./Configure darwin64-x86_64-cc --prefix="$openssl_prefix" shared
+        ./Configure darwin64-x86_64-cc --prefix="$openssl_prefix" no-shared
     else
-        ./config --prefix="$openssl_prefix" shared
+        ./config --prefix="$openssl_prefix" no-shared
+        sed -ie "s!^CFLAG=!CFLAG=-fPIC !" "Makefile"
     fi
 fi
 
