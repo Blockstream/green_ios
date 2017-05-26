@@ -1,4 +1,4 @@
-project('sdk', ['c', 'cpp'], meson_version : '>= 0.37.1', default_options : ['cpp_std=c++14'])
+project('sdk', ['c', 'cpp'], meson_version : '>= 0.40.1', default_options : ['cpp_std=c++14'])
 
 # dependencies
 compiler = meson.get_compiler('cpp')
