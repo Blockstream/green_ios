@@ -20,7 +20,7 @@ namespace sdk {
         auto random_device_ptr
             = std::unique_ptr<int, std::function<void(int*)>>(&random_device, [](int* device) { ::close(*device); });
 
-        GA_SDK_RUNTIME_ASSERT(read(random_device, data, siz) == siz);
+        GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, data, siz)) == siz);
     }
 }
 }
