@@ -4,9 +4,10 @@
 
 ### Deps:
 
-For Debian Jessie
+For Debian Stretch
 
-* sudo apt-get update && sudo apt-get install build-essential meson ninja-build clang wget autoconf pkg-config
+* sudo apt-get update && sudo apt-get install build-essential python3-pip ninja-build clang wget autoconf pkg-config libtool
+* sudo pip3 install meson
 
 For Mac OSX:
 
@@ -56,9 +57,7 @@ for example
 
 This doesn't require any of the previous steps but requires docker installed; it will build the project
 
-* cd sdk/tools
-* docker build -t greenaddress_sdk .
-* cd ..
+* docker build -t greenaddress_sdk - < tools/Dockerfile
 * docker run -v $PWD:/sdk greenaddress_sdk
 
 or if you don't want to build it locally
@@ -71,6 +70,4 @@ in both cases (built or fetched) this will build the sdk with clang by default
 if you want to change it for example to ndk armeabi-v7a:
 
 * docker run -v $PWD:/sdk greenaddress/ci bash -c "cd /sdk && ./tools/build.sh --ndk armeabi-v7a"
-
-
 

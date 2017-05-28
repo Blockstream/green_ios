@@ -7,3 +7,4 @@
 /build-clang/
 /build-clang-*/
 /deps_cache
+*.swp
