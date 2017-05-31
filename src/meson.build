@@ -22,16 +22,8 @@ endif
 
 dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
 
-# FIXME: needs both options (shared and static). meson won't allow a version kw arg for library.
-libga = shared_library('greenaddress', sources,
-            version : '0.0.0',
-            include_directories : incdir,
-            dependencies : dependencies)
-
-libga_dep = declare_dependency(
-            include_directories : incdir,
-            link_with : libga,
-            dependencies : dependencies)
+libga = library('greenaddress', sources, include_directories : incdir, dependencies : dependencies)
+libga_dep = declare_dependency(include_directories : incdir, link_with : libga, dependencies : dependencies)
 
 # tests
 subdirs = ['tests']

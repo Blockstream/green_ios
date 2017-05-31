@@ -10,6 +10,11 @@ if [ ! -x "$NINJA" ] ; then
     NINJA=$(which ninja)
 fi
 
+LIBTYPE="${@: -1}"
+if test "x${LIBTYPE}" != "xshared" && test "x${LIBTYPE}" != "xstatic" ; then
+    LIBTYPE=shared
+fi
+
 export CFLAGS="$CFLAGS -O3" # Must  add optimisation flags for secp
 export CPPFLAGS="$CFLAGS"
 export PKG_CONFIG_PATH_BASE=$PKG_CONFIG_PATH
@@ -25,7 +30,7 @@ function build() {
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     if [ ! -d "build-$1/meson-private" ]; then
-        meson build-$1
+        meson build-$1 --default-library=${LIBTYPE}
     fi
 
     cd build-$1
@@ -118,7 +123,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
             export AR="$bld_root/toolchain/bin/$SDK_PLATFORM-ar"
             export RANLIB="$bld_root/toolchain/bin/$SDK_PLATFORM-ranlib"
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $1 ndk
-            meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt
+            meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt --default-library=${LIBTYPE}
         fi
         cd $bld_root 
         $NINJA -j$NUM_JOBS -v
@@ -166,8 +171,8 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
         if [ ! -d "$bld_root/meson-private" ]; then
             export AR="ar"
             export RANLIB="ranlib"
-            ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $2 $2
-            meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt
+            ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ios.txt $2 $2
+            meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE}
         fi
         cd $bld_root
         $NINJA -j$NUM_JOBS -v

@@ -9,9 +9,9 @@ LTO=enable-lto
 if test "x$CC" == "clang"; then
     LTO=disable-lto
 fi
-cp "${MESON_SOURCE_ROOT}/tools/configure.ac" "${MESON_BUILD_ROOT}/wallycore"
-cp "${MESON_SOURCE_ROOT}/tools/secp256k1_configure.ac" "${MESON_BUILD_ROOT}/wallycore/src/secp256k1/configure.ac"
-cd "${MESON_BUILD_ROOT}/wallycore"
+cp "${MESON_SOURCE_ROOT}/tools/configure.ac" "${MESON_BUILD_ROOT}/libwally-core"
+cp "${MESON_SOURCE_ROOT}/tools/secp256k1_configure.ac" "${MESON_BUILD_ROOT}/libwally-core/src/secp256k1/configure.ac"
+cd "${MESON_BUILD_ROOT}/libwally-core"
 ./tools/cleanup.sh
 ./tools/autogen.sh
 if [ \( "$1" = "--ndk" \) ]; then

@@ -48,4 +48,4 @@ function move_if() {
 }
 move_if *autobahn* autobahn-cpp
 move_if openssl* openssl-1.0.2l
-move_if libwally-core-30a3124fca42adce82c837385eb6de0331d12af8 wallycore
+move_if libwally-core-30a3124fca42adce82c837385eb6de0331d12af8* libwally-core
