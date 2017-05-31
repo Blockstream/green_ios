@@ -1,5 +1,13 @@
 project('sdk', ['c', 'cpp'], meson_version : '>= 0.40.1', default_options : ['cpp_std=c++14'])
 
+if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_family().contains('mips')
+    add_project_arguments(['-flto'], language : 'cpp')
+    add_project_link_arguments(['-flto'], language : 'cpp')
+    if build_machine.system() == 'linux' or build_machine.cpu_family().contains('android')
+        add_project_link_arguments(['-fuse-ld=gold'], language : 'cpp')
+    endif
+endif
+
 # dependencies
 compiler = meson.get_compiler('cpp')
 
@@ -37,10 +45,20 @@ foreach sub : subprojects
             run_command(join_paths('tools', 'build' + sub[4] + '.sh'), '--' + meson.get_cross_property('target_os'))
         endif
         subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)
+        #if build_machine.system() != 'linux' or compiler.get_id() != 'clang' or sub[4] != 'wally'
+        #    subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2])
+        #else
+        #    message('libwally-core with clang -flto detected. adding dependency manually...')
+        #endif
     endif
 endforeach
 
 subproject_deps += dependency('libsecp256k1', static : true)
+
+#if build_machine.system() == 'linux' and compiler.get_id() == 'clang'
+#    add_project_link_arguments(join_paths(meson.current_build_dir(), 'libwally-core', 'build', 'lib', 'libwallycore.a'),
+#                               language : 'cpp')
+#endif
 
 add_project_link_arguments(['-lboost_system', '-lboost_thread'], language : 'cpp')
 

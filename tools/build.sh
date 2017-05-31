@@ -59,7 +59,7 @@ function set_cross_build_env() {
             ;;
         arm64-v8a)
             export SDK_ARCH=arm64
-            export SDK_CFLAGS="-flax-vector-conversions"
+            export SDK_CFLAGS="-march=armv8-a -flax-vector-conversions"
             ;;
         mips)
             export SDK_ARCH=mips
@@ -107,7 +107,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     function build() {
         bld_root="$PWD/build-clang-$1-$2"
 
-        export SDK_CFLAGS="$SDK_CFLAGS -O3" # Must  add optimisation flags for secp
+        export SDK_CFLAGS="$SDK_CFLAGS -O3 -fPIC" # Must  add optimisation flags for secp
         export SDK_CPPFLAGS="$SDK_CFLAGS"
 
         if [[ $SDK_ARCH == *"64"* ]]; then

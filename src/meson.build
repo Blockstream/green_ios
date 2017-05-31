@@ -3,7 +3,7 @@ foreach libdir : subproject_libdirs
     add_project_link_arguments(['-Wl,-rpath,' + libdir], language : 'cpp')
 endforeach
 
-if compiler.get_id() == 'clang' and meson.is_cross_build()
+if compiler.get_id() == 'clang' and host_machine.cpu_family().contains('mips')
     add_project_arguments(['-mxgot'], language : 'cpp')
 endif
 

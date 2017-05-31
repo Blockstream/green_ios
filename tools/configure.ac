@@ -21,21 +21,18 @@ AM_CONDITIONAL([IS_OSX], [test "x$is_osx" == "xyes"])
 AC_SUBST([LDPATH_VAR])
 
 AM_INIT_AUTOMAKE([foreign subdir-objects])
-LT_INIT([disable-static])
 
 AC_PROG_CC
 
 # Prefer gccs ar/ranlib as they handle flto files properly
 AC_CHECK_PROG(HAVE_GCC_AR,gcc-ar,yes,no)
 if test "x$HAVE_GCC_AR" == "xyes"; then
-    AR=gcc-ar
-    AC_SUBST([AR])
+    AC_CHECK_TOOL([AR], gcc-ar)
 fi
 
 AC_CHECK_PROG(HAVE_GCC_RANLIB,gcc-ranlib,yes,no)
 if test "x$HAVE_GCC_RANLIB" == "xyes"; then
-    RANLIB=gcc-ranlib
-    AC_SUBST([RANLIB])
+    AC_CHECK_TOOL([RANLIB], gcc-ranlib)
 fi
 
 GNU_SED=sed
@@ -48,6 +45,8 @@ else
     fi
 fi
 AC_SUBST([GNU_SED])
+
+LT_INIT([disable-static])
 
 #
 # C facilities
