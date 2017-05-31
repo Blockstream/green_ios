@@ -21,16 +21,15 @@ if [ \( "$1" = "--ndk" \) ]; then
     make -o configure clean -j$NUM_JOBS
     make -o configure -j$NUM_JOBS V=1
     make -o configure install
-elif [ \( "$1" = "--iphone" \) ]; then
-    export CFLAGS="$SDK_CFLAGS -isysroot ${IPHONE_SDK_PATH} -miphoneos-version-min=9.0 -O3"
-    export LDFLAGS="$SDK_LDFLAGS -isysroot ${IPHONE_SDK_PATH} -miphoneos-version-min=9.0"
-    export CPPFLAGS=${CFLAGS}
+elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
+    export CFLAGS="$SDK_CFLAGS -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0 -O3"
+    export LDFLAGS="$SDK_LDFLAGS -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0"
     export CC=${XCODE_DEFAULT_PATH}/clang
     export CXX=${XCODE_DEFAULT_PATH}/clang++
     export AR="libtool"
     export AR_FLAGS="-static -o"
-    ./configure --host=armv7-apple-darwin --with-sysroot=${IPHONE_SDK_PATH} --build=$HOST_OS --enable-silent-rules \
-                --disable-shared --$LTO --disable-dependency-tracking --target=armv7 --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+    ./configure --host=armv7-apple-darwin --with-sysroot=${IOS_SDK_PATH} --build=$HOST_OS --enable-silent-rules \
+                --disable-shared --$LTO --disable-dependency-tracking --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
     make -o configure clean -j$NUM_JOBS
     make -o configure -j$NUM_JOBS V=1
     make -o configure install

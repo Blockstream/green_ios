@@ -67,13 +67,13 @@ function set_cross_build_env() {
             export SDK_CFLAGS="-mxgot"
             export SDK_LDLAGS="-mxgot"
             ;;
-        ios-armv7s)
-            export SDK_ARCH=armv7s
-            export SDK_CFLAGS="-arch armv7s -miphoneos-version-min=9"
+        iphone)
+            export SDK_ARCH=arm
+            export SDK_CFLAGS="-miphoneos-version-min=9"
             ;;
-        ios-armv7)
-            export SDK_ARCH=armv7
-            export SDK_CFLAGS="-arch armv7 -miphoneos-version-min=9"
+        iphonesim)
+            export SDK_ARCH=x86
+            export SDK_CFLAGS="-miphoneos-version-min=9"
             ;;
         *)
             export SDK_ARCH=$2
@@ -136,26 +136,37 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     done
 fi
 
-if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) ]; then
+if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
 
     function build() {
         bld_root="$PWD/build-clang-$1-$2"
 
+        if test "x$2" == "xiphone"; then
+            export IOS_PLATFORM=iPhoneOS
+        else
+            export IOS_PLATFORM=iPhoneSimulator
+        fi
         export XCODE_PATH=$(xcode-select --print-path 2>/dev/null)
         export XCODE_DEFAULT_PATH="$XCODE_PATH/Toolchains/XcodeDefault.xctoolchain/usr/bin"
-        export XCODE_IPHONEOS_PATH="$XCODE_PATH/Platforms/iPhoneOS.platform/Developer/usr/bin"
-        export IPHONE_SDK_PATH="$XCODE_PATH/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
+        export XCODE_IOS_PATH="$XCODE_PATH/Platforms/$IOS_PLATFORM.platform/Developer/usr/bin"
+        export IOS_SDK_PATH="$XCODE_PATH/Platforms/$IOS_PLATFORM.platform/Developer/SDKs/$IOS_PLATFORM.sdk"
 
-        export PATH=$XCODE_DEFAULT_PATH:$XCODE_IPHONEOS_PATH:$PATH_BASE
+        export PATH=$XCODE_DEFAULT_PATH:$XCODE_IOS_PATH:$PATH_BASE
 
-        export SDK_CFLAGS="$SDK_CFLAGS -O3" # Must  add optimisation flags for secp
+        if test "x$2" == "xiphone"; then
+            ARCHS="-arch armv7 -arch armv7s -arch arm64"
+        else
+            ARCHS="-arch i386 -arch x86_64"
+        fi
+
+        export SDK_CFLAGS="$SDK_CFLAGS $ARCHS -O3" # Must add optimisation flags for secp
         export SDK_CPPFLAGS="$SDK_CFLAGS"
         export SDK_LDFLAGS="$SDK_CFLAGS"
 
         if [ ! -d "$bld_root/meson-private" ]; then
             export AR="ar"
             export RANLIB="ranlib"
-            ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $1 iphone
+            ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $2 $2
             meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt
         fi
         cd $bld_root
@@ -163,6 +174,11 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) ];
         cd ..
     }
 
-    set_cross_build_env iphone ios-armv7
-    build iphone ios-armv7
+    if test "x$1" == "x--iphone"; then
+        PLATFORM=iphone
+    else
+        PLATFORM=iphonesim
+    fi
+    set_cross_build_env ios $PLATFORM
+    build ios $PLATFORM
 fi
