@@ -1,11 +1,18 @@
 project('sdk', ['c', 'cpp'], meson_version : '>= 0.40.1', default_options : ['cpp_std=c++14'])
 
+# language related arguments
 if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_family().contains('mips')
     add_project_arguments(['-flto'], language : 'cpp')
     add_project_link_arguments(['-flto'], language : 'cpp')
     if build_machine.system() == 'linux' or build_machine.cpu_family().contains('android')
         add_project_link_arguments(['-fuse-ld=gold'], language : 'cpp')
     endif
+endif
+
+if find_program('swiftc', required : false).found()
+    add_languages('swift', required : false)
+    add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
+    add_project_link_arguments(['-L' + join_paths(meson.current_build_dir(), 'src')], language : 'swift')
 endif
 
 # dependencies

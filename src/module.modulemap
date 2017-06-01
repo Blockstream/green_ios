@@ -1,0 +1,7 @@
+module ga [extern_c] {
+    module sdk {
+        header "session.h"
+        link "greenaddress"
+        export *
+    }
+}

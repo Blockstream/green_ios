@@ -4,28 +4,35 @@ exe_names = ['wss_change_settings',
              'wss_get_tx_list',
              'wss_login',
              'wss_login_c',
+#             'wss_login_s',
              'wss_subscribe']
 
 sources = []
 foreach name : exe_names
     if name.endswith('_c')
         sources += [name + '.c']
+    elif name.endswith('_s')
+        sources += [name + '.swift']
     else
         sources += [name + '.cpp']
     endif
 endforeach
 
-common_sources = ['argparser.h', 'argparser.c']
+common_c_cpp_sources = ['argparser.h', 'argparser.c']
 
 if clang_format.found()
-    custom_target('tests/clang-format', input : sources + common_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
+    custom_target('tests/clang-format', input : sources + common_c_cpp_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
-foreach source : sources 
+foreach source : sources
     exe_name = source.split('.')[0]
-    exe = executable(exe_name, [source] + common_sources,
-                         include_directories : incdir,
-                         dependencies : [libga_dep])
+    exe_sources = [source]
+    if not source.endswith('.swift')
+        exe_sources += common_c_cpp_sources
+    endif
+    exe = executable(exe_name, exe_sources,
+                     include_directories : incdir,
+                     dependencies : [libga_dep])
     test(exe_name, exe)
 endforeach
 
