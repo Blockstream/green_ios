@@ -51,7 +51,7 @@ for example
 
 #### Using local backend:
 
-* mesontest --test-args '\-l'
+* mesontest --test-args '\\-l'
 
 ### Docker based deps & build
 
