@@ -4,8 +4,11 @@ exe_names = ['wss_change_settings',
              'wss_get_tx_list',
              'wss_login',
              'wss_login_c',
-#             'wss_login_s',
              'wss_subscribe']
+
+#if swiftc and swift
+#    exe_names += 'wss_login_s'
+#endif
 
 sources = []
 foreach name : exe_names

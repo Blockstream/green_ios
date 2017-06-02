@@ -63,21 +63,19 @@ int GA_disconnect(struct GA_session* session);
  * Create a new user account.
  * @session The server session to use.
  * @mnemonic The user mnemonic.
- * @user_agent Optional string to identify this client.
  *
  * GA_ERROR if registration is unsuccessful.
  */
-int GA_register_user(struct GA_session* session, const char* mnemonic, const char* user_agent);
+int GA_register_user(struct GA_session* session, const char* mnemonic);
 
 /**
  * Authenticate an user.
  * @session The server session to use.
  * @mnemonic The user mnemonic.
- * @user_agent Optional string to identify this client.
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-int GA_login(struct GA_session* session, const char* mnemonic, const char* user_agent);
+int GA_login(struct GA_session* session, const char* mnemonic);
 
 /**
  * Change privacy (send me) settings.

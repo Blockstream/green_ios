@@ -482,24 +482,20 @@ void GA_destroy_session(struct GA_session* session)
 GA_SDK_DEFINE_C_FUNCTION_2(GA_connect,
     [](struct GA_session* session, int network, int debug) {
         auto&& params = network == GA_NETWORK_REGTEST ? ga::sdk::make_regtest_network()
-                                                      : GA_NETWORK_LOCALTEST
+                                                      : network == GA_NETWORK_LOCALTEST
                 ? ga::sdk::make_localtest_network()
-                : GA_NETWORK_TESTNET ? ga::sdk::make_testnet_network() : ga::sdk::make_testnet_network();
+                : network == GA_NETWORK_TESTNET ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network();
         session->connect(std::move(params), debug != 0);
     },
     int, network, int, debug)
 
 GA_SDK_DEFINE_C_FUNCTION_0(GA_disconnect, [](struct GA_session* session) { session->disconnect(); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_register_user,
-    [](struct GA_session* session, const char* mnemonic, const char* user_agent) {
-        session->register_user(mnemonic, user_agent);
-    },
-    const char*, mnemonic, const char*, user_agent)
+GA_SDK_DEFINE_C_FUNCTION_1(GA_register_user,
+    [](struct GA_session* session, const char* mnemonic) { session->register_user(mnemonic); }, const char*, mnemonic)
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_login, [](struct GA_session* session, const char* mnemonic,
-                                         const char* user_agent) { session->login(mnemonic, user_agent); },
-    const char*, mnemonic, const char*, user_agent);
+GA_SDK_DEFINE_C_FUNCTION_1(GA_login, [](struct GA_session* session, const char* mnemonic) { session->login(mnemonic); },
+    const char*, mnemonic);
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me,
     [](struct GA_session* session, int param) {

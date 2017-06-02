@@ -9,10 +9,13 @@ if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_fami
     endif
 endif
 
-if find_program('swiftc', required : false).found()
-    add_languages('swift', required : false)
-    add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
-    add_project_link_arguments(['-L' + join_paths(meson.current_build_dir(), 'src')], language : 'swift')
+swiftc = find_program('swiftc', required : false).found()
+if swiftc
+    swift = add_languages('swift', required : false)
+    if swift
+        add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
+        add_project_link_arguments(['-L' + join_paths(meson.current_build_dir(), 'src')], language : 'swift')
+    endif
 endif
 
 # dependencies
