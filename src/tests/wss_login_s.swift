@@ -4,7 +4,6 @@ import ga.sdk
 
 let DEFAULT_MNEMONIC
     = "believe roast zen poorer tax chicken snap calm override french banner salmon bird sad smart "
-let DEFAULT_USER_AGENT = "[sw]"
 
 var session : OpaquePointer?
 var ret : Int32
