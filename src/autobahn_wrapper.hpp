@@ -2,8 +2,10 @@
 #define GA_SDK_AUTOBAHN_WRAPPER_HPP
 #pragma once
 
+#ifdef __ANDROID__
 #include <sys/epoll.h>
 #undef EPOLL_CLOEXEC
+#endif
 
 #include <autobahn/autobahn.hpp>
 #include <autobahn/wamp_websocketpp_websocket_transport.hpp>

@@ -11,11 +11,13 @@ if [ \( "$3" = "android" \) ]; then
     STRIP="$1/toolchain/bin/$SDK_PLATFORM-strip"
     CFLAGS=$(comma_separate "--sysroot=$1/toolchain/sysroot" $SDK_CFLAGS)
     LDFLAGS=$(comma_separate $SDK_LDFLAGS)
+    ARCHS="''"
 elif [ \( "$3" = "iphone" \) -o \( "$3" = "iphonesim" \) ]; then
     C_COMPILER="clang"
     CXX_COMPILER="clang++"
-    CFLAGS=$(comma_separate "-isysroot $IOS_SDK_PATH" "-stdlib=libc++" $SDK_CFLAGS)
+    CFLAGS=$(comma_separate "-isysroot $IOS_SDK_PATH" "-stdlib=libc++" $SDK_CFLAGS_NO_ARCH)
     LDFLAGS=$(comma_separate "-isysroot $IOS_SDK_PATH" "-stdlib=libc++" $SDK_LDFLAGS)
+    ARCHS=$(comma_separate $ARCHS)
 else
     echo "cross build type not supported" && exit 1
 fi
@@ -31,6 +33,7 @@ strip = '$STRIP'
 
 [properties]
 target_os = '$4'
+archs = $ARCHS
 c_args = $CFLAGS
 cpp_args = $CFLAGS
 c_link_args = $LDFLAGS

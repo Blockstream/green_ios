@@ -159,11 +159,12 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
         export PATH=$XCODE_DEFAULT_PATH:$XCODE_IOS_PATH:$PATH_BASE
 
         if test "x$2" == "xiphone"; then
-            ARCHS="-arch armv7 -arch armv7s -arch arm64"
+            export ARCHS="-arch armv7 -arch armv7s -arch arm64"
         else
-            ARCHS="-arch i386 -arch x86_64"
+            export ARCHS="-arch i386 -arch x86_64"
         fi
 
+        export SDK_CFLAGS_NO_ARCH="$SDK_CFLAGS"
         export SDK_CFLAGS="$SDK_CFLAGS $ARCHS"
         export SDK_CPPFLAGS="$SDK_CFLAGS"
         export SDK_LDFLAGS="$SDK_CFLAGS"
