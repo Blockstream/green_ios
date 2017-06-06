@@ -5,7 +5,6 @@ boost_bld_home="${MESON_BUILD_ROOT}/boost_1_64_0/build"
 cd $boost_src_home
 if [ \( "$1" = "--ndk" \) ]; then
     cp "${MESON_SOURCE_ROOT}/tools/darwin.jam" "$boost_src_home/tools/build/src/tools"
-    export TARGET_OS=android
     . ${MESON_SOURCE_ROOT}/tools/env.sh
     rm -fr "$boost_src_home/tools/build/src/user-config.jam"
     cat > $boost_src_home/tools/build/src/user-config.jam << EOF

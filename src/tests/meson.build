@@ -27,6 +27,12 @@ if clang_format.found()
     custom_target('tests/clang-format', input : sources + common_c_cpp_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
+dependencies = [libga_dep]
+
+if host_machine.cpu_family().contains('iphone')
+    dependencies += [archiver_dep]
+endif
+
 foreach source : sources
     exe_name = source.split('.')[0]
     exe_sources = [source]
@@ -35,7 +41,6 @@ foreach source : sources
     endif
     exe = executable(exe_name, exe_sources,
                      include_directories : incdir,
-                     dependencies : [libga_dep])
+                     dependencies : dependencies)
     test(exe_name, exe)
 endforeach
-

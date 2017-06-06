@@ -15,7 +15,7 @@ if test "x${LIBTYPE}" != "xshared" && test "x${LIBTYPE}" != "xstatic" ; then
     LIBTYPE=shared
 fi
 
-export CFLAGS="$CFLAGS -O3" # Must  add optimisation flags for secp
+export CFLAGS="$CFLAGS"
 export CPPFLAGS="$CFLAGS"
 export PKG_CONFIG_PATH_BASE=$PKG_CONFIG_PATH
 export PATH_BASE=$PATH
@@ -30,7 +30,7 @@ function build() {
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     if [ ! -d "build-$1/meson-private" ]; then
-        meson build-$1 --default-library=${LIBTYPE}
+        meson build-$1 --default-library=${LIBTYPE} --buildtype=release
     fi
 
     cd build-$1
@@ -107,7 +107,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     function build() {
         bld_root="$PWD/build-clang-$1-$2"
 
-        export SDK_CFLAGS="$SDK_CFLAGS -O3 -fPIC" # Must  add optimisation flags for secp
+        export SDK_CFLAGS="$SDK_CFLAGS -fPIC"
         export SDK_CPPFLAGS="$SDK_CFLAGS"
 
         if [[ $SDK_ARCH == *"64"* ]]; then
@@ -123,7 +123,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
             export AR="$bld_root/toolchain/bin/$SDK_PLATFORM-ar"
             export RANLIB="$bld_root/toolchain/bin/$SDK_PLATFORM-ranlib"
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $1 ndk
-            meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt --default-library=${LIBTYPE}
+            meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt --default-library=${LIBTYPE} --buildtype=release
         fi
         cd $bld_root 
         $NINJA -j$NUM_JOBS -v
@@ -164,7 +164,7 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
             ARCHS="-arch i386 -arch x86_64"
         fi
 
-        export SDK_CFLAGS="$SDK_CFLAGS $ARCHS -O3" # Must add optimisation flags for secp
+        export SDK_CFLAGS="$SDK_CFLAGS $ARCHS"
         export SDK_CPPFLAGS="$SDK_CFLAGS"
         export SDK_LDFLAGS="$SDK_CFLAGS"
 
@@ -172,7 +172,7 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
             export AR="ar"
             export RANLIB="ranlib"
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ios.txt $2 $2
-            meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE}
+            meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE} --buildtype=release
         fi
         cd $bld_root
         $NINJA -j$NUM_JOBS -v

@@ -25,6 +25,22 @@ dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
 libga = library('greenaddress', sources, include_directories : incdir, dependencies : dependencies)
 libga_dep = declare_dependency(include_directories : incdir, link_with : libga, dependencies : dependencies)
 
+if host_machine.cpu_family().contains('iphone')
+    output = 'single_arch_libgreenaddress_armv7.a'
+    if host_machine.cpu_family().contains('sim')
+        output = 'single_arch_libgreenaddress_x86_64.a'
+    endif
+    archiver = custom_target('archiver',
+                             output : output,
+                             command : [join_paths(meson.source_root(), 'tools', 'archiver.sh'), '--' + meson.get_cross_property('target_os'),
+                                        meson.build_root()],
+                             build_always : true,
+                             build_by_default : true,
+                             depends : libga)
+
+    archiver_dep = declare_dependency(dependencies : libga_dep)
+endif
+
 # tests
 subdirs = ['tests']
 foreach n : subdirs

@@ -40,19 +40,19 @@ dl_dep = compiler.find_library('dl', required : false)
 
 subproject_libdirs = []
 subproject_deps = []
-subprojects = [['boost', 'boost_1_64_0', '>= 1.64.0', ['system', 'thread'], 'boost'],
-               ['wallycore', 'libwally-core', '>= 0.1', [], 'wally'],
-               ['openssl', 'openssl-1.0.2l', '>= 1.0.2', [], 'openssl']]
+subprojects = [['boost', 'boost_1_64_0', '>= 1.64.0', ['system', 'thread']],
+               ['wallycore', 'libwally-core', '>= 0.1', []],
+               ['openssl', 'openssl-1.0.2l', '>= 1.0.2', []]]
 
 foreach sub : subprojects
     subproject_libdirs += join_paths(meson.current_build_dir(), sub[1], 'build', 'lib')
     dep = dependency(sub[0], modules : sub[3], version : '>= 9.9.9', required : false, static : true)
     if not dep.found()
-        message('Building ' + sub[4] + '...')
+        message('Building ' + sub[0] + '...')
         if not meson.is_cross_build()
-            run_command(join_paths('tools', 'build' + sub[4] + '.sh'))
+            run_command(join_paths('tools', 'build' + sub[0] + '.sh'))
         else
-            run_command(join_paths('tools', 'build' + sub[4] + '.sh'), '--' + meson.get_cross_property('target_os'))
+            run_command(join_paths('tools', 'build' + sub[0] + '.sh'), '--' + meson.get_cross_property('target_os'))
         endif
         subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)
     endif
