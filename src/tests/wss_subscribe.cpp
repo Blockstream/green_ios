@@ -5,10 +5,7 @@
 
 using namespace std::chrono_literals;
 
-#include <autobahn/autobahn.hpp>
-
 #include "argparser.h"
-
 #include "session.hpp"
 
 const std::string DEFAULT_TOPIC("com.greenaddress.blocks");

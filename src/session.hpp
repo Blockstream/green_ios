@@ -5,6 +5,7 @@
 #include <ctime>
 #include <memory>
 
+#include "autobahn_wrapper.hpp"
 #include <autobahn/wamp_event_handler.hpp>
 
 #include "network_parameters.hpp"

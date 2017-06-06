@@ -10,12 +10,6 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 
-#include <autobahn/autobahn.hpp>
-#include <autobahn/wamp_websocketpp_websocket_transport.hpp>
-
-#include <websocketpp/client.hpp>
-#include <websocketpp/config/asio_client.hpp>
-
 #include <wally_bip32.h>
 #include <wally_bip39.h>
 #include <wally_core.h>

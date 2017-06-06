@@ -23,6 +23,7 @@ compiler = meson.get_compiler('cpp')
 
 check_headers = [
     'fcntl.h',
+    'sys/epoll.h',
     'sys/stat.h',
     'unistd.h'
 ]
