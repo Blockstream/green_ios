@@ -1,5 +1,5 @@
-#ifndef GA_SDK_AUTOBAHN_WRAPPER_HPP
-#define GA_SDK_AUTOBAHN_WRAPPER_HPP
+#ifndef GA_SDK_WALLY_WRAPPER_HPP
+#define GA_SDK_WALLY_WRAPPER_HPP
 #pragma once
 
 #include <wally_bip32.h>
