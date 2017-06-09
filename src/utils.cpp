@@ -87,7 +87,7 @@ namespace sdk {
 
         std::copy(sha512.begin(), sha512.begin() + siz, static_cast<unsigned char*>(bytes));
 
-        GA_SDK_RUNTIME_ASSERT(wally_bzero(sha512.data(), sha512.size() == WALLY_OK));
+        GA_SDK_RUNTIME_ASSERT(wally_bzero(sha512.data(), sha512.size()) == WALLY_OK);
     }
 }
 }
