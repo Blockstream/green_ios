@@ -1,6 +1,8 @@
 #include <stdlib.h>
 
 #include "argparser.h"
+
+#include "common.h"
 #include "session.h"
 
 const char* DEFAULT_MNEMONIC

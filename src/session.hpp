@@ -9,6 +9,7 @@
 #include <autobahn/wamp_event_handler.hpp>
 
 #include "network_parameters.hpp"
+#include "session_call_result.hpp"
 #include "utils.hpp"
 
 namespace ga {
@@ -85,7 +86,7 @@ namespace sdk {
         void disconnect();
 
         void register_user(const std::string& mnemonic, const std::string& user_agent = std::string());
-        void login(const std::string& mnemonic, const std::string& user_agent = std::string());
+        session_call_result login(const std::string& mnemonic, const std::string& user_agent = std::string());
 
         template <typename... Args> void change_settings(settings key, Args&&... args)
         {

@@ -1,6 +1,8 @@
 module ga [extern_c] {
     module sdk {
+        header "common.h"
         header "session.h"
+        header "utils.h"
         header "wally_wrapper.h"
         link "greenaddress"
         export *

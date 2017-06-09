@@ -8,9 +8,12 @@ sources = ['assertion.hpp',
            'network_parameters.hpp',
            'session.hpp',
            'session.cpp',
+           'session_call_result.hpp',
            'utils.hpp',
            'utils.cpp',
-           'session.h']
+           'common.h',
+           'session.h',
+           'utils.h']
 
 if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])

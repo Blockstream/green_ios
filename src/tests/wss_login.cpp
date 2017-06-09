@@ -2,6 +2,7 @@
 
 #include "argparser.h"
 
+#include "assertion.hpp"
 #include "session.hpp"
 
 const std::string DEFAULT_MNEMONIC(
@@ -16,7 +17,8 @@ int main(int argc, char** argv)
         ga::sdk::session session;
         session.connect(options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
         session.register_user(DEFAULT_MNEMONIC);
-        session.login(DEFAULT_MNEMONIC);
+        auto result = session.login(DEFAULT_MNEMONIC);
+        GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

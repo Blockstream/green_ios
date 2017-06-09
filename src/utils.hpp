@@ -62,7 +62,7 @@ namespace sdk {
             detail::make_even_index_sequence_t<2>{});
     }
 
-    void get_random_bytes(void* data, std::size_t siz);
+    void get_random_bytes(void* bytes, std::size_t siz);
 
     template <std::size_t N> std::array<unsigned char, N> get_random_bytes()
     {

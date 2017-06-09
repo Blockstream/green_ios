@@ -6,18 +6,10 @@
 extern "C" {
 #endif
 
-/** Error codes for API calls */
-#define GA_OK 0
-#define GA_ERROR -1
-
 /** Network parameters to use */
 #define GA_NETWORK_LOCALTEST 0
 #define GA_NETWORK_REGTEST 1
 #define GA_NETWORK_TESTNET 2
-
-/** Boolean values */
-#define GA_TRUE 1
-#define GA_FALSE 0
 
 /** Values for privacy settings */
 #define GA_PRIVATE 0

@@ -16,6 +16,7 @@
 #include <wally_crypto.h>
 
 #include "assertion.hpp"
+#include "common.h"
 #include "session.h"
 #include "session.hpp"
 
@@ -87,7 +88,7 @@ namespace sdk {
 
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
-        void login(const std::string& mnemonic, const std::string& user_agent);
+        session_call_result login(const std::string& mnemonic, const std::string& user_agent);
         void change_settings_helper(settings key, const std::map<int, int>& args);
         void get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
             const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount);
@@ -156,8 +157,6 @@ namespace sdk {
         std::shared_ptr<autobahn::wamp_session> m_session;
 
         event_loop_controller m_controller;
-
-        std::unordered_map<std::string, msgpack::object> m_login_data;
 
         network_parameters m_params;
 
@@ -242,7 +241,7 @@ namespace sdk {
         register_future.get();
     }
 
-    void session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
+    session_call_result session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
@@ -268,21 +267,24 @@ namespace sdk {
         auto get_challenge_future = m_session->call("com.greenaddress.login.get_challenge", challenge_arguments)
                                         .then([&challenge](boost::future<autobahn::wamp_call_result> result) {
                                             challenge = result.get().argument<std::string>(0);
-                                            std::cerr << challenge << std::endl;
                                         });
 
         get_challenge_future.get();
 
         auto hexder_path = sign_challenge(std::move(master_key), challenge);
 
+        session_call_result login_data;
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
-        auto authenticate_future = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
-                                       .then([this](boost::future<autobahn::wamp_call_result> result) {
-                                           m_login_data = result.get().argument<decltype(m_login_data)>(0);
-                                       });
+        auto authenticate_future
+            = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
+                  .then([this, &login_data](boost::future<autobahn::wamp_call_result> result) {
+                      login_data.associate(result.get().argument<session_call_result::container>(0));
+                  });
 
         authenticate_future.get();
+
+        return login_data;
     }
 
     void session::session_impl::change_settings_helper(settings key, const std::map<int, int>& args)
@@ -393,27 +395,32 @@ namespace sdk {
 
     void session::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         m_impl->register_user(mnemonic, user_agent);
     }
 
-    void session::login(const std::string& mnemonic, const std::string& user_agent)
+    session_call_result session::login(const std::string& mnemonic, const std::string& user_agent)
     {
-        m_impl->login(mnemonic, user_agent);
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->login(mnemonic, user_agent);
     }
 
     void session::change_settings_helper(settings key, const std::map<int, int>& args)
     {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         m_impl->change_settings_helper(key, args);
     }
 
     void session::get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
         const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount)
     {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         m_impl->get_tx_list(page_id, query, sort_by, date_range, subaccount);
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         m_impl->subscribe(topic, handler);
     }
 }
