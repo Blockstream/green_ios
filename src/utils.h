@@ -2,6 +2,8 @@
 #define GA_SDK_UTILS_H
 #pragma once
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
