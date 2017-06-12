@@ -278,7 +278,7 @@ namespace sdk {
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
         auto authenticate_future
             = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
-                  .then([this, &login_data](boost::future<autobahn::wamp_call_result> result) {
+                  .then([&login_data](boost::future<autobahn::wamp_call_result> result) {
                       login_data.associate(result.get().argument<session_call_result::container>(0));
                   });
 
