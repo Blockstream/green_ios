@@ -64,12 +64,14 @@ namespace sdk {
         std::array<unsigned char, 64 + 32 + 8> buf;
         GA_SDK_RUNTIME_ASSERT(RAND_bytes(buf.data(), 32) == 1);
 
-        int random_device = open("/dev/urandom", O_RDONLY);
-        GA_SDK_RUNTIME_ASSERT(random_device != -1);
-        auto random_device_ptr
-            = std::unique_ptr<int, std::function<void(int*)>>(&random_device, [](int* device) { ::close(*device); });
+        {
+            int random_device = open("/dev/urandom", O_RDONLY);
+            GA_SDK_RUNTIME_ASSERT(random_device != -1);
+            const auto random_device_ptr = std::unique_ptr<int, std::function<void(int*)>>(
+                &random_device, [](int* device) { ::close(*device); });
 
-        GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, buf.data(), 32)) == 32);
+            GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, buf.data(), 32)) == 32);
+        }
 
         std::array<unsigned char, SHA512_LEN> sha512;
         {
