@@ -35,6 +35,7 @@ ${XCODE_DEFAULT_PATH}/clang++
 :
 <root>${IOS_SDK_PATH}
 <compileflags>-std=c++14
+<compileflags>-fembed-bitcode
 <compileflags>"${SDK_CFLAGS}"
 <compileflags>"-miphoneos-version-min=9.0"
 <compileflags>"-isysroot ${IOS_SDK_PATH}"

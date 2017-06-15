@@ -35,7 +35,7 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
             NOASM=no-asm
 	fi
         KERNEL_BITS=$ARCH_BITS ./Configure iphoneos-cross no-krb5 no-shared no-dso no-hw no-engine $NOASM --prefix=$openssl_prefix
-        sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch ${CURRENT_ARCH} -miphoneos-version-min=9.0 !" "Makefile"
+        sed -ie "s!^CFLAG=!CFLAG=-fembed-bitcode -isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch ${CURRENT_ARCH} -miphoneos-version-min=9.0 !" "Makefile"
         make clean
         make depend
         make 2> /dev/null

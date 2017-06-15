@@ -30,6 +30,10 @@ endif
 if meson.is_cross_build()
     add_project_arguments(meson.get_cross_property('archs'), language : 'c')
     add_project_arguments(meson.get_cross_property('archs'), language : 'cpp')
+    if host_machine.cpu_family().contains('iphone')
+        add_project_arguments(['-fembed-bitcode'], language : 'c')
+        add_project_arguments(['-fembed-bitcode'], language : 'cpp')
+    endif
 endif
 
 swiftc = find_program('swiftc', required : false).found()
