@@ -2,6 +2,7 @@ exe_names = ['wss_change_settings',
              'wss_change_settings_c',
              'wss_connect',
              'wss_get_tx_list',
+             'wss_get_tx_list_c',
              'wss_login',
              'wss_login_c',
              'wss_subscribe']
@@ -24,7 +25,7 @@ endforeach
 common_c_cpp_sources = ['argparser.h', 'argparser.c']
 
 if clang_format.found()
-    custom_target('tests/clang-format', input : sources + common_c_cpp_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
+    custom_target('tests-clang-format', input : sources + common_c_cpp_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
 dependencies = [libga_dep]

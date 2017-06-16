@@ -5,8 +5,10 @@ compiler = meson.get_compiler('cpp')
 
 check_headers = [
     'fcntl.h',
+    'string.h',
     'sys/epoll.h',
     'sys/stat.h',
+    'time.h',
     'unistd.h'
 ]
 

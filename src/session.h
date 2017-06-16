@@ -2,6 +2,10 @@
 #define GA_SDK_SESSION_H
 #pragma once
 
+#include <time.h>
+
+#include "containers.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,6 +20,14 @@ extern "C" {
 #define GA_ADDRBOOK 1
 #define GA_MUTUAL_ADDRBOOK 1
 #define GA_PUBLIC 2
+
+/** Values for transactions list */
+#define GA_TIMESTAMP 0
+#define GA_TIMESTAMP_ASCENDING 1
+#define GA_TIMESTAMP_DESCENDING 2
+#define GA_VALUE 3
+#define GA_VALUE_ASCENDING 4
+#define GA_VALUE_DESCENDING 5
 
 /** An server session */
 struct GA_session;
@@ -89,6 +101,7 @@ int GA_change_settings_privacy_show_as_sender(struct GA_session* session, int pa
 
 /**
  * Change transaction limits settings.
+ * @session The server session to use.
  * @is_fiat One of @GA_TRUE or @GA_FALSE.
  * @per_tx Amount per transaction in satoshis.
  * @total Amount in total per transaction in satoshis.
@@ -96,6 +109,22 @@ int GA_change_settings_privacy_show_as_sender(struct GA_session* session, int pa
  * GA_ERROR if transaction limits could not be changed.
  */
 int GA_change_settings_tx_limits(struct GA_session* session, int is_fiat, int per_tx, int total);
+
+/**
+ * Get list of user's transactions for a subaccount on the specified date range.
+ * @session The server session to use.
+ * @begin_date The begin date of the date range to search.
+ * @end_date The end date of the date range to search.
+ * @subaccount The subaccount to which transactions belong to.
+ * @sort_by Return results ordered by timestamp or by value.
+ * @page_id The page to fetch.
+ * @query Extra query parameters.
+ * @txs The list of transactions.
+ *
+ * GA_ERROR if transactions could not be fetched.
+ */
+int GA_get_tx_list(struct GA_session* session, time_t begin_date, time_t end_date, size_t subaccount, int sort_by,
+    size_t page_id, const char* query, struct GA_tx_list** txs);
 
 #ifdef __cplusplus
 }

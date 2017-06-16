@@ -5,13 +5,14 @@ endforeach
 
 sources = ['assertion.hpp',
            'assertion.cpp',
+           'containers.hpp',
            'network_parameters.hpp',
            'session.hpp',
            'session.cpp',
-           'session_call_result.hpp',
            'utils.hpp',
            'utils.cpp',
            'common.h',
+           'containers.h',
            'session.h',
            'utils.h']
 

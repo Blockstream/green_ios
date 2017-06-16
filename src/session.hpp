@@ -8,8 +8,8 @@
 #include "autobahn_wrapper.hpp"
 #include <autobahn/wamp_event_handler.hpp>
 
+#include "containers.hpp"
 #include "network_parameters.hpp"
-#include "session_call_result.hpp"
 #include "utils.hpp"
 
 namespace ga {
@@ -86,15 +86,15 @@ namespace sdk {
         void disconnect();
 
         void register_user(const std::string& mnemonic, const std::string& user_agent = std::string());
-        session_call_result login(const std::string& mnemonic, const std::string& user_agent = std::string());
+        login_data login(const std::string& mnemonic, const std::string& user_agent = std::string());
 
         template <typename... Args> void change_settings(settings key, Args&&... args)
         {
             change_settings_helper(key, ga::sdk::make_map_from_args(std::forward<Args>(args)...));
         }
 
-        void get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
-            const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount);
+        tx_list get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount = 0,
+            tx_list_sort_by sort_by = ' '_ts, size_t page_id = 0, const std::string& query = std::string());
 
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 

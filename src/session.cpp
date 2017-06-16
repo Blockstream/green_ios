@@ -88,10 +88,11 @@ namespace sdk {
 
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
-        session_call_result login(const std::string& mnemonic, const std::string& user_agent);
+        login_data login(const std::string& mnemonic, const std::string& user_agent);
         void change_settings_helper(settings key, const std::map<int, int>& args);
-        void get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
-            const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount);
+
+        tx_list get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
+            tx_list_sort_by sort_by, size_t page_id, const std::string& query);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
     private:
@@ -241,7 +242,7 @@ namespace sdk {
         register_future.get();
     }
 
-    session_call_result session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
+    login_data session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
@@ -273,14 +274,13 @@ namespace sdk {
 
         auto hexder_path = sign_challenge(std::move(master_key), challenge);
 
-        session_call_result login_data;
+        login_data login_data;
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
-        auto authenticate_future
-            = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
-                  .then([&login_data](boost::future<autobahn::wamp_call_result> result) {
-                      login_data.associate(result.get().argument<session_call_result::container>(0));
-                  });
+        auto authenticate_future = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
+                                       .then([&login_data](boost::future<autobahn::wamp_call_result> result) {
+                                           login_data.associate(result.get().argument<login_data::container>(0));
+                                       });
 
         authenticate_future.get();
 
@@ -332,8 +332,8 @@ namespace sdk {
         }
     }
 
-    void session::session_impl::get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
-        const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount)
+    tx_list session::session_impl::get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
+        tx_list_sort_by sort_by, size_t page_id, const std::string& query)
     {
         auto&& sort_by_str = [sort_by] {
             switch (sort_by) {
@@ -367,11 +367,16 @@ namespace sdk {
             return std::make_pair(std::string(begin_date_str.data()), std::string(end_date_str.data()));
         };
 
-        auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
+        tx_list txs;
+        const auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
         auto get_tx_list_future = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
-                                      .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
+                                      .then([&txs](boost::future<autobahn::wamp_call_result> result) {
+                                          txs.associate(result.get().argument<login_data::container>(0));
+                                      });
 
         get_tx_list_future.get();
+
+        return txs;
     }
 
     void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
@@ -399,7 +404,7 @@ namespace sdk {
         m_impl->register_user(mnemonic, user_agent);
     }
 
-    session_call_result session::login(const std::string& mnemonic, const std::string& user_agent)
+    login_data session::login(const std::string& mnemonic, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return m_impl->login(mnemonic, user_agent);
@@ -411,11 +416,11 @@ namespace sdk {
         m_impl->change_settings_helper(key, args);
     }
 
-    void session::get_tx_list(size_t page_id, const std::string& query, tx_list_sort_by sort_by,
-        const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount)
+    tx_list session::get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
+        tx_list_sort_by sort_by, size_t page_id, const std::string& query)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        m_impl->get_tx_list(page_id, query, sort_by, date_range, subaccount);
+        return m_impl->get_tx_list(date_range, subaccount, sort_by, page_id, query);
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
@@ -427,39 +432,52 @@ namespace sdk {
 }
 
 namespace {
-template <typename F, typename... Args> auto c_invoke(F&& f, struct GA_session* session, Args&&... args)
+template <typename F, typename Obj, typename... Args> auto c_invoke(F&& f, Obj* obj, Args&&... args)
 {
     try {
-        GA_SDK_RUNTIME_ASSERT(session);
-        f(session, std::forward<Args>(args)...);
+        GA_SDK_RUNTIME_ASSERT(obj);
+        f(obj, std::forward<Args>(args)...);
         return GA_OK;
     } catch (const std::exception& ex) {
         std::cerr << ex.what() << std::endl;
         return GA_ERROR;
     }
-    __builtin_unreachable();
 }
 }
 
 struct GA_session final : public ga::sdk::session {
 };
 
-#define GA_SDK_DEFINE_C_FUNCTION_0(c_function_name, c_function_body)                                                   \
-    int c_function_name(struct GA_session* session) { return c_invoke(c_function_body, session); }
+struct GA_dict final : public ga::sdk::detail::object_container<GA_dict> {
+};
 
-#define GA_SDK_DEFINE_C_FUNCTION_1(c_function_name, c_function_body, T1, ARG1)                                         \
-    int c_function_name(struct GA_session* session, T1 ARG1) { return c_invoke(c_function_body, session, ARG1); }
+struct GA_tx_list final : public ga::sdk::tx_list {
+    explicit GA_tx_list(const ga::sdk::tx_list& txs)
+        : ga::sdk::tx_list(txs)
+    {
+    }
+};
 
-#define GA_SDK_DEFINE_C_FUNCTION_2(c_function_name, c_function_body, T1, ARG1, T2, ARG2)                               \
-    int c_function_name(struct GA_session* session, T1 ARG1, T2 ARG2)                                                  \
+#define GA_SDK_DEFINE_C_FUNCTION_0(c_function_name, c_obj_name, c_function_body)                                       \
+    int c_function_name(struct c_obj_name* obj) { return c_invoke(c_function_body, obj); }
+
+#define GA_SDK_DEFINE_C_FUNCTION_1(c_function_name, c_obj_name, c_function_body, T1, ARG1)                             \
+    int c_function_name(struct c_obj_name* obj, T1 ARG1) { return c_invoke(c_function_body, obj, ARG1); }
+
+#define GA_SDK_DEFINE_C_FUNCTION_2(c_function_name, c_obj_name, c_function_body, T1, ARG1, T2, ARG2)                   \
+    int c_function_name(struct c_obj_name* obj, T1 ARG1, T2 ARG2) { return c_invoke(c_function_body, obj, ARG1, ARG2); }
+
+#define GA_SDK_DEFINE_C_FUNCTION_3(c_function_name, c_obj_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3)         \
+    int c_function_name(struct c_obj_name* obj, T1 ARG1, T2 ARG2, T3 ARG3)                                             \
     {                                                                                                                  \
-        return c_invoke(c_function_body, session, ARG1, ARG2);                                                         \
+        return c_invoke(c_function_body, obj, ARG1, ARG2, ARG3);                                                       \
     }
 
-#define GA_SDK_DEFINE_C_FUNCTION_3(c_function_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3)                     \
-    int c_function_name(struct GA_session* session, T1 ARG1, T2 ARG2, T3 ARG3)                                         \
+#define GA_SDK_DEFINE_C_FUNCTION_7(c_function_name, c_obj_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3, T4,     \
+                                   ARG4, T5, ARG5, T6, ARG6, T7, ARG7)                                                 \
+    int c_function_name(struct c_obj_name* obj, T1 ARG1, T2 ARG2, T3 ARG3, T4 ARG4, T5 ARG5, T6 ARG6, T7 ARG7)         \
     {                                                                                                                  \
-        return c_invoke(c_function_body, session, ARG1, ARG2, ARG3);                                                   \
+        return c_invoke(c_function_body, obj, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6, ARG7);                               \
     }
 
 int GA_create_session(struct GA_session** session)
@@ -471,16 +489,15 @@ int GA_create_session(struct GA_session** session)
     } catch (const std::exception& ex) {
         return GA_ERROR;
     }
-    __builtin_unreachable();
 }
 
-void GA_destroy_session(struct GA_session* session)
-{
-    delete session;
-    session = nullptr;
-}
+void GA_destroy_session(struct GA_session* session) { delete session; }
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_connect,
+void GA_destroy_dict(struct GA_dict* dict) { delete dict; }
+
+void GA_destroy_tx_list(struct GA_tx_list* txs) { delete txs; }
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_connect, GA_session,
     [](struct GA_session* session, int network, int debug) {
         auto&& params = network == GA_NETWORK_REGTEST ? ga::sdk::make_regtest_network()
                                                       : network == GA_NETWORK_LOCALTEST
@@ -490,32 +507,107 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_connect,
     },
     int, network, int, debug)
 
-GA_SDK_DEFINE_C_FUNCTION_0(GA_disconnect, [](struct GA_session* session) { session->disconnect(); })
+GA_SDK_DEFINE_C_FUNCTION_0(GA_disconnect, GA_session, [](struct GA_session* session) { session->disconnect(); })
 
-GA_SDK_DEFINE_C_FUNCTION_1(GA_register_user,
+GA_SDK_DEFINE_C_FUNCTION_1(GA_register_user, GA_session,
     [](struct GA_session* session, const char* mnemonic) { session->register_user(mnemonic); }, const char*, mnemonic)
 
-GA_SDK_DEFINE_C_FUNCTION_1(GA_login, [](struct GA_session* session, const char* mnemonic) { session->login(mnemonic); },
-    const char*, mnemonic);
+GA_SDK_DEFINE_C_FUNCTION_1(GA_login, GA_session,
+    [](struct GA_session* session, const char* mnemonic) { session->login(mnemonic); }, const char*, mnemonic);
 
-GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me,
+GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me, GA_session,
     [](struct GA_session* session, int param) {
         namespace sdk = ga::sdk;
         session->change_settings(sdk::settings::privacy_send_me, sdk::privacy_send_me(param));
     },
     int, param);
 
-GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_show_as_sender,
+GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_show_as_sender, GA_session,
     [](struct GA_session* session, int param) {
         namespace sdk = ga::sdk;
         session->change_settings(sdk::settings::privacy_show_as_sender, sdk::privacy_show_as_sender(param));
     },
     int, param);
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_tx_limits,
+GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_tx_limits, GA_session,
     [](struct GA_session* session, int is_fiat, int per_tx, int total) {
         namespace sdk = ga::sdk;
         session->change_settings(sdk::settings::tx_limits, sdk::tx_limits::is_fiat, is_fiat, sdk::tx_limits::per_tx,
             per_tx, sdk::tx_limits::total, total);
     },
     int, is_fiat, int, per_tx, int, total);
+
+GA_SDK_DEFINE_C_FUNCTION_7(GA_get_tx_list, GA_session,
+    [](struct GA_session* session, time_t begin_date, time_t end_date, size_t subaccount, int sort_by, size_t page_id,
+        const char* query, struct GA_tx_list** txs) {
+        using namespace ga::sdk::literals;
+        namespace sdk = ga::sdk;
+        sdk::tx_list_sort_by sort_by_lit = sort_by == GA_TIMESTAMP
+            ? ' '_ts
+            : sort_by == GA_TIMESTAMP_ASCENDING ? '+'_ts
+                                                : sort_by == GA_TIMESTAMP_DESCENDING ? '-'_ts
+                                                                                     : sort_by == GA_VALUE
+                        ? ' '_value
+                        : sort_by == GA_VALUE_ASCENDING ? '+'_value
+                                                        : sort_by == GA_VALUE_DESCENDING ? '-'_value : ' '_ts;
+        const auto result
+            = session->get_tx_list(std::make_pair(begin_date, end_date), subaccount, sort_by_lit, page_id, query);
+        GA_SDK_RUNTIME_ASSERT(txs);
+        *txs = new GA_tx_list(result);
+    },
+    time_t, begin_date, time_t, end_date, size_t, subaccount, int, sort_by, size_t, page_id, const char*, query,
+    struct GA_tx_list**, txs);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
+    [](struct GA_tx_list* txs, const char* path, struct GA_dict** value) {
+        GA_SDK_RUNTIME_ASSERT(path);
+        GA_SDK_RUNTIME_ASSERT(value);
+        const auto v = txs->get<GA_dict::container>(path);
+        *value = new struct GA_dict();
+        (*value)->associate(v);
+    },
+    const char*, path, struct GA_dict**, value);
+
+namespace {
+template <typename Obj> void c_invoke_convert_to_bool(const Obj* obj, const char* path, int* value)
+{
+    GA_SDK_RUNTIME_ASSERT(path);
+    GA_SDK_RUNTIME_ASSERT(value);
+    *value = obj->template get<bool>(path) == true ? 1 : 0;
+}
+
+template <typename Obj> void c_invoke_convert_to_string(const Obj* obj, const char* path, char** value)
+{
+    GA_SDK_RUNTIME_ASSERT(path);
+    GA_SDK_RUNTIME_ASSERT(value);
+    const auto v = obj->template get<std::string>(path);
+    *value = new char[v.size() + 1];
+    std::copy(v.begin(), v.end(), *value);
+    *(*value + v.size()) = 0;
+}
+
+template <typename Obj> void c_invoke_convert_to_unsigned_integer(const Obj* obj, const char* path, size_t* value)
+{
+    GA_SDK_RUNTIME_ASSERT(path);
+    GA_SDK_RUNTIME_ASSERT(value);
+    *value = obj->template get<size_t>(path);
+}
+}
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_dict_path_to_bool, GA_dict,
+    [](struct GA_dict* dict, const char* path, int* value) { c_invoke_convert_to_bool(dict, path, value); },
+    const char*, path, int*, value);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_dict_path_to_string, GA_dict,
+    [](struct GA_dict* dict, const char* path, char** value) { c_invoke_convert_to_string(dict, path, value); },
+    const char*, path, char**, value);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_dict_path_to_unsigned_integer, GA_dict,
+    [](struct GA_dict* dict, const char* path, size_t* value) { c_invoke_convert_to_unsigned_integer(dict, path, value); },
+    const char*, path, size_t*, value);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_string, GA_tx_list,
+    [](struct GA_tx_list* txs, const char* path, char** value) { c_invoke_convert_to_string(txs, path, value); },
+    const char*, path, char**, value);
+
+void GA_destroy_string(const char* str) { delete[] str; }

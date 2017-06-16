@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "argparser.h"
+#include "assertion.hpp"
 
 #include "session.hpp"
 
@@ -28,8 +29,10 @@ int main(int argc, char** argv)
         const auto now = std::chrono::system_clock::now();
         const auto now_28_days_before = now - days(28);
 
-        session.get_tx_list(0, "", '+'_ts,
-            std::make_pair(system_clock::to_time_t(now_28_days_before), system_clock::to_time_t(now)), 0);
+        const auto txs = session.get_tx_list(
+            std::make_pair(system_clock::to_time_t(now_28_days_before), system_clock::to_time_t(now)), 0, '+'_ts, 0,
+            "");
+        GA_SDK_RUNTIME_ASSERT(txs.get<std::string>("fiat_currency") == "USD");
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;
