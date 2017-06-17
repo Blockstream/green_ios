@@ -15,6 +15,7 @@ Install xcode and brew if not installed, then
 
 * brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config
 * pip3 install --user meson
+* xcode-select --install
 
 If you want to target Android you will need to download the NDK and set the ANDROID_NDK env variable to the directory you uncompress it to, for example
 
