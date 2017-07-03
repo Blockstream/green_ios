@@ -491,11 +491,19 @@ int GA_create_session(struct GA_session** session)
     }
 }
 
-void GA_destroy_session(struct GA_session* session) { delete session; }
+int GA_destroy_session(struct GA_session* session)
+{
+    delete session;
+    return GA_OK;
+}
 
 void GA_destroy_dict(struct GA_dict* dict) { delete dict; }
 
-void GA_destroy_tx_list(struct GA_tx_list* txs) { delete txs; }
+int GA_destroy_tx_list(struct GA_tx_list* txs)
+{
+    delete txs;
+    return GA_OK;
+}
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_connect, GA_session,
     [](struct GA_session* session, int network, int debug) {
@@ -603,7 +611,9 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_dict_path_to_string, GA_dict,
     const char*, path, char**, value);
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_dict_path_to_unsigned_integer, GA_dict,
-    [](struct GA_dict* dict, const char* path, size_t* value) { c_invoke_convert_to_unsigned_integer(dict, path, value); },
+    [](struct GA_dict* dict, const char* path, size_t* value) {
+        c_invoke_convert_to_unsigned_integer(dict, path, value);
+    },
     const char*, path, size_t*, value);
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_string, GA_tx_list,

@@ -8,3 +8,4 @@
 /build-clang-*/
 /deps_cache
 *.swp
+*.class

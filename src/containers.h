@@ -51,7 +51,7 @@ void GA_destroy_string(const char* str);
  * Free a GA_tx_list allocated by @GA_get_tx_list
  * @txs GA_tx_list to free.
  */
-void GA_destroy_tx_list(struct GA_tx_list* txs);
+int GA_destroy_tx_list(struct GA_tx_list* txs);
 
 #ifdef __cplusplus
 }

@@ -4,18 +4,20 @@
 
 ### Deps:
 
-For Debian Stretch
+For Debian Stretch:
 
-* sudo apt-get update && sudo apt-get install build-essential python3-pip ninja-build clang wget autoconf pkg-config libtool
+* sudo apt-get update && sudo apt-get install build-essential python3-pip ninja-build clang wget autoconf pkg-config libtool swig (optional)
 * sudo pip3 install meson or pip3 install --user meson
 
 For Mac OSX:
 
-Install xcode and brew if not installed, then
+Install Xcode and brew if not installed, then
 
-* brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config
+* brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config swig (optional)
 * pip3 install --user meson
 * xcode-select --install
+
+You may also need to change your PATH environment variable to add $HOME/Library/Python/3.6/bin
 
 If you want to target Android you will need to download the NDK and set the ANDROID_NDK env variable to the directory you uncompress it to, for example
 
@@ -23,13 +25,15 @@ If you want to target Android you will need to download the NDK and set the ANDR
 
 or you can add it to your bash profile ~/.bash_profile
 
+JAVA bindings can be built by installing swig as explained above and setting JAVA_HOME to the location of the JDK.
+
 ### To build:
 
 * tools/build.sh
 
 With no options it will attempt to build all configurations buildable (i.e. for iphone you can only build on osx)
 
-Different options if you want to build a different configuation (flags in squared brackets are optional):
+Different options if you want to build a different configuration (flags in squared brackets are optional):
 
 --clang
 --gcc

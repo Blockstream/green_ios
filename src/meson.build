@@ -41,6 +41,10 @@ if host_machine.cpu_family().contains('iphone')
     archiver_dep = declare_dependency(dependencies : libga_dep)
 endif
 
+if build_jni
+    subdir('swig_java')
+endif
+
 # tests
 subdirs = ['tests']
 foreach n : subdirs

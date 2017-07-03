@@ -46,7 +46,7 @@ int GA_create_session(struct GA_session** session);
  * Free a session allocated by @GA_create_session
  * @session Session to free.
  */
-void GA_destroy_session(struct GA_session* session);
+int GA_destroy_session(struct GA_session* session);
 
 /**
  * Connect to a remote server using the specified network.

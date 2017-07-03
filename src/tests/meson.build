@@ -45,3 +45,20 @@ foreach source : sources
                      dependencies : dependencies)
     test(exe_name, exe)
 endforeach
+
+if build_jni
+    java_sources = ['wss_connect',
+                    'wss_login']
+    foreach source : java_sources
+        target_name = source + '_java_test'
+        custom_target(target_name,
+                      command : ['javac', '-classpath', '@OUTDIR@/../swig_java', '-d', '@OUTDIR@', '@INPUT@'],
+                      input : source + '.java',
+                      output : source + '.class',
+                      depends : swig_target,
+                      build_always : true)
+        test(target_name, java,
+             args : ['-classpath', '.:../swig_java', '-Djava.library.path=.:../swig_java:..', source],
+             workdir : meson.current_build_dir())
+    endforeach
+endif

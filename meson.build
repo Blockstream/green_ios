@@ -30,23 +30,43 @@ if compiler.get_id() == 'clang' and host_machine.cpu_family().contains('mips')
 endif
 
 if meson.is_cross_build()
-    add_project_arguments(meson.get_cross_property('archs'), language : 'c')
-    add_project_arguments(meson.get_cross_property('archs'), language : 'cpp')
-    if host_machine.cpu_family().contains('iphone')
-        add_project_arguments(['-fembed-bitcode'], language : 'c')
-        add_project_arguments(['-fembed-bitcode'], language : 'cpp')
+    foreach lang : ['c', 'cpp']
+        archs = meson.get_cross_property('archs')
+        if archs != ''
+            add_project_arguments(meson.get_cross_property('archs'), language : lang)
+        endif
+        if host_machine.cpu_family().contains('iphone')
+            add_project_arguments(['-fembed-bitcode'], language : lang)
+        endif
+    endforeach
+endif
+
+swift = add_languages('swift', required : false)
+if swift
+    add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
+    add_project_arguments(['-I' + join_paths(meson.current_build_dir(), 'libwally-core', 'include')], language : 'swift')
+    add_project_link_arguments(['-L' + join_paths(meson.current_build_dir(), 'src')], language : 'swift')
+endif
+
+swig = find_program('swig', required : false)
+if swig.found()
+    pymodule = import('python3')
+    python3 = pymodule.find_python()
+    res = run_command(python3, '-c', 'import os; print(os.environ["JAVA_HOME"], end = "")')
+    if res.returncode() == 0
+        java_home = res.stdout()
+    else
+        java_home = ''
+    endif
+    javac = add_languages('java', required : false)
+    if not javac or java_home == ''
+        message('Java not found or $JAVA_HOME not set. JNI bindings are disabled.')
+    else
+        java = find_program('java')
     endif
 endif
 
-swiftc = find_program('swiftc', required : false).found()
-if swiftc
-    swift = add_languages('swift', required : false)
-    if swift
-        add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
-        add_project_arguments(['-I' + join_paths(meson.current_build_dir(), 'libwally-core', 'include')], language : 'swift')
-        add_project_link_arguments(['-L' + join_paths(meson.current_build_dir(), 'src')], language : 'swift')
-    endif
-endif
+build_jni = swig.found() and javac and java_home != ''
 
 # dependencies
 clang_format = find_program('clang-format', required : false)
