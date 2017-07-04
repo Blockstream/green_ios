@@ -1,6 +1,6 @@
 # GreenAddress C/C++ SDK
 
-##  Meson/Ninja build:
+## Meson/Ninja build:
 
 ### Deps:
 
