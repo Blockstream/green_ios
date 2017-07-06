@@ -11,6 +11,8 @@
 
 #include <msgpack.hpp>
 
+#include "assertion.hpp"
+
 namespace ga {
 namespace sdk {
 
@@ -18,32 +20,58 @@ namespace sdk {
         template <typename T> class object_container {
         public:
             using container = std::unordered_map<std::string, msgpack::object>;
+            using value_container = std::unordered_map<std::string, std::string>;
 
-            void associate(const container& data) { m_data = data; }
+            void associate(const container& data)
+            {
+                for (auto&& kv : data) {
+                    std::stringstream strm;
+                    msgpack::pack(strm, kv.second);
+                    m_data[kv.first] = strm.str();
+                }
+            }
 
             template <typename U> U get(const std::string& path) const
             {
                 std::vector<std::string> split;
                 boost::algorithm::split(split, path, [](char c) { return c == '/'; });
-                container v = m_data;
+                GA_SDK_RUNTIME_ASSERT(!split.empty());
                 auto p = split.begin();
-                for (; p != split.end() - 1; ++p) {
-                    v = v.at(*p).template as<container>();
+                const auto& stream = m_data.at(*p);
+                const auto h = msgpack::unpack(stream.data(), stream.size());
+                if (split.size() > 1) {
+                    auto v = h.get().template as<container>();
+                    ++p;
+                    const auto end = split.end() - 1;
+                    for (; p != end; ++p) {
+                        v = v.at(*p).template as<container>();
+                    }
+                    return v.at(*p).template as<U>();
+                } else {
+                    return h.get().template as<U>();
                 }
-                return v.at(*p).template as<U>();
+            }
+
+            template <typename U> U get_with_default(const std::string& path, const U& u) const
+            {
+                try {
+                    return get<U>(path);
+                } catch (const std::exception& ex) {
+                    return u;
+                }
             }
 
             template <typename U> void set(const std::string& path, const U& u)
             {
                 std::stringstream strm;
                 msgpack::pack(strm, u);
-                m_data[path] = msgpack::unpack(strm.str().data(), strm.str().size()).get();
+                m_data[path] = strm.str();
             }
 
             bool empty() const { return m_data.empty(); }
 
         private:
-            container m_data;
+            value_container m_data;
         };
     }
 
