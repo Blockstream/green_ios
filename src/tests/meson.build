@@ -5,10 +5,12 @@ exe_names = ['wss_change_settings',
              'wss_get_tx_list_c',
              'wss_login',
              'wss_login_c',
+             'wss_login_new',
              'wss_subscribe']
 
-#if swiftc and swift
-#    exe_names += 'wss_login_s'
+#if swift
+#    exe_names += ['wss_login_s',
+#                  'wss_login_new_s']
 #endif
 
 sources = []

@@ -20,6 +20,8 @@
 #include "utils.hpp"
 #include "wally_wrapper.h"
 
+#include "utils.h"
+
 namespace ga {
 namespace sdk {
 
@@ -102,5 +104,17 @@ int GA_get_random_bytes(unsigned char* bytes, size_t siz)
     } catch (const std::exception& ex) {
         return GA_ERROR;
     }
-    __builtin_unreachable();
+}
+
+int GA_generate_mnemonic(const char* lang, char** mnemonic)
+{
+    try {
+        auto entropy = ga::sdk::get_random_bytes<32>();
+        const struct words* w = nullptr;
+        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang, &w) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, entropy.data(), entropy.size(), mnemonic) == WALLY_OK);
+        return GA_OK;
+    } catch (const std::exception& ex) {
+        return GA_ERROR;
+    }
 }
