@@ -70,16 +70,16 @@ namespace sdk {
     public:
         template <typename params>
         explicit network_parameters(params p)
-            : _gait_wamp_url(p.gait_wamp_url)
-            , _gait_wamp_cert_pins(p.gait_wamp_cert_pins)
-            , _block_explorer_address(p.block_explorer_address)
-            , _block_explorer_tx(p.block_explorer_tx)
-            , _deposit_chain_code(p.deposit_chain_code)
-            , _deposit_pub_key(p.deposit_pub_key)
-            , _gait_onion(p.gait_onion)
-            , _default_peer(p.default_peer)
-            , _btc_version(p.btc_version)
-            , _main_net(p.main_net)
+            : m_gait_wamp_url(p.gait_wamp_url)
+            , m_gait_wamp_cert_pins(p.gait_wamp_cert_pins)
+            , m_block_explorer_address(p.block_explorer_address)
+            , m_block_explorer_tx(p.block_explorer_tx)
+            , m_deposit_chain_code(p.deposit_chain_code)
+            , m_deposit_pub_key(p.deposit_pub_key)
+            , m_gait_onion(p.gait_onion)
+            , m_default_peer(p.default_peer)
+            , m_btc_version(p.btc_version)
+            , m_main_net(p.main_net)
         {
         }
 
@@ -89,27 +89,27 @@ namespace sdk {
         network_parameters(network_parameters&&) = default;
         network_parameters& operator=(network_parameters&&) = default;
 
-        const std::string& gait_wamp_url() const { return _gait_wamp_url; }
-        const std::vector<std::string>& gait_wamp_cert_pins() const { return _gait_wamp_cert_pins; }
-        const std::string& block_explorer_address() const { return _block_explorer_address; }
-        const std::string& block_explorer_tx() const { return _block_explorer_tx; }
-        const std::string& deposit_chain_code() const { return _deposit_chain_code; }
-        const std::string& deposit_pub_key() const { return _deposit_pub_key; }
-        const std::string& gait_onion() const { return _gait_onion; }
-        unsigned char btc_version() const { return _btc_version; }
-        bool main_net() const { return _main_net; }
+        const std::string& gait_wamp_url() const { return m_gait_wamp_url; }
+        const std::vector<std::string>& gait_wamp_cert_pins() const { return m_gait_wamp_cert_pins; }
+        const std::string& block_explorer_address() const { return m_block_explorer_address; }
+        const std::string& block_explorer_tx() const { return m_block_explorer_tx; }
+        const std::string& deposit_chain_code() const { return m_deposit_chain_code; }
+        const std::string& deposit_pub_key() const { return m_deposit_pub_key; }
+        const std::string& gait_onion() const { return m_gait_onion; }
+        unsigned char btc_version() const { return m_btc_version; }
+        bool main_net() const { return m_main_net; }
 
     private:
-        std::string _gait_wamp_url;
-        std::vector<std::string> _gait_wamp_cert_pins;
-        std::string _block_explorer_address;
-        std::string _block_explorer_tx;
-        std::string _deposit_chain_code;
-        std::string _deposit_pub_key;
-        std::string _gait_onion;
-        std::string _default_peer;
-        unsigned char _btc_version;
-        bool _main_net;
+        std::string m_gait_wamp_url;
+        std::vector<std::string> m_gait_wamp_cert_pins;
+        std::string m_block_explorer_address;
+        std::string m_block_explorer_tx;
+        std::string m_deposit_chain_code;
+        std::string m_deposit_pub_key;
+        std::string m_gait_onion;
+        std::string m_default_peer;
+        unsigned char m_btc_version;
+        bool m_main_net;
     };
 
     inline network_parameters make_localtest_network()
