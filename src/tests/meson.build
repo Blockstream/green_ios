@@ -9,7 +9,8 @@ exe_names = ['wss_change_settings',
              'wss_subscribe']
 
 #if swift
-#    exe_names += ['wss_login_s',
+#    exe_names += ['wss_get_tx_list_s',
+#                  'wss_login_s',
 #                  'wss_login_new_s']
 #endif
 
@@ -39,12 +40,15 @@ endif
 foreach source : sources
     exe_name = source.split('.')[0]
     exe_sources = [source]
+    deps = dependencies
     if not source.endswith('.swift')
         exe_sources += common_c_cpp_sources
+    else
+        deps += [ga_swift_module_dep]
     endif
     exe = executable(exe_name, exe_sources,
                      include_directories : incdir,
-                     dependencies : dependencies)
+                     dependencies : deps)
     test(exe_name, exe)
 endforeach
 

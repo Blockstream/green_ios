@@ -22,6 +22,13 @@ namespace sdk {
             using container = std::unordered_map<std::string, msgpack::object>;
             using value_container = std::unordered_map<std::string, std::string>;
 
+            void associate(const msgpack::object& o)
+            {
+                std::stringstream strm;
+                strm << o;
+                m_json = strm.str();
+            }
+
             void associate(const container& data)
             {
                 for (auto&& kv : data) {
@@ -70,8 +77,11 @@ namespace sdk {
 
             bool empty() const { return m_data.empty(); }
 
+            const std::string& get_json() const { return m_json; }
+
         private:
             value_container m_data;
+            std::string m_json;
         };
     }
 

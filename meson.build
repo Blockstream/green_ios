@@ -46,7 +46,10 @@ swift = add_languages('swift', required : false)
 if swift
     add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
     add_project_arguments(['-I' + join_paths(meson.current_build_dir(), 'libwally-core', 'include')], language : 'swift')
+    add_project_arguments(['-I' + join_paths(meson.source_root(), 'src', 'swift', 'GA', '.build', 'debug')], language : 'swift')
     add_project_link_arguments(['-L' + join_paths(meson.current_build_dir(), 'src')], language : 'swift')
+    add_project_link_arguments(['-L' + join_paths(meson.source_root(), 'src', 'swift', 'GA')], language : 'swift')
+    add_project_link_arguments(['-lGA'], language : 'swift')
 endif
 
 swig = find_program('swig', required : false)

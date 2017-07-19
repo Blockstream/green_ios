@@ -371,7 +371,9 @@ namespace sdk {
         const auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
         auto get_tx_list_future = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
                                       .then([&txs](boost::future<autobahn::wamp_call_result> result) {
-                                          txs.associate(result.get().argument<login_data::container>(0));
+                                          const auto r = result.get();
+                                          txs.associate(r.argument<login_data::container>(0));
+                                          txs.associate(r.argument<msgpack::object>(0));
                                       });
 
         get_tx_list_future.get();
@@ -575,6 +577,16 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
         (*value)->associate(v);
     },
     const char*, path, struct GA_dict**, value);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_tx_list_to_json, GA_tx_list,
+    [](struct GA_tx_list* txs, char** json) {
+        GA_SDK_RUNTIME_ASSERT(json);
+        const auto& v = txs->get_json();
+        *json = new char[v.size() + 1];
+        std::copy(v.begin(), v.end(), *json);
+        *(*json + v.size()) = 0;
+    },
+    char**, json);
 
 namespace {
 template <typename Obj> void c_invoke_convert_to_bool(const Obj* obj, const char* path, int* value)

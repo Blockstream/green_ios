@@ -42,6 +42,11 @@ int GA_convert_tx_list_path_to_string(struct GA_tx_list* txs, const char* path, 
 /**
  *
  */
+int GA_convert_tx_list_to_json(struct GA_tx_list* txs, char** json);
+
+/**
+ *
+ */
 void GA_destroy_dict(struct GA_dict* dict);
 
 /**

@@ -46,7 +46,8 @@ if build_jni
 endif
 
 # tests
-subdirs = ['tests']
+subdirs = ['swift',
+           'tests']
 foreach n : subdirs
     subdir(n)
 endforeach
