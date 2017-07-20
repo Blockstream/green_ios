@@ -3,9 +3,12 @@ foreach libdir : subproject_libdirs
     add_project_link_arguments(['-Wl,-rpath,' + libdir], language : 'cpp')
 endforeach
 
-sources = ['assertion.hpp',
+sources = ['amount.hpp',
+           'amount.cpp',
+           'assertion.hpp',
            'assertion.cpp',
            'containers.hpp',
+           'containers.cpp',
            'network_parameters.hpp',
            'session.hpp',
            'session.cpp',

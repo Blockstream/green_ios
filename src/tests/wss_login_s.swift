@@ -1,7 +1,7 @@
-import GA
+import GreenAddress
 
-let DEFAULT_MNEMONIC
-    = "believe roast zen poorer tax chicken snap calm override french banner salmon bird sad smart "
+let DEFAULT_MNEMONIC: String = "tragic transfer mesh camera fish model bleak lumber never capital animal era " +
+                               "coffee shift flame across pitch pipe shiver castle crawl noble obtain response"
 
 var session : Session = try Session()
 

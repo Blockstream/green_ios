@@ -39,7 +39,7 @@ prepare_pkg websocketpp-0.7.0 https://github.com/zaphoyd/websocketpp/archive/0.7
 prepare_pkg msgpack-2.1.1 https://github.com/msgpack/msgpack-c/releases/download/cpp-2.1.1/msgpack-2.1.1.tar.gz ${SHA256SUM_MSGPACK}
 prepare_pkg boost_1_64_0 https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz ${SHA256SUM_BOOST}
 prepare_pkg openssl-1.0.2l https://github.com/openssl/openssl/archive/OpenSSL_1_0_2l.tar.gz ${SHA256SUM_OPENSSL}
-prepare_pkg wallycore https://github.com/jgriffiths/libwally-core/archive/3eabf30c44eee88dfa31aa3aa797ec115d72b3ff.tar.gz ${SHA256SUM_WALLYCORE}
+prepare_pkg libwally-core https://github.com/jgriffiths/libwally-core/archive/3eabf30c44eee88dfa31aa3aa797ec115d72b3ff.tar.gz ${SHA256SUM_WALLYCORE}
 
 function move_if() {
     if [ ! -d "$DEPS_BLD_DIR/$2" ]; then

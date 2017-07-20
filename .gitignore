@@ -6,6 +6,9 @@
 /build-gcc/
 /build-clang/
 /build-clang-*/
-/deps_cache
+/deps_cache/
+/*/*/*/.build/
 *.swp
 *.class
+*.so
+*.dylib

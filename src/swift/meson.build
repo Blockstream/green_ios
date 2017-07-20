@@ -1,3 +1,3 @@
-#if swift
-#    subdir('GA')
-#endif
+if swift
+    subdir('GreenAddress')
+endif

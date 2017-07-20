@@ -14,21 +14,24 @@ exe_names = ['wss_change_settings',
 #                  'wss_login_new_s']
 #endif
 
-sources = []
+c_cpp_sources = []
+swift_sources = []
 foreach name : exe_names
     if name.endswith('_c')
-        sources += [name + '.c']
+        c_cpp_sources += [name + '.c']
     elif name.endswith('_s')
-        sources += [name + '.swift']
+        swift_sources += [name + '.swift']
     else
-        sources += [name + '.cpp']
+        c_cpp_sources += [name + '.cpp']
     endif
 endforeach
 
 common_c_cpp_sources = ['argparser.h', 'argparser.c']
 
+sources = c_cpp_sources + swift_sources
+
 if clang_format.found()
-    custom_target('tests-clang-format', input : sources + common_c_cpp_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
+    custom_target('tests-clang-format', input : c_cpp_sources + common_c_cpp_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
 dependencies = [libga_dep]

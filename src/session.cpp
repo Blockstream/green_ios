@@ -29,19 +29,11 @@ namespace sdk {
     using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context>;
 
     using wally_ext_key_ptr = std::unique_ptr<const ext_key, decltype(&bip32_key_free)>;
-    using wally_string_ptr = std::unique_ptr<char, decltype(&wally_free_string)>;
 
     const std::string DEFAULT_REALM("realm1");
     const std::string DEFAULT_USER_AGENT("[v2,sw]");
 
     namespace {
-        wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
-        {
-            char* s = nullptr;
-            GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
-            return wally_string_ptr(s, &wally_free_string);
-        }
-
         // FIXME: too slow. lacks validation.
         std::array<unsigned char, 32> uint256_to_base256(const std::string& bytes)
         {
@@ -94,6 +86,7 @@ namespace sdk {
         tx_list get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
             tx_list_sort_by sort_by, size_t page_id, const std::string& query);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
+        receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -224,8 +217,9 @@ namespace sdk {
             bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
 
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(
-            bip32_key_from_seed_alloc(seed.data(), seed.size(), BIP32_VER_TEST_PRIVATE, 0, &p) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(),
+                                  m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
+            == WALLY_OK);
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
         auto pub_key = hex_from_bytes(master_key->pub_key, sizeof(master_key->pub_key));
@@ -355,14 +349,15 @@ namespace sdk {
         };
 
         auto&& date_range_str = [&date_range] {
-            constexpr auto iso_str_siz = sizeof("0000-00-00T00:00:00Z");
+            constexpr auto iso_str_siz = sizeof "0000-00-00T00:00:00.000Z";
 
             std::array<char, iso_str_siz> begin_date_str = { { 0 } };
             std::array<char, iso_str_siz> end_date_str = { { 0 } };
 
             struct tm tm_;
-            std::strftime(begin_date_str.data(), begin_date_str.size(), "%FT%TZ", gmtime_r(&date_range.first, &tm_));
-            std::strftime(end_date_str.data(), end_date_str.size(), "%FT%TZ", gmtime_r(&date_range.second, &tm_));
+            std::strftime(
+                begin_date_str.data(), begin_date_str.size(), "%FT%T.000Z", gmtime_r(&date_range.first, &tm_));
+            std::strftime(end_date_str.data(), end_date_str.size(), "%FT%T.000Z", gmtime_r(&date_range.second, &tm_));
 
             return std::make_pair(std::string(begin_date_str.data()), std::string(end_date_str.data()));
         };
@@ -389,6 +384,42 @@ namespace sdk {
                                     });
 
         subscribe_future.get();
+    }
+
+    receive_address session::session_impl::get_receive_address(address_type addr_type, size_t subaccount) const
+    {
+        const std::string addr_type_str = addr_type == address_type::p2sh ? "p2sh" : "p2wsh";
+
+        receive_address address;
+        auto receive_address_future
+            = m_session->call("com.greenaddress.vault.fund", std::make_tuple(subaccount, true, addr_type_str))
+                  .then([&address](boost::future<autobahn::wamp_call_result> result) {
+                      address = result.get().argument<receive_address::container>(0);
+                  });
+
+        receive_address_future.get();
+
+        const auto script = address.get<std::string>("script");
+        const auto script_bytes = bytes_from_hex(script.data(), script.length());
+
+        auto&& p2sh_script_builder = [&] {
+            std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
+            hash160[0] = 196;
+            GA_SDK_RUNTIME_ASSERT(
+                wally_hash160(script_bytes.data(), script_bytes.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
+            return hash160;
+        };
+
+        const auto hash160 = addr_type == address_type::p2sh ? p2sh_script_builder() : p2sh_script_builder();
+
+        char* q = nullptr;
+        GA_SDK_RUNTIME_ASSERT(
+            wally_base58_from_bytes(hash160.data(), hash160.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
+        wally_string_ptr base58_pkh(q, &wally_free_string);
+
+        address.set(addr_type_str, std::string(q));
+
+        return address;
     }
 
     void session::connect(network_parameters params, bool debug)
@@ -429,6 +460,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         m_impl->subscribe(topic, handler);
+    }
+
+    receive_address session::get_receive_address(address_type addr_type, size_t subaccount) const
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_receive_address(addr_type, subaccount);
     }
 }
 }
@@ -567,6 +604,19 @@ GA_SDK_DEFINE_C_FUNCTION_7(GA_get_tx_list, GA_session,
     },
     time_t, begin_date, time_t, end_date, size_t, subaccount, int, sort_by, size_t, page_id, const char*, query,
     struct GA_tx_list**, txs);
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_get_receive_address, GA_session,
+    [](struct GA_session* session, int addr_type, int subaccount, char** address) {
+        namespace sdk = ga::sdk;
+        GA_SDK_RUNTIME_ASSERT(address);
+        sdk::address_type t = addr_type == GA_ADDRESS_TYPE_P2SH ? sdk::address_type::p2sh : sdk::address_type::p2wsh;
+        const auto r = session->get_receive_address(t, subaccount);
+        const auto a = r.get_address();
+        *address = new char[a.size() + 1];
+        std::copy(a.begin(), a.end(), *address);
+        *(*address + a.size()) = 0;
+    },
+    int, addr_type, int, subaccount, char**, address);
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
     [](struct GA_tx_list* txs, const char* path, struct GA_dict** value) {

@@ -1,4 +1,4 @@
-import GA
+import GreenAddress
 
 var session : Session = try Session()
 

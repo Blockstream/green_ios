@@ -7,9 +7,8 @@
 
 #include "session.hpp"
 
-const std::string DEFAULT_MNEMONIC(
-    "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive "
-    "spike pond industry time hero trim verb mammal asthma");
+const std::string DEFAULT_MNEMONIC("tragic transfer mesh camera fish model bleak lumber never capital animal era "
+                                   "coffee shift flame across pitch pipe shiver castle crawl noble obtain response");
 
 int main(int argc, char** argv)
 {

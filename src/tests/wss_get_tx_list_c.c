@@ -6,8 +6,8 @@
 #include "common.h"
 #include "session.h"
 
-const char* DEFAULT_MNEMONIC
-    = "believe roast zen poorer tax chicken snap calm override french banner salmon bird sad smart ";
+const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lumber never capital animal era "
+                                   "coffee shift flame across pitch pipe shiver castle crawl noble obtain response";
 
 int main(int argc, char* argv[])
 {

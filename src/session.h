@@ -29,6 +29,10 @@ extern "C" {
 #define GA_VALUE_ASCENDING 4
 #define GA_VALUE_DESCENDING 5
 
+/** Value for address types */
+#define GA_ADDRESS_TYPE_P2SH 0
+#define GA_ADDRESS_TYPE_P2WSH 1
+
 /** An server session */
 struct GA_session;
 
@@ -125,6 +129,16 @@ int GA_change_settings_tx_limits(struct GA_session* session, int is_fiat, int pe
  */
 int GA_get_tx_list(struct GA_session* session, time_t begin_date, time_t end_date, size_t subaccount, int sort_by,
     size_t page_id, const char* query, struct GA_tx_list** txs);
+
+/**
+ * @session The server session to use.
+ * @addr_type The type of address P2SH or P2WSH.
+ * @subaccount The subaccount to which transactions belong to.
+ * @address The generated address.
+ *
+ * GA_ERROR if address could not be generated.
+ */
+int GA_get_receive_address(struct GA_session* session, int addr_type, int subaccount, char** address);
 
 #ifdef __cplusplus
 }

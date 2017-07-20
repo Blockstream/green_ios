@@ -48,10 +48,16 @@ public class Session {
         if GA_get_tx_list(session, Int(begin.timeIntervalSince1970), Int(end.timeIntervalSince1970), subaccount, 0, 0, String(), &txs) == GA_ERROR {
             throw GaError.GenericError
         }
+        defer {
+            GA_destroy_tx_list(txs)
+        }
 
-        var bytes : UnsafeMutablePointer<Int8>?
+        var bytes : UnsafeMutablePointer<Int8>? = nil
         if GA_convert_tx_list_to_json(txs, &bytes) == GA_ERROR {
             throw GaError.GenericError
+        }
+        defer {
+            GA_destroy_string(bytes)
         }
 
         var dict: [String: Any]? = nil;
@@ -61,14 +67,22 @@ public class Session {
             do {
                 dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
             } catch {
-                return nil;
+                return nil
             }
         }
 
-        GA_destroy_string(bytes)
-        GA_destroy_tx_list(txs)
-
         return dict
+    }
+
+    public func getReceiveAddress() -> String? {
+        var bytes : UnsafeMutablePointer<Int8>? = nil
+        if GA_get_receive_address(session, GA_ADDRESS_TYPE_P2SH, 0, &bytes) == GA_ERROR {
+            return nil 
+        }
+        defer {
+            GA_destroy_string(bytes)
+        }
+        return String(cString: bytes!)
     }
 }
 
@@ -77,10 +91,13 @@ public func generateMnemonic(lang: String) throws -> String {
     if GA_generate_mnemonic(lang, &bytes) == GA_ERROR {
         throw GaError.GenericError
     }
+    defer {
+        GA_destroy_string(bytes)
+    }
 
-    let mnemonic: String = String(cString: bytes!)
+    return String(cString: bytes!)
+}
 
-    GA_destroy_string(bytes);
-
-    return mnemonic
+public func validateMnemonic(lang: String, mnemonic: String) -> Bool {
+    return GA_validate_mnemonic(lang, mnemonic) == GA_TRUE
 }

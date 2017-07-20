@@ -30,6 +30,17 @@ int GA_get_random_bytes(unsigned char* bytes, size_t siz);
  */
 int GA_generate_mnemonic(const char* lang, char** mnemonic);
 
+/**
+ * Validate mnemonic.
+ *
+ * Validates a BIP39 mnemonic.
+ * @lang language for the default word list
+ * @mnemonic the mnemonic phrase
+ *
+ * GA_FALSE if mnemonic validation fails
+ */
+int GA_validate_mnemonic(const char* lang, const char* mnemonic);
+
 #ifdef __cplusplus
 }
 #endif

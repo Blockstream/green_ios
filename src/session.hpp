@@ -15,6 +15,8 @@
 namespace ga {
 namespace sdk {
 
+    enum class address_type : int { p2sh, p2wsh };
+
     enum class settings : int {
         privacy_send_me,
         privacy_show_as_sender,
@@ -97,6 +99,8 @@ namespace sdk {
             tx_list_sort_by sort_by = ' '_ts, size_t page_id = 0, const std::string& query = std::string());
 
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
+
+        receive_address get_receive_address(address_type addr_type = address_type::p2wsh, size_t subaccount = 0) const;
 
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);

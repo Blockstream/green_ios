@@ -5,6 +5,9 @@
 #include <cstddef>
 #include <map>
 #include <string>
+#include <vector>
+
+#include "wally_wrapper.h"
 
 namespace ga {
 namespace sdk {
@@ -80,6 +83,12 @@ namespace sdk {
             *d_first++ = binary_op(*prev, *next++);
         }
     }
+
+    using wally_string_ptr = std::unique_ptr<char, decltype(&wally_free_string)>;
+
+    wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz);
+
+    std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
 }
 }
 

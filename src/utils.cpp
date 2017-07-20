@@ -18,7 +18,6 @@
 #include "assertion.hpp"
 #include "common.h"
 #include "utils.hpp"
-#include "wally_wrapper.h"
 
 #include "utils.h"
 
@@ -93,6 +92,22 @@ namespace sdk {
 
         GA_SDK_RUNTIME_ASSERT(wally_bzero(sha512.data(), sha512.size()) == WALLY_OK);
     }
+
+    wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
+    {
+        char* s = nullptr;
+        GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
+        return wally_string_ptr(s, &wally_free_string);
+    }
+
+    std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz)
+    {
+        std::vector<unsigned char> bytes(siz / 2);
+        size_t written;
+        GA_SDK_RUNTIME_ASSERT(wally_hex_to_bytes(hex, bytes.data(), bytes.size(), &written) == WALLY_OK);
+        bytes.resize(written);
+        return bytes;
+    }
 }
 }
 
@@ -116,5 +131,17 @@ int GA_generate_mnemonic(const char* lang, char** mnemonic)
         return GA_OK;
     } catch (const std::exception& ex) {
         return GA_ERROR;
+    }
+}
+
+int GA_validate_mnemonic(const char* lang, const char* mnemonic)
+{
+    try {
+        const struct words* w = nullptr;
+        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang, &w) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_validate(w, mnemonic) == WALLY_OK);
+        return GA_TRUE;
+    } catch (const std::exception& ex) {
+        return GA_FALSE;
     }
 }

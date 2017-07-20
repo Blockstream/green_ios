@@ -29,7 +29,8 @@ function build() {
     export WALLY_PKG_CONFIG_PATH="$PWD/build-$1/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
-    if [ ! -d "build-$1/meson-private" ]; then
+    if [ ! -f "build-$1/build.ninja" ]; then
+        rm -rf build-$1/meson-private
         meson build-$1 --default-library=${LIBTYPE} --buildtype=release
     fi
 
@@ -117,7 +118,8 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
         fi
         export PATH=$bld_root/toolchain/bin:$PATH_BASE
 
-        if [ ! -d "$bld_root/meson-private" ]; then
+        if [ ! -f "build-$1/build.ninja" ]; then
+            rm -rf build-$1/meson-private
             $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $SDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
             export SDK_PLATFORM=$(basename $(find $bld_root/toolchain/ -maxdepth 1 -type d -name "*linux-android*"))
             export AR="$bld_root/toolchain/bin/$SDK_PLATFORM-ar"
@@ -169,7 +171,8 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
         export SDK_CPPFLAGS="$SDK_CFLAGS"
         export SDK_LDFLAGS="$SDK_CFLAGS"
 
-        if [ ! -d "$bld_root/meson-private" ]; then
+        if [ ! -f "build-$1/build.ninja" ]; then
+            rm -rf build-$1/meson-private
             export AR="ar"
             export RANLIB="ranlib"
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ios.txt $2 $2
