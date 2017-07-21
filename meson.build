@@ -1,4 +1,4 @@
-project('sdk', ['c', 'cpp'], meson_version : '>= 0.40.1', default_options : ['cpp_std=c++14'])
+project('sdk', ['c', 'cpp'], meson_version : '>= 0.41.1', default_options : ['cpp_std=c++14'])
 
 # header checks (must be architecture independent)
 compiler = meson.get_compiler('cpp')
@@ -96,13 +96,11 @@ foreach sub : subprojects
         else
             run_command(join_paths('tools', 'build' + sub[0] + '.sh'), '--' + meson.get_cross_property('target_os'))
         endif
-        subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)
     endif
+    subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)
 endforeach
 
 subproject_deps += dependency('libsecp256k1', static : true)
-
-add_project_link_arguments(['-lboost_system', '-lboost_thread'], language : 'cpp')
 
 # includes
 autobahn_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'autobahn-cpp')
