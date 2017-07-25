@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
 sed_exe=$1
 
@@ -13,10 +14,20 @@ $sed_exe -i 's/GASDKJNI/GASDK/g' $2
 # Merge the constants and JNI interface into GASDK.java
 grep -v '^}$' $3/GASDKJNI.java | $sed_exe 's/GASDKJNI/GASDK/g' >$result
 grep 'public final static' $3/GASDKConstants.java >>$result
+cat $5 >>$result
 echo '}' >>$result
 
 $JAVA_HOME/bin/javac -sourcepath $3/com/blockstream/libgreenaddress/ $3/com/blockstream/libgreenaddress/GASDK.java
-$JAVA_HOME/bin/jar cf $3/GASDK.jar -C $3 'com/blockstream/libgreenaddress/GASDK$Obj.class' -C $3 'com/blockstream/libgreenaddress/GASDK.class'
+
+tmp_wally_java_dir=`mktemp -d`
+pushd . > /dev/null
+cd $tmp_wally_java_dir
+$JAVA_HOME/bin/jar xf $6
+popd > /dev/null
+
+$JAVA_HOME/bin/jar cf $3/GASDK.jar -C $3 'com/blockstream/libgreenaddress/GASDK$Obj.class' -C $3 'com/blockstream/libgreenaddress/GASDK.class' \
+  -C $tmp_wally_java_dir .
 
 # Clean up
 rm -f $3/*.java
+rm -rf $tmp_wally_java_dir

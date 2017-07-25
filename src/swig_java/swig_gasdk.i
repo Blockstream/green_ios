@@ -67,7 +67,7 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 %pragma(java) jniclasscode=%{
     private static boolean loadLibrary() {
         try {
-            System.loadLibrary("swig_java");
+            System.loadLibrary("greenaddress");
             return true;
         } catch (final UnsatisfiedLinkError e) {
             System.err.println("Native code library failed to load.\n" + e);
@@ -88,6 +88,9 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
         private int get_id() { return id; }
     }
 %}
+%pragma(java) jniclassimports=%{
+    import java.util.Date;
+%}
 
 /* Raise an exception whenever a function fails */
 %exception {
@@ -98,19 +101,28 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 /* Don't use our int return value except for exception checking */
 %typemap(out) int %{
 %}
-
+%typemap(argout, noblock=1) (char **output) {
+    if ($1) {
+        $result = (*jenv)->NewStringUTF(jenv, *$1);
+        GA_destroy_string(*$1);
+    } else {
+        $result = NULL;
+    }
+}
 %define %java_opaque_struct(NAME, ID)
 %typemap(in, numinputs=0) struct NAME** (struct NAME* w) {
     w = 0; $1 = ($1_ltype)&w;
 }
 %typemap(argout) struct NAME** {
-    if (*$1)
+    if (*$1) {
         $result = create_obj(jenv, *$1, ID);
+    }
 }
-%typemap (in) struct NAME* {
-    $1 = (struct NAME*)get_obj_or_throw(jenv, $input, ID, "NAME");
-    if (!$1)
+%typemap(in) struct NAME* {
+    $1 = (struct NAME*) get_obj_or_throw(jenv, $input, ID, "NAME");
+    if (!$1) {
         return $null;
+    }
 }
 %typemap(jtype) struct NAME* "Object"
 %typemap(jni) struct NAME* "jobject"
@@ -130,6 +142,9 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 %define %returns_struct(FUNC, STRUCT)
 %return_decls(FUNC, Object, jobject)
 %enddef
+%define %returns_string(FUNC)
+%return_decls(FUNC, String, jstring)
+%enddef
 
 %java_opaque_struct(GA_session, 1)
 %java_opaque_struct(GA_tx_list, 2)
@@ -142,6 +157,10 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 %returns_void__(GA_login)
 %returns_struct(GA_get_tx_list, GA_tx_list)
 %returns_void__(GA_destroy_tx_list)
+%returns_string(GA_convert_tx_list_to_json)
+%returns_struct(GA_convert_tx_list_path_to_dict, GA_dict)
+%returns_string(GA_convert_tx_list_path_to_string)
+%returns_string(GA_get_receive_addresss)
 
 %include "../common.h"
 %include "../containers.h"

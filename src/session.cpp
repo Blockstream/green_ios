@@ -629,14 +629,14 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
     const char*, path, struct GA_dict**, value);
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_tx_list_to_json, GA_tx_list,
-    [](struct GA_tx_list* txs, char** json) {
-        GA_SDK_RUNTIME_ASSERT(json);
+    [](struct GA_tx_list* txs, char** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
         const auto& v = txs->get_json();
-        *json = new char[v.size() + 1];
-        std::copy(v.begin(), v.end(), *json);
-        *(*json + v.size()) = 0;
+        *output = new char[v.size() + 1];
+        std::copy(v.begin(), v.end(), *output);
+        *(*output + v.size()) = 0;
     },
-    char**, json);
+    char**, output);
 
 namespace {
 template <typename Obj> void c_invoke_convert_to_bool(const Obj* obj, const char* path, int* value)

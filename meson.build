@@ -70,7 +70,7 @@ if swig.found()
     endif
 endif
 
-build_jni = swig.found() and javac and java_home != ''
+build_jni = swig.found() and javac and java_home != '' and build_machine.system() == 'linux'
 
 # dependencies
 clang_format = find_program('clang-format', required : false)

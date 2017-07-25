@@ -6,6 +6,11 @@ else
     export HOST_OS="i686-linux-gnu"
 fi
 
+ENABLE_SWIG_JAVA=disable-swig-java
+if [ "x$JAVA_HOME" != "x" -a "$(uname)" != "Darwin" ]; then
+    ENABLE_SWIG_JAVA=enable-swig-java
+fi
+
 cd "${MESON_BUILD_ROOT}/libwally-core"
 ./tools/cleanup.sh
 ./tools/autogen.sh
@@ -20,7 +25,7 @@ if [ \( "$1" = "--ndk" \) ]; then
         LTO=disable-lto
     fi
 
-    ./configure --host=$SDK_PLATFORM --with-sysroot="${MESON_BUILD_ROOT}/toolchain/sysroot" --build=$HOST_OS --enable-silent-rules \
+    ./configure --host=$SDK_PLATFORM --with-sysroot="${MESON_BUILD_ROOT}/toolchain/sysroot" --build=$HOST_OS --enable-silent-rules --$ENABLE_SWIG_JAVA \
                 --disable-shared --disable-dependency-tracking --target=$SDK_PLATFORM --$LTO --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
     make -o configure clean -j$NUM_JOBS
     make -o configure -j$NUM_JOBS
@@ -47,7 +52,8 @@ else
         export AR=llvm-ar
         export RANLIB=llvm-ranlib
     fi
-    ./configure --enable-silent-rules --disable-shared --disable-dependency-tracking --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+
+    ./configure --enable-silent-rules --$ENABLE_SWIG_JAVA --disable-shared --disable-dependency-tracking --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
     make -j$NUM_JOBS
     make install
 fi

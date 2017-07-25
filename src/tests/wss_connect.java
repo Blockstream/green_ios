@@ -1,4 +1,5 @@
 import com.blockstream.libgreenaddress.GASDK;
+import com.blockstream.libwally.Wally;
 
 public class wss_connect {
     public static void main(String args[]) throws Exception {

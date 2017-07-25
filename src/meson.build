@@ -25,7 +25,18 @@ endif
 
 dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
 
-libga = library('greenaddress', sources, include_directories : incdir, dependencies : dependencies)
+link_whole = []
+if build_jni
+    subdir('swig_java')
+    link_whole += [libswig_java]
+endif
+
+libga = library('greenaddress',
+                sources,
+                include_directories : incdir,
+                link_whole : link_whole,
+                dependencies : dependencies)
+
 libga_dep = declare_dependency(include_directories : incdir, link_with : libga, dependencies : dependencies)
 
 if host_machine.cpu_family().contains('iphone')
@@ -42,10 +53,6 @@ if host_machine.cpu_family().contains('iphone')
                              depends : libga)
 
     archiver_dep = declare_dependency(dependencies : libga_dep)
-endif
-
-if build_jni
-    subdir('swig_java')
 endif
 
 # tests

@@ -14,17 +14,17 @@ struct GA_dict;
 /**
  *
  */
-int GA_convert_dict_value_to_string(struct GA_dict* dict, const char* path, char** value);
+// int GA_convert_dict_value_to_string(struct GA_dict* dict, const char* path, char** value);
 
 /**
  *
  */
-int GA_convert_dict_value_to_unsigned_integer(struct GA_dict* dict, const char* path, size_t* value);
+// int GA_convert_dict_value_to_unsigned_integer(struct GA_dict* dict, const char* path, size_t* value);
 
 /**
  *
  */
-int GA_convert_dict_value_to_bool(struct GA_dict* dict, const char* path, int* value);
+// int GA_convert_dict_value_to_bool(struct GA_dict* dict, const char* path, int* value);
 
 /** An transaction list */
 struct GA_tx_list;
@@ -42,7 +42,7 @@ int GA_convert_tx_list_path_to_string(struct GA_tx_list* txs, const char* path, 
 /**
  *
  */
-int GA_convert_tx_list_to_json(struct GA_tx_list* txs, char** json);
+int GA_convert_tx_list_to_json(struct GA_tx_list* txs, char** output);
 
 /**
  *
