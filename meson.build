@@ -104,7 +104,7 @@ subproject_deps += dependency('libsecp256k1', static : true)
 
 # includes
 autobahn_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'autobahn-cpp')
-msgpack_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'msgpack-2.1.1', 'include')
+msgpack_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'msgpack', 'include')
 sdk_inc_dir = 'src'
 websocketpp_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'websocketpp-0.7.0')
 
