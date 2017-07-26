@@ -118,9 +118,11 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
         fi
         export PATH=$bld_root/toolchain/bin:$PATH_BASE
 
-        if [ ! -f "build-$1/build.ninja" ]; then
-            rm -rf build-$1/meson-private
-            $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $SDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
+        if [ ! -f "build-clang-$1-$2/build.ninja" ]; then
+            rm -rf build-clang-$1-$2/meson-private
+            if [ ! -f "build-clang-$1-$2/toolchain" ]; then
+                $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $SDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
+            fi
             export SDK_PLATFORM=$(basename $(find $bld_root/toolchain/ -maxdepth 1 -type d -name "*linux-android*"))
             export AR="$bld_root/toolchain/bin/$SDK_PLATFORM-ar"
             export RANLIB="$bld_root/toolchain/bin/$SDK_PLATFORM-ranlib"
@@ -171,10 +173,10 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
         export SDK_CPPFLAGS="$SDK_CFLAGS"
         export SDK_LDFLAGS="$SDK_CFLAGS"
 
-        if [ ! -f "build-$1/build.ninja" ]; then
-            rm -rf build-$1/meson-private
-            export AR="ar"
-            export RANLIB="ranlib"
+        export AR=ar
+
+        if [ ! -f "build-clang-$1-$2/build.ninja" ]; then
+            rm -rf build-clang-$1-$2/meson-private
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ios.txt $2 $2
             meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE} --buildtype=release
         fi
