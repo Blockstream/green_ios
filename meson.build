@@ -45,9 +45,9 @@ endif
 swift = add_languages('swift', required : false)
 if swift
     add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
-    add_project_arguments(['-I' + join_paths(meson.current_build_dir(), 'libwally-core', 'include')], language : 'swift')
+    add_project_arguments(['-I' + join_paths(meson.build_root(), 'libwally-core', 'include')], language : 'swift')
     add_project_arguments(['-I' + join_paths(meson.source_root(), 'src', 'swift', 'GreenAddress', '.build', 'debug')], language : 'swift')
-    add_project_link_arguments(['-L' + join_paths(meson.current_build_dir(), 'src')], language : 'swift')
+    add_project_link_arguments(['-L' + join_paths(meson.build_root(), 'src')], language : 'swift')
     add_project_link_arguments(['-L' + join_paths(meson.source_root(), 'src', 'swift', 'GreenAddress')], language : 'swift')
     add_project_link_arguments(['-lGreenAddress'], language : 'swift')
 endif
@@ -88,7 +88,7 @@ subprojects = [['boost', 'boost_1_64_0', '>= 1.64.0', ['system', 'thread']],
                ['openssl', 'openssl-1.0.2l', '>= 1.0.2', []]]
 
 foreach sub : subprojects
-    subproject_libdirs += join_paths(meson.current_build_dir(), sub[1], 'build', 'lib')
+    subproject_libdirs += join_paths(meson.build_root(), sub[1], 'build', 'lib')
     dep = dependency(sub[0], modules : sub[3], version : '>= 9.9.9', required : false, static : true)
     if not dep.found()
         message('Building ' + sub[0] + '...')
@@ -104,10 +104,10 @@ endforeach
 subproject_deps += dependency('libsecp256k1', static : true)
 
 # includes
-autobahn_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'autobahn-cpp')
-msgpack_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'msgpack', 'include')
+autobahn_inc_dir = join_paths(meson.build_root().split('/')[-1], 'autobahn-cpp')
+msgpack_inc_dir = join_paths(meson.build_root().split('/')[-1], 'msgpack', 'include')
+websocketpp_inc_dir = join_paths(meson.build_root().split('/')[-1], 'websocketpp-0.7.0')
 sdk_inc_dir = 'src'
-websocketpp_inc_dir = join_paths(meson.current_build_dir().split('/')[-1], 'websocketpp-0.7.0')
 
 incdir = include_directories([autobahn_inc_dir, msgpack_inc_dir, sdk_inc_dir, websocketpp_inc_dir])
 

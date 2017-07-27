@@ -26,10 +26,12 @@ endif
 dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
 
 link_whole = []
+link_args = []
 if build_jni
     message('Building JNI bindings...')
     subdir('swig_java')
     link_whole += [libswig_java]
+    link_args += ['-Wl,--whole-archive', '-lwallycore', '-Wl,--no-whole-archive']
 else
     message('Disabled JNI bindings')
 endif
@@ -38,6 +40,7 @@ libga = library('greenaddress',
                 sources,
                 include_directories : incdir,
                 link_whole : link_whole,
+                link_args : link_args,
                 dependencies : dependencies)
 
 libga_dep = declare_dependency(include_directories : incdir, link_with : libga, dependencies : dependencies)
