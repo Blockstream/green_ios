@@ -46,6 +46,7 @@ function set_cross_build_env() {
     export OPENSSL_PKG_CONFIG_PATH="$bld_root/openssl-1.0.2l/build/lib/pkgconfig"
     export WALLY_PKG_CONFIG_PATH="$bld_root/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
+    export HOST_ARCH=$2
     case $2 in
         armeabi)
             export SDK_ARCH=arm
@@ -69,7 +70,7 @@ function set_cross_build_env() {
             export SDK_LDLAGS="-mips32"
             ;;
         mips64)
-            export SDK_ARCH=mips
+            export SDK_ARCH=mips64
             export SDK_CFLAGS="-mxgot"
             export SDK_LDLAGS="-mxgot"
             ;;
@@ -84,6 +85,7 @@ function set_cross_build_env() {
         *)
             export SDK_ARCH=$2
             export SDK_CPU=i686
+            ;;
     esac
 }
 
