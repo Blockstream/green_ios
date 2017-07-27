@@ -61,13 +61,14 @@ if build_jni
     foreach source : java_sources
         target_name = source + '_java_test'
         custom_target(target_name,
-                      command : ['javac', '-classpath', '@OUTDIR@/../swig_java/GASDK.jar', '-d', '@OUTDIR@', '@INPUT@'],
+                      command : ['javac', '-implicit:none', '-bootclasspath', join_paths(java_home, 'jre', 'lib', 'rt.jar'), '-source', '1.7',
+                                 '-target', '1.7', '-classpath', '@OUTDIR@/../swig_java/GASDK.jar', '-d', '@OUTDIR@', '@INPUT@'],
                       input : source + '.java',
                       output : source + '.class',
                       depends : swig_target,
                       build_always : true)
         test(target_name, java,
-             args : ['-classpath', '.:../swig_java', '-Djava.library.path=.:..', source],
+             args : ['-classpath', '.:../swig_java/GASDK.jar', '-Djava.library.path=.:..', source],
              workdir : meson.current_build_dir())
     endforeach
 endif

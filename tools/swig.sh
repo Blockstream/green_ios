@@ -17,7 +17,10 @@ grep 'public final static' $3/GASDKConstants.java >>$result
 cat $5 >>$result
 echo '}' >>$result
 
-$JAVA_HOME/bin/javac -sourcepath $3/com/blockstream/libgreenaddress/ $3/com/blockstream/libgreenaddress/GASDK.java
+JAVAC_TARGET=1.7
+$JAVA_HOME/bin/javac -implicit:none -source $JAVAC_TARGET -target $JAVAC_TARGET \
+    -bootclasspath $JAVA_HOME/jre/lib/rt.jar \
+    -sourcepath $3/com/blockstream/libgreenaddress/ $3/com/blockstream/libgreenaddress/GASDK.java
 
 tmp_wally_java_dir=`mktemp -d`
 pushd . > /dev/null

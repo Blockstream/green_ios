@@ -59,6 +59,7 @@ if swig.found()
     res = run_command(python3, '-c', 'import os; print(os.environ["JAVA_HOME"], end = "")')
     if res.returncode() == 0
         java_home = res.stdout()
+        message('JAVA_HOME set to ' + java_home)
     else
         java_home = ''
     endif

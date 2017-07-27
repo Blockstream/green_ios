@@ -1,9 +1,12 @@
 #! /usr/bin/env bash
 set -e
+
 if [ "$(uname)" == "Darwin" ]; then
     export HOST_OS="x86_64-apple-darwin"
+    SED=gsed
 else
     export HOST_OS="i686-linux-gnu"
+    SED=sed
 fi
 
 ENABLE_SWIG_JAVA=disable-swig-java
@@ -14,6 +17,9 @@ fi
 cd "${MESON_BUILD_ROOT}/libwally-core"
 ./tools/cleanup.sh
 ./tools/autogen.sh
+
+$SED -i 's/\"wallycore\"/\"greenaddress\"/' ${MESON_BUILD_ROOT}/libwally-core/src/swig_java/swig.i
+
 if [ \( "$1" = "--ndk" \) ]; then
     . ${MESON_SOURCE_ROOT}/tools/env.sh
     export CFLAGS="$SDK_CFLAGS -fPIC -O3"
