@@ -31,7 +31,7 @@ if build_jni
     message('Building JNI bindings...')
     subdir('swig_java')
     link_whole += [libswig_java]
-    link_args += ['-Wl,--whole-archive', '-lwallycore', '-Wl,--no-whole-archive']
+    link_args += ['-Wl,--whole-archive', '-lwallycore', '-lsecp256k1', '-Wl,--no-whole-archive']
 else
     message('Disabled JNI bindings')
 endif
