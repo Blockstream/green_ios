@@ -10,7 +10,7 @@ else
 fi
 
 ENABLE_SWIG_JAVA=disable-swig-java
-if [ "x$JAVA_HOME" != "x" -a "$(uname)" != "Darwin" ]; then
+if [ "x$JAVA_HOME" != "x" ]; then
     ENABLE_SWIG_JAVA=enable-swig-java
 fi
 
@@ -42,7 +42,12 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     make -o configure -j$NUM_JOBS
     make -o configure install
 else
-    ./configure --$ENABLE_SWIG_JAVA --enable-static --disable-shared --disable-dependency-tracking --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+    ./configure --$ENABLE_SWIG_JAVA --host=$HOST_OS -enable-static --disable-shared --disable-dependency-tracking --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+
+    if [ "$(uname)" == "Darwin" ]; then
+        patch -p0 < ${MESON_SOURCE_ROOT}/tools/libtool.patch
+    fi
+
     make -j$NUM_JOBS
     make install
 fi

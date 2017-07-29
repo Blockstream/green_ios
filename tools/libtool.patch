@@ -1,0 +1,17 @@
+--- libtool	2017-07-28 18:43:54.000000000 +0100
++++ ../../libtool.hack	2017-07-28 18:45:53.000000000 +0100
+@@ -5590,12 +5590,12 @@
+ 	sleep 2
+       done
+     fi
+-    func_show_eval "(cd \$f_ex_an_ar_dir && $AR x \"\$f_ex_an_ar_oldlib\")" \
++    func_show_eval "(cd \$f_ex_an_ar_dir && ar x \"\$f_ex_an_ar_oldlib\")" \
+ 		   'stat=$?; rm -f "$lockfile"; exit $stat'
+     if test yes = "$lock_old_archive_extraction"; then
+       $opt_dry_run || rm -f "$lockfile"
+     fi
+-    if ($AR t "$f_ex_an_ar_oldlib" | sort | sort -uc >/dev/null 2>&1); then
++    if (ar t "$f_ex_an_ar_oldlib" | sort | sort -uc >/dev/null 2>&1); then
+      :
+     else
+       func_fatal_error "object name conflicts in archive: $f_ex_an_ar_dir/$f_ex_an_ar_oldlib"

@@ -21,7 +21,7 @@ endforeach
 if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_family().contains('mips')
     add_project_arguments(['-flto'], language : 'cpp')
     add_project_link_arguments(['-flto'], language : 'cpp')
-    if build_machine.system() == 'linux' or build_machine.cpu_family().contains('android')
+    if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
         add_project_link_arguments(['-fuse-ld=gold'], language : 'cpp')
     endif
 endif
@@ -71,7 +71,7 @@ if swig.found()
     endif
 endif
 
-build_jni = swig.found() and javac and java_home != '' and build_machine.system() == 'linux'
+build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_family().contains('iphone')
 
 # dependencies
 clang_format = find_program('clang-format', required : false)
@@ -101,7 +101,9 @@ foreach sub : subprojects
     subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)
 endforeach
 
-subproject_deps += dependency('libsecp256k1', static : true)
+if build_machine.system() == 'linux'
+    subproject_deps += dependency('libsecp256k1', static : true)
+endif
 
 # includes
 autobahn_inc_dir = join_paths(meson.build_root().split('/')[-1], 'autobahn-cpp')

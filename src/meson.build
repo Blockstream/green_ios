@@ -31,7 +31,11 @@ if build_jni
     message('Building JNI bindings...')
     subdir('swig_java')
     link_whole += [libswig_java]
-    link_args += ['-Wl,--whole-archive', '-lwallycore', '-lsecp256k1', '-Wl,--no-whole-archive']
+    if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+        link_args += ['-Wl,--whole-archive', '-lwallycore', '-lsecp256k1', '-Wl,--no-whole-archive']
+    else
+        link_args += ['-Wl,-all_load']
+    endif
 else
     message('Disabled JNI bindings')
 endif
