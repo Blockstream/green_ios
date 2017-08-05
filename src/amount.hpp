@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 
 namespace ga {
@@ -15,7 +16,7 @@ namespace sdk {
         static constexpr value_type coin_value = 100000000;
         static constexpr value_type cent = 1000000;
 
-        amount(value_type v)
+        amount(value_type v = 0)
             : m_value(v)
         {
         }
@@ -165,6 +166,36 @@ namespace sdk {
     inline bool operator!=(const amount& x, const amount::value_type& y) { return x.value() != y; }
 
     inline bool operator!=(amount::value_type x, const amount& y) { return x != y.value(); }
+
+    inline bool operator>(const amount& x, const amount& y) { return x.value() > y.value(); }
+
+    inline bool operator>(const amount& x, const amount::value_type& y) { return x.value() > y; }
+
+    inline bool operator>(amount::value_type x, const amount& y) { return x > y.value(); }
+
+    inline bool operator>=(const amount& x, const amount& y) { return x.value() >= y.value(); }
+
+    inline bool operator>=(const amount& x, const amount::value_type& y) { return x.value() >= y; }
+
+    inline bool operator>=(amount::value_type x, const amount& y) { return x >= y.value(); }
+
+    inline bool operator<(const amount& x, const amount& y) { return x.value() < y.value(); }
+
+    inline bool operator<(const amount& x, const amount::value_type& y) { return x.value() < y; }
+
+    inline bool operator<(amount::value_type x, const amount& y) { return x < y.value(); }
+
+    inline bool operator<=(const amount& x, const amount& y) { return x.value() <= y.value(); }
+
+    inline bool operator<=(const amount& x, const amount::value_type& y) { return x.value() <= y; }
+
+    inline bool operator<=(amount::value_type x, const amount& y) { return x <= y.value(); }
+
+    inline std::ostream& operator<<(std::ostream& os, const amount& x)
+    {
+        os << x.value();
+        return os;
+    }
 }
 }
 

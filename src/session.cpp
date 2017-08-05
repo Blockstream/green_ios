@@ -273,7 +273,7 @@ namespace sdk {
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
         auto authenticate_future = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                                        .then([&login_data](boost::future<autobahn::wamp_call_result> result) {
-                                           login_data.associate(result.get().argument<login_data::container>(0));
+                                           login_data = result.get().argument<msgpack::object>(0);
                                        });
 
         authenticate_future.get();
@@ -366,9 +366,7 @@ namespace sdk {
         const auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
         auto get_tx_list_future = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
                                       .then([&txs](boost::future<autobahn::wamp_call_result> result) {
-                                          const auto r = result.get();
-                                          txs.associate(r.argument<login_data::container>(0));
-                                          txs.associate(r.argument<msgpack::object>(0));
+                                          txs.associate(result.get().argument<msgpack::object>(0));
                                       });
 
         get_tx_list_future.get();
@@ -394,7 +392,7 @@ namespace sdk {
         auto receive_address_future
             = m_session->call("com.greenaddress.vault.fund", std::make_tuple(subaccount, true, addr_type_str))
                   .then([&address](boost::future<autobahn::wamp_call_result> result) {
-                      address = result.get().argument<receive_address::container>(0);
+                      address = result.get().argument<msgpack::object>(0);
                   });
 
         receive_address_future.get();
@@ -490,9 +488,20 @@ struct GA_session final : public ga::sdk::session {
 struct GA_dict final : public ga::sdk::detail::object_container<GA_dict> {
 };
 
+struct GA_tx final : public ga::sdk::tx {
+};
+
 struct GA_tx_list final : public ga::sdk::tx_list {
-    explicit GA_tx_list(const ga::sdk::tx_list& txs)
-        : ga::sdk::tx_list(txs)
+    GA_tx_list& operator=(const msgpack_object& data)
+    {
+        ga::sdk::tx_list::operator=(data);
+        return *this;
+    }
+};
+
+struct GA_tx_view final : public ga::sdk::tx::tx_view {
+    GA_tx_view(const ga::sdk::tx::tx_view& view = ga::sdk::tx::tx_view())
+        : ga::sdk::tx::tx_view(view)
     {
     }
 };
@@ -541,6 +550,18 @@ void GA_destroy_dict(struct GA_dict* dict) { delete dict; }
 int GA_destroy_tx_list(struct GA_tx_list* txs)
 {
     delete txs;
+    return GA_OK;
+}
+
+int GA_destroy_tx(const struct GA_tx* tx)
+{
+    delete tx;
+    return GA_OK;
+}
+
+int GA_destroy_tx_view(const struct GA_tx_view* view)
+{
+    delete view;
     return GA_OK;
 }
 
@@ -600,7 +621,9 @@ GA_SDK_DEFINE_C_FUNCTION_7(GA_get_tx_list, GA_session,
         const auto result
             = session->get_tx_list(std::make_pair(begin_date, end_date), subaccount, sort_by_lit, page_id, query);
         GA_SDK_RUNTIME_ASSERT(txs);
-        *txs = new GA_tx_list(result);
+        *txs = new GA_tx_list();
+        GA_SDK_RUNTIME_ASSERT(*txs);
+        **txs = result.get_handle().get();
     },
     time_t, begin_date, time_t, end_date, size_t, subaccount, int, sort_by, size_t, page_id, const char*, query,
     struct GA_tx_list**, txs);
@@ -622,7 +645,7 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
     [](struct GA_tx_list* txs, const char* path, struct GA_dict** value) {
         GA_SDK_RUNTIME_ASSERT(path);
         GA_SDK_RUNTIME_ASSERT(value);
-        const auto v = txs->get<GA_dict::container>(path);
+        const auto v = txs->get<msgpack::object>(path);
         *value = new struct GA_dict();
         (*value)->associate(v);
     },
@@ -637,6 +660,117 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_tx_list_to_json, GA_tx_list,
         *(*output + v.size()) = 0;
     },
     char**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_list_get_size, GA_tx_list,
+    [](struct GA_tx_list* txs, size_t* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        std::cout << "SIZ " << txs->size() << std::endl;
+        *output = txs->size();
+    },
+    size_t*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_tx_list_get_tx, GA_tx_list,
+    [](struct GA_tx_list* txs, size_t i, struct GA_tx** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        GA_SDK_RUNTIME_ASSERT(i < txs->size());
+        *output = new GA_tx;
+        (*output)->associate(*(txs->begin() + i));
+    },
+    size_t, i, struct GA_tx**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_populate_view, GA_tx,
+    [](struct GA_tx* tx, struct GA_tx_view** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = new GA_tx_view;
+        **output = tx->populate_view();
+    },
+    struct GA_tx_view**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_tx_view_get_received_on, GA_tx_view,
+    [](struct GA_tx_view* view, const char** output, size_t count) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        for (size_t i = 0; i < std::min(count, view->received_on.size()); ++i) {
+            output[i] = view->received_on[i].c_str();
+        }
+    },
+    const char**, output, size_t, count);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_counterparty, GA_tx_view,
+    [](struct GA_tx_view* view, const char** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->counterparty.c_str();
+    },
+    const char**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_hash, GA_tx_view,
+    [](struct GA_tx_view* view, const char** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->hash.c_str();
+    },
+    const char**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_double_spent_by, GA_tx_view,
+    [](struct GA_tx_view* view, const char** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->double_spent_by.c_str();
+    },
+    const char**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_value, GA_tx_view,
+    [](struct GA_tx_view* view, int64_t* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->value.value();
+    },
+    int64_t*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_fee, GA_tx_view,
+    [](struct GA_tx_view* view, int64_t* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->fee.value();
+    },
+    int64_t*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_block_height, GA_tx_view,
+    [](struct GA_tx_view* view, size_t* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->block_height;
+    },
+    size_t*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_size, GA_tx_view,
+    [](struct GA_tx_view* view, size_t* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->size;
+    },
+    size_t*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_instant, GA_tx_view,
+    [](struct GA_tx_view* view, int* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->instant;
+    },
+    int*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_replaceable, GA_tx_view,
+    [](struct GA_tx_view* view, int* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->replaceable;
+    },
+    int*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_is_spent, GA_tx_view,
+    [](struct GA_tx_view* view, int* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = view->is_spent;
+    },
+    int*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_type, GA_tx_view,
+    [](struct GA_tx_view* view, int* output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        *output = static_cast<int>(view->type);
+    },
+    int*, output);
 
 namespace {
 template <typename Obj> void c_invoke_convert_to_bool(const Obj* obj, const char* path, int* value)

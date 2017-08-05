@@ -10,4 +10,11 @@ try session.connect(network: Network.TestNet, debug: true)
 try session.registerUser(mnemonic: DEFAULT_MNEMONIC)
 try session.login(mnemonic: DEFAULT_MNEMONIC)
 
-let txs: [String: Any]? = try session.getTxList(begin: Date(timeIntervalSinceNow: -24*3600), end: Date(), subaccount: 0)
+let txs: [Transaction]? = try session.getTxList(begin: Date(timeIntervalSinceNow: -24*3600*28), end: Date(), subaccount: 0)
+if let t = txs {
+    for tx in t {
+        let view = try! tx.getView()
+        let amount = try! view.getValue()
+        print(amount)
+    }
+}

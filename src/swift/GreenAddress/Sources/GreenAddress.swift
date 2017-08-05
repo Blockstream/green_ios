@@ -12,72 +12,120 @@ public enum Network: Int32 {
     case TestNet = 2
 }
 
-public struct Transaction {
+public class Transaction {
     public enum TransactionType {
         case Out
         case In
-        case Recovery
+        case Redeposit
     }
 
-    let amount: Int64
-    let type: TransactionType
-    let tx: [String: Any]
+    public class View {
+        var view: OpaquePointer? = nil
 
-    public init(tx: [String: Any]) {
-        self.tx = tx;
-
-        var amount: Int64 = 0
-
-        let epsList : [[String: Any]] = tx["eps"] as! [[String: Any]]
-        for eps in epsList {
-            let isCredit = eps["is_credit"] as! Bool
-            let isRelevant = eps["is_relevant"] as! Bool
-
-            if (!isRelevant) {
-                continue;
-            }
-
-            if let value_str = eps["value"] {
-
-                let value = Int64(value_str as! String)
-
-                if (!isCredit) {
-                    amount -= value!
-                }
-                else {
-                    amount += value!
-                }
+        init(tx: OpaquePointer) throws {
+            guard GA_tx_populate_view(tx, &view) == GA_OK else {
+                throw GaError.GenericError
             }
         }
 
-        if amount >= 0 {
-            self.type = TransactionType.In
-        }
-        else {
-            self.type = TransactionType.Out
+        deinit {
+            GA_destroy_tx_view(view)
         }
 
-        self.amount = amount
+        public func getValue() throws -> Int64 {
+            var value: Int64 = 0
+            guard GA_tx_view_get_value(view, &value) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return value;
+        }
+
+        public func getFee() throws -> Int64 {
+            var fee: Int64 = 0
+            guard GA_tx_view_get_fee(view, &fee) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return fee;
+        }
+
+        public func getHash() throws -> String {
+            var bytes: UnsafePointer<Int8>? = nil
+            guard GA_tx_view_get_hash(view, &bytes) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return String(cString: bytes!)
+        }
+
+        public func getCounterparty() throws -> String {
+            var bytes: UnsafePointer<Int8>? = nil
+            guard GA_tx_view_get_counterparty(view, &bytes) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return String(cString: bytes!)
+        }
+
+        public func getDoubleSpentBy() throws -> String {
+            var bytes: UnsafePointer<Int8>? = nil
+            guard GA_tx_view_get_double_spent_by(view, &bytes) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return String(cString: bytes!)
+        }
+
+        public func getInstant() throws -> Bool {
+            var instant: Int32 = 0
+            guard GA_tx_view_get_instant(view, &instant) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return instant != 0
+        }
+
+        public func getReplaceable() throws -> Bool {
+            var replaceable: Int32 = 0
+            guard GA_tx_view_get_replaceable(view, &replaceable) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return replaceable != 0
+        }
+
+        public func getIsSpent() throws -> Bool {
+            var isSpent: Int32 = 0
+            guard GA_tx_view_get_is_spent(view, &isSpent) == GA_OK else {
+                throw GaError.GenericError
+            }
+            return isSpent != 0
+        }
+
+        public func getType() throws -> TransactionType {
+            var type: Int32 = 0
+            guard GA_tx_view_get_type(view, &type) == GA_OK else {
+                throw GaError.GenericError
+            }
+            switch type {
+                case 0:
+                    return TransactionType.Out
+                case 1:
+                    return TransactionType.In
+                case 2:
+                    return TransactionType.Redeposit
+                default:
+                    throw GaError.GenericError
+            }
+        }
     }
 
-    func getAs<T>(key: String) -> T {
-        return tx[key] as! T
+    var tx: OpaquePointer? = nil;
+
+    public init(tx: OpaquePointer) {
+        self.tx = tx
     }
 
-    public func getFee() -> Int64 {
-        return getAs(key: "fee")
+    deinit {
+        GA_destroy_tx(tx)
     }
 
-    public func isInstant() -> Bool {
-        return getAs(key: "instant")
-    }
-
-    public func getType() -> TransactionType {
-        return self.type
-    }
-
-    public func getAmount() -> Int64 {
-        return self.amount
+    public func getView() throws -> View {
+        return try! View(tx: tx!)
     }
 }
 
@@ -112,14 +160,6 @@ public class Session {
         }
     }
 
-    func transactionsFromDict(txList: [[String: Any]]) -> [Transaction] {
-        var txs = [Transaction]()
-        for tx in txList {
-            txs.append(Transaction(tx: tx))
-        }
-        return txs
-    }
-
     public func getTxList(begin: Date, end: Date, subaccount: Int) throws -> [Transaction]? {
         var txs: OpaquePointer? = nil
         let startDate = Int(begin.timeIntervalSince1970)
@@ -131,31 +171,21 @@ public class Session {
             GA_destroy_tx_list(txs)
         }
 
-        var bytes : UnsafeMutablePointer<Int8>? = nil
-        guard GA_convert_tx_list_to_json(txs, &bytes) == GA_OK else {
+        var count: Int = 0;
+        guard GA_tx_list_get_size(txs, &count) == GA_OK else {
             throw GaError.GenericError
         }
-        defer {
-            GA_destroy_string(bytes)
-        }
 
-        var dict: [String: Any]? = nil
-
-        let json: String = String(cString: bytes!)
-        if let data = json.data(using: .utf8) {
-            do {
-                dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-            } catch {
-                return nil
+        var txss = [Transaction]()
+        for i in 0..<count {
+            var tx: OpaquePointer? = nil;
+            guard GA_tx_list_get_tx(txs, i, &tx) == GA_OK else {
+                throw GaError.GenericError;
             }
+            txss.append(Transaction(tx: tx!))
         }
 
-        if let list = dict?["list"] {
-            return transactionsFromDict(txList: list as! [[String: Any]])
-        }
-        else {
-            return nil;
-        }
+        return txss
     }
 
     public func getReceiveAddress() -> String? {
