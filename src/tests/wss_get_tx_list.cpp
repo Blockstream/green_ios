@@ -32,6 +32,8 @@ int main(int argc, char** argv)
             std::make_pair(system_clock::to_time_t(now_28_days_before), system_clock::to_time_t(now)), 0, '+'_ts, 0,
             "");
         GA_SDK_RUNTIME_ASSERT(txs.get<std::string>("fiat_currency") == "USD");
+
+        const auto balance = session.get_balance();
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

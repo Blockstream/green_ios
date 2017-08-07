@@ -171,7 +171,7 @@ public class Session {
             GA_destroy_tx_list(txs)
         }
 
-        var count: Int = 0;
+        var count: Int = 0
         guard GA_tx_list_get_size(txs, &count) == GA_OK else {
             throw GaError.GenericError
         }
@@ -180,7 +180,7 @@ public class Session {
         for i in 0..<count {
             var tx: OpaquePointer? = nil;
             guard GA_tx_list_get_tx(txs, i, &tx) == GA_OK else {
-                throw GaError.GenericError;
+                throw GaError.GenericError
             }
             txss.append(Transaction(tx: tx!))
         }
@@ -188,15 +188,63 @@ public class Session {
         return txss
     }
 
-    public func getReceiveAddress() -> String? {
+    public func getReceiveAddress() throws -> String {
         var bytes : UnsafeMutablePointer<Int8>? = nil
         guard GA_get_receive_address(session, GA_ADDRESS_TYPE_P2SH, 0, &bytes) == GA_OK else {
-            return nil 
+            throw GaError.GenericError
         }
         defer {
             GA_destroy_string(bytes)
         }
         return String(cString: bytes!)
+    }
+
+    func convertOpaqueJsonToDict(o: OpaquePointer) throws -> [String: Any]? {
+        var bytes: UnsafeMutablePointer<Int8>? = nil
+        guard GA_convert_balance_to_json(o, &bytes) == GA_OK else {
+            throw GaError.GenericError
+        }
+        defer {
+            GA_destroy_string(bytes)
+        }
+
+        var dict: [String: Any]? = nil
+
+        let json = String(cString: bytes!)
+        if let data = json.data(using: .utf8) {
+            do {
+                dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            }
+            catch {
+                return nil
+            }
+        }
+
+        return dict
+    }
+
+    public func getBalanceForSubaccount(subaccount: UInt32, numConfs: UInt32) throws -> [String: Any]? {
+        var balance: OpaquePointer? = nil
+        guard GA_get_balance_for_subaccount(session, Int(subaccount), Int(numConfs), &balance) == GA_OK else {
+            throw GaError.GenericError
+        }
+        defer {
+            GA_destroy_balance(balance)
+        }
+
+        return try convertOpaqueJsonToDict(o: balance!)
+    }
+
+    public func getBalance(numConfs: UInt32) throws -> [String: Any]? {
+        var balance: OpaquePointer? = nil
+        guard GA_get_balance(session, Int(numConfs), &balance) == GA_OK else {
+            throw GaError.GenericError
+        }
+        defer {
+            GA_destroy_balance(balance)
+        }
+
+        return try convertOpaqueJsonToDict(o: balance!)
     }
 }
 

@@ -18,3 +18,7 @@ if let t = txs {
         print(amount)
     }
 }
+
+
+let balance: [String: Any]? = try session.getBalance(numConfs: 0)
+print(balance!)

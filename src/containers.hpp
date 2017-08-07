@@ -190,6 +190,14 @@ namespace sdk {
             return *this;
         }
     };
+
+    struct balance : public detail::object_container<balance> {
+        balance& operator=(const msgpack_object& data)
+        {
+            associate(data);
+            return *this;
+        }
+    };
 }
 }
 

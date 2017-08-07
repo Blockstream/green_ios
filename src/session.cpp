@@ -87,6 +87,7 @@ namespace sdk {
             tx_list_sort_by sort_by, size_t page_id, const std::string& query);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
+        template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -420,6 +421,21 @@ namespace sdk {
         return address;
     }
 
+    template <typename T> balance session::session_impl::get_balance(T subaccount, size_t num_confs) const
+    {
+        balance b;
+
+        auto balance_future
+            = m_session->call("com.greenaddress.txs.get_balance", std::make_tuple(subaccount, num_confs))
+                  .then([&b](boost::future<autobahn::wamp_call_result> result) {
+                      b = result.get().argument<msgpack::object>(0);
+                  });
+
+        balance_future.get();
+
+        return b;
+    }
+
     void session::connect(network_parameters params, bool debug)
     {
         m_impl = std::make_shared<session::session_impl>(std::move(params), debug);
@@ -465,6 +481,18 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return m_impl->get_receive_address(addr_type, subaccount);
     }
+
+    balance session::get_balance_for_subaccount(size_t subaccount, size_t num_confs) const
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_balance(subaccount, num_confs);
+    }
+
+    balance session::get_balance(size_t num_confs) const
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_balance("all", num_confs);
+    }
 }
 }
 
@@ -503,6 +531,14 @@ struct GA_tx_view final : public ga::sdk::tx::tx_view {
     GA_tx_view(const ga::sdk::tx::tx_view& view = ga::sdk::tx::tx_view())
         : ga::sdk::tx::tx_view(view)
     {
+    }
+};
+
+struct GA_balance final : public ga::sdk::balance {
+    GA_balance& operator=(const msgpack_object& data)
+    {
+        ga::sdk::balance::operator=(data);
+        return *this;
     }
 };
 
@@ -565,6 +601,12 @@ int GA_destroy_tx_view(const struct GA_tx_view* view)
     return GA_OK;
 }
 
+int GA_destroy_balance(const struct GA_balance* balance)
+{
+    delete balance;
+    return GA_OK;
+}
+
 GA_SDK_DEFINE_C_FUNCTION_2(GA_connect, GA_session,
     [](struct GA_session* session, int network, int debug) {
         auto&& params = network == GA_NETWORK_REGTEST ? ga::sdk::make_regtest_network()
@@ -621,7 +663,7 @@ GA_SDK_DEFINE_C_FUNCTION_7(GA_get_tx_list, GA_session,
         const auto result
             = session->get_tx_list(std::make_pair(begin_date, end_date), subaccount, sort_by_lit, page_id, query);
         GA_SDK_RUNTIME_ASSERT(txs);
-        *txs = new GA_tx_list();
+        *txs = new GA_tx_list;
         GA_SDK_RUNTIME_ASSERT(*txs);
         **txs = result.get_handle().get();
     },
@@ -629,7 +671,7 @@ GA_SDK_DEFINE_C_FUNCTION_7(GA_get_tx_list, GA_session,
     struct GA_tx_list**, txs);
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_get_receive_address, GA_session,
-    [](struct GA_session* session, int addr_type, int subaccount, char** address) {
+    [](struct GA_session* session, int addr_type, size_t subaccount, char** address) {
         namespace sdk = ga::sdk;
         GA_SDK_RUNTIME_ASSERT(address);
         sdk::address_type t = addr_type == GA_ADDRESS_TYPE_P2SH ? sdk::address_type::p2sh : sdk::address_type::p2wsh;
@@ -639,7 +681,25 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_get_receive_address, GA_session,
         std::copy(a.begin(), a.end(), *address);
         *(*address + a.size()) = 0;
     },
-    int, addr_type, int, subaccount, char**, address);
+    int, addr_type, size_t, subaccount, char**, address);
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_get_balance_for_subaccount, GA_session,
+    [](struct GA_session* session, size_t subaccount, size_t num_confs, struct GA_balance** balance) {
+        GA_SDK_RUNTIME_ASSERT(balance);
+        const auto result = session->get_balance_for_subaccount(subaccount, num_confs);
+        *balance = new GA_balance;
+        **balance = result.get_handle().get();
+    },
+    size_t, subaccount, size_t, num_confs, struct GA_balance**, balance);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_balance, GA_session,
+    [](struct GA_session* session, size_t num_confs, struct GA_balance** balance) {
+        GA_SDK_RUNTIME_ASSERT(balance);
+        const auto result = session->get_balance(num_confs);
+        *balance = new GA_balance;
+        **balance = result.get_handle().get();
+    },
+    size_t, num_confs, struct GA_balance**, balance);
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
     [](struct GA_tx_list* txs, const char* path, struct GA_dict** value) {
@@ -771,6 +831,16 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_type, GA_tx_view,
         *output = static_cast<int>(view->type);
     },
     int*, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_balance_to_json, GA_balance,
+    [](struct GA_balance* balance, char** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        const auto& v = balance->get_json();
+        *output = new char[v.size() + 1];
+        std::copy(v.begin(), v.end(), *output);
+        *(*output + v.size()) = 0;
+    },
+    char**, output);
 
 namespace {
 template <typename Obj> void c_invoke_convert_to_bool(const Obj* obj, const char* path, int* value)

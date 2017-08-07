@@ -102,6 +102,9 @@ namespace sdk {
 
         receive_address get_receive_address(address_type addr_type = address_type::p2wsh, size_t subaccount = 0) const;
 
+        balance get_balance_for_subaccount(size_t subaccount, size_t num_confs = 0) const;
+        balance get_balance(size_t num_confs = 0) const;
+
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);
 

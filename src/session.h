@@ -138,7 +138,29 @@ int GA_get_tx_list(struct GA_session* session, time_t begin_date, time_t end_dat
  *
  * GA_ERROR if address could not be generated.
  */
-int GA_get_receive_address(struct GA_session* session, int addr_type, int subaccount, char** address);
+int GA_get_receive_address(struct GA_session* session, int addr_type, size_t subaccount, char** address);
+
+/**
+ * The sum of unspent outputs destined to user’s wallet.
+ * @session The server session to use.
+ * @subaccount The subaccount pointer.
+ * @num_confs The number of required confirmations.
+ * @balance The returned balance.
+ *
+ * GA_ERROR if balance could not be retrieved.
+ */
+int GA_get_balance_for_subaccount(
+    struct GA_session* session, size_t subaccount, size_t num_confs, struct GA_balance** balance);
+
+/**
+ * The sum of unspent outputs destined to user’s wallet.
+ * @session The server session to use.
+ * @num_confs The number of required confirmations.
+ * @balance The returned balance.
+ *
+ * GA_ERROR if balance could not be retrieved.
+ */
+int GA_get_balance(struct GA_session* session, size_t num_confs, struct GA_balance** balance);
 
 #ifdef __cplusplus
 }

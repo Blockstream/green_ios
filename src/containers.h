@@ -36,6 +36,9 @@ struct GA_tx;
 /** An view onto a GA transaction */
 struct GA_tx_view;
 
+/** An balance representation */
+struct GA_balance;
+
 /**
  *
  */
@@ -85,6 +88,11 @@ int GA_tx_view_get_type(struct GA_tx_view* view, int* output);
 /**
  *
  */
+int GA_convert_balance_to_json(struct GA_balance* balance, char** output);
+
+/**
+ *
+ */
 void GA_destroy_dict(struct GA_dict* dict);
 
 /**
@@ -107,6 +115,11 @@ int GA_destroy_tx(const struct GA_tx* tx);
  *
  */
 int GA_destroy_tx_view(const struct GA_tx_view* view);
+
+/**
+ *
+ */
+int GA_destroy_balance(const struct GA_balance* balance);
 
 #ifdef __cplusplus
 }
