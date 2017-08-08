@@ -2,6 +2,8 @@
 #define GA_SDK_ASSERTION_HPP
 #pragma once
 
+#include <string>
+
 namespace ga {
 namespace sdk {
     void runtime_assert_message(
