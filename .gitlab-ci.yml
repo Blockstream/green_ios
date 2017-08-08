@@ -3,7 +3,7 @@ cache:
   - deps_cache
 
 test_gcc:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -11,7 +11,7 @@ test_gcc:
     - ./tools/build.sh --gcc
 
 test_clang:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -19,7 +19,7 @@ test_clang:
     - ./tools/build.sh --clang
 
 test_clang_ndk_armeabi:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -27,7 +27,7 @@ test_clang_ndk_armeabi:
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk armeabi
 
 test_clang_ndk_armeabi-v7a:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -35,7 +35,7 @@ test_clang_ndk_armeabi-v7a:
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk armeabi-v7a
 
 test_clang_ndk_arm64-v8a:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -43,7 +43,7 @@ test_clang_ndk_arm64-v8a:
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk arm64-v8a
 
 test_clang_ndk_mips:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -51,7 +51,7 @@ test_clang_ndk_mips:
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk mips
 
 test_clang_ndk_mips64:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -59,7 +59,7 @@ test_clang_ndk_mips64:
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk mips64
 
 test_clang_ndk_x86:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:
@@ -67,7 +67,7 @@ test_clang_ndk_x86:
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86
 
 test_clang_ndk_x86_64:
-  image: greenaddress/ci:latest
+  image: greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
   tags:
     - ga
   script:

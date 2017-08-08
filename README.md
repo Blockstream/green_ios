@@ -67,7 +67,7 @@ This doesn't require any of the previous steps but requires docker installed; it
 
 or if you don't want to build it locally
 
-* docker pull greenaddress/ci:latest
+* docker pull greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
 * docker run -v $PWD:/sdk greenaddress/ci
 
 in both cases (built or fetched) this will build the sdk with clang by default
