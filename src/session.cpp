@@ -198,18 +198,6 @@ namespace sdk {
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
-        unsigned char salt[] = "greenaddress_path";
-        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> hash{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(mnemonic.data()),
-                                  mnemonic.length(), salt, sizeof(salt), 0, 2048, hash.data(), hash.size())
-            == WALLY_OK);
-
-        const std::string key = "GreenAddress.it HD wallet path";
-        std::array<unsigned char, HMAC_SHA512_LEN> path{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(wally_hmac_sha512(reinterpret_cast<const unsigned char*>(key.data()), key.length(),
-                                  hash.data(), hash.size(), path.data(), path.size())
-            == WALLY_OK);
-
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
         GA_SDK_RUNTIME_ASSERT(
@@ -220,6 +208,17 @@ namespace sdk {
                                   m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
             == WALLY_OK);
         wally_ext_key_ptr master_key(p, &bip32_key_free);
+
+        std::array<unsigned char, sizeof(master_key->chain_code) + sizeof(master_key->pub_key)> path_data;
+        std::copy(master_key->chain_code, master_key->chain_code + sizeof(master_key->chain_code), path_data.data());
+        std::copy(master_key->pub_key, master_key->pub_key + sizeof(master_key->pub_key),
+            path_data.data() + sizeof(master_key->chain_code));
+
+        const std::string key = "GreenAddress.it HD wallet path";
+        std::array<unsigned char, HMAC_SHA512_LEN> path{ { 0 } };
+        GA_SDK_RUNTIME_ASSERT(wally_hmac_sha512(reinterpret_cast<const unsigned char*>(key.data()), key.length(),
+                                  path_data.data(), path_data.size(), path.data(), path.size())
+            == WALLY_OK);
 
         auto pub_key = hex_from_bytes(master_key->pub_key, sizeof(master_key->pub_key));
         auto chain_code = hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code));
