@@ -4,6 +4,7 @@ import ga.sdk
 
 public enum GaError: Error {
     case GenericError
+    case ReconnectError
 }
 
 public enum Network: Int32 {
@@ -132,10 +133,23 @@ public class Transaction {
 public class Session {
     var session: OpaquePointer? = nil
 
-    public init() throws {
-        guard GA_create_session(&session) == GA_OK else {
-            throw GaError.GenericError
+    func errorWrapper(_ r: Int32) throws {
+        guard r == GA_OK else {
+            switch r {
+                case GA_RECONNECT:
+                    throw GaError.ReconnectError
+                default:
+                    throw GaError.GenericError
+            }
         }
+    }
+
+    func callWrapper(fun call: @autoclosure () -> Int32) throws {
+        try errorWrapper(call())
+    }
+
+    public init() throws {
+        try callWrapper(fun: GA_create_session(&session))
     }
 
     deinit {
@@ -143,30 +157,22 @@ public class Session {
     }
 
     public func connect(network: Network, debug: Bool = false) throws {
-        guard GA_connect(session, network.rawValue, debug ? GA_TRUE : GA_FALSE) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_connect(session, network.rawValue, debug ? GA_TRUE : GA_FALSE))
     }
 
     public func registerUser(mnemonic: String) throws {
-        guard GA_register_user(session, mnemonic) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_register_user(session, mnemonic))
     }
 
     public func login(mnemonic: String) throws {
-        guard GA_login(session, mnemonic) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_login(session, mnemonic))
     }
 
     public func getTxList(begin: Date, end: Date, subaccount: Int) throws -> [Transaction]? {
         var txs: OpaquePointer? = nil
         let startDate = Int(begin.timeIntervalSince1970)
         let endDate = Int(end.timeIntervalSince1970)
-        guard GA_get_tx_list(session, startDate, endDate, subaccount, 0, 0, String(), &txs) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_get_tx_list(session, startDate, endDate, subaccount, 0, 0, String(), &txs))
         defer {
             GA_destroy_tx_list(txs)
         }
@@ -190,9 +196,7 @@ public class Session {
 
     public func getReceiveAddress() throws -> String {
         var bytes : UnsafeMutablePointer<Int8>? = nil
-        guard GA_get_receive_address(session, GA_ADDRESS_TYPE_P2SH, 0, &bytes) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_get_receive_address(session, GA_ADDRESS_TYPE_P2SH, 0, &bytes))
         defer {
             GA_destroy_string(bytes)
         }
@@ -201,9 +205,7 @@ public class Session {
 
     func convertOpaqueJsonToDict(o: OpaquePointer) throws -> [String: Any]? {
         var bytes: UnsafeMutablePointer<Int8>? = nil
-        guard GA_convert_balance_to_json(o, &bytes) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_convert_balance_to_json(o, &bytes))
         defer {
             GA_destroy_string(bytes)
         }
@@ -225,9 +227,7 @@ public class Session {
 
     public func getBalanceForSubaccount(subaccount: UInt32, numConfs: UInt32) throws -> [String: Any]? {
         var balance: OpaquePointer? = nil
-        guard GA_get_balance_for_subaccount(session, Int(subaccount), Int(numConfs), &balance) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_get_balance_for_subaccount(session, Int(subaccount), Int(numConfs), &balance))
         defer {
             GA_destroy_balance(balance)
         }
@@ -237,9 +237,7 @@ public class Session {
 
     public func getBalance(numConfs: UInt32) throws -> [String: Any]? {
         var balance: OpaquePointer? = nil
-        guard GA_get_balance(session, Int(numConfs), &balance) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_get_balance(session, Int(numConfs), &balance))
         defer {
             GA_destroy_balance(balance)
         }

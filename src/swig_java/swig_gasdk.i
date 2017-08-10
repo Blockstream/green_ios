@@ -161,6 +161,11 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 %returns_struct(GA_convert_tx_list_path_to_dict, GA_dict)
 %returns_string(GA_convert_tx_list_path_to_string)
 %returns_string(GA_get_receive_addresss)
+%returns_string(GA_tx_view_get_received_on)
+%returns_string(GA_tx_view_get_counterparty)
+%returns_string(GA_tx_view_get_hash)
+%returns_string(GA_tx_view_get_double_spent_by)
+%returns_string(GA_convert_balance_to_json)
 
 %include "../common.h"
 %include "../containers.h"

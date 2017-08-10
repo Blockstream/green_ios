@@ -16,6 +16,7 @@
 #include <wally_crypto.h>
 
 #include "assertion.hpp"
+#include "exception.hpp"
 #include "session.hpp"
 
 namespace ga {
@@ -91,7 +92,6 @@ namespace sdk {
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
             wally_ext_key_ptr master_key, const std::string& challenge);
 
-    private:
         bool connect_with_tls() const { return boost::algorithm::starts_with(m_params.gait_wamp_url(), "wss://"); }
 
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
@@ -230,7 +230,6 @@ namespace sdk {
                                    .then([](boost::future<autobahn::wamp_call_result> result) {
                                        GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
                                    });
-
         register_future.get();
     }
 
@@ -433,11 +432,34 @@ namespace sdk {
         return b;
     }
 
+    template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
+    {
+        try {
+            return f(std::forward<Args>(args)...);
+        } catch (const autobahn::abort_error& e) {
+            disconnect();
+            throw reconnect_error();
+        } catch (const autobahn::network_error& e) {
+            disconnect();
+            throw reconnect_error();
+        } catch (const autobahn::no_transport_error& e) {
+            disconnect();
+            throw reconnect_error();
+        } catch (const autobahn::protocol_error& e) {
+            disconnect();
+            throw reconnect_error();
+        } catch (const std::exception& e) {
+            throw;
+        }
+        __builtin_unreachable();
+    }
+
     void session::connect(network_parameters params, bool debug)
     {
-        m_impl = std::make_shared<session::session_impl>(std::move(params), debug);
-
-        m_impl->connect();
+        exception_wrapper([&] {
+            m_impl = std::make_shared<session::session_impl>(std::move(params), debug);
+            m_impl->connect();
+        });
     }
 
     void session::disconnect() { m_impl.reset(); }
@@ -445,50 +467,51 @@ namespace sdk {
     void session::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        m_impl->register_user(mnemonic, user_agent);
+
+        exception_wrapper([&] { m_impl->register_user(mnemonic, user_agent); });
     }
 
     login_data session::login(const std::string& mnemonic, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return m_impl->login(mnemonic, user_agent);
+        return exception_wrapper([&] { return m_impl->login(mnemonic, user_agent); });
     }
 
     void session::change_settings_helper(settings key, const std::map<int, int>& args)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        m_impl->change_settings_helper(key, args);
+        return exception_wrapper([&] { m_impl->change_settings_helper(key, args); });
     }
 
     tx_list session::get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
         tx_list_sort_by sort_by, size_t page_id, const std::string& query)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return m_impl->get_tx_list(date_range, subaccount, sort_by, page_id, query);
+        return exception_wrapper([&] { return m_impl->get_tx_list(date_range, subaccount, sort_by, page_id, query); });
     }
 
     void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        m_impl->subscribe(topic, handler);
+        exception_wrapper([&] { m_impl->subscribe(topic, handler); });
     }
 
-    receive_address session::get_receive_address(address_type addr_type, size_t subaccount) const
+    receive_address session::get_receive_address(address_type addr_type, size_t subaccount)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return m_impl->get_receive_address(addr_type, subaccount);
+        return exception_wrapper([&] { return m_impl->get_receive_address(addr_type, subaccount); });
     }
 
-    balance session::get_balance_for_subaccount(size_t subaccount, size_t num_confs) const
+    balance session::get_balance_for_subaccount(size_t subaccount, size_t num_confs)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return m_impl->get_balance(subaccount, num_confs);
+        return exception_wrapper([&] { return m_impl->get_balance(subaccount, num_confs); });
     }
 
-    balance session::get_balance(size_t num_confs) const
+    balance session::get_balance(size_t num_confs)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return m_impl->get_balance("all", num_confs);
+        return exception_wrapper([&] { return m_impl->get_balance("all", num_confs); });
     }
 }
 }

@@ -100,13 +100,15 @@ namespace sdk {
 
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
 
-        receive_address get_receive_address(address_type addr_type = address_type::p2wsh, size_t subaccount = 0) const;
+        receive_address get_receive_address(address_type addr_type = address_type::p2wsh, size_t subaccount = 0);
 
-        balance get_balance_for_subaccount(size_t subaccount, size_t num_confs = 0) const;
-        balance get_balance(size_t num_confs = 0) const;
+        balance get_balance_for_subaccount(size_t subaccount, size_t num_confs = 0);
+        balance get_balance(size_t num_confs = 0);
 
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);
+
+        template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);
 
     private:
         class session_impl;
