@@ -25,13 +25,13 @@ namespace ga {
 namespace sdk {
 
     // use the same strategy as bitcoin core
-    void get_random_bytes(void* bytes, std::size_t siz)
+    void get_random_bytes(std::size_t num_bytes, void* bytes, std::size_t siz)
     {
         static std::mutex curr_state_mutex;
         static std::array<unsigned char, 32> curr_state = { { 0 } };
         static uint64_t nonce = 0;
 
-        GA_SDK_RUNTIME_ASSERT(siz <= 32);
+        GA_SDK_RUNTIME_ASSERT(num_bytes <= 32 && num_bytes <= siz);
 
         int64_t tsc = 0;
 #ifdef __x86_64
@@ -111,23 +111,23 @@ namespace sdk {
 }
 }
 
-int GA_get_random_bytes(unsigned char* bytes, size_t siz)
+int GA_get_random_bytes(size_t num_bytes, unsigned char* bytes, size_t siz)
 {
     try {
-        ga::sdk::get_random_bytes(bytes, siz);
+        ga::sdk::get_random_bytes(num_bytes, bytes, siz);
         return GA_OK;
     } catch (const std::exception& ex) {
         return GA_ERROR;
     }
 }
 
-int GA_generate_mnemonic(const char* lang, char** mnemonic)
+int GA_generate_mnemonic(const char* lang, char** output)
 {
     try {
-        auto entropy = ga::sdk::get_random_bytes<32>();
+        const auto entropy = ga::sdk::get_random_bytes<32>();
         const struct words* w = nullptr;
         GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang, &w) == WALLY_OK);
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, entropy.data(), entropy.size(), mnemonic) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, entropy.data(), entropy.size(), output) == WALLY_OK);
         return GA_OK;
     } catch (const std::exception& ex) {
         return GA_ERROR;

@@ -3,6 +3,7 @@
 #include "../common.h"
 #include "../containers.h"
 #include "../session.h"
+#include "../utils.h"
 #include <stdint.h>
 
 static int check_result(JNIEnv *jenv, int result)
@@ -58,6 +59,22 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
     return ret;
 }
 
+static unsigned char* malloc_or_throw(JNIEnv *jenv, size_t len) {
+    unsigned char *p = (unsigned char *)malloc(len);
+    if (!p) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "Out of memory");
+    }
+    return p;
+}
+
+static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len) {
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, len);
+    if (ret) {
+        (*jenv)->SetByteArrayRegion(jenv, ret, 0, len, (const jbyte*)p);
+    }
+    return ret;
+}
+
 %}
 
 %javaconst(1);
@@ -101,7 +118,10 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 /* Don't use our int return value except for exception checking */
 %typemap(out) int %{
 %}
-%typemap(argout, noblock=1) (char **output) {
+%typemap(in,noblock=1,numinputs=0) char** output(char* temp = 0) {
+      $1 = &temp;
+}
+%typemap(argout, noblock=1) (char** output) {
     if ($1) {
         $result = (*jenv)->NewStringUTF(jenv, *$1);
         GA_destroy_string(*$1);
@@ -145,6 +165,30 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 %define %returns_string(FUNC)
 %return_decls(FUNC, String, jstring)
 %enddef
+%define %returns_array_(FUNC, ARRAYARG, LENARG, LEN)
+%return_decls(FUNC, byte[], jbyteArray)
+%exception FUNC {
+    int skip = 0;
+    jresult = NULL;
+    if (!jarg ## ARRAYARG) {
+        arg ## LENARG = LEN;
+        arg ## ARRAYARG = malloc_or_throw(jenv, LEN);
+        if (!arg ## ARRAYARG) {
+            skip = 1; /* Exception set by malloc_or_throw */
+        }
+    }
+    if (!skip) {
+        $action
+        if (check_result(jenv, result) == GA_OK && !jarg ## ARRAYARG) {
+            jresult = create_array(jenv, arg ## ARRAYARG, LEN);
+        }
+        if (!jarg ## ARRAYARG) {
+            // wally_bzero(arg ## ARRAYARG, LEN);
+            free(arg ## ARRAYARG);
+        }
+    }
+}
+%enddef
 
 %java_opaque_struct(GA_session, 1)
 %java_opaque_struct(GA_tx_list, 2)
@@ -166,7 +210,10 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
 %returns_string(GA_tx_view_get_hash)
 %returns_string(GA_tx_view_get_double_spent_by)
 %returns_string(GA_convert_balance_to_json)
+%returns_array_(GA_get_random_bytes, 2, 3, jarg1)
+%returns_string(GA_generate_mnemonic)
 
 %include "../common.h"
 %include "../containers.h"
 %include "../session.h"
+%include "../utils.h"

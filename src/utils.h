@@ -17,18 +17,18 @@ extern "C" {
  *
  * GA_ERROR if it fails to generate the requested amount of random bytes.
  */
-int GA_get_random_bytes(unsigned char* bytes, size_t siz);
+int GA_get_random_bytes(size_t num_bytes, unsigned char* bytes, size_t len);
 
 /**
  * Generate mnemonic.
  *
  * Generates a BIP39 mnemonic.
  * @lang language for the default word list
- * @mnemonic the generated mnemonic phrase
+ * @output the generated mnemonic phrase
  *
  * GA_ERROR if mnemonic generation fails
  */
-int GA_generate_mnemonic(const char* lang, char** mnemonic);
+int GA_generate_mnemonic(const char* lang, char** output);
 
 /**
  * Validate mnemonic.

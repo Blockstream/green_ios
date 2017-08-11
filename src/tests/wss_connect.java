@@ -9,5 +9,7 @@ public class wss_connect {
         Wally.bip39_get_wordlist("en");
         Object session = GASDK.create_session();
         GASDK.connect(session, GASDK.GA_NETWORK_TESTNET, GASDK.GA_TRUE);
+        byte[] random_bytes = GASDK.get_random_bytes(32);
+        String mnemonic = GASDK.generate_mnemonic("en");
     }
 }
