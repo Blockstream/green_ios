@@ -1,4 +1,7 @@
+import Dispatch
 import Foundation
+
+import PromiseKit
 
 import ga.sdk
 
@@ -260,4 +263,27 @@ public func generateMnemonic(lang: String) throws -> String {
 
 public func validateMnemonic(lang: String, mnemonic: String) -> Bool {
     return GA_validate_mnemonic(lang, mnemonic) == GA_TRUE
+}
+
+public func retry<T>(on: DispatchQueue = .default, mnemonic: String? = nil, _ fun: @escaping () -> Promise<T>) -> Promise<T> {
+    func retry() -> Promise<T> {
+        return fun().recover { error -> Promise<T> in
+            guard error as! GaError == GaError.ReconnectError else { throw error }
+            return after(interval: 2).then(on: on, execute: retry)
+        }
+    }
+    return retry()
+}
+
+public func wrap<T>(_ fun: () throws -> T) -> Promise<T> {
+    return Promise { fullfill, reject in
+        do {
+            let result = try fun()
+            fullfill(result)
+        } catch GaError.ReconnectError {
+            reject(GaError.ReconnectError)
+        } catch GaError.GenericError {
+            reject(GaError.GenericError)
+        }
+    }
 }

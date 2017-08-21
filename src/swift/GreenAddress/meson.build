@@ -1,21 +1,28 @@
 swift_sources = ['Sources/GreenAddress.swift']
 
-swift_cmd_line = []
+swift_cmd_line = ['LD_LIBRARY_PATH=' + join_paths(meson.build_root(), 'src')]
 if build_machine.system() == 'darwin'
-    swift_cmd_line = ['xcrun', '--sdk', 'macosx']
+    swift_cmd_line += ['xcrun', '--sdk', 'macosx']
 endif
 
-swift_cmd_line += ['swift', 'build', '--chdir', join_paths(meson.source_root(), 'src', 'swift', 'GreenAddress'),
-                   '-Xswiftc', '-I../..',
-                   '-Xswiftc', '-I' + join_paths(meson.build_root(), 'libwally-core', 'build', 'include'),
-                   '-Xswiftc', '-emit-library',
-                   '-Xswiftc', '-L' + join_paths(meson.build_root(), 'src')]
+target_cmd_line = []
+foreach target : ['build', 'test']
+    target_cmd_line += [swift_cmd_line + ['swift', target, '--chdir', join_paths(meson.source_root(), 'src', 'swift', 'GreenAddress'),
+                       '-Xswiftc', '-I../..',
+                       '-Xswiftc', '-I' + join_paths(meson.build_root(), 'libwally-core', 'build', 'include'),
+                       '-Xswiftc', '-L' + join_paths(meson.build_root(), 'src')]]
+endforeach
 
-ga_swift_module = custom_target('GA.swiftmodule',
-                      command : swift_cmd_line,
-                      input : swift_sources,
-                      output : 'GA.swiftmodule',
-                      depends : libga,
-                      build_always : true)
+custom_target('GreenAddress',
+              command : target_cmd_line[0],
+              input : swift_sources,
+              output : ['GreenAddress.swiftmodule'],
+              depends : libga,
+              build_always : true)
 
-ga_swift_module_dep = declare_dependency(dependencies : libga_dep)
+custom_target('GreenAddressTests',
+              command : target_cmd_line[1],
+              input : swift_sources,
+              output : ['GreenAddressTests.swiftmodule'],
+              depends : libga,
+              build_always : false)
