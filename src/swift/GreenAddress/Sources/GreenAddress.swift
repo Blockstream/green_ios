@@ -8,6 +8,7 @@ import ga.sdk
 public enum GaError: Error {
     case GenericError
     case ReconnectError
+    case SessionLost
 }
 
 public enum Network: Int32 {
@@ -141,6 +142,8 @@ public class Session {
             switch r {
                 case GA_RECONNECT:
                     throw GaError.ReconnectError
+                case GA_SESSION_LOST:
+                    throw GaError.SessionLost
                 default:
                     throw GaError.GenericError
             }
@@ -265,21 +268,26 @@ public func validateMnemonic(lang: String, mnemonic: String) -> Bool {
     return GA_validate_mnemonic(lang, mnemonic) == GA_TRUE
 }
 
-public func retry<T>(on: DispatchQueue = .default, mnemonic: String? = nil, _ fun: @escaping () -> Promise<T>) -> Promise<T> {
+public func retry<T>(session: Session,
+                     network: Network,
+                     on: DispatchQueue = .default,
+                     mnemonic: String? = nil,
+                     _ fun: @escaping () -> Promise<T>) -> Promise<T> {
     func retry() -> Promise<T> {
         return fun().recover { error -> Promise<T> in
             guard error as! GaError == GaError.ReconnectError else { throw error }
-            return after(interval: 2).then(on: on, execute: retry)
+            return after(interval: 2).then {
+                return GreenAddress.retry(session: session, network: network) { wrap { try session.connect(network: network, debug: true) } }
+            }.then(on: on, execute: retry)
         }
     }
     return retry()
 }
 
 public func wrap<T>(_ fun: () throws -> T) -> Promise<T> {
-    return Promise { fullfill, reject in
+    return Promise { fulfill, reject in
         do {
-            let result = try fun()
-            fullfill(result)
+            fulfill(try fun())
         } catch GaError.ReconnectError {
             reject(GaError.ReconnectError)
         } catch GaError.GenericError {

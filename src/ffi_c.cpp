@@ -11,15 +11,9 @@ template <typename F, typename Obj, typename... Args> auto c_invoke(F&& f, Obj* 
         GA_SDK_RUNTIME_ASSERT(obj);
         f(obj, std::forward<Args>(args)...);
         return GA_OK;
-    } catch (const autobahn::abort_error& e) {
-        return GA_RECONNECT;
-    } catch (const autobahn::network_error& e) {
-        return GA_RECONNECT;
     } catch (const autobahn::no_session_error& e) {
         return GA_SESSION_LOST;
-    } catch (const autobahn::no_transport_error& e) {
-        return GA_RECONNECT;
-    } catch (const autobahn::protocol_error& e) {
+    } catch (const ga::sdk::reconnect_error& ex) {
         return GA_RECONNECT;
     } catch (const std::exception& ex) {
         return GA_ERROR;
