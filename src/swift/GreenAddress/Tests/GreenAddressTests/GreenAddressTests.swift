@@ -62,7 +62,7 @@ class GreenAddressTests : XCTestCase {
             }.then { (balance: [String: Any]?) -> Void in
             }
 
-            when(fulfilled: [p1, p2, p3, p4, p5]).then { ex.fulfill(); }
+            _ = when(fulfilled: [p1, p2, p3, p4, p5]).then { ex.fulfill(); }
             waitForExpectations(timeout: 15, handler: nil)
         }
         catch {

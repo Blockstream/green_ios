@@ -270,18 +270,18 @@ public func validateMnemonic(lang: String, mnemonic: String) -> Bool {
 
 public func retry<T>(session: Session,
                      network: Network,
-                     on: DispatchQueue = .default,
+                     on: DispatchQueue = DispatchQueue.global(qos : .background),
                      mnemonic: String? = nil,
                      _ fun: @escaping () -> Promise<T>) -> Promise<T> {
-    func retry() -> Promise<T> {
+    func retry_() -> Promise<T> {
         return fun().recover { error -> Promise<T> in
             guard error as! GaError == GaError.ReconnectError else { throw error }
             return after(interval: 2).then {
-                return GreenAddress.retry(session: session, network: network) { wrap { try session.connect(network: network, debug: true) } }
-            }.then(on: on, execute: retry)
+                return retry(session: session, network: network, on: on) { wrap { try session.connect(network: network, debug: true) } }
+            }.then(on: on, execute: retry_)
         }
     }
-    return retry()
+    return retry_()
 }
 
 public func wrap<T>(_ fun: () throws -> T) -> Promise<T> {
@@ -290,7 +290,7 @@ public func wrap<T>(_ fun: () throws -> T) -> Promise<T> {
             fulfill(try fun())
         } catch GaError.ReconnectError {
             reject(GaError.ReconnectError)
-        } catch GaError.GenericError {
+        } catch {
             reject(GaError.GenericError)
         }
     }
