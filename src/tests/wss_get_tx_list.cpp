@@ -34,6 +34,8 @@ int main(int argc, char** argv)
         GA_SDK_RUNTIME_ASSERT(txs.get<std::string>("fiat_currency") == "USD");
 
         const auto balance = session.get_balance();
+        const auto two_factor = session.get_twofactor_config();
+        const auto gauth_url = two_factor.get<std::string>("gauth_url");
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

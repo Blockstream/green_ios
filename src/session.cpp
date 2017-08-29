@@ -87,6 +87,8 @@ namespace sdk {
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
         template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
+        two_factor get_twofactor_config();
+        bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -432,6 +434,35 @@ namespace sdk {
         return b;
     }
 
+    two_factor session::session_impl::get_twofactor_config()
+    {
+        two_factor f;
+
+        auto two_factor_future = m_session->call("com.greenaddress.twofactor.get_config", std::make_tuple())
+                                     .then([&f](boost::future<autobahn::wamp_call_result> result) {
+                                         f = result.get().argument<msgpack::object>(0);
+                                     });
+
+        two_factor_future.get();
+
+        return f;
+    }
+
+    bool session::session_impl::set_twofactor(
+        two_factor_type type, const std::string& code, const std::string& proxy_code)
+    {
+        auto two_factor_future
+            = m_session
+                  ->call("com.greenaddress.twofactor.enable_gauth",
+                      //std::make_tuple(code, std::map<std::string, std::string>{ { "proxy", proxy_code } }))
+                      std::make_tuple(code, std::map<std::string, std::string>()))
+                  .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
+
+        two_factor_future.get();
+
+        return false;
+    }
+
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
     {
         try {
@@ -512,6 +543,18 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_balance("all", num_confs); });
+    }
+
+    two_factor session::get_twofactor_config()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_twofactor_config(); });
+    }
+
+    bool session::set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->set_twofactor(type, code, proxy_code); });
     }
 }
 }

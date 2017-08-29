@@ -42,6 +42,12 @@ namespace sdk {
         value_descending,
     };
 
+    enum class two_factor_type {
+        email,
+        gauth,
+        phone,
+    };
+
     inline namespace literals {
 
         constexpr tx_list_sort_by operator""_ts(char c)
@@ -104,6 +110,9 @@ namespace sdk {
 
         balance get_balance_for_subaccount(size_t subaccount, size_t num_confs = 0);
         balance get_balance(size_t num_confs = 0);
+
+        two_factor get_twofactor_config();
+        bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
 
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);
