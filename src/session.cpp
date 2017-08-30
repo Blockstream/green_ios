@@ -80,6 +80,9 @@ namespace sdk {
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         login_data login(const std::string& mnemonic, const std::string& user_agent);
+
+        login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
+            const std::string& user_agent = std::string());
         void change_settings_helper(settings key, const std::map<int, int>& args);
 
         tx_list get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
@@ -89,6 +92,7 @@ namespace sdk {
         template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
+        pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -144,6 +148,8 @@ namespace sdk {
                 f.get();
             }
         }
+
+        std::string get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
     private:
         boost::asio::io_service m_io;
@@ -454,13 +460,109 @@ namespace sdk {
         auto two_factor_future
             = m_session
                   ->call("com.greenaddress.twofactor.enable_gauth",
-                      //std::make_tuple(code, std::map<std::string, std::string>{ { "proxy", proxy_code } }))
+                      // std::make_tuple(code, std::map<std::string, std::string>{ { "proxy", proxy_code } }))
                       std::make_tuple(code, std::map<std::string, std::string>()))
                   .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         two_factor_future.get();
 
         return false;
+    }
+
+    pin_info session::session_impl::set_pin(
+        const std::string& mnemonic, const std::string& pin, const std::string& device)
+    {
+        GA_SDK_RUNTIME_ASSERT(pin.length() >= 4);
+
+        std::string pin_identifier;
+
+        auto set_pin_future = m_session->call("com.greenaddress.pin.set_pin_login", std::make_tuple(pin, device))
+                                  .then([&pin_identifier](boost::future<autobahn::wamp_call_result> result) {
+                                      pin_identifier = result.get().argument<std::string>(0);
+                                  });
+
+        set_pin_future.get();
+
+        const auto password = get_pin_password(pin, pin_identifier);
+
+        auto salt = get_random_bytes<16>();
+        const auto salt_hex = hex_from_bytes(salt.data(), salt.size());
+
+        std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
+        size_t written = 0;
+        GA_SDK_RUNTIME_ASSERT(
+            bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
+        const auto seed_hex = hex_from_bytes(seed.data(), written);
+        const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
+        const auto mnemonic_hex = hex_from_bytes(mnemonic_bytes.data(), mnemonic_bytes.size());
+
+        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
+        GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()),
+                                  password.size(), salt.data(), salt.size(), 0, 2048, key.data(), key.size())
+            == WALLY_OK);
+
+        std::array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data{ { 0 } };
+        std::copy(seed.begin(), seed.end(), data.begin());
+        std::copy(mnemonic_bytes.begin(), mnemonic_bytes.end(), data.begin() + BIP39_SEED_LEN_512);
+
+        const auto iv = get_random_bytes<AES_BLOCK_LEN>();
+
+        std::vector<unsigned char> encrypted(iv.size() + ((data.size() / AES_BLOCK_LEN) + 1) * AES_BLOCK_LEN);
+        std::copy(iv.begin(), iv.end(), encrypted.begin());
+        GA_SDK_RUNTIME_ASSERT(
+            wally_aes_cbc(key.data(), AES_KEY_LEN_256, iv.data(), iv.size(), data.data(), data.size(), AES_FLAG_ENCRYPT,
+                encrypted.data() + iv.size(), encrypted.size() - iv.size(), &written)
+            == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(written == encrypted.size() - iv.size());
+
+        const auto encrypted_hex = hex_from_bytes(encrypted.data(), iv.size() + written);
+
+        pin_info p;
+        p.emplace("secret", std::string(salt_hex.get()) + std::string(encrypted_hex.get()));
+        p.emplace("pin_identifier", pin_identifier);
+
+        return p;
+    }
+
+    std::string session::session_impl::get_pin_password(const std::string& pin, const std::string& pin_identifier)
+    {
+        std::string password;
+
+        auto get_pin_password_future
+            = m_session->call("com.greenaddress.pin.get_password", std::make_tuple(pin, pin_identifier))
+                  .then([&password](boost::future<autobahn::wamp_call_result> result) {
+                      password = result.get().argument<std::string>(0);
+                  });
+
+        get_pin_password_future.get();
+
+        return password;
+    }
+
+    login_data session::session_impl::login(const std::string& pin,
+        const std::pair<std::string, std::string>& pin_identifier_and_secret, const std::string& user_agent)
+    {
+        const auto password = get_pin_password(pin, pin_identifier_and_secret.first);
+
+        auto secret_bytes
+            = bytes_from_hex(pin_identifier_and_secret.second.data(), pin_identifier_and_secret.second.size());
+
+        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
+        GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()),
+                                  password.size(), secret_bytes.data(), 16, 0, 2048, key.data(), key.size())
+            == WALLY_OK);
+
+        std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
+        size_t written = 0;
+        GA_SDK_RUNTIME_ASSERT(wally_aes_cbc(key.data(), AES_KEY_LEN_256, secret_bytes.data(), 16,
+                                  secret_bytes.data() + 16 + AES_BLOCK_LEN, secret_bytes.size() - AES_BLOCK_LEN - 16,
+                                  AES_FLAG_DECRYPT, plaintext.data(), plaintext.size(), &written)
+            == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(written <= plaintext.size() && (plaintext.size() - written <= AES_BLOCK_LEN));
+
+        const auto mnemonic = mnemonic_from_bytes(plaintext.data() + BIP39_SEED_LEN_512, BIP39_ENTROPY_LEN_256, "en");
+
+        return login(std::string(mnemonic.get()), user_agent);
     }
 
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
@@ -506,6 +608,13 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->login(mnemonic, user_agent); });
+    }
+
+    login_data session::login(const std::string& pin,
+        const std::pair<std::string, std::string>& pin_identifier_and_secret, const std::string& user_agent)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->login(pin, pin_identifier_and_secret, user_agent); });
     }
 
     void session::change_settings_helper(settings key, const std::map<int, int>& args)
@@ -555,6 +664,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->set_twofactor(type, code, proxy_code); });
+    }
+
+    pin_info session::set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->set_pin(mnemonic, pin, device); });
     }
 }
 }

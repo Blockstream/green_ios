@@ -20,11 +20,25 @@ int main(int argc, char** argv)
         GA_SDK_RUNTIME_ASSERT(
             bip39_mnemonic_from_bytes(w, ga::sdk::get_random_bytes<32>().data(), 32, &mnemonic) == WALLY_OK);
 
-        ga::sdk::session session;
-        session.connect(options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
-        session.register_user(mnemonic);
-        auto result = session.login(mnemonic);
-        GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login"));
+        ga::sdk::pin_info p;
+        {
+            ga::sdk::session session;
+            session.connect(
+                options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
+            session.register_user(mnemonic);
+            auto result = session.login(mnemonic);
+            GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login"));
+            p = session.set_pin(mnemonic, "0000", "default");
+        }
+
+        {
+            ga::sdk::session session;
+            session.connect(
+                options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
+            auto result = session.login("0000", std::make_pair(p["pin_identifier"], p["secret"]));
+            GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login") == false);
+        }
+
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

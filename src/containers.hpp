@@ -206,6 +206,8 @@ namespace sdk {
             return *this;
         }
     };
+
+    using pin_info = std::map<std::string, std::string>;
 }
 }
 

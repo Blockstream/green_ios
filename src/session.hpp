@@ -95,6 +95,8 @@ namespace sdk {
 
         void register_user(const std::string& mnemonic, const std::string& user_agent = std::string());
         login_data login(const std::string& mnemonic, const std::string& user_agent = std::string());
+        login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
+            const std::string& user_agent = std::string());
 
         template <typename... Args> void change_settings(settings key, Args&&... args)
         {
@@ -113,6 +115,8 @@ namespace sdk {
 
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
+
+        pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);

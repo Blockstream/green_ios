@@ -76,6 +76,13 @@ struct GA_balance final : public ga::sdk::balance {
         return c_invoke(c_function_body, obj, ARG1, ARG2, ARG3);                                                       \
     }
 
+#define GA_SDK_DEFINE_C_FUNCTION_4(                                                                                    \
+    c_function_name, c_obj_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3, T4, ARG4)                              \
+    int c_function_name(struct c_obj_name* obj, T1 ARG1, T2 ARG2, T3 ARG3, T4 ARG4)                                    \
+    {                                                                                                                  \
+        return c_invoke(c_function_body, obj, ARG1, ARG2, ARG3, ARG4);                                                 \
+    }
+
 #define GA_SDK_DEFINE_C_FUNCTION_7(c_function_name, c_obj_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3, T4,     \
                                    ARG4, T5, ARG5, T6, ARG6, T7, ARG7)                                                 \
     int c_function_name(struct c_obj_name* obj, T1 ARG1, T2 ARG2, T3 ARG3, T4 ARG4, T5 ARG5, T6 ARG6, T7 ARG7)         \
@@ -143,6 +150,15 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_register_user, GA_session,
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_login, GA_session,
     [](struct GA_session* session, const char* mnemonic) { session->login(mnemonic); }, const char*, mnemonic);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_login_with_pin, GA_session,
+    [](struct GA_session* session, const char* pin, const char* pin_identifier_and_secret) {
+        std::vector<std::string> split;
+        boost::algorithm::split(split, pin_identifier_and_secret, [](char c) { return c == ':'; });
+        GA_SDK_RUNTIME_ASSERT(split.size() == 2);
+        session->login(pin, std::make_pair(split[0], split[1]));
+    },
+    const char*, pin, const char*, pin_identifier_and_secret);
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me, GA_session,
     [](struct GA_session* session, int param) {
@@ -217,6 +233,15 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_get_balance, GA_session,
         **balance = result.get_handle().get();
     },
     size_t, num_confs, struct GA_balance**, balance);
+
+GA_SDK_DEFINE_C_FUNCTION_4(GA_set_pin, GA_session,
+    [](struct GA_session* session, const char* mnemonic, const char* pin, const char* device,
+        char** pin_identifier_and_secret) {
+        GA_SDK_RUNTIME_ASSERT(pin_identifier_and_secret);
+        const auto p = session->set_pin(mnemonic, pin, device);
+        *pin_identifier_and_secret = to_c_string(p.at("pin_identifier") + ':' + p.at("secret"));
+    },
+    const char*, mnemonic, const char*, pin, const char*, device, char**, pin_identifier_and_secret);
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
     [](struct GA_tx_list* txs, const char* path, struct GA_dict** value) {

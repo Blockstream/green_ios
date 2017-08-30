@@ -89,6 +89,11 @@ namespace sdk {
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz);
 
     std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
+
+    std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
+        const std::string& mnemonic, const std::string& lang);
+
+    wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang);
 }
 }
 

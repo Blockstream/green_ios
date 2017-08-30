@@ -108,6 +108,30 @@ namespace sdk {
         bytes.resize(written);
         return bytes;
     }
+
+    std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
+        const std::string& mnemonic, const std::string& lang)
+    {
+        const struct words* w = nullptr;
+        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang.c_str(), &w) == WALLY_OK);
+
+        std::array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
+        size_t written = 0;
+        GA_SDK_RUNTIME_ASSERT(
+            bip39_mnemonic_to_bytes(w, mnemonic.c_str(), bytes.data(), bytes.size(), &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(written == BIP39_ENTROPY_LEN_256);
+
+        return bytes;
+    }
+
+    wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang)
+    {
+        const struct words* w = nullptr;
+        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang, &w) == WALLY_OK);
+        char* s = nullptr;
+        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, bytes, siz, &s) == WALLY_OK);
+        return wally_string_ptr(s, &wally_free_string);
+    }
 }
 }
 

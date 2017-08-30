@@ -86,6 +86,16 @@ int GA_register_user(struct GA_session* session, const char* mnemonic);
 int GA_login(struct GA_session* session, const char* mnemonic);
 
 /**
+ * Authenticate an user.
+ * @session The server session to use.
+ * @pin The user pin.
+ * @pin_identifier_and_secret The pin identifier and secret return from @GA_set_pin.
+ *
+ * GA_ERROR if authentication is unsuccessful.
+ */
+int GA_login_with_pin(struct GA_session* session, const char* pin, const char* pin_identifier_and_secret);
+
+/**
  * Change privacy (send me) settings.
  * @session The server session to use.
  * @param One of @GA_PRIVATE, @GA_ADDRBOOK, @GA_PUBLIC
@@ -161,6 +171,19 @@ int GA_get_balance_for_subaccount(
  * GA_ERROR if balance could not be retrieved.
  */
 int GA_get_balance(struct GA_session* session, size_t num_confs, struct GA_balance** balance);
+
+/**
+ * Set a PIN for the user wallet.
+ * @session The server session to use.
+ * @mnemonic The user mnemonic.
+ * @pin The user pin.
+ * @device The user device identifier.
+ * @pin_identifier_and_secret The returned identifier and secret.
+ *
+ * GA_ERROR if pin could not be set.
+ */
+int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin, const char* device,
+    char** pin_identifier_and_secret);
 
 #ifdef __cplusplus
 }
