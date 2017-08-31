@@ -39,6 +39,9 @@ struct GA_tx_view;
 /** An balance representation */
 struct GA_balance;
 
+/** An login data representation */
+struct GA_login_data;
+
 /**
  *
  */
@@ -93,6 +96,11 @@ int GA_convert_balance_to_json(struct GA_balance* balance, char** output);
 /**
  *
  */
+int GA_convert_login_data_to_json(struct GA_login_data* login_data, char** output);
+
+/**
+ *
+ */
 void GA_destroy_dict(struct GA_dict* dict);
 
 /**
@@ -120,6 +128,11 @@ int GA_destroy_tx_view(const struct GA_tx_view* view);
  *
  */
 int GA_destroy_balance(const struct GA_balance* balance);
+
+/**
+ *
+ */
+int GA_destroy_login_data(const struct GA_login_data* login_data);
 
 #ifdef __cplusplus
 }

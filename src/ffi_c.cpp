@@ -61,6 +61,14 @@ struct GA_balance final : public ga::sdk::balance {
     }
 };
 
+struct GA_login_data final : public ga::sdk::login_data {
+    GA_login_data& operator=(const msgpack_object& data)
+    {
+        ga::sdk::login_data::operator=(data);
+        return *this;
+    }
+};
+
 #define GA_SDK_DEFINE_C_FUNCTION_0(c_function_name, c_obj_name, c_function_body)                                       \
     int c_function_name(struct c_obj_name* obj) { return c_invoke(c_function_body, obj); }
 
@@ -133,6 +141,12 @@ int GA_destroy_balance(const struct GA_balance* balance)
     return GA_OK;
 }
 
+int GA_destroy_login_data(const struct GA_login_data* login_data)
+{
+    delete login_data;
+    return GA_OK;
+}
+
 GA_SDK_DEFINE_C_FUNCTION_2(GA_connect, GA_session,
     [](struct GA_session* session, int network, int debug) {
         auto&& params = network == GA_NETWORK_REGTEST ? ga::sdk::make_regtest_network()
@@ -148,17 +162,30 @@ GA_SDK_DEFINE_C_FUNCTION_0(GA_disconnect, GA_session, [](struct GA_session* sess
 GA_SDK_DEFINE_C_FUNCTION_1(GA_register_user, GA_session,
     [](struct GA_session* session, const char* mnemonic) { session->register_user(mnemonic); }, const char*, mnemonic)
 
-GA_SDK_DEFINE_C_FUNCTION_1(GA_login, GA_session,
-    [](struct GA_session* session, const char* mnemonic) { session->login(mnemonic); }, const char*, mnemonic);
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_login_with_pin, GA_session,
-    [](struct GA_session* session, const char* pin, const char* pin_identifier_and_secret) {
-        std::vector<std::string> split;
-        boost::algorithm::split(split, pin_identifier_and_secret, [](char c) { return c == ':'; });
-        GA_SDK_RUNTIME_ASSERT(split.size() == 2);
-        session->login(pin, std::make_pair(split[0], split[1]));
+GA_SDK_DEFINE_C_FUNCTION_2(GA_login, GA_session,
+    [](struct GA_session* session, const char* mnemonic, struct GA_login_data** login_data) {
+        GA_SDK_RUNTIME_ASSERT(login_data);
+        const auto result = session->login(mnemonic);
+        *login_data = new GA_login_data;
+        **login_data = result.get_handle().get();
     },
-    const char*, pin, const char*, pin_identifier_and_secret);
+    const char*, mnemonic, struct GA_login_data**, login_data);
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, GA_session,
+    [](struct GA_session* session, const char* pin, const char* pin_identifier_and_secret,
+        struct GA_login_data** login_data) {
+        GA_SDK_RUNTIME_ASSERT(pin);
+        GA_SDK_RUNTIME_ASSERT(pin_identifier_and_secret);
+        GA_SDK_RUNTIME_ASSERT(login_data);
+        const auto s = std::string(pin_identifier_and_secret);
+        const auto pos = s.find(':');
+        GA_SDK_RUNTIME_ASSERT(pos != std::string::npos);
+        const auto result = session->login(
+            pin, std::make_pair(std::string(s.begin(), s.begin() + pos), std::string(s.begin() + pos, s.end())));
+        *login_data = new GA_login_data;
+        **login_data = result.get_handle().get();
+    },
+    const char*, pin, const char*, pin_identifier_and_secret, struct GA_login_data**, login_data);
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me, GA_session,
     [](struct GA_session* session, int param) {
@@ -375,6 +402,14 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_balance_to_json, GA_balance,
     [](struct GA_balance* balance, char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
         const auto& v = balance->get_json();
+        *output = to_c_string(v);
+    },
+    char**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_login_data_to_json, GA_login_data,
+    [](struct GA_login_data* login_data, char** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        const auto& v = login_data->get_json();
         *output = to_c_string(v);
     },
     char**, output);

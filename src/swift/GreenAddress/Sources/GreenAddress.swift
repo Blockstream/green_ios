@@ -170,8 +170,22 @@ public class Session {
         try callWrapper(fun: GA_register_user(session, mnemonic))
     }
 
-    public func login(mnemonic: String) throws {
-        try callWrapper(fun: GA_login(session, mnemonic))
+    public func login(mnemonic: String) throws -> [String: Any]? {
+        var login_data: OpaquePointer? = nil
+        try callWrapper(fun: GA_login(session, mnemonic, &login_data))
+        defer {
+            GA_destroy_login_data(login_data)
+        }
+        return try convertOpaqueJsonToDict(o: login_data!)
+    }
+
+    public func login(pin: String, pin_identifier_and_secret: String) throws -> [String: Any]? {
+        var login_data: OpaquePointer? = nil
+        try callWrapper(fun: GA_login_with_pin(session, pin, pin_identifier_and_secret, &login_data))
+        defer {
+            GA_destroy_login_data(login_data)
+        }
+        return try convertOpaqueJsonToDict(o: login_data!)
     }
 
     public func getTxList(begin: Date, end: Date, subaccount: Int) throws -> [Transaction]? {
@@ -201,7 +215,7 @@ public class Session {
     }
 
     public func getReceiveAddress() throws -> String {
-        var bytes : UnsafeMutablePointer<Int8>? = nil
+        var bytes: UnsafeMutablePointer<Int8>? = nil
         try callWrapper(fun: GA_get_receive_address(session, GA_ADDRESS_TYPE_P2SH, 0, &bytes))
         defer {
             GA_destroy_string(bytes)
@@ -249,6 +263,15 @@ public class Session {
         }
 
         return try convertOpaqueJsonToDict(o: balance!)
+    }
+
+    public func setPin(mnemonic: String, pin: String, device: String) throws -> String {
+        var bytes: UnsafeMutablePointer<Int8>? = nil
+        try callWrapper(fun: GA_set_pin(session, mnemonic, pin, device, &bytes))
+        defer {
+            GA_destroy_string(bytes)
+        }
+        return String(cString: bytes!)
     }
 }
 

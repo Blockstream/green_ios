@@ -21,7 +21,9 @@ int main(int argc, char* argv[])
 
     ret = GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 1);
     ret = GA_register_user(session, DEFAULT_MNEMONIC);
-    ret = GA_login(session, DEFAULT_MNEMONIC);
+
+    struct GA_login_data* login_data = NULL;
+    ret = GA_login(session, DEFAULT_MNEMONIC, &login_data);
 
     time_t now = time(NULL);
     time_t now_28_days_before = now - 3600 * 24 * 28;
@@ -35,8 +37,9 @@ int main(int argc, char* argv[])
         ret = GA_ERROR;
     }
 
-    GA_destroy_tx_list(txs);
     GA_destroy_string(fiat_currency);
+    GA_destroy_tx_list(txs);
+    GA_destroy_login_data(login_data);
     GA_destroy_session(session);
 
     return ret;

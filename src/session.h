@@ -83,7 +83,7 @@ int GA_register_user(struct GA_session* session, const char* mnemonic);
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-int GA_login(struct GA_session* session, const char* mnemonic);
+int GA_login(struct GA_session* session, const char* mnemonic, struct GA_login_data** login_data);
 
 /**
  * Authenticate an user.
@@ -93,7 +93,8 @@ int GA_login(struct GA_session* session, const char* mnemonic);
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-int GA_login_with_pin(struct GA_session* session, const char* pin, const char* pin_identifier_and_secret);
+int GA_login_with_pin(struct GA_session* session, const char* pin, const char* pin_identifier_and_secret,
+    struct GA_login_data** login_data);
 
 /**
  * Change privacy (send me) settings.
