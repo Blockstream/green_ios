@@ -151,6 +151,9 @@ namespace sdk {
 
         std::string get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
+        std::string get_raw_output(const std::string& txhash);
+        utxo get_utxos(size_t num_confs, size_t subaccount) const;
+
     private:
         boost::asio::io_service m_io;
         boost::variant<std::shared_ptr<client>, std::shared_ptr<client_tls>> m_client;
@@ -389,6 +392,35 @@ namespace sdk {
         subscribe_future.get();
     }
 
+    std::string session::session_impl::get_raw_output(const std::string& txhash)
+    {
+        std::string raw_output;
+        auto raw_output_future = m_session->call("com.greenaddress.txs.get_raw_output", std::make_tuple(txhash))
+                                     .then([&raw_output](boost::future<autobahn::wamp_call_result> result) {
+                                         raw_output = result.get().argument<std::string>(0);
+                                     });
+
+        raw_output_future.get();
+
+        return raw_output;
+    }
+
+    utxo session::session_impl::get_utxos(size_t num_confs, size_t subaccount) const
+    {
+        utxo unspent;
+        auto unspent_outputs_future
+            = m_session
+                  ->call("com.greenaddress.txs.get_all_unspent_outputs", std::make_tuple(num_confs, subaccount, "any"))
+                  .then([&unspent](boost::future<autobahn::wamp_call_result> result) {
+                      const auto r = result.get();
+                      if (r.number_of_arguments()) {
+                          unspent = r.argument<msgpack::object>(0);
+                      }
+                  });
+
+        return unspent;
+    }
+
     receive_address session::session_impl::get_receive_address(address_type addr_type, size_t subaccount) const
     {
         const std::string addr_type_str = addr_type == address_type::p2sh ? "p2sh" : "p2wsh";
@@ -413,7 +445,27 @@ namespace sdk {
             return hash160;
         };
 
-        const auto hash160 = addr_type == address_type::p2sh ? p2sh_script_builder() : p2sh_script_builder();
+        auto&& p2wsh_script_builder = [&] {
+            std::array<unsigned char, SHA256_LEN> sha256{ { 0 } };
+            GA_SDK_RUNTIME_ASSERT(
+                wally_sha256(script_bytes.data(), script_bytes.size(), sha256.data(), sha256.size()) == WALLY_OK);
+
+            std::array<unsigned char, 1 + 1 + SHA256_LEN> q{ { 0 } };
+            unsigned char* s = q.data();
+            size_t written = 0;
+            GA_SDK_RUNTIME_ASSERT(script_encode_small_num(0, s, 1, &written) == WALLY_OK);
+            s += written;
+            GA_SDK_RUNTIME_ASSERT(
+                script_encode_data(sha256.data(), sha256.size(), s, q.size() - written, &written) == WALLY_OK);
+
+            std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
+            hash160[0] = 196;
+            GA_SDK_RUNTIME_ASSERT(wally_hash160(q.data(), q.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
+
+            return hash160;
+        };
+
+        const auto hash160 = addr_type == address_type::p2sh ? p2sh_script_builder() : p2wsh_script_builder();
 
         char* q = nullptr;
         GA_SDK_RUNTIME_ASSERT(
