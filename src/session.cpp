@@ -80,6 +80,7 @@ namespace sdk {
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         login_data login(const std::string& mnemonic, const std::string& user_agent);
+        bool remove_account();
 
         login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
             const std::string& user_agent = std::string());
@@ -287,6 +288,19 @@ namespace sdk {
         authenticate_future.get();
 
         return login_data;
+    }
+
+    bool session::session_impl::remove_account()
+    {
+        bool r;
+        auto remove_account_future
+            = m_session
+                  ->call("com.greenaddress.login.remove_account", std::make_tuple(std::map<std::string, std::string>()))
+                  .then([&r](boost::future<autobahn::wamp_call_result> result) { r = result.get().argument<bool>(0); });
+
+        remove_account_future.get();
+
+        return r;
     }
 
     void session::session_impl::change_settings_helper(settings key, const std::map<int, int>& args)
@@ -667,6 +681,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->login(pin, pin_identifier_and_secret, user_agent); });
+    }
+
+    bool session::remove_account()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->remove_account(); });
     }
 
     void session::change_settings_helper(settings key, const std::map<int, int>& args)

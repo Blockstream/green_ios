@@ -37,8 +37,8 @@ int main(int argc, char** argv)
                 options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
             auto result = session.login("0000", std::make_pair(p["pin_identifier"], p["secret"]));
             GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login") == false);
+            GA_SDK_RUNTIME_ASSERT(session.remove_account());
         }
-
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

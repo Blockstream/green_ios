@@ -187,6 +187,8 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, GA_session,
     },
     const char*, pin, const char*, pin_identifier_and_secret, struct GA_login_data**, login_data);
 
+GA_SDK_DEFINE_C_FUNCTION_0(GA_remove_account, GA_session, [](struct GA_session* session) { session->remove_account(); })
+
 GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me, GA_session,
     [](struct GA_session* session, int param) {
         namespace sdk = ga::sdk;

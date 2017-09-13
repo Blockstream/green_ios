@@ -188,6 +188,10 @@ public class Session {
         return try convertOpaqueJsonToDict(o: login_data!)
     }
 
+    public func removeAccount() throws {
+        try callWrapper(fun: GA_remove_account(session));
+    }
+
     public func getTxList(begin: Date, end: Date, subaccount: Int) throws -> [Transaction]? {
         var txs: OpaquePointer? = nil
         let startDate = Int(begin.timeIntervalSince1970)

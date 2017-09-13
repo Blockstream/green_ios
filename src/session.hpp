@@ -97,6 +97,7 @@ namespace sdk {
         login_data login(const std::string& mnemonic, const std::string& user_agent = std::string());
         login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
             const std::string& user_agent = std::string());
+        bool remove_account();
 
         template <typename... Args> void change_settings(settings key, Args&&... args)
         {

@@ -97,6 +97,12 @@ int GA_login_with_pin(struct GA_session* session, const char* pin, const char* p
     struct GA_login_data** login_data);
 
 /**
+ * Remove an account.
+ * @session The server session to use.
+ */
+int GA_remove_account(struct GA_session* session);
+
+/**
  * Change privacy (send me) settings.
  * @session The server session to use.
  * @param One of @GA_PRIVATE, @GA_ADDRBOOK, @GA_PUBLIC
