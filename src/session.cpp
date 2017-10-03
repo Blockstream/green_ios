@@ -18,6 +18,7 @@
 #include "assertion.hpp"
 #include "exception.hpp"
 #include "session.hpp"
+#include "transaction_utils.hpp"
 
 namespace ga {
 namespace sdk {
@@ -70,6 +71,7 @@ namespace sdk {
         explicit session_impl(network_parameters params, bool debug)
             : m_controller(m_io)
             , m_params(std::move(params))
+            , m_master_key(nullptr, &bip32_key_free)
             , m_debug(debug)
         {
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
@@ -152,7 +154,8 @@ namespace sdk {
 
         std::string get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
-        std::string get_raw_output(const std::string& txhash);
+        std::string get_raw_output(const std::string& txhash) const;
+        std::vector<unsigned char> output_script(int32_t subaccount, uint32_t pointer) const;
         utxo get_utxos(size_t num_confs, size_t subaccount) const;
 
     private:
@@ -164,6 +167,9 @@ namespace sdk {
         event_loop_controller m_controller;
 
         network_parameters m_params;
+
+        login_data m_login_data;
+        wally_ext_key_ptr m_master_key;
 
         bool m_debug;
     };
@@ -256,11 +262,11 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(),
                                   m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
             == WALLY_OK);
-        wally_ext_key_ptr master_key(p, &bip32_key_free);
+        m_master_key = wally_ext_key_ptr(p, &bip32_key_free);
 
-        std::array<unsigned char, sizeof(master_key->hash160) + 1> vpkh{ { 0 } };
+        std::array<unsigned char, sizeof(m_master_key->hash160) + 1> vpkh{ { 0 } };
         vpkh[0] = m_params.btc_version();
-        std::copy(master_key->hash160, master_key->hash160 + sizeof(master_key->hash160), vpkh.begin() + 1);
+        std::copy(m_master_key->hash160, m_master_key->hash160 + sizeof(m_master_key->hash160), vpkh.begin() + 1);
 
         char* q = nullptr;
         GA_SDK_RUNTIME_ASSERT(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
@@ -275,19 +281,20 @@ namespace sdk {
 
         get_challenge_future.get();
 
-        auto hexder_path = sign_challenge(std::move(master_key), challenge);
+        struct ext_key master_key = *m_master_key;
+        auto hexder_path
+            = sign_challenge(wally_ext_key_ptr(&master_key, [](const struct ext_key*) { return WALLY_OK; }), challenge);
 
-        login_data login_data;
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
         auto authenticate_future = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
-                                       .then([&login_data](boost::future<autobahn::wamp_call_result> result) {
-                                           login_data = result.get().argument<msgpack::object>(0);
+                                       .then([this](boost::future<autobahn::wamp_call_result> result) {
+                                           m_login_data = result.get().argument<msgpack::object>(0);
                                        });
 
         authenticate_future.get();
 
-        return login_data;
+        return m_login_data;
     }
 
     bool session::session_impl::remove_account()
@@ -406,7 +413,7 @@ namespace sdk {
         subscribe_future.get();
     }
 
-    std::string session::session_impl::get_raw_output(const std::string& txhash)
+    std::string session::session_impl::get_raw_output(const std::string& txhash) const
     {
         std::string raw_output;
         auto raw_output_future = m_session->call("com.greenaddress.txs.get_raw_output", std::make_tuple(txhash))
@@ -417,6 +424,12 @@ namespace sdk {
         raw_output_future.get();
 
         return raw_output;
+    }
+
+    std::vector<unsigned char> session::session_impl::output_script(int32_t subaccount, uint32_t pointer) const
+    {
+        return ga::sdk::output_script(m_master_key, m_params.deposit_chain_code(), m_params.deposit_pub_key(),
+            m_login_data.get<std::string>("gait_path"), subaccount, pointer, m_params.main_net());
     }
 
     utxo session::session_impl::get_utxos(size_t num_confs, size_t subaccount) const
@@ -449,37 +462,16 @@ namespace sdk {
         receive_address_future.get();
 
         const auto script = address.get<std::string>("script");
+        const auto pointer = address.get<int>("pointer");
         const auto script_bytes = bytes_from_hex(script.data(), script.length());
+        const auto hash160
+            = addr_type == address_type::p2sh ? create_p2sh_script(script_bytes) : create_p2wsh_script(script_bytes);
 
-        auto&& p2sh_script_builder = [&] {
-            std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
-            hash160[0] = 196;
-            GA_SDK_RUNTIME_ASSERT(
-                wally_hash160(script_bytes.data(), script_bytes.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
-            return hash160;
-        };
+        const auto multisig = output_script(subaccount, pointer);
+        const auto hash160_multisig
+            = addr_type == address_type::p2sh ? create_p2sh_script(multisig) : create_p2wsh_script(multisig);
 
-        auto&& p2wsh_script_builder = [&] {
-            std::array<unsigned char, SHA256_LEN> sha256{ { 0 } };
-            GA_SDK_RUNTIME_ASSERT(
-                wally_sha256(script_bytes.data(), script_bytes.size(), sha256.data(), sha256.size()) == WALLY_OK);
-
-            std::array<unsigned char, 1 + 1 + SHA256_LEN> q{ { 0 } };
-            unsigned char* s = q.data();
-            size_t written = 0;
-            GA_SDK_RUNTIME_ASSERT(script_encode_small_num(0, s, 1, &written) == WALLY_OK);
-            s += written;
-            GA_SDK_RUNTIME_ASSERT(
-                script_encode_data(sha256.data(), sha256.size(), s, q.size() - written, &written) == WALLY_OK);
-
-            std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
-            hash160[0] = 196;
-            GA_SDK_RUNTIME_ASSERT(wally_hash160(q.data(), q.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
-
-            return hash160;
-        };
-
-        const auto hash160 = addr_type == address_type::p2sh ? p2sh_script_builder() : p2wsh_script_builder();
+        GA_SDK_RUNTIME_ASSERT(hash160 == hash160_multisig);
 
         char* q = nullptr;
         GA_SDK_RUNTIME_ASSERT(

@@ -108,6 +108,14 @@ namespace sdk {
     public:
         const fee_estimates& get_estimates() const { return m_fee_estimates; }
 
+        login_data() = default;
+
+        login_data(const login_data& data)
+        {
+            associate(data.get_handle().get());
+            m_fee_estimates = get<msgpack::object>("fee_estimates");
+        }
+
         login_data& operator=(const msgpack::object& data)
         {
             associate(data);

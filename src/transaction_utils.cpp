@@ -53,19 +53,65 @@ namespace sdk {
         return derive_key(server_pub_key, pointer, true);
     }
 
+    std::array<unsigned char, HASH160_LEN + 1> create_p2sh_script(const std::vector<unsigned char>& script_bytes)
+    {
+        std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
+        hash160[0] = 196;
+        GA_SDK_RUNTIME_ASSERT(
+            wally_hash160(script_bytes.data(), script_bytes.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
+        return hash160;
+    }
+
+    std::array<unsigned char, HASH160_LEN + 1> create_p2wsh_script(const std::vector<unsigned char>& script_bytes)
+    {
+        std::array<unsigned char, SHA256_LEN> sha256{ { 0 } };
+        GA_SDK_RUNTIME_ASSERT(
+            wally_sha256(script_bytes.data(), script_bytes.size(), sha256.data(), sha256.size()) == WALLY_OK);
+
+        std::array<unsigned char, 1 + 1 + SHA256_LEN> q{ { 0 } };
+        unsigned char* s = q.data();
+        size_t written = 0;
+        GA_SDK_RUNTIME_ASSERT(script_encode_small_num(0, s, 1, &written) == WALLY_OK);
+        s += written;
+        GA_SDK_RUNTIME_ASSERT(
+            script_encode_data(sha256.data(), sha256.size(), s, q.size() - written, &written) == WALLY_OK);
+
+        std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
+        hash160[0] = 196;
+        GA_SDK_RUNTIME_ASSERT(wally_hash160(q.data(), q.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
+
+        return hash160;
+    }
+
     std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address)
     {
         std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> hash160{ { 0 } };
-        size_t written;
+        size_t written{ 0 };
         GA_SDK_RUNTIME_ASSERT(
             wally_base58_to_bytes(address.data(), 0, hash160.data(), hash160.size(), &written) == WALLY_OK);
 
-        std::array<unsigned char, HASH160_LEN + 3> script;
+        std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
         unsigned char* p = script.data();
         GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_HASH160, p, 1, &written) == WALLY_OK);
         p += written;
         GA_SDK_RUNTIME_ASSERT(
             script_encode_data(hash160.data() + 1, HASH160_LEN, p, HASH160_LEN, &written) == WALLY_OK);
+        p += written;
+        GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_EQUAL, p, 1, &written) == WALLY_OK);
+
+        return script;
+    }
+
+    std::array<unsigned char, HASH160_LEN + 3> output_script(
+        const std::array<unsigned char, HASH160_LEN + 1>& script_hash)
+    {
+        size_t written{ 0 };
+        std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
+        unsigned char* p = script.data();
+        GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_HASH160, p, 1, &written) == WALLY_OK);
+        p += written;
+        GA_SDK_RUNTIME_ASSERT(
+            script_encode_data(script_hash.data() + 1, HASH160_LEN, p, HASH160_LEN, &written) == WALLY_OK);
         p += written;
         GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_EQUAL, p, 1, &written) == WALLY_OK);
 
