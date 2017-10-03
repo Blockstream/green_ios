@@ -27,6 +27,8 @@ if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_fami
     endif
 endif
 
+add_project_arguments(['-Wextra', '-Werror'], language : 'cpp')
+
 if compiler.get_id() == 'clang' and host_machine.cpu_family().contains('mips')
     add_project_arguments(['-mxgot'], language : 'cpp')
 endif
@@ -94,10 +96,16 @@ foreach sub : subprojects
     dep = dependency(sub[0], modules : sub[3], version : '>= 9.9.9', required : false, static : true)
     if not dep.found()
         message('Building ' + sub[0] + '...')
-        if not meson.is_cross_build()
-            run_command(join_paths('tools', 'build' + sub[0] + '.sh'))
-        else
-            run_command(join_paths('tools', 'build' + sub[0] + '.sh'), '--' + meson.get_cross_property('target_os'))
+        run_cmd_args = []
+        if meson.is_cross_build()
+            run_cmd_args += ['--' + meson.get_cross_property('target_os')]
+        endif
+        res = run_command(join_paths('tools', 'build' + sub[0] + '.sh'), run_cmd_args)
+        if res.returncode() != 0
+            message('--- Failed to run command (stdout) ---')
+            message(res.stdout())
+            message('--- Failed to run command (stderr) ---')
+            message(res.stderr())
         endif
     endif
     subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)

@@ -520,8 +520,8 @@ namespace sdk {
         return f;
     }
 
-    bool session::session_impl::set_twofactor(
-        two_factor_type type, const std::string& code, const std::string& proxy_code)
+    bool session::session_impl::set_twofactor(__attribute__((unused)) two_factor_type type, const std::string& code,
+        __attribute__((unused)) const std::string& proxy_code)
     {
         auto two_factor_future
             = m_session
