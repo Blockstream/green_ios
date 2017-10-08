@@ -55,7 +55,7 @@ namespace sdk {
                 }
             }
 
-            template <typename U> U get_with_default(const std::string& path, const U& u) const
+            template <typename U> U get_with_default(const std::string& path, const U& u = U()) const
             {
                 try {
                     return get<U>(path);
@@ -113,13 +113,13 @@ namespace sdk {
         login_data(const login_data& data)
         {
             associate(data.get_handle().get());
-            m_fee_estimates = get<msgpack::object>("fee_estimates");
+            m_fee_estimates = get_with_default<msgpack::object>("fee_estimates");
         }
 
         login_data& operator=(const msgpack::object& data)
         {
             associate(data);
-            m_fee_estimates = get<msgpack::object>("fee_estimates");
+            m_fee_estimates = get_with_default<msgpack::object>("fee_estimates");
             return *this;
         }
 

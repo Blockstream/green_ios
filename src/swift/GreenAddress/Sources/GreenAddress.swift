@@ -188,6 +188,15 @@ public class Session {
         return try convertOpaqueJsonToDict(o: login_data!)
     }
 
+    public func login(username: String, password: String) throws -> [String: Any]? {
+        var login_data: OpaquePointer? = nil
+        try callWrapper(fun: GA_login_watch_only(session, username, password, &login_data))
+        defer {
+            GA_destroy_login_data(login_data)
+        }
+        return try convertOpaqueJsonToDict(o: login_data!)
+    }
+
     public func removeAccount() throws {
         try callWrapper(fun: GA_remove_account(session));
     }

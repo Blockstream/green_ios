@@ -82,6 +82,9 @@ namespace sdk {
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         login_data login(const std::string& mnemonic, const std::string& user_agent);
+        login_data login_watch_only(
+            const std::string& username, const std::string& password, const std::string& user_agent);
+        bool set_watch_only(const std::string& username, const std::string& password);
         bool remove_account();
 
         login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
@@ -295,6 +298,36 @@ namespace sdk {
         authenticate_future.get();
 
         return m_login_data;
+    }
+
+    login_data session::session_impl::login_watch_only(
+        const std::string& username, const std::string& password, const std::string& user_agent)
+    {
+        auto login_watch_only_future
+            = m_session
+                  ->call("com.greenaddress.login.watch_only_v2",
+                      std::make_tuple("custom",
+                          std::map<std::string, std::string>({ { "username", username }, { "password", password } }),
+                          DEFAULT_USER_AGENT + user_agent + "_ga_sdk"))
+                  .then([this](boost::future<autobahn::wamp_call_result> result) {
+                      m_login_data = result.get().argument<msgpack::object>(0);
+                  });
+
+        login_watch_only_future.get();
+
+        return m_login_data;
+    }
+
+    bool session::session_impl::set_watch_only(const std::string& username, const std::string& password)
+    {
+        bool r;
+        auto set_watch_only_future
+            = m_session->call("com.greenaddress.addressbook.sync_custom", std::make_tuple(username, password))
+                  .then([&r](boost::future<autobahn::wamp_call_result> result) { r = result.get().argument<bool>(0); });
+
+        set_watch_only_future.get();
+
+        return r;
     }
 
     bool session::session_impl::remove_account()
@@ -673,6 +706,19 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->login(pin, pin_identifier_and_secret, user_agent); });
+    }
+
+    login_data session::login_watch_only(
+        const std::string& username, const std::string& password, const std::string& user_agent)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->login_watch_only(username, password, user_agent); });
+    }
+
+    bool session::set_watch_only(const std::string& username, const std::string& password)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->set_watch_only(username, password); });
     }
 
     bool session::remove_account()

@@ -187,6 +187,17 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, GA_session,
     },
     const char*, pin, const char*, pin_identifier_and_secret, struct GA_login_data**, login_data);
 
+GA_SDK_DEFINE_C_FUNCTION_3(GA_login_watch_only, GA_session,
+    [](struct GA_session* session, const char* username, const char* password, struct GA_login_data** login_data) {
+        GA_SDK_RUNTIME_ASSERT(username);
+        GA_SDK_RUNTIME_ASSERT(password);
+        GA_SDK_RUNTIME_ASSERT(login_data);
+        const auto result = session->login_watch_only(username, password);
+        *login_data = new GA_login_data;
+        **login_data = result.get_handle().get();
+    },
+    const char*, username, const char*, password, struct GA_login_data**, login_data);
+
 GA_SDK_DEFINE_C_FUNCTION_0(GA_remove_account, GA_session, [](struct GA_session* session) { session->remove_account(); })
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me, GA_session,

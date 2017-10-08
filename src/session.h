@@ -97,6 +97,17 @@ int GA_login_with_pin(struct GA_session* session, const char* pin, const char* p
     struct GA_login_data** login_data);
 
 /**
+ * Authenticate an user in watch only mode.
+ * @session The server session to use.
+ * @username The username.
+ * @password The password.
+ *
+ * GA_ERROR if authentication is unsuccessful.
+ */
+int GA_login_watch_only(
+    struct GA_session* session, const char* username, const char* password, struct GA_login_data** login_data);
+
+/**
  * Remove an account.
  * @session The server session to use.
  */
