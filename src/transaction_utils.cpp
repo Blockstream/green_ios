@@ -5,10 +5,10 @@
 namespace ga {
 namespace sdk {
 
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t path, bool public_)
+    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t child, bool public_)
     {
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_alloc(key.get(), path,
+        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_alloc(key.get(), child,
                                   (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH, &p)
             == WALLY_OK);
         return wally_ext_key_ptr(p, &bip32_key_free);
@@ -20,11 +20,12 @@ namespace sdk {
         return derive_key(derive_key(key, path.first, public_), path.second, public_);
     }
 
-    wally_ext_key_ptr ga_pub_key(const std::string& deposit_chain_code, const std::string& deposit_pub_key,
-        const std::string& gait_path, int32_t subaccount, uint32_t pointer, bool main_net)
+    wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
+        const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net)
     {
-        const auto dcc_bytes = bytes_from_hex(deposit_chain_code.c_str(), deposit_chain_code.size());
-        const auto dpk_bytes = bytes_from_hex(deposit_pub_key.c_str(), deposit_pub_key.size());
+        // FIXME: cache the top level keys
+        const auto dcc_bytes = bytes_from_hex(chain_code.c_str(), chain_code.size());
+        const auto dpk_bytes = bytes_from_hex(pub_key.c_str(), pub_key.size());
 
         const ext_key* p = nullptr;
         GA_SDK_RUNTIME_ASSERT(
@@ -55,47 +56,45 @@ namespace sdk {
 
     std::array<unsigned char, HASH160_LEN + 1> create_p2sh_script(const std::vector<unsigned char>& script_bytes)
     {
-        std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
-        hash160[0] = 196;
+        std::array<unsigned char, HASH160_LEN + 1> script{ { 0 } };
+        script[0] = 196;
         GA_SDK_RUNTIME_ASSERT(
-            wally_hash160(script_bytes.data(), script_bytes.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
-        return hash160;
+            wally_hash160(script_bytes.data(), script_bytes.size(), script.data() + 1, HASH160_LEN) == WALLY_OK);
+        return script;
     }
 
     std::array<unsigned char, HASH160_LEN + 1> create_p2wsh_script(const std::vector<unsigned char>& script_bytes)
     {
-        std::array<unsigned char, SHA256_LEN> sha256{ { 0 } };
+        std::array<unsigned char, SHA256_LEN> script{ { 0 } };
         GA_SDK_RUNTIME_ASSERT(
-            wally_sha256(script_bytes.data(), script_bytes.size(), sha256.data(), sha256.size()) == WALLY_OK);
+            wally_sha256(script_bytes.data(), script_bytes.size(), script.data(), script.size()) == WALLY_OK);
 
         std::array<unsigned char, 1 + 1 + SHA256_LEN> q{ { 0 } };
         unsigned char* s = q.data();
-        size_t written = 0;
+        size_t written{ 0 };
         GA_SDK_RUNTIME_ASSERT(script_encode_small_num(0, s, 1, &written) == WALLY_OK);
         s += written;
         GA_SDK_RUNTIME_ASSERT(
-            script_encode_data(sha256.data(), sha256.size(), s, q.size() - written, &written) == WALLY_OK);
+            script_encode_data(script.data(), script.size(), s, q.size() - written, &written) == WALLY_OK);
 
-        std::array<unsigned char, HASH160_LEN + 1> hash160{ { 0 } };
-        hash160[0] = 196;
-        GA_SDK_RUNTIME_ASSERT(wally_hash160(q.data(), q.size(), hash160.data() + 1, HASH160_LEN) == WALLY_OK);
+        std::array<unsigned char, HASH160_LEN + 1> sc{ { 0 } };
+        sc[0] = 196;
+        GA_SDK_RUNTIME_ASSERT(wally_hash160(q.data(), q.size(), sc.data() + 1, HASH160_LEN) == WALLY_OK);
 
-        return hash160;
+        return sc;
     }
 
     std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address)
     {
-        std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> hash160{ { 0 } };
+        std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc{ { 0 } };
         size_t written{ 0 };
-        GA_SDK_RUNTIME_ASSERT(
-            wally_base58_to_bytes(address.data(), 0, hash160.data(), hash160.size(), &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_base58_to_bytes(address.data(), 0, sc.data(), sc.size(), &written) == WALLY_OK);
 
         std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
         unsigned char* p = script.data();
         GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_HASH160, p, 1, &written) == WALLY_OK);
         p += written;
-        GA_SDK_RUNTIME_ASSERT(
-            script_encode_data(hash160.data() + 1, HASH160_LEN, p, HASH160_LEN, &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(script_encode_data(sc.data() + 1, HASH160_LEN, p, HASH160_LEN, &written) == WALLY_OK);
         p += written;
         GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_EQUAL, p, 1, &written) == WALLY_OK);
 
@@ -119,7 +118,7 @@ namespace sdk {
     }
 
     std::vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,
-        const std::string& deposit_pub_key, const std::string& gait_path, int32_t subaccount, uint32_t pointer,
+        const std::string& deposit_pub_key, const std::string& gait_path, uint32_t subaccount, uint32_t pointer,
         bool main_net)
     {
         const auto server_pub_key

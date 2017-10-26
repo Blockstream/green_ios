@@ -27,8 +27,7 @@ namespace sdk {
     using transport = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_client>;
     using transport_tls = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_tls_client>;
     using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context>;
-
-    using wally_ext_key_ptr = std::unique_ptr<const ext_key, decltype(&bip32_key_free)>;
+    using wamp_call_result = boost::future<autobahn::wamp_call_result>;
 
     const std::string DEFAULT_REALM("realm1");
     const std::string DEFAULT_USER_AGENT("[v2,sw]");
@@ -158,8 +157,8 @@ namespace sdk {
         std::string get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
         std::string get_raw_output(const std::string& txhash) const;
-        std::vector<unsigned char> output_script(int32_t subaccount, uint32_t pointer) const;
-        utxo get_utxos(size_t num_confs, size_t subaccount) const;
+        std::vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
+        utxo_set get_utxos(size_t num_confs, size_t subaccount) const;
 
     private:
         boost::asio::io_service m_io;
@@ -247,11 +246,11 @@ namespace sdk {
 
         auto register_arguments = std::make_tuple(
             pub_key.get(), chain_code.get(), DEFAULT_USER_AGENT + user_agent + "_ga_sdk", hex_path.get());
-        auto register_future = m_session->call("com.greenaddress.login.register", register_arguments)
-                                   .then([](boost::future<autobahn::wamp_call_result> result) {
-                                       GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
-                                   });
-        register_future.get();
+        auto fn
+            = m_session->call("com.greenaddress.login.register", register_arguments).then([](wamp_call_result result) {
+                  GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
+              });
+        fn.get();
     }
 
     login_data session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
@@ -277,12 +276,11 @@ namespace sdk {
 
         auto challenge_arguments = std::make_tuple(base58_pkh.get());
         std::string challenge;
-        auto get_challenge_future = m_session->call("com.greenaddress.login.get_challenge", challenge_arguments)
-                                        .then([&challenge](boost::future<autobahn::wamp_call_result> result) {
-                                            challenge = result.get().argument<std::string>(0);
-                                        });
+        auto fn
+            = m_session->call("com.greenaddress.login.get_challenge", challenge_arguments)
+                  .then([&challenge](wamp_call_result result) { challenge = result.get().argument<std::string>(0); });
 
-        get_challenge_future.get();
+        fn.get();
 
         struct ext_key master_key = *m_master_key;
         auto hexder_path
@@ -290,12 +288,10 @@ namespace sdk {
 
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
-        auto authenticate_future = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
-                                       .then([this](boost::future<autobahn::wamp_call_result> result) {
-                                           m_login_data = result.get().argument<msgpack::object>(0);
-                                       });
+        fn = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
+                 .then([this](wamp_call_result result) { m_login_data = result.get().argument<msgpack::object>(0); });
 
-        authenticate_future.get();
+        fn.get();
 
         return m_login_data;
     }
@@ -303,17 +299,15 @@ namespace sdk {
     login_data session::session_impl::login_watch_only(
         const std::string& username, const std::string& password, const std::string& user_agent)
     {
-        auto login_watch_only_future
+        auto fn
             = m_session
                   ->call("com.greenaddress.login.watch_only_v2",
                       std::make_tuple("custom",
                           std::map<std::string, std::string>({ { "username", username }, { "password", password } }),
                           DEFAULT_USER_AGENT + user_agent + "_ga_sdk"))
-                  .then([this](boost::future<autobahn::wamp_call_result> result) {
-                      m_login_data = result.get().argument<msgpack::object>(0);
-                  });
+                  .then([this](wamp_call_result result) { m_login_data = result.get().argument<msgpack::object>(0); });
 
-        login_watch_only_future.get();
+        fn.get();
 
         return m_login_data;
     }
@@ -321,11 +315,10 @@ namespace sdk {
     bool session::session_impl::set_watch_only(const std::string& username, const std::string& password)
     {
         bool r;
-        auto set_watch_only_future
-            = m_session->call("com.greenaddress.addressbook.sync_custom", std::make_tuple(username, password))
-                  .then([&r](boost::future<autobahn::wamp_call_result> result) { r = result.get().argument<bool>(0); });
+        auto fn = m_session->call("com.greenaddress.addressbook.sync_custom", std::make_tuple(username, password))
+                      .then([&r](wamp_call_result result) { r = result.get().argument<bool>(0); });
 
-        set_watch_only_future.get();
+        fn.get();
 
         return r;
     }
@@ -333,12 +326,12 @@ namespace sdk {
     bool session::session_impl::remove_account()
     {
         bool r;
-        auto remove_account_future
+        auto fn
             = m_session
                   ->call("com.greenaddress.login.remove_account", std::make_tuple(std::map<std::string, std::string>()))
-                  .then([&r](boost::future<autobahn::wamp_call_result> result) { r = result.get().argument<bool>(0); });
+                  .then([&r](wamp_call_result result) { r = result.get().argument<bool>(0); });
 
-        remove_account_future.get();
+        fn.get();
 
         return r;
     }
@@ -371,13 +364,10 @@ namespace sdk {
 
         auto&& change_settings = [this, &key_str](auto arg) {
             auto change_settings_arguments = std::make_tuple(key_str, arg);
-            auto change_settings_future
-                = m_session->call("com.greenaddress.login.change_settings", change_settings_arguments)
-                      .then([](boost::future<autobahn::wamp_call_result> result) {
-                          GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
-                      });
+            auto fn = m_session->call("com.greenaddress.login.change_settings", change_settings_arguments)
+                          .then([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); });
 
-            change_settings_future.get();
+            fn.get();
         };
 
         if (key == settings::tx_limits) {
@@ -426,12 +416,11 @@ namespace sdk {
 
         tx_list txs;
         const auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
-        auto get_tx_list_future = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
-                                      .then([&txs](boost::future<autobahn::wamp_call_result> result) {
-                                          txs.associate(result.get().argument<msgpack::object>(0));
-                                      });
+        auto fn
+            = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
+                  .then([&txs](wamp_call_result result) { txs.associate(result.get().argument<msgpack::object>(0)); });
 
-        get_tx_list_future.get();
+        fn.get();
 
         return txs;
     }
@@ -449,34 +438,35 @@ namespace sdk {
     std::string session::session_impl::get_raw_output(const std::string& txhash) const
     {
         std::string raw_output;
-        auto raw_output_future = m_session->call("com.greenaddress.txs.get_raw_output", std::make_tuple(txhash))
-                                     .then([&raw_output](boost::future<autobahn::wamp_call_result> result) {
-                                         raw_output = result.get().argument<std::string>(0);
-                                     });
+        auto fn
+            = m_session->call("com.greenaddress.txs.get_raw_output", std::make_tuple(txhash))
+                  .then([&raw_output](wamp_call_result result) { raw_output = result.get().argument<std::string>(0); });
 
-        raw_output_future.get();
+        fn.get();
 
         return raw_output;
     }
 
-    std::vector<unsigned char> session::session_impl::output_script(int32_t subaccount, uint32_t pointer) const
+    std::vector<unsigned char> session::session_impl::output_script(uint32_t subaccount, uint32_t pointer) const
     {
         return ga::sdk::output_script(m_master_key, m_params.deposit_chain_code(), m_params.deposit_pub_key(),
             m_login_data.get<std::string>("gait_path"), subaccount, pointer, m_params.main_net());
     }
 
-    utxo session::session_impl::get_utxos(size_t num_confs, size_t subaccount) const
+    utxo_set session::session_impl::get_utxos(size_t num_confs, size_t subaccount) const
     {
-        utxo unspent;
-        auto unspent_outputs_future
+        utxo_set unspent;
+        auto fn
             = m_session
                   ->call("com.greenaddress.txs.get_all_unspent_outputs", std::make_tuple(num_confs, subaccount, "any"))
-                  .then([&unspent](boost::future<autobahn::wamp_call_result> result) {
+                  .then([&unspent](wamp_call_result result) {
                       const auto r = result.get();
                       if (r.number_of_arguments()) {
                           unspent = r.argument<msgpack::object>(0);
                       }
                   });
+
+        fn.get();
 
         return unspent;
     }
@@ -486,29 +476,26 @@ namespace sdk {
         const std::string addr_type_str = addr_type == address_type::p2sh ? "p2sh" : "p2wsh";
 
         receive_address address;
-        auto receive_address_future
+        auto fn
             = m_session->call("com.greenaddress.vault.fund", std::make_tuple(subaccount, true, addr_type_str))
-                  .then([&address](boost::future<autobahn::wamp_call_result> result) {
-                      address = result.get().argument<msgpack::object>(0);
-                  });
+                  .then([&address](wamp_call_result result) { address = result.get().argument<msgpack::object>(0); });
 
-        receive_address_future.get();
+        fn.get();
 
         const auto script = address.get<std::string>("script");
         const auto pointer = address.get<int>("pointer");
         const auto script_bytes = bytes_from_hex(script.data(), script.length());
-        const auto hash160
+        const auto sc
             = addr_type == address_type::p2sh ? create_p2sh_script(script_bytes) : create_p2wsh_script(script_bytes);
 
         const auto multisig = output_script(subaccount, pointer);
-        const auto hash160_multisig
+        const auto sc_multisig
             = addr_type == address_type::p2sh ? create_p2sh_script(multisig) : create_p2wsh_script(multisig);
 
-        GA_SDK_RUNTIME_ASSERT(hash160 == hash160_multisig);
+        GA_SDK_RUNTIME_ASSERT(sc == sc_multisig);
 
         char* q = nullptr;
-        GA_SDK_RUNTIME_ASSERT(
-            wally_base58_from_bytes(hash160.data(), hash160.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_base58_from_bytes(sc.data(), sc.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
         wally_string_ptr base58_pkh(q, &wally_free_string);
 
         address.set(addr_type_str, std::string(q));
@@ -520,13 +507,10 @@ namespace sdk {
     {
         balance b;
 
-        auto balance_future
-            = m_session->call("com.greenaddress.txs.get_balance", std::make_tuple(subaccount, num_confs))
-                  .then([&b](boost::future<autobahn::wamp_call_result> result) {
-                      b = result.get().argument<msgpack::object>(0);
-                  });
+        auto fn = m_session->call("com.greenaddress.txs.get_balance", std::make_tuple(subaccount, num_confs))
+                      .then([&b](wamp_call_result result) { b = result.get().argument<msgpack::object>(0); });
 
-        balance_future.get();
+        fn.get();
 
         return b;
     }
@@ -535,12 +519,10 @@ namespace sdk {
     {
         two_factor f;
 
-        auto two_factor_future = m_session->call("com.greenaddress.twofactor.get_config", std::make_tuple())
-                                     .then([&f](boost::future<autobahn::wamp_call_result> result) {
-                                         f = result.get().argument<msgpack::object>(0);
-                                     });
+        auto fn = m_session->call("com.greenaddress.twofactor.get_config", std::make_tuple())
+                      .then([&f](wamp_call_result result) { f = result.get().argument<msgpack::object>(0); });
 
-        two_factor_future.get();
+        fn.get();
 
         return f;
     }
@@ -548,14 +530,13 @@ namespace sdk {
     bool session::session_impl::set_twofactor(__attribute__((unused)) two_factor_type type, const std::string& code,
         __attribute__((unused)) const std::string& proxy_code)
     {
-        auto two_factor_future
-            = m_session
-                  ->call("com.greenaddress.twofactor.enable_gauth",
-                      // std::make_tuple(code, std::map<std::string, std::string>{ { "proxy", proxy_code } }))
-                      std::make_tuple(code, std::map<std::string, std::string>()))
-                  .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
+        auto fn = m_session
+                      ->call("com.greenaddress.twofactor.enable_gauth",
+                          // std::make_tuple(code, std::map<std::string, std::string>{ { "proxy", proxy_code } }))
+                          std::make_tuple(code, std::map<std::string, std::string>()))
+                      .then([](wamp_call_result result) { result.get(); });
 
-        two_factor_future.get();
+        fn.get();
 
         return false;
     }
@@ -567,12 +548,11 @@ namespace sdk {
 
         std::string pin_identifier;
 
-        auto set_pin_future = m_session->call("com.greenaddress.pin.set_pin_login", std::make_tuple(pin, device))
-                                  .then([&pin_identifier](boost::future<autobahn::wamp_call_result> result) {
-                                      pin_identifier = result.get().argument<std::string>(0);
-                                  });
+        auto fn = m_session->call("com.greenaddress.pin.set_pin_login", std::make_tuple(pin, device))
+                      .then([&pin_identifier](
+                          wamp_call_result result) { pin_identifier = result.get().argument<std::string>(0); });
 
-        set_pin_future.get();
+        fn.get();
 
         const auto password = get_pin_password(pin, pin_identifier);
 
@@ -619,13 +599,10 @@ namespace sdk {
     {
         std::string password;
 
-        auto get_pin_password_future
-            = m_session->call("com.greenaddress.pin.get_password", std::make_tuple(pin, pin_identifier))
-                  .then([&password](boost::future<autobahn::wamp_call_result> result) {
-                      password = result.get().argument<std::string>(0);
-                  });
+        auto fn = m_session->call("com.greenaddress.pin.get_password", std::make_tuple(pin, pin_identifier))
+                      .then([&password](wamp_call_result result) { password = result.get().argument<std::string>(0); });
 
-        get_pin_password_future.get();
+        fn.get();
 
         return password;
     }

@@ -296,7 +296,7 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_dict, GA_tx_list,
 GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_tx_list_to_json, GA_tx_list,
     [](struct GA_tx_list* txs, char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
-        const auto& v = txs->get_json();
+        const auto v = txs->get_json();
         *output = to_c_string(v);
     },
     char**, output);
@@ -414,7 +414,7 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_type, GA_tx_view,
 GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_balance_to_json, GA_balance,
     [](struct GA_balance* balance, char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
-        const auto& v = balance->get_json();
+        const auto v = balance->get_json();
         *output = to_c_string(v);
     },
     char**, output);
@@ -422,7 +422,7 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_balance_to_json, GA_balance,
 GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_login_data_to_json, GA_login_data,
     [](struct GA_login_data* login_data, char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
-        const auto& v = login_data->get_json();
+        const auto v = login_data->get_json();
         *output = to_c_string(v);
     },
     char**, output);

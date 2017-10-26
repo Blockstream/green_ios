@@ -15,13 +15,13 @@ namespace sdk {
 
     using wally_ext_key_ptr = std::unique_ptr<const ext_key, decltype(&bip32_key_free)>;
 
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t path, bool public_);
+    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t child, bool public_);
 
     wally_ext_key_ptr derive_key(
         const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path, bool public_);
 
-    wally_ext_key_ptr ga_pub_key(const std::string& deposit_chain_code, const std::string& deposit_pub_key,
-        const std::string& gait_path, int32_t subaccount, uint32_t pointer, bool main_net);
+    wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
+        const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net);
 
     std::array<unsigned char, HASH160_LEN + 1> create_p2sh_script(const std::vector<unsigned char>& script_bytes);
     std::array<unsigned char, HASH160_LEN + 1> create_p2wsh_script(const std::vector<unsigned char>& script_bytes);
@@ -30,7 +30,7 @@ namespace sdk {
         const std::array<unsigned char, HASH160_LEN + 1>& script_hash);
 
     std::vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,
-        const std::string& deposit_pub_key, const std::string& gait_path, int32_t subaccount, uint32_t pointer,
+        const std::string& deposit_pub_key, const std::string& gait_path, uint32_t subaccount, uint32_t pointer,
         bool main_net);
 
     std::vector<unsigned char> input_script(

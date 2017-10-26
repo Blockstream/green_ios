@@ -191,8 +191,8 @@ namespace sdk {
         value_container m_list;
     };
 
-    struct utxo : public detail::object_container<utxo> {
-        utxo& operator=(const msgpack_object& data)
+    struct utxo_set : public detail::object_container<utxo_set> {
+        utxo_set& operator=(const msgpack_object& data)
         {
             associate(data);
             return *this;

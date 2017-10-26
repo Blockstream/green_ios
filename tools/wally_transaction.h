@@ -140,7 +140,7 @@ extern "C" {
 
 #define OP_INVALIDOPCODE 0xff
 
-WALLY_CORE_API int8_t script_encode_op_n(int8_t v);
+WALLY_CORE_API uint8_t script_encode_op_n(uint8_t v);
 
 WALLY_CORE_API int script_encode_data(
     const unsigned char* data,
@@ -212,7 +212,7 @@ WALLY_CORE_API int raw_tx_output_to_bytes(
 
 WALLY_CORE_API int tx_output_size(const struct tx_output *in, size_t* output);
 
-#define TRANSACTION_CURRENT_VERSION 2
+#define TRANSACTION_LATEST_VERSION 2
 #define TRANSACTION_MAX_STANDARD_VERSION 2
 
 struct raw_tx {

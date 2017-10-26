@@ -1,16 +1,10 @@
 #include "internal.h"
 
+#include <ccan/ccan/endian/endian.h>
+
 #include <include/wally_crypto.h>
 #include <include/wally_transaction.h>
 
-#ifdef __APPLE__
-#include <libkern/OSByteOrder.h>
-#define htole16(x) OSSwapHostToLittleInt16(x)
-#define htole32(x) OSSwapHostToLittleInt32(x)
-#define htole64(x) OSSwapHostToLittleInt64(x)
-#else
-#include <endian.h>
-#endif
 #include <limits.h>
 
 #define ALLOC_TX_SIZ(siz)                                                                                              \
@@ -30,7 +24,7 @@
 #define ALLOC_RAW_TX()                                                                                                 \
     ALLOC_TX_SIZ(sizeof(struct raw_tx))
 
-int8_t script_encode_op_n(int8_t v)
+uint8_t script_encode_op_n(uint8_t v)
 {
     if (v == 0)
         return OP_0;
@@ -47,6 +41,8 @@ int script_encode_data(
     unsigned char b;
 
     if (!bytes_out || !len || !written)
+        return WALLY_EINVAL;
+    if (len < 1 + data_len)
         return WALLY_EINVAL;
 
     if (!data_len)
@@ -114,8 +110,7 @@ inline size_t compact_size_of(uint64_t size)
         return sizeof(unsigned char) + sizeof(uint16_t);
     else if (size <= UINT_MAX)
         return sizeof(unsigned char) + sizeof(uint32_t);
-    else
-        return sizeof(unsigned char) + sizeof(uint64_t);
+    __builtin_unreachable();
 }
 
 inline size_t compact_size_to_bytes(uint64_t size, unsigned char* bytes_out)
@@ -127,22 +122,19 @@ inline size_t compact_size_to_bytes(uint64_t size, unsigned char* bytes_out)
         written = 1;
     }
     else if (size <= USHRT_MAX) {
-        uint16_t n = htole16(size);
+        uint16_t n = cpu_to_le16(size);
         *bytes_out++ = 253;
         memcpy(bytes_out, (unsigned char*) &n, sizeof(uint16_t));
         written = 3;
     }
     else if (size <= UINT_MAX) {
-        uint32_t n = htole32(size);
+        uint32_t n = cpu_to_le32(size);
         *bytes_out++ = 254;
         memcpy(bytes_out, (unsigned char*) &n, sizeof(uint32_t));
         written = 5;
     }
     else {
-        uint64_t n = htole64(size);
-        *bytes_out++ = 255;
-        memcpy(bytes_out, (unsigned char*) &n, sizeof(uint64_t));
-        written = 9;
+        __builtin_unreachable();
     }
     return written;
 }
@@ -151,6 +143,8 @@ int tx_input_free(const struct tx_input *tx_input_in)
 {
     if (!tx_input_in || !tx_input_in->script)
         return WALLY_EINVAL;
+    clear((void*)tx_input_in->script, tx_input_in->script_len);
+    clear((void*)tx_input_in, sizeof(struct tx_input));
     wally_free((void*)tx_input_in->script);
     wally_free((void*)tx_input_in);
 
@@ -217,7 +211,7 @@ int raw_tx_in_to_bytes(
     memcpy(bytes_out, in->hash256, sizeof(in->hash256)); 
     bytes_out += sizeof(in->hash256);
 
-    tmp = htole32(in->index);
+    tmp = cpu_to_le32(in->index);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
     bytes_out += sizeof(uint32_t);
 
@@ -227,7 +221,7 @@ int raw_tx_in_to_bytes(
     memcpy(bytes_out, in->script, in->script_len);
     bytes_out += in->script_len;
 
-    tmp = htole32(in->sequence);
+    tmp = cpu_to_le32(in->sequence);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
 
     return WALLY_OK;
@@ -252,6 +246,8 @@ int tx_output_free(const struct tx_output *tx_output_in)
     if (!tx_output_in || !tx_output_in->script)
         return WALLY_EINVAL;
 
+    clear((void*)tx_output_in->script, tx_output_in->script_len);
+    clear((void*)tx_output_in, sizeof(struct tx_output));
     wally_free((void*)tx_output_in->script);
     wally_free((void*)tx_output_in);
 
@@ -307,7 +303,7 @@ int raw_tx_output_to_bytes(
 
     *written = n;
 
-    tmp = htole64(in->amount);
+    tmp = cpu_to_le64(in->amount);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint64_t));
     bytes_out += sizeof(uint64_t);
 
@@ -319,7 +315,7 @@ int raw_tx_output_to_bytes(
     return WALLY_OK;
 }
 
-int tx_output_size(const struct tx_output *in, size_t* output)
+int tx_output_size(const struct tx_output *in, size_t *output)
 {
     if (!in || !output)
         return WALLY_EINVAL;
@@ -335,6 +331,10 @@ int raw_tx_free(const struct raw_tx *raw_tx_in)
 {
     if (!raw_tx_in || !raw_tx_in->in || !raw_tx_in->out)
         return WALLY_EINVAL;
+
+    clear((void*)raw_tx_in->in, raw_tx_in->in_len * sizeof(struct tx_input*));
+    clear((void*)raw_tx_in->out, raw_tx_in->out_len * sizeof(struct tx_output*));
+    clear((void*)raw_tx_in, sizeof(struct raw_tx));
     wally_free((void*)raw_tx_in->in);
     wally_free((void*)raw_tx_in->out);
     wally_free((void*)raw_tx_in);
@@ -401,7 +401,7 @@ int raw_tx_to_bytes(
     if (!in || !bytes_out || !written || len < n)
         return WALLY_EINVAL;
 
-    tmp = htole32(in->version);
+    tmp = cpu_to_le32(in->version);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
     bytes_out += sizeof(uint32_t);
 
@@ -423,7 +423,7 @@ int raw_tx_to_bytes(
         bytes_out += out_written;
     }
 
-    tmp = htole32(in->locktime);
+    tmp = cpu_to_le32(in->locktime);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
 
     return WALLY_OK;
