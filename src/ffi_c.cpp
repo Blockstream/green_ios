@@ -61,6 +61,14 @@ struct GA_balance final : public ga::sdk::balance {
     }
 };
 
+struct GA_available_currencies final : public ga::sdk::available_currencies {
+    GA_available_currencies& operator=(const msgpack_object& data)
+    {
+        ga::sdk::available_currencies::operator=(data);
+        return *this;
+    }
+};
+
 struct GA_login_data final : public ga::sdk::login_data {
     GA_login_data& operator=(const msgpack_object& data)
     {
@@ -138,6 +146,12 @@ int GA_destroy_tx_view(const struct GA_tx_view* view)
 int GA_destroy_balance(const struct GA_balance* balance)
 {
     delete balance;
+    return GA_OK;
+}
+
+int GA_destroy_available_currencies(const struct GA_available_currencies* o)
+{
+    delete o;
     return GA_OK;
 }
 
@@ -273,6 +287,15 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_get_balance, GA_session,
         **balance = result.get_handle().get();
     },
     size_t, num_confs, struct GA_balance**, balance);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_get_available_currencies, GA_session,
+    [](struct GA_session* session, struct GA_available_currencies** available_currencies) {
+        GA_SDK_RUNTIME_ASSERT(available_currencies);
+        const auto result = session->get_available_currencies();
+        *available_currencies = new GA_available_currencies;
+        **available_currencies = result.get_handle().get();
+    },
+    struct GA_available_currencies**, available_currencies);
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_set_pin, GA_session,
     [](struct GA_session* session, const char* mnemonic, const char* pin, const char* device,
@@ -415,6 +438,14 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_balance_to_json, GA_balance,
     [](struct GA_balance* balance, char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
         const auto v = balance->get_json();
+        *output = to_c_string(v);
+    },
+    char**, output);
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_available_currencies_to_json, GA_available_currencies,
+    [](struct GA_available_currencies* available_currencies, char** output) {
+        GA_SDK_RUNTIME_ASSERT(output);
+        const auto v = available_currencies->get_json();
         *output = to_c_string(v);
     },
     char**, output);

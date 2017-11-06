@@ -39,6 +39,9 @@ struct GA_tx_view;
 /** An balance representation */
 struct GA_balance;
 
+/** An available currencies representation */
+struct GA_available_currencies;
+
 /** An login data representation */
 struct GA_login_data;
 
@@ -101,6 +104,11 @@ int GA_convert_login_data_to_json(struct GA_login_data* login_data, char** outpu
 /**
  *
  */
+int GA_convert_available_currencies_to_json(struct GA_available_currencies* available_currencies, char** output);
+
+/**
+ *
+ */
 void GA_destroy_dict(struct GA_dict* dict);
 
 /**
@@ -128,6 +136,11 @@ int GA_destroy_tx_view(const struct GA_tx_view* view);
  *
  */
 int GA_destroy_balance(const struct GA_balance* balance);
+
+/**
+ *
+ */
+int GA_destroy_available_currencies(const struct GA_available_currencies* o);
 
 /**
  *

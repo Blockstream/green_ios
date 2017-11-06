@@ -191,6 +191,15 @@ int GA_get_balance_for_subaccount(
 int GA_get_balance(struct GA_session* session, size_t num_confs, struct GA_balance** balance);
 
 /**
+ * The list of allowed currencies for all available pricing sources.
+ * @session The server session to use.
+ * @available_currencies The returned list of currencies.
+ *
+ * GA_ERROR if available_currencies could not be retrieved.
+ */
+int GA_get_available_currencies(struct GA_session* session, struct GA_available_currencies** available_currencies);
+
+/**
  * Set a PIN for the user wallet.
  * @session The server session to use.
  * @mnemonic The user mnemonic.

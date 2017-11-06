@@ -207,6 +207,14 @@ namespace sdk {
         }
     };
 
+    struct available_currencies : public detail::object_container<available_currencies> {
+        available_currencies& operator=(const msgpack_object& data)
+        {
+            associate(data);
+            return *this;
+        }
+    };
+
     struct two_factor : public detail::object_container<two_factor> {
         two_factor& operator=(const msgpack_object& data)
         {

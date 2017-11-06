@@ -95,6 +95,7 @@ namespace sdk {
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
         template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
+        available_currencies get_available_currencies() const;
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
         pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
@@ -515,6 +516,18 @@ namespace sdk {
         return b;
     }
 
+    available_currencies session::session_impl::get_available_currencies() const
+    {
+        available_currencies a;
+
+        auto fn = m_session->call("com.greenaddress.login.available_currencies", std::make_tuple())
+                      .then([&a](wamp_call_result result) { a = result.get().argument<msgpack::object>(0); });
+
+        fn.get();
+
+        return a;
+    }
+
     two_factor session::session_impl::get_twofactor_config()
     {
         two_factor f;
@@ -739,6 +752,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_balance("all", num_confs); });
+    }
+
+    available_currencies session::get_available_currencies()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_available_currencies(); });
     }
 
     two_factor session::get_twofactor_config()

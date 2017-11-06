@@ -176,7 +176,7 @@ public class Session {
         defer {
             GA_destroy_login_data(login_data)
         }
-        return try convertOpaqueJsonToDict(o: login_data!)
+        return try convertOpaqueJsonToDict(fun: GA_convert_login_data_to_json, o: login_data!)
     }
 
     public func login(pin: String, pin_identifier_and_secret: String) throws -> [String: Any]? {
@@ -185,7 +185,7 @@ public class Session {
         defer {
             GA_destroy_login_data(login_data)
         }
-        return try convertOpaqueJsonToDict(o: login_data!)
+        return try convertOpaqueJsonToDict(fun: GA_convert_login_data_to_json, o: login_data!)
     }
 
     public func login(username: String, password: String) throws -> [String: Any]? {
@@ -194,7 +194,7 @@ public class Session {
         defer {
             GA_destroy_login_data(login_data)
         }
-        return try convertOpaqueJsonToDict(o: login_data!)
+        return try convertOpaqueJsonToDict(fun: GA_convert_login_data_to_json, o: login_data!)
     }
 
     public func removeAccount() throws {
@@ -236,9 +236,9 @@ public class Session {
         return String(cString: bytes!)
     }
 
-    func convertOpaqueJsonToDict(o: OpaquePointer) throws -> [String: Any]? {
+    func convertOpaqueJsonToDict(fun call: (OpaquePointer, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: OpaquePointer) throws -> [String: Any]? {
         var bytes: UnsafeMutablePointer<Int8>? = nil
-        try callWrapper(fun: GA_convert_balance_to_json(o, &bytes))
+        try callWrapper(fun: call(o, &bytes))
         defer {
             GA_destroy_string(bytes)
         }
@@ -265,7 +265,7 @@ public class Session {
             GA_destroy_balance(balance)
         }
 
-        return try convertOpaqueJsonToDict(o: balance!)
+        return try convertOpaqueJsonToDict(fun: GA_convert_balance_to_json, o: balance!)
     }
 
     public func getBalance(numConfs: UInt32) throws -> [String: Any]? {
@@ -274,8 +274,16 @@ public class Session {
         defer {
             GA_destroy_balance(balance)
         }
+        return try convertOpaqueJsonToDict(fun: GA_convert_balance_to_json, o: balance!)
+    }
 
-        return try convertOpaqueJsonToDict(o: balance!)
+    public func getAvailableCurrencies() throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_get_available_currencies(session, &result))
+        defer {
+            GA_destroy_available_currencies(result)
+        }
+        return try convertOpaqueJsonToDict(fun: GA_convert_available_currencies_to_json, o: result!)
     }
 
     public func setPin(mnemonic: String, pin: String, device: String) throws -> String {

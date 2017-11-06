@@ -117,6 +117,8 @@ namespace sdk {
         balance get_balance_for_subaccount(size_t subaccount, size_t num_confs = 0);
         balance get_balance(size_t num_confs = 0);
 
+        available_currencies get_available_currencies();
+
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
 
