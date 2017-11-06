@@ -25,7 +25,7 @@ function build() {
     export CXX=$2
     export CC=$1
     export BOOST_ROOT="$PWD/build-$1/boost_1_64_0/build"
-    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$1/openssl-1.0.2l/build/lib/pkgconfig"
+    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$1/openssl-1.0.2m/build/lib/pkgconfig"
     export WALLY_PKG_CONFIG_PATH="$PWD/build-$1/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
@@ -43,7 +43,7 @@ function set_cross_build_env() {
     bld_root="$PWD/build-clang-$1-$2"
     ./tools/deps.sh $bld_root
     export BOOST_ROOT="$bld_root/boost_1_64_0/build"
-    export OPENSSL_PKG_CONFIG_PATH="$bld_root/openssl-1.0.2l/build/lib/pkgconfig"
+    export OPENSSL_PKG_CONFIG_PATH="$bld_root/openssl-1.0.2m/build/lib/pkgconfig"
     export WALLY_PKG_CONFIG_PATH="$bld_root/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
     export HOST_ARCH=$2

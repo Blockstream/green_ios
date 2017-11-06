@@ -6,7 +6,7 @@ SHA256SUM_WEBSOCKETPP=07b3364ad30cda022d91759d4b83ff902e1ebadb796969e58b59caa535
 SHA256SUM_MSGPACK=beaac1209f33276b5a75e7a02f8689ed44b97209cef82ba0909e06f0c45f6cae
 SHA256SUM_WALLYCORE=759af5c259fb6f09b708a563d06f8f2d3cef611920bf20af90a5e20c5585c51b
 SHA256SUM_BOOST=0445c22a5ef3bd69f5dfb48354978421a85ab395254a26b1ffb0aa1bfd63a108
-SHA256SUM_OPENSSL=a3d3a7c03c90ba370405b2d12791598addfcafb1a77ef483c02a317a56c08485
+SHA256SUM_OPENSSL=9066c68c1aa8e8719af61cb82b88156ab07b3ad2a9ab1f874a8afb324583b1b6
 
 SHASUM=sha256sum
 
@@ -38,7 +38,7 @@ prepare_pkg autobahn-cpp https://github.com/crossbario/autobahn-cpp/archive/e2d4
 prepare_pkg websocketpp-0.7.0 https://github.com/zaphoyd/websocketpp/archive/0.7.0.tar.gz ${SHA256SUM_WEBSOCKETPP}
 prepare_pkg msgpack-2.1.3 https://github.com/msgpack/msgpack-c/releases/download/cpp-2.1.3/msgpack-2.1.3.tar.gz ${SHA256SUM_MSGPACK}
 prepare_pkg boost_1_64_0 https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz ${SHA256SUM_BOOST}
-prepare_pkg openssl-1.0.2l https://github.com/openssl/openssl/archive/OpenSSL_1_0_2l.tar.gz ${SHA256SUM_OPENSSL}
+prepare_pkg openssl-1.0.2m https://github.com/openssl/openssl/archive/OpenSSL_1_0_2m.tar.gz ${SHA256SUM_OPENSSL}
 prepare_pkg libwally-core https://github.com/ElementsProject/libwally-core/archive/release_0.4.0.tar.gz ${SHA256SUM_WALLYCORE}
 
 function move_if() {
@@ -47,6 +47,6 @@ function move_if() {
     fi
 }
 move_if *autobahn* autobahn-cpp
-move_if openssl* openssl-1.0.2l
+move_if openssl* openssl-1.0.2m
 move_if *msgpack* msgpack
 move_if libwally-core-* libwally-core

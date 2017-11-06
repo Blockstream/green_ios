@@ -6,8 +6,8 @@ if test "x$1" == "x--iphone" || test "x$1" == "x--iphonesim"; then
     boost_system_lib=$2/boost_1_64_0/build/lib/libboost_system
     boost_thread_lib=$2/boost_1_64_0/build/lib/libboost_thread
     greenaddress_lib=$2/src/libgreenaddress
-    openssl_crypto_lib=$2/openssl-1.0.2l/build/lib/libcrypto
-    openssl_ssl_lib=$2/openssl-1.0.2l/build/lib/libssl
+    openssl_crypto_lib=$2/openssl-1.0.2m/build/lib/libcrypto
+    openssl_ssl_lib=$2/openssl-1.0.2m/build/lib/libssl
     secp256k1_lib=$2/libwally-core/build/lib/libsecp256k1
     wally_lib=$2/libwally-core/build/lib/libwallycore
 

@@ -89,7 +89,7 @@ subproject_libdirs = []
 subproject_deps = []
 subprojects = [['boost', 'boost_1_64_0', '>= 1.64.0', ['system', 'thread']],
                ['wallycore', 'libwally-core', '>= 0.1', []],
-               ['openssl', 'openssl-1.0.2l', '>= 1.0.2', []]]
+               ['openssl', 'openssl-1.0.2m', '>= 1.0.2', []]]
 
 foreach sub : subprojects
     subproject_libdirs += join_paths(meson.build_root(), sub[1], 'build', 'lib')
