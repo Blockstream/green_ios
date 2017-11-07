@@ -20,6 +20,11 @@ int main(int argc, char** argv)
         auto result = session.login(DEFAULT_MNEMONIC);
         GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);
         GA_SDK_RUNTIME_ASSERT(result.get<bool>("appearance/use_segwit"));
+        if (options->testnet) {
+            auto r = session.get_available_currencies();
+            auto v = r.get<std::vector<std::string>>("per_exchange/LOCALBTC");
+            GA_SDK_RUNTIME_ASSERT(std::find(v.begin(), v.end(), "GBP") != v.end());
+        }
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;
