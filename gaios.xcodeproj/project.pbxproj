@@ -9,10 +9,14 @@
 /* Begin PBXBuildFile section */
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
+		672FA1301FB9E846008CDA17 /* SendTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */; };
+		674385B41FA799BF001311DE /* VerifyMnemonicTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */; };
+		674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B71FA8D03B001311DE /* SettingsTableViewController.swift */; };
 		67512A091F9DFF7300D18169 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67512A081F9DFF7200D18169 /* GreenAddress.swift */; };
+		676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */; };
+		676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */; };
+		676846041FACC1E4002D79ED /* PINViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676846031FACC1E4002D79ED /* PINViewController.swift */; };
 		676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */; };
-		676FCF221F9D0CF800354E93 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF211F9D0CF800354E93 /* FirstViewController.swift */; };
-		676FCF241F9D0CF800354E93 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF231F9D0CF800354E93 /* SecondViewController.swift */; };
 		676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF251F9D0CF800354E93 /* Main.storyboard */; };
 		676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF281F9D0CF800354E93 /* Assets.xcassets */; };
 		676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */; };
@@ -23,6 +27,7 @@
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
 		676FCF571F9D0E7100354E93 /* CreatePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */; };
 		676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF531F9D0E7100354E93 /* CreateViewController.swift */; };
+		677442901FB202AC0082F74A /* ReceiveTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -50,11 +55,15 @@
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
+		672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendTableViewControllerScene.swift; sourceTree = "<group>"; };
+		674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyMnemonicTableViewController.swift; sourceTree = "<group>"; };
+		674385B71FA8D03B001311DE /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		67512A081F9DFF7200D18169 /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = sdk/src/swift/GreenAddress/Sources/GreenAddress.swift; sourceTree = SOURCE_ROOT; };
+		676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTCUnitsTableViewController.swift; sourceTree = "<group>"; };
+		676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceViewController.swift; sourceTree = "<group>"; };
+		676846031FACC1E4002D79ED /* PINViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PINViewController.swift; sourceTree = "<group>"; };
 		676FCF1C1F9D0CF800354E93 /* gaios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gaios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		676FCF211F9D0CF800354E93 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		676FCF231F9D0CF800354E93 /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		676FCF261F9D0CF800354E93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		676FCF281F9D0CF800354E93 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		676FCF2B1F9D0CF800354E93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -70,6 +79,7 @@
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreatePageViewController.swift; sourceTree = "<group>"; };
 		676FCF531F9D0E7100354E93 /* CreateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
+		6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveTableViewControllerScene.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,19 +161,24 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
-				67512A081F9DFF7200D18169 /* GreenAddress.swift */,
+				676FCF2D1F9D0CF800354E93 /* Info.plist */,
+				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
 				676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */,
 				676FCF531F9D0E7100354E93 /* CreateViewController.swift */,
+				6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */,
+				67512A081F9DFF7200D18169 /* GreenAddress.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
+				674385B71FA8D03B001311DE /* SettingsTableViewController.swift */,
 				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
 				676FCF501F9D0E7100354E93 /* TransactionsTableViewController.swift */,
-				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
-				676FCF211F9D0CF800354E93 /* FirstViewController.swift */,
-				676FCF231F9D0CF800354E93 /* SecondViewController.swift */,
-				676FCF251F9D0CF800354E93 /* Main.storyboard */,
+				674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
-				676FCF2D1F9D0CF800354E93 /* Info.plist */,
+				676FCF251F9D0CF800354E93 /* Main.storyboard */,
+				676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */,
+				676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */,
+				676846031FACC1E4002D79ED /* PINViewController.swift */,
+				672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */,
 			);
 			path = gaios;
 			sourceTree = "<group>";
@@ -479,15 +494,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				677442901FB202AC0082F74A /* ReceiveTableViewControllerScene.swift in Sources */,
+				676846041FACC1E4002D79ED /* PINViewController.swift in Sources */,
+				676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */,
 				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
+				676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */,
 				676FCF551F9D0E7100354E93 /* TransactionsTableViewController.swift in Sources */,
 				676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */,
-				676FCF241F9D0CF800354E93 /* SecondViewController.swift in Sources */,
+				674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */,
+				674385B41FA799BF001311DE /* VerifyMnemonicTableViewController.swift in Sources */,
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
+				672FA1301FB9E846008CDA17 /* SendTableViewControllerScene.swift in Sources */,
 				676FCF571F9D0E7100354E93 /* CreatePageViewController.swift in Sources */,
 				67512A091F9DFF7300D18169 /* GreenAddress.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
-				676FCF221F9D0CF800354E93 /* FirstViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -657,6 +677,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LDYC3R2G89;
 				INFOPLIST_FILE = gaios/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -680,6 +701,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LDYC3R2G89;
 				INFOPLIST_FILE = gaios/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",

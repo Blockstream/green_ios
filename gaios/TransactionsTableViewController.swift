@@ -6,30 +6,30 @@
 import UIKit
 
 class TransactionsTableViewController: UITableViewController {
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
-    
+
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 1
     }
-    
+
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 5
     }
-    
+
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Section"
+        return "Transactions"
     }
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath)
-        
+
         return cell
     }
 }

@@ -8,11 +8,11 @@ import UIKit
 
 class InitialViewController: UIViewController {
     @IBOutlet weak var userProvidedMnemonic: UITextField!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         wrap {
@@ -23,11 +23,11 @@ class InitialViewController: UIViewController {
             print("Connection failed")
         }
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+
     @IBAction func goAction(_ sender: Any) {
         print("User Provided Mnemonic " + userProvidedMnemonic.text!)
         let trimmedUserProvidedMnemonic = userProvidedMnemonic.text!.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -39,12 +39,12 @@ class InitialViewController: UIViewController {
             print("Login failed")
         }
     }
-    
+
     @IBAction func showMnemonicAction(_ sender: Any) {
         let showMnemonic = sender as! UISwitch
         userProvidedMnemonic.isSecureTextEntry = showMnemonic.isOn ? false : true
     }
-    
+
     @IBAction func unwindToInitialViewController(segue: UIStoryboardSegue) {
     }
 }

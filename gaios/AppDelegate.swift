@@ -15,8 +15,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var session: Session = try! Session()
 
+    var mnemonicWords: [String]?
+
     func getSession() -> Session {
         return self.session
+    }
+
+    func setMnemonicWords(_ words: [String]) {
+        mnemonicWords = words
+    }
+
+    func getMnemonicWords() -> [String]? {
+        return mnemonicWords
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
