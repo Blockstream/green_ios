@@ -99,6 +99,8 @@ namespace sdk {
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
         pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
+        bool add_address_book_entry(const std::string& address, const std::string& name, size_t rating);
+        void delete_address_book_entry(const std::string& address);
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -646,6 +648,27 @@ namespace sdk {
         return login(std::string(mnemonic.get()), user_agent);
     }
 
+    bool session::session_impl::add_address_book_entry(
+        const std::string& address, const std::string& name, size_t rating)
+    {
+        bool r{ false };
+
+        auto fn = m_session->call("com.greenaddress.addressbook.add_entry", std::make_tuple(address, name, rating))
+                      .then([&r](wamp_call_result result) { r = result.get().argument<bool>(0); });
+
+        fn.get();
+
+        return r;
+    }
+
+    void session::session_impl::delete_address_book_entry(const std::string& address)
+    {
+        auto fn = m_session->call("com.greenaddress.addressbook.delete_entry", std::make_tuple(address))
+                      .then([](wamp_call_result result) { result.get(); });
+
+        fn.get();
+    }
+
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
     {
         try {
@@ -776,6 +799,18 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->set_pin(mnemonic, pin, device); });
+    }
+
+    bool session::add_address_book_entry(const std::string& address, const std::string& name, size_t rating)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->add_address_book_entry(address, name, rating); });
+    }
+
+    void session::delete_address_book_entry(const std::string& address)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        exception_wrapper([&] { m_impl->delete_address_book_entry(address); });
     }
 }
 }

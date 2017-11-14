@@ -124,6 +124,9 @@ namespace sdk {
 
         pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 
+        bool add_address_book_entry(const std::string& address, const std::string& name, size_t rating);
+        void delete_address_book_entry(const std::string& address);
+
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);
 
