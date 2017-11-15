@@ -100,6 +100,7 @@ namespace sdk {
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
         pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
         bool add_address_book_entry(const std::string& address, const std::string& name, size_t rating);
+        bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
 
     private:
@@ -661,6 +662,19 @@ namespace sdk {
         return r;
     }
 
+    bool session::session_impl::edit_address_book_entry(
+        const std::string& address, const std::string& name, size_t rating)
+    {
+        bool r{ false };
+
+        auto fn = m_session->call("com.greenaddress.addressbook.edit_entry", std::make_tuple(address, name, rating))
+                      .then([&r](wamp_call_result result) { r = result.get().argument<bool>(0); });
+
+        fn.get();
+
+        return r;
+    }
+
     void session::session_impl::delete_address_book_entry(const std::string& address)
     {
         auto fn = m_session->call("com.greenaddress.addressbook.delete_entry", std::make_tuple(address))
@@ -805,6 +819,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->add_address_book_entry(address, name, rating); });
+    }
+
+    bool session::edit_address_book_entry(const std::string& address, const std::string& name, size_t rating)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->edit_address_book_entry(address, name, rating); });
     }
 
     void session::delete_address_book_entry(const std::string& address)
