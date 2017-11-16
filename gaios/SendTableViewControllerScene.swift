@@ -52,6 +52,7 @@ class SendTableViewControllerScene: UITableViewController {
             headerView.textLabel?.textAlignment = .center
         }
     }
+
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Send"
     }
