@@ -5,20 +5,39 @@
 
 import UIKit
 
+class GreenAddressService {
+    var session: Session = try! Session()
+
+    var loginData: [String: Any]? = nil
+
+    func getSession() -> Session {
+        return self.session
+    }
+
+}
+
 func getAppDelegate() -> AppDelegate {
     return UIApplication.shared.delegate as! AppDelegate
+}
+
+func getGAService() -> GreenAddressService {
+    return getAppDelegate().getService()
+}
+
+func getSession() -> Session {
+    return getGAService().getSession()
 }
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var session: Session = try! Session()
+    let service = GreenAddressService()
 
-    var mnemonicWords: [String]?
+    var mnemonicWords: [String]? = nil
 
-    func getSession() -> Session {
-        return self.session
+    func getService() -> GreenAddressService {
+        return self.service
     }
 
     func setMnemonicWords(_ words: [String]) {

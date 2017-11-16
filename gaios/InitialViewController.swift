@@ -16,7 +16,7 @@ class InitialViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         wrap {
-            try getAppDelegate().getSession().connect(network: Network.TestNet, debug: true)
+            try getSession().connect(network: Network.TestNet, debug: true)
         }.then {
             print("Connected to TestNet")
         }.catch { error in
@@ -31,8 +31,8 @@ class InitialViewController: UIViewController {
     @IBAction func goAction(_ sender: Any) {
         print("User Provided Mnemonic " + userProvidedMnemonic.text!)
         let trimmedUserProvidedMnemonic = userProvidedMnemonic.text!.trimmingCharacters(in: .whitespacesAndNewlines)
-        retry(session: getAppDelegate().getSession(), network: Network.TestNet) {
-            wrap { return try getAppDelegate().getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
+        retry(session: getSession(), network: Network.TestNet) {
+            wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
         }.then { _ -> Void in
             self.performSegue(withIdentifier: "MainViewSegue", sender: self)
         }.catch { error in
