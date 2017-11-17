@@ -22,12 +22,6 @@ class AddressBookTableViewControllerScene: UITableViewController {
         return 5
     }
 
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        if let headerView = view as? UITableViewHeaderFooterView {
-            headerView.textLabel?.textAlignment = .center
-        }
-    }
-
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Address Book"
     }

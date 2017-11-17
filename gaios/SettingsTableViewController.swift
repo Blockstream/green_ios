@@ -247,7 +247,7 @@ class SwitcherCell: UITableViewCell {
 
     var item: SettingsItem? {
         didSet {
-            guard  let item = item as? GenericSettingsItem else {
+            guard let item = item as? GenericSettingsItem else {
                 return
             }
 
