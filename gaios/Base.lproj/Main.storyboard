@@ -220,7 +220,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="SettingsTableCell" textLabel="8xx-A1-g3z" detailTextLabel="UQ1-Ts-tcG" style="IBUITableViewCellStyleValue1" id="gYp-Z1-opE">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="SettingsTableCell" textLabel="8xx-A1-g3z" detailTextLabel="UQ1-Ts-tcG" style="IBUITableViewCellStyleValue1" id="gYp-Z1-opE" customClass="SelectorCell" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="55.5" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gYp-Z1-opE" id="T2V-vY-BmM">
@@ -243,8 +243,12 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="detail" destination="UQ1-Ts-tcG" id="W2a-i0-Wz0"/>
+                                    <outlet property="title" destination="8xx-A1-g3z" id="rrL-is-iKe"/>
+                                </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsSwitchTableCell" id="tSW-7p-dIa">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsSwitchTableCell" id="tSW-7p-dIa" customClass="SwitcherCell" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="99.5" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tSW-7p-dIa" id="GT0-ih-QjD">
@@ -252,17 +256,17 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Qpa-f3-ZIu">
-                                            <rect key="frame" x="267" y="6" width="41" height="31"/>
+                                            <rect key="frame" x="257" y="6" width="51" height="31"/>
                                         </switch>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dRr-Wp-H2r">
-                                            <rect key="frame" x="20" y="11" width="0.0" height="21"/>
+                                            <rect key="frame" x="20" y="11" width="40.5" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="Qpa-f3-ZIu" firstAttribute="leading" secondItem="dRr-Wp-H2r" secondAttribute="trailing" constant="247" id="2I7-mE-79I"/>
+                                        <constraint firstItem="Qpa-f3-ZIu" firstAttribute="leading" relation="lessThanOrEqual" secondItem="dRr-Wp-H2r" secondAttribute="trailing" constant="196.5" id="2I7-mE-79I"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Qpa-f3-ZIu" secondAttribute="trailing" constant="-2" id="BCc-IP-fSe"/>
                                         <constraint firstItem="dRr-Wp-H2r" firstAttribute="top" secondItem="GT0-ih-QjD" secondAttribute="top" constant="11" id="BfB-vz-nsh"/>
                                         <constraint firstAttribute="bottom" secondItem="Qpa-f3-ZIu" secondAttribute="bottom" constant="6.5" id="IBS-Mp-d8Y"/>
@@ -272,6 +276,9 @@
                                         <constraint firstItem="Qpa-f3-ZIu" firstAttribute="centerY" secondItem="dRr-Wp-H2r" secondAttribute="centerY" id="XyG-k0-DCh"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="title" destination="dRr-Wp-H2r" id="tbA-jq-Ptc"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -287,7 +294,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1WB-YE-YfP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2064" y="678"/>
+            <point key="canvasLocation" x="2062.5" y="677.11267605633805"/>
         </scene>
         <!--BTC Units Table View Controller-->
         <scene sceneID="L5a-4g-6oL">
@@ -359,7 +366,7 @@
                                 </variation>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k3K-QR-MPv">
-                                <rect key="frame" x="234" y="198.5" width="30" height="27"/>
+                                <rect key="frame" x="234" y="198" width="30" height="27"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <state key="normal" title="Go"/>
                                 <connections>
