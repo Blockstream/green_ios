@@ -825,6 +825,12 @@
                                         <constraint firstItem="j1U-by-xA4" firstAttribute="leading" secondItem="Oqb-kg-6qT" secondAttribute="leading" constant="20" symbolic="YES" id="ymj-Gy-x2o"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="address" destination="0WE-5e-83W" id="Dmw-SU-xPu"/>
+                                    <outlet property="amount" destination="Oq9-gO-NjD" id="XB6-fT-2xd"/>
+                                    <outlet property="fiatAmount" destination="j1U-by-xA4" id="4H2-Sv-S1o"/>
+                                    <outlet property="timestamp" destination="4Ti-vT-VLO" id="kbd-FK-sVW"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

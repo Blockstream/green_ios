@@ -20,12 +20,21 @@ class TransactionItem {
 }
 
 class TransactionCell: UITableViewCell {
+    @IBOutlet weak var timestamp: UILabel!
+    @IBOutlet weak var address: UILabel!
+    @IBOutlet weak var amount: UILabel!
+    @IBOutlet weak var fiatAmount: UILabel!
 
     var item: TransactionItem? {
         didSet {
             guard let item = item else {
                 return
             }
+
+            timestamp.text = item.timestamp.description
+            address.text = item.address
+            amount.text = item.amount
+            fiatAmount.text = item.fiatAmount
         }
     }
 }
@@ -54,8 +63,8 @@ extension TransactionsTableViewModel: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath)
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath) as! TransactionCell
+        cell.item = items[indexPath.row]
         return cell
     }
 }
