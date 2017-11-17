@@ -277,6 +277,7 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="on" destination="Qpa-f3-ZIu" id="bT8-XC-VmP"/>
                                     <outlet property="title" destination="dRr-Wp-H2r" id="tbA-jq-Ptc"/>
                                 </connections>
                             </tableViewCell>

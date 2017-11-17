@@ -243,6 +243,7 @@ class SelectorCell: UITableViewCell {
 class SwitcherCell: UITableViewCell {
 
     @IBOutlet weak var title: UILabel!
+    @IBOutlet weak var on: UISwitch!
 
     var item: SettingsItem? {
         didSet {
@@ -251,6 +252,7 @@ class SwitcherCell: UITableViewCell {
             }
 
             self.title.text = item.text
+            self.on.isOn = item.on!
         }
     }
 }
