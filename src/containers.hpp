@@ -89,6 +89,7 @@ namespace sdk {
             {
                 return v.at(k).template as<U>();
             }
+            template <typename U> U handle_as() const { return m_o.get().template as<U>(); }
 
             msgpack::object_handle m_o;
         };
@@ -191,12 +192,36 @@ namespace sdk {
         value_container m_list;
     };
 
+    struct utxo : public detail::object_container<utxo> {
+        utxo& operator=(const msgpack_object& data)
+        {
+            associate(data);
+            return *this;
+        }
+    };
+
     struct utxo_set : public detail::object_container<utxo_set> {
+        using value_container = std::vector<msgpack::object>;
+        using const_iterator = value_container::const_iterator;
+        using size_type = value_container::size_type;
+
         utxo_set& operator=(const msgpack_object& data)
         {
             associate(data);
             return *this;
         }
+
+        const_iterator begin() const { return handle_as<value_container>().begin(); }
+        const_iterator end() const { return handle_as<value_container>().end(); }
+
+        utxo operator[](size_t i) const
+        {
+            utxo u;
+            u = handle_as<value_container>()[i];
+            return u;
+        }
+
+        size_type size() const { return handle_as<value_container>().size(); }
     };
 
     struct balance : public detail::object_container<balance> {

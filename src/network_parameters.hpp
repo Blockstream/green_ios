@@ -54,8 +54,10 @@ namespace sdk {
             DEFINE_NETWORK_VECTOR_STRING_PARAM(gait_wamp_cert_pins, "", "");
             DEFINE_NETWORK_STRING_PARAM(block_explorer_address, "");
             DEFINE_NETWORK_STRING_PARAM(block_explorer_tx, "");
-            DEFINE_NETWORK_STRING_PARAM(deposit_chain_code, "");
-            DEFINE_NETWORK_STRING_PARAM(deposit_pub_key, "");
+            DEFINE_NETWORK_STRING_PARAM(
+                deposit_chain_code, "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04");
+            DEFINE_NETWORK_STRING_PARAM(
+                deposit_pub_key, "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3");
             DEFINE_NETWORK_STRING_PARAM(gait_onion, "");
             DEFINE_NETWORK_STRING_PARAM(default_peer, "");
             static constexpr unsigned char btc_version = 111;

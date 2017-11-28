@@ -88,13 +88,13 @@ namespace sdk {
     {
         std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc{ { 0 } };
         size_t written{ 0 };
-        GA_SDK_RUNTIME_ASSERT(wally_base58_to_bytes(address.data(), 0, sc.data(), sc.size(), &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_base58_to_bytes(address.c_str(), 0, sc.data(), sc.size(), &written) == WALLY_OK);
 
         std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
         unsigned char* p = script.data();
         GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_HASH160, p, 1, &written) == WALLY_OK);
         p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_data(sc.data() + 1, HASH160_LEN, p, HASH160_LEN, &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(script_encode_data(sc.data() + 1, HASH160_LEN, p, HASH160_LEN + 1, &written) == WALLY_OK);
         p += written;
         GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_EQUAL, p, 1, &written) == WALLY_OK);
 

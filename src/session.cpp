@@ -102,6 +102,7 @@ namespace sdk {
         bool add_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
+        bool send(const std::vector<std::pair<std::string, std::string>>& address_amount);
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -456,6 +457,8 @@ namespace sdk {
 
     std::vector<unsigned char> session::session_impl::output_script(uint32_t subaccount, uint32_t pointer) const
     {
+        GA_SDK_RUNTIME_ASSERT(!m_params.deposit_chain_code().empty());
+        GA_SDK_RUNTIME_ASSERT(!m_params.deposit_pub_key().empty());
         return ga::sdk::output_script(m_master_key, m_params.deposit_chain_code(), m_params.deposit_pub_key(),
             m_login_data.get<std::string>("gait_path"), subaccount, pointer, m_params.main_net());
     }
@@ -490,11 +493,12 @@ namespace sdk {
         fn.get();
 
         const auto script = address.get<std::string>("script");
-        const auto pointer = address.get<int>("pointer");
-        const auto script_bytes = bytes_from_hex(script.data(), script.length());
+        const auto script_bytes = bytes_from_hex(script.c_str(), script.length());
+
         const auto sc
             = addr_type == address_type::p2sh ? create_p2sh_script(script_bytes) : create_p2wsh_script(script_bytes);
 
+        const auto pointer = address.get<int>("pointer");
         const auto multisig = output_script(subaccount, pointer);
         const auto sc_multisig
             = addr_type == address_type::p2sh ? create_p2sh_script(multisig) : create_p2wsh_script(multisig);
@@ -632,7 +636,7 @@ namespace sdk {
         const auto password = get_pin_password(pin, pin_identifier_and_secret.first);
 
         auto secret_bytes
-            = bytes_from_hex(pin_identifier_and_secret.second.data(), pin_identifier_and_secret.second.size());
+            = bytes_from_hex(pin_identifier_and_secret.second.c_str(), pin_identifier_and_secret.second.size());
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
         GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()),
@@ -684,6 +688,102 @@ namespace sdk {
                       .then([](wamp_call_result result) { result.get(); });
 
         fn.get();
+    }
+
+    bool session::session_impl::send(const std::vector<std::pair<std::string, std::string>>& address_amount)
+    {
+        GA_SDK_RUNTIME_ASSERT(!address_amount.empty());
+
+        const auto utxos = get_utxos(0, 0);
+        if (utxos.empty()) {
+            return false;
+        }
+
+        std::array<const struct tx_output*, 2> tx_out;
+        {
+            const auto script = output_script_for_address(address_amount[0].first);
+            GA_SDK_RUNTIME_ASSERT(
+                tx_output_init_alloc(amount(address_amount[0].second).value(), script.data(), script.size(), &tx_out[0])
+                == WALLY_OK);
+        }
+
+        {
+            const auto change_address = get_receive_address(address_type::p2wsh, 0);
+            amount change_value = "0.99980080";
+            const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
+            GA_SDK_RUNTIME_ASSERT(tx_output_init_alloc(change_value.value(), change_output_script.data(),
+                                      change_output_script.size(), &tx_out[1])
+                == WALLY_OK);
+        }
+
+        const utxo u = utxos[0];
+        const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
+        const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
+        const uint32_t index = u.get<uint32_t>("pt_idx");
+        const std::string txhash = u.get<std::string>("txhash");
+
+        const auto out_script = output_script(subaccount, pointer);
+
+        const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
+        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
+        const struct tx_input* tx_in{ nullptr };
+        GA_SDK_RUNTIME_ASSERT(
+            tx_input_init_alloc(txhash_bytes_rev.data(), index, 0, out_script.data(), out_script.size(), &tx_in)
+            == WALLY_OK);
+
+        const struct raw_tx* raw_tx_out = nullptr;
+        GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(433, &tx_in, 1, tx_out.data(), 2, &raw_tx_out) == WALLY_OK);
+
+        size_t written{ 0 };
+
+        size_t ser_siz;
+        GA_SDK_RUNTIME_ASSERT(raw_tx_size(raw_tx_out, &ser_siz) == WALLY_OK);
+        std::vector<unsigned char> tx_ser;
+        tx_ser.resize(ser_siz + 4);
+        GA_SDK_RUNTIME_ASSERT(raw_tx_to_bytes(raw_tx_out, tx_ser.data(), ser_siz, &written) == WALLY_OK);
+        uint32_t flags = htole32(0x000000ff & 1);
+        memcpy(tx_ser.data() + ser_siz, (const unsigned char*)&flags, sizeof(uint32_t));
+
+        std::array<unsigned char, SHA256_LEN> tx_hash;
+        GA_SDK_RUNTIME_ASSERT(wally_sha256d(tx_ser.data(), tx_ser.size(), tx_hash.data(), tx_hash.size()) == WALLY_OK);
+
+        const auto client_priv_key = derive_key(m_master_key, { 1, pointer }, false);
+
+        std::array<unsigned char, EC_SIGNATURE_LEN> sig;
+        GA_SDK_RUNTIME_ASSERT(
+            wally_ec_sig_from_bytes(client_priv_key->priv_key + 1, sizeof client_priv_key->priv_key - 1, tx_hash.data(),
+                tx_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size())
+            == WALLY_OK);
+
+        std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
+        size_t der_written;
+        GA_SDK_RUNTIME_ASSERT(
+            wally_ec_sig_to_der(sig.data(), sig.size(), sigs[0].data(), EC_SIGNATURE_DER_MAX_LEN, &der_written)
+            == WALLY_OK);
+        unsigned char c = 1;
+        memcpy(sigs[0].data() + der_written, (const unsigned char*)&c, 1);
+
+        const auto in_script = input_script(sigs, der_written + 1, 1, out_script);
+
+        // create new tx
+        GA_SDK_RUNTIME_ASSERT(
+            tx_input_init_alloc(txhash_bytes_rev.data(), index, 0, in_script.data(), in_script.size(), &tx_in)
+            == WALLY_OK);
+
+        GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(433, &tx_in, 1, tx_out.data(), 2, &raw_tx_out) == WALLY_OK);
+
+        GA_SDK_RUNTIME_ASSERT(raw_tx_size(raw_tx_out, &ser_siz) == WALLY_OK);
+        tx_ser.resize(ser_siz);
+        GA_SDK_RUNTIME_ASSERT(raw_tx_to_bytes(raw_tx_out, tx_ser.data(), tx_ser.size(), &written) == WALLY_OK);
+
+        auto raw_tx_hex = hex_from_bytes(tx_ser.data(), tx_ser.size());
+        auto raw_tx_future
+            = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(std::string(raw_tx_hex.get())))
+                  .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
+
+        raw_tx_future.get();
+
+        return true;
     }
 
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
@@ -834,6 +934,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->delete_address_book_entry(address); });
+    }
+
+    bool session::send(const std::vector<std::pair<std::string, std::string>>& address_amount)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->send(address_amount); });
     }
 }
 }

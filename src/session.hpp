@@ -128,6 +128,8 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
 
+        bool send(const std::vector<std::pair<std::string, std::string>>& address_amount);
+
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);
 

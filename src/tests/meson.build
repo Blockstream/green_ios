@@ -6,6 +6,7 @@ exe_names = ['wss_change_settings',
              'wss_login',
              'wss_login_c',
              'wss_login_new',
+             'wss_send',
              'wss_subscribe']
 
 c_cpp_sources = []
@@ -17,7 +18,10 @@ foreach name : exe_names
     endif
 endforeach
 
-common_c_cpp_sources = ['argparser.h', 'argparser.c']
+common_c_cpp_sources = ['argparser.h',
+                        'argparser.c',
+                        'http_jsonrpc_interface.hpp',
+                        'http_jsonrpc_interface.cpp']
 
 sources = c_cpp_sources
 
