@@ -8,6 +8,7 @@
 #include "autobahn_wrapper.hpp"
 #include <autobahn/wamp_event_handler.hpp>
 
+#include "amount.hpp"
 #include "containers.hpp"
 #include "network_parameters.hpp"
 #include "utils.hpp"
@@ -128,7 +129,8 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
 
-        bool send(const std::vector<std::pair<std::string, std::string>>& address_amount);
+        bool send(
+            const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all = false);
 
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);

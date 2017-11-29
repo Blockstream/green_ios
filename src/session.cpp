@@ -102,7 +102,7 @@ namespace sdk {
         bool add_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
-        bool send(const std::vector<std::pair<std::string, std::string>>& address_amount);
+        bool send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all);
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -690,9 +690,10 @@ namespace sdk {
         fn.get();
     }
 
-    bool session::session_impl::send(const std::vector<std::pair<std::string, std::string>>& address_amount)
+    bool session::session_impl::send(const std::vector<std::pair<std::string, amount>>& address_amount,
+        __attribute__((unused)) amount fee_rate, __attribute__((unused)) bool send_all)
     {
-        GA_SDK_RUNTIME_ASSERT(!address_amount.empty());
+        GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && (!send_all || address_amount.size() == 1));
 
         const auto utxos = get_utxos(0, 0);
         if (utxos.empty()) {
@@ -703,7 +704,7 @@ namespace sdk {
         {
             const auto script = output_script_for_address(address_amount[0].first);
             GA_SDK_RUNTIME_ASSERT(
-                tx_output_init_alloc(amount(address_amount[0].second).value(), script.data(), script.size(), &tx_out[0])
+                tx_output_init_alloc(address_amount[0].second.value(), script.data(), script.size(), &tx_out[0])
                 == WALLY_OK);
         }
 
@@ -936,10 +937,11 @@ namespace sdk {
         exception_wrapper([&] { m_impl->delete_address_book_entry(address); });
     }
 
-    bool session::send(const std::vector<std::pair<std::string, std::string>>& address_amount)
+    bool session::send(
+        const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->send(address_amount); });
+        return exception_wrapper([&] { return m_impl->send(address_amount, fee_rate, send_all); });
     }
 }
 }
