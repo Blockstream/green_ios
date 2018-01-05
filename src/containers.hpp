@@ -208,20 +208,23 @@ namespace sdk {
         utxo_set& operator=(const msgpack_object& data)
         {
             associate(data);
+            m_container = handle_as<value_container>();
             return *this;
         }
 
-        const_iterator begin() const { return handle_as<value_container>().begin(); }
-        const_iterator end() const { return handle_as<value_container>().end(); }
+        const_iterator begin() const { return m_container.begin(); }
+        const_iterator end() const { return m_container.end(); }
 
         utxo operator[](size_t i) const
         {
             utxo u;
-            u = handle_as<value_container>()[i];
+            u = m_container[i];
             return u;
         }
 
-        size_type size() const { return handle_as<value_container>().size(); }
+        size_type size() const { return m_container.size(); }
+
+        value_container m_container;
     };
 
     struct balance : public detail::object_container<balance> {

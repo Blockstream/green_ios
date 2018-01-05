@@ -96,12 +96,16 @@ namespace sdk {
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
         template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
         available_currencies get_available_currencies() const;
+
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
+
         pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
+
         bool add_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
+
         bool send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all);
 
     private:
@@ -768,6 +772,15 @@ namespace sdk {
         return tx_in;
     }
 
+    namespace {
+        const struct tx_output* create_tx_output(amount v, const unsigned char* script, size_t size)
+        {
+            const struct tx_output* tx_out{ nullptr };
+            GA_SDK_RUNTIME_ASSERT(tx_output_init_alloc(v.value(), script, size, &tx_out) == WALLY_OK);
+            return tx_out;
+        }
+    }
+
     bool session::session_impl::send(const std::vector<std::pair<std::string, amount>>& address_amount,
         __attribute__((unused)) amount fee_rate, __attribute__((unused)) bool send_all)
     {
@@ -795,23 +808,16 @@ namespace sdk {
         outputs.reserve(2);
 
         {
-            const struct tx_output* tx_out;
             const auto script = output_script_for_address(address_amount[0].first);
-            GA_SDK_RUNTIME_ASSERT(
-                tx_output_init_alloc(address_amount[0].second.value(), script.data(), script.size(), &tx_out)
-                == WALLY_OK);
-            outputs.emplace_back(tx_out);
+            outputs.emplace_back(create_tx_output(address_amount[0].second.value(), script.data(), script.size()));
         }
 
         {
-            const struct tx_output* tx_out;
             const auto change_address = get_receive_address(address_type::p2wsh, 0);
-            amount change_value = "0.99980080";
             const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
-            GA_SDK_RUNTIME_ASSERT(tx_output_init_alloc(change_value.value(), change_output_script.data(),
-                                      change_output_script.size(), &tx_out)
-                == WALLY_OK);
-            outputs.emplace_back(tx_out);
+            amount change_value = "0.99980080";
+            outputs.emplace_back(
+                create_tx_output(change_value.value(), change_output_script.data(), change_output_script.size()));
         }
 
         std::vector<const struct tx_input*> signed_inputs;
