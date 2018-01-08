@@ -49,6 +49,8 @@ namespace sdk {
         phone,
     };
 
+    enum class transaction_priority { high, normal, low, economy, custom, instant };
+
     inline namespace literals {
 
         constexpr tx_list_sort_by operator""_ts(char c)

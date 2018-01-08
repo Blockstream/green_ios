@@ -15,6 +15,11 @@ if test "x${LIBTYPE}" != "xshared" && test "x${LIBTYPE}" != "xstatic" ; then
     LIBTYPE=shared
 fi
 
+ANALYZE="${@: -1}"
+if test "x${ANALYZE}" != "x--analyze" ; then
+    ANALYZE=""
+fi
+
 export CFLAGS="$CFLAGS"
 export CPPFLAGS="$CFLAGS"
 export PKG_CONFIG_PATH_BASE=$PKG_CONFIG_PATH
@@ -23,15 +28,23 @@ export PATH_BASE=$PATH
 function build() {
     ./tools/deps.sh $PWD/build-$1
     export CXX=$2
+    export CCC_CXX=$2
+    export CC=$1
+    export CCC_CC=$1
     export CC=$1
     export BOOST_ROOT="$PWD/build-$1/boost_1_64_0/build"
     export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$1/openssl-1.0.2m/build/lib/pkgconfig"
     export WALLY_PKG_CONFIG_PATH="$PWD/build-$1/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
+    SCAN_BUILD=""
+    if [ "x${ANALYZE}" = "x--analyze" ] ; then
+        SCAN_BUILD="scan-build --use-cc=$1 --use-c++=$2" 
+    fi
+
     if [ ! -f "build-$1/build.ninja" ]; then
         rm -rf build-$1/meson-private
-        meson build-$1 --default-library=${LIBTYPE} --buildtype=release
+        $SCAN_BUILD meson build-$1 --default-library=${LIBTYPE} --buildtype=release
     fi
 
     cd build-$1

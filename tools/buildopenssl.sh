@@ -125,7 +125,7 @@ else
         sed -ie "s!^CFLAG=!CFLAG=-fPIC !" "Makefile"
     fi
     make depend
-    make 2> /dev/null
+    make -j$NUM_JOBS 2> /dev/null
     make install_sw
 fi
 

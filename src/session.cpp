@@ -168,6 +168,7 @@ namespace sdk {
 
         std::string get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
+        amount get_dust_threshold() const;
         std::string get_raw_output(const std::string& txhash) const;
         std::vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
         utxo_set get_utxos(size_t num_confs, size_t subaccount) const;
@@ -450,6 +451,8 @@ namespace sdk {
         subscribe_future.get();
     }
 
+    amount session::session_impl::get_dust_threshold() const { return { m_login_data.get<long>("dust") }; }
+
     std::string session::session_impl::get_raw_output(const std::string& txhash) const
     {
         std::string raw_output;
@@ -726,9 +729,6 @@ namespace sdk {
 
         const auto out_script = output_script(subaccount, pointer);
 
-        const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
-        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
-
         const struct raw_tx* raw_tx_out = nullptr;
         GA_SDK_RUNTIME_ASSERT(
             raw_tx_init_alloc(433, &input, 1, outputs.data(), outputs.size(), &raw_tx_out) == WALLY_OK);
@@ -764,6 +764,8 @@ namespace sdk {
 
         const auto in_script = input_script(sigs, der_written + 1, 1, out_script);
 
+        const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
+        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct tx_input* tx_in{ nullptr };
         GA_SDK_RUNTIME_ASSERT(
             tx_input_init_alloc(txhash_bytes_rev.data(), index, 0, in_script.data(), in_script.size(), &tx_in)

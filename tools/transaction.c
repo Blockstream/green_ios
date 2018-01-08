@@ -113,7 +113,7 @@ inline size_t compact_size_of(uint64_t size)
     __builtin_unreachable();
 }
 
-inline size_t compact_size_to_bytes(uint64_t size, unsigned char* bytes_out)
+static inline size_t compact_size_to_bytes(uint64_t size, unsigned char* bytes_out)
 {
     size_t written = 0;
     if (size < 253) {
@@ -410,7 +410,10 @@ int raw_tx_to_bytes(
 
     for (i = 0; i < in->in_len; ++i) {
         size_t in_written;
-        raw_tx_in_to_bytes(in->in[i], bytes_out, len, &in_written);
+        int r;
+        r = raw_tx_in_to_bytes(in->in[i], bytes_out, len, &in_written);
+        if (r != WALLY_OK)
+            return r;
         bytes_out += in_written;
     }
 
@@ -419,7 +422,10 @@ int raw_tx_to_bytes(
 
     for (i = 0; i < in->out_len; ++i) {
         size_t out_written;
-        raw_tx_output_to_bytes(in->out[i], bytes_out, len, &out_written);
+        int r;
+        r = raw_tx_output_to_bytes(in->out[i], bytes_out, len, &out_written);
+        if (r != WALLY_OK)
+            return r;
         bytes_out += out_written;
     }
 
