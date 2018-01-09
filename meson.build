@@ -119,9 +119,10 @@ endif
 autobahn_inc_dir = join_paths(meson.build_root().split('/')[-1], 'autobahn-cpp')
 msgpack_inc_dir = join_paths(meson.build_root().split('/')[-1], 'msgpack', 'include')
 websocketpp_inc_dir = join_paths(meson.build_root().split('/')[-1], 'websocketpp-0.7.0')
+wallycore_src_dir = join_paths(meson.build_root().split('/')[-1], 'libwally-core', 'src')
 sdk_inc_dir = 'src'
 
-incdir = include_directories([autobahn_inc_dir, msgpack_inc_dir, sdk_inc_dir, websocketpp_inc_dir])
+incdir = include_directories([autobahn_inc_dir, msgpack_inc_dir, sdk_inc_dir, wallycore_src_dir, websocketpp_inc_dir])
 
 # builds
 subdirs = ['src']

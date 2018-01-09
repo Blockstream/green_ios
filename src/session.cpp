@@ -10,6 +10,8 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 
+#include <ccan/ccan/endian/endian.h>
+
 #include <wally_bip32.h>
 #include <wally_bip39.h>
 #include <wally_core.h>
@@ -757,7 +759,7 @@ namespace sdk {
         std::vector<unsigned char> tx_ser;
         tx_ser.resize(ser_siz + 4);
         GA_SDK_RUNTIME_ASSERT(raw_tx_to_bytes(raw_tx_out, tx_ser.data(), ser_siz, &written) == WALLY_OK);
-        uint32_t flags = htole32(0x000000ff & 1);
+        uint32_t flags = cpu_to_le32(0x000000ff & 1);
         memcpy(tx_ser.data() + ser_siz, (const unsigned char*)&flags, sizeof(uint32_t));
 
         std::array<unsigned char, SHA256_LEN> tx_hash;
@@ -879,7 +881,8 @@ namespace sdk {
             {
                 const auto change_address = get_receive_address(address_type::p2wsh, 0);
                 const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
-                change_output = create_tx_output(0L, change_output_script.data(), change_output_script.size());
+                change_output
+                    = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
                 outputs.emplace_back(change_output);
 
                 GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(block_height, inputs.data(), inputs.size(), outputs.data(),
