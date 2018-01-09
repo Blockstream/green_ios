@@ -188,7 +188,7 @@ WALLY_CORE_API int raw_tx_in_to_bytes(
     size_t len,
     size_t *written);
 
-WALLY_CORE_API int tx_input_size(const struct tx_input *in, size_t* output);
+WALLY_CORE_API int tx_input_size(const struct tx_input *in, size_t *output);
 
 struct tx_output {
     int64_t amount;
@@ -210,7 +210,7 @@ WALLY_CORE_API int raw_tx_output_to_bytes(
     size_t len,
     size_t *written);
 
-WALLY_CORE_API int tx_output_size(const struct tx_output *in, size_t* output);
+WALLY_CORE_API int tx_output_size(const struct tx_output *in, size_t *output);
 
 #define TRANSACTION_LATEST_VERSION 2
 #define TRANSACTION_MAX_STANDARD_VERSION 2
@@ -240,7 +240,7 @@ WALLY_CORE_API int raw_tx_to_bytes(
     size_t len,
     size_t *written);
 
-WALLY_CORE_API int raw_tx_size(const struct raw_tx *in, size_t* output);
+WALLY_CORE_API int raw_tx_size(const struct raw_tx *in, size_t *output);
 
 #ifdef __cplusplus
 }

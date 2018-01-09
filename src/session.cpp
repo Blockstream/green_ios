@@ -176,6 +176,7 @@ namespace sdk {
         const struct tx_input* add_utxo(const utxo& u) const;
         const struct tx_input* sign_input(const struct tx_input* input, std::vector<const struct tx_output*>& outputs,
             const utxo& u, size_t block_height) const;
+        amount get_tx_fee(const struct raw_tx* tx, amount fee_rate);
 
     private:
         boost::asio::io_service m_io;
@@ -790,6 +791,20 @@ namespace sdk {
         return tx_in;
     }
 
+    amount session::session_impl::get_tx_fee(const struct raw_tx* tx, amount fee_rate)
+    {
+        const amount min_fee_rate = m_login_data.get<long>("min_fee");
+        const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
+
+        size_t vsize{ 0 };
+        GA_SDK_RUNTIME_ASSERT(raw_tx_size(tx, &vsize) == WALLY_OK);
+
+        const double fee = static_cast<double>(vsize) * rate.value() / 1000.0;
+        const long rounded_fee = static_cast<long>(std::ceil(fee));
+
+        return rounded_fee;
+    }
+
     namespace {
         const struct tx_output* create_tx_output(amount v, const unsigned char* script, size_t size)
         {
@@ -818,7 +833,7 @@ namespace sdk {
             if (!send_all && total >= address_amount[0].second) {
                 break;
             }
-            total += std::strtoull(u.get<std::string>("value").c_str(), nullptr, 10);
+            total += std::stoll(u.get<std::string>("value").c_str(), nullptr, 10);
             inputs.emplace_back(add_utxo(u));
         }
 
@@ -830,18 +845,55 @@ namespace sdk {
             outputs.emplace_back(create_tx_output(address_amount[0].second.value(), script.data(), script.size()));
         }
 
-        {
-            const auto change_address = get_receive_address(address_type::p2wsh, 0);
-            const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
-            amount change_value = "0.99980080";
-            outputs.emplace_back(
-                create_tx_output(change_value.value(), change_output_script.data(), change_output_script.size()));
+        const size_t block_height = m_block_height;
+
+        const struct raw_tx* raw_tx_out{ nullptr };
+        GA_SDK_RUNTIME_ASSERT(
+            raw_tx_init_alloc(block_height, inputs.data(), inputs.size(), outputs.data(), outputs.size(), &raw_tx_out)
+            == WALLY_OK);
+
+        const struct tx_output* change_output{ nullptr };
+
+        amount fee;
+
+        for (;;) {
+            fee = get_tx_fee(raw_tx_out, fee_rate);
+            const amount min_change = change_output ? 0L : get_dust_threshold();
+            const amount am = address_amount[0].second + fee + min_change;
+            if (total < am) {
+                if (inputs.size() == utxos.size()) {
+                    throw std::runtime_error("insufficient funds");
+                }
+
+                utxo u;
+                u = *(utxos.begin() + inputs.size());
+                total += std::stoll(u.get<std::string>("value").c_str(), nullptr, 10);
+                inputs.emplace_back(add_utxo(u));
+                continue;
+            }
+
+            if (total == am || change_output) {
+                break;
+            }
+
+            {
+                const auto change_address = get_receive_address(address_type::p2wsh, 0);
+                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
+                change_output = create_tx_output(0L, change_output_script.data(), change_output_script.size());
+                outputs.emplace_back(change_output);
+
+                GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(block_height, inputs.data(), inputs.size(), outputs.data(),
+                                          outputs.size(), &raw_tx_out)
+                    == WALLY_OK);
+            }
+        }
+
+        if (change_output) {
+            const_cast<struct tx_output*>(change_output)->amount = (total - address_amount[0].second - fee).value();
         }
 
         std::vector<const struct tx_input*> signed_inputs;
         signed_inputs.reserve(inputs.size());
-
-        const size_t block_height = m_block_height;
 
         auto ub = utxos.begin();
         for (auto&& in : inputs) {
@@ -850,7 +902,6 @@ namespace sdk {
             signed_inputs.emplace_back(sign_input(in, outputs, u, block_height));
         }
 
-        const struct raw_tx* raw_tx_out{ nullptr };
         GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(block_height, signed_inputs.data(), signed_inputs.size(),
                                   outputs.data(), outputs.size(), &raw_tx_out)
             == WALLY_OK);

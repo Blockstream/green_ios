@@ -227,7 +227,7 @@ int raw_tx_in_to_bytes(
     return WALLY_OK;
 }
 
-int tx_input_size(const struct tx_input *in, size_t* output)
+int tx_input_size(const struct tx_input *in, size_t *output)
 {
     if (!in || !output)
         return WALLY_EINVAL;
@@ -435,7 +435,7 @@ int raw_tx_to_bytes(
     return WALLY_OK;
 }
 
-int raw_tx_size(const struct raw_tx *in, size_t* output)
+int raw_tx_size(const struct raw_tx *in, size_t *output)
 {
     size_t i;
     int ret;
