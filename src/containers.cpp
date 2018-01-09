@@ -5,9 +5,53 @@
 namespace ga {
 namespace sdk {
 
-    amount fee_estimates::get_estimate(bool is_instant, __attribute__((unused)) uint32_t block) const
+    namespace {
+
+        static std::map<uint32_t, std::pair<double, uint32_t>> convert_to_block_estimates(
+            const fee_estimates::container& estimates)
+        {
+            std::map<uint32_t, std::pair<double, uint32_t>> c;
+            for (auto&& v : estimates) {
+                const fee_estimates::container block_estimate = v.second.as<fee_estimates::container>();
+                const double fee_rate = std::stod(block_estimate.at("fee_rate").as<std::string>());
+                const uint32_t blocks = block_estimate.at("blocks").as<uint32_t>();
+                c.emplace(std::stoul(v.first), std::make_pair(fee_rate, blocks));
+            }
+            return c;
+        }
+    }
+
+    amount fee_estimates::get_estimate(uint32_t block, bool instant, amount min_fee_rate, bool main_net)
     {
-        return { (is_instant ? 75 : 60) * 1000 };
+        std::map<uint32_t, std::pair<double, uint32_t>> block_estimates;
+
+        {
+            std::unique_lock<std::mutex> lock{ m_mutex };
+            block_estimates = convert_to_block_estimates(get_handle().get().as<container>());
+        }
+
+        for (auto&& e : block_estimates) {
+            const double fee_rate = e.second.first;
+            if (fee_rate <= 0.0) {
+                continue;
+            }
+            const double actual_block = e.second.second;
+
+            if (instant) {
+                if (actual_block <= 2) {
+                    return { static_cast<long>(fee_rate * 1.1 * 1000 * 1000 * 100) };
+                }
+                break;
+            } else if (actual_block < block) {
+                continue;
+            }
+
+            return { static_cast<long>(fee_rate * 1000 * 1000 * 100) };
+        }
+
+        GA_SDK_RUNTIME_ASSERT(!main_net || !instant);
+
+        return instant ? min_fee_rate * 3 : min_fee_rate;
     }
 
     tx::tx_view tx::populate_view() const

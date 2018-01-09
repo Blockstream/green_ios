@@ -39,7 +39,7 @@ function build() {
 
     SCAN_BUILD=""
     if [ "x${ANALYZE}" = "x--analyze" ] ; then
-        SCAN_BUILD="scan-build --use-cc=$1 --use-c++=$2" 
+        SCAN_BUILD="scan-build --use-cc=$1 --use-c++=$2"
     fi
 
     if [ ! -f "build-$1/build.ninja" ]; then

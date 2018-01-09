@@ -3,8 +3,10 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -98,34 +100,27 @@ namespace sdk {
     struct fee_estimates : public detail::object_container<fee_estimates> {
         fee_estimates& operator=(const msgpack::object& data)
         {
+            std::unique_lock<std::mutex> lock{ m_mutex };
             associate(data);
             return *this;
         }
 
-        amount get_estimate(bool is_instant, uint32_t block) const;
+        amount get_estimate(uint32_t block, bool instant, amount min_fee_rate, bool main_net);
+
+        std::mutex m_mutex;
     };
 
     class login_data : public detail::object_container<login_data> {
     public:
-        const fee_estimates& get_estimates() const { return m_fee_estimates; }
-
         login_data() = default;
 
-        login_data(const login_data& data)
-        {
-            associate(data.get_handle().get());
-            m_fee_estimates = get_with_default<msgpack::object>("fee_estimates");
-        }
+        login_data(const login_data& data) { associate(data.get_handle().get()); }
 
         login_data& operator=(const msgpack::object& data)
         {
             associate(data);
-            m_fee_estimates = get_with_default<msgpack::object>("fee_estimates");
             return *this;
         }
-
-    private:
-        fee_estimates m_fee_estimates;
     };
 
     struct receive_address : public detail::object_container<receive_address> {
@@ -245,6 +240,14 @@ namespace sdk {
 
     struct two_factor : public detail::object_container<two_factor> {
         two_factor& operator=(const msgpack_object& data)
+        {
+            associate(data);
+            return *this;
+        }
+    };
+
+    struct block_event : public detail::object_container<block_event> {
+        block_event& operator=(const msgpack_object& data)
         {
             associate(data);
             return *this;

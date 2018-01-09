@@ -70,6 +70,7 @@ namespace sdk {
         explicit session_impl(network_parameters params, bool debug)
             : m_controller(m_io)
             , m_params(std::move(params))
+            , m_block_height(0)
             , m_master_key(nullptr, &bip32_key_free)
             , m_debug(debug)
         {
@@ -173,8 +174,8 @@ namespace sdk {
         std::vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
         utxo_set get_utxos(size_t num_confs, size_t subaccount) const;
         const struct tx_input* add_utxo(const utxo& u) const;
-        const struct tx_input* sign_input(
-            const struct tx_input* input, std::vector<const struct tx_output*>& outputs, const utxo& u) const;
+        const struct tx_input* sign_input(const struct tx_input* input, std::vector<const struct tx_output*>& outputs,
+            const utxo& u, size_t block_height) const;
 
     private:
         boost::asio::io_service m_io;
@@ -187,6 +188,8 @@ namespace sdk {
         network_parameters m_params;
 
         login_data m_login_data;
+        fee_estimates m_fee_estimates;
+        std::atomic<size_t> m_block_height;
         wally_ext_key_ptr m_master_key;
 
         bool m_debug;
@@ -308,6 +311,19 @@ namespace sdk {
                  .then([this](wamp_call_result result) { m_login_data = result.get().argument<msgpack::object>(0); });
 
         fn.get();
+
+        m_block_height = m_login_data.get<size_t>("block_height");
+        subscribe("com.greenaddress.blocks", [this](const autobahn::wamp_event& event) {
+            block_event block_ev;
+            block_ev = event.argument<msgpack::object>(0);
+            const size_t count = block_ev.get<size_t>("count");
+            GA_SDK_RUNTIME_ASSERT(count >= m_block_height);
+            m_block_height = count;
+        });
+
+        m_fee_estimates = m_login_data.get<msgpack::object>("fee_estimates");
+        subscribe("com.greenaddress.fee_estimates",
+            [this](const autobahn::wamp_event& event) { m_fee_estimates = event.argument<msgpack::object>(0); });
 
         return m_login_data;
     }
@@ -719,8 +735,8 @@ namespace sdk {
         return tx_in;
     }
 
-    const struct tx_input* session::session_impl::sign_input(
-        const struct tx_input* input, std::vector<const struct tx_output*>& outputs, const utxo& u) const
+    const struct tx_input* session::session_impl::sign_input(const struct tx_input* input,
+        std::vector<const struct tx_output*>& outputs, const utxo& u, size_t block_height) const
     {
         const std::string txhash = u.get<std::string>("txhash");
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
@@ -731,7 +747,7 @@ namespace sdk {
 
         const struct raw_tx* raw_tx_out = nullptr;
         GA_SDK_RUNTIME_ASSERT(
-            raw_tx_init_alloc(433, &input, 1, outputs.data(), outputs.size(), &raw_tx_out) == WALLY_OK);
+            raw_tx_init_alloc(block_height, &input, 1, outputs.data(), outputs.size(), &raw_tx_out) == WALLY_OK);
 
         size_t written{ 0 };
 
@@ -825,16 +841,18 @@ namespace sdk {
         std::vector<const struct tx_input*> signed_inputs;
         signed_inputs.reserve(inputs.size());
 
+        const size_t block_height = m_block_height;
+
         auto ub = utxos.begin();
         for (auto&& in : inputs) {
             utxo u;
             u = *ub++;
-            signed_inputs.emplace_back(sign_input(in, outputs, u));
+            signed_inputs.emplace_back(sign_input(in, outputs, u, block_height));
         }
 
         const struct raw_tx* raw_tx_out{ nullptr };
-        GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(433, signed_inputs.data(), signed_inputs.size(), outputs.data(),
-                                  outputs.size(), &raw_tx_out)
+        GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(block_height, signed_inputs.data(), signed_inputs.size(),
+                                  outputs.data(), outputs.size(), &raw_tx_out)
             == WALLY_OK);
 
         size_t ser_siz{ 0 };
