@@ -860,7 +860,7 @@ namespace sdk {
 
         for (;;) {
             fee = get_tx_fee(raw_tx_out, fee_rate);
-            const amount min_change = change_output ? 0L : get_dust_threshold();
+            const amount min_change = change_output ? amount() : get_dust_threshold();
             const amount am = address_amount[0].second + fee + min_change;
             if (total < am) {
                 if (inputs.size() == utxos.size()) {
