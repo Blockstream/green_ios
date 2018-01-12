@@ -99,6 +99,7 @@ namespace sdk {
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
         template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
         available_currencies get_available_currencies() const;
+        bool is_rbf_enabled() const;
 
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
@@ -176,8 +177,8 @@ namespace sdk {
         std::vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
         utxo_set get_utxos(size_t num_confs, size_t subaccount) const;
         const struct tx_input* add_utxo(const utxo& u) const;
-        const struct tx_input* sign_input(const struct tx_input* input, std::vector<const struct tx_output*>& outputs,
-            const utxo& u, size_t block_height) const;
+        const struct tx_input* sign_input(
+            std::vector<const struct tx_output*>& outputs, const utxo& u, size_t block_height) const;
         amount get_tx_fee(const struct raw_tx* tx, amount fee_rate);
 
     private:
@@ -567,6 +568,8 @@ namespace sdk {
         return a;
     }
 
+    bool session::session_impl::is_rbf_enabled() const { return m_login_data.get<bool>("rbf"); }
+
     two_factor session::session_impl::get_twofactor_config()
     {
         two_factor f;
@@ -728,17 +731,22 @@ namespace sdk {
 
         const auto out_script = output_script(subaccount, pointer);
 
+        std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
+        const auto in_script
+            = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN, EC_SIGNATURE_DER_MAX_LEN } }, 2, out_script);
+
         const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct tx_input* tx_in{ nullptr };
         GA_SDK_RUNTIME_ASSERT(
-            tx_input_init_alloc(txhash_bytes_rev.data(), index, 0, out_script.data(), out_script.size(), &tx_in)
+            tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
+                in_script.data(), in_script.size(), nullptr, 0, &tx_in)
             == WALLY_OK);
 
         return tx_in;
     }
 
-    const struct tx_input* session::session_impl::sign_input(const struct tx_input* input,
+    const struct tx_input* session::session_impl::sign_input(
         std::vector<const struct tx_output*>& outputs, const utxo& u, size_t block_height) const
     {
         const std::string txhash = u.get<std::string>("txhash");
@@ -748,14 +756,22 @@ namespace sdk {
 
         const auto out_script = output_script(subaccount, pointer);
 
+        const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
+        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
+        const struct tx_input* tx_in{ nullptr };
+        GA_SDK_RUNTIME_ASSERT(
+            tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
+                out_script.data(), out_script.size(), nullptr, 0, &tx_in)
+            == WALLY_OK);
+
         const struct raw_tx* raw_tx_out = nullptr;
         GA_SDK_RUNTIME_ASSERT(
-            raw_tx_init_alloc(block_height, &input, 1, outputs.data(), outputs.size(), &raw_tx_out) == WALLY_OK);
+            raw_tx_init_alloc(block_height, &tx_in, 1, outputs.data(), outputs.size(), &raw_tx_out) == WALLY_OK);
 
         size_t written{ 0 };
 
         size_t ser_siz;
-        GA_SDK_RUNTIME_ASSERT(raw_tx_size(raw_tx_out, &ser_siz) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, &ser_siz) == WALLY_OK);
         std::vector<unsigned char> tx_ser;
         tx_ser.resize(ser_siz + 4);
         GA_SDK_RUNTIME_ASSERT(raw_tx_to_bytes(raw_tx_out, tx_ser.data(), ser_siz, &written) == WALLY_OK);
@@ -781,13 +797,11 @@ namespace sdk {
         unsigned char c = 1;
         memcpy(sigs[0].data() + der_written, (const unsigned char*)&c, 1);
 
-        const auto in_script = input_script(sigs, der_written + 1, 1, out_script);
+        const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
 
-        const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
-        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
-        const struct tx_input* tx_in{ nullptr };
         GA_SDK_RUNTIME_ASSERT(
-            tx_input_init_alloc(txhash_bytes_rev.data(), index, 0, in_script.data(), in_script.size(), &tx_in)
+            tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
+                in_script.data(), in_script.size(), nullptr, 0, &tx_in)
             == WALLY_OK);
 
         return tx_in;
@@ -799,7 +813,7 @@ namespace sdk {
         const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
 
         size_t vsize{ 0 };
-        GA_SDK_RUNTIME_ASSERT(raw_tx_size(tx, &vsize) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(raw_tx_virtual_size(tx, &vsize) == WALLY_OK);
 
         const double fee = static_cast<double>(vsize) * rate.value() / 1000.0;
         const long rounded_fee = static_cast<long>(std::ceil(fee));
@@ -879,8 +893,8 @@ namespace sdk {
             }
 
             {
-                const auto change_address = get_receive_address(address_type::p2wsh, 0);
-                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
+                const auto change_address = get_receive_address(address_type::p2sh, 0);
+                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2sh"));
                 change_output
                     = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
                 outputs.emplace_back(change_output);
@@ -899,10 +913,10 @@ namespace sdk {
         signed_inputs.reserve(inputs.size());
 
         auto ub = utxos.begin();
-        for (auto&& in : inputs) {
+        for (__attribute__((unused)) auto&& in : inputs) {
             utxo u;
             u = *ub++;
-            signed_inputs.emplace_back(sign_input(in, outputs, u, block_height));
+            signed_inputs.emplace_back(sign_input(outputs, u, block_height));
         }
 
         GA_SDK_RUNTIME_ASSERT(raw_tx_init_alloc(block_height, signed_inputs.data(), signed_inputs.size(),
@@ -910,12 +924,15 @@ namespace sdk {
             == WALLY_OK);
 
         size_t ser_siz{ 0 };
-        GA_SDK_RUNTIME_ASSERT(raw_tx_size(raw_tx_out, &ser_siz) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, &ser_siz) == WALLY_OK);
 
         size_t written{ 0 };
         std::vector<unsigned char> tx_ser;
         tx_ser.resize(ser_siz);
         GA_SDK_RUNTIME_ASSERT(raw_tx_to_bytes(raw_tx_out, tx_ser.data(), tx_ser.size(), &written) == WALLY_OK);
+
+        size_t vsize{ 0 };
+        GA_SDK_RUNTIME_ASSERT(raw_tx_virtual_size(raw_tx_out, &vsize) == WALLY_OK);
 
         auto raw_tx_hex = hex_from_bytes(tx_ser.data(), tx_ser.size());
         auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(std::string(raw_tx_hex.get())))
@@ -1038,6 +1055,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_available_currencies(); });
+    }
+
+    bool session::is_rbf_enabled()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->is_rbf_enabled(); });
     }
 
     two_factor session::get_twofactor_config()

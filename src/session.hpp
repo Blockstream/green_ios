@@ -122,6 +122,8 @@ namespace sdk {
 
         available_currencies get_available_currencies();
 
+        bool is_rbf_enabled();
+
         two_factor get_twofactor_config();
         bool set_twofactor(two_factor_type type, const std::string& code, const std::string& proxy_code);
 

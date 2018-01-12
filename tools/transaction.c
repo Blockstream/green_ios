@@ -157,19 +157,16 @@ int tx_input_init_alloc(
     uint32_t sequence,
     const unsigned char *script,
     size_t script_len,
+    const unsigned char *script_witness,
+    size_t script_witness_len,
     const struct tx_input **output)
 {
     struct tx_input *tx_out;
 
-    if (!output)
+    if (!hash256 || !script || !script_len || !output)
         return WALLY_EINVAL;
+
     *output = NULL;
-
-    if (!hash256)
-        return WALLY_EINVAL;
-
-    if (!script || !script_len)
-        return WALLY_EINVAL;
 
     ALLOC_TX_INPUT();
 
@@ -185,8 +182,18 @@ int tx_input_init_alloc(
     }
 
     memcpy(tx_out->script, script, script_len);
-
     tx_out->script_len = script_len;
+
+    if (!script_witness || !script_witness_len)
+        return WALLY_OK;
+
+    if (!(tx_out->script_witness = wally_malloc(script_witness_len))) {
+        wally_free((void*)tx_out);
+        return WALLY_ENOMEM;
+    }
+
+    memcpy(tx_out->script_witness, script_witness, script_witness_len);
+    tx_out->script_witness_len = script_witness_len;
 
     return WALLY_OK;
 }
@@ -395,7 +402,7 @@ int raw_tx_to_bytes(
     size_t i;
     uint32_t tmp;
 
-    if (raw_tx_size(in, &n) != WALLY_OK)
+    if (raw_tx_byte_length(in, &n) != WALLY_OK)
         return WALLY_EINVAL;
 
     if (!in || !bytes_out || !written || len < n)
@@ -435,7 +442,7 @@ int raw_tx_to_bytes(
     return WALLY_OK;
 }
 
-int raw_tx_size(const struct raw_tx *in, size_t *output)
+int raw_tx_byte_length(const struct raw_tx *in, size_t *output)
 {
     size_t i;
     int ret;
@@ -461,6 +468,18 @@ int raw_tx_size(const struct raw_tx *in, size_t *output)
             return ret;
         *output += siz;
     }
+
+    return WALLY_OK;
+}
+
+int raw_tx_virtual_size(const struct raw_tx *in, size_t *output)
+{
+    int ret;
+
+    if ((ret = raw_tx_byte_length(in, output)) != WALLY_OK)
+        return ret;
+
+    *output = (3 * *output + *output) / 4;
 
     return WALLY_OK;
 }

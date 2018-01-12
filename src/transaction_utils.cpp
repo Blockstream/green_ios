@@ -151,11 +151,13 @@ namespace sdk {
     }
 
     std::vector<unsigned char> input_script(
-        const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs, size_t sigs_size,
-        size_t num_sigs, const std::vector<unsigned char>& output_script)
+        const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs,
+        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script)
     {
+        GA_SDK_RUNTIME_ASSERT(num_sigs > 0 && num_sigs < 3);
+
         std::vector<unsigned char> script;
-        script.resize(1 + 1 + output_script.size() + num_sigs * (1 + sigs_size) + 2);
+        script.resize(1 + 1 + output_script.size() + (1 + sigs_size[0]) + (num_sigs == 2 ? 1 + sigs_size[1] : 0) + 2);
 
         unsigned char* p = script.data();
 
@@ -168,7 +170,7 @@ namespace sdk {
         p += written;
         for (size_t i = 0; i < num_sigs; ++i) {
             GA_SDK_RUNTIME_ASSERT(
-                script_encode_data(sigs[i].data(), sigs_size, p, sigs_size + 1, &written) == WALLY_OK);
+                script_encode_data(sigs[i].data(), sigs_size[i], p, sigs_size[i] + 1, &written) == WALLY_OK);
             p += written;
         }
         GA_SDK_RUNTIME_ASSERT(

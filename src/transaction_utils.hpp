@@ -34,8 +34,8 @@ namespace sdk {
         bool main_net);
 
     std::vector<unsigned char> input_script(
-        const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs, size_t sigs_size,
-        size_t num_sigs, const std::vector<unsigned char>& output_script);
+        const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs,
+        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script);
 }
 }
 
