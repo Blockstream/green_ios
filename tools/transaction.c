@@ -158,7 +158,7 @@ int tx_input_init_alloc(
     const unsigned char *script,
     size_t script_len,
     const unsigned char *script_witness,
-    size_t script_witness_len,
+    uint16_t script_witness_len,
     const struct tx_input **output)
 {
     struct tx_input *tx_out;
@@ -207,7 +207,7 @@ int raw_tx_in_to_bytes(
     size_t n;
     uint32_t tmp;
 
-    if (tx_input_size(in, &n) != WALLY_OK)
+    if (tx_input_size(in, ALLOW_WITNESS_FLAG, &n) != WALLY_OK)
         return WALLY_EINVAL;
 
     if (!in || !bytes_out || !written || len < n)
@@ -234,7 +234,7 @@ int raw_tx_in_to_bytes(
     return WALLY_OK;
 }
 
-int tx_input_size(const struct tx_input *in, size_t *output)
+int tx_input_size(const struct tx_input *in, uint32_t flags, size_t *output)
 {
     if (!in || !output)
         return WALLY_EINVAL;
@@ -244,6 +244,14 @@ int tx_input_size(const struct tx_input *in, size_t *output)
               compact_size_of(in->script_len) +
               in->script_len +
               sizeof(uint32_t);
+
+    if (flags & ALLOW_WITNESS_FLAG) {
+        if (!in->script_witness || !in->script_witness_len)
+            return WALLY_OK;
+
+        *output += compact_size_of(in->script_witness_len) +
+                   sizeof(uint16_t);
+    }
 
     return WALLY_OK;
 }
@@ -402,7 +410,7 @@ int raw_tx_to_bytes(
     size_t i;
     uint32_t tmp;
 
-    if (raw_tx_byte_length(in, &n) != WALLY_OK)
+    if (raw_tx_byte_length(in, ALLOW_WITNESS_FLAG, &n) != WALLY_OK)
         return WALLY_EINVAL;
 
     if (!in || !bytes_out || !written || len < n)
@@ -442,7 +450,7 @@ int raw_tx_to_bytes(
     return WALLY_OK;
 }
 
-int raw_tx_byte_length(const struct raw_tx *in, size_t *output)
+int raw_tx_byte_length(const struct raw_tx *in, uint32_t flags, size_t *output)
 {
     size_t i;
     int ret;
@@ -457,7 +465,7 @@ int raw_tx_byte_length(const struct raw_tx *in, size_t *output)
 
     for (i = 0; i < in->in_len; ++i) {
         size_t siz;
-        if ((ret = tx_input_size(in->in[i], &siz)) != WALLY_OK)
+        if ((ret = tx_input_size(in->in[i], flags, &siz)) != WALLY_OK)
             return ret;
         *output += siz;
     }
@@ -476,10 +484,15 @@ int raw_tx_virtual_size(const struct raw_tx *in, size_t *output)
 {
     int ret;
 
-    if ((ret = raw_tx_byte_length(in, output)) != WALLY_OK)
+    size_t base;
+    if ((ret = raw_tx_byte_length(in, 0, &base)) != WALLY_OK)
         return ret;
 
-    *output = (3 * *output + *output) / 4;
+    size_t total;
+    if ((ret = raw_tx_byte_length(in, ALLOW_WITNESS_FLAG, &total)) != WALLY_OK)
+        return ret;
+
+    *output = (3 * base + total) / 4;
 
     return WALLY_OK;
 }

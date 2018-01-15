@@ -170,7 +170,7 @@ struct tx_input {
     unsigned char *script;
     size_t script_len;
     unsigned char *script_witness;
-    size_t script_witness_len;
+    uint16_t script_witness_len;
 };
 
 WALLY_CORE_API int tx_input_free(const struct tx_input *in);
@@ -182,7 +182,7 @@ WALLY_CORE_API int tx_input_init_alloc(
     const unsigned char *script,
     size_t script_len,
     const unsigned char* script_witness,
-    size_t script_witness_len,
+    uint16_t script_witness_len,
     const struct tx_input **output);
 
 WALLY_CORE_API int raw_tx_in_to_bytes(
@@ -191,7 +191,9 @@ WALLY_CORE_API int raw_tx_in_to_bytes(
     size_t len,
     size_t *written);
 
-WALLY_CORE_API int tx_input_size(const struct tx_input *in, size_t *output);
+#define ALLOW_WITNESS_FLAG 0x1
+
+WALLY_CORE_API int tx_input_size(const struct tx_input *in, uint32_t flags, size_t *output);
 
 struct tx_output {
     int64_t amount;
@@ -243,7 +245,7 @@ WALLY_CORE_API int raw_tx_to_bytes(
     size_t len,
     size_t *written);
 
-WALLY_CORE_API int raw_tx_byte_length(const struct raw_tx *in, size_t *output);
+WALLY_CORE_API int raw_tx_byte_length(const struct raw_tx *in, uint32_t flags, size_t *output);
 
 WALLY_CORE_API int raw_tx_virtual_size(const struct raw_tx *in, size_t *output);
 

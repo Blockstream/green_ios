@@ -771,7 +771,7 @@ namespace sdk {
         size_t written{ 0 };
 
         size_t ser_siz;
-        GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, &ser_siz) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, ALLOW_WITNESS_FLAG, &ser_siz) == WALLY_OK);
         std::vector<unsigned char> tx_ser;
         tx_ser.resize(ser_siz + 4);
         GA_SDK_RUNTIME_ASSERT(raw_tx_to_bytes(raw_tx_out, tx_ser.data(), ser_siz, &written) == WALLY_OK);
@@ -924,7 +924,7 @@ namespace sdk {
             == WALLY_OK);
 
         size_t ser_siz{ 0 };
-        GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, &ser_siz) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, ALLOW_WITNESS_FLAG, &ser_siz) == WALLY_OK);
 
         size_t written{ 0 };
         std::vector<unsigned char> tx_ser;
