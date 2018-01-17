@@ -1,6 +1,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "containers.hpp"
+#include "transaction_utils.hpp"
 
 namespace ga {
 namespace sdk {

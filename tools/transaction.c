@@ -228,6 +228,9 @@ int raw_tx_in_to_bytes(
     memcpy(bytes_out, in->script, in->script_len);
     bytes_out += in->script_len;
 
+    memcpy(bytes_out, in->script_witness, in->script_witness_len);
+    bytes_out += in->script_witness_len;
+
     tmp = cpu_to_le32(in->sequence);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
 

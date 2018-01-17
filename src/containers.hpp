@@ -22,13 +22,6 @@ namespace sdk {
 
     enum class transaction_type { in, out, redeposit };
 
-    enum class script_type : int {
-        p2sh_fortified_out = 10,
-        p2sh_p2wsh_fortified_out = 14,
-        redeem_p2sh_fortified = 150,
-        redeem_p2sh_p2wsh_fortified = 159
-    };
-
     namespace detail {
         template <typename T> class object_container {
         public:

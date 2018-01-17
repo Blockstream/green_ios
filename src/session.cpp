@@ -728,6 +728,7 @@ namespace sdk {
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
         const uint32_t index = u.get<uint32_t>("pt_idx");
+        const auto type = script_type(u.get<uint32_t>("script_type"));
 
         const auto out_script = output_script(subaccount, pointer);
 
@@ -738,10 +739,19 @@ namespace sdk {
         const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct tx_input* tx_in{ nullptr };
-        GA_SDK_RUNTIME_ASSERT(
-            tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
-                in_script.data(), in_script.size(), nullptr, 0, &tx_in)
-            == WALLY_OK);
+
+        if (type == script_type::p2sh_p2wsh_fortified_out) {
+            std::array<unsigned char, 3 + SHA256_LEN> script_bytes{ { 0 } };
+            GA_SDK_RUNTIME_ASSERT(
+                tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
+                    script_bytes.data(), script_bytes.size(), in_script.data(), in_script.size(), &tx_in)
+                == WALLY_OK);
+        } else {
+            GA_SDK_RUNTIME_ASSERT(
+                tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
+                    in_script.data(), in_script.size(), nullptr, 0, &tx_in)
+                == WALLY_OK);
+        }
 
         return tx_in;
     }
@@ -753,6 +763,7 @@ namespace sdk {
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
         const uint32_t index = u.get<uint32_t>("pt_idx");
+        const auto type = script_type(u.get<uint32_t>("script_type"));
 
         const auto out_script = output_script(subaccount, pointer);
 
@@ -799,10 +810,18 @@ namespace sdk {
 
         const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
 
-        GA_SDK_RUNTIME_ASSERT(
-            tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
-                in_script.data(), in_script.size(), nullptr, 0, &tx_in)
-            == WALLY_OK);
+        if (type == script_type::p2sh_p2wsh_fortified_out) {
+            const auto script_bytes = witness_script(out_script);
+            GA_SDK_RUNTIME_ASSERT(
+                tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
+                    script_bytes.data(), script_bytes.size(), in_script.data(), in_script.size(), &tx_in)
+                == WALLY_OK);
+        } else {
+            GA_SDK_RUNTIME_ASSERT(
+                tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
+                    in_script.data(), in_script.size(), nullptr, 0, &tx_in)
+                == WALLY_OK);
+        }
 
         return tx_in;
     }

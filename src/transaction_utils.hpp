@@ -12,6 +12,12 @@
 
 namespace ga {
 namespace sdk {
+    enum class script_type : int {
+        p2sh_fortified_out = 10,
+        p2sh_p2wsh_fortified_out = 14,
+        redeem_p2sh_fortified = 150,
+        redeem_p2sh_p2wsh_fortified = 159
+    };
 
     using wally_ext_key_ptr = std::unique_ptr<const ext_key, decltype(&bip32_key_free)>;
 
@@ -36,6 +42,8 @@ namespace sdk {
     std::vector<unsigned char> input_script(
         const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs,
         const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script);
+
+    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes);
 }
 }
 
