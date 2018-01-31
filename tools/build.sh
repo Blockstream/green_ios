@@ -11,7 +11,7 @@ BUILD_TYPE="release"
 MESON_OPTIONS=""
 EXTRA_CXXFLAGS=""
 
-TEMPOPT=`getopt -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk,iphone,buildtype: -- "$@"`
+TEMPOPT=`getopt -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,buildtype: -- "$@"`
 
 eval set -- "$TEMPOPT"
 
