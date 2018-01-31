@@ -11,22 +11,22 @@ BUILD_TYPE="release"
 MESON_OPTIONS=""
 EXTRA_CXXFLAGS=""
 
-TEMPOPT=`getopt -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,buildtype: -- "$@"`
-
-eval set -- "$TEMPOPT"
-
-while true; do
-    case "$1" in
-        -z | --address_sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=address -Dcpp_args=-shared-asan";
-                                   EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS -shared-libasan";
-                                   shift ;;
-        -x | --analyze ) ANALYZE=true; shift ;;
-        -b | --buildtype ) BUILD_TYPE="$2"; shift 2;;
-        --clang | --gcc | --ndk | --iphone ) break ;;
-        -- ) shift; break ;;
-        *) break ;;
-    esac
-done
+if [ "$(uname)" != "Darwin" ]; then
+    TEMPOPT=`getopt -n "'build.sh" -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,buildtype: -- "$@"`
+    eval set -- "$TEMPOPT"
+    while true; do
+        case "$1" in
+            -z | --address_sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=address -Dcpp_args=-shared-asan";
+                                       EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS -shared-libasan";
+                                       shift ;;
+            -x | --analyze ) ANALYZE=true; shift ;;
+            -b | --buildtype ) BUILD_TYPE="$2"; shift 2;;
+            --clang | --gcc | --ndk | --iphone ) break ;;
+            -- ) shift; break ;;
+            *) break ;;
+        esac
+    done
+fi
 
 MESON_OPTIONS="$MESON_OPTIONS --buildtype=$BUILD_TYPE"
 
