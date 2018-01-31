@@ -11,7 +11,7 @@ BUILD_TYPE="release"
 MESON_OPTIONS=""
 EXTRA_CXXFLAGS=""
 
-TEMPOPT=`getopt -o z,x,b: -l analyze,address_sanitizer,clang,gcc,buildtype: -- "$@"`
+TEMPOPT=`getopt -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk,iphone,buildtype: -- "$@"`
 
 eval set -- "$TEMPOPT"
 
@@ -22,7 +22,7 @@ while true; do
                                    shift ;;
         -x | --analyze ) ANALYZE=true; shift ;;
         -b | --buildtype ) BUILD_TYPE="$2"; shift 2;;
-        --clang | --gcc) break ;;
+        --clang | --gcc | --ndk | --iphone ) break ;;
         -- ) shift; break ;;
         *) break ;;
     esac
