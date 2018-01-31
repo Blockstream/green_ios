@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 #define OP_0 0x00
-#define OP_FALSE = OP_0
+#define OP_FALSE OP_0
 #define OP_PUSHDATA1 0x4c
 #define OP_PUSHDATA2 0x4d
 #define OP_PUSHDATA4 0x4e
@@ -163,14 +163,32 @@ WALLY_CORE_API int script_encode_small_num(
 
 #define TRANSACTION_SEQUENCE_FINAL 0xffffffff
 
+struct tx_witness {
+    unsigned char* script_witness;
+    uint32_t script_witness_len;
+};
+
+WALLY_CORE_API int tx_witness_free(const struct tx_witness *in);
+
+WALLY_CORE_API int tx_witness_init_alloc(
+    const unsigned char* script_witness,
+    uint16_t script_witness_len,
+    const struct tx_witness **output);
+
+WALLY_CORE_API int raw_tx_witness_to_bytes(
+    const struct tx_witness *in,
+    unsigned char *bytes_out,
+    size_t len,
+    size_t *written);
+
 struct tx_input {
     unsigned char hash256[32];
     uint32_t index;
     uint32_t sequence;
     unsigned char *script;
     size_t script_len;
-    unsigned char *script_witness;
-    uint16_t script_witness_len;
+    struct tx_witness **witness;
+    uint16_t witness_len;
 };
 
 WALLY_CORE_API int tx_input_free(const struct tx_input *in);
@@ -181,8 +199,8 @@ WALLY_CORE_API int tx_input_init_alloc(
     uint32_t sequence,
     const unsigned char *script,
     size_t script_len,
-    const unsigned char* script_witness,
-    uint16_t script_witness_len,
+    const struct tx_witness **witness,
+    uint16_t witness_len,
     const struct tx_input **output);
 
 WALLY_CORE_API int raw_tx_in_to_bytes(
@@ -249,6 +267,14 @@ WALLY_CORE_API int raw_tx_byte_length(const struct raw_tx *in, uint32_t flags, s
 
 WALLY_CORE_API int raw_tx_virtual_size(const struct raw_tx *in, size_t *output);
 
+WALLY_CORE_API int raw_tx_segwit_preimage(const struct raw_tx *in,
+                                          const unsigned char *script,
+                                          size_t script_len,
+                                          uint32_t index,
+                                          uint32_t hash_type,
+                                          unsigned char *bytes_out,
+                                          size_t len,
+                                          size_t *written);
 #ifdef __cplusplus
 }
 #endif

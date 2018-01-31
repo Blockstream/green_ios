@@ -44,7 +44,7 @@ function build() {
 
     if [ ! -f "build-$1/build.ninja" ]; then
         rm -rf build-$1/meson-private
-        $SCAN_BUILD meson build-$1 --default-library=${LIBTYPE} --buildtype=release
+        $SCAN_BUILD meson build-$1 --default-library=${LIBTYPE} --buildtype=debug
     fi
 
     cd build-$1

@@ -26,7 +26,7 @@ ga::sdk::receive_address login_and_get_receive_address(
     session.connect(testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
     session.register_user(mnemonic);
     session.login(mnemonic);
-    return session.get_receive_address(ga::sdk::address_type::p2sh);
+    return session.get_receive_address(ga::sdk::address_type::p2wsh);
 }
 }
 
@@ -41,12 +41,13 @@ int main(int argc, char** argv)
         const auto address_2 = login_and_get_receive_address(session_2, DEFAULT_MNEMONIC_2, options->testnet);
 
         ga::sdk::http_jsonrpc_client rpc;
-        const auto send_request = rpc.make_send_to_address(address_1.get<std::string>("p2sh"), "2");
+        const auto send_request = rpc.make_send_to_address(address_1.get<std::string>("p2wsh"), "2");
         std::cerr << "p2sh " << send_request << std::endl;
-        rpc.sync_post("127.0.0.1", "19001", send_request);
-        rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
+        //rpc.sync_post("127.0.0.1", "19001", send_request);
+        //rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
 
-        session_1.send({ { address_2.get<std::string>("p2sh"), 1000 } }, 1000);
+        std::cerr << address_2.get<std::string>("p2wsh") << std::endl;
+        session_1.send({ { address_2.get<std::string>("p2wsh"), 100000 } }, 1000);
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

@@ -179,6 +179,7 @@ namespace sdk {
         const struct tx_input* add_utxo(const utxo& u) const;
         const struct tx_input* sign_input(
             std::vector<const struct tx_output*>& outputs, const utxo& u, size_t block_height) const;
+        std::vector<unsigned char> hash_segwit(const struct raw_tx* tx, const std::vector<unsigned char>& script, uint32_t idx, uint32_t hash_type);
         amount get_tx_fee(const struct raw_tx* tx, amount fee_rate);
 
     private:
@@ -741,10 +742,12 @@ namespace sdk {
         const struct tx_input* tx_in{ nullptr };
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
-            std::array<unsigned char, 3 + SHA256_LEN> script_bytes{ { 0 } };
+            const struct tx_witness* witness{nullptr};
+            GA_SDK_RUNTIME_ASSERT(tx_witness_init_alloc(in_script.data(), in_script.size(), &witness) == WALLY_OK);
+            const auto script_bytes = witness_script(out_script);
             GA_SDK_RUNTIME_ASSERT(
                 tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
-                    script_bytes.data(), script_bytes.size(), in_script.data(), in_script.size(), &tx_in)
+                    script_bytes.data(), script_bytes.size(), &witness, 1, &tx_in)
                 == WALLY_OK);
         } else {
             GA_SDK_RUNTIME_ASSERT(
@@ -806,15 +809,20 @@ namespace sdk {
             wally_ec_sig_to_der(sig.data(), sig.size(), sigs[0].data(), EC_SIGNATURE_DER_MAX_LEN, &der_written)
             == WALLY_OK);
         unsigned char c = 1;
+        std::cout << "SIG " << hex_from_bytes(sigs[0].data(), der_written).get() << std::endl;
         memcpy(sigs[0].data() + der_written, (const unsigned char*)&c, 1);
 
         const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
 
+        std::cout << "TYPE " << static_cast<uint32_t>(type) << std::endl;
         if (type == script_type::p2sh_p2wsh_fortified_out) {
+            const struct tx_witness* witness{nullptr};
             const auto script_bytes = witness_script(out_script);
+            GA_SDK_RUNTIME_ASSERT(tx_witness_init_alloc(sigs[0].data(), der_written + 1, &witness) == WALLY_OK);
+            std::cout << "witness " << witness << std::endl;
             GA_SDK_RUNTIME_ASSERT(
                 tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
-                    script_bytes.data(), script_bytes.size(), in_script.data(), in_script.size(), &tx_in)
+                    script_bytes.data(), script_bytes.size(), &witness, 1, &tx_in)
                 == WALLY_OK);
         } else {
             GA_SDK_RUNTIME_ASSERT(
@@ -824,6 +832,11 @@ namespace sdk {
         }
 
         return tx_in;
+    }
+
+    std::vector<unsigned char> session::session_impl::hash_segwit(const struct raw_tx*, const std::vector<unsigned char>&, uint32_t, uint32_t)
+    {
+        return {};
     }
 
     amount session::session_impl::get_tx_fee(const struct raw_tx* tx, amount fee_rate)
@@ -912,8 +925,8 @@ namespace sdk {
             }
 
             {
-                const auto change_address = get_receive_address(address_type::p2sh, 0);
-                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2sh"));
+                const auto change_address = get_receive_address(address_type::p2wsh, 0);
+                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
                 change_output
                     = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
                 outputs.emplace_back(change_output);
@@ -945,15 +958,14 @@ namespace sdk {
         size_t ser_siz{ 0 };
         GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, ALLOW_WITNESS_FLAG, &ser_siz) == WALLY_OK);
 
+        std::cout << "SER SIZE " << ser_siz << std::endl;
+
         size_t written{ 0 };
         std::vector<unsigned char> tx_ser;
         tx_ser.resize(ser_siz);
         GA_SDK_RUNTIME_ASSERT(raw_tx_to_bytes(raw_tx_out, tx_ser.data(), tx_ser.size(), &written) == WALLY_OK);
 
-        size_t vsize{ 0 };
-        GA_SDK_RUNTIME_ASSERT(raw_tx_virtual_size(raw_tx_out, &vsize) == WALLY_OK);
-
-        auto raw_tx_hex = hex_from_bytes(tx_ser.data(), tx_ser.size());
+        auto raw_tx_hex = hex_from_bytes(tx_ser.data(), ser_siz);
         auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(std::string(raw_tx_hex.get())))
                       .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 

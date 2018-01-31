@@ -15,6 +15,9 @@
         return WALLY_ENOMEM;                                                                                           \
     clear((void *)*output, siz)
 
+#define ALLOC_TX_WITNESS()                                                                                             \
+    ALLOC_TX_SIZ(sizeof(struct tx_witness))
+
 #define ALLOC_TX_INPUT()                                                                                               \
     ALLOC_TX_SIZ(sizeof(struct tx_input))
 
@@ -139,13 +142,80 @@ static inline size_t compact_size_to_bytes(uint64_t size, unsigned char* bytes_o
     return written;
 }
 
+int tx_witness_free(const struct tx_witness *tx_witness_in)
+{
+    if (!tx_witness_in || !tx_witness_in->script_witness)
+        return WALLY_EINVAL;
+    clear((void*)tx_witness_in->script_witness, tx_witness_in->script_witness_len);
+    wally_free((void*)tx_witness_in->script_witness);
+    return WALLY_OK;
+}
+
+int tx_witness_init_alloc(const unsigned char *script_witness,
+                          uint16_t script_witness_len,
+                          const struct tx_witness **output)
+{
+    struct tx_witness *tx_out;
+
+    if (!script_witness || !script_witness_len || !output)
+        return WALLY_EINVAL;
+
+    *output = NULL;
+
+    ALLOC_TX_WITNESS();
+
+    tx_out = (struct tx_witness*)*output;
+
+    if (!(tx_out->script_witness = wally_malloc(script_witness_len))) {
+        wally_free((void*)tx_out);
+        return WALLY_ENOMEM;
+    }
+
+    memcpy(tx_out->script_witness, script_witness, script_witness_len);
+    tx_out->script_witness_len = script_witness_len;
+
+    printf("INPUT %zu\n", tx_out->script_witness_len);
+
+    return WALLY_OK;
+}
+
+WALLY_CORE_API int raw_tx_witness_to_bytes(
+    const struct tx_witness *in,
+    unsigned char *bytes_out,
+    size_t len,
+    size_t *written)
+{
+    size_t n;
+
+    if (!in || !bytes_out || !written)
+        return WALLY_EINVAL;
+
+    n = compact_size_to_bytes(in->script_witness_len, bytes_out);
+    bytes_out += n;
+
+    memcpy(bytes_out, in->script_witness, in->script_witness_len);
+    bytes_out += in->script_witness_len;
+
+    *written = n + in->script_witness_len;
+
+    printf("WRITTENWIT %zu %zu\n", *written, in->script_witness_len);
+
+    return WALLY_OK;
+}
+
 int tx_input_free(const struct tx_input *tx_input_in)
 {
+    int i;
+
     if (!tx_input_in || !tx_input_in->script)
         return WALLY_EINVAL;
     clear((void*)tx_input_in->script, tx_input_in->script_len);
-    clear((void*)tx_input_in, sizeof(struct tx_input));
     wally_free((void*)tx_input_in->script);
+    for (i = 0; i < tx_input_in->witness_len; ++i) {
+        tx_witness_free(tx_input_in->witness[i]);
+    }
+    wally_free((void*)tx_input_in->witness);
+    clear((void*)tx_input_in, sizeof(struct tx_input));
     wally_free((void*)tx_input_in);
 
     return WALLY_OK;
@@ -157,8 +227,8 @@ int tx_input_init_alloc(
     uint32_t sequence,
     const unsigned char *script,
     size_t script_len,
-    const unsigned char *script_witness,
-    uint16_t script_witness_len,
+    const struct tx_witness **witness,
+    uint16_t witness_len,
     const struct tx_input **output)
 {
     struct tx_input *tx_out;
@@ -184,16 +254,16 @@ int tx_input_init_alloc(
     memcpy(tx_out->script, script, script_len);
     tx_out->script_len = script_len;
 
-    if (!script_witness || !script_witness_len)
+    if (!witness)
         return WALLY_OK;
 
-    if (!(tx_out->script_witness = wally_malloc(script_witness_len))) {
+    if (!(tx_out->witness = wally_malloc(witness_len * sizeof(struct tx_witness*)))) {
         wally_free((void*)tx_out);
         return WALLY_ENOMEM;
     }
 
-    memcpy(tx_out->script_witness, script_witness, script_witness_len);
-    tx_out->script_witness_len = script_witness_len;
+    memcpy(tx_out->witness, witness, witness_len * sizeof(struct tx_witness*));
+    tx_out->witness_len = witness_len;
 
     return WALLY_OK;
 }
@@ -207,7 +277,7 @@ int raw_tx_in_to_bytes(
     size_t n;
     uint32_t tmp;
 
-    if (tx_input_size(in, ALLOW_WITNESS_FLAG, &n) != WALLY_OK)
+    if (tx_input_size(in, 0, &n) != WALLY_OK)
         return WALLY_EINVAL;
 
     if (!in || !bytes_out || !written || len < n)
@@ -228,9 +298,6 @@ int raw_tx_in_to_bytes(
     memcpy(bytes_out, in->script, in->script_len);
     bytes_out += in->script_len;
 
-    memcpy(bytes_out, in->script_witness, in->script_witness_len);
-    bytes_out += in->script_witness_len;
-
     tmp = cpu_to_le32(in->sequence);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
 
@@ -239,6 +306,8 @@ int raw_tx_in_to_bytes(
 
 int tx_input_size(const struct tx_input *in, uint32_t flags, size_t *output)
 {
+    int i;
+
     if (!in || !output)
         return WALLY_EINVAL;
 
@@ -249,13 +318,19 @@ int tx_input_size(const struct tx_input *in, uint32_t flags, size_t *output)
               sizeof(uint32_t);
 
     if (flags & ALLOW_WITNESS_FLAG) {
-        if (!in->script_witness || !in->script_witness_len)
+        if (!in->witness || !in->witness_len)
             return WALLY_OK;
 
-        *output += compact_size_of(in->script_witness_len) +
-                   sizeof(uint16_t);
+        printf("INPUT SIZ %zu\n", in->witness_len);
+        *output += compact_size_of(in->witness_len);
+        if (in->witness) {
+            for (i = 0; i < in->witness_len; ++i) {
+                *output += compact_size_of(in->witness[i]->script_witness_len) + in->witness[i]->script_witness_len;
+            }
+        }
     }
 
+    printf("INPUT SIZ %zu %zu\n", in->witness_len, *output);
     return WALLY_OK;
 }
 
@@ -411,6 +486,7 @@ int raw_tx_to_bytes(
 {
     size_t n;
     size_t i;
+    size_t j;
     uint32_t tmp;
 
     if (raw_tx_byte_length(in, ALLOW_WITNESS_FLAG, &n) != WALLY_OK)
@@ -419,12 +495,23 @@ int raw_tx_to_bytes(
     if (!in || !bytes_out || !written || len < n)
         return WALLY_EINVAL;
 
+    *written = 0;
+
     tmp = cpu_to_le32(in->version);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
     bytes_out += sizeof(uint32_t);
 
+    *written += sizeof(uint32_t);
+
+    *bytes_out++ = 0x00;
+    *bytes_out++ = 0x01;
+
+    *written += 2;
+
     n = compact_size_to_bytes(in->in_len, bytes_out);
     bytes_out += n;
+
+    *written += n;
 
     for (i = 0; i < in->in_len; ++i) {
         size_t in_written;
@@ -433,10 +520,12 @@ int raw_tx_to_bytes(
         if (r != WALLY_OK)
             return r;
         bytes_out += in_written;
+        *written += in_written;
     }
 
     n = compact_size_to_bytes(in->out_len, bytes_out);
     bytes_out += n;
+    *written += n;
 
     for (i = 0; i < in->out_len; ++i) {
         size_t out_written;
@@ -445,10 +534,31 @@ int raw_tx_to_bytes(
         if (r != WALLY_OK)
             return r;
         bytes_out += out_written;
+        *written += out_written;
+    }
+
+    for (i = 0; i < in->in_len; ++i) {
+        if (in->in[i]->witness) {
+            n = compact_size_to_bytes(in->in[i]->witness_len, bytes_out);
+            bytes_out += n;
+            *written += n;
+            printf("WRITTEN %zu\n", *written);
+            for (j = 0; j < in->in[i]->witness_len; ++j) {
+                size_t witness_written;
+                int r;
+                r = raw_tx_witness_to_bytes(in->in[i]->witness[j], bytes_out, len, &witness_written);
+                if (r != WALLY_OK)
+                    return r;
+                printf("WITNESS WRITTEN %zu %zu %zu %d\n", witness_written, len, *written, i);
+                bytes_out += witness_written;
+                *written += witness_written;
+            }
+        }
     }
 
     tmp = cpu_to_le32(in->locktime);
     memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
+    *written += sizeof(uint32_t);
 
     return WALLY_OK;
 }
@@ -456,6 +566,7 @@ int raw_tx_to_bytes(
 int raw_tx_byte_length(const struct raw_tx *in, uint32_t flags, size_t *output)
 {
     size_t i;
+    int has_witnesses;
     int ret;
 
     if (!in || !output)
@@ -466,11 +577,14 @@ int raw_tx_byte_length(const struct raw_tx *in, uint32_t flags, size_t *output)
               compact_size_of(in->out_len) +
               sizeof(uint32_t);
 
+    has_witnesses = 0;
     for (i = 0; i < in->in_len; ++i) {
         size_t siz;
-        if ((ret = tx_input_size(in->in[i], flags, &siz)) != WALLY_OK)
+        if ((ret = tx_input_size(in->in[i], ALLOW_WITNESS_FLAG, &siz)) != WALLY_OK)
             return ret;
         *output += siz;
+        if (in->in[i]->witness)
+            ++has_witnesses;
     }
 
     for (i = 0; i < in->out_len; ++i) {
@@ -479,7 +593,12 @@ int raw_tx_byte_length(const struct raw_tx *in, uint32_t flags, size_t *output)
             return ret;
         *output += siz;
     }
+ 
+    if ((flags & ALLOW_WITNESS_FLAG) && has_witnesses) {
+        *output += 2;
+    }
 
+    printf("BYTELENGTH %zu\n", *output);
     return WALLY_OK;
 }
 
@@ -496,6 +615,113 @@ int raw_tx_virtual_size(const struct raw_tx *in, size_t *output)
         return ret;
 
     *output = (3 * base + total) / 4;
+
+    return WALLY_OK;
+}
+
+int raw_tx_segwit_preimage_size(const struct raw_tx *in,
+                                const unsigned char *script,
+                                size_t script_len,
+                                uint32_t index,
+                                uint32_t hash_type,
+                                size_t *output)
+{
+    return WALLY_OK;
+}
+
+static int raw_tx_hash_prevouts(const struct raw_tx *in,
+                                unsigned char *bytes_out,
+                                size_t len)
+{
+    return WALLY_OK;
+}
+
+static int raw_tx_hash_sequence(const struct raw_tx *in,
+                                unsigned char *bytes_out,
+                                size_t len)
+{
+    return WALLY_OK;
+}
+
+int raw_tx_segwit_preimage(const struct raw_tx *in,
+                           const unsigned char *script,
+                           size_t script_len,
+                           uint32_t index,
+                           uint32_t hash_type,
+                           unsigned char *bytes_out,
+                           size_t len,
+                           size_t *written)
+{
+    unsigned char buffer[SHA256_LEN];
+    unsigned char *tmp_buffer;
+    size_t tmp_buffer_siz;
+    uint32_t tmp;
+    int ret;
+    int i;
+
+    if (!in || !script || !script_len || !bytes_out)
+        return WALLY_EINVAL;
+
+    tmp = cpu_to_le32(in->version);
+    memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
+    bytes_out += sizeof(uint32_t);
+
+    if (written)
+        *written += sizeof(uint32_t);
+
+    tmp_buffer = NULL;
+    tmp_buffer_siz = in->in_len * (SHA256_LEN + sizeof(uint32_t));
+    if ((tmp_buffer = wally_malloc(tmp_buffer_siz)) != WALLY_OK)
+        return WALLY_ENOMEM;
+
+    for (i = 0; i < in->in_len; ++i) {
+        memcpy(tmp_buffer, in->in[i]->hash256, sizeof(in->in[i]->hash256));
+        tmp = cpu_to_le32(in->in[i]->index);
+        memcpy(tmp_buffer + sizeof(uint32_t), &tmp, sizeof(uint32_t));
+        tmp_buffer += SHA256_LEN + sizeof(uint32_t);
+    }
+
+    if ((ret = wally_sha256d(tmp_buffer, tmp_buffer_siz, buffer, SHA256_LEN)) != WALLY_OK)
+        return ret;
+
+    memcpy(bytes_out, tmp_buffer, SHA256_LEN);
+    bytes_out += SHA256_LEN;
+
+    if (written)
+       *written += SHA256_LEN;
+
+    wally_free(tmp_buffer);
+
+    tmp_buffer_siz = in->in_len * sizeof(uint32_t);
+    if ((tmp_buffer = wally_malloc(tmp_buffer_siz)) != WALLY_OK)
+        return WALLY_ENOMEM;
+
+    for (i = 0; i < in->in_len; ++i) {
+        tmp = cpu_to_le32(in->in[i]->sequence);
+        memcpy(tmp_buffer, (const unsigned char*) &tmp, sizeof(uint32_t));
+        tmp_buffer += sizeof(uint32_t);
+    }
+
+    if ((ret = wally_sha256d(tmp_buffer, tmp_buffer_siz, buffer, SHA256_LEN)) != WALLY_OK)
+        return ret;
+
+    memcpy(bytes_out, tmp_buffer, SHA256_LEN);
+    bytes_out += SHA256_LEN;
+
+    if (written)
+       *written += SHA256_LEN;
+
+    wally_free(tmp_buffer);
+
+    memcpy(bytes_out, in->in[index]->hash256, SHA256_LEN);
+    bytes_out += SHA256_LEN;
+
+    tmp = cpu_to_le32(in->in[index]->index);
+    memcpy(bytes_out, (const unsigned char*) &tmp, sizeof(uint32_t));
+    bytes_out += sizeof(uint32_t);
+
+    if (written)
+        *written += sizeof(uint32_t);
 
     return WALLY_OK;
 }
