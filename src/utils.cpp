@@ -96,7 +96,6 @@ namespace sdk {
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
     {
         char* s = nullptr;
-        std::cout << "SIZ " << siz << std::endl;
         GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
         return wally_string_ptr(s, &wally_free_string);
     }

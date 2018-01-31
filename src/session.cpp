@@ -809,17 +809,14 @@ namespace sdk {
             wally_ec_sig_to_der(sig.data(), sig.size(), sigs[0].data(), EC_SIGNATURE_DER_MAX_LEN, &der_written)
             == WALLY_OK);
         unsigned char c = 1;
-        std::cout << "SIG " << hex_from_bytes(sigs[0].data(), der_written).get() << std::endl;
         memcpy(sigs[0].data() + der_written, (const unsigned char*)&c, 1);
 
         const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
 
-        std::cout << "TYPE " << static_cast<uint32_t>(type) << std::endl;
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             const struct tx_witness* witness{nullptr};
             const auto script_bytes = witness_script(out_script);
             GA_SDK_RUNTIME_ASSERT(tx_witness_init_alloc(sigs[0].data(), der_written + 1, &witness) == WALLY_OK);
-            std::cout << "witness " << witness << std::endl;
             GA_SDK_RUNTIME_ASSERT(
                 tx_input_init_alloc(txhash_bytes_rev.data(), index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE,
                     script_bytes.data(), script_bytes.size(), &witness, 1, &tx_in)
@@ -957,8 +954,6 @@ namespace sdk {
 
         size_t ser_siz{ 0 };
         GA_SDK_RUNTIME_ASSERT(raw_tx_byte_length(raw_tx_out, ALLOW_WITNESS_FLAG, &ser_siz) == WALLY_OK);
-
-        std::cout << "SER SIZE " << ser_siz << std::endl;
 
         size_t written{ 0 };
         std::vector<unsigned char> tx_ser;

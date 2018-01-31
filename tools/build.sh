@@ -1,9 +1,34 @@
 #!/usr/bin/env bash
 set -e
+
 export NUM_JOBS=4
 if [ -f /proc/cpuinfo ]; then
     export NUM_JOBS=$(cat /proc/cpuinfo | grep ^processor | wc -l)
 fi
+
+ANALYZE=false
+BUILD_TYPE="release"
+MESON_OPTIONS=""
+EXTRA_CXXFLAGS=""
+
+TEMPOPT=`getopt -o z,x,b: -l analyze,address_sanitizer,clang,gcc,buildtype: -- "$@"`
+
+eval set -- "$TEMPOPT"
+
+while true; do
+    case "$1" in
+        -z | --address_sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=address -Dcpp_args=-shared-asan";
+                                   EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS -shared-libasan";
+                                   shift ;;
+        -x | --analyze ) ANALYZE=true; shift ;;
+        -b | --buildtype ) BUILD_TYPE="$2"; shift 2;;
+        --clang | --gcc) break ;;
+        -- ) shift; break ;;
+        *) break ;;
+    esac
+done
+
+MESON_OPTIONS="$MESON_OPTIONS --buildtype=$BUILD_TYPE"
 
 NINJA=$(which ninja-build) || true
 if [ ! -x "$NINJA" ] ; then
@@ -13,11 +38,6 @@ fi
 LIBTYPE="${@: -1}"
 if test "x${LIBTYPE}" != "xshared" && test "x${LIBTYPE}" != "xstatic" ; then
     LIBTYPE=shared
-fi
-
-ANALYZE="${@: -1}"
-if test "x${ANALYZE}" != "x--analyze" ; then
-    ANALYZE=""
 fi
 
 export CFLAGS="$CFLAGS"
@@ -38,13 +58,13 @@ function build() {
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     SCAN_BUILD=""
-    if [ "x${ANALYZE}" = "x--analyze" ] ; then
+    if [ $ANALYZE == true ] ; then
         SCAN_BUILD="scan-build --use-cc=$1 --use-c++=$2"
     fi
 
     if [ ! -f "build-$1/build.ninja" ]; then
         rm -rf build-$1/meson-private
-        $SCAN_BUILD meson build-$1 --default-library=${LIBTYPE} --buildtype=debug
+        CXXFLAGS=$EXTRA_CXXFLAGS $SCAN_BUILD meson build-$1 --default-library=${LIBTYPE} ${MESON_OPTIONS}
     fi
 
     cd build-$1
@@ -105,7 +125,6 @@ function set_cross_build_env() {
 if [ \( "$(uname)" != "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
     build gcc g++
 fi
-
 
 if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
     build clang clang++
