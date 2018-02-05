@@ -13,7 +13,7 @@ EXTRA_CXXFLAGS=""
 
 GETOPT='getopt'
 if [ "$(uname)" == "Darwin" ]; then
-    GETOPT='/usr/local/opt/gnu-getopt/getopt'
+    GETOPT='/usr/local/opt/gnu-getopt/bin/getopt'
 fi
 
 TEMPOPT=`"$GETOPT" -n "'build.sh" -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,buildtype: -- "$@"`
