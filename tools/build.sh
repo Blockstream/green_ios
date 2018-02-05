@@ -8,6 +8,7 @@ fi
 
 ANALYZE=false
 BUILD_TYPE="release"
+LIBTYPE="shared"
 MESON_OPTIONS=""
 EXTRA_CXXFLAGS=""
 
@@ -16,7 +17,7 @@ if [ "$(uname)" == "Darwin" ]; then
     GETOPT='/usr/local/opt/gnu-getopt/bin/getopt'
 fi
 
-TEMPOPT=`"$GETOPT" -n "'build.sh" -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,buildtype: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "'build.sh" -o z,x,c,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,iphonesim:,buildtype: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
@@ -25,7 +26,8 @@ while true; do
                                    shift ;;
         -x | --analyze ) ANALYZE=true; shift ;;
         -b | --buildtype ) BUILD_TYPE="$2"; shift 2;;
-        --clang | --gcc | --ndk | --iphone ) break ;;
+        --clang | --gcc | --ndk ) break ;;
+        --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
         -- ) shift; break ;;
         *) break ;;
     esac
@@ -36,11 +38,6 @@ MESON_OPTIONS="$MESON_OPTIONS --buildtype=$BUILD_TYPE"
 NINJA=$(which ninja-build) || true
 if [ ! -x "$NINJA" ] ; then
     NINJA=$(which ninja)
-fi
-
-LIBTYPE="${@: -1}"
-if test "x${LIBTYPE}" != "xshared" && test "x${LIBTYPE}" != "xstatic" ; then
-    LIBTYPE=shared
 fi
 
 export CFLAGS="$CFLAGS"
