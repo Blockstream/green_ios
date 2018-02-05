@@ -16,7 +16,7 @@ if [ "$(uname)" == "Darwin" ]; then
     GETOPT='/usr/local/opt/gnu-getopt/getopt'
 fi
 
-TEMPOPT=`getopt -n "'build.sh" -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,buildtype: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "'build.sh" -o z,x,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,buildtype: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
