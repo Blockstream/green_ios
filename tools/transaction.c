@@ -174,8 +174,6 @@ int tx_witness_init_alloc(const unsigned char *script_witness,
     memcpy(tx_out->script_witness, script_witness, script_witness_len);
     tx_out->script_witness_len = script_witness_len;
 
-    printf("INPUT %zu\n", tx_out->script_witness_len);
-
     return WALLY_OK;
 }
 
@@ -197,8 +195,6 @@ WALLY_CORE_API int raw_tx_witness_to_bytes(
     bytes_out += in->script_witness_len;
 
     *written = n + in->script_witness_len;
-
-    printf("WRITTENWIT %zu %zu\n", *written, in->script_witness_len);
 
     return WALLY_OK;
 }
@@ -321,7 +317,6 @@ int tx_input_size(const struct tx_input *in, uint32_t flags, size_t *output)
         if (!in->witness || !in->witness_len)
             return WALLY_OK;
 
-        printf("INPUT SIZ %zu\n", in->witness_len);
         *output += compact_size_of(in->witness_len);
         if (in->witness) {
             for (i = 0; i < in->witness_len; ++i) {
@@ -330,7 +325,6 @@ int tx_input_size(const struct tx_input *in, uint32_t flags, size_t *output)
         }
     }
 
-    printf("INPUT SIZ %zu %zu\n", in->witness_len, *output);
     return WALLY_OK;
 }
 
@@ -542,14 +536,12 @@ int raw_tx_to_bytes(
             n = compact_size_to_bytes(in->in[i]->witness_len, bytes_out);
             bytes_out += n;
             *written += n;
-            printf("WRITTEN %zu\n", *written);
             for (j = 0; j < in->in[i]->witness_len; ++j) {
                 size_t witness_written;
                 int r;
                 r = raw_tx_witness_to_bytes(in->in[i]->witness[j], bytes_out, len, &witness_written);
                 if (r != WALLY_OK)
                     return r;
-                printf("WITNESS WRITTEN %zu %zu %zu %d\n", witness_written, len, *written, i);
                 bytes_out += witness_written;
                 *written += witness_written;
             }
@@ -598,7 +590,6 @@ int raw_tx_byte_length(const struct raw_tx *in, uint32_t flags, size_t *output)
         *output += 2;
     }
 
-    printf("BYTELENGTH %zu\n", *output);
     return WALLY_OK;
 }
 
