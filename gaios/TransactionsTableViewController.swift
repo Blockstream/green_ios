@@ -44,8 +44,12 @@ class TransactionsTableViewModel: NSObject {
 
     override init() {
         super.init()
+    }
 
+    func updateViewModel(tableView: UITableView) {
         items.append(TransactionItem(timestamp: Date(), address: "", amount: "", fiatAmount: ""))
+
+        tableView.reloadData()
     }
 }
 
@@ -82,5 +86,7 @@ class TransactionsTableViewController: UITableViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        viewModel.updateViewModel(tableView: self.tableView)
     }
 }

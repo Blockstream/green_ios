@@ -263,10 +263,11 @@ class SettingsTableViewModel: NSObject {
     override init() {
         super.init()
 
-        let generalSection = GeneralSettingsSection()
-        generalSection.items.append(PricingSourceItem(detailText: "BITSTAMP", show: ""))
-        generalSection.items.append(CurrencyItem(detailText: "BTC", show: ""))
+        let loginData = getGAService().loginData!
 
+        let generalSection = GeneralSettingsSection()
+        generalSection.items.append(PricingSourceItem(detailText: loginData["exchange"] as? String ?? "BITSTAMP", show: ""))
+        generalSection.items.append(CurrencyItem(detailText: (loginData["appearance"] as! [String: Any])["unit"] as? String ?? "BTC", show: ""))
         sections.append(generalSection)
 
         let transactionsSection = TransactionsSettingsSection()
@@ -275,8 +276,8 @@ class SettingsTableViewModel: NSObject {
         transactionsSection.items.append(ConfirmationPriorityItem(detailText: "Economy", show: ""))
         transactionsSection.items.append(NLockTimeItem(detailText: "12960", show: ""))
         transactionsSection.items.append(SpendingLimitsItem(detailText: "0.00", show: ""))
-        transactionsSection.items.append(IncreaseFeeForOutgoingItem(on: false))
-        transactionsSection.items.append(SegregatedWitnessItem(on: true))
+        transactionsSection.items.append(IncreaseFeeForOutgoingItem(on: (loginData["appearance"] as! [String: Any])["replace_by_fee"] as? Bool ?? false))
+        transactionsSection.items.append(SegregatedWitnessItem(on: (loginData["appearance"] as! [String: Any])["use_segwit"] as? Bool ?? false))
         sections.append(transactionsSection)
 
         let securitySection = SecuritySettingsSection()
