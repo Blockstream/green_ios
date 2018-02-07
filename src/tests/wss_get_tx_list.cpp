@@ -23,14 +23,7 @@ int main(int argc, char** argv)
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
 
-        using days = std::chrono::duration<int, std::ratio<24 * 3600>>;
-
-        const auto now = std::chrono::system_clock::now();
-        const auto now_28_days_before = now - days(28);
-
-        const auto txs = session.get_tx_list(
-            std::make_pair(system_clock::to_time_t(now_28_days_before), system_clock::to_time_t(now)), 0, '+'_ts, 0,
-            "");
+        const auto txs = session.get_tx_list(std::make_pair(0, 0), 0, '+'_ts, 0, "");
         GA_SDK_RUNTIME_ASSERT(txs.get<std::string>("fiat_currency") == "USD");
 
         const auto balance = session.get_balance();

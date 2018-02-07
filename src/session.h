@@ -2,7 +2,7 @@
 #define GA_SDK_SESSION_H
 #pragma once
 
-#include <time.h>
+#include <sys/types.h>
 
 #include "containers.h"
 

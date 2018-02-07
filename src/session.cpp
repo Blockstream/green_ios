@@ -179,7 +179,8 @@ namespace sdk {
         const struct tx_input* add_utxo(const utxo& u) const;
         const struct tx_input* sign_input(
             std::vector<const struct tx_output*>& outputs, const utxo& u, size_t block_height) const;
-        std::vector<unsigned char> hash_segwit(const struct raw_tx* tx, const std::vector<unsigned char>& script, uint32_t idx, uint32_t hash_type);
+        std::vector<unsigned char> hash_segwit(
+            const struct raw_tx* tx, const std::vector<unsigned char>& script, uint32_t idx, uint32_t hash_type);
         amount get_tx_fee(const struct raw_tx* tx, amount fee_rate);
 
     private:
@@ -439,6 +440,10 @@ namespace sdk {
 
         auto&& date_range_str = [&date_range] {
             constexpr auto iso_str_siz = sizeof "0000-00-00T00:00:00.000Z";
+
+            if (!date_range.first && !date_range.second) {
+                return std::make_pair(std::string(), std::string());
+            }
 
             std::array<char, iso_str_siz> begin_date_str = { { 0 } };
             std::array<char, iso_str_siz> end_date_str = { { 0 } };
@@ -742,7 +747,7 @@ namespace sdk {
         const struct tx_input* tx_in{ nullptr };
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
-            const struct tx_witness* witness{nullptr};
+            const struct tx_witness* witness{ nullptr };
             GA_SDK_RUNTIME_ASSERT(tx_witness_init_alloc(in_script.data(), in_script.size(), &witness) == WALLY_OK);
             const auto script_bytes = witness_script(out_script);
             GA_SDK_RUNTIME_ASSERT(
@@ -814,7 +819,7 @@ namespace sdk {
         const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
-            const struct tx_witness* witness{nullptr};
+            const struct tx_witness* witness{ nullptr };
             const auto script_bytes = witness_script(out_script);
             GA_SDK_RUNTIME_ASSERT(tx_witness_init_alloc(sigs[0].data(), der_written + 1, &witness) == WALLY_OK);
             GA_SDK_RUNTIME_ASSERT(
@@ -831,7 +836,8 @@ namespace sdk {
         return tx_in;
     }
 
-    std::vector<unsigned char> session::session_impl::hash_segwit(const struct raw_tx*, const std::vector<unsigned char>&, uint32_t, uint32_t)
+    std::vector<unsigned char> session::session_impl::hash_segwit(
+        const struct raw_tx*, const std::vector<unsigned char>&, uint32_t, uint32_t)
     {
         return {};
     }

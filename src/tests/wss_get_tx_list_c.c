@@ -25,11 +25,8 @@ int main(int argc, char* argv[])
     struct GA_login_data* login_data = NULL;
     ret = GA_login(session, DEFAULT_MNEMONIC, &login_data);
 
-    time_t now = time(NULL);
-    time_t now_28_days_before = now - 3600 * 24 * 28;
-
     struct GA_tx_list* txs = NULL;
-    ret = GA_get_tx_list(session, now_28_days_before, now, 0, GA_TIMESTAMP_ASCENDING, 0, "", &txs);
+    ret = GA_get_tx_list(session, 0, 0, 0, GA_TIMESTAMP_ASCENDING, 0, "", &txs);
 
     char* fiat_currency = NULL;
     ret = GA_convert_tx_list_path_to_string(txs, "fiat_currency", &fiat_currency);
