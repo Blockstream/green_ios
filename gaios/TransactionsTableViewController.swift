@@ -3,6 +3,8 @@
 //  gaios
 //
 
+import PromiseKit
+
 import UIKit
 
 class TransactionItem {
@@ -42,14 +44,26 @@ class TransactionCell: UITableViewCell {
 class TransactionsTableViewModel: NSObject {
     var items = [TransactionItem]()
 
+    func getTransactions() -> Promise<[Transaction]?> {
+        return retry(session: getSession(), network: Network.TestNet) {
+            return wrap { return try getSession().getTransactions(subaccount: 0) }
+        }
+    }
+
     override init() {
         super.init()
     }
 
     func updateViewModel(tableView: UITableView) {
-        items.append(TransactionItem(timestamp: Date(), address: "", amount: "", fiatAmount: ""))
-
-        tableView.reloadData()
+        getTransactions().then { (txs: [Transaction]?) -> Void in
+            self.items.removeAll(keepingCapacity: true)
+            for tx in txs ?? [] {
+                let view = tx.getView()
+                self.items.append(TransactionItem(timestamp: try view.getTimestamp(), address: "", amount: String(try view.getValue()), fiatAmount: ""))
+            }
+        }.always {
+            tableView.reloadData()
+        }
     }
 }
 
