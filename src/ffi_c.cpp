@@ -392,12 +392,12 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_fee, GA_tx_view,
     },
     int64_t*, output);
 
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_block_height, GA_tx_view,
-    [](struct GA_tx_view* view, size_t* output) {
+GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_timestamp, GA_tx_view,
+    [](struct GA_tx_view* view, const char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->block_height;
+        *output = view->timestamp.c_str();
     },
-    size_t*, output);
+    const char**, output);
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_size, GA_tx_view,
     [](struct GA_tx_view* view, size_t* output) {

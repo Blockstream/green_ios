@@ -84,7 +84,7 @@ int GA_tx_view_get_hash(struct GA_tx_view* view, const char** output);
 int GA_tx_view_get_double_spent_by(struct GA_tx_view* view, const char** output);
 int GA_tx_view_get_value(struct GA_tx_view* view, int64_t* output);
 int GA_tx_view_get_fee(struct GA_tx_view* view, int64_t* output);
-int GA_tx_view_get_block_height(struct GA_tx_view* view, size_t* output);
+int GA_tx_view_get_timestamp(struct GA_tx_view* view, const char** output);
 int GA_tx_view_get_size(struct GA_tx_view* view, size_t* output);
 int GA_tx_view_get_instant(struct GA_tx_view* view, int* output);
 int GA_tx_view_get_replaceable(struct GA_tx_view* view, int* output);

@@ -26,6 +26,12 @@ int main(int argc, char** argv)
         const auto txs = session.get_tx_list(std::make_pair(0, 0), 0, '+'_ts, 0, "");
         GA_SDK_RUNTIME_ASSERT(txs.get<std::string>("fiat_currency") == "USD");
 
+        for (auto&& tx : txs) {
+            ga::sdk::tx t;
+            t = tx;
+            const auto v = t.populate_view();
+        }
+
         const auto balance = session.get_balance();
         const auto two_factor = session.get_twofactor_config();
         const auto gauth_url = two_factor.get<std::string>("gauth_url");

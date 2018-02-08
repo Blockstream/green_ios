@@ -7,7 +7,7 @@ if [ -f /proc/cpuinfo ]; then
 fi
 
 ANALYZE=false
-BUILD_TYPE="release"
+BUILDTYPE="release"
 LIBTYPE="shared"
 MESON_OPTIONS=""
 EXTRA_CXXFLAGS=""
@@ -25,7 +25,7 @@ while true; do
                                    EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS -shared-libasan";
                                    shift ;;
         -x | --analyze ) ANALYZE=true; shift ;;
-        -b | --buildtype ) BUILD_TYPE="$2"; shift 2;;
+        -b | --buildtype ) BUILDTYPE="$2"; shift 2;;
         --clang | --gcc | --ndk ) break ;;
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
         -- ) shift; break ;;
@@ -33,7 +33,7 @@ while true; do
     esac
 done
 
-MESON_OPTIONS="$MESON_OPTIONS --buildtype=$BUILD_TYPE"
+MESON_OPTIONS="$MESON_OPTIONS --buildtype=$BUILDTYPE"
 
 NINJA=$(which ninja-build) || true
 if [ ! -x "$NINJA" ] ; then

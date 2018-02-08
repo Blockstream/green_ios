@@ -458,9 +458,8 @@ namespace sdk {
 
         tx_list txs;
         const auto get_tx_list_arguments = std::make_tuple(page_id, query, sort_by_str(), date_range_str(), subaccount);
-        auto fn
-            = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
-                  .then([&txs](wamp_call_result result) { txs.associate(result.get().argument<msgpack::object>(0)); });
+        auto fn = m_session->call("com.greenaddress.txs.get_list_v2", get_tx_list_arguments)
+                      .then([&txs](wamp_call_result result) { txs = result.get().argument<msgpack::object>(0); });
 
         fn.get();
 

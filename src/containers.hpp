@@ -129,12 +129,12 @@ namespace sdk {
     struct tx : public detail::object_container<tx> {
         struct tx_view {
             std::vector<std::string> received_on;
+            std::string timestamp;
             std::string counterparty;
             std::string hash;
             std::string double_spent_by;
             amount value;
             amount fee;
-            size_t block_height;
             size_t size;
             transaction_type type;
             bool instant;
