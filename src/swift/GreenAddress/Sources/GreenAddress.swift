@@ -101,6 +101,16 @@ public class Transaction {
             return isSpent != 0
         }
 
+        public func getTimestamp() throws -> Date {
+            var bytes: UnsafePointer<Int8>? = nil
+            guard GA_tx_view_get_timestamp(view, &bytes) == GA_OK else {
+                throw GaError.GenericError
+            }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss"
+            return dateFormatter.date(from: String(cString: bytes!)) ?? Date()
+        }
+
         public func getType() throws -> TransactionType {
             var type: Int32 = 0
             guard GA_tx_view_get_type(view, &type) == GA_OK else {
@@ -129,7 +139,7 @@ public class Transaction {
         GA_destroy_tx(tx)
     }
 
-    public func getView() throws -> View {
+    public func getView() -> View {
         return try! View(tx: tx!)
     }
 }
@@ -201,11 +211,9 @@ public class Session {
         try callWrapper(fun: GA_remove_account(session));
     }
 
-    public func getTxList(begin: Date, end: Date, subaccount: Int) throws -> [Transaction]? {
+    public func getTransactions(subaccount: Int) throws -> [Transaction]? {
         var txs: OpaquePointer? = nil
-        let startDate = Int(begin.timeIntervalSince1970)
-        let endDate = Int(end.timeIntervalSince1970)
-        try callWrapper(fun: GA_get_tx_list(session, startDate, endDate, subaccount, 0, 0, String(), &txs))
+        try callWrapper(fun: GA_get_tx_list(session, 0, 0, subaccount, 0, 0, String(), &txs))
         defer {
             GA_destroy_tx_list(txs)
         }
