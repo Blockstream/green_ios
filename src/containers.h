@@ -33,9 +33,6 @@ struct GA_tx_list;
 /** An GA transaction */
 struct GA_tx;
 
-/** An view onto a GA transaction */
-struct GA_tx_view;
-
 /** An balance representation */
 struct GA_balance;
 
@@ -110,11 +107,6 @@ int GA_destroy_tx_list(struct GA_tx_list* txs);
  *
  */
 int GA_destroy_tx(const struct GA_tx* tx);
-
-/**
- *
- */
-int GA_destroy_tx_view(const struct GA_tx_view* view);
 
 /**
  *

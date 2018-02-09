@@ -46,13 +46,6 @@ struct GA_tx_list final : public ga::sdk::tx_list {
     }
 };
 
-struct GA_tx_view final : public ga::sdk::tx::tx_view {
-    GA_tx_view(const ga::sdk::tx::tx_view& view = ga::sdk::tx::tx_view())
-        : ga::sdk::tx::tx_view(view)
-    {
-    }
-};
-
 struct GA_balance final : public ga::sdk::balance {
     GA_balance& operator=(const msgpack_object& data)
     {
@@ -134,12 +127,6 @@ int GA_destroy_tx_list(struct GA_tx_list* txs)
 int GA_destroy_tx(const struct GA_tx* tx)
 {
     delete tx;
-    return GA_OK;
-}
-
-int GA_destroy_tx_view(const struct GA_tx_view* view)
-{
-    delete view;
     return GA_OK;
 }
 

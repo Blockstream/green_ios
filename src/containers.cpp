@@ -107,11 +107,11 @@ namespace sdk {
 
         set("received_on", boost::algorithm::join(received_on, ", "));
         set("counterparty", boost::algorithm::join(recipients, ", "));
-        set("fee", boost::lexical_cast<amount::value_type>(as<std::string>(l, "fee")));
-        set("timestamp", as<std::string>(l, "created_at"));
-        set("size", as<size_t>(l, "size"));
-        set("hash", as<std::string>(l, "txhash"));
-        set("instant", as<bool>(l, "instant"));
+        set("fee", boost::lexical_cast<amount::value_type>(get<std::string>("fee")));
+        set("timestamp", get<std::string>("created_at"));
+        set("size", get<size_t>("size"));
+        set("hash", get<std::string>("txhash"));
+        set("instant", get<bool>("instant"));
         set("value", total.value());
         // FIXME; missing replaceable
     }

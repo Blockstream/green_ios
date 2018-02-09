@@ -127,21 +127,6 @@ namespace sdk {
     };
 
     struct tx : public detail::object_container<tx> {
-        struct tx_view {
-            std::vector<std::string> received_on;
-            std::string timestamp;
-            std::string counterparty;
-            std::string hash;
-            std::string double_spent_by;
-            amount value;
-            amount fee;
-            size_t size;
-            transaction_type type;
-            bool instant;
-            bool replaceable;
-            bool is_spent;
-        };
-
         tx& operator=(const msgpack_object& data)
         {
             construct_from(data);
