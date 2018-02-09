@@ -17,116 +17,50 @@ public enum Network: Int32 {
     case TestNet = 2
 }
 
+fileprivate func errorWrapper(_ r: Int32) throws {
+    guard r == GA_OK else {
+        switch r {
+            case GA_RECONNECT:
+                throw GaError.ReconnectError
+            case GA_SESSION_LOST:
+                throw GaError.SessionLost
+            default:
+                throw GaError.GenericError
+        }
+    }
+}
+
+fileprivate func callWrapper(fun call: @autoclosure () -> Int32) throws {
+    try errorWrapper(call())
+}
+
+fileprivate func convertOpaqueJsonToDict(fun call: (OpaquePointer, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: OpaquePointer) throws -> [String: Any]? {
+    var bytes: UnsafeMutablePointer<Int8>? = nil
+    try callWrapper(fun: call(o, &bytes))
+    defer {
+        GA_destroy_string(bytes)
+    }
+
+    var dict: [String: Any]? = nil
+
+    let json = String(cString: bytes!)
+    if let data = json.data(using: .utf8) {
+        do {
+            dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+        }
+        catch {
+            return nil
+        }
+    }
+
+    return dict
+}
+
 public class Transaction {
     public enum TransactionType {
         case Out
         case In
         case Redeposit
-    }
-
-    public class View {
-        var view: OpaquePointer? = nil
-
-        init(tx: OpaquePointer) throws {
-            guard GA_tx_populate_view(tx, &view) == GA_OK else {
-                throw GaError.GenericError
-            }
-        }
-
-        deinit {
-            GA_destroy_tx_view(view)
-        }
-
-        public func getValue() throws -> Int64 {
-            var value: Int64 = 0
-            guard GA_tx_view_get_value(view, &value) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return value;
-        }
-
-        public func getFee() throws -> Int64 {
-            var fee: Int64 = 0
-            guard GA_tx_view_get_fee(view, &fee) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return fee;
-        }
-
-        public func getHash() throws -> String {
-            var bytes: UnsafePointer<Int8>? = nil
-            guard GA_tx_view_get_hash(view, &bytes) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return String(cString: bytes!)
-        }
-
-        public func getCounterparty() throws -> String {
-            var bytes: UnsafePointer<Int8>? = nil
-            guard GA_tx_view_get_counterparty(view, &bytes) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return String(cString: bytes!)
-        }
-
-        public func getDoubleSpentBy() throws -> String {
-            var bytes: UnsafePointer<Int8>? = nil
-            guard GA_tx_view_get_double_spent_by(view, &bytes) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return String(cString: bytes!)
-        }
-
-        public func getInstant() throws -> Bool {
-            var instant: Int32 = 0
-            guard GA_tx_view_get_instant(view, &instant) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return instant != 0
-        }
-
-        public func getReplaceable() throws -> Bool {
-            var replaceable: Int32 = 0
-            guard GA_tx_view_get_replaceable(view, &replaceable) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return replaceable != 0
-        }
-
-        public func getIsSpent() throws -> Bool {
-            var isSpent: Int32 = 0
-            guard GA_tx_view_get_is_spent(view, &isSpent) == GA_OK else {
-                throw GaError.GenericError
-            }
-            return isSpent != 0
-        }
-
-        public func getTimestamp() throws -> Date {
-            var bytes: UnsafePointer<Int8>? = nil
-            guard GA_tx_view_get_timestamp(view, &bytes) == GA_OK else {
-                throw GaError.GenericError
-            }
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH-mm-ss"
-            return dateFormatter.date(from: String(cString: bytes!)) ?? Date()
-        }
-
-        public func getType() throws -> TransactionType {
-            var type: Int32 = 0
-            guard GA_tx_view_get_type(view, &type) == GA_OK else {
-                throw GaError.GenericError
-            }
-            switch type {
-                case 0:
-                    return TransactionType.Out
-                case 1:
-                    return TransactionType.In
-                case 2:
-                    return TransactionType.Redeposit
-                default:
-                    throw GaError.GenericError
-            }
-        }
     }
 
     var tx: OpaquePointer? = nil;
@@ -139,30 +73,13 @@ public class Transaction {
         GA_destroy_tx(tx)
     }
 
-    public func getView() -> View {
-        return try! View(tx: tx!)
+    public func toJSON() throws -> [String: Any]? {
+        return try convertOpaqueJsonToDict(fun: GA_transaction_to_json, o: self.tx!)
     }
 }
 
 public class Session {
     var session: OpaquePointer? = nil
-
-    func errorWrapper(_ r: Int32) throws {
-        guard r == GA_OK else {
-            switch r {
-                case GA_RECONNECT:
-                    throw GaError.ReconnectError
-                case GA_SESSION_LOST:
-                    throw GaError.SessionLost
-                default:
-                    throw GaError.GenericError
-            }
-        }
-    }
-
-    func callWrapper(fun call: @autoclosure () -> Int32) throws {
-        try errorWrapper(call())
-    }
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
@@ -242,28 +159,6 @@ public class Session {
             GA_destroy_string(bytes)
         }
         return String(cString: bytes!)
-    }
-
-    func convertOpaqueJsonToDict(fun call: (OpaquePointer, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: OpaquePointer) throws -> [String: Any]? {
-        var bytes: UnsafeMutablePointer<Int8>? = nil
-        try callWrapper(fun: call(o, &bytes))
-        defer {
-            GA_destroy_string(bytes)
-        }
-
-        var dict: [String: Any]? = nil
-
-        let json = String(cString: bytes!)
-        if let data = json.data(using: .utf8) {
-            do {
-                dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-            }
-            catch {
-                return nil
-            }
-        }
-
-        return dict
     }
 
     public func getBalanceForSubaccount(subaccount: UInt32, numConfs: UInt32) throws -> [String: Any]? {

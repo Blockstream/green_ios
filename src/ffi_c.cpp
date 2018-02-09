@@ -340,99 +340,13 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_tx_list_get_tx, GA_tx_list,
     },
     size_t, i, struct GA_tx**, output);
 
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_populate_view, GA_tx,
-    [](struct GA_tx* tx, struct GA_tx_view** output) {
+GA_SDK_DEFINE_C_FUNCTION_1(GA_transaction_to_json, GA_tx,
+    [](struct GA_tx* tx, char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
-        *output = new GA_tx_view;
-        **output = tx->populate_view();
+        const auto v = tx->get_json();
+        *output = to_c_string(v);
     },
-    struct GA_tx_view**, output);
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_tx_view_get_received_on, GA_tx_view,
-    [](struct GA_tx_view* view, const char** output, size_t count) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        for (size_t i = 0; i < std::min(count, view->received_on.size()); ++i) {
-            output[i] = view->received_on[i].c_str();
-        }
-    },
-    const char**, output, size_t, count);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_counterparty, GA_tx_view,
-    [](struct GA_tx_view* view, const char** output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->counterparty.c_str();
-    },
-    const char**, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_hash, GA_tx_view,
-    [](struct GA_tx_view* view, const char** output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->hash.c_str();
-    },
-    const char**, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_double_spent_by, GA_tx_view,
-    [](struct GA_tx_view* view, const char** output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->double_spent_by.c_str();
-    },
-    const char**, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_value, GA_tx_view,
-    [](struct GA_tx_view* view, int64_t* output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->value.value();
-    },
-    int64_t*, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_fee, GA_tx_view,
-    [](struct GA_tx_view* view, int64_t* output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->fee.value();
-    },
-    int64_t*, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_timestamp, GA_tx_view,
-    [](struct GA_tx_view* view, const char** output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->timestamp.c_str();
-    },
-    const char**, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_size, GA_tx_view,
-    [](struct GA_tx_view* view, size_t* output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->size;
-    },
-    size_t*, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_instant, GA_tx_view,
-    [](struct GA_tx_view* view, int* output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->instant;
-    },
-    int*, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_replaceable, GA_tx_view,
-    [](struct GA_tx_view* view, int* output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->replaceable;
-    },
-    int*, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_is_spent, GA_tx_view,
-    [](struct GA_tx_view* view, int* output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = view->is_spent;
-    },
-    int*, output);
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_tx_view_get_type, GA_tx_view,
-    [](struct GA_tx_view* view, int* output) {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = static_cast<int>(view->type);
-    },
-    int*, output);
+    char**, output);
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_balance_to_json, GA_balance,
     [](struct GA_balance* balance, char** output) {

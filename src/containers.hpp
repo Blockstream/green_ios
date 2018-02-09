@@ -144,11 +144,12 @@ namespace sdk {
 
         tx& operator=(const msgpack_object& data)
         {
-            associate(data);
+            construct_from(data);
             return *this;
         }
 
-        tx_view populate_view() const;
+    private:
+        void construct_from(const msgpack_object& data);
     };
 
     class tx_list : public detail::object_container<tx_list> {

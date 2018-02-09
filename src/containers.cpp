@@ -1,3 +1,4 @@
+#include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "containers.hpp"
@@ -55,13 +56,14 @@ namespace sdk {
         return instant ? min_fee_rate * 3 : min_fee_rate;
     }
 
-    tx::tx_view tx::populate_view() const
+    void tx::construct_from(const msgpack_object& data)
     {
-        std::vector<std::string> received_on;
+        associate(data);
+
         std::vector<std::string> recipients;
+        std::vector<std::string> received_on;
         std::string counterparty;
         amount total;
-        bool is_spent{ true };
 
         const auto l = m_o.get().as<container>();
         const auto eps = l.at("eps").as<std::vector<msgpack::object>>();
@@ -70,72 +72,48 @@ namespace sdk {
 
             const auto is_credit = as<bool>(ep, "is_credit");
             const auto is_relevant = as<bool>(ep, "is_relevant");
+            const auto ad = as<std::string>(ep, "ad");
+            const auto value = as<std::string>(ep, "value");
 
-            const auto address_it = ep.find("ad");
-            const auto value_it = ep.find("value");
-
-            if (is_credit && !is_relevant
-                && (address_it != ep.end() && address_it->second.type != msgpack::type::NIL)) {
-                recipients.push_back(as<std::string>(ep, "ad"));
+            if (is_credit && !is_relevant) {
+                recipients.push_back(ad);
             }
 
             if (!is_relevant) {
                 continue;
             }
 
-            amount value;
-            if (value_it != ep.end() && value_it->second.type != msgpack::type::NIL) {
-                value = boost::lexical_cast<amount::value_type>(value_it->second.as<std::string>());
-            }
+            const amount satoshis = boost::lexical_cast<amount::value_type>(value);
 
             if (!is_credit) {
-                total -= value;
-                continue;
+                total -= satoshis;
+            } else {
+                total += value;
+                // FIXME: confidential transactions
+                received_on.push_back(ad);
             }
-
-            total += value;
-            if (!as<bool>(ep, "is_spent")) {
-                is_spent = false;
-            }
-
-            // FIXME: confidential transactions
-            const auto address = as<std::string>(ep, "ad");
-            received_on.push_back(address);
         }
 
-        tx_view view;
-
         if (total >= 0) {
-            view.type = transaction_type::in;
+            set("type", static_cast<uint8_t>(transaction_type::in));
         } else {
             received_on.clear();
             if (recipients.empty()) {
-                view.type = transaction_type::redeposit;
+                set("type", static_cast<uint8_t>(transaction_type::redeposit));
             } else {
-                view.type = transaction_type::out;
-                if (counterparty.empty()) {
-                    if (!recipients.empty()) {
-                        counterparty = recipients.front();
-                    }
-                }
-                if (recipients.size() > 1) {
-                    counterparty += ", ...";
-                }
+                set("type", static_cast<uint8_t>(transaction_type::out));
             }
         }
 
-        view.received_on = received_on;
-        view.counterparty = counterparty;
-        view.fee = boost::lexical_cast<amount::value_type>(as<std::string>(l, "fee"));
-        view.timestamp = as<std::string>(l, "created_at");
-        view.size = as<size_t>(l, "size");
-        view.hash = as<std::string>(l, "txhash");
-        view.instant = as<bool>(l, "instant");
-        view.value = total;
-        view.is_spent = is_spent;
+        set("received_on", boost::algorithm::join(received_on, ", "));
+        set("counterparty", boost::algorithm::join(recipients, ", "));
+        set("fee", boost::lexical_cast<amount::value_type>(as<std::string>(l, "fee")));
+        set("timestamp", as<std::string>(l, "created_at"));
+        set("size", as<size_t>(l, "size"));
+        set("hash", as<std::string>(l, "txhash"));
+        set("instant", as<bool>(l, "instant"));
+        set("value", total.value());
         // FIXME; missing replaceable
-
-        return view;
     }
 }
 }

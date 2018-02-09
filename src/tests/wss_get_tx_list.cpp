@@ -29,7 +29,6 @@ int main(int argc, char** argv)
         for (auto&& tx : txs) {
             ga::sdk::tx t;
             t = tx;
-            const auto v = t.populate_view();
         }
 
         const auto balance = session.get_balance();

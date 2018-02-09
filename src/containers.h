@@ -73,23 +73,7 @@ int GA_tx_list_get_tx(struct GA_tx_list* txs, size_t i, struct GA_tx** output);
 /**
  *
  */
-int GA_tx_populate_view(struct GA_tx* tx, struct GA_tx_view** output);
-
-/**
- *
- */
-int GA_tx_view_get_received_on(struct GA_tx_view* view, const char** output, size_t count);
-int GA_tx_view_get_counterparty(struct GA_tx_view* view, const char** output);
-int GA_tx_view_get_hash(struct GA_tx_view* view, const char** output);
-int GA_tx_view_get_double_spent_by(struct GA_tx_view* view, const char** output);
-int GA_tx_view_get_value(struct GA_tx_view* view, int64_t* output);
-int GA_tx_view_get_fee(struct GA_tx_view* view, int64_t* output);
-int GA_tx_view_get_timestamp(struct GA_tx_view* view, const char** output);
-int GA_tx_view_get_size(struct GA_tx_view* view, size_t* output);
-int GA_tx_view_get_instant(struct GA_tx_view* view, int* output);
-int GA_tx_view_get_replaceable(struct GA_tx_view* view, int* output);
-int GA_tx_view_get_is_spent(struct GA_tx_view* view, int* output);
-int GA_tx_view_get_type(struct GA_tx_view* view, int* output);
+int GA_transaction_to_json(struct GA_tx* balance, char** output);
 
 /**
  *
