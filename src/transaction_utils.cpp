@@ -1,3 +1,5 @@
+#include <wally_script.h>
+
 #include "transaction_utils.hpp"
 #include "assertion.hpp"
 #include "utils.hpp"
@@ -65,17 +67,11 @@ namespace sdk {
 
     std::array<unsigned char, HASH160_LEN + 1> create_p2wsh_script(const std::vector<unsigned char>& script_bytes)
     {
-        std::array<unsigned char, SHA256_LEN> script{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(
-            wally_sha256(script_bytes.data(), script_bytes.size(), script.data(), script.size()) == WALLY_OK);
-
-        std::array<unsigned char, 1 + 1 + SHA256_LEN> q{ { 0 } };
-        unsigned char* s = q.data();
+        std::array<unsigned char, SHA256_LEN + 1> script{ { 0 } };
         size_t written{ 0 };
-        GA_SDK_RUNTIME_ASSERT(script_encode_small_num(0, s, 1, &written) == WALLY_OK);
-        s += written;
-        GA_SDK_RUNTIME_ASSERT(
-            script_encode_data(script.data(), script.size(), s, q.size() - written, &written) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_witness_program_from_bytes(script_bytes.data(), script_bytes.size(),
+                                  WALLY_SCRIPT_SHA256, script.data(), script.size(), &written)
+            == WALLY_OK);
 
         std::array<unsigned char, HASH160_LEN + 1> sc{ { 0 } };
         sc[0] = 196;
