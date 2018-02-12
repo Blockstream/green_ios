@@ -16,4 +16,4 @@ rm ndk.zip
 apt-get remove --purge unzip -yqq
 apt-get -yqq autoremove
 apt-get -yqq clean
-rm -rf /var/lib/apt/lists/* /var/cache/* /tmp/* /usr/share/locale/* /usr/share/man /usr/share/doc /lib/xtables/libip6*
+rm -rf /var/lib/apt/lists/* /var/cache/* /tmp/* /usr/share/locale/* /usr/share/man /usr/share/doc /lib/xtables/libip6* /root/.cache
