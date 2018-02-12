@@ -114,8 +114,11 @@ namespace sdk {
         {
             // FIXME: these options need to be checked.
             boost::get<std::shared_ptr<T>>(m_client)->set_tls_init_handler([](websocketpp::connection_hdl) {
-                context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv1);
+                context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
                 ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2
+                    | boost::asio::ssl::context::no_sslv3
+                    | boost::asio::ssl::context::no_tlsv1
+                    | boost::asio::ssl::context::no_tlsv1_1
                     | boost::asio::ssl::context::single_dh_use);
                 return ctx;
             });
