@@ -23,7 +23,7 @@ if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_fami
     add_project_arguments(['-flto'], language : 'cpp')
     add_project_link_arguments(['-flto'], language : 'cpp')
     if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
-        add_project_link_arguments(['-fuse-ld=gold'], language : 'cpp')
+        add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
     endif
 endif
 

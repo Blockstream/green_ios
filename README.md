@@ -7,14 +7,14 @@
 For Debian Stretch:
 
 * sudo apt-get update && sudo apt-get install build-essential python3-pip ninja-build clang wget autoconf pkg-config libtool swig (optional)
-* sudo pip3 install meson or pip3 install --user meson
+* sudo pip3 install -r tools/requirements.txt or pip3 install --user -r tools/requirements.txt
 
 For Mac OSX:
 
 Install Xcode and brew if not installed, then
 
 * brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config swig (optional)
-* pip3 install --user meson
+* pip3 install --user -r tools/requirements.txt
 * xcode-select --install
 
 You may also need to change your PATH environment variable to add $HOME/Library/Python/3.6/bin
@@ -67,7 +67,7 @@ This doesn't require any of the previous steps but requires docker installed; it
 
 or if you don't want to build it locally
 
-* docker pull greenaddress/ci@sha256:9cef60dc4555ae6d510b758bdabcc2e022c9010dbb72e5528745bf59634772c3
+* docker pull greenaddress/ci@sha256:d9f628bdfad8159aafd38139f6de91fa1040f3378ccb813893888dde5d80d13f
 * docker run -v $PWD:/sdk greenaddress/ci
 
 in both cases (built or fetched) this will build the sdk with clang by default
