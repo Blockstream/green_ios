@@ -123,7 +123,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
         if [ ! -f "build-clang-$1-$2/build.ninja" ]; then
             rm -rf build-clang-$1-$2/meson-private
             if [ ! -f "build-clang-$1-$2/toolchain" ]; then
-                $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $SDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
+                $ANDROID_NDK/build/tools/make_standalone_toolchain.py --stl libc++ --arch $SDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
             fi
             export SDK_PLATFORM=$(basename $(find $bld_root/toolchain/ -maxdepth 1 -type d -name "*linux-android*"))
             export AR="$bld_root/toolchain/bin/$SDK_PLATFORM-ar"

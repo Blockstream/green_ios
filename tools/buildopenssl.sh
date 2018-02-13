@@ -9,7 +9,8 @@ if [ \( "$1" = "--ndk" \) ]; then
         sed -i 's/-mandroid//g' ${MESON_BUILD_ROOT}/openssl-1.0.2m/Configure
     fi
     . ${MESON_SOURCE_ROOT}/tools/env.sh
-    ./Configure android --prefix="$openssl_prefix" no-krb5 no-shared
+    ./Configure android --prefix="$openssl_prefix" no-krb5 no-shared no-dso
+    sed -ie "s!-ldl!!" "Makefile"
     make depend
     make 2> /dev/null
     make install_sw

@@ -1,6 +1,6 @@
 add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
 foreach libdir : subproject_libdirs
-    add_project_link_arguments(['-Wl,-rpath,' + libdir], language : 'cpp')
+    add_project_link_arguments(['-Wl,-rpath,' + libdir, '-L' + libdir], language : 'cpp')
 endforeach
 
 sources = ['amount.hpp',
