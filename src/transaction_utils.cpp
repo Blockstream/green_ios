@@ -75,7 +75,7 @@ namespace sdk {
 
         std::array<unsigned char, HASH160_LEN + 1> sc{ { 0 } };
         sc[0] = 196;
-        GA_SDK_RUNTIME_ASSERT(wally_hash160(q.data(), q.size(), sc.data() + 1, HASH160_LEN) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_hash160(script.data(), script.size(), sc.data() + 1, HASH160_LEN) == WALLY_OK);
 
         return sc;
     }
