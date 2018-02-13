@@ -43,8 +43,8 @@ int main(int argc, char** argv)
         ga::sdk::http_jsonrpc_client rpc;
         const auto send_request = rpc.make_send_to_address(address_1.get<std::string>("p2wsh"), "2");
         std::cerr << "p2sh " << send_request << std::endl;
-        // rpc.sync_post("127.0.0.1", "19001", send_request);
-        // rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
+        rpc.sync_post("127.0.0.1", "19001", send_request);
+        rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
 
         std::cerr << address_2.get<std::string>("p2wsh") << std::endl;
         session_1.send({ { address_2.get<std::string>("p2wsh"), 100000 } }, 1000);

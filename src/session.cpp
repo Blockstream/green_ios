@@ -742,6 +742,7 @@ namespace sdk {
             = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN, EC_SIGNATURE_DER_MAX_LEN } }, 2, out_script);
 
         const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
+        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct wally_tx_input* tx_in{ nullptr };
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
@@ -752,13 +753,13 @@ namespace sdk {
             GA_SDK_RUNTIME_ASSERT(
                 wally_tx_witness_stack_add(witness_stack, in_script.data(), in_script.size()) == WALLY_OK);
             const auto script_bytes = witness_script(out_script);
-            GA_SDK_RUNTIME_ASSERT(wally_tx_input_init_alloc(txhash_bytes.data(), txhash_bytes.size(), index,
+            GA_SDK_RUNTIME_ASSERT(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
                                       is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(),
                                       script_bytes.size(), witness_stack, &tx_in)
                 == WALLY_OK);
         } else {
             GA_SDK_RUNTIME_ASSERT(
-                wally_tx_input_init_alloc(txhash_bytes.data(), txhash_bytes.size(), index,
+                wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
                     is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in)
                 == WALLY_OK);
         }
@@ -778,9 +779,10 @@ namespace sdk {
         const auto out_script = output_script(subaccount, pointer);
 
         const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
+        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct wally_tx_input* tx_in{ nullptr };
         GA_SDK_RUNTIME_ASSERT(
-            wally_tx_input_init_alloc(txhash_bytes.data(), txhash_bytes.size(), index,
+            wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, out_script.data(), out_script.size(), nullptr, &tx_in)
             == WALLY_OK);
 
@@ -833,13 +835,13 @@ namespace sdk {
             GA_SDK_RUNTIME_ASSERT(
                 wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1) == WALLY_OK);
             const auto script_bytes = witness_script(out_script);
-            GA_SDK_RUNTIME_ASSERT(wally_tx_input_init_alloc(txhash_bytes.data(), txhash_bytes.size(), index,
+            GA_SDK_RUNTIME_ASSERT(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
                                       is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(),
                                       script_bytes.size(), witness_stack, &tx_in)
                 == WALLY_OK);
         } else {
             GA_SDK_RUNTIME_ASSERT(
-                wally_tx_input_init_alloc(txhash_bytes.data(), txhash_bytes.size(), index,
+                wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
                     is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in)
                 == WALLY_OK);
         }
@@ -945,8 +947,8 @@ namespace sdk {
             }
 
             {
-                const auto change_address = get_receive_address(address_type::p2wsh, 0);
-                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
+                const auto change_address = get_receive_address(address_type::p2sh, 0);
+                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2sh"));
                 change_output
                     = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
                 outputs.emplace_back(change_output);
@@ -981,7 +983,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
                                   const_cast<const struct wally_tx**>(&raw_tx_out))
             == WALLY_OK);
-        for (auto&& in : inputs) {
+        for (auto&& in : signed_inputs) {
             GA_SDK_RUNTIME_ASSERT(wally_tx_add_input(raw_tx_out, in) == WALLY_OK);
         }
         for (auto&& out : outputs) {

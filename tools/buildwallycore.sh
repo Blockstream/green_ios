@@ -42,6 +42,8 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     make -o configure -j$NUM_JOBS
     make -o configure install
 else
+    export CFLAGS="$SDK_CFLAGS -fPIC"
+
     ./configure --$ENABLE_SWIG_JAVA --host=$HOST_OS -enable-static --disable-shared --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
 
     make -j$NUM_JOBS

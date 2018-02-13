@@ -1,7 +1,7 @@
 #include <wally_script.h>
 
-#include "transaction_utils.hpp"
 #include "assertion.hpp"
+#include "transaction_utils.hpp"
 #include "utils.hpp"
 
 namespace ga {
@@ -88,11 +88,11 @@ namespace sdk {
 
         std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
         unsigned char* p = script.data();
-        GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_HASH160, p, 1, &written) == WALLY_OK);
+        *p++ = OP_HASH160;
+        GA_SDK_RUNTIME_ASSERT(
+            wally_script_push_from_bytes(sc.data() + 1, HASH160_LEN, 0, p, HASH160_LEN + 1, &written) == WALLY_OK);
         p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_data(sc.data() + 1, HASH160_LEN, p, HASH160_LEN + 1, &written) == WALLY_OK);
-        p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_EQUAL, p, 1, &written) == WALLY_OK);
+        *p = OP_EQUAL;
 
         return script;
     }
@@ -103,12 +103,12 @@ namespace sdk {
         size_t written{ 0 };
         std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
         unsigned char* p = script.data();
-        GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_HASH160, p, 1, &written) == WALLY_OK);
-        p += written;
+        *p++ = OP_HASH160;
         GA_SDK_RUNTIME_ASSERT(
-            script_encode_data(script_hash.data() + 1, HASH160_LEN, p, HASH160_LEN, &written) == WALLY_OK);
+            wally_script_push_from_bytes(script_hash.data() + 1, HASH160_LEN, 0, p, HASH160_LEN + 1, &written)
+            == WALLY_OK);
         p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_EQUAL, p, 1, &written) == WALLY_OK);
+        *p = OP_EQUAL;
 
         return script;
     }
@@ -125,23 +125,21 @@ namespace sdk {
         //
 
         std::vector<unsigned char> script;
-        script.resize(5 + sizeof(server_pub_key->pub_key) + sizeof(client_pub_key->pub_key));
+        script.resize(5 + sizeof server_pub_key->pub_key + sizeof client_pub_key->pub_key);
         unsigned char* p = script.data();
 
-        size_t written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_small_num(2, p, 1, &written) == WALLY_OK);
-        p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_data(server_pub_key->pub_key, sizeof server_pub_key->pub_key, p,
-                                  sizeof server_pub_key->pub_key + 1, &written)
+        size_t written{ 0 };
+        *p++ = OP_2;
+        GA_SDK_RUNTIME_ASSERT(wally_script_push_from_bytes(server_pub_key->pub_key, sizeof server_pub_key->pub_key, 0,
+                                  p, sizeof server_pub_key->pub_key + 1, &written)
             == WALLY_OK);
         p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_data(client_pub_key->pub_key, sizeof client_pub_key->pub_key, p,
-                                  sizeof client_pub_key->pub_key + 1, &written)
+        GA_SDK_RUNTIME_ASSERT(wally_script_push_from_bytes(client_pub_key->pub_key, sizeof client_pub_key->pub_key, 0,
+                                  p, sizeof client_pub_key->pub_key + 1, &written)
             == WALLY_OK);
         p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_small_num(2, p, 1, &written) == WALLY_OK);
-        p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_op(OP_CHECKMULTISIG, p, 1, &written) == WALLY_OK);
+        *p++ = OP_2;
+        *p = OP_CHECKMULTISIG;
 
         return script;
     }
@@ -157,20 +155,18 @@ namespace sdk {
 
         unsigned char* p = script.data();
 
-        size_t written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_small_num(0, p, 1, &written) == WALLY_OK);
-        p += written;
-        *p = 1;
-        p += written;
-        GA_SDK_RUNTIME_ASSERT(script_encode_small_num(0, p, 1, &written) == WALLY_OK);
-        p += written;
+        size_t written{ 0 };
+        *p++ = OP_0;
+        *p++ = 1;
+        *p++ = OP_0;
         for (size_t i = 0; i < num_sigs; ++i) {
             GA_SDK_RUNTIME_ASSERT(
-                script_encode_data(sigs[i].data(), sigs_size[i], p, sigs_size[i] + 1, &written) == WALLY_OK);
+                wally_script_push_from_bytes(sigs[i].data(), sigs_size[i], 0, p, sigs_size[i] + 1, &written)
+                == WALLY_OK);
             p += written;
         }
-        GA_SDK_RUNTIME_ASSERT(
-            script_encode_data(output_script.data(), output_script.size(), p, output_script.size() + 1, &written)
+        GA_SDK_RUNTIME_ASSERT(wally_script_push_from_bytes(
+                                  output_script.data(), output_script.size(), 0, p, output_script.size() + 1, &written)
             == WALLY_OK);
         return script;
     }
