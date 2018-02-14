@@ -530,13 +530,13 @@ namespace sdk {
         const auto script = address.get<std::string>("script");
         const auto script_bytes = bytes_from_hex(script.c_str(), script.length());
 
-        const auto sc
-            = addr_type == address_type::p2sh ? create_p2sh_script(script_bytes) : create_p2wsh_script(script_bytes);
+        const auto sc = addr_type == address_type::p2sh ? p2sh_address_from_bytes(script_bytes)
+                                                        : create_p2wsh_script(script_bytes);
 
         const auto pointer = address.get<int>("pointer");
         const auto multisig = output_script(subaccount, pointer);
         const auto sc_multisig
-            = addr_type == address_type::p2sh ? create_p2sh_script(multisig) : create_p2wsh_script(multisig);
+            = addr_type == address_type::p2sh ? p2sh_address_from_bytes(multisig) : create_p2wsh_script(multisig);
 
         GA_SDK_RUNTIME_ASSERT(sc == sc_multisig);
 

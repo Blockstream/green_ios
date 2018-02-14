@@ -56,7 +56,7 @@ namespace sdk {
         return derive_key(server_pub_key, pointer, true);
     }
 
-    std::array<unsigned char, HASH160_LEN + 1> create_p2sh_script(const std::vector<unsigned char>& script_bytes)
+    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script_bytes)
     {
         std::array<unsigned char, HASH160_LEN + 1> script{ { 0 } };
         script[0] = 196;
