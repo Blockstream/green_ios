@@ -531,12 +531,12 @@ namespace sdk {
         const auto script_bytes = bytes_from_hex(script.c_str(), script.length());
 
         const auto sc = addr_type == address_type::p2sh ? p2sh_address_from_bytes(script_bytes)
-                                                        : create_p2wsh_script(script_bytes);
+                                                        : p2wsh_address_from_bytes(script_bytes);
 
         const auto pointer = address.get<int>("pointer");
         const auto multisig = output_script(subaccount, pointer);
         const auto sc_multisig
-            = addr_type == address_type::p2sh ? p2sh_address_from_bytes(multisig) : create_p2wsh_script(multisig);
+            = addr_type == address_type::p2sh ? p2sh_address_from_bytes(multisig) : p2wsh_address_from_bytes(multisig);
 
         GA_SDK_RUNTIME_ASSERT(sc == sc_multisig);
 

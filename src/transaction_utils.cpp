@@ -65,7 +65,7 @@ namespace sdk {
         return script;
     }
 
-    std::array<unsigned char, HASH160_LEN + 1> create_p2wsh_script(const std::vector<unsigned char>& script_bytes)
+    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script_bytes)
     {
         std::array<unsigned char, SHA256_LEN + 1> script{ { 0 } };
         size_t written{ 0 };

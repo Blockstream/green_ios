@@ -30,7 +30,7 @@ namespace sdk {
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net);
 
     std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
-    std::array<unsigned char, HASH160_LEN + 1> create_p2wsh_script(const std::vector<unsigned char>& script_bytes);
+    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
     std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address);
     std::array<unsigned char, HASH160_LEN + 3> output_script(
         const std::array<unsigned char, HASH160_LEN + 1>& script_hash);
