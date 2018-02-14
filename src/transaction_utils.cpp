@@ -87,12 +87,9 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(wally_base58_to_bytes(address.c_str(), 0, sc.data(), sc.size(), &written) == WALLY_OK);
 
         std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
-        unsigned char* p = script.data();
-        *p++ = OP_HASH160;
         GA_SDK_RUNTIME_ASSERT(
-            wally_script_push_from_bytes(sc.data() + 1, HASH160_LEN, 0, p, HASH160_LEN + 1, &written) == WALLY_OK);
-        p += written;
-        *p = OP_EQUAL;
+            wally_scriptpubkey_p2sh_from_bytes(sc.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written)
+            == WALLY_OK);
 
         return script;
     }
@@ -102,13 +99,10 @@ namespace sdk {
     {
         size_t written{ 0 };
         std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
-        unsigned char* p = script.data();
-        *p++ = OP_HASH160;
-        GA_SDK_RUNTIME_ASSERT(
-            wally_script_push_from_bytes(script_hash.data() + 1, HASH160_LEN, 0, p, HASH160_LEN + 1, &written)
+
+        GA_SDK_RUNTIME_ASSERT(wally_scriptpubkey_p2sh_from_bytes(
+                                  script_hash.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written)
             == WALLY_OK);
-        p += written;
-        *p = OP_EQUAL;
 
         return script;
     }
