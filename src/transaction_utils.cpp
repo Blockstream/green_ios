@@ -94,19 +94,6 @@ namespace sdk {
         return script;
     }
 
-    std::array<unsigned char, HASH160_LEN + 3> output_script(
-        const std::array<unsigned char, HASH160_LEN + 1>& script_hash)
-    {
-        size_t written{ 0 };
-        std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
-
-        GA_SDK_RUNTIME_ASSERT(wally_scriptpubkey_p2sh_from_bytes(
-                                  script_hash.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written)
-            == WALLY_OK);
-
-        return script;
-    }
-
     std::vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,
         const std::string& deposit_pub_key, const std::string& gait_path, uint32_t subaccount, uint32_t pointer,
         bool main_net)
