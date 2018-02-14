@@ -39,10 +39,10 @@ namespace sdk {
         const auto gait_path_bytes = bytes_from_hex(gait_path.c_str(), gait_path.size());
 
         std::vector<uint32_t> path(32 + (subaccount == 0 ? 1 : 2));
+        path[0] = subaccount == 0 ? 1 : 3;
         adjacent_transform(gait_path_bytes.begin(), gait_path_bytes.end(), path.begin() + 1,
             [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
-        path[0] = subaccount == 0 ? 1 : 3;
         if (subaccount != 0) {
             path.back() = subaccount;
         }
