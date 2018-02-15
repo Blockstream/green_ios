@@ -155,12 +155,10 @@ namespace sdk {
     std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes)
     {
         std::array<unsigned char, 3 + SHA256_LEN> script{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(
-            wally_sha256(script_bytes.data(), script_bytes.size(), script.data() + 3, SHA256_LEN) == WALLY_OK);
-
         script[0] = 0x22;
         script[1] = 0x00;
         script[2] = 0x20;
+        GA_SDK_VERIFY(wally_sha256(script_bytes.data(), script_bytes.size(), script.data() + 3, SHA256_LEN));
 
         return script;
     }

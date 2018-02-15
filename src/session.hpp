@@ -133,6 +133,8 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
 
+        std::vector<unsigned char> make_raw_tx();
+
         bool send(
             const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all = false);
 

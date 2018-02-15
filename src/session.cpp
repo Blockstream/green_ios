@@ -787,12 +787,11 @@ namespace sdk {
             == WALLY_OK);
 
         struct wally_tx* raw_tx_out = nullptr;
-        GA_SDK_RUNTIME_ASSERT(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, 1, outputs.size(),
-                                  const_cast<const struct wally_tx**>(&raw_tx_out))
-            == WALLY_OK);
-        GA_SDK_RUNTIME_ASSERT(wally_tx_add_input(raw_tx_out, tx_in) == WALLY_OK);
+        GA_SDK_VERIFY(wally_tx_init_alloc(
+            WALLY_TX_VERSION_2, block_height, 1, outputs.size(), const_cast<const struct wally_tx**>(&raw_tx_out)));
+        GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, tx_in));
         for (auto&& out : outputs) {
-            GA_SDK_RUNTIME_ASSERT(wally_tx_add_output(raw_tx_out, out) == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_add_output(raw_tx_out, out));
         }
 
         size_t written{ 0 };

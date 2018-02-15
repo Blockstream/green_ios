@@ -15,7 +15,6 @@ if [ "x$JAVA_HOME" != "x" ]; then
 fi
 
 cd "${MESON_BUILD_ROOT}/libwally-core"
-cp "${MESON_SOURCE_ROOT}/tools/Makefile.am" "${MESON_BUILD_ROOT}/libwally-core/src"
 ./tools/cleanup.sh
 ./tools/autogen.sh
 
