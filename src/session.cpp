@@ -48,6 +48,20 @@ namespace sdk {
 
             return repr;
         }
+
+        std::vector<unsigned char> tx_to_bytes(struct wally_tx* tx)
+        {
+            std::vector<unsigned char> bytes(1024);
+            bool complete = false;
+
+            while (!complete) {
+                size_t written;
+                GA_SDK_VERIFY(wally::tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, bytes, &written));
+                complete = written <= bytes.size();
+                bytes.resize(written);
+            }
+            return bytes;
+        }
     }
 
     struct event_loop_controller {
@@ -979,17 +993,8 @@ namespace sdk {
             GA_SDK_RUNTIME_ASSERT(wally_tx_add_output(raw_tx_out, out) == WALLY_OK);
         }
 
-        size_t ser_siz{ 0 };
-        GA_SDK_RUNTIME_ASSERT(wally_tx_get_length(raw_tx_out, WALLY_TX_FLAG_USE_WITNESS, &ser_siz) == WALLY_OK);
-
-        size_t written{ 0 };
-        std::vector<unsigned char> tx_ser;
-        tx_ser.resize(ser_siz);
-        GA_SDK_RUNTIME_ASSERT(
-            wally_tx_to_bytes(raw_tx_out, WALLY_TX_FLAG_USE_WITNESS, tx_ser.data(), ser_siz, &written) == WALLY_OK);
-
-        auto raw_tx_hex = hex_from_bytes(tx_ser.data(), ser_siz);
-        auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(std::string(raw_tx_hex.get())))
+        auto tx_hex = hex_from_bytes(tx_to_bytes(raw_tx_out));
+        auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(tx_hex.get()))
                       .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         fn.get();
