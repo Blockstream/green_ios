@@ -796,17 +796,9 @@ namespace sdk {
 
         size_t written{ 0 };
 
-        size_t ser_siz;
-        GA_SDK_RUNTIME_ASSERT(wally_tx_get_length(raw_tx_out, WALLY_TX_FLAG_USE_WITNESS, &ser_siz) == WALLY_OK);
-        std::vector<unsigned char> tx_ser;
-        tx_ser.resize(ser_siz + 4);
-        GA_SDK_RUNTIME_ASSERT(
-            wally_tx_to_bytes(raw_tx_out, WALLY_TX_FLAG_USE_WITNESS, tx_ser.data(), ser_siz, &written) == WALLY_OK);
-        uint32_t flags = cpu_to_le32(0x000000ff & 1);
-        memcpy(tx_ser.data() + ser_siz, (const unsigned char*)&flags, sizeof(uint32_t));
-
         std::array<unsigned char, SHA256_LEN> tx_hash;
-        GA_SDK_RUNTIME_ASSERT(wally_sha256d(tx_ser.data(), tx_ser.size(), tx_hash.data(), tx_hash.size()) == WALLY_OK);
+        GA_SDK_VERIFY(wally_tx_hash_for_signature(
+            raw_tx_out, 0, out_script.data(), out_script.size(), WALLY_TX_FLAG_SIGHASH_ALL, tx_hash.data(), tx_hash.size(), &written));
 
         const auto client_priv_key = derive_key(m_master_key, { 1, pointer }, false);
 

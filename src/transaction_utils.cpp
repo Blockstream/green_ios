@@ -7,7 +7,7 @@
 namespace ga {
 namespace sdk {
 
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t child, bool public_)
+    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, uint32_t child, bool public_)
     {
         const ext_key* p = nullptr;
         GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_alloc(key.get(), child,
@@ -17,7 +17,7 @@ namespace sdk {
     }
 
     wally_ext_key_ptr derive_key(
-        const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path, bool public_)
+        const wally_ext_key_ptr& key, std::pair<uint32_t, uint32_t> path, bool public_)
     {
         return derive_key(derive_key(key, path.first, public_), path.second, public_);
     }
@@ -105,24 +105,20 @@ namespace sdk {
         // FIXME: needs code for subaccounts
         //
 
-        std::vector<unsigned char> script;
-        script.resize(5 + sizeof server_pub_key->pub_key + sizeof client_pub_key->pub_key);
-        unsigned char* p = script.data();
+        std::vector<unsigned char> keys;
+        keys.resize(sizeof server_pub_key->pub_key + sizeof client_pub_key->pub_key);
+        std::copy(server_pub_key->pub_key, server_pub_key->pub_key + sizeof server_pub_key->pub_key, keys.begin());
+        std::copy(client_pub_key->pub_key, client_pub_key->pub_key + sizeof client_pub_key->pub_key,
+            keys.begin() + sizeof server_pub_key->pub_key);
+
+        std::vector<unsigned char> multisig;
+        multisig.resize(5 + sizeof server_pub_key->pub_key + sizeof client_pub_key->pub_key);
 
         size_t written{ 0 };
-        *p++ = OP_2;
-        GA_SDK_RUNTIME_ASSERT(wally_script_push_from_bytes(server_pub_key->pub_key, sizeof server_pub_key->pub_key, 0,
-                                  p, sizeof server_pub_key->pub_key + 1, &written)
-            == WALLY_OK);
-        p += written;
-        GA_SDK_RUNTIME_ASSERT(wally_script_push_from_bytes(client_pub_key->pub_key, sizeof client_pub_key->pub_key, 0,
-                                  p, sizeof client_pub_key->pub_key + 1, &written)
-            == WALLY_OK);
-        p += written;
-        *p++ = OP_2;
-        *p = OP_CHECKMULTISIG;
+        GA_SDK_VERIFY(wally_scriptpubkey_multisig_from_bytes(
+            keys.data(), keys.size(), 2, 0, multisig.data(), multisig.size(), &written));
 
-        return script;
+        return multisig;
     }
 
     std::vector<unsigned char> input_script(
