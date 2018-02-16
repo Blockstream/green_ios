@@ -26,8 +26,8 @@ namespace sdk {
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net)
     {
         // FIXME: cache the top level keys
-        const auto dcc_bytes = bytes_from_hex(chain_code.c_str(), chain_code.size());
-        const auto dpk_bytes = bytes_from_hex(pub_key.c_str(), pub_key.size());
+        const auto dcc_bytes = bytes_from_hex(chain_code);
+        const auto dpk_bytes = bytes_from_hex(pub_key);
 
         const ext_key* p = nullptr;
         GA_SDK_RUNTIME_ASSERT(
@@ -36,7 +36,7 @@ namespace sdk {
             == WALLY_OK);
         wally_ext_key_ptr server_pub_key(p, &bip32_key_free);
 
-        const auto gait_path_bytes = bytes_from_hex(gait_path.c_str(), gait_path.size());
+        const auto gait_path_bytes = bytes_from_hex(gait_path);
 
         std::vector<uint32_t> path(32 + (subaccount == 0 ? 1 : 2));
         path[0] = subaccount == 0 ? 1 : 3;

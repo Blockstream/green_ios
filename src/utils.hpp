@@ -87,8 +87,13 @@ namespace sdk {
     using wally_string_ptr = std::unique_ptr<char, decltype(&wally_free_string)>;
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz);
+    inline wally_string_ptr hex_from_bytes(const std::vector<unsigned char>& bytes)
+    {
+        return hex_from_bytes(bytes.data(), bytes.size());
+    }
 
     std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
+    inline auto bytes_from_hex(const std::string& hex) { return bytes_from_hex(hex.data(), hex.size()); }
 
     std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
         const std::string& mnemonic, const std::string& lang);

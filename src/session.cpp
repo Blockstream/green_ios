@@ -527,8 +527,7 @@ namespace sdk {
 
         fn.get();
 
-        const auto script = address.get<std::string>("script");
-        const auto script_bytes = bytes_from_hex(script.c_str(), script.length());
+        const auto script_bytes = bytes_from_hex(address.get<std::string>("script"));
 
         const auto sc = addr_type == address_type::p2sh ? p2sh_address_from_bytes(script_bytes)
                                                         : p2wsh_address_from_bytes(script_bytes);
@@ -672,8 +671,7 @@ namespace sdk {
     {
         const auto password = get_pin_password(pin, pin_identifier_and_secret.first);
 
-        auto secret_bytes
-            = bytes_from_hex(pin_identifier_and_secret.second.c_str(), pin_identifier_and_secret.second.size());
+        auto secret_bytes = bytes_from_hex(pin_identifier_and_secret.second);
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
         GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()),
@@ -741,7 +739,7 @@ namespace sdk {
         const auto in_script
             = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN, EC_SIGNATURE_DER_MAX_LEN } }, 2, out_script);
 
-        const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
+        const auto txhash_bytes = bytes_from_hex(txhash);
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct wally_tx_input* tx_in{ nullptr };
 
@@ -778,7 +776,7 @@ namespace sdk {
 
         const auto out_script = output_script(subaccount, pointer);
 
-        const auto txhash_bytes = bytes_from_hex(txhash.c_str(), txhash.length());
+        const auto txhash_bytes = bytes_from_hex(txhash);
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct wally_tx_input* tx_in{ nullptr };
         GA_SDK_RUNTIME_ASSERT(
