@@ -10,9 +10,9 @@ namespace sdk {
     wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, uint32_t child, bool public_)
     {
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_alloc(key.get(), child,
-                                  (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH, &p)
-            == WALLY_OK);
+        GA_SDK_VERIFY(bip32_key_from_parent_alloc(
+            key.get(), child, (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH, &p));
+
         return wally_ext_key_ptr(p, &bip32_key_free);
     }
 
@@ -30,10 +30,10 @@ namespace sdk {
         const auto dpk_bytes = bytes_from_hex(pub_key);
 
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(
+        GA_SDK_VERIFY(
             bip32_key_init_alloc(main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC, 0, 0, dcc_bytes.data(),
-                dcc_bytes.size(), dpk_bytes.data(), dpk_bytes.size(), nullptr, 0, nullptr, 0, nullptr, 0, &p)
-            == WALLY_OK);
+                dcc_bytes.size(), dpk_bytes.data(), dpk_bytes.size(), nullptr, 0, nullptr, 0, nullptr, 0, &p));
+
         wally_ext_key_ptr server_pub_key(p, &bip32_key_free);
 
         const auto gait_path_bytes = bytes_from_hex(gait_path);
@@ -48,9 +48,9 @@ namespace sdk {
         }
 
         const ext_key* q = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(server_pub_key.get(), path.data(), path.size(),
-                                  BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH, &q)
-            == WALLY_OK);
+        GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
+            server_pub_key.get(), path.data(), path.size(), BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH, &q));
+
         server_pub_key = wally_ext_key_ptr(q, &bip32_key_free);
 
         return derive_key(server_pub_key, pointer, true);
@@ -60,8 +60,7 @@ namespace sdk {
     {
         std::array<unsigned char, HASH160_LEN + 1> script{ { 0 } };
         script[0] = 196;
-        GA_SDK_RUNTIME_ASSERT(
-            wally_hash160(script_bytes.data(), script_bytes.size(), script.data() + 1, HASH160_LEN) == WALLY_OK);
+        GA_SDK_VERIFY(wally_hash160(script_bytes.data(), script_bytes.size(), script.data() + 1, HASH160_LEN));
         return script;
     }
 
@@ -69,13 +68,12 @@ namespace sdk {
     {
         std::array<unsigned char, SHA256_LEN + 1> script{ { 0 } };
         size_t written{ 0 };
-        GA_SDK_RUNTIME_ASSERT(wally_witness_program_from_bytes(script_bytes.data(), script_bytes.size(),
-                                  WALLY_SCRIPT_SHA256, script.data(), script.size(), &written)
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_witness_program_from_bytes(
+            script_bytes.data(), script_bytes.size(), WALLY_SCRIPT_SHA256, script.data(), script.size(), &written));
 
         std::array<unsigned char, HASH160_LEN + 1> sc{ { 0 } };
         sc[0] = 196;
-        GA_SDK_RUNTIME_ASSERT(wally_hash160(script.data(), script.size(), sc.data() + 1, HASH160_LEN) == WALLY_OK);
+        GA_SDK_VERIFY(wally_hash160(script.data(), script.size(), sc.data() + 1, HASH160_LEN));
 
         return sc;
     }
@@ -84,12 +82,11 @@ namespace sdk {
     {
         std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc{ { 0 } };
         size_t written{ 0 };
-        GA_SDK_RUNTIME_ASSERT(wally_base58_to_bytes(address.c_str(), 0, sc.data(), sc.size(), &written) == WALLY_OK);
+        GA_SDK_VERIFY(wally_base58_to_bytes(address.c_str(), 0, sc.data(), sc.size(), &written));
 
         std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(
-            wally_scriptpubkey_p2sh_from_bytes(sc.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written)
-            == WALLY_OK);
+        GA_SDK_VERIFY(
+            wally_scriptpubkey_p2sh_from_bytes(sc.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written));
 
         return script;
     }
@@ -137,14 +134,11 @@ namespace sdk {
         *p++ = 1;
         *p++ = OP_0;
         for (size_t i = 0; i < num_sigs; ++i) {
-            GA_SDK_RUNTIME_ASSERT(
-                wally_script_push_from_bytes(sigs[i].data(), sigs_size[i], 0, p, sigs_size[i] + 1, &written)
-                == WALLY_OK);
+            GA_SDK_VERIFY(wally_script_push_from_bytes(sigs[i].data(), sigs_size[i], 0, p, sigs_size[i] + 1, &written));
             p += written;
         }
-        GA_SDK_RUNTIME_ASSERT(wally_script_push_from_bytes(
-                                  output_script.data(), output_script.size(), 0, p, output_script.size() + 1, &written)
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_script_push_from_bytes(
+            output_script.data(), output_script.size(), 0, p, output_script.size() + 1, &written));
         return script;
     }
 

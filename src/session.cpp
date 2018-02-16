@@ -235,22 +235,19 @@ namespace sdk {
 
         wally_ext_key_ptr login_key = std::move(master_key);
         const ext_key* r = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_parent_path_alloc(login_key.get(), child_num.data(), child_num.size(),
-                                  BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r)
-            == WALLY_OK);
+        GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
+            login_key.get(), child_num.data(), child_num.size(), BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r));
 
         login_key = wally_ext_key_ptr(r, &bip32_key_free);
 
         const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(wally_ec_sig_from_bytes(login_key->priv_key + 1, sizeof(login_key->priv_key) - 1,
-                                  challenge_hash.data(), challenge_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size())
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_ec_sig_from_bytes(login_key->priv_key + 1, sizeof(login_key->priv_key) - 1,
+            challenge_hash.data(), challenge_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size()));
 
         std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN> der{ { 0 } };
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(
-            wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written) == WALLY_OK);
+        GA_SDK_VERIFY(wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written));
 
         return { hex_from_bytes(der.data(), written), hex_from_bytes(random_path.data(), random_path.size()) };
     }
@@ -259,13 +256,11 @@ namespace sdk {
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(
-            bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
 
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(),
-                                  m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
-            == WALLY_OK);
+        GA_SDK_VERIFY(bip32_key_from_seed_alloc(
+            seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
         wally_ext_key_ptr master_key(p, &bip32_key_free);
 
         std::array<unsigned char, sizeof(master_key->chain_code) + sizeof(master_key->pub_key)> path_data;
@@ -275,9 +270,8 @@ namespace sdk {
 
         const std::string key = "GreenAddress.it HD wallet path";
         std::array<unsigned char, HMAC_SHA512_LEN> path{ { 0 } };
-        GA_SDK_RUNTIME_ASSERT(wally_hmac_sha512(reinterpret_cast<const unsigned char*>(key.data()), key.length(),
-                                  path_data.data(), path_data.size(), path.data(), path.size())
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_hmac_sha512(reinterpret_cast<const unsigned char*>(key.data()), key.length(),
+            path_data.data(), path_data.size(), path.data(), path.size()));
 
         auto pub_key = hex_from_bytes(master_key->pub_key, sizeof(master_key->pub_key));
         auto chain_code = hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code));
@@ -296,13 +290,12 @@ namespace sdk {
     {
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(
-            bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
 
         const ext_key* p = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip32_key_from_seed_alloc(seed.data(), seed.size(),
-                                  m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p)
-            == WALLY_OK);
+        GA_SDK_VERIFY(bip32_key_from_seed_alloc(
+            seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
+
         m_master_key = wally_ext_key_ptr(p, &bip32_key_free);
 
         std::array<unsigned char, sizeof(m_master_key->hash160) + 1> vpkh{ { 0 } };
@@ -310,7 +303,7 @@ namespace sdk {
         std::copy(m_master_key->hash160, m_master_key->hash160 + sizeof(m_master_key->hash160), vpkh.begin() + 1);
 
         char* q = nullptr;
-        GA_SDK_RUNTIME_ASSERT(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
+        GA_SDK_VERIFY(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q));
         wally_string_ptr base58_pkh(q, &wally_free_string);
 
         auto challenge_arguments = std::make_tuple(base58_pkh.get());
@@ -554,7 +547,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(sc == sc_multisig);
 
         char* q = nullptr;
-        GA_SDK_RUNTIME_ASSERT(wally_base58_from_bytes(sc.data(), sc.size(), BASE58_FLAG_CHECKSUM, &q) == WALLY_OK);
+        GA_SDK_VERIFY(wally_base58_from_bytes(sc.data(), sc.size(), BASE58_FLAG_CHECKSUM, &q));
         wally_string_ptr base58_pkh(q, &wally_free_string);
 
         address.set(addr_type_str, std::string(q));
@@ -634,16 +627,14 @@ namespace sdk {
 
         std::array<unsigned char, BIP39_SEED_LEN_512> seed{ { 0 } };
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(
-            bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
         const auto seed_hex = hex_from_bytes(seed.data(), written);
         const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
         const auto mnemonic_hex = hex_from_bytes(mnemonic_bytes.data(), mnemonic_bytes.size());
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()),
-                                  password.size(), salt.data(), salt.size(), 0, 2048, key.data(), key.size())
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()), password.size(),
+            salt.data(), salt.size(), 0, 2048, key.data(), key.size()));
 
         std::array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data{ { 0 } };
         std::copy(seed.begin(), seed.end(), data.begin());
@@ -653,10 +644,8 @@ namespace sdk {
 
         std::vector<unsigned char> encrypted(iv.size() + ((data.size() / AES_BLOCK_LEN) + 1) * AES_BLOCK_LEN);
         std::copy(iv.begin(), iv.end(), encrypted.begin());
-        GA_SDK_RUNTIME_ASSERT(
-            wally_aes_cbc(key.data(), AES_KEY_LEN_256, iv.data(), iv.size(), data.data(), data.size(), AES_FLAG_ENCRYPT,
-                encrypted.data() + iv.size(), encrypted.size() - iv.size(), &written)
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_aes_cbc(key.data(), AES_KEY_LEN_256, iv.data(), iv.size(), data.data(), data.size(),
+            AES_FLAG_ENCRYPT, encrypted.data() + iv.size(), encrypted.size() - iv.size(), &written));
         GA_SDK_RUNTIME_ASSERT(written == encrypted.size() - iv.size());
 
         const auto encrypted_hex = hex_from_bytes(encrypted.data(), iv.size() + written);
@@ -688,16 +677,15 @@ namespace sdk {
         auto secret_bytes = bytes_from_hex(pin_identifier_and_secret.second);
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        GA_SDK_RUNTIME_ASSERT(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()),
-                                  password.size(), secret_bytes.data(), 16, 0, 2048, key.data(), key.size())
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()), password.size(),
+            secret_bytes.data(), 16, 0, 2048, key.data(), key.size()));
 
         std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(wally_aes_cbc(key.data(), AES_KEY_LEN_256, secret_bytes.data(), 16,
-                                  secret_bytes.data() + 16 + AES_BLOCK_LEN, secret_bytes.size() - AES_BLOCK_LEN - 16,
-                                  AES_FLAG_DECRYPT, plaintext.data(), plaintext.size(), &written)
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_aes_cbc(key.data(), AES_KEY_LEN_256, secret_bytes.data(), 16,
+            secret_bytes.data() + 16 + AES_BLOCK_LEN, secret_bytes.size() - AES_BLOCK_LEN - 16, AES_FLAG_DECRYPT,
+            plaintext.data(), plaintext.size(), &written));
+
         GA_SDK_RUNTIME_ASSERT(written <= plaintext.size() && (plaintext.size() - written <= AES_BLOCK_LEN));
 
         const auto mnemonic = mnemonic_from_bytes(plaintext.data() + BIP39_SEED_LEN_512, BIP39_ENTROPY_LEN_256, "en");
@@ -759,21 +747,16 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_RUNTIME_ASSERT(
-                wally_tx_witness_stack_init_alloc(1, 1, const_cast<const wally_tx_witness_stack**>(&witness_stack))
-                == WALLY_OK);
-            GA_SDK_RUNTIME_ASSERT(
-                wally_tx_witness_stack_add(witness_stack, in_script.data(), in_script.size()) == WALLY_OK);
+            GA_SDK_VERIFY(
+                wally_tx_witness_stack_init_alloc(1, 1, const_cast<const wally_tx_witness_stack**>(&witness_stack)));
+            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, in_script.data(), in_script.size()));
             const auto script_bytes = witness_script(out_script);
-            GA_SDK_RUNTIME_ASSERT(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
-                                      is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(),
-                                      script_bytes.size(), witness_stack, &tx_in)
-                == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
+                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(), script_bytes.size(), witness_stack,
+                &tx_in));
         } else {
-            GA_SDK_RUNTIME_ASSERT(
-                wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
-                    is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in)
-                == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
+                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
         }
 
         return tx_in;
@@ -793,10 +776,8 @@ namespace sdk {
         const auto txhash_bytes = bytes_from_hex(txhash);
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
         const struct wally_tx_input* tx_in{ nullptr };
-        GA_SDK_RUNTIME_ASSERT(
-            wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
-                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, out_script.data(), out_script.size(), nullptr, &tx_in)
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
+            is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, out_script.data(), out_script.size(), nullptr, &tx_in));
 
         struct wally_tx* raw_tx_out = nullptr;
         GA_SDK_VERIFY(wally_tx_init_alloc(
@@ -815,16 +796,14 @@ namespace sdk {
         const auto client_priv_key = derive_key(m_master_key, { 1, pointer }, false);
 
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-        GA_SDK_RUNTIME_ASSERT(
-            wally_ec_sig_from_bytes(client_priv_key->priv_key + 1, sizeof client_priv_key->priv_key - 1, tx_hash.data(),
-                tx_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size())
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_ec_sig_from_bytes(client_priv_key->priv_key + 1, sizeof client_priv_key->priv_key - 1,
+            tx_hash.data(), tx_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size()));
 
         std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
         size_t der_written;
-        GA_SDK_RUNTIME_ASSERT(
-            wally_ec_sig_to_der(sig.data(), sig.size(), sigs[0].data(), EC_SIGNATURE_DER_MAX_LEN, &der_written)
-            == WALLY_OK);
+        GA_SDK_VERIFY(
+            wally_ec_sig_to_der(sig.data(), sig.size(), sigs[0].data(), EC_SIGNATURE_DER_MAX_LEN, &der_written));
+
         unsigned char c = 1;
         memcpy(sigs[0].data() + der_written, (const unsigned char*)&c, 1);
 
@@ -832,21 +811,17 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_RUNTIME_ASSERT(
-                wally_tx_witness_stack_init_alloc(1, 1, const_cast<const wally_tx_witness_stack**>(&witness_stack))
-                == WALLY_OK);
-            GA_SDK_RUNTIME_ASSERT(
-                wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1) == WALLY_OK);
+            GA_SDK_VERIFY(
+                wally_tx_witness_stack_init_alloc(1, 1, const_cast<const wally_tx_witness_stack**>(&witness_stack)));
+
+            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1));
             const auto script_bytes = witness_script(out_script);
-            GA_SDK_RUNTIME_ASSERT(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
-                                      is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(),
-                                      script_bytes.size(), witness_stack, &tx_in)
-                == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
+                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(), script_bytes.size(), witness_stack,
+                &tx_in));
         } else {
-            GA_SDK_RUNTIME_ASSERT(
-                wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
-                    is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in)
-                == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
+                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
         }
 
         return tx_in;
@@ -864,7 +839,7 @@ namespace sdk {
         const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
 
         size_t vsize{ 0 };
-        GA_SDK_RUNTIME_ASSERT(wally_tx_get_vsize(tx, &vsize) == WALLY_OK);
+        GA_SDK_VERIFY(wally_tx_get_vsize(tx, &vsize));
 
         const double fee = static_cast<double>(vsize) * rate.value() / 1000.0;
         const long rounded_fee = static_cast<long>(std::ceil(fee));
@@ -876,7 +851,7 @@ namespace sdk {
         const struct wally_tx_output* create_tx_output(amount v, const unsigned char* script, size_t size)
         {
             const struct wally_tx_output* tx_out{ nullptr };
-            GA_SDK_RUNTIME_ASSERT(wally_tx_output_init_alloc(v.value(), script, size, &tx_out) == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_output_init_alloc(v.value(), script, size, &tx_out));
             return tx_out;
         }
     }
@@ -915,14 +890,14 @@ namespace sdk {
         const size_t block_height = m_block_height;
 
         struct wally_tx* raw_tx_out{ nullptr };
-        GA_SDK_RUNTIME_ASSERT(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
-                                  const_cast<const struct wally_tx**>(&raw_tx_out))
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
+            const_cast<const struct wally_tx**>(&raw_tx_out)));
+
         for (auto&& in : inputs) {
-            GA_SDK_RUNTIME_ASSERT(wally_tx_add_input(raw_tx_out, in) == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, in));
         }
         for (auto&& out : outputs) {
-            GA_SDK_RUNTIME_ASSERT(wally_tx_add_output(raw_tx_out, out) == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_add_output(raw_tx_out, out));
         }
 
         const struct wally_tx_output* change_output{ nullptr };
@@ -956,14 +931,14 @@ namespace sdk {
                     = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
                 outputs.emplace_back(change_output);
 
-                GA_SDK_RUNTIME_ASSERT(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(),
-                                          outputs.size(), const_cast<const struct wally_tx**>(&raw_tx_out))
-                    == WALLY_OK);
+                GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
+                    const_cast<const struct wally_tx**>(&raw_tx_out)));
+
                 for (auto&& in : inputs) {
-                    GA_SDK_RUNTIME_ASSERT(wally_tx_add_input(raw_tx_out, in) == WALLY_OK);
+                    GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, in));
                 }
                 for (auto&& out : outputs) {
-                    GA_SDK_RUNTIME_ASSERT(wally_tx_add_output(raw_tx_out, out) == WALLY_OK);
+                    GA_SDK_VERIFY(wally_tx_add_output(raw_tx_out, out));
                 }
             }
         }
@@ -983,14 +958,14 @@ namespace sdk {
             signed_inputs.emplace_back(sign_input(outputs, u, block_height));
         }
 
-        GA_SDK_RUNTIME_ASSERT(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
-                                  const_cast<const struct wally_tx**>(&raw_tx_out))
-            == WALLY_OK);
+        GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
+            const_cast<const struct wally_tx**>(&raw_tx_out)));
+
         for (auto&& in : signed_inputs) {
-            GA_SDK_RUNTIME_ASSERT(wally_tx_add_input(raw_tx_out, in) == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, in));
         }
         for (auto&& out : outputs) {
-            GA_SDK_RUNTIME_ASSERT(wally_tx_add_output(raw_tx_out, out) == WALLY_OK);
+            GA_SDK_VERIFY(wally_tx_add_output(raw_tx_out, out));
         }
 
         auto tx_hex = hex_from_bytes(tx_to_bytes(raw_tx_out));

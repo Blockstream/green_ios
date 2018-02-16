@@ -60,7 +60,7 @@ namespace sdk {
         }
 
         RAND_add(&tsc, sizeof tsc, 1.5);
-        GA_SDK_RUNTIME_ASSERT(wally_bzero(&tsc, sizeof tsc) == WALLY_OK);
+        GA_SDK_VERIFY(wally_bzero(&tsc, sizeof tsc));
 
         std::array<unsigned char, 64 + 32 + 8> buf;
         GA_SDK_RUNTIME_ASSERT(RAND_bytes(buf.data(), 32) == 1);
@@ -83,20 +83,20 @@ namespace sdk {
                 buf.data() + 96);
             ++nonce;
 
-            GA_SDK_RUNTIME_ASSERT(wally_sha512(buf.data(), buf.size(), sha512.data(), sha512.size()) == WALLY_OK);
+            GA_SDK_VERIFY(wally_sha512(buf.data(), buf.size(), sha512.data(), sha512.size()));
 
             std::copy(sha512.begin() + 32, sha512.end(), curr_state.data());
         }
 
         std::copy(sha512.begin(), sha512.begin() + siz, static_cast<unsigned char*>(bytes));
 
-        GA_SDK_RUNTIME_ASSERT(wally_bzero(sha512.data(), sha512.size()) == WALLY_OK);
+        GA_SDK_VERIFY(wally_bzero(sha512.data(), sha512.size()));
     }
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
     {
         char* s = nullptr;
-        GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(bytes, siz, &s) == WALLY_OK);
+        GA_SDK_VERIFY(wally_hex_from_bytes(bytes, siz, &s));
         return wally_string_ptr(s, &wally_free_string);
     }
 
@@ -104,7 +104,7 @@ namespace sdk {
     {
         std::vector<unsigned char> bytes(siz / 2);
         size_t written;
-        GA_SDK_RUNTIME_ASSERT(wally_hex_to_bytes(hex, bytes.data(), bytes.size(), &written) == WALLY_OK);
+        GA_SDK_VERIFY(wally_hex_to_bytes(hex, bytes.data(), bytes.size(), &written));
         bytes.resize(written);
         return bytes;
     }
@@ -113,12 +113,11 @@ namespace sdk {
         const std::string& mnemonic, const std::string& lang)
     {
         const struct words* w = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang.c_str(), &w) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_get_wordlist(lang.c_str(), &w));
 
         std::array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
         size_t written = 0;
-        GA_SDK_RUNTIME_ASSERT(
-            bip39_mnemonic_to_bytes(w, mnemonic.c_str(), bytes.data(), bytes.size(), &written) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_mnemonic_to_bytes(w, mnemonic.c_str(), bytes.data(), bytes.size(), &written));
         GA_SDK_RUNTIME_ASSERT(written == BIP39_ENTROPY_LEN_256);
 
         return bytes;
@@ -127,9 +126,9 @@ namespace sdk {
     wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang)
     {
         const struct words* w = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang, &w) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
         char* s = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, bytes, siz, &s) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, bytes, siz, &s));
         return wally_string_ptr(s, &wally_free_string);
     }
 }
@@ -150,8 +149,8 @@ int GA_generate_mnemonic(const char* lang, char** output)
     try {
         const auto entropy = ga::sdk::get_random_bytes<32>();
         const struct words* w = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang, &w) == WALLY_OK);
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, entropy.data(), entropy.size(), output) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
+        GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, entropy.data(), entropy.size(), output));
         return GA_OK;
     } catch (const std::exception& ex) {
         return GA_ERROR;
@@ -162,8 +161,8 @@ int GA_validate_mnemonic(const char* lang, const char* mnemonic)
 {
     try {
         const struct words* w = nullptr;
-        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist(lang, &w) == WALLY_OK);
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_validate(w, mnemonic) == WALLY_OK);
+        GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
+        GA_SDK_VERIFY(bip39_mnemonic_validate(w, mnemonic));
         return GA_TRUE;
     } catch (const std::exception& ex) {
         return GA_FALSE;
