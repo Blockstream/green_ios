@@ -9,7 +9,7 @@ namespace sdk {
 
     wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, uint32_t child, bool public_)
     {
-        const ext_key* p = nullptr;
+        const ext_key* p;
         GA_SDK_VERIFY(bip32_key_from_parent_alloc(
             key.get(), child, (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH, &p));
 
@@ -29,7 +29,7 @@ namespace sdk {
         const auto dcc_bytes = bytes_from_hex(chain_code);
         const auto dpk_bytes = bytes_from_hex(pub_key);
 
-        const ext_key* p = nullptr;
+        const ext_key* p;
         GA_SDK_VERIFY(
             bip32_key_init_alloc(main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC, 0, 0, dcc_bytes.data(),
                 dcc_bytes.size(), dpk_bytes.data(), dpk_bytes.size(), nullptr, 0, nullptr, 0, nullptr, 0, &p));
@@ -47,7 +47,7 @@ namespace sdk {
             path.back() = subaccount;
         }
 
-        const ext_key* q = nullptr;
+        const ext_key* q;
         GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
             server_pub_key.get(), path.data(), path.size(), BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH, &q));
 
@@ -58,7 +58,7 @@ namespace sdk {
 
     std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script_bytes)
     {
-        std::array<unsigned char, HASH160_LEN + 1> script{ { 0 } };
+        std::array<unsigned char, HASH160_LEN + 1> script;
         script[0] = 196;
         GA_SDK_VERIFY(wally_hash160(script_bytes.data(), script_bytes.size(), script.data() + 1, HASH160_LEN));
         return script;
@@ -66,12 +66,12 @@ namespace sdk {
 
     std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script_bytes)
     {
-        std::array<unsigned char, SHA256_LEN + 1> script{ { 0 } };
-        size_t written{ 0 };
+        std::array<unsigned char, SHA256_LEN + 1> script;
+        size_t written;
         GA_SDK_VERIFY(wally_witness_program_from_bytes(
             script_bytes.data(), script_bytes.size(), WALLY_SCRIPT_SHA256, script.data(), script.size(), &written));
 
-        std::array<unsigned char, HASH160_LEN + 1> sc{ { 0 } };
+        std::array<unsigned char, HASH160_LEN + 1> sc;
         sc[0] = 196;
         GA_SDK_VERIFY(wally_hash160(script.data(), script.size(), sc.data() + 1, HASH160_LEN));
 
@@ -80,11 +80,11 @@ namespace sdk {
 
     std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address)
     {
-        std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc{ { 0 } };
-        size_t written{ 0 };
+        std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc;
+        size_t written;
         GA_SDK_VERIFY(wally_base58_to_bytes(address.c_str(), 0, sc.data(), sc.size(), &written));
 
-        std::array<unsigned char, HASH160_LEN + 3> script{ { 0 } };
+        std::array<unsigned char, HASH160_LEN + 3> script;
         GA_SDK_VERIFY(
             wally_scriptpubkey_p2sh_from_bytes(sc.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written));
 
@@ -129,7 +129,7 @@ namespace sdk {
 
         unsigned char* p = script.data();
 
-        size_t written{ 0 };
+        size_t written;
         *p++ = OP_0;
         *p++ = 1;
         *p++ = OP_0;
@@ -144,7 +144,7 @@ namespace sdk {
 
     std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes)
     {
-        std::array<unsigned char, 3 + SHA256_LEN> script{ { 0 } };
+        std::array<unsigned char, 3 + SHA256_LEN> script;
         script[0] = 0x22;
         script[1] = 0x00;
         script[2] = 0x20;
