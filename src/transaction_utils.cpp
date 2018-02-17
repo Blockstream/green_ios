@@ -60,22 +60,21 @@ namespace sdk {
     {
         std::array<unsigned char, HASH160_LEN + 1> script;
         script[0] = 196;
-        GA_SDK_VERIFY(wally_hash160(script_bytes.data(), script_bytes.size(), script.data() + 1, HASH160_LEN));
+        GA_SDK_VERIFY(wally::hash160(script_bytes, script, 1));
         return script;
     }
 
     std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script_bytes)
     {
-        std::array<unsigned char, SHA256_LEN + 1> script;
+        std::array<unsigned char, SHA256_LEN + 1> witness;
         size_t written;
         GA_SDK_VERIFY(wally_witness_program_from_bytes(
-            script_bytes.data(), script_bytes.size(), WALLY_SCRIPT_SHA256, script.data(), script.size(), &written));
+            script_bytes.data(), script_bytes.size(), WALLY_SCRIPT_SHA256, witness.data(), witness.size(), &written));
 
-        std::array<unsigned char, HASH160_LEN + 1> sc;
-        sc[0] = 196;
-        GA_SDK_VERIFY(wally_hash160(script.data(), script.size(), sc.data() + 1, HASH160_LEN));
-
-        return sc;
+        std::array<unsigned char, HASH160_LEN + 1> script;
+        script[0] = 196;
+        GA_SDK_VERIFY(wally::hash160(witness, script, 1));
+        return script;
     }
 
     std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address)
@@ -148,8 +147,7 @@ namespace sdk {
         script[0] = 0x22;
         script[1] = 0x00;
         script[2] = 0x20;
-        GA_SDK_VERIFY(wally_sha256(script_bytes.data(), script_bytes.size(), script.data() + 3, SHA256_LEN));
-
+        GA_SDK_VERIFY(wally::sha256(script_bytes, script, 3));
         return script;
     }
 }

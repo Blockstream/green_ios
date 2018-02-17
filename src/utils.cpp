@@ -83,14 +83,14 @@ namespace sdk {
                 buf.data() + 96);
             ++nonce;
 
-            GA_SDK_VERIFY(wally_sha512(buf.data(), buf.size(), sha512.data(), sha512.size()));
+            GA_SDK_VERIFY(wally::sha512(buf, sha512));
 
             std::copy(sha512.begin() + 32, sha512.end(), curr_state.data());
         }
 
         std::copy(sha512.begin(), sha512.begin() + siz, static_cast<unsigned char*>(bytes));
 
-        GA_SDK_VERIFY(wally_bzero(sha512.data(), sha512.size()));
+        GA_SDK_VERIFY(wally::bzero(sha512));
     }
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)

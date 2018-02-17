@@ -31,8 +31,9 @@ namespace sdk {
     using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context>;
     using wamp_call_result = boost::future<autobahn::wamp_call_result>;
 
-    const std::string DEFAULT_REALM("realm1");
-    const std::string DEFAULT_USER_AGENT("[v2,sw]");
+    static const std::string DEFAULT_REALM("realm1");
+    static const std::string DEFAULT_USER_AGENT("[v2,sw]");
+    static const char GA_LOGIN_NONCE[] = { "GreenAddress.it HD wallet path" };
 
     namespace {
         // FIXME: too slow. lacks validation.
@@ -268,10 +269,10 @@ namespace sdk {
         std::copy(master_key->pub_key, master_key->pub_key + sizeof(master_key->pub_key),
             path_data.data() + sizeof(master_key->chain_code));
 
-        const std::string key = "GreenAddress.it HD wallet path";
+        std::array<unsigned char, sizeof(GA_LOGIN_NONCE) - 1> key_bytes;
+        memcpy(key_bytes.data(), GA_LOGIN_NONCE, sizeof(GA_LOGIN_NONCE) - 1);
         std::array<unsigned char, HMAC_SHA512_LEN> path;
-        GA_SDK_VERIFY(wally_hmac_sha512(reinterpret_cast<const unsigned char*>(key.data()), key.length(),
-            path_data.data(), path_data.size(), path.data(), path.size()));
+        GA_SDK_VERIFY(wally::hmac_sha512(key_bytes, path_data, path));
 
         auto pub_key = hex_from_bytes(master_key->pub_key, sizeof(master_key->pub_key));
         auto chain_code = hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code));
