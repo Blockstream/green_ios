@@ -90,7 +90,7 @@ namespace sdk {
 
         std::copy(sha512.begin(), sha512.begin() + siz, static_cast<unsigned char*>(bytes));
 
-        GA_SDK_VERIFY(wally::bzero(sha512));
+        GA_SDK_VERIFY(wally_bzero(sha512.data(), sha512.size()));
     }
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
