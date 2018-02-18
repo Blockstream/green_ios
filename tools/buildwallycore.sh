@@ -24,7 +24,7 @@ if [ \( "$1" = "--ndk" \) ]; then
     . ${MESON_SOURCE_ROOT}/tools/env.sh
     . tools/android_helpers.sh
 
-    export CFLAGS="$SDK_CFLAGS -fPIC"
+    export CFLAGS="$SDK_CFLAGS -DPIC -fPIC"
 
     android_build_wally $HOST_ARCH "${MESON_BUILD_ROOT}/toolchain" $ANDROID_VERSION --host=$SDK_PLATFORM --build=$HOST_OS \
           --enable-static --disable-shared --$ENABLE_SWIG_JAVA --target=$SDK_PLATFORM --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
@@ -41,9 +41,9 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     make -o configure -j$NUM_JOBS
     make -o configure install
 else
-    export CFLAGS="$SDK_CFLAGS -fPIC"
+    export CFLAGS="$SDK_CFLAGS -DPIC -fPIC"
 
-    ./configure --$ENABLE_SWIG_JAVA --host=$HOST_OS -enable-static --disable-shared --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+    ./configure --$ENABLE_SWIG_JAVA --host=$HOST_OS --enable-static --disable-shared --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
 
     make -j$NUM_JOBS
     make install
