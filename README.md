@@ -39,10 +39,17 @@ Different options if you want to build a different configuration (flags in squar
 --gcc
 --ndk [armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64]
 --iphone [static]
+--buildtype=debug
 
 for example
 
 * tools/build.sh --gcc
+
+Build output is placed in 'build-<target>', e.g. 'build-clang', 'build-gcc' sub-directories.
+
+You can quickly run a single targets build from the 'build-<target>' sub-directory using:
+
+* ninja
 
 ### To clean:
 
@@ -52,11 +59,13 @@ for example
 
 #### Using testnet as backend:
 
+From the 'build-<target>' sub-directory:
+
 * ninja test
 
-#### Using local backend:
+#### Using local backend (GreenAddress developers only):
 
-* mesontest --test-args '\\-l'
+* meson test --no-rebuild --print-errorlogs --test-args '\-l'
 
 ### Docker based deps & build
 
