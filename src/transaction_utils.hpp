@@ -19,7 +19,7 @@ namespace sdk {
         redeem_p2sh_p2wsh_fortified = 159
     };
 
-    using wally_ext_key_ptr = std::unique_ptr<const ext_key, decltype(&bip32_key_free)>;
+    using wally_ext_key_ptr = std::unique_ptr<ext_key, decltype(&bip32_key_free)>;
 
     wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t child, bool public_);
 

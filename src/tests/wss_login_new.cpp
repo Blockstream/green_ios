@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
-        const struct words* w;
+        struct words* w;
         GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist("en", &w) == WALLY_OK);
 
         char* mnemonic = nullptr;

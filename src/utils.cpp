@@ -112,7 +112,7 @@ namespace sdk {
     std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
         const std::string& mnemonic, const std::string& lang)
     {
-        const struct words* w;
+        struct words* w;
         GA_SDK_VERIFY(bip39_get_wordlist(lang.c_str(), &w));
 
         std::array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
@@ -125,7 +125,7 @@ namespace sdk {
 
     wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang)
     {
-        const struct words* w;
+        struct words* w;
         GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
         char* s;
         GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, bytes, siz, &s));
@@ -148,7 +148,7 @@ int GA_generate_mnemonic(const char* lang, char** output)
 {
     try {
         const auto entropy = ga::sdk::get_random_bytes<32>();
-        const struct words* w;
+        struct words* w;
         GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
         GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, entropy.data(), entropy.size(), output));
         return GA_OK;
@@ -160,7 +160,7 @@ int GA_generate_mnemonic(const char* lang, char** output)
 int GA_validate_mnemonic(const char* lang, const char* mnemonic)
 {
     try {
-        const struct words* w;
+        struct words* w;
         GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
         GA_SDK_VERIFY(bip39_mnemonic_validate(w, mnemonic));
         return GA_TRUE;

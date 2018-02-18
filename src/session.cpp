@@ -191,9 +191,9 @@ namespace sdk {
         std::string get_raw_output(const std::string& txhash) const;
         std::vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
         utxo_set get_utxos(size_t num_confs, size_t subaccount) const;
-        const struct wally_tx_input* add_utxo(const utxo& u) const;
-        const struct wally_tx_input* sign_input(
-            std::vector<const struct wally_tx_output*>& outputs, const utxo& u, size_t block_height) const;
+        struct wally_tx_input* add_utxo(const utxo& u) const;
+        struct wally_tx_input* sign_input(
+            std::vector<struct wally_tx_output*>& outputs, const utxo& u, size_t block_height) const;
         std::vector<unsigned char> hash_segwit(
             const struct raw_tx* tx, const std::vector<unsigned char>& script, uint32_t idx, uint32_t hash_type);
         amount get_tx_fee(const struct wally_tx* tx, amount fee_rate);
@@ -235,7 +235,7 @@ namespace sdk {
             [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
         wally_ext_key_ptr login_key = std::move(master_key);
-        const ext_key* r;
+        ext_key* r;
         GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
             login_key.get(), child_num.data(), child_num.size(), BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r));
 
@@ -259,7 +259,7 @@ namespace sdk {
         size_t written;
         GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
 
-        const ext_key* p;
+        ext_key* p;
         GA_SDK_VERIFY(bip32_key_from_seed_alloc(
             seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
         wally_ext_key_ptr master_key(p, &bip32_key_free);
@@ -293,7 +293,7 @@ namespace sdk {
         size_t written;
         GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
 
-        const ext_key* p;
+        ext_key* p;
         GA_SDK_VERIFY(bip32_key_from_seed_alloc(
             seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
 
@@ -728,7 +728,7 @@ namespace sdk {
         fn.get();
     }
 
-    const struct wally_tx_input* session::session_impl::add_utxo(const utxo& u) const
+    struct wally_tx_input* session::session_impl::add_utxo(const utxo& u) const
     {
         const std::string txhash = u.get<std::string>("txhash");
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
@@ -744,12 +744,11 @@ namespace sdk {
 
         const auto txhash_bytes = bytes_from_hex(txhash);
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
-        const struct wally_tx_input* tx_in;
+        struct wally_tx_input* tx_in;
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_VERIFY(
-                wally_tx_witness_stack_init_alloc(1, 1, const_cast<const wally_tx_witness_stack**>(&witness_stack)));
+            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, 1, &witness_stack));
             GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, in_script.data(), in_script.size()));
             const auto script_bytes = witness_script(out_script);
             GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
@@ -763,8 +762,8 @@ namespace sdk {
         return tx_in;
     }
 
-    const struct wally_tx_input* session::session_impl::sign_input(
-        std::vector<const struct wally_tx_output*>& outputs, const utxo& u, size_t block_height) const
+    struct wally_tx_input* session::session_impl::sign_input(
+        std::vector<struct wally_tx_output*>& outputs, const utxo& u, size_t block_height) const
     {
         const std::string txhash = u.get<std::string>("txhash");
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
@@ -776,13 +775,12 @@ namespace sdk {
 
         const auto txhash_bytes = bytes_from_hex(txhash);
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
-        const struct wally_tx_input* tx_in;
+        struct wally_tx_input* tx_in;
         GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
             is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, out_script.data(), out_script.size(), nullptr, &tx_in));
 
         struct wally_tx* raw_tx_out;
-        GA_SDK_VERIFY(wally_tx_init_alloc(
-            WALLY_TX_VERSION_2, block_height, 1, outputs.size(), const_cast<const struct wally_tx**>(&raw_tx_out)));
+        GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, 1, outputs.size(), &raw_tx_out));
         GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, tx_in));
         for (auto&& out : outputs) {
             GA_SDK_VERIFY(wally_tx_add_output(raw_tx_out, out));
@@ -812,8 +810,7 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_VERIFY(
-                wally_tx_witness_stack_init_alloc(1, 1, const_cast<const wally_tx_witness_stack**>(&witness_stack)));
+            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, 1, &witness_stack));
 
             GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1));
             const auto script_bytes = witness_script(out_script);
@@ -849,9 +846,9 @@ namespace sdk {
     }
 
     namespace {
-        const struct wally_tx_output* create_tx_output(amount v, const unsigned char* script, size_t size)
+        struct wally_tx_output* create_tx_output(amount v, const unsigned char* script, size_t size)
         {
-            const struct wally_tx_output* tx_out;
+            struct wally_tx_output* tx_out;
             GA_SDK_VERIFY(wally_tx_output_init_alloc(v.value(), script, size, &tx_out));
             return tx_out;
         }
@@ -868,7 +865,7 @@ namespace sdk {
         }
 
         amount total;
-        std::vector<const struct wally_tx_input*> inputs;
+        std::vector<struct wally_tx_input*> inputs;
         inputs.reserve(utxos.size());
         for (auto&& o : utxos) {
             utxo u;
@@ -880,7 +877,7 @@ namespace sdk {
             inputs.emplace_back(add_utxo(u));
         }
 
-        std::vector<const struct wally_tx_output*> outputs;
+        std::vector<struct wally_tx_output*> outputs;
         outputs.reserve(2);
 
         {
@@ -891,8 +888,8 @@ namespace sdk {
         const size_t block_height = m_block_height;
 
         struct wally_tx* raw_tx_out;
-        GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
-            const_cast<const struct wally_tx**>(&raw_tx_out)));
+        GA_SDK_VERIFY(
+            wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(), &raw_tx_out));
 
         for (auto&& in : inputs) {
             GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, in));
@@ -901,7 +898,7 @@ namespace sdk {
             GA_SDK_VERIFY(wally_tx_add_output(raw_tx_out, out));
         }
 
-        const struct wally_tx_output* change_output{ nullptr };
+        struct wally_tx_output* change_output{ nullptr };
 
         amount fee;
 
@@ -932,8 +929,8 @@ namespace sdk {
                     = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
                 outputs.emplace_back(change_output);
 
-                GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
-                    const_cast<const struct wally_tx**>(&raw_tx_out)));
+                GA_SDK_VERIFY(
+                    wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(), &raw_tx_out));
 
                 for (auto&& in : inputs) {
                     GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, in));
@@ -945,11 +942,10 @@ namespace sdk {
         }
 
         if (change_output) {
-            const_cast<struct wally_tx_output*>(change_output)->satoshi
-                = (total - address_amount[0].second - fee).value();
+            change_output->satoshi = (total - address_amount[0].second - fee).value();
         }
 
-        std::vector<const struct wally_tx_input*> signed_inputs;
+        std::vector<struct wally_tx_input*> signed_inputs;
         signed_inputs.reserve(inputs.size());
 
         auto ub = utxos.begin();
@@ -959,8 +955,8 @@ namespace sdk {
             signed_inputs.emplace_back(sign_input(outputs, u, block_height));
         }
 
-        GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(),
-            const_cast<const struct wally_tx**>(&raw_tx_out)));
+        GA_SDK_VERIFY(
+            wally_tx_init_alloc(WALLY_TX_VERSION_2, block_height, inputs.size(), outputs.size(), &raw_tx_out));
 
         for (auto&& in : signed_inputs) {
             GA_SDK_VERIFY(wally_tx_add_input(raw_tx_out, in));

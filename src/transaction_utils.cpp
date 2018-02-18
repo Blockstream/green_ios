@@ -9,7 +9,7 @@ namespace sdk {
 
     wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, uint32_t child, bool public_)
     {
-        const ext_key* p;
+        ext_key* p;
         GA_SDK_VERIFY(bip32_key_from_parent_alloc(
             key.get(), child, (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH, &p));
 
@@ -29,7 +29,7 @@ namespace sdk {
         const auto dcc_bytes = bytes_from_hex(chain_code);
         const auto dpk_bytes = bytes_from_hex(pub_key);
 
-        const ext_key* p;
+        ext_key* p;
         GA_SDK_VERIFY(
             bip32_key_init_alloc(main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC, 0, 0, dcc_bytes.data(),
                 dcc_bytes.size(), dpk_bytes.data(), dpk_bytes.size(), nullptr, 0, nullptr, 0, nullptr, 0, &p));
@@ -47,7 +47,7 @@ namespace sdk {
             path.back() = subaccount;
         }
 
-        const ext_key* q;
+        ext_key* q;
         GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
             server_pub_key.get(), path.data(), path.size(), BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH, &q));
 
