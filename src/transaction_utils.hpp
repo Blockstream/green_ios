@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "containers.hpp"
-#include "wally_wrapper.h"
+#include <wally.hpp>
 
 namespace ga {
 namespace sdk {

@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "wally_wrapper.h"
+#include <wally.hpp>
 
 namespace ga {
 namespace sdk {

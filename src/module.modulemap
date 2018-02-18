@@ -4,7 +4,6 @@ module ga [extern_c] {
         header "containers.h"
         header "session.h"
         header "utils.h"
-        header "wally_wrapper.h"
         link "greenaddress"
         export *
     }
