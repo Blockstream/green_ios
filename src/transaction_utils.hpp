@@ -10,6 +10,24 @@
 #include "containers.hpp"
 #include <wally.hpp>
 
+namespace std {
+template <> struct default_delete<struct ext_key> {
+    void operator()(struct ext_key* ptr) const { bip32_key_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx_input> {
+    void operator()(struct wally_tx_input* ptr) const { wally_tx_input_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx_output> {
+    void operator()(struct wally_tx_output* ptr) const { wally_tx_output_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx> {
+    void operator()(struct wally_tx* ptr) const { wally_tx_free(ptr); }
+};
+}
+
 namespace ga {
 namespace sdk {
     enum class script_type : int {
@@ -19,11 +37,10 @@ namespace sdk {
         redeem_p2sh_p2wsh_fortified = 159
     };
 
-    using wally_ext_key_ptr = std::unique_ptr<ext_key, decltype(&bip32_key_free)>;
-
-    using wally_tx_input_ptr = std::unique_ptr<wally_tx_input, decltype(&wally_tx_input_free)>;
-    using wally_tx_output_ptr = std::unique_ptr<wally_tx_output, decltype(&wally_tx_output_free)>;
-    using wally_tx_ptr = std::unique_ptr<wally_tx, decltype(&wally_tx_free)>;
+    using wally_ext_key_ptr = std::unique_ptr<struct ext_key>;
+    using wally_tx_input_ptr = std::unique_ptr<struct wally_tx_input>;
+    using wally_tx_output_ptr = std::unique_ptr<struct wally_tx_output>;
+    using wally_tx_ptr = std::unique_ptr<struct wally_tx>;
 
     wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t child, bool public_);
 

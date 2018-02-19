@@ -88,7 +88,7 @@ namespace sdk {
             : m_controller(m_io)
             , m_params(std::move(params))
             , m_block_height(0)
-            , m_master_key(nullptr, &bip32_key_free)
+            , m_master_key(nullptr)
             , m_debug(debug)
         {
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
@@ -129,7 +129,7 @@ namespace sdk {
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
-            wally_ext_key_ptr master_key, const std::string& challenge);
+            const wally_ext_key_ptr& master_key, const std::string& challenge);
 
         bool connect_with_tls() const { return boost::algorithm::starts_with(m_params.gait_wamp_url(), "wss://"); }
 
@@ -223,7 +223,7 @@ namespace sdk {
     }
 
     std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
-        wally_ext_key_ptr master_key, const std::string& challenge)
+        const wally_ext_key_ptr& master_key, const std::string& challenge)
     {
         auto random_path = get_random_bytes<8>();
 
@@ -231,12 +231,11 @@ namespace sdk {
         adjacent_transform(std::begin(random_path), std::end(random_path), std::begin(child_num),
             [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
-        wally_ext_key_ptr login_key = std::move(master_key);
         ext_key* r;
         GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
-            login_key.get(), child_num.data(), child_num.size(), BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r));
+            master_key.get(), child_num.data(), child_num.size(), BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r));
 
-        login_key = wally_ext_key_ptr(r, &bip32_key_free);
+        wally_ext_key_ptr login_key{ r };
 
         const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
@@ -259,7 +258,7 @@ namespace sdk {
         ext_key* p;
         GA_SDK_VERIFY(bip32_key_from_seed_alloc(
             seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
-        wally_ext_key_ptr master_key(p, &bip32_key_free);
+        wally_ext_key_ptr master_key{ p };
 
         std::array<unsigned char, sizeof(master_key->chain_code) + sizeof(master_key->pub_key)> path_data;
         std::copy(master_key->chain_code, master_key->chain_code + sizeof(master_key->chain_code), path_data.data());
@@ -294,7 +293,7 @@ namespace sdk {
         GA_SDK_VERIFY(bip32_key_from_seed_alloc(
             seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
 
-        m_master_key = wally_ext_key_ptr(p, &bip32_key_free);
+        m_master_key = wally_ext_key_ptr(p);
 
         std::array<unsigned char, sizeof(m_master_key->hash160) + 1> vpkh;
         vpkh[0] = m_params.btc_version();
@@ -312,9 +311,7 @@ namespace sdk {
 
         fn.get();
 
-        struct ext_key master_key = *m_master_key;
-        auto hexder_path
-            = sign_challenge(wally_ext_key_ptr(&master_key, [](const struct ext_key*) { return WALLY_OK; }), challenge);
+        auto hexder_path = sign_challenge(m_master_key, challenge);
 
         auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
@@ -756,7 +753,7 @@ namespace sdk {
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
         }
 
-        return wally_tx_input_ptr(tx_in, &wally_tx_input_free);
+        return wally_tx_input_ptr{ tx_in };
     }
 
     wally_tx_input_ptr session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const
@@ -808,7 +805,7 @@ namespace sdk {
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
         }
 
-        return wally_tx_input_ptr(tx_in, &wally_tx_input_free);
+        return wally_tx_input_ptr{ tx_in };
     }
 
     amount session::session_impl::get_tx_fee(const wally_tx_ptr& tx, amount fee_rate)
@@ -830,7 +827,7 @@ namespace sdk {
         {
             struct wally_tx_output* tx_out;
             GA_SDK_VERIFY(wally_tx_output_init_alloc(v.value(), script, size, &tx_out));
-            return wally_tx_output_ptr(tx_out, &wally_tx_output_free);
+            return wally_tx_output_ptr{ tx_out };
         }
     }
 
