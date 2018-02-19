@@ -40,6 +40,9 @@ namespace sdk {
         {
             return constant_string(s, std::make_index_sequence<N - 1>());
         }
+        struct wally_string_dtor {
+            void operator()(char* p) { wally_free_string(p); }
+        };
     }
 
     template <typename T, std::size_t... I> inline std::string make_string(T s, std::index_sequence<I...>)
@@ -84,7 +87,7 @@ namespace sdk {
         }
     }
 
-    using wally_string_ptr = std::unique_ptr<char, decltype(&wally_free_string)>;
+    using wally_string_ptr = std::unique_ptr<char, detail::wally_string_dtor>;
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz);
     template <typename IN> inline wally_string_ptr hex_from_bytes(const IN& bytes)

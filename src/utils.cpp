@@ -99,7 +99,7 @@ namespace sdk {
     {
         char* s;
         GA_SDK_VERIFY(wally_hex_from_bytes(bytes, siz, &s));
-        return wally_string_ptr(s, &wally_free_string);
+        return wally_string_ptr(s);
     }
 
     std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz)
@@ -131,7 +131,7 @@ namespace sdk {
         GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
         char* s;
         GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, bytes, siz, &s));
-        return wally_string_ptr(s, &wally_free_string);
+        return wally_string_ptr(s);
     }
 }
 }

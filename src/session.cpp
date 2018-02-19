@@ -301,7 +301,7 @@ namespace sdk {
 
         char* q;
         GA_SDK_VERIFY(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q));
-        wally_string_ptr base58_pkh(q, &wally_free_string);
+        wally_string_ptr base58_pkh(q);
 
         auto challenge_arguments = std::make_tuple(base58_pkh.get());
         std::string challenge;
@@ -543,7 +543,7 @@ namespace sdk {
 
         char* q;
         GA_SDK_VERIFY(wally_base58_from_bytes(sc.data(), sc.size(), BASE58_FLAG_CHECKSUM, &q));
-        wally_string_ptr base58_pkh(q, &wally_free_string);
+        wally_string_ptr base58_pkh(q);
 
         address.set(addr_type_str, std::string(q));
 

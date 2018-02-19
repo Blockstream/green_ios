@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
         char* m;
         GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, sdk::get_random_bytes<32>().data(), 32, &m) == WALLY_OK);
-        sdk::wally_string_ptr mnemonic(m, &wally_free_string);
+        sdk::wally_string_ptr mnemonic(m);
 
         sdk::pin_info p;
         sdk::wally_string_ptr username = sdk::hex_from_bytes(sdk::get_random_bytes<8>());
