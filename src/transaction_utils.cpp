@@ -96,20 +96,17 @@ namespace sdk {
         // FIXME: needs code for subaccounts
         //
 
+        size_t n_pubkeys = 2, threshold = 2, written;
         std::vector<unsigned char> keys;
-        keys.resize(sizeof server_pub_key->pub_key + sizeof client_pub_key->pub_key);
-        std::copy(server_pub_key->pub_key, server_pub_key->pub_key + sizeof server_pub_key->pub_key, keys.begin());
-        std::copy(client_pub_key->pub_key, client_pub_key->pub_key + sizeof client_pub_key->pub_key,
-            keys.begin() + sizeof server_pub_key->pub_key);
+        keys.reserve(3 * EC_PUBLIC_KEY_LEN);
+        keys.insert(keys.end(), server_pub_key->pub_key, server_pub_key->pub_key + EC_PUBLIC_KEY_LEN);
+        keys.insert(keys.end(), client_pub_key->pub_key, client_pub_key->pub_key + EC_PUBLIC_KEY_LEN);
+        // FIXME: If 2of3, insert 2nd key and increment n_pubkeys here
+        std::vector<unsigned char> script(3 + n_pubkeys * (EC_PUBLIC_KEY_LEN + 1));
 
-        std::vector<unsigned char> multisig;
-        multisig.resize(5 + sizeof server_pub_key->pub_key + sizeof client_pub_key->pub_key);
-
-        size_t written{ 0 };
-        GA_SDK_VERIFY(wally_scriptpubkey_multisig_from_bytes(
-            keys.data(), keys.size(), 2, 0, multisig.data(), multisig.size(), &written));
-
-        return multisig;
+        GA_SDK_VERIFY(wally::scriptpubkey_multisig_from_bytes(keys, threshold, 0, &written, script));
+        GA_SDK_RUNTIME_ASSERT(written == script.size());
+        return script;
     }
 
     std::vector<unsigned char> input_script(
