@@ -12,6 +12,8 @@ const std::string DEFAULT_TOPIC("com.greenaddress.blocks");
 
 int main(int argc, char** argv)
 {
+    using namespace ga;
+
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
 
@@ -19,8 +21,8 @@ int main(int argc, char** argv)
     std::condition_variable cv;
 
     try {
-        ga::sdk::session session;
-        session.connect(options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network());
+        sdk::session session;
+        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network());
         session.subscribe(DEFAULT_TOPIC, [&](const autobahn::wamp_event& event) {
             using topic_type = std::unordered_map<std::string, size_t>;
             auto ev = event.argument<topic_type>(0);

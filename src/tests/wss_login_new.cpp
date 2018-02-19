@@ -10,6 +10,8 @@
 
 int main(int argc, char** argv)
 {
+    using namespace ga;
+
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
@@ -17,17 +19,15 @@ int main(int argc, char** argv)
         GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist("en", &w) == WALLY_OK);
 
         char* m;
-        GA_SDK_RUNTIME_ASSERT(
-            bip39_mnemonic_from_bytes(w, ga::sdk::get_random_bytes<32>().data(), 32, &m) == WALLY_OK);
-        ga::sdk::wally_string_ptr mnemonic(m, &wally_free_string);
+        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, sdk::get_random_bytes<32>().data(), 32, &m) == WALLY_OK);
+        sdk::wally_string_ptr mnemonic(m, &wally_free_string);
 
-        ga::sdk::pin_info p;
-        ga::sdk::wally_string_ptr username = ga::sdk::hex_from_bytes(ga::sdk::get_random_bytes<8>());
+        sdk::pin_info p;
+        sdk::wally_string_ptr username = sdk::hex_from_bytes(sdk::get_random_bytes<8>());
 
         {
-            ga::sdk::session session;
-            session.connect(
-                options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
+            sdk::session session;
+            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
             session.register_user(mnemonic.get());
             auto result = session.login(mnemonic.get());
             GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login"));
@@ -36,16 +36,14 @@ int main(int argc, char** argv)
         }
 
         {
-            ga::sdk::session session;
-            session.connect(
-                options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
+            sdk::session session;
+            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
             auto result = session.login_watch_only(username.get(), "password");
         }
 
         {
-            ga::sdk::session session;
-            session.connect(
-                options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
+            sdk::session session;
+            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
             auto result = session.login("0000", std::make_pair(p["pin_identifier"], p["secret"]));
             GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login") == false);
             GA_SDK_RUNTIME_ASSERT(session.remove_account());

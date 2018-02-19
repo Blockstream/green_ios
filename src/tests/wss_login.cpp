@@ -11,11 +11,13 @@ const std::string DEFAULT_MNEMONIC(
 
 int main(int argc, char** argv)
 {
+    using namespace ga;
+
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
-        ga::sdk::session session;
-        session.connect(options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
+        sdk::session session;
+        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
         session.register_user(DEFAULT_MNEMONIC);
         auto result = session.login(DEFAULT_MNEMONIC);
         GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);
