@@ -31,6 +31,8 @@ namespace sdk {
         static std::array<unsigned char, 32> curr_state = { { 0 } };
         static uint64_t nonce = 0;
 
+        // We only allow fetching up to 32 bytes of random data as bits beyond
+        // this expose the final bytes of the sha512 we use to update curr_state.
         GA_SDK_RUNTIME_ASSERT(num_bytes <= 32 && num_bytes <= siz);
 
         int64_t tsc = 0;
@@ -62,7 +64,8 @@ namespace sdk {
         RAND_add(&tsc, sizeof tsc, 1.5);
         GA_SDK_VERIFY(wally_bzero(&tsc, sizeof tsc));
 
-        std::array<unsigned char, 64 + 32 + 8> buf;
+        // 32 bytes from openssl, 32 from /dev/urandom, 32 from state, 8 from nonce
+        std::array<unsigned char, 32 + 32 + 32 + 8> buf;
         GA_SDK_RUNTIME_ASSERT(RAND_bytes(buf.data(), 32) == 1);
 
         {
@@ -71,7 +74,7 @@ namespace sdk {
             const auto random_device_ptr = std::unique_ptr<int, std::function<void(int*)>>(
                 &random_device, [](int* device) { ::close(*device); });
 
-            GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, buf.data(), 32)) == 32);
+            GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, buf.data() + 32, 32)) == 32);
         }
 
         std::array<unsigned char, SHA512_LEN> sha512;
@@ -84,7 +87,6 @@ namespace sdk {
             ++nonce;
 
             GA_SDK_VERIFY(wally::sha512(buf, sha512));
-
             std::copy(sha512.begin() + 32, sha512.end(), curr_state.data());
         }
 
