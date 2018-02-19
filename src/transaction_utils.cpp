@@ -1,8 +1,7 @@
-#include <wally_script.h>
-
-#include "assertion.hpp"
 #include "transaction_utils.hpp"
+#include "assertion.hpp"
 #include "utils.hpp"
+#include "wally.hpp"
 
 namespace ga {
 namespace sdk {
@@ -16,8 +15,7 @@ namespace sdk {
         return wally_ext_key_ptr(p, &bip32_key_free);
     }
 
-    wally_ext_key_ptr derive_key(
-        const wally_ext_key_ptr& key, std::pair<uint32_t, uint32_t> path, bool public_)
+    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::pair<uint32_t, uint32_t> path, bool public_)
     {
         return derive_key(derive_key(key, path.first, public_), path.second, public_);
     }
@@ -149,6 +147,23 @@ namespace sdk {
         script[2] = 0x20;
         GA_SDK_VERIFY(wally::sha256(script_bytes, script, 3));
         return script;
+    }
+
+    wally_tx_ptr make_tx(uint32_t locktime, const std::vector<wally_tx_input_ptr>& inputs,
+        const std::vector<wally_tx_output_ptr>& outputs)
+    {
+        struct wally_tx* tx;
+        GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, locktime, inputs.size(), outputs.size(), &tx));
+        auto&& tx_ptr = wally_tx_ptr(tx, &wally_tx_free);
+
+        for (auto&& in : inputs) {
+            GA_SDK_VERIFY(wally_tx_add_input(tx, in.get()));
+        }
+        for (auto&& out : outputs) {
+            GA_SDK_VERIFY(wally_tx_add_output(tx, out.get()));
+        }
+
+        return std::move(tx_ptr);
     }
 }
 }

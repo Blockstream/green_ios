@@ -21,6 +21,10 @@ namespace sdk {
 
     using wally_ext_key_ptr = std::unique_ptr<ext_key, decltype(&bip32_key_free)>;
 
+    using wally_tx_input_ptr = std::unique_ptr<wally_tx_input, decltype(&wally_tx_input_free)>;
+    using wally_tx_output_ptr = std::unique_ptr<wally_tx_output, decltype(&wally_tx_output_free)>;
+    using wally_tx_ptr = std::unique_ptr<wally_tx, decltype(&wally_tx_free)>;
+
     wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t child, bool public_);
 
     wally_ext_key_ptr derive_key(
@@ -44,6 +48,9 @@ namespace sdk {
         const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script);
 
     std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes);
+
+    wally_tx_ptr make_tx(uint32_t locktime, const std::vector<wally_tx_input_ptr>& inputs,
+        const std::vector<wally_tx_output_ptr>& outputs);
 }
 }
 
