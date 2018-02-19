@@ -87,7 +87,7 @@ namespace sdk {
     using wally_string_ptr = std::unique_ptr<char, decltype(&wally_free_string)>;
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz);
-    inline wally_string_ptr hex_from_bytes(const std::vector<unsigned char>& bytes)
+    template <typename IN> inline wally_string_ptr hex_from_bytes(const IN& bytes)
     {
         return hex_from_bytes(bytes.data(), bytes.size());
     }
