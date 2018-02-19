@@ -21,6 +21,9 @@ int main(int argc, char** argv)
             bip39_mnemonic_from_bytes(w, ga::sdk::get_random_bytes<32>().data(), 32, &mnemonic) == WALLY_OK);
 
         ga::sdk::pin_info p;
+        char* username = nullptr;
+        GA_SDK_RUNTIME_ASSERT(wally_hex_from_bytes(ga::sdk::get_random_bytes<8>().data(), 8, &username) == WALLY_OK);
+
         {
             ga::sdk::session session;
             session.connect(
@@ -29,14 +32,14 @@ int main(int argc, char** argv)
             auto result = session.login(mnemonic);
             GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login"));
             p = session.set_pin(mnemonic, "0000", "default");
-            GA_SDK_RUNTIME_ASSERT(session.set_watch_only("username", "password"));
+            GA_SDK_RUNTIME_ASSERT(session.set_watch_only(username, "password"));
         }
 
         {
             ga::sdk::session session;
             session.connect(
                 options->testnet ? ga::sdk::make_testnet_network() : ga::sdk::make_localtest_network(), true);
-            auto result = session.login_watch_only("username", "password");
+            auto result = session.login_watch_only(username, "password");
         }
 
         {
@@ -47,6 +50,8 @@ int main(int argc, char** argv)
             GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login") == false);
             GA_SDK_RUNTIME_ASSERT(session.remove_account());
         }
+        GA_SDK_RUNTIME_ASSERT(wally_free_string(username) == WALLY_OK);
+        GA_SDK_RUNTIME_ASSERT(wally_free_string(mnemonic) == WALLY_OK);
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;
