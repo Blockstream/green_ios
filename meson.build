@@ -1,4 +1,4 @@
-project('sdk', ['c', 'cpp'], meson_version : '>= 0.41.1', default_options : ['cpp_std=c++14'])
+project('sdk', ['c', 'cpp'], meson_version : '>= 0.44.0', default_options : ['cpp_std=c++14'])
 
 # header checks (must be architecture independent)
 compiler = meson.get_compiler('cpp')
@@ -31,6 +31,15 @@ add_project_arguments(['-Wextra', '-Werror'], language : 'cpp')
 
 if compiler.get_id() == 'clang' and host_machine.cpu_family().contains('mips')
     add_project_arguments(['-mxgot'], language : 'cpp')
+endif
+
+if get_option('b_sanitize') == 'address'
+    add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
+    add_project_link_arguments(['-shared-libasan'], language : ['c', 'cpp'])
+endif
+
+if get_option('buildtype') == 'debug'
+    add_project_arguments(['-Og', '-g'], language : ['c', 'cpp'])
 endif
 
 if meson.is_cross_build()

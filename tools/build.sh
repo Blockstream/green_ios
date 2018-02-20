@@ -7,33 +7,30 @@ if [ -f /proc/cpuinfo ]; then
 fi
 
 ANALYZE=false
-BUILDTYPE="release"
 LIBTYPE="shared"
 MESON_OPTIONS=""
 EXTRA_CXXFLAGS=""
+COMPILER_VERSION=""
 
 GETOPT='getopt'
 if [ "$(uname)" == "Darwin" ]; then
     GETOPT='/usr/local/opt/gnu-getopt/bin/getopt'
 fi
 
-TEMPOPT=`"$GETOPT" -n "'build.sh" -o z,x,c,b: -l analyze,address_sanitizer,clang,gcc,ndk:,iphone:,iphonesim:,buildtype: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "'build.sh" -o z,x,c,b: -l analyze,address_sanitizer,clang,gcc,compiler_version:,ndk:,iphone:,iphonesim:,buildtype: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
-        -z | --address_sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=address -Dcpp_args=-shared-asan";
-                                   EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS -shared-libasan";
-                                   shift ;;
+        -z | --address_sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=address"; shift ;;
         -x | --analyze ) ANALYZE=true; shift ;;
-        -b | --buildtype ) BUILDTYPE="$2"; shift 2;;
+        -b | --buildtype ) MESON_OPTIONS="$MESON_OPTIONS -Dbuildtype=$2"; shift 2;;
         --clang | --gcc | --ndk ) break ;;
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
+        --compiler_version) COMPILER_VERSION="-$2"; shift 2;;
         -- ) shift; break ;;
         *) break ;;
     esac
 done
-
-MESON_OPTIONS="$MESON_OPTIONS --buildtype=$BUILDTYPE"
 
 NINJA=$(which ninja-build) || true
 if [ ! -x "$NINJA" ] ; then
@@ -46,28 +43,30 @@ export PKG_CONFIG_PATH_BASE=$PKG_CONFIG_PATH
 export PATH_BASE=$PATH
 
 function build() {
-    ./tools/deps.sh $PWD/build-$1
-    export CXX=$2
-    export CCC_CXX=$2
-    export CC=$1
-    export CCC_CC=$1
-    export CC=$1
-    export BOOST_ROOT="$PWD/build-$1/boost_1_64_0/build"
-    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$1/openssl-1.0.2m/build/lib/pkgconfig"
-    export WALLY_PKG_CONFIG_PATH="$PWD/build-$1/libwally-core/build/lib/pkgconfig"
+    CXX_COMPILER="$2$COMPILER_VERSION"
+    C_COMPILER="$1$COMPILER_VERSION"
+    ./tools/deps.sh $PWD/build-$C_COMPILER
+    export CXX="$CXX_COMPILER"
+    export CCC_CXX="$CXX_COMPILER"
+    export CC="$C_COMPILER"
+    export CCC_CC="$C_COMPILER"
+    export CC="$C_COMPILER"
+    export BOOST_ROOT="$PWD/build-$C_COMPILER/boost_1_64_0/build"
+    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$C_COMPILER/openssl-1.0.2m/build/lib/pkgconfig"
+    export WALLY_PKG_CONFIG_PATH="$PWD/build-$C_COMPILER/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     SCAN_BUILD=""
     if [ $ANALYZE == true ] ; then
-        SCAN_BUILD="scan-build --use-cc=$1 --use-c++=$2"
+        SCAN_BUILD="scan-build --use-cc=$C_COMPILER --use-c++=$CXX_COMPILER"
     fi
 
-    if [ ! -f "build-$1/build.ninja" ]; then
-        rm -rf build-$1/meson-private
-        CXXFLAGS=$EXTRA_CXXFLAGS $SCAN_BUILD meson build-$1 --default-library=${LIBTYPE} ${MESON_OPTIONS}
+    if [ ! -f "build-$C_COMPILER/build.ninja" ]; then
+        rm -rf build-$C_COMPILER/meson-private
+        CXXFLAGS=$EXTRA_CXXFLAGS $SCAN_BUILD meson build-$C_COMPILER --default-library=${LIBTYPE} ${MESON_OPTIONS}
     fi
 
-    cd build-$1
+    cd build-$C_COMPILER
     $NINJA -j$NUM_JOBS
     cd ..
 }
@@ -142,7 +141,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     function build() {
         bld_root="$PWD/build-clang-$1-$2"
 
-        export SDK_CFLAGS="$SDK_CFLAGS -fPIC"
+        export SDK_CFLAGS="$SDK_CFLAGS -DPIC -fPIC"
         export SDK_CPPFLAGS="$SDK_CFLAGS"
 
         if [[ $SDK_ARCH == *"64"* ]]; then

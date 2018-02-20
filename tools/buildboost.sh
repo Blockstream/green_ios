@@ -50,5 +50,5 @@ EOF
 else
     ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=system,thread
     ./b2 --clean
-    ./b2 -j$NUM_JOBS --with-thread --with-system cxxflags=-fPIC link=static install
+    ./b2 -j$NUM_JOBS --with-thread --with-system cxxflags="-DPIC -fPIC" link=static install
 fi

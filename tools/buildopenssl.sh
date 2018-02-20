@@ -122,7 +122,7 @@ else
         ./Configure darwin64-x86_64-cc --prefix="$openssl_prefix" no-shared
     else
         ./config --prefix="$openssl_prefix" no-shared
-        sed -ie "s!^CFLAG=!CFLAG=-fPIC !" "Makefile"
+        sed -ie "s!^CFLAG=!CFLAG=-fPIC -DPIC !" "Makefile"
     fi
     make depend
     make -j$NUM_JOBS 2> /dev/null
