@@ -33,7 +33,7 @@ if compiler.get_id() == 'clang' and host_machine.cpu_family().contains('mips')
     add_project_arguments(['-mxgot'], language : 'cpp')
 endif
 
-if get_option('b_sanitize') == 'address'
+if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address'
     add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
     add_project_link_arguments(['-shared-libasan'], language : ['c', 'cpp'])
 endif
