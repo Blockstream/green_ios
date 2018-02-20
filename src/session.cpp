@@ -137,28 +137,26 @@ namespace sdk {
         template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
         {
             // FIXME: these options need to be checked.
-            boost::get<std::shared_ptr<T>>(m_client)->set_tls_init_handler([](websocketpp::connection_hdl) {
+            boost::get<std::unique_ptr<T>>(m_client)->set_tls_init_handler([](websocketpp::connection_hdl) {
                 context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
                 ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2
-                    | boost::asio::ssl::context::no_sslv3
-                    | boost::asio::ssl::context::no_tlsv1
-                    | boost::asio::ssl::context::no_tlsv1_1
-                    | boost::asio::ssl::context::single_dh_use);
+                    | boost::asio::ssl::context::no_sslv3 | boost::asio::ssl::context::no_tlsv1
+                    | boost::asio::ssl::context::no_tlsv1_1 | boost::asio::ssl::context::single_dh_use);
                 return ctx;
             });
         }
 
         template <typename T> void make_client()
         {
-            m_client = std::make_shared<T>();
-            boost::get<std::shared_ptr<T>>(m_client)->init_asio(&m_io);
+            m_client = std::make_unique<T>();
+            boost::get<std::unique_ptr<T>>(m_client)->init_asio(&m_io);
             set_tls_init_handler<T>();
         }
 
         template <typename T> void make_transport()
         {
             using client_type
-                = std::shared_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
+                = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
 
             m_transport = std::make_shared<T>(*boost::get<client_type>(m_client), m_params.gait_wamp_url(), m_debug),
             boost::get<std::shared_ptr<T>>(m_transport)
@@ -197,7 +195,7 @@ namespace sdk {
 
     private:
         boost::asio::io_service m_io;
-        boost::variant<std::shared_ptr<client>, std::shared_ptr<client_tls>> m_client;
+        boost::variant<std::unique_ptr<client>, std::unique_ptr<client_tls>> m_client;
         boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> m_transport;
         std::shared_ptr<autobahn::wamp_session> m_session;
 
@@ -952,10 +950,13 @@ namespace sdk {
     void session::connect(network_parameters params, bool debug)
     {
         exception_wrapper([&] {
-            m_impl = std::make_shared<session::session_impl>(std::move(params), debug);
+            m_impl = std::make_unique<session::session_impl>(std::move(params), debug);
             m_impl->connect();
         });
     }
+
+    session::session() {}
+    session::~session() {}
 
     void session::disconnect() { m_impl.reset(); }
 

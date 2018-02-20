@@ -84,8 +84,8 @@ namespace sdk {
 
     class session {
     public:
-        explicit session() = default;
-        ~session() = default;
+        explicit session();
+        ~session();
 
         session(const session&) = delete;
         session(session&&) = delete;
@@ -145,7 +145,7 @@ namespace sdk {
 
     private:
         class session_impl;
-        std::shared_ptr<session_impl> m_impl;
+        std::unique_ptr<session_impl> m_impl;
     };
 }
 }
