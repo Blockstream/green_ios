@@ -23,10 +23,10 @@ while true; do
     case "$1" in
         -z | --address_sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=address"; shift ;;
         -x | --analyze ) ANALYZE=true; shift ;;
-        -b | --buildtype ) MESON_OPTIONS="$MESON_OPTIONS --buildtype=$2"; shift 2;;
+        -b | --buildtype ) MESON_OPTIONS="$MESON_OPTIONS --buildtype=$2"; shift 2 ;;
         --clang | --gcc | --ndk ) break ;;
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
-        --compiler_version) COMPILER_VERSION="-$2"; shift 2;;
+        --compiler_version) COMPILER_VERSION="-$2"; shift 2 ;;
         -- ) shift; break ;;
         *) break ;;
     esac
