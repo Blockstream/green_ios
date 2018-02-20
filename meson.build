@@ -27,7 +27,7 @@ if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_fami
     endif
 endif
 
-add_project_arguments(['-Wextra', '-Werror'], language : 'cpp')
+add_project_arguments(['-Wextra'], language : ['c', 'cpp'])
 
 if compiler.get_id() == 'clang' and host_machine.cpu_family().contains('mips')
     add_project_arguments(['-mxgot'], language : 'cpp')
