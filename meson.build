@@ -39,7 +39,7 @@ if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 
 endif
 
 if get_option('buildtype') == 'debug'
-    add_project_arguments(['-Og', '-g'], language : ['c', 'cpp'])
+    add_project_arguments(['-Og', '-g', '-fno-omit-frame-pointer'], language : ['c', 'cpp'])
 endif
 
 if meson.is_cross_build()
