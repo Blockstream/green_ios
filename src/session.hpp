@@ -84,7 +84,7 @@ namespace sdk {
 
     class session {
     public:
-        explicit session();
+        session();
         ~session();
 
         session(const session&) = delete;

@@ -5,9 +5,10 @@
 #include <cstddef>
 #include <map>
 #include <string>
-#include <vector>
 
 #include <wally.hpp>
+
+#include "memory.hpp"
 
 namespace ga {
 namespace sdk {
@@ -95,7 +96,7 @@ namespace sdk {
         return hex_from_bytes(bytes.data(), bytes.size());
     }
 
-    std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
+    secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
     inline auto bytes_from_hex(const std::string& hex) { return bytes_from_hex(hex.data(), hex.size()); }
 
     std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(

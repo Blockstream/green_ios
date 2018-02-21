@@ -10,8 +10,6 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 
-#include <ccan/ccan/endian/endian.h>
-
 #include <wally_bip32.h>
 #include <wally_bip39.h>
 #include <wally_core.h>
@@ -19,6 +17,7 @@
 
 #include "assertion.hpp"
 #include "exception.hpp"
+#include "memory.hpp"
 #include "session.hpp"
 #include "transaction_utils.hpp"
 
@@ -187,7 +186,7 @@ namespace sdk {
 
         amount get_dust_threshold() const;
         std::string get_raw_output(const std::string& txhash) const;
-        std::vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
+        secure_vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
         utxo_set get_utxos(size_t num_confs, size_t subaccount) const;
         wally_tx_input_ptr add_utxo(const utxo& u) const;
         wally_tx_input_ptr sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const;
@@ -490,7 +489,7 @@ namespace sdk {
         return raw_output;
     }
 
-    std::vector<unsigned char> session::session_impl::output_script(uint32_t subaccount, uint32_t pointer) const
+    secure_vector<unsigned char> session::session_impl::output_script(uint32_t subaccount, uint32_t pointer) const
     {
         GA_SDK_RUNTIME_ASSERT(!m_params.deposit_chain_code().empty());
         GA_SDK_RUNTIME_ASSERT(!m_params.deposit_pub_key().empty());

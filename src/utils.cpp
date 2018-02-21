@@ -102,9 +102,9 @@ namespace sdk {
         return wally_string_ptr(s);
     }
 
-    std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz)
+    secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz)
     {
-        std::vector<unsigned char> bytes(siz / 2);
+        secure_vector<unsigned char> bytes(siz / 2);
         size_t written;
         GA_SDK_VERIFY(wally_hex_to_bytes(hex, bytes.data(), bytes.size(), &written));
         bytes.resize(written);

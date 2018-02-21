@@ -54,7 +54,7 @@ namespace sdk {
         return derive_key(server_pub_key, pointer, true);
     }
 
-    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script)
+    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const secure_vector<unsigned char>& script)
     {
         std::array<unsigned char, HASH160_LEN + 1> addr;
         addr[0] = 196;
@@ -62,9 +62,9 @@ namespace sdk {
         return addr;
     }
 
-    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script)
+    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const secure_vector<unsigned char>& script)
     {
-        std::vector<unsigned char> witness;
+        secure_vector<unsigned char> witness;
         size_t written;
         witness.resize(SHA256_LEN + 1);
         GA_SDK_VERIFY(wally::witness_program_from_bytes(script, WALLY_SCRIPT_SHA256, &written, witness));
@@ -85,7 +85,7 @@ namespace sdk {
         return script;
     }
 
-    std::vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,
+    secure_vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,
         const std::string& deposit_pub_key, const std::string& gait_path, uint32_t subaccount, uint32_t pointer,
         bool main_net)
     {
@@ -97,25 +97,25 @@ namespace sdk {
         //
 
         size_t n_pubkeys = 2, threshold = 2, written;
-        std::vector<unsigned char> keys;
+        secure_vector<unsigned char> keys;
         keys.reserve(3 * EC_PUBLIC_KEY_LEN);
         keys.insert(keys.end(), server_pub_key->pub_key, server_pub_key->pub_key + EC_PUBLIC_KEY_LEN);
         keys.insert(keys.end(), client_pub_key->pub_key, client_pub_key->pub_key + EC_PUBLIC_KEY_LEN);
         // FIXME: If 2of3, insert 2nd key and increment n_pubkeys here
-        std::vector<unsigned char> script(3 + n_pubkeys * (EC_PUBLIC_KEY_LEN + 1));
+        secure_vector<unsigned char> script(3 + n_pubkeys * (EC_PUBLIC_KEY_LEN + 1));
 
         GA_SDK_VERIFY(wally::scriptpubkey_multisig_from_bytes(keys, threshold, 0, &written, script));
         GA_SDK_RUNTIME_ASSERT(written == script.size());
         return script;
     }
 
-    std::vector<unsigned char> input_script(
+    secure_vector<unsigned char> input_script(
         const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs,
-        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script)
+        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const secure_vector<unsigned char>& output_script)
     {
         GA_SDK_RUNTIME_ASSERT(num_sigs > 0 && num_sigs < 3);
 
-        std::vector<unsigned char> script;
+        secure_vector<unsigned char> script;
         script.resize(1 + 1 + output_script.size() + (1 + sigs_size[0]) + (num_sigs == 2 ? 1 + sigs_size[1] : 0) + 2);
 
         unsigned char* p = script.data();
@@ -133,7 +133,7 @@ namespace sdk {
         return script;
     }
 
-    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes)
+    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const secure_vector<unsigned char>& script_bytes)
     {
         std::array<unsigned char, 3 + SHA256_LEN> script;
         script[0] = 0x22;

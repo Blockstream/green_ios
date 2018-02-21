@@ -97,25 +97,22 @@ dl_dep = compiler.find_library('dl', required : false)
 subproject_libdirs = []
 subproject_deps = []
 subprojects = [['boost', 'boost_1_64_0', '>= 1.64.0', ['system', 'thread']],
-               ['wallycore', 'libwally-core', '>= 0.1', []],
+               ['wallycore', 'libwally-core', '>= 0.4.0', []],
                ['openssl', 'openssl-1.0.2m', '>= 1.0.2', []]]
 
 foreach sub : subprojects
     subproject_libdirs += join_paths(meson.build_root(), sub[1], 'build', 'lib')
-    dep = dependency(sub[0], modules : sub[3], version : '>= 9.9.9', required : false, static : true)
-    if not dep.found()
-        message('Building ' + sub[0] + '...')
-        run_cmd_args = []
-        if meson.is_cross_build()
-            run_cmd_args += ['--' + meson.get_cross_property('target_os')]
-        endif
-        res = run_command(join_paths('tools', 'build' + sub[0] + '.sh'), run_cmd_args)
-        if res.returncode() != 0
-            message('--- Failed to run command (stdout) ---')
-            message(res.stdout())
-            message('--- Failed to run command (stderr) ---')
-            message(res.stderr())
-        endif
+    message('Building ' + sub[0] + '...')
+    run_cmd_args = []
+    if meson.is_cross_build()
+        run_cmd_args += ['--' + meson.get_cross_property('target_os')]
+    endif
+    res = run_command(join_paths('tools', 'build' + sub[0] + '.sh'), run_cmd_args)
+    if res.returncode() != 0
+        message('--- Failed to run command (stdout) ---')
+        message(res.stdout())
+        message('--- Failed to run command (stderr) ---')
+        message(res.stderr())
     endif
     subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)
 endforeach
