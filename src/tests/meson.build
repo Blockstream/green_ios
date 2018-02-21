@@ -41,7 +41,7 @@ foreach source : sources
     exe = executable(exe_name, exe_sources,
                      include_directories : incdir,
                      dependencies : dependencies)
-    test(exe_name, exe)
+    test(exe_name, exe, timeout : 120)
 endforeach
 
 if build_jni
