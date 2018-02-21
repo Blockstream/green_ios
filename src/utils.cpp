@@ -111,13 +111,13 @@ namespace sdk {
         return bytes;
     }
 
-    std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
+    secure_array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
         const std::string& mnemonic, const std::string& lang)
     {
         struct words* w;
         GA_SDK_VERIFY(bip39_get_wordlist(lang.c_str(), &w));
 
-        std::array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
+        secure_array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
         size_t written = 0;
         GA_SDK_VERIFY(bip39_mnemonic_to_bytes(w, mnemonic.c_str(), bytes.data(), bytes.size(), &written));
         GA_SDK_RUNTIME_ASSERT(written == BIP39_ENTROPY_LEN_256);

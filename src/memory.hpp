@@ -1,9 +1,10 @@
-#ifndef GA_SDK_SECURE_ALLOCATOR_HPP
-#define GA_SDK_SECURE_ALLOCATOR_HPP
+#ifndef GA_SDK_MEMORY_HPP
+#define GA_SDK_MEMORY_HPP
 #pragma once
 
 #include <sys/mman.h>
 
+#include <array>
 #include <memory>
 #include <new>
 #include <vector>
@@ -45,6 +46,7 @@ namespace sdk {
                 T* ptr = m_alloc.allocate(n);
                 const auto ret = mlock(ptr, n);
                 if (ret) {
+                    m_alloc.deallocate(ptr, n);
                     throw std::bad_alloc();
                 }
                 return ptr;
@@ -60,6 +62,34 @@ namespace sdk {
     }
 
     template <typename T> using secure_vector = std::vector<T, detail::secure_allocator<T>>;
+
+    template <typename T, size_t N> class secure_array : private std::array<T, N> {
+    public:
+        secure_array()
+            : std::array<T, N>()
+        {
+            const auto ret = mlock(data(), N);
+            if (ret) {
+                throw std::bad_alloc();
+            }
+        }
+
+        ~secure_array()
+        {
+            wally_bzero(data(), N);
+            munlock(data(), N);
+        }
+
+        secure_array(const secure_array& other) = default;
+        secure_array(secure_array&& other) = default;
+        secure_array& operator=(secure_array& other) = default;
+        secure_array& operator=(secure_array&& other) = default;
+
+        using std::array<T, N>::data;
+        using std::array<T, N>::size;
+        using std::array<T, N>::begin;
+        using std::array<T, N>::end;
+    };
 }
 }
 

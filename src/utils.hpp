@@ -99,7 +99,7 @@ namespace sdk {
     secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
     inline auto bytes_from_hex(const std::string& hex) { return bytes_from_hex(hex.data(), hex.size()); }
 
-    std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
+    secure_array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
         const std::string& mnemonic, const std::string& lang);
 
     wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang);

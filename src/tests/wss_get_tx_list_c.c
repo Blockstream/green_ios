@@ -19,18 +19,18 @@ int main(int argc, char* argv[])
     struct GA_session* session = NULL;
     ret = GA_create_session(&session);
 
-    ret = GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 1);
-    ret = GA_register_user(session, DEFAULT_MNEMONIC);
+    ret = ret == GA_OK ? GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 1) : ret;
+    ret = ret == GA_OK ? GA_register_user(session, DEFAULT_MNEMONIC) : ret;
 
     struct GA_login_data* login_data = NULL;
-    ret = GA_login(session, DEFAULT_MNEMONIC, &login_data);
+    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC, &login_data) : ret;
 
     struct GA_tx_list* txs = NULL;
-    ret = GA_get_tx_list(session, 0, 0, 0, GA_TIMESTAMP_ASCENDING, 0, "", &txs);
+    ret = ret == GA_OK ? GA_get_tx_list(session, 0, 0, 0, GA_TIMESTAMP_ASCENDING, 0, "", &txs) : ret;
 
     char* fiat_currency = NULL;
-    ret = GA_convert_tx_list_path_to_string(txs, "fiat_currency", &fiat_currency);
-    if (strcmp(fiat_currency, "USD")) {
+    ret = ret == GA_OK ? GA_convert_tx_list_path_to_string(txs, "fiat_currency", &fiat_currency) : ret;
+    if (ret != GA_OK || strcmp(fiat_currency, "USD")) {
         ret = GA_ERROR;
     }
 
