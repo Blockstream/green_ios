@@ -64,11 +64,14 @@ namespace sdk {
     template <typename T> using secure_vector = std::vector<T, detail::secure_allocator<T>>;
 
     template <typename T, size_t N> class secure_array : private std::array<T, N> {
+    private:
+        static constexpr auto siz = N * sizeof(T);
+
     public:
         secure_array()
             : std::array<T, N>()
         {
-            const auto ret = mlock(data(), N);
+            const auto ret = mlock(data(), siz);
             if (ret) {
                 throw std::bad_alloc();
             }
@@ -76,8 +79,8 @@ namespace sdk {
 
         ~secure_array()
         {
-            wally_bzero(data(), N);
-            munlock(data(), N);
+            wally_bzero(data(), siz);
+            munlock(data(), siz);
         }
 
         secure_array(const secure_array& other) = default;
