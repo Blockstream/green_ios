@@ -1,12 +1,10 @@
 #include <iostream>
 
-#include <wally_bip39.h>
-
 #include "argparser.h"
 
 #include "assertion.hpp"
 #include "session.hpp"
-#include "utils.h"
+#include "utils.hpp"
 
 int main(int argc, char** argv)
 {
@@ -15,12 +13,7 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
-        struct words* w;
-        GA_SDK_RUNTIME_ASSERT(bip39_get_wordlist("en", &w) == WALLY_OK);
-
-        char* m;
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_from_bytes(w, sdk::get_random_bytes<32>().data(), 32, &m) == WALLY_OK);
-        sdk::wally_string_ptr mnemonic(m);
+        const auto mnemonic = sdk::mnemonic_from_bytes(sdk::get_random_bytes<32>().data(), 32, "en");
 
         sdk::pin_info p;
         sdk::wally_string_ptr username = sdk::hex_from_bytes(sdk::get_random_bytes<8>());
