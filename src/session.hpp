@@ -133,9 +133,13 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
 
+        utxo_set get_utxos(size_t num_confs, size_t subaccount);
+
         wally_string_ptr make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const std::vector<utxo>& utxos, amount fee_rate, bool send_all);
 
+        void send(const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
+            amount fee_rate, bool send_all = false);
         void send(
             const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all = false);
 
@@ -143,6 +147,7 @@ namespace sdk {
         void change_settings_helper(settings key, const std::map<int, int>& args);
 
         template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);
+        template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args) const;
 
     private:
         class session_impl;
