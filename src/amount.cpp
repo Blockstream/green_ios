@@ -46,7 +46,7 @@ namespace sdk {
         if (str.size() > 10) { // guard against 63 bit overflow
             throw std::out_of_range(str_value);
         }
-        if (units < 0 || units > coin_value) {
+        if (units > coin_value) {
             throw std::out_of_range(str_value);
         }
 

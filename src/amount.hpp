@@ -2,7 +2,6 @@
 #define GA_SDK_AMOUNT_HPP
 #pragma once
 
-#include <cstdint>
 #include <ostream>
 #include <string>
 
@@ -11,7 +10,7 @@ namespace sdk {
 
     class amount final {
     public:
-        using value_type = std::int64_t;
+        using value_type = uint64_t;
 
         static constexpr value_type coin_value = 100000000;
         static constexpr value_type cent = 1000000;

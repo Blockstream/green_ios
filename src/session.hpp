@@ -147,7 +147,6 @@ namespace sdk {
         void change_settings_helper(settings key, const std::map<int, int>& args);
 
         template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);
-        template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args) const;
 
     private:
         class session_impl;

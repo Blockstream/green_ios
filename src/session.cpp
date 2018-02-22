@@ -479,7 +479,10 @@ namespace sdk {
         subscribe_future.get();
     }
 
-    amount session::session_impl::get_dust_threshold() const { return { m_login_data.get<long>("dust") }; }
+    amount session::session_impl::get_dust_threshold() const
+    {
+        return { m_login_data.get<amount::value_type>("dust") };
+    }
 
     std::string session::session_impl::get_raw_output(const std::string& txhash) const
     {
@@ -845,7 +848,7 @@ namespace sdk {
             if (!send_all && total >= address_amount[0].second) {
                 break;
             }
-            total += std::stoll(o.get<std::string>("value").c_str(), nullptr, 10);
+            total += std::stoull(o.get<std::string>("value").c_str(), nullptr, 10);
             inputs.emplace_back(add_utxo(o));
         }
 
@@ -875,7 +878,7 @@ namespace sdk {
                 }
 
                 const utxo& u = *(utxos.begin() + inputs.size());
-                total += std::stoll(u.get<std::string>("value").c_str(), nullptr, 10);
+                total += std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
                 inputs.emplace_back(add_utxo(u));
                 continue;
             }

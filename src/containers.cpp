@@ -41,14 +41,14 @@ namespace sdk {
 
             if (instant) {
                 if (actual_block <= 2) {
-                    return { static_cast<long>(fee_rate * 1.1 * 1000 * 1000 * 100) };
+                    return { static_cast<amount::value_type>(fee_rate * 1.1 * 1000 * 1000 * 100) };
                 }
                 break;
             } else if (actual_block < block) {
                 continue;
             }
 
-            return { static_cast<long>(fee_rate * 1000 * 1000 * 100) };
+            return { static_cast<amount::value_type>(fee_rate * 1000 * 1000 * 100) };
         }
 
         GA_SDK_RUNTIME_ASSERT(!main_net || !instant);
