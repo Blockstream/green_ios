@@ -124,7 +124,9 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name, size_t rating);
         void delete_address_book_entry(const std::string& address);
 
-        bool send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all);
+        wally_string_ptr make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
+            const std::vector<utxo>& utxos, amount fee_rate, bool send_all);
+        void send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all);
 
     private:
         static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
@@ -828,27 +830,21 @@ namespace sdk {
         }
     }
 
-    bool session::session_impl::send(const std::vector<std::pair<std::string, amount>>& address_amount,
-        __attribute__((unused)) amount fee_rate, __attribute__((unused)) bool send_all)
+    wally_string_ptr session::session_impl::make_raw_tx(
+        const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
+        amount fee_rate, bool send_all)
     {
-        GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && (!send_all || address_amount.size() == 1));
-
-        const auto utxos = get_utxos(1, 0);
-        if (utxos.empty()) {
-            return false;
-        }
+        GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && !utxos.empty() && (!send_all || address_amount.size() == 1));
 
         amount total;
         std::vector<wally_tx_input_ptr> inputs;
         inputs.reserve(utxos.size());
         for (auto&& o : utxos) {
-            utxo u;
-            u = o;
             if (!send_all && total >= address_amount[0].second) {
                 break;
             }
-            total += std::stoll(u.get<std::string>("value").c_str(), nullptr, 10);
-            inputs.emplace_back(add_utxo(u));
+            total += std::stoll(o.get<std::string>("value").c_str(), nullptr, 10);
+            inputs.emplace_back(add_utxo(o));
         }
 
         std::vector<wally_tx_output_ptr> outputs;
@@ -876,8 +872,7 @@ namespace sdk {
                     throw std::runtime_error("insufficient funds");
                 }
 
-                utxo u;
-                u = *(utxos.begin() + inputs.size());
+                const utxo& u = *(utxos.begin() + inputs.size());
                 total += std::stoll(u.get<std::string>("value").c_str(), nullptr, 10);
                 inputs.emplace_back(add_utxo(u));
                 continue;
@@ -908,20 +903,32 @@ namespace sdk {
 
         auto ub = utxos.begin();
         for (uint32_t index = 0; index < inputs.size(); ++index) {
-            utxo u;
-            u = *ub++;
-            signed_inputs.emplace_back(sign_input(tx, index, u));
+            signed_inputs.emplace_back(sign_input(tx, index, *ub++));
         }
 
         tx = make_tx(block_height, signed_inputs, outputs);
 
-        auto tx_hex = hex_from_bytes(tx_to_bytes(tx.get()));
-        auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(tx_hex.get()))
+        return hex_from_bytes(tx_to_bytes(tx.get()));
+    }
+
+    void session::session_impl::send(
+        const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all)
+    {
+        GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && (!send_all || address_amount.size() == 1));
+
+        const auto utxos = get_utxos(1, 0);
+
+        std::vector<utxo> utxos_in_use;
+        for (auto&& u : utxos) {
+            utxos_in_use.emplace_back(u);
+        }
+
+        const auto raw_tx = make_raw_tx(address_amount, utxos_in_use, fee_rate, send_all);
+
+        auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(raw_tx.get()))
                       .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         fn.get();
-
-        return true;
     }
 
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
@@ -1083,7 +1090,14 @@ namespace sdk {
         exception_wrapper([&] { m_impl->delete_address_book_entry(address); });
     }
 
-    bool session::send(
+    wally_string_ptr session::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
+        const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->make_raw_tx(address_amount, utxos, fee_rate, send_all); });
+    }
+
+    void session::send(
         const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);

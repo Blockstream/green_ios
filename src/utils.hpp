@@ -91,7 +91,7 @@ namespace sdk {
     using wally_string_ptr = std::unique_ptr<char, detail::wally_string_dtor>;
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz);
-    template <typename IN> inline wally_string_ptr hex_from_bytes(const IN& bytes)
+    template <typename T> inline wally_string_ptr hex_from_bytes(const T& bytes)
     {
         return hex_from_bytes(bytes.data(), bytes.size());
     }

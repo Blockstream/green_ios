@@ -167,9 +167,13 @@ namespace sdk {
     };
 
     struct utxo : public detail::object_container<utxo> {
-        utxo& operator=(const msgpack_object& data)
+        utxo() = default;
+
+        utxo(const msgpack_object& other) { associate(other); }
+
+        utxo& operator=(const msgpack_object& other)
         {
-            associate(data);
+            associate(other);
             return *this;
         }
     };
