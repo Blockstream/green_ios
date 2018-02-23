@@ -775,14 +775,11 @@ namespace sdk {
         const auto out_script = output_script(subaccount, pointer);
 
         std::array<unsigned char, SHA256_LEN> tx_hash;
-        GA_SDK_VERIFY(wally_tx_get_signature_hash(tx.get(), index, out_script.data(), out_script.size(),
-            WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, 0, tx_hash.data(), tx_hash.size()));
+        GA_SDK_VERIFY(wally::tx_get_signature_hash(tx, index, out_script, WALLY_SIGHASH_ALL, tx_hash));
 
-        const auto client_priv_key = derive_key(m_master_key, { 1, pointer }, false);
-
+        const auto client_priv_key = derive_private_key(m_master_key, { 1, pointer });
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-        GA_SDK_VERIFY(wally_ec_sig_from_bytes(client_priv_key->priv_key + 1, sizeof client_priv_key->priv_key - 1,
-            tx_hash.data(), tx_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size()));
+        GA_SDK_VERIFY(wally::ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, sig));
 
         std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
         size_t der_written;

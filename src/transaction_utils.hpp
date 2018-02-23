@@ -48,6 +48,14 @@ namespace sdk {
     wally_ext_key_ptr derive_key(
         const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path, bool public_);
 
+    secure_array<unsigned char, EC_PRIVATE_KEY_LEN> derive_private_key(
+        const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path)
+    {
+        secure_array<unsigned char, EC_PRIVATE_KEY_LEN> p;
+        memcpy(p.data(), derive_key(key, path, false)->priv_key + 1, EC_PRIVATE_KEY_LEN);
+        return p;
+    }
+
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net);
 
