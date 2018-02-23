@@ -55,7 +55,7 @@ namespace sdk {
             void deallocate(T* ptr, std::size_t n)
             {
                 GA_SDK_VERIFY(wally_bzero(ptr, n));
-                GA_SDK_RUNTIME_ASSERT(!munlock(ptr, n));
+                munlock(ptr, n);
                 m_alloc.deallocate(ptr, n);
             }
         };

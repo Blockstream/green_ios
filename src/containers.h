@@ -127,6 +127,15 @@ int GA_convert_available_currencies_to_json(struct GA_available_currencies* curr
 void GA_destroy_dict(struct GA_dict* dict);
 
 /**
+ * Copy a string.
+ * @src The string to copy.
+ * @dst The new string.
+ *
+ * GA_ERROR if unsuccessful.
+ */
+void GA_copy_string(const char* src, char** dst);
+
+/**
  * Free a string.
  * @str The string to free.
  *

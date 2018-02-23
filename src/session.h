@@ -216,7 +216,11 @@ int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin
 /*
  * Send a transaction for the specified address/amount pairs.
  * @session The server session to use.
- * @
+ * @addr The addresses to send.
+ * @add_siz The count of items in @addr.
+ * @amt The amounts to send.
+ * @amt_siz The count of items in @amt.
+ * @fee_rate The fee rate.
  *
  * GA_ERROR if raw transaction could not be created.
  */

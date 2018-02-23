@@ -199,24 +199,31 @@ public class Session {
     }
 
     public func send(addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool = false) throws -> Void {
-        let pointer = UnsafeMutablePointer<UnsafePointer<Int8>?>.allocate(capacity: addrAmt.count)
-        pointer.initialize(to: nil, count: addrAmt.count)
+        let addresses = UnsafeMutablePointer<UnsafePointer<Int8>?>.allocate(capacity: addrAmt.count)
+        addresses.initialize(to: nil, count: addrAmt.count)
         defer {
-            pointer.deinitialize(count: addrAmt.count)
-            pointer.deallocate(capacity: addrAmt.count)
-        }
-        let addr = addrAmt.map { $0.0 }
-        for i in 0..<addrAmt.count {
-            addr[i].withCString { cstr in
-                pointer.advanced(by: i).pointee = cstr
+            for i in 0..<addrAmt.count {
+                if let p = addresses[i] {
+                    GA_destroy_string(p)
+                }
             }
+            addresses.deinitialize(count: addrAmt.count)
+            addresses.deallocate(capacity: addrAmt.count)
         }
-        try callWrapper(fun: GA_send(session, pointer, addrAmt.count, addrAmt.map { $0.1 }, addrAmt.count, feeRate, sendAll))
+        let addr = addrAmt.map { (str, _) -> UnsafePointer<Int8>? in
+            var bytes: UnsafeMutablePointer<Int8>? = nil
+            GA_copy_string(str, &bytes)
+            return UnsafePointer<Int8>(bytes!)
+        }
+        for i in 0..<addrAmt.count {
+            addresses.advanced(by: i).pointee = addr[i]
+        }
+        try callWrapper(fun: GA_send(session, addresses, addrAmt.count, addrAmt.map { $0.1 }, addrAmt.count, feeRate, sendAll))
     }
 }
 
 public func generateMnemonic(lang: String) throws -> String {
-    var bytes : UnsafeMutablePointer<Int8>?
+    var bytes : UnsafeMutablePointer<Int8>? = nil
     guard GA_generate_mnemonic(lang, &bytes) == GA_OK else {
         throw GaError.GenericError
     }
