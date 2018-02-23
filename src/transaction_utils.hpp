@@ -48,7 +48,7 @@ namespace sdk {
     wally_ext_key_ptr derive_key(
         const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path, bool public_);
 
-    secure_array<unsigned char, EC_PRIVATE_KEY_LEN> derive_private_key(
+    inline secure_array<unsigned char, EC_PRIVATE_KEY_LEN> derive_private_key(
         const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path)
     {
         secure_array<unsigned char, EC_PRIVATE_KEY_LEN> p;
