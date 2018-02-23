@@ -774,10 +774,9 @@ namespace sdk {
 
         const auto out_script = output_script(subaccount, pointer);
 
-        size_t written;
         std::array<unsigned char, SHA256_LEN> tx_hash;
         GA_SDK_VERIFY(wally_tx_get_signature_hash(tx.get(), index, out_script.data(), out_script.size(),
-            WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, 0, tx_hash.data(), tx_hash.size(), &written));
+            WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, 0, tx_hash.data(), tx_hash.size()));
 
         const auto client_priv_key = derive_key(m_master_key, { 1, pointer }, false);
 
