@@ -126,6 +126,7 @@ int GA_convert_available_currencies_to_json(struct GA_available_currencies* curr
  */
 void GA_destroy_dict(struct GA_dict* dict);
 
+#ifndef SWIG
 /**
  * Copy a string.
  * @src The string to copy.
@@ -142,6 +143,7 @@ void GA_copy_string(const char* src, char** dst);
  * GA_ERROR if unsuccessful.
  */
 void GA_destroy_string(const char* str);
+#endif
 
 /**
  * Free a GA_tx_list allocated by @GA_get_tx_list.

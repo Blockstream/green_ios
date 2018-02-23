@@ -425,12 +425,13 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_tx_list_path_to_string, GA_tx_list,
     [](struct GA_tx_list* txs, const char* path, char** value) { c_invoke_convert_to_string(txs, path, value); },
     const char*, path, char**, value);
 
-void GA_copy_string(const char* src, char** dst) {
+void GA_copy_string(const char* src, char** dst)
+{
     GA_SDK_RUNTIME_ASSERT(src);
     GA_SDK_RUNTIME_ASSERT(dst);
 
     const auto len = strlen(src);
-    *dst = new char [len + 1];
+    *dst = new char[len + 1];
     std::copy(src, src + len, *dst);
     *(dst + len) = 0;
 }

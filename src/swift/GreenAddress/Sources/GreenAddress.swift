@@ -198,25 +198,34 @@ public class Session {
         return String(cString: bytes!)
     }
 
-    public func send(addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool = false) throws -> Void {
-        let addresses = UnsafeMutablePointer<UnsafePointer<Int8>?>.allocate(capacity: addrAmt.count)
-        addresses.initialize(to: nil, count: addrAmt.count)
-        defer {
-            for i in 0..<addrAmt.count {
-                if let p = addresses[i] {
-                    GA_destroy_string(p)
-                }
-            }
-            addresses.deinitialize(count: addrAmt.count)
-            addresses.deallocate(capacity: addrAmt.count)
-        }
-        let addr = addrAmt.map { (str, _) -> UnsafePointer<Int8>? in
+    func toCStr(strings: [String]) -> UnsafeMutablePointer<UnsafePointer<Int8>?> {
+        let copies = UnsafeMutablePointer<UnsafePointer<Int8>?>.allocate(capacity: strings.count)
+        copies.initialize(to: nil, count: strings.count)
+        let arr = strings.map { str -> UnsafePointer<Int8>? in
             var bytes: UnsafeMutablePointer<Int8>? = nil
             GA_copy_string(str, &bytes)
             return UnsafePointer<Int8>(bytes!)
         }
-        for i in 0..<addrAmt.count {
-            addresses.advanced(by: i).pointee = addr[i]
+        for i in 0..<strings.count {
+            copies.advanced(by: i).pointee = arr[i]
+        }
+        return copies
+    }
+
+    func clearCStr(copies: UnsafeMutablePointer<UnsafePointer<Int8>?>, count: Int) -> Void {
+        for i in 0..<count {
+            if let p = copies[i] {
+                GA_destroy_string(p)
+            }
+        }
+        copies.deinitialize(count: count)
+        copies.deallocate(capacity: count)
+    }
+
+    public func send(addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool = false) throws -> Void {
+        let addresses = toCStr(strings: addrAmt.map { $0.0 })
+        defer {
+            clearCStr(copies: addresses, count: addrAmt.count)
         }
         try callWrapper(fun: GA_send(session, addresses, addrAmt.count, addrAmt.map { $0.1 }, addrAmt.count, feeRate, sendAll))
     }
