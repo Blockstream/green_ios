@@ -138,6 +138,7 @@ namespace sdk {
         wally_string_ptr make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const std::vector<utxo>& utxos, amount fee_rate, bool send_all);
 
+        void send(const wally_string_ptr& raw_tx);
         void send(const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
             amount fee_rate, bool send_all = false);
         void send(

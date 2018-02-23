@@ -127,6 +127,7 @@ namespace sdk {
         utxo_set get_utxos(size_t num_confs, size_t subaccount);
         wally_string_ptr make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const std::vector<utxo>& utxos, amount fee_rate, bool send_all);
+        void send(const wally_string_ptr& raw_tx);
         void send(const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
             amount fee_rate, bool send_all);
         void send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all);
@@ -916,15 +917,18 @@ namespace sdk {
         return hex_from_bytes(tx_to_bytes(tx.get()));
     }
 
-    void session::session_impl::send(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
+    void session::session_impl::send(const wally_string_ptr& raw_tx)
     {
-        const auto raw_tx = make_raw_tx(address_amount, utxos, fee_rate, send_all);
-
         auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(raw_tx.get()))
                       .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         fn.get();
+    }
+
+    void session::session_impl::send(const std::vector<std::pair<std::string, amount>>& address_amount,
+        const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
+    {
+        send(make_raw_tx(address_amount, utxos, fee_rate, send_all));
     }
 
     void session::session_impl::send(
@@ -1112,18 +1116,24 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->make_raw_tx(address_amount, utxos, fee_rate, send_all); });
     }
 
+    void session::send(const wally_string_ptr& raw_tx)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { m_impl->send(raw_tx); });
+    }
+
     void session::send(const std::vector<std::pair<std::string, amount>>& address_amount,
         const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->send(address_amount, utxos, fee_rate, send_all); });
+        return exception_wrapper([&] { m_impl->send(address_amount, utxos, fee_rate, send_all); });
     }
 
     void session::send(
         const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->send(address_amount, fee_rate, send_all); });
+        return exception_wrapper([&] { m_impl->send(address_amount, fee_rate, send_all); });
     }
 }
 }
