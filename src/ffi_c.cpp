@@ -1,3 +1,4 @@
+#include "amount.hpp"
 #include "assertion.hpp"
 #include "common.h"
 #include "exception.hpp"
@@ -90,6 +91,13 @@ struct GA_login_data final : public ga::sdk::login_data {
     int c_function_name(struct c_obj_name* obj, T1 ARG1, T2 ARG2, T3 ARG3, T4 ARG4)                                    \
     {                                                                                                                  \
         return c_invoke(c_function_body, obj, ARG1, ARG2, ARG3, ARG4);                                                 \
+    }
+
+#define GA_SDK_DEFINE_C_FUNCTION_6(                                                                                    \
+    c_function_name, c_obj_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3, T4, ARG4, T5, ARG5, T6, ARG6)          \
+    int c_function_name(struct c_obj_name* obj, T1 ARG1, T2 ARG2, T3 ARG3, T4 ARG4, T5 ARG5, T6 ARG6)                  \
+    {                                                                                                                  \
+        return c_invoke(c_function_body, obj, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6);                                     \
     }
 
 #define GA_SDK_DEFINE_C_FUNCTION_7(c_function_name, c_obj_name, c_function_body, T1, ARG1, T2, ARG2, T3, ARG3, T4,     \
@@ -187,6 +195,22 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, GA_session,
         **login_data = result.get_handle().get();
     },
     const char*, pin, const char*, pin_identifier_and_secret, struct GA_login_data**, login_data);
+
+GA_SDK_DEFINE_C_FUNCTION_6(GA_send, GA_session,
+    [](struct GA_session* session, const char** addr, size_t addr_siz, const uint64_t* amt, size_t amt_siz,
+        uint64_t fee_rate, bool send_all) {
+        GA_SDK_RUNTIME_ASSERT(addr);
+        GA_SDK_RUNTIME_ASSERT(amt);
+        GA_SDK_RUNTIME_ASSERT(addr_siz == amt_siz);
+        std::vector<ga::sdk::session::address_amount_pair> addr_amt;
+        addr_amt.reserve(addr_siz);
+        for (size_t i = 0; i < addr_siz; ++i) {
+            GA_SDK_RUNTIME_ASSERT(addr[i]);
+            addr_amt.emplace_back(std::make_pair(addr[i], amt[i]));
+        }
+        session->send(addr_amt, fee_rate, send_all);
+    },
+    const char**, addr, size_t, addr_siz, const uint64_t*, amt, size_t, amt_siz, uint64_t, fee_rate, bool, send_all);
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_login_watch_only, GA_session,
     [](struct GA_session* session, const char* username, const char* password, struct GA_login_data** login_data) {

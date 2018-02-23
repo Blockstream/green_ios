@@ -42,6 +42,9 @@ struct GA_available_currencies;
 /** An login data representation */
 struct GA_login_data;
 
+/** An utxo representation */
+struct GA_utxo;
+
 /**
  *
  */

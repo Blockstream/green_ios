@@ -84,6 +84,8 @@ namespace sdk {
 
     class session {
     public:
+        using address_amount_pair = std::pair<std::string, amount>;
+
         session();
         ~session();
 

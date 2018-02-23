@@ -197,6 +197,22 @@ public class Session {
         }
         return String(cString: bytes!)
     }
+
+    public func send(addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool = false) throws -> Void {
+        let pointer = UnsafeMutablePointer<UnsafePointer<Int8>?>.allocate(capacity: addrAmt.count)
+        pointer.initialize(to: nil, count: addrAmt.count)
+        defer {
+            pointer.deinitialize(count: addrAmt.count)
+            pointer.deallocate(capacity: addrAmt.count)
+        }
+        let addr = addrAmt.map { $0.0 }
+        for i in 0..<addrAmt.count {
+            addr[i].withCString { cstr in
+                pointer.advanced(by: i).pointee = cstr
+            }
+        }
+        try callWrapper(fun: GA_send(session, pointer, addrAmt.count, addrAmt.map { $0.1 }, addrAmt.count, feeRate, sendAll))
+    }
 }
 
 public func generateMnemonic(lang: String) throws -> String {

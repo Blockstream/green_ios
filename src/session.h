@@ -2,6 +2,7 @@
 #define GA_SDK_SESSION_H
 #pragma once
 
+#include <stdbool.h>
 #include <sys/types.h>
 
 #include "containers.h"
@@ -211,6 +212,16 @@ int GA_get_available_currencies(struct GA_session* session, struct GA_available_
  */
 int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin, const char* device,
     char** pin_identifier_and_secret);
+
+/*
+ * Send a transaction for the specified address/amount pairs.
+ * @session The server session to use.
+ * @
+ *
+ * GA_ERROR if raw transaction could not be created.
+ */
+int GA_send(struct GA_session* session, const char** addr, size_t add_siz, const uint64_t* amt, size_t amt_siz,
+    uint64_t fee_rate, bool send_all);
 
 #ifdef __cplusplus
 }
