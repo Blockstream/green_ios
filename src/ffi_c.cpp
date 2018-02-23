@@ -344,9 +344,9 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_balance_to_json, GA_balance,
     char**, output);
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_convert_available_currencies_to_json, GA_available_currencies,
-    [](struct GA_available_currencies* available_currencies, char** output) {
+    [](struct GA_available_currencies* currencies, char** output) {
         GA_SDK_RUNTIME_ASSERT(output);
-        const auto v = available_currencies->get_json();
+        const auto v = currencies->get_json();
         *output = to_c_string(v);
     },
     char**, output);
