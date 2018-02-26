@@ -244,9 +244,9 @@ namespace sdk {
 
         std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN> der;
         size_t written;
-        GA_SDK_VERIFY(wally_ec_sig_to_der(sig.data(), sig.size(), der.data(), der.size(), &written));
+        GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &written, der));
 
-        return { hex_from_bytes(der.data(), written), hex_from_bytes(random_path.data(), random_path.size()) };
+        return { hex_from_bytes(der.data(), written), hex_from_bytes(random_path) };
     }
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
@@ -295,9 +295,9 @@ namespace sdk {
 
         m_master_key = wally_ext_key_ptr(p);
 
-        std::array<unsigned char, sizeof(m_master_key->hash160) + 1> vpkh;
-        vpkh[0] = m_params.btc_version();
-        std::copy(m_master_key->hash160, m_master_key->hash160 + sizeof(m_master_key->hash160), vpkh.begin() + 1);
+        unsigned char btc_ver[1] = { m_params.btc_version() };
+        std::array<unsigned char, sizeof(btc_ver) + sizeof(m_master_key->hash160)> vpkh;
+        init_container(vpkh, make_bytes_view(btc_ver), make_bytes_view(m_master_key->hash160));
 
         char* q;
         GA_SDK_VERIFY(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q));
@@ -635,8 +635,7 @@ namespace sdk {
             salt.data(), salt.size(), 0, 2048, key.data(), key.size()));
 
         std::array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data;
-        std::copy(seed.begin(), seed.end(), data.begin());
-        std::copy(mnemonic_bytes.begin(), mnemonic_bytes.end(), data.begin() + BIP39_SEED_LEN_512);
+        init_container(data, seed, mnemonic_bytes);
 
         const auto iv = get_random_bytes<AES_BLOCK_LEN>();
 
@@ -782,11 +781,9 @@ namespace sdk {
 
         std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
         size_t der_written;
-        GA_SDK_VERIFY(
-            wally_ec_sig_to_der(sig.data(), sig.size(), sigs[0].data(), EC_SIGNATURE_DER_MAX_LEN, &der_written));
+        GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &der_written, sigs[0]));
 
-        unsigned char c = 1;
-        memcpy(sigs[0].data() + der_written, (const unsigned char*)&c, 1);
+        sigs[0][der_written] = WALLY_SIGHASH_ALL;
 
         const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
 
