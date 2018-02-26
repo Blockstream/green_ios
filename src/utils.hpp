@@ -41,6 +41,7 @@ namespace sdk {
         {
             return constant_string(s, std::make_index_sequence<N - 1>());
         }
+
         struct wally_string_dtor {
             void operator()(char* p) { wally_free_string(p); }
         };
