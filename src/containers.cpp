@@ -63,7 +63,7 @@ namespace sdk {
         std::vector<std::string> recipients;
         std::vector<std::string> received_on;
         std::string counterparty;
-        amount total;
+        long total = 0;
 
         const auto l = m_o.get().as<container>();
         const auto eps = l.at("eps").as<std::vector<msgpack::object>>();
@@ -83,12 +83,12 @@ namespace sdk {
                 continue;
             }
 
-            const amount satoshis = boost::lexical_cast<amount::value_type>(value);
+            const long satoshis = boost::lexical_cast<long>(value);
 
             if (!is_credit) {
                 total -= satoshis;
             } else {
-                total += value;
+                total += satoshis;
                 // FIXME: confidential transactions
                 received_on.push_back(ad);
             }
@@ -107,12 +107,9 @@ namespace sdk {
 
         set("received_on", boost::algorithm::join(received_on, ", "));
         set("counterparty", boost::algorithm::join(recipients, ", "));
-        set("fee", boost::lexical_cast<amount::value_type>(get<std::string>("fee")));
         set("timestamp", get<std::string>("created_at"));
-        set("size", get<size_t>("size"));
         set("hash", get<std::string>("txhash"));
-        set("instant", get<bool>("instant"));
-        set("value", total.value());
+        set("value", total);
         // FIXME; missing replaceable
     }
 }

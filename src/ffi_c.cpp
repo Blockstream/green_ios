@@ -37,6 +37,11 @@ struct GA_dict final : public ga::sdk::detail::object_container<GA_dict> {
 };
 
 struct GA_tx final : public ga::sdk::tx {
+    GA_tx& operator=(const msgpack_object& data)
+    {
+        ga::sdk::tx::operator=(data);
+        return *this;
+    }
 };
 
 struct GA_tx_list final : public ga::sdk::tx_list {
@@ -347,7 +352,7 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_tx_list_get_tx, GA_tx_list,
         GA_SDK_RUNTIME_ASSERT(output);
         GA_SDK_RUNTIME_ASSERT(i < txs->size());
         *output = new GA_tx;
-        (*output)->associate(*(txs->begin() + i));
+        **output = *(txs->begin() + i);
     },
     size_t, i, struct GA_tx**, output);
 
