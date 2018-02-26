@@ -83,7 +83,7 @@ namespace sdk {
                 continue;
             }
 
-            const long satoshis = boost::lexical_cast<long>(value);
+            const long satoshis = boost::lexical_cast<int64_t>(value);
 
             if (!is_credit) {
                 total -= satoshis;
