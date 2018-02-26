@@ -231,28 +231,24 @@ namespace sdk {
     std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
         const wally_ext_key_ptr& master_key, const std::string& challenge)
     {
-        auto random_path = get_random_bytes<8>();
+        auto path_bytes = get_random_bytes<8>();
 
-        std::array<uint32_t, 4> child_num;
-        adjacent_transform(std::begin(random_path), std::end(random_path), std::begin(child_num),
+        std::array<uint32_t, 4> path;
+        adjacent_transform(std::begin(path_bytes), std::end(path_bytes), std::begin(path),
             [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
-        ext_key* r;
-        GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
-            master_key.get(), child_num.data(), child_num.size(), BIP32_FLAG_KEY_PRIVATE | BIP32_FLAG_SKIP_HASH, &r));
-
-        wally_ext_key_ptr login_key{ r };
+        secure_array<unsigned char, EC_PRIVATE_KEY_LEN> login_priv_key;
+        derive_private_key(master_key, path, login_priv_key);
 
         const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-        GA_SDK_VERIFY(wally_ec_sig_from_bytes(login_key->priv_key + 1, sizeof(login_key->priv_key) - 1,
-            challenge_hash.data(), challenge_hash.size(), EC_FLAG_ECDSA, sig.data(), sig.size()));
+        GA_SDK_VERIFY(wally::ec_sig_from_bytes(login_priv_key, challenge_hash, EC_FLAG_ECDSA, sig));
 
         std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN> der;
-        size_t written;
-        GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &written, der));
+        size_t der_written;
+        GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &der_written, der));
 
-        return { hex_from_bytes(der.data(), written), hex_from_bytes(random_path) };
+        return { hex_from_bytes(der.data(), der_written), hex_from_bytes(path_bytes) };
     }
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
@@ -778,7 +774,8 @@ namespace sdk {
         GA_SDK_VERIFY(
             wally::tx_get_signature_hash(tx, index, out_script, 0, WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, 0, tx_hash));
 
-        const auto client_priv_key = derive_private_key(m_master_key, { 1, pointer });
+        secure_array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
+        derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
         GA_SDK_VERIFY(wally::ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, sig));
 

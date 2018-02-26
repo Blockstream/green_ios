@@ -45,17 +45,19 @@ namespace sdk {
     using wally_tx_output_ptr = std::unique_ptr<struct wally_tx_output>;
     using wally_tx_ptr = std::unique_ptr<struct wally_tx>;
 
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::uint32_t child, bool public_);
+    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, const uint32_t* path, size_t n, bool public_);
 
-    wally_ext_key_ptr derive_key(
-        const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path, bool public_);
-
-    inline secure_array<unsigned char, EC_PRIVATE_KEY_LEN> derive_private_key(
-        const wally_ext_key_ptr& key, std::pair<std::uint32_t, std::uint32_t> path)
+    template <typename T> inline wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, const T& v, bool public_)
     {
-        secure_array<unsigned char, EC_PRIVATE_KEY_LEN> p;
-        memcpy(p.data(), derive_key(key, path, false)->priv_key + 1, EC_PRIVATE_KEY_LEN);
-        return p;
+        return derive_key(key, v.data(), v.size(), public_);
+    }
+
+    template <typename T>
+    inline void derive_private_key(
+        const wally_ext_key_ptr& key, const T& v, secure_array<unsigned char, EC_PRIVATE_KEY_LEN>& dest)
+    {
+        wally_ext_key_ptr derived = derive_key(key, v, false);
+        memcpy(dest.data(), derived->priv_key + 1, EC_PRIVATE_KEY_LEN);
     }
 
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,

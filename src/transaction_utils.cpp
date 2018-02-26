@@ -7,18 +7,12 @@
 namespace ga {
 namespace sdk {
 
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, uint32_t child, bool public_)
+    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, const uint32_t* path, size_t n, bool public_)
     {
+        uint32_t flags = (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH;
         ext_key* p;
-        GA_SDK_VERIFY(bip32_key_from_parent_alloc(
-            key.get(), child, (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH, &p));
-
+        GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(key.get(), path, n, flags, &p));
         return wally_ext_key_ptr{ p };
-    }
-
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, std::pair<uint32_t, uint32_t> path, bool public_)
-    {
-        return derive_key(derive_key(key, path.first, public_), path.second, public_);
     }
 
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
@@ -27,6 +21,7 @@ namespace sdk {
         // FIXME: cache the top level keys
         const auto dcc_bytes = bytes_from_hex(chain_code);
         const auto dpk_bytes = bytes_from_hex(pub_key);
+        const auto gait_path_bytes = bytes_from_hex(gait_path);
 
         ext_key* p;
         GA_SDK_VERIFY(
@@ -35,24 +30,17 @@ namespace sdk {
 
         wally_ext_key_ptr server_pub_key{ p };
 
-        const auto gait_path_bytes = bytes_from_hex(gait_path);
-
-        std::vector<uint32_t> path(32 + (subaccount == 0 ? 1 : 2));
-        path[0] = subaccount == 0 ? 1 : 3;
+        std::vector<uint32_t> path(32 + 1);
+        path[0] = subaccount ? 3 : 1;
         adjacent_transform(gait_path_bytes.begin(), gait_path_bytes.end(), path.begin() + 1,
             [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
-        if (subaccount != 0) {
-            path.back() = subaccount;
+        if (subaccount) {
+            path.push_back(subaccount);
         }
+        path.push_back(pointer);
 
-        ext_key* q;
-        GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(
-            server_pub_key.get(), path.data(), path.size(), BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH, &q));
-
-        server_pub_key = wally_ext_key_ptr(q);
-
-        return derive_key(server_pub_key, pointer, true);
+        return derive_key(server_pub_key, path, true);
     }
 
     std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const secure_vector<unsigned char>& script)
@@ -92,7 +80,7 @@ namespace sdk {
     {
         const auto server_pub_key
             = ga_pub_key(deposit_chain_code, deposit_pub_key, gait_path, subaccount, pointer, main_net);
-        const auto client_pub_key = derive_key(key, { 1, pointer }, true);
+        const auto client_pub_key = derive_key(key, std::array<uint32_t, 2>{ { 1, pointer } }, true);
 
         // FIXME: needs code for subaccounts
         //
