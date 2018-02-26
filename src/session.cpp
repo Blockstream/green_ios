@@ -30,7 +30,8 @@ namespace sdk {
 
     static const std::string DEFAULT_REALM("realm1");
     static const std::string DEFAULT_USER_AGENT("[v2,sw]");
-    static const char GA_LOGIN_NONCE[] = { "GreenAddress.it HD wallet path" };
+    static const unsigned char GA_LOGIN_NONCE[30] = { 'G', 'r', 'e', 'e', 'n', 'A', 'd', 'd', 'r', 'e', 's', 's', '.',
+        'i', 't', ' ', 'H', 'D', ' ', 'w', 'a', 'l', 'l', 'e', 't', ' ', 'p', 'a', 't', 'h' };
 
     namespace {
         // FIXME: too slow. lacks validation.
@@ -196,6 +197,11 @@ namespace sdk {
         amount get_tx_fee(const wally_tx_ptr& tx, amount fee_rate);
 
     private:
+        uint32_t get_bip32_version() const
+        {
+            return m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
+        }
+
         boost::asio::io_service m_io;
         boost::variant<std::unique_ptr<client>, std::unique_ptr<client_tls>> m_client;
         boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> m_transport;
@@ -251,28 +257,25 @@ namespace sdk {
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
-        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
+        secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
         size_t written;
         GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
 
-        ext_key* p;
-        GA_SDK_VERIFY(bip32_key_from_seed_alloc(
-            seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
-        wally_ext_key_ptr master_key{ p };
+        ext_key master;
+        GA_SDK_VERIFY(wally::bip32_key_from_seed(seed, get_bip32_version(), BIP32_FLAG_SKIP_HASH, &master));
+        // Since we don't use the private key or seed further, wipe them immediately
+        GA_SDK_VERIFY(wally_bzero(master.priv_key, sizeof(master.priv_key)));
+        GA_SDK_VERIFY(wally_bzero(seed.data(), seed.size()));
 
-        std::array<unsigned char, sizeof(master_key->chain_code) + sizeof(master_key->pub_key)> path_data;
-        std::copy(master_key->chain_code, master_key->chain_code + sizeof(master_key->chain_code), path_data.data());
-        std::copy(master_key->pub_key, master_key->pub_key + sizeof(master_key->pub_key),
-            path_data.data() + sizeof(master_key->chain_code));
+        std::array<unsigned char, sizeof(master.chain_code) + sizeof(master.pub_key)> path_data;
+        init_container(path_data, make_bytes_view(master.chain_code), make_bytes_view(master.pub_key));
 
-        std::array<unsigned char, sizeof(GA_LOGIN_NONCE) - 1> key_bytes;
-        memcpy(key_bytes.data(), GA_LOGIN_NONCE, sizeof(GA_LOGIN_NONCE) - 1);
         std::array<unsigned char, HMAC_SHA512_LEN> path;
-        GA_SDK_VERIFY(wally::hmac_sha512(key_bytes, path_data, path));
+        GA_SDK_VERIFY(wally::hmac_sha512(make_bytes_view(GA_LOGIN_NONCE), path_data, path));
 
-        auto pub_key = hex_from_bytes(master_key->pub_key, sizeof(master_key->pub_key));
-        auto chain_code = hex_from_bytes(master_key->chain_code, sizeof(master_key->chain_code));
-        auto hex_path = hex_from_bytes(path.data(), path.size());
+        auto pub_key = hex_from_bytes(make_bytes_view(master.pub_key));
+        auto chain_code = hex_from_bytes(make_bytes_view(master.chain_code));
+        auto hex_path = hex_from_bytes(path);
 
         auto register_arguments = std::make_tuple(
             pub_key.get(), chain_code.get(), DEFAULT_USER_AGENT + user_agent + "_ga_sdk", hex_path.get());
@@ -289,9 +292,9 @@ namespace sdk {
         size_t written;
         GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
 
+        // FIXME: Allocate m_master_key in mlocked memory and pass it
         ext_key* p;
-        GA_SDK_VERIFY(bip32_key_from_seed_alloc(
-            seed.data(), seed.size(), m_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE, 0, &p));
+        GA_SDK_VERIFY(bip32_key_from_seed_alloc(seed.data(), seed.size(), get_bip32_version(), 0, &p));
 
         m_master_key = wally_ext_key_ptr(p);
 
