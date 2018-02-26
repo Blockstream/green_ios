@@ -17,7 +17,7 @@ if [ "$(uname)" == "Darwin" ]; then
     GETOPT='/usr/local/opt/gnu-getopt/bin/getopt'
 fi
 
-TEMPOPT=`"$GETOPT" -n "'build.sh" -o x,b: -l analyze,clang,gcc,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "'build.sh" -o x,b: -l analyze,clang,gcc,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
@@ -27,6 +27,7 @@ while true; do
         --clang | --gcc | --ndk ) break ;;
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
         --compiler-version) COMPILER_VERSION="-$2"; shift 2 ;;
+        --lto) MESON_OPTIONS="$MESON_OPTIONS -Dlto=$2"; shift 2 ;;
         -- ) shift; break ;;
         *) break ;;
     esac

@@ -1,0 +1,1 @@
+option('lto', type : 'boolean', value : true, description : 'override meson lto values for finer grained control')

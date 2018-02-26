@@ -20,8 +20,10 @@ endforeach
 
 # language related arguments
 if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_family().contains('mips')
-    add_project_arguments(['-flto'], language : 'cpp')
-    add_project_link_arguments(['-flto'], language : 'cpp')
+    if get_option('lto')
+        add_project_arguments(['-flto'], language : 'cpp')
+        add_project_link_arguments(['-flto'], language : 'cpp')
+    endif
     if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
         add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
     endif
@@ -43,15 +45,13 @@ if get_option('buildtype') == 'debug'
 endif
 
 if meson.is_cross_build()
-    foreach lang : ['c', 'cpp']
-        archs = meson.get_cross_property('archs')
-        if archs != ''
-            add_project_arguments(meson.get_cross_property('archs'), language : lang)
-        endif
-        if host_machine.cpu_family().contains('iphone')
-            add_project_arguments(['-fembed-bitcode'], language : lang)
-        endif
-    endforeach
+    archs = meson.get_cross_property('archs')
+    if archs != ''
+        add_project_arguments(meson.get_cross_property('archs'), language : ['c', 'cpp'])
+    endif
+    if host_machine.cpu_family().contains('iphone')
+        add_project_arguments(['-fembed-bitcode'], language : lang)
+    endif
 endif
 
 swift = add_languages('swift', required : false)
