@@ -9,7 +9,7 @@
 #include <new>
 #include <vector>
 
-#include <wally_core.h>
+#include <wally.hpp>
 
 #include <assertion.hpp>
 
@@ -93,6 +93,36 @@ namespace sdk {
         using std::array<T, N>::begin;
         using std::array<T, N>::end;
     };
+
+    // A simple class for slicing constant size containers without copying
+    template <typename T> class bytes_view {
+    private:
+        std::reference_wrapper<const T> bytes;
+
+    public:
+        bytes_view(const T& a)
+            : bytes(std::cref(a))
+        {
+        }
+
+        bytes_view(const bytes_view& other) = default;
+        bytes_view(bytes_view&& other) = default;
+        bytes_view& operator=(bytes_view& other) = default;
+        bytes_view& operator=(bytes_view&& other) = default;
+
+        const unsigned char* data() const { return wally::detail::get_p(bytes); }
+        constexpr size_t size() const { return std::extent<T>::value; }
+        const unsigned char* end() const { return data() + size(); }
+    };
+
+    template <typename T> bytes_view<T> make_bytes_view(const T& v) { return bytes_view<T>(v); }
+
+    template <typename T, typename T1, typename T2> inline void init_container(T& dst, const T1& arg1, const T2& arg2)
+    {
+        GA_SDK_RUNTIME_ASSERT(dst.size() == arg1.size() + arg2.size()); // No partial fills supported
+        std::copy(arg1.data(), arg1.end(), dst.data());
+        std::copy(arg2.data(), arg2.end(), dst.data() + arg1.size());
+    }
 }
 }
 
