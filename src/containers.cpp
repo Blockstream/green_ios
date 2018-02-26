@@ -63,7 +63,7 @@ namespace sdk {
         std::vector<std::string> recipients;
         std::vector<std::string> received_on;
         std::string counterparty;
-        long total = 0;
+        int64_t total = 0;
 
         const auto l = m_o.get().as<container>();
         const auto eps = l.at("eps").as<std::vector<msgpack::object>>();

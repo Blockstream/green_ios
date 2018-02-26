@@ -50,7 +50,7 @@ if meson.is_cross_build()
         add_project_arguments(meson.get_cross_property('archs'), language : ['c', 'cpp'])
     endif
     if host_machine.cpu_family().contains('iphone')
-        add_project_arguments(['-fembed-bitcode'], language : lang)
+        add_project_arguments(['-fembed-bitcode'], language : ['c', 'cpp'])
     endif
 endif
 
