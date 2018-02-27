@@ -56,7 +56,7 @@ namespace sdk {
 
             while (!complete) {
                 size_t written;
-                GA_SDK_VERIFY(wally::tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, bytes, &written));
+                GA_SDK_VERIFY(wally_tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, bytes.data(), bytes.size(), &written));
                 complete = written <= bytes.size();
                 bytes.resize(written);
             }
