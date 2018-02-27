@@ -115,6 +115,19 @@ namespace sdk {
         const unsigned char* end() const { return data() + size(); }
     };
 
+    // A class representing a null range of bytes
+    class nullbytes {
+    public:
+        nullbytes() {}
+        nullbytes(const nullbytes&) {}
+        nullbytes(nullbytes&&) {}
+        nullbytes& operator=(nullbytes&) { return *this; }
+        nullbytes& operator=(nullbytes&&) { return *this; }
+
+        const unsigned char* data() const { return nullptr; }
+        size_t size() const { return 0; }
+    };
+
     template <typename T> bytes_view<T> make_bytes_view(const T& v) { return bytes_view<T>(v); }
 
     template <typename T, typename T1, typename T2> inline void init_container(T& dst, const T1& arg1, const T2& arg2)
