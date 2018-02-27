@@ -50,3 +50,5 @@ move_if *autobahn* autobahn-cpp
 move_if openssl* openssl-1.0.2m
 move_if *msgpack* msgpack
 move_if libwally-core-* libwally-core
+
+cp tools/wamp_arguments.hpp $DEPS_BLD_DIR/autobahn-cpp/autobahn
