@@ -377,7 +377,7 @@
                                 </variation>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k3K-QR-MPv">
-                                <rect key="frame" x="234" y="198.5" width="30" height="27"/>
+                                <rect key="frame" x="234" y="198" width="30" height="27"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <state key="normal" title="Go"/>
                                 <connections>
@@ -893,11 +893,11 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0.00" textAlignment="right" minimumFontSize="22" translatesAutoresizingMaskIntoConstraints="NO" id="aEZ-0A-wDM">
+                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="0.00" placeholder="0.00" textAlignment="right" minimumFontSize="22" translatesAutoresizingMaskIntoConstraints="NO" id="aEZ-0A-wDM">
                                             <rect key="frame" x="124" y="38" width="136" height="27"/>
                                             <nil key="textColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                            <textInputTraits key="textInputTraits"/>
+                                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                         </textField>
                                     </subviews>
                                     <constraints>
@@ -919,24 +919,28 @@
                                     </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SendButtonTableCell" id="fec-XF-kdz">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="SendButtonTableCell" textLabel="KKO-yO-7N2" detailTextLabel="lxE-KK-xSU" style="IBUITableViewCellStyleValue2" id="fec-XF-kdz">
                                 <rect key="frame" x="0.0" y="205.5" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fec-XF-kdz" id="Kj4-h0-dSt">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="286" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tyJ-WC-fXe">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                            <state key="normal" title="Send"/>
-                                        </button>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Send" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KKO-yO-7N2">
+                                            <rect key="frame" x="16" y="14" width="91" height="16"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lxE-KK-xSU">
+                                            <rect key="frame" x="113" y="14" width="35" height="16"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
-                                    <constraints>
-                                        <constraint firstItem="tyJ-WC-fXe" firstAttribute="width" secondItem="Kj4-h0-dSt" secondAttribute="width" id="2xM-k1-cN7"/>
-                                        <constraint firstItem="tyJ-WC-fXe" firstAttribute="height" secondItem="Kj4-h0-dSt" secondAttribute="height" id="7MV-2N-DbP"/>
-                                        <constraint firstItem="tyJ-WC-fXe" firstAttribute="centerX" secondItem="Kj4-h0-dSt" secondAttribute="centerX" id="cXO-UL-Ocb"/>
-                                        <constraint firstItem="tyJ-WC-fXe" firstAttribute="centerY" secondItem="Kj4-h0-dSt" secondAttribute="centerY" id="fRU-7g-73e"/>
-                                    </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>

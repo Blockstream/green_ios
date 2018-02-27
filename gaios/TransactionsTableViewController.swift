@@ -8,12 +8,12 @@ import PromiseKit
 import UIKit
 
 class TransactionItem {
-    var timestamp: Date
+    var timestamp: String
     var address: String
     var amount: String
     var fiatAmount: String
 
-    init(timestamp: Date, address: String, amount: String, fiatAmount: String) {
+    init(timestamp: String, address: String, amount: String, fiatAmount: String) {
         self.timestamp = timestamp
         self.address = address
         self.amount = amount
@@ -54,12 +54,22 @@ class TransactionsTableViewModel: NSObject {
         super.init()
     }
 
+    func dateFromTimestamp(date: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return dateFormatter.date(from: date)!
+    }
+
     func updateViewModel(tableView: UITableView) {
         getTransactions().then { (txs: [Transaction]?) -> Void in
             self.items.removeAll(keepingCapacity: true)
             for tx in txs ?? [] {
-                let view = tx.getView()
-                self.items.append(TransactionItem(timestamp: try view.getTimestamp(), address: "", amount: String(try view.getValue()), fiatAmount: ""))
+                let json = try! tx.toJSON()!
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateStyle = .medium
+                dateFormatter.timeStyle = .short
+                let date = dateFormatter.string(from: self.dateFromTimestamp(date: json["timestamp"] as! String))
+                self.items.append(TransactionItem(timestamp: date, address: "", amount: String(json["value"] as! Int64), fiatAmount: ""))
             }
         }.always {
             tableView.reloadData()

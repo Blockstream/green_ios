@@ -15,7 +15,7 @@ protocol SendItem {
     var identifier: String { get }
 }
 
-class AmountSendItem: SendItem {
+class SendAmountItem: SendItem {
     var type: SendItemType {
         return .amount
     }
@@ -41,7 +41,7 @@ class SendTableViewControllerScene: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        items.append(AmountSendItem())
+        items.append(SendAmountItem())
         items.append(SendButtonItem())
 
         tableView.tableFooterView = UIView()
