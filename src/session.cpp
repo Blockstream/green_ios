@@ -48,14 +48,14 @@ namespace sdk {
             return repr;
         }
 
-        std::vector<unsigned char> tx_to_bytes(struct wally_tx* tx)
+        std::vector<unsigned char> tx_to_bytes(const wally_tx_ptr& tx)
         {
             std::vector<unsigned char> bytes(1024);
             bool complete = false;
 
             while (!complete) {
                 size_t written;
-                GA_SDK_VERIFY(wally_tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, bytes.data(), bytes.size(), &written));
+                GA_SDK_VERIFY(wally::tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, &written, bytes));
                 complete = written <= bytes.size();
                 bytes.resize(written);
             }
@@ -187,7 +187,7 @@ namespace sdk {
             }
         }
 
-        std::string get_pin_password(const std::string& pin, const std::string& pin_identifier);
+        std::vector<unsigned char> get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
         amount get_dust_threshold() const;
         std::string get_raw_output(const std::string& txhash) const;
@@ -284,7 +284,7 @@ namespace sdk {
 
     login_data session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
     {
-        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
+        secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
         size_t written;
         GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
 
@@ -299,7 +299,7 @@ namespace sdk {
         init_container(vpkh, make_bytes_view(btc_ver), make_bytes_view(m_master_key->hash160));
 
         char* q;
-        GA_SDK_VERIFY(wally_base58_from_bytes(vpkh.data(), vpkh.size(), BASE58_FLAG_CHECKSUM, &q));
+        GA_SDK_VERIFY(wally::base58_from_bytes(vpkh, BASE58_FLAG_CHECKSUM, &q));
         wally_string_ptr base58_pkh(q);
 
         auto challenge_arguments = std::make_tuple(base58_pkh.get());
@@ -544,7 +544,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(sc == sc_multisig);
 
         char* q;
-        GA_SDK_VERIFY(wally_base58_from_bytes(sc.data(), sc.size(), BASE58_FLAG_CHECKSUM, &q));
+        GA_SDK_VERIFY(wally::base58_from_bytes(sc, BASE58_FLAG_CHECKSUM, &q));
         wally_string_ptr base58_pkh(q);
 
         address.set(addr_type_str, std::string(q));
@@ -620,18 +620,17 @@ namespace sdk {
         const auto password = get_pin_password(pin, pin_identifier);
 
         auto salt = get_random_bytes<16>();
-        const auto salt_hex = hex_from_bytes(salt.data(), salt.size());
+        const auto salt_hex = hex_from_bytes(salt);
 
         std::array<unsigned char, BIP39_SEED_LEN_512> seed;
         size_t written;
         GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
         const auto seed_hex = hex_from_bytes(seed.data(), written);
         const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
-        const auto mnemonic_hex = hex_from_bytes(mnemonic_bytes.data(), mnemonic_bytes.size());
+        const auto mnemonic_hex = hex_from_bytes(mnemonic_bytes);
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        GA_SDK_VERIFY(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()), password.size(),
-            salt.data(), salt.size(), 0, 2048, key.data(), key.size()));
+        GA_SDK_VERIFY(wally::pbkdf2_hmac_sha512(password, salt, 0, 2048, key));
 
         std::array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data;
         init_container(data, seed, mnemonic_bytes);
@@ -653,7 +652,8 @@ namespace sdk {
         return p;
     }
 
-    std::string session::session_impl::get_pin_password(const std::string& pin, const std::string& pin_identifier)
+    std::vector<unsigned char> session::session_impl::get_pin_password(
+        const std::string& pin, const std::string& pin_identifier)
     {
         std::string password;
 
@@ -662,7 +662,7 @@ namespace sdk {
 
         fn.get();
 
-        return password;
+        return std::vector<unsigned char>(password.begin(), password.end());
     }
 
     login_data session::session_impl::login(const std::string& pin,
@@ -673,8 +673,8 @@ namespace sdk {
         auto secret_bytes = bytes_from_hex(pin_identifier_and_secret.second);
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        GA_SDK_VERIFY(wally_pbkdf2_hmac_sha512(reinterpret_cast<const unsigned char*>(password.data()), password.size(),
-            secret_bytes.data(), 16, 0, 2048, key.data(), key.size()));
+        GA_SDK_VERIFY(wally_pbkdf2_hmac_sha512(
+            password.data(), password.size(), secret_bytes.data(), 16, 0, 2048, key.data(), key.size()));
 
         std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
         size_t written;
@@ -763,6 +763,8 @@ namespace sdk {
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
         const uint32_t pt_idx = u.get<uint32_t>("pt_idx");
+        // const amount satoshi = u.get<std::string>("value"); // FIXME throws bad_cast, why?
+        const amount satoshi;
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
         const auto txhash_bytes = bytes_from_hex(txhash);
@@ -771,8 +773,9 @@ namespace sdk {
         const auto out_script = output_script(subaccount, pointer);
 
         std::array<unsigned char, SHA256_LEN> tx_hash;
-        GA_SDK_VERIFY(
-            wally::tx_get_signature_hash(tx, index, out_script, 0, WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, 0, tx_hash));
+        const uint32_t flags = type == script_type::p2sh_p2wsh_fortified_out ? WALLY_TX_FLAG_USE_WITNESS : 0;
+        GA_SDK_VERIFY(wally::tx_get_signature_hash(
+            tx, index, out_script, satoshi.value(), WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, flags, tx_hash));
 
         secure_array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
         derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
@@ -906,7 +909,7 @@ namespace sdk {
 
         tx = make_tx(block_height, signed_inputs, outputs);
 
-        return hex_from_bytes(tx_to_bytes(tx.get()));
+        return hex_from_bytes(tx_to_bytes(tx));
     }
 
     void session::session_impl::send(const wally_string_ptr& raw_tx)
