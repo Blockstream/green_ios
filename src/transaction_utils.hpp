@@ -45,11 +45,12 @@ namespace sdk {
     using wally_tx_output_ptr = std::unique_ptr<struct wally_tx_output>;
     using wally_tx_ptr = std::unique_ptr<struct wally_tx>;
 
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, const uint32_t* path, size_t n, bool public_);
-
-    template <typename T> inline wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, const T& v, bool public_)
+    template <typename T> inline wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, const T& path, bool public_)
     {
-        return derive_key(key, v.data(), v.size(), public_);
+        uint32_t flags = (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH;
+        ext_key* p;
+        GA_SDK_VERIFY(wally::bip32_key_from_parent_path_alloc(key, path, flags, &p));
+        return wally_ext_key_ptr{ p };
     }
 
     template <typename T>

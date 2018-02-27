@@ -290,7 +290,7 @@ namespace sdk {
 
         // FIXME: Allocate m_master_key in mlocked memory and pass it
         ext_key* p;
-        GA_SDK_VERIFY(bip32_key_from_seed_alloc(seed.data(), seed.size(), get_bip32_version(), 0, &p));
+        GA_SDK_VERIFY(wally::bip32_key_from_seed_alloc(seed, get_bip32_version(), 0, &p));
 
         m_master_key = wally_ext_key_ptr(p);
 

@@ -7,14 +7,6 @@
 namespace ga {
 namespace sdk {
 
-    wally_ext_key_ptr derive_key(const wally_ext_key_ptr& key, const uint32_t* path, size_t n, bool public_)
-    {
-        uint32_t flags = (public_ ? BIP32_FLAG_KEY_PUBLIC : BIP32_FLAG_KEY_PRIVATE) | BIP32_FLAG_SKIP_HASH;
-        ext_key* p;
-        GA_SDK_VERIFY(bip32_key_from_parent_path_alloc(key.get(), path, n, flags, &p));
-        return wally_ext_key_ptr{ p };
-    }
-
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net)
     {
@@ -24,9 +16,9 @@ namespace sdk {
         const auto gait_path_bytes = bytes_from_hex(gait_path);
 
         ext_key* p;
-        GA_SDK_VERIFY(
-            bip32_key_init_alloc(main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC, 0, 0, dcc_bytes.data(),
-                dcc_bytes.size(), dpk_bytes.data(), dpk_bytes.size(), nullptr, 0, nullptr, 0, nullptr, 0, &p));
+        uint32_t version = main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
+        const nullbytes nb;
+        GA_SDK_VERIFY(wally::bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, nb, nb, nb, &p));
 
         wally_ext_key_ptr server_pub_key{ p };
 
