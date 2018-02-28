@@ -5,64 +5,42 @@
 
 import UIKit
 
-enum SendItemType {
-    case amount
-    case send
+class SendAmountTableCell: UITableViewCell {
 }
 
-protocol SendItem {
-    var type: SendItemType { get }
-    var identifier: String { get }
+class SendToTableCell: UITableViewCell {
 }
 
-class SendAmountItem: SendItem {
-    var type: SendItemType {
-        return .amount
-    }
+class SendFeeChoiceTableCell: UITableViewCell {
 
-    var identifier: String {
-        return "SendAmountTableCell"
-    }
-}
+    @IBOutlet weak var feeChoice: UISegmentedControl!
 
-class SendButtonItem: SendItem {
-    var type: SendItemType {
-        return .send
-    }
-
-    var identifier: String {
-        return "SendButtonTableCell"
+    override func awakeFromNib() {
+        let attr = NSDictionary(object: UIFont.systemFont(ofSize: 9), forKey: NSAttributedStringKey.font as NSCopying)
+        feeChoice.setTitleTextAttributes(attr as [NSObject : AnyObject] , for: .normal)
     }
 }
 
 class SendTableViewControllerScene: UITableViewController {
-    var items = [SendItem]()
+    let cellIdentifiers = ["SendAmountTableCell", "SendToTableCell", "SendFeeChoiceTableCell"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        items.append(SendAmountItem())
-        items.append(SendButtonItem())
-
+        tableView.tableHeaderView = UIView()
         tableView.tableFooterView = UIView()
     }
 
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        if let headerView = view as? UITableViewHeaderFooterView {
-            headerView.textLabel?.textAlignment = .center
-        }
-    }
-
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Send"
+        return "Main"
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return cellIdentifiers.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: items[indexPath.row].identifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifiers[indexPath.row], for: indexPath)
         return cell
     }
 }

@@ -862,7 +862,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SendAmountTableCell" rowHeight="150" id="5Hc-Fp-Gk4">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SendAmountTableCell" rowHeight="150" id="5Hc-Fp-Gk4" customClass="SendAmountTableCell" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="55.5" width="320" height="150"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="5Hc-Fp-Gk4" id="63w-MO-22V">
@@ -893,7 +893,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="0.00" placeholder="0.00" textAlignment="right" minimumFontSize="22" translatesAutoresizingMaskIntoConstraints="NO" id="aEZ-0A-wDM">
-                                            <rect key="frame" x="124" y="38" width="136" height="27"/>
+                                            <rect key="frame" x="124" y="34" width="136" height="27"/>
                                             <nil key="textColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
@@ -901,7 +901,7 @@
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="aEZ-0A-wDM" secondAttribute="trailing" constant="60" id="4h5-eE-fjN"/>
-                                        <constraint firstItem="Ekp-sz-H03" firstAttribute="top" secondItem="aEZ-0A-wDM" secondAttribute="bottom" constant="15" id="4oW-PL-RZT"/>
+                                        <constraint firstItem="Ekp-sz-H03" firstAttribute="top" secondItem="aEZ-0A-wDM" secondAttribute="bottom" constant="19" id="4oW-PL-RZT"/>
                                         <constraint firstItem="P8g-Kv-laH" firstAttribute="leading" secondItem="63w-MO-22V" secondAttribute="leading" constant="60" id="5t8-Bt-RIo"/>
                                         <constraint firstItem="aEZ-0A-wDM" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="daN-S1-AVo" secondAttribute="trailing" constant="8" symbolic="YES" id="BgK-ZY-rXP"/>
                                         <constraint firstItem="Ekp-sz-H03" firstAttribute="trailing" secondItem="aEZ-0A-wDM" secondAttribute="trailing" constant="-2" id="EIc-iy-oJU"/>
@@ -911,36 +911,61 @@
                                         <constraint firstItem="daN-S1-AVo" firstAttribute="top" secondItem="P8g-Kv-laH" secondAttribute="bottom" constant="15" id="L2z-mS-y2N"/>
                                         <constraint firstItem="IEa-m8-Epe" firstAttribute="top" secondItem="Ekp-sz-H03" secondAttribute="bottom" constant="15" id="L8A-Hp-uxQ"/>
                                         <constraint firstItem="IEa-m8-Epe" firstAttribute="bottom" secondItem="63w-MO-22V" secondAttribute="bottomMargin" id="bei-dx-Q96"/>
-                                        <constraint firstItem="aEZ-0A-wDM" firstAttribute="top" secondItem="63w-MO-22V" secondAttribute="top" constant="38" id="nb2-Yj-heb"/>
+                                        <constraint firstItem="aEZ-0A-wDM" firstAttribute="top" secondItem="63w-MO-22V" secondAttribute="top" constant="34" id="nb2-Yj-heb"/>
                                         <constraint firstItem="Ekp-sz-H03" firstAttribute="centerY" secondItem="daN-S1-AVo" secondAttribute="centerY" id="pmO-2t-Qns"/>
                                         <constraint firstItem="P8g-Kv-laH" firstAttribute="top" secondItem="63w-MO-22V" secondAttribute="topMargin" constant="20" id="qfs-tc-Iwh"/>
                                         <constraint firstItem="Ekp-sz-H03" firstAttribute="leading" secondItem="aEZ-0A-wDM" secondAttribute="leading" constant="1" id="yBS-7r-VPQ"/>
                                     </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="SendButtonTableCell" textLabel="KKO-yO-7N2" detailTextLabel="lxE-KK-xSU" style="IBUITableViewCellStyleValue2" id="fec-XF-kdz">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="SendToTableCell" textLabel="KKO-yO-7N2" detailTextLabel="lxE-KK-xSU" style="IBUITableViewCellStyleValue1" id="fec-XF-kdz" customClass="SendToTableCell" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="205.5" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fec-XF-kdz" id="Kj4-h0-dSt">
                                     <rect key="frame" x="0.0" y="0.0" width="286" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Send" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KKO-yO-7N2">
-                                            <rect key="frame" x="16" y="14" width="91" height="16"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="To:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KKO-yO-7N2">
+                                            <rect key="frame" x="16" y="12" width="23.5" height="20.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lxE-KK-xSU">
-                                            <rect key="frame" x="113" y="14" width="35" height="16"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lxE-KK-xSU">
+                                            <rect key="frame" x="241" y="12" width="44" height="20.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SendFeeChoiceTableCell" id="rm6-lv-uyX" customClass="SendFeeChoiceTableCell" customModule="gaios" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="249.5" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rm6-lv-uyX" id="o4T-yy-a90">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="J3Z-QG-qjR">
+                                            <rect key="frame" x="16" y="7" width="288" height="29"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="High"/>
+                                                <segment title="Normal"/>
+                                                <segment title="Low"/>
+                                                <segment title="Economy"/>
+                                                <segment title="Custom"/>
+                                                <segment title="Instant"/>
+                                            </segments>
+                                        </segmentedControl>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="feeChoice" destination="J3Z-QG-qjR" id="z9Q-se-KgA"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -952,7 +977,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Syv-21-ZK9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3366" y="-68"/>
+            <point key="canvasLocation" x="3365.625" y="-68.661971830985919"/>
         </scene>
         <!--Create Mnemonic Table View Controller-->
         <scene sceneID="3EL-7D-8Ls">

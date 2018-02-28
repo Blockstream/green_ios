@@ -79,11 +79,20 @@ class TransactionsTableViewModel: NSObject {
 
 extension TransactionsTableViewModel: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        if items.count != 0 {
+            return 1
+        }
+        else {
+            let label: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+            label.text = "You don't have any items right now"
+            label.textAlignment = .center
+            tableView.backgroundView = label
+            return 0
+        }
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Transactions"
+        return "Main"
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
