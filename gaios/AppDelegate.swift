@@ -14,6 +14,9 @@ class GreenAddressService {
         return self.session
     }
 
+    func getConfirmationPriority() -> String {
+        return [3: "High", 6: "Normal", 12: "Low", 24: "Economy"][(loginData!["appearance"] as! [String: Any])["required_num_blocks"] as? Int ?? 24]!
+    }
 }
 
 func getAppDelegate() -> AppDelegate {
