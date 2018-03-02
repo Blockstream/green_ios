@@ -60,7 +60,7 @@ class SendButtonTableCell: SendTableCell {
     }
 }
 
-class SendTableViewControllerScene: UITableViewController {
+class SendTableViewControllerScene: UITableViewController, QRCodeReaderData {
     let cellIdentifiers = ["SendAmountTableCell", "SendToTableCell", "SendFeeChoiceTableCell", "SendButtonTableCell"]
 
     fileprivate var userData = UserData()
@@ -84,5 +84,19 @@ class SendTableViewControllerScene: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifiers[indexPath.row], for: indexPath) as! SendTableCell
         cell.userData = userData
         return cell
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("QRCodeReader")
+        if segue.identifier == "QR Code Reader View Controller" {
+            let qrCodeReaderViewController = sender as! QRCodeReaderViewController
+            qrCodeReaderViewController.sendControllerDelegate = self
+        }
+    }
+
+    func onQRCodeReadSuccess(_ qrcode: String) {
+    }
+
+    func onQRCodeReadFailure() {
     }
 }

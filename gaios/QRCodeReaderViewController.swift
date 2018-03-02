@@ -6,24 +6,44 @@
 import AVFoundation
 import UIKit
 
+protocol QRCodeReaderData {
+    func onQRCodeReadSuccess(_ qrcode: String)
+    func onQRCodeReadFailure()
+}
+
 class QRCodeReaderViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
 
     var captureSession: AVCaptureSession!
     var captureVideoPreviewLayer: AVCaptureVideoPreviewLayer!
+
+    weak var sendControllerDelegate: SendTableViewControllerScene!
+
+    func onQRCodeReadFailure() {
+        if let delegate = sendControllerDelegate {
+            delegate.onQRCodeReadFailure()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = UIColor.black
 
-        guard let captureDevice = AVCaptureDevice.default(for: .video) else { return }
-        guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else { return }
+        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+            onQRCodeReadFailure()
+            return
+        }
+        guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+            onQRCodeReadFailure()
+            return
+        }
 
         captureSession = AVCaptureSession()
         if captureSession.canAddInput(captureDeviceInput) {
             captureSession.addInput(captureDeviceInput)
         }
         else {
+            onQRCodeReadFailure()
             return
         }
 
@@ -34,6 +54,7 @@ class QRCodeReaderViewController: UIViewController, AVCaptureMetadataOutputObjec
             captureMetadataOutput.metadataObjectTypes = [.qr, .ean8, .ean13, .pdf417]
         }
         else {
+            onQRCodeReadFailure()
             return
         }
 
@@ -68,6 +89,8 @@ class QRCodeReaderViewController: UIViewController, AVCaptureMetadataOutputObjec
             guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
             guard let stringValue = readableObject.stringValue else { return }
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+
+            sendControllerDelegate.onQRCodeReadSuccess(stringValue)
         }
 
         dismiss(animated: true)

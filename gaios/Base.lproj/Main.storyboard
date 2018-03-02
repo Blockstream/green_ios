@@ -376,7 +376,7 @@
                                 </variation>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k3K-QR-MPv">
-                                <rect key="frame" x="234" y="198" width="30" height="27"/>
+                                <rect key="frame" x="234" y="198.5" width="30" height="27"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <state key="normal" title="Go"/>
                                 <connections>
@@ -870,13 +870,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="247" text="BTC" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P8g-Kv-laH">
-                                            <rect key="frame" x="60" y="31" width="42.5" height="34.5"/>
+                                            <rect key="frame" x="60" y="31" width="43" height="35"/>
                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="22"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USD" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="daN-S1-AVo">
-                                            <rect key="frame" x="60" y="80.5" width="30.5" height="18"/>
+                                            <rect key="frame" x="60" y="81" width="31" height="16"/>
                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="15"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -898,6 +898,14 @@
                                             <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                         </textField>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bXu-cz-p3t">
+                                            <rect key="frame" x="39" y="70" width="241" height="1"/>
+                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="1" id="JF7-pk-JOL"/>
+                                            </constraints>
+                                        </view>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="aEZ-0A-wDM" secondAttribute="trailing" constant="60" id="4h5-eE-fjN"/>
@@ -906,6 +914,8 @@
                                         <constraint firstItem="aEZ-0A-wDM" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="daN-S1-AVo" secondAttribute="trailing" constant="8" symbolic="YES" id="BgK-ZY-rXP"/>
                                         <constraint firstItem="Ekp-sz-H03" firstAttribute="trailing" secondItem="aEZ-0A-wDM" secondAttribute="trailing" constant="-2" id="EIc-iy-oJU"/>
                                         <constraint firstItem="IEa-m8-Epe" firstAttribute="centerX" secondItem="63w-MO-22V" secondAttribute="centerX" id="Fac-uN-quE"/>
+                                        <constraint firstItem="bXu-cz-p3t" firstAttribute="centerX" secondItem="IEa-m8-Epe" secondAttribute="centerX" id="Gu0-a9-Iqd"/>
+                                        <constraint firstItem="Ekp-sz-H03" firstAttribute="top" secondItem="bXu-cz-p3t" secondAttribute="bottom" constant="9" id="IoZ-8E-0dD"/>
                                         <constraint firstItem="daN-S1-AVo" firstAttribute="leading" secondItem="P8g-Kv-laH" secondAttribute="leading" id="JSX-hV-ZQS"/>
                                         <constraint firstItem="aEZ-0A-wDM" firstAttribute="leading" secondItem="P8g-Kv-laH" secondAttribute="trailing" constant="21.5" id="JxV-PL-iKN"/>
                                         <constraint firstItem="daN-S1-AVo" firstAttribute="top" secondItem="P8g-Kv-laH" secondAttribute="bottom" constant="15" id="L2z-mS-y2N"/>
@@ -913,10 +923,14 @@
                                         <constraint firstItem="IEa-m8-Epe" firstAttribute="bottom" secondItem="63w-MO-22V" secondAttribute="bottomMargin" id="bei-dx-Q96"/>
                                         <constraint firstItem="aEZ-0A-wDM" firstAttribute="top" secondItem="63w-MO-22V" secondAttribute="top" constant="34" id="nb2-Yj-heb"/>
                                         <constraint firstItem="Ekp-sz-H03" firstAttribute="centerY" secondItem="daN-S1-AVo" secondAttribute="centerY" id="pmO-2t-Qns"/>
+                                        <constraint firstItem="bXu-cz-p3t" firstAttribute="top" secondItem="P8g-Kv-laH" secondAttribute="bottom" constant="4" id="qM8-Ex-a4b"/>
                                         <constraint firstItem="P8g-Kv-laH" firstAttribute="top" secondItem="63w-MO-22V" secondAttribute="topMargin" constant="20" id="qfs-tc-Iwh"/>
                                         <constraint firstItem="Ekp-sz-H03" firstAttribute="leading" secondItem="aEZ-0A-wDM" secondAttribute="leading" constant="1" id="yBS-7r-VPQ"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="bXu-cz-p3t" secondAttribute="trailing" constant="40" id="OYX-Fc-udq"/>
+                                </constraints>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="SendToTableCell" id="fec-XF-kdz" customClass="SendToTableCell" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="205.5" width="320" height="44"/>
