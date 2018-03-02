@@ -43,7 +43,7 @@ class SendFeeChoiceTableCell: SendTableCell {
     }
 
     override func awakeFromNib() {
-        super .awakeFromNib()
+        super.awakeFromNib()
 
         let selectedSegmentIndex = ["High": 0, "Normal": 1, "Low": 2, "Economy": 3][getGAService().getConfirmationPriority()]!
         let textAttrs = NSDictionary(object: UIFont.systemFont(ofSize: 9), forKey: NSAttributedStringKey.font as NSCopying)
