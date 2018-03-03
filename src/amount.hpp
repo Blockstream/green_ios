@@ -20,8 +20,8 @@ namespace sdk {
         {
         }
 
-        amount(const char* str_value);
-        amount(const std::string& str_value)
+        explicit amount(const char* str_value);
+        explicit amount(const std::string& str_value)
             : amount(str_value.c_str())
         {
         }
