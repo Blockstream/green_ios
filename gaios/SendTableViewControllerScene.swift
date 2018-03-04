@@ -87,9 +87,8 @@ class SendTableViewControllerScene: UITableViewController, QRCodeReaderData {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("QRCodeReader")
-        if segue.identifier == "QR Code Reader View Controller" {
-            let qrCodeReaderViewController = sender as! QRCodeReaderViewController
+        if segue.identifier == "QRCodeReaderViewController" {
+            let qrCodeReaderViewController = segue.destination as! QRCodeReaderViewController
             qrCodeReaderViewController.sendControllerDelegate = self
         }
     }

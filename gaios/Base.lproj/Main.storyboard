@@ -376,7 +376,7 @@
                                 </variation>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k3K-QR-MPv">
-                                <rect key="frame" x="234" y="198.5" width="30" height="27"/>
+                                <rect key="frame" x="234" y="198" width="30" height="27"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <state key="normal" title="Go"/>
                                 <connections>
@@ -957,7 +957,7 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="recipient" destination="h32-hF-sQN" id="J5H-k5-Rxv"/>
-                                    <segue destination="DBk-Xu-yf1" kind="show" id="9cW-7K-XXN"/>
+                                    <segue destination="DBk-Xu-yf1" kind="show" identifier="QRCodeReaderViewController" id="9cW-7K-XXN"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SendFeeChoiceTableCell" id="rm6-lv-uyX" customClass="SendFeeChoiceTableCell" customModule="gaios" customModuleProvider="target">

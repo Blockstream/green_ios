@@ -93,6 +93,6 @@ class QRCodeReaderViewController: UIViewController, AVCaptureMetadataOutputObjec
             sendControllerDelegate.onQRCodeReadSuccess(stringValue)
         }
 
-        dismiss(animated: true)
+        self.navigationController?.popViewController(animated: true)
     }
 }
