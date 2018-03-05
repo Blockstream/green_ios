@@ -95,4 +95,12 @@ class QRCodeReaderViewController: UIViewController, AVCaptureMetadataOutputObjec
 
         self.navigationController?.popViewController(animated: true)
     }
+
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
 }

@@ -20,6 +20,12 @@ class SendToTableCell: SendTableCell, UITextFieldDelegate {
 
     @IBOutlet weak var recipient: UITextField!
 
+    fileprivate override weak var userData: UserData? {
+        didSet {
+            recipient.text = userData?.recipient
+        }
+    }
+
     override func awakeFromNib() {
         super .awakeFromNib()
 
@@ -60,30 +66,42 @@ class SendButtonTableCell: SendTableCell {
     }
 }
 
-class SendTableViewControllerScene: UITableViewController, QRCodeReaderData {
+class SendTableViewModel: NSObject {
     let cellIdentifiers = ["SendAmountTableCell", "SendToTableCell", "SendFeeChoiceTableCell", "SendButtonTableCell"]
 
     fileprivate var userData = UserData()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        tableView.tableHeaderView = UIView()
-        tableView.tableFooterView = UIView()
+    func updateFromQRCode(_ qrcode: String) {
+        userData.recipient = qrcode
     }
+}
 
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+extension SendTableViewModel: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Main"
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cellIdentifiers.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifiers[indexPath.row], for: indexPath) as! SendTableCell
         cell.userData = userData
         return cell
+    }
+}
+
+class SendTableViewControllerScene: UITableViewController, QRCodeReaderData {
+    fileprivate let viewModel = SendTableViewModel()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        tableView.dataSource = viewModel
+
+        tableView.tableHeaderView = UIView()
+        tableView.tableFooterView = UIView()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -94,6 +112,9 @@ class SendTableViewControllerScene: UITableViewController, QRCodeReaderData {
     }
 
     func onQRCodeReadSuccess(_ qrcode: String) {
+        viewModel.updateFromQRCode(qrcode)
+
+        self.tableView.reloadData()
     }
 
     func onQRCodeReadFailure() {

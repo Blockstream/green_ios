@@ -376,7 +376,7 @@
                                 </variation>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k3K-QR-MPv">
-                                <rect key="frame" x="234" y="198" width="30" height="27"/>
+                                <rect key="frame" x="234" y="198.5" width="30" height="27"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <state key="normal" title="Go"/>
                                 <connections>
@@ -1021,7 +1021,7 @@
         <!--QR Code Reader View Controller-->
         <scene sceneID="E8r-UV-k1L">
             <objects>
-                <viewController id="DBk-Xu-yf1" userLabel="QR Code Reader View Controller" customClass="QRCodeReaderViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="DBk-Xu-yf1" userLabel="QR Code Reader View Controller" customClass="QRCodeReaderViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="0H8-R6-H23">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
