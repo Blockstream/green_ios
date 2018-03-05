@@ -237,6 +237,15 @@ namespace sdk {
         }
     };
 
+    struct bitcoin_uri : public detail::object_container<bitcoin_uri> {
+        bitcoin_uri()
+        {
+            container c;
+            msgpack::zone z;
+            associate(msgpack::object(c, z));
+        }
+    };
+
     using pin_info = std::map<std::string, std::string>;
 }
 }

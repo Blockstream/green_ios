@@ -9,7 +9,7 @@
 #include <new>
 #include <vector>
 
-#include <wally.hpp>
+#include <wally_core.h>
 
 #include <assertion.hpp>
 

@@ -1,4 +1,5 @@
-exe_names = ['wss_change_settings',
+exe_names = ['parse_uri',
+             'wss_change_settings',
              'wss_change_settings_c',
              'wss_connect',
              'wss_get_tx_list',

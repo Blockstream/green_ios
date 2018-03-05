@@ -13,7 +13,11 @@
 #include <x86intrin.h>
 #endif
 
+#include <boost/algorithm/string.hpp>
+
 #include <openssl/rand.h>
+
+#include <wally.hpp>
 
 #include "assertion.hpp"
 #include "common.h"
@@ -133,6 +137,34 @@ namespace sdk {
         GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, bytes, siz, &s));
         return wally_string_ptr(s);
     }
+
+    bitcoin_uri parse_bitcoin_uri(const std::string& s)
+    {
+        auto&& split = [](const std::string& s, const std::string& c) {
+            std::vector<std::string> ss;
+            boost::algorithm::split(ss, s, boost::is_any_of(c));
+            return ss;
+        };
+
+        bitcoin_uri u;
+        if (boost::algorithm::starts_with(s, "bitcoin:", boost::is_equal())) {
+            std::string v = s;
+            if (s.find('?') != std::string::npos) {
+                const auto recipient_amount = split(s, "?");
+                const auto amount = split(recipient_amount[1], "=");
+                if (amount.size() == 2 && amount[0] == "amount") {
+                    u.set("amount", amount[1]);
+                }
+                v = recipient_amount[0];
+            }
+            const auto recipient = split(v, ":");
+            if (recipient.size() == 2) {
+                u.set("recipient", recipient[1]);
+            }
+        }
+
+        return u;
+    }
 }
 }
 
@@ -170,3 +202,29 @@ int GA_validate_mnemonic(const char* lang, const char* mnemonic)
         return GA_FALSE;
     }
 }
+
+int GA_parse_bitcoin_uri_to_json(const char* uri, char** output)
+{
+    try {
+        GA_SDK_RUNTIME_ASSERT(output);
+        const auto elements = ga::sdk::parse_bitcoin_uri(uri);
+        const auto s = elements.get_json();
+        GA_copy_string(s.c_str(), output);
+        return GA_TRUE;
+    } catch (const std::exception& ex) {
+        return GA_FALSE;
+    }
+}
+
+void GA_copy_string(const char* src, char** dst)
+{
+    GA_SDK_RUNTIME_ASSERT(src);
+    GA_SDK_RUNTIME_ASSERT(dst);
+
+    const auto len = strlen(src);
+    *dst = new char[len + 1];
+    std::copy(src, src + len, *dst);
+    *(dst + len) = 0;
+}
+
+void GA_destroy_string(const char* str) { delete[] str; }

@@ -8,6 +8,25 @@
 extern "C" {
 #endif
 
+#ifndef SWIG
+/**
+ * Copy a string.
+ * @src The string to copy.
+ * @dst The new string.
+ *
+ * GA_ERROR if unsuccessful.
+ */
+void GA_copy_string(const char* src, char** dst);
+
+/**
+ * Free a string.
+ * @str The string to free.
+ *
+ * GA_ERROR if unsuccessful.
+ */
+void GA_destroy_string(const char* str);
+#endif
+
 /**
  * Get up to 32 random bytes.
  *
@@ -40,6 +59,18 @@ int GA_generate_mnemonic(const char* lang, char** output);
  * GA_FALSE if mnemonic validation fails
  */
 int GA_validate_mnemonic(const char* lang, const char* mnemonic);
+
+#ifndef SWIG
+/**
+ * Parse Bitcoin URI.
+ *
+ * @uri The URI to parse
+ * @output The JSON representation of a dictionary containing the elements
+ *
+ * GA_FALSE if parsing fails
+ */
+int GA_parse_bitcoin_uri_to_json(const char* uri, char** output);
+#endif
 
 #ifdef __cplusplus
 }

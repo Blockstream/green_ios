@@ -34,7 +34,7 @@ fileprivate func callWrapper(fun call: @autoclosure () -> Int32) throws {
     try errorWrapper(call())
 }
 
-fileprivate func convertOpaqueJsonToDict(fun call: (OpaquePointer, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: OpaquePointer) throws -> [String: Any]? {
+fileprivate func convertOpaqueJsonToDict<T>(fun call: (T, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: T) throws -> [String: Any]? {
     var bytes: UnsafeMutablePointer<Int8>? = nil
     try callWrapper(fun: call(o, &bytes))
     defer {
@@ -245,6 +245,10 @@ public func generateMnemonic(lang: String) throws -> String {
 
 public func validateMnemonic(lang: String, mnemonic: String) -> Bool {
     return GA_validate_mnemonic(lang, mnemonic) == GA_TRUE
+}
+
+public func parse_bitcoin_uri(uri: String) throws -> [String: Any]? {
+    return try convertOpaqueJsonToDict(fun: GA_parse_bitcoin_uri_to_json, o: uri)
 }
 
 public func retry<T>(session: Session,

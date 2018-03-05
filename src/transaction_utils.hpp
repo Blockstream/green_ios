@@ -6,7 +6,9 @@
 #include <memory>
 #include <utility>
 
-#include <wally.hpp>
+#include <wally_bip32.h>
+#include <wally_crypto.h>
+#include <wally_transaction.h>
 
 #include "containers.hpp"
 #include "memory.hpp"

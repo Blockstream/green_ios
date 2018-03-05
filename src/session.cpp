@@ -10,10 +10,8 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 
-#include <wally_bip32.h>
-#include <wally_bip39.h>
-#include <wally_core.h>
-#include <wally_crypto.h>
+#include <wally.hpp>
+#include <wally_script.h>
 
 #include "assertion.hpp"
 #include "exception.hpp"

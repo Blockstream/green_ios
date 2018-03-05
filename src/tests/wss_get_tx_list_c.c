@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "session.h"
+#include "utils.h"
 
 const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lumber never capital animal era "
                                "coffee shift flame across pitch pipe shiver castle crawl noble obtain response";

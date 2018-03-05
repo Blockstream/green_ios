@@ -6,8 +6,9 @@
 #include <map>
 #include <string>
 
-#include <wally.hpp>
+#include <wally_bip39.h>
 
+#include "containers.hpp"
 #include "memory.hpp"
 
 namespace ga {
@@ -104,6 +105,8 @@ namespace sdk {
         const std::string& mnemonic, const std::string& lang);
 
     wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang);
+
+    bitcoin_uri parse_bitcoin_uri(const std::string& s);
 }
 }
 
