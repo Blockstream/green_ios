@@ -224,7 +224,7 @@ void GA_copy_string(const char* src, char** dst)
     const auto len = strlen(src);
     *dst = new char[len + 1];
     std::copy(src, src + len, *dst);
-    *(dst + len) = 0;
+    *(*dst + len) = 0;
 }
 
 void GA_destroy_string(const char* str) { delete[] str; }
