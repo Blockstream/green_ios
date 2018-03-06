@@ -210,9 +210,9 @@ int GA_parse_bitcoin_uri_to_json(const char* uri, char** output)
         const auto elements = ga::sdk::parse_bitcoin_uri(uri);
         const auto s = elements.get_json();
         GA_copy_string(s.c_str(), output);
-        return GA_TRUE;
+        return GA_OK;
     } catch (const std::exception& ex) {
-        return GA_FALSE;
+        return GA_ERROR;
     }
 }
 

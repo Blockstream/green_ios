@@ -247,7 +247,7 @@ public func validateMnemonic(lang: String, mnemonic: String) -> Bool {
     return GA_validate_mnemonic(lang, mnemonic) == GA_TRUE
 }
 
-public func parse_bitcoin_uri(uri: String) throws -> [String: Any]? {
+public func parseBitcoinUri(uri: String) throws -> [String: Any]? {
     return try convertOpaqueJsonToDict(fun: GA_parse_bitcoin_uri_to_json, o: uri)
 }
 

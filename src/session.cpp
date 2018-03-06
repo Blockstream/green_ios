@@ -773,7 +773,8 @@ namespace sdk {
         const auto out_script = output_script(subaccount, pointer);
 
         std::array<unsigned char, SHA256_LEN> tx_hash;
-        GA_SDK_VERIFY(wally::tx_get_signature_hash(tx, index, out_script, WALLY_SIGHASH_ALL, tx_hash));
+        GA_SDK_VERIFY(
+            wally::tx_get_signature_hash(tx, index, out_script, 0, WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, 0, tx_hash));
 
         const auto client_priv_key = derive_private_key(m_master_key, { 1, pointer });
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
