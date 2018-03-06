@@ -939,21 +939,28 @@
                                     <rect key="frame" x="0.0" y="0.0" width="286" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="To:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OwK-7Z-Y6y">
-                                            <rect key="frame" x="16" y="12" width="42" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="To:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OwK-7Z-Y6y">
+                                            <rect key="frame" x="16" y="12" width="23.5" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter recipient address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="h32-hF-sQN">
-                                            <rect key="frame" x="60" y="7" width="218" height="30"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter recipient address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="h32-hF-sQN">
+                                            <rect key="frame" x="50" y="7" width="236.5" height="30"/>
                                             <nil key="textColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                         </textField>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="OwK-7Z-Y6y" firstAttribute="leading" secondItem="Kj4-h0-dSt" secondAttribute="leading" constant="16" id="8jh-1X-M9x"/>
+                                        <constraint firstItem="h32-hF-sQN" firstAttribute="top" secondItem="Kj4-h0-dSt" secondAttribute="top" constant="7" id="AtQ-Jn-NZg"/>
+                                        <constraint firstAttribute="bottom" secondItem="h32-hF-sQN" secondAttribute="bottom" constant="6.5" id="Jbw-f1-G8y"/>
+                                        <constraint firstItem="h32-hF-sQN" firstAttribute="leading" secondItem="OwK-7Z-Y6y" secondAttribute="trailing" constant="10.5" id="Qb2-qV-bex"/>
+                                        <constraint firstItem="OwK-7Z-Y6y" firstAttribute="top" secondItem="Kj4-h0-dSt" secondAttribute="top" constant="12" id="UgJ-Hc-wgf"/>
+                                        <constraint firstAttribute="trailing" secondItem="h32-hF-sQN" secondAttribute="trailing" constant="-0.5" id="hvw-IL-JSK"/>
+                                        <constraint firstAttribute="bottom" secondItem="OwK-7Z-Y6y" secondAttribute="bottom" constant="10.5" id="xt6-gW-Kei"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="recipient" destination="h32-hF-sQN" id="J5H-k5-Rxv"/>
@@ -967,9 +974,8 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="J3Z-QG-qjR">
+                                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="J3Z-QG-qjR">
                                             <rect key="frame" x="16" y="7" width="288" height="29"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
                                                 <segment title="High"/>
                                                 <segment title="Normal"/>
@@ -983,6 +989,12 @@
                                             </connections>
                                         </segmentedControl>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="J3Z-QG-qjR" firstAttribute="leading" secondItem="o4T-yy-a90" secondAttribute="leading" constant="16" id="Lub-Dc-yCK"/>
+                                        <constraint firstAttribute="bottom" secondItem="J3Z-QG-qjR" secondAttribute="bottom" constant="8.5" id="Uym-EI-2yp"/>
+                                        <constraint firstItem="J3Z-QG-qjR" firstAttribute="top" secondItem="o4T-yy-a90" secondAttribute="top" constant="7" id="l4l-JE-5vu"/>
+                                        <constraint firstAttribute="trailing" secondItem="J3Z-QG-qjR" secondAttribute="trailing" constant="16" id="rpN-1Z-LaL"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="feeChoice" destination="J3Z-QG-qjR" id="z9Q-se-KgA"/>
@@ -995,15 +1007,20 @@
                                     <rect key="frame" x="0.0" y="0.0" width="286" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jR9-II-Uk1">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jR9-II-Uk1">
                                             <rect key="frame" x="64" y="7" width="190" height="30"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <state key="normal" title="Send"/>
                                             <connections>
                                                 <action selector="sendAction:" destination="v2j-kl-HQC" eventType="touchUpInside" id="KF5-vX-T74"/>
                                             </connections>
                                         </button>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="jR9-II-Uk1" firstAttribute="top" secondItem="sZV-Nx-h9U" secondAttribute="top" constant="7" id="0Fx-SI-xfY"/>
+                                        <constraint firstAttribute="trailing" secondItem="jR9-II-Uk1" secondAttribute="trailing" constant="32" id="B4y-QE-Zkz"/>
+                                        <constraint firstAttribute="bottom" secondItem="jR9-II-Uk1" secondAttribute="bottom" constant="6.5" id="RfS-vQ-sRk"/>
+                                        <constraint firstItem="jR9-II-Uk1" firstAttribute="leading" secondItem="sZV-Nx-h9U" secondAttribute="leading" constant="64" id="dN3-Ew-67e"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>

@@ -6,6 +6,7 @@
 import UIKit
 
 fileprivate class UserData {
+    var amount = String()
     var recipient = String()
 }
 
@@ -72,7 +73,13 @@ class SendTableViewModel: NSObject {
     fileprivate var userData = UserData()
 
     func updateFromQRCode(_ qrcode: String) {
-        userData.recipient = qrcode
+        guard let uriElements = try? parseBitcoinUri(uri: qrcode) else {
+            userData.recipient = qrcode
+            return
+        }
+
+        userData.recipient = (uriElements!["recipient"] as? String) ?? String()
+        userData.amount = (uriElements!["amount"] as? String) ?? String()
     }
 }
 
