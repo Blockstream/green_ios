@@ -763,8 +763,7 @@ namespace sdk {
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
         const uint32_t pt_idx = u.get<uint32_t>("pt_idx");
-        // const amount satoshi = u.get<std::string>("value"); // FIXME throws bad_cast, why?
-        const amount satoshi;
+        const amount satoshi = u.get<std::string>("value");
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
         const auto txhash_bytes = bytes_from_hex(txhash);
