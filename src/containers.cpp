@@ -113,6 +113,7 @@ namespace sdk {
         set("timestamp", get<std::string>("created_at"));
         set("hash", get<std::string>("txhash"));
         set("value", total.value());
+        set("value_str", tx_in ? to_string(total) : '-' + to_string(total));
         // FIXME; missing replaceable
     }
 }
