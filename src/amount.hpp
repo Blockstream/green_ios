@@ -195,6 +195,8 @@ namespace sdk {
         os << x.value();
         return os;
     }
+
+    inline std::string to_string(const amount& x) { return std::to_string(x.value()); }
 }
 }
 

@@ -42,22 +42,6 @@ test_clang_ndk_arm64-v8a:
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk arm64-v8a
 
-test_clang_ndk_mips:
-  image: greenaddress/ci@sha256:d9f628bdfad8159aafd38139f6de91fa1040f3378ccb813893888dde5d80d13f
-  tags:
-    - ga
-  script:
-    - cd $CI_PROJECT_DIR
-    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk mips
-
-test_clang_ndk_mips64:
-  image: greenaddress/ci@sha256:d9f628bdfad8159aafd38139f6de91fa1040f3378ccb813893888dde5d80d13f
-  tags:
-    - ga
-  script:
-    - cd $CI_PROJECT_DIR
-    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk mips64
-
 test_clang_ndk_x86:
   image: greenaddress/ci@sha256:d9f628bdfad8159aafd38139f6de91fa1040f3378ccb813893888dde5d80d13f
   tags:
@@ -108,20 +92,6 @@ test_osx_clang_ndk_arm64-v8a:
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk arm64-v8a
-
-test_osx_clang_ndk_mips:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk mips
-
-test_osx_clang_ndk_mips64:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk mips64
 
 test_osx_clang_ndk_x86:
   tags:

@@ -96,17 +96,6 @@ function set_cross_build_env() {
             export SDK_ARCH=arm64
             export SDK_CFLAGS="-march=armv8-a -flax-vector-conversions"
             ;;
-        mips)
-            export SDK_ARCH=mips
-            # FIXME: Only needed until mips32r2 is not the default in clang
-            export SDK_CFLAGS="-mips32"
-            export SDK_LDLAGS="-mips32"
-            ;;
-        mips64)
-            export SDK_ARCH=mips64
-            export SDK_CFLAGS="-mxgot"
-            export SDK_LDLAGS="-mxgot"
-            ;;
         iphone)
             export SDK_ARCH=arm
             export SDK_CFLAGS="-miphoneos-version-min=9"
@@ -171,7 +160,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     if [ -n "$2" ]; then
         all_archs="$2"
     else
-        all_archs="armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64"
+        all_archs="armeabi armeabi-v7a arm64-v8a x86 x86_64"
     fi
     for a in $all_archs; do
         set_cross_build_env android $a

@@ -37,7 +37,7 @@ Different options if you want to build a different configuration (flags in squar
 
 --clang
 --gcc
---ndk [armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64]
+--ndk [armeabi armeabi-v7a arm64-v8a x86 x86_64]
 --iphone [static]
 --buildtype=debug
 

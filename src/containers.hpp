@@ -20,7 +20,7 @@
 namespace ga {
 namespace sdk {
 
-    enum class transaction_type { in, out, redeposit };
+    enum class transaction_type : uint8_t { in, out, redeposit };
 
     namespace detail {
         template <typename T> class object_container {

@@ -19,7 +19,7 @@ foreach h : check_headers
 endforeach
 
 # language related arguments
-if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_family().contains('mips')
+if not host_machine.cpu_family().contains('arm64')
     if get_option('lto')
         add_project_arguments(['-flto'], language : 'cpp')
         add_project_link_arguments(['-flto'], language : 'cpp')
@@ -30,10 +30,6 @@ if not host_machine.cpu_family().contains('arm64') and not host_machine.cpu_fami
 endif
 
 add_project_arguments(['-Wextra'], language : ['c', 'cpp'])
-
-if compiler.get_id() == 'clang' and host_machine.cpu_family().contains('mips')
-    add_project_arguments(['-mxgot'], language : 'cpp')
-endif
 
 if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address'
     add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
