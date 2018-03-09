@@ -743,7 +743,7 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, 1, &witness_stack));
+            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(0, 1, &witness_stack));
             GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, in_script.data(), in_script.size()));
             const auto script_bytes = witness_script(out_script);
             GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
@@ -787,19 +787,17 @@ namespace sdk {
 
         sigs[0][der_written] = WALLY_SIGHASH_ALL;
 
-        const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
-
         struct wally_tx_input* tx_in;
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, 1, &witness_stack));
-
+            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(0, 1, &witness_stack));
             GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1));
             const auto script_bytes = witness_script(out_script);
             GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), pt_idx,
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(), script_bytes.size(), witness_stack,
                 &tx_in));
         } else {
+            const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
             GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), pt_idx,
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
         }
@@ -883,8 +881,8 @@ namespace sdk {
             }
 
             {
-                const auto change_address = get_receive_address(address_type::p2sh, 0);
-                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2sh"));
+                const auto change_address = get_receive_address(address_type::p2wsh, 0);
+                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
                 auto&& change_output_ptr
                     = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
                 change_output = change_output_ptr.get();

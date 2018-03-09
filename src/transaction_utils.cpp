@@ -47,7 +47,7 @@ namespace sdk {
     {
         secure_vector<unsigned char> witness;
         size_t written;
-        witness.resize(SHA256_LEN + 1);
+        witness.resize(SHA256_LEN + 2);
         GA_SDK_VERIFY(wally::witness_program_from_bytes(script, WALLY_SCRIPT_SHA256, &written, witness));
         GA_SDK_RUNTIME_ASSERT(written == witness.size());
         return p2sh_address_from_bytes(witness);
