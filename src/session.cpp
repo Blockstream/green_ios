@@ -734,8 +734,6 @@ namespace sdk {
         const auto out_script = output_script(subaccount, pointer);
 
         std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
-        const auto in_script
-            = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN, EC_SIGNATURE_DER_MAX_LEN } }, 2, out_script);
 
         const auto txhash_bytes = bytes_from_hex(txhash);
         const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
@@ -743,13 +741,16 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(0, 1, &witness_stack));
-            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, in_script.data(), in_script.size()));
+            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(0, 2, &witness_stack));
+            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), sigs[0].size()));
+            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[1].data(), sigs[1].size()));
             const auto script_bytes = witness_script(out_script);
             GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(), script_bytes.size(), witness_stack,
                 &tx_in));
         } else {
+            const auto in_script
+                = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN, EC_SIGNATURE_DER_MAX_LEN } }, 2, out_script);
             GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
         }
