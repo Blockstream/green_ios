@@ -6,28 +6,30 @@
 #include <memory>
 #include <utility>
 
-#include <wally_bip32.h>
-#include <wally_crypto.h>
-#include <wally_transaction.h>
+#include <wally.hpp>
 
 #include "containers.hpp"
 #include "memory.hpp"
 
 namespace std {
 template <> struct default_delete<struct ext_key> {
-    void operator()(struct ext_key* ptr) const { bip32_key_free(ptr); }
+    void operator()(struct ext_key* ptr) const { wally::bip32_key_free(ptr); }
 };
 
 template <> struct default_delete<struct wally_tx_input> {
-    void operator()(struct wally_tx_input* ptr) const { wally_tx_input_free(ptr); }
+    void operator()(struct wally_tx_input* ptr) const { wally::tx_input_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx_witness_stack> {
+    void operator()(struct wally_tx_witness_stack* ptr) const { wally::tx_witness_stack_free(ptr); }
 };
 
 template <> struct default_delete<struct wally_tx_output> {
-    void operator()(struct wally_tx_output* ptr) const { wally_tx_output_free(ptr); }
+    void operator()(struct wally_tx_output* ptr) const { wally::tx_output_free(ptr); }
 };
 
 template <> struct default_delete<struct wally_tx> {
-    void operator()(struct wally_tx* ptr) const { wally_tx_free(ptr); }
+    void operator()(struct wally_tx* ptr) const { wally::tx_free(ptr); }
 };
 }
 
@@ -42,6 +44,7 @@ namespace sdk {
 
     using wally_ext_key_ptr = std::unique_ptr<struct ext_key>;
     using wally_tx_input_ptr = std::unique_ptr<struct wally_tx_input>;
+    using wally_tx_witness_stack_ptr = std::unique_ptr<struct wally_tx_witness_stack>;
     using wally_tx_output_ptr = std::unique_ptr<struct wally_tx_output>;
     using wally_tx_ptr = std::unique_ptr<struct wally_tx>;
 

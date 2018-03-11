@@ -1,7 +1,5 @@
-#include <wally.hpp>
-
-#include "assertion.hpp"
 #include "transaction_utils.hpp"
+#include "assertion.hpp"
 #include "utils.hpp"
 
 namespace ga {
@@ -57,7 +55,7 @@ namespace sdk {
     {
         std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc;
         size_t written;
-        GA_SDK_VERIFY(wally_base58_to_bytes(address.c_str(), 0, sc.data(), sc.size(), &written));
+        GA_SDK_VERIFY(wally::base58_to_bytes(address, 0, &written, sc));
 
         std::array<unsigned char, HASH160_LEN + 3> script;
         GA_SDK_VERIFY(
@@ -128,14 +126,14 @@ namespace sdk {
         const std::vector<wally_tx_output_ptr>& outputs)
     {
         struct wally_tx* tx;
-        GA_SDK_VERIFY(wally_tx_init_alloc(WALLY_TX_VERSION_2, locktime, inputs.size(), outputs.size(), &tx));
+        GA_SDK_VERIFY(wally::tx_init_alloc(WALLY_TX_VERSION_2, locktime, inputs.size(), outputs.size(), &tx));
         wally_tx_ptr tx_ptr{ tx };
 
         for (auto&& in : inputs) {
-            GA_SDK_VERIFY(wally_tx_add_input(tx, in.get()));
+            GA_SDK_VERIFY(wally::tx_add_input(tx, in));
         }
         for (auto&& out : outputs) {
-            GA_SDK_VERIFY(wally_tx_add_output(tx, out.get()));
+            GA_SDK_VERIFY(wally::tx_add_output(tx, out));
         }
 
         return tx_ptr;

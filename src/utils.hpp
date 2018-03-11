@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-#include <wally_bip39.h>
+#include <wally.hpp>
 
 #include "containers.hpp"
 #include "memory.hpp"
@@ -44,7 +44,7 @@ namespace sdk {
         }
 
         struct wally_string_dtor {
-            void operator()(char* p) { wally_free_string(p); }
+            void operator()(char* p) { wally::free_string(p); }
         };
     }
 

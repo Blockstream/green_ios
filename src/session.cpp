@@ -11,7 +11,6 @@
 #include <boost/variant.hpp>
 
 #include <wally.hpp>
-#include <wally_script.h>
 
 #include "assertion.hpp"
 #include "exception.hpp"
@@ -260,8 +259,8 @@ namespace sdk {
         ext_key master;
         GA_SDK_VERIFY(wally::bip32_key_from_seed(seed, get_bip32_version(), BIP32_FLAG_SKIP_HASH, &master));
         // Since we don't use the private key or seed further, wipe them immediately
-        GA_SDK_VERIFY(wally_bzero(master.priv_key, sizeof(master.priv_key)));
-        GA_SDK_VERIFY(wally_bzero(seed.data(), seed.size()));
+        GA_SDK_VERIFY(wally::clear(master.priv_key, sizeof(master.priv_key)));
+        GA_SDK_VERIFY(wally::clear(seed));
 
         std::array<unsigned char, sizeof(master.chain_code) + sizeof(master.pub_key)> path_data;
         init_container(path_data, make_bytes_view(master.chain_code), make_bytes_view(master.pub_key));
@@ -740,19 +739,19 @@ namespace sdk {
         struct wally_tx_input* tx_in;
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
-            struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(0, 2, &witness_stack));
-            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), sigs[0].size()));
-            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[1].data(), sigs[1].size()));
+            struct wally_tx_witness_stack* witness_stack;
+            GA_SDK_VERIFY(wally::tx_witness_stack_init_alloc(0, 2, &witness_stack));
+            wally_tx_witness_stack_ptr witness{ witness_stack };
+            GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, sigs[0]));
+            GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, sigs[1]));
             const auto script_bytes = witness_script(out_script);
-            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
-                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(), script_bytes.size(), witness_stack,
-                &tx_in));
+            GA_SDK_VERIFY(wally::tx_input_init_alloc(txhash_bytes_rev, index,
+                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes, witness_stack, &tx_in));
         } else {
             const auto in_script
                 = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN, EC_SIGNATURE_DER_MAX_LEN } }, 2, out_script);
-            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), index,
-                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
+            GA_SDK_VERIFY(wally::tx_input_init_alloc(
+                txhash_bytes_rev, index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script, nullptr, &tx_in));
         }
 
         return wally_tx_input_ptr{ tx_in };
@@ -774,8 +773,8 @@ namespace sdk {
 
         std::array<unsigned char, SHA256_LEN> tx_hash;
         const uint32_t flags = type == script_type::p2sh_p2wsh_fortified_out ? WALLY_TX_FLAG_USE_WITNESS : 0;
-        GA_SDK_VERIFY(wally::tx_get_signature_hash(
-            tx, index, out_script, satoshi.value(), WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL, flags, tx_hash));
+        GA_SDK_VERIFY(wally::tx_get_btc_signature_hash(
+            tx, index, out_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash));
 
         secure_array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
         derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
@@ -792,15 +791,15 @@ namespace sdk {
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack{ nullptr };
             GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(0, 1, &witness_stack));
+            wally_tx_witness_stack_ptr witness{ witness_stack };
             GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1));
             const auto script_bytes = witness_script(out_script);
-            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), pt_idx,
-                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes.data(), script_bytes.size(), witness_stack,
-                &tx_in));
+            GA_SDK_VERIFY(wally::tx_input_init_alloc(txhash_bytes_rev, pt_idx,
+                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes, witness_stack, &tx_in));
         } else {
             const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
-            GA_SDK_VERIFY(wally_tx_input_init_alloc(txhash_bytes_rev.data(), txhash_bytes_rev.size(), pt_idx,
-                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script.data(), in_script.size(), nullptr, &tx_in));
+            GA_SDK_VERIFY(wally::tx_input_init_alloc(
+                txhash_bytes_rev, pt_idx, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script, nullptr, &tx_in));
         }
 
         return wally_tx_input_ptr{ tx_in };
@@ -812,7 +811,7 @@ namespace sdk {
         const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
 
         size_t vsize;
-        GA_SDK_VERIFY(wally_tx_get_vsize(tx.get(), &vsize));
+        GA_SDK_VERIFY(wally::tx_get_vsize(tx, &vsize));
 
         const double fee = static_cast<double>(vsize) * rate.value() / 1000.0;
         const long rounded_fee = static_cast<long>(std::ceil(fee));

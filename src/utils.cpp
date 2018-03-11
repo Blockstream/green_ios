@@ -17,8 +17,6 @@
 
 #include <openssl/rand.h>
 
-#include <wally.hpp>
-
 #include "assertion.hpp"
 #include "common.h"
 #include "utils.hpp"
@@ -66,7 +64,7 @@ namespace sdk {
         }
 
         RAND_add(&tsc, sizeof tsc, 1.5);
-        GA_SDK_VERIFY(wally_bzero(&tsc, sizeof tsc));
+        GA_SDK_VERIFY(wally::clear(&tsc, sizeof tsc));
 
         // 32 bytes from openssl, 32 from /dev/urandom, 32 from state, 8 from nonce
         std::array<unsigned char, 32 + 32 + 32 + 8> buf;
@@ -96,7 +94,7 @@ namespace sdk {
 
         std::copy(sha512.begin(), sha512.begin() + siz, static_cast<unsigned char*>(bytes));
 
-        GA_SDK_VERIFY(wally_bzero(sha512.data(), sha512.size()));
+        GA_SDK_VERIFY(wally::clear(sha512.data(), sha512.size()));
     }
 
     wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
@@ -110,7 +108,7 @@ namespace sdk {
     {
         secure_vector<unsigned char> bytes(siz / 2);
         size_t written;
-        GA_SDK_VERIFY(wally_hex_to_bytes(hex, bytes.data(), bytes.size(), &written));
+        GA_SDK_VERIFY(wally::hex_to_bytes(hex, &written, bytes));
         bytes.resize(written);
         return bytes;
     }
