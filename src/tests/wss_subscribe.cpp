@@ -23,12 +23,8 @@ int main(int argc, char** argv)
     try {
         sdk::session session;
         session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network());
-        session.subscribe(DEFAULT_TOPIC, [&](const autobahn::wamp_event& event) {
-            using topic_type = std::unordered_map<std::string, size_t>;
-            auto ev = event.argument<topic_type>(0);
-            for (auto&& arg : ev) {
-                std::cerr << arg.first << " " << arg.second << std::endl;
-            }
+        session.subscribe(DEFAULT_TOPIC, [&](const std::string& event) {
+            std::cerr << event << std::endl;
             cv.notify_one();
         });
 

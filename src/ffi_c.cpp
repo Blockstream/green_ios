@@ -217,6 +217,18 @@ GA_SDK_DEFINE_C_FUNCTION_6(GA_send, GA_session,
     },
     const char**, addr, size_t, addr_siz, const uint64_t*, amt, size_t, amt_siz, uint64_t, fee_rate, bool, send_all);
 
+using callback_t = void (*)(void*, char* output);
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_subscribe_to_topic_as_json, GA_session,
+    [](struct GA_session* session, const char* topic, callback_t callback, void* context) {
+        GA_SDK_RUNTIME_ASSERT(topic);
+        GA_SDK_RUNTIME_ASSERT(callback);
+        GA_SDK_RUNTIME_ASSERT(context);
+        session->subscribe(
+            topic, [callback, context](const std::string& event) { callback(context, to_c_string(event)); });
+    },
+    const char*, topic, callback_t, callback, void*, context);
+
 GA_SDK_DEFINE_C_FUNCTION_3(GA_login_watch_only, GA_session,
     [](struct GA_session* session, const char* username, const char* password, struct GA_login_data** login_data) {
         GA_SDK_RUNTIME_ASSERT(username);

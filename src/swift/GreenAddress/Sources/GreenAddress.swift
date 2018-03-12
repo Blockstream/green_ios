@@ -34,16 +34,10 @@ fileprivate func callWrapper(fun call: @autoclosure () -> Int32) throws {
     try errorWrapper(call())
 }
 
-fileprivate func convertOpaqueJsonToDict<T>(fun call: (T, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: T) throws -> [String: Any]? {
-    var bytes: UnsafeMutablePointer<Int8>? = nil
-    try callWrapper(fun: call(o, &bytes))
-    defer {
-        GA_destroy_string(bytes)
-    }
-
+fileprivate func convertJSONBytesToDict(_ bytes: UnsafeMutablePointer<Int8>) -> [String: Any]? {
     var dict: [String: Any]? = nil
 
-    let json = String(cString: bytes!)
+    let json = String(cString: bytes)
     if let data = json.data(using: .utf8) {
         do {
             dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
@@ -54,6 +48,15 @@ fileprivate func convertOpaqueJsonToDict<T>(fun call: (T, UnsafeMutablePointer<U
     }
 
     return dict
+}
+
+fileprivate func convertOpaqueJsonToDict<T>(fun call: (T, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: T) throws -> [String: Any]? {
+    var bytes: UnsafeMutablePointer<Int8>? = nil
+    try callWrapper(fun: call(o, &bytes))
+    defer {
+        GA_destroy_string(bytes)
+    }
+    return convertJSONBytesToDict(bytes!)
 }
 
 public class Transaction {
@@ -78,11 +81,29 @@ public class Transaction {
     }
 }
 
+fileprivate class FFIContext {
+    var data: [String: Any]?
+}
+
 public class Session {
+    fileprivate typealias EventHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<Int8>?) -> Void
+
+    fileprivate let blocksFFIContext = FFIContext()
+    fileprivate let eventHandler : EventHandler = { (o: UnsafeMutableRawPointer?, p: UnsafeMutablePointer<Int8>?) -> Void in
+        defer {
+            GA_destroy_string(p!)
+        }
+        let context : FFIContext = Unmanaged.fromOpaque(o!).takeRetainedValue()
+        context.data = convertJSONBytesToDict(p!);
+    }
+
     var session: OpaquePointer? = nil
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
+
+        let blocksOpaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(blocksFFIContext).toOpaque())
+        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "blocks", eventHandler, blocksOpaqueContext))
     }
 
     deinit {

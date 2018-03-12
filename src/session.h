@@ -49,12 +49,14 @@ int GA_create_session(struct GA_session** session);
 
 /**
  * Free a session allocated by @GA_create_session
+ *
  * @session Session to free.
  */
 int GA_destroy_session(struct GA_session* session);
 
 /**
  * Connect to a remote server using the specified network.
+ *
  * @session The server session to use.
  * @network The network parameters to use.
  * @debug Output transport debug information to stderr.
@@ -70,6 +72,7 @@ int GA_disconnect(struct GA_session* session);
 
 /**
  * Create a new user account.
+ *
  * @session The server session to use.
  * @mnemonic The user mnemonic.
  *
@@ -79,6 +82,7 @@ int GA_register_user(struct GA_session* session, const char* mnemonic);
 
 /**
  * Authenticate an user.
+ *
  * @session The server session to use.
  * @mnemonic The user mnemonic.
  *
@@ -88,6 +92,7 @@ int GA_login(struct GA_session* session, const char* mnemonic, struct GA_login_d
 
 /**
  * Authenticate an user.
+ *
  * @session The server session to use.
  * @pin The user pin.
  * @pin_identifier_and_secret The pin identifier and secret return from @GA_set_pin.
@@ -99,6 +104,7 @@ int GA_login_with_pin(struct GA_session* session, const char* pin, const char* p
 
 /**
  * Authenticate an user in watch only mode.
+ *
  * @session The server session to use.
  * @username The username.
  * @password The password.
@@ -110,12 +116,14 @@ int GA_login_watch_only(
 
 /**
  * Remove an account.
+ *
  * @session The server session to use.
  */
 int GA_remove_account(struct GA_session* session);
 
 /**
  * Change privacy (send me) settings.
+ *
  * @session The server session to use.
  * @param One of @GA_PRIVATE, @GA_ADDRBOOK, @GA_PUBLIC
  *
@@ -125,6 +133,7 @@ int GA_change_settings_privacy_send_me(struct GA_session* session, int param);
 
 /**
  * Change privacy (show as sender) settings.
+ *
  * @session The server session to use.
  * @param One of @GA_PRIVATE, @GA_MUTUAL_ADDRBOOK, @GA_PUBLIC
  *
@@ -134,6 +143,7 @@ int GA_change_settings_privacy_show_as_sender(struct GA_session* session, int pa
 
 /**
  * Change transaction limits settings.
+ *
  * @session The server session to use.
  * @is_fiat One of @GA_TRUE or @GA_FALSE.
  * @per_tx Amount per transaction in satoshis.
@@ -145,6 +155,7 @@ int GA_change_settings_tx_limits(struct GA_session* session, int is_fiat, int pe
 
 /**
  * Get list of user's transactions for a subaccount on the specified date range.
+ *
  * @session The server session to use.
  * @begin_date The begin date of the date range to search.
  * @end_date The end date of the date range to search.
@@ -171,6 +182,7 @@ int GA_get_receive_address(struct GA_session* session, int addr_type, size_t sub
 
 /**
  * The sum of unspent outputs destined to user’s wallet.
+ *
  * @session The server session to use.
  * @subaccount The subaccount pointer.
  * @num_confs The number of required confirmations.
@@ -183,6 +195,7 @@ int GA_get_balance_for_subaccount(
 
 /**
  * The sum of unspent outputs destined to user’s wallet.
+ *
  * @session The server session to use.
  * @num_confs The number of required confirmations.
  * @balance The returned balance.
@@ -193,6 +206,7 @@ int GA_get_balance(struct GA_session* session, size_t num_confs, struct GA_balan
 
 /**
  * The list of allowed currencies for all available pricing sources.
+ *
  * @session The server session to use.
  * @available_currencies The returned list of currencies.
  *
@@ -202,6 +216,7 @@ int GA_get_available_currencies(struct GA_session* session, struct GA_available_
 
 /**
  * Set a PIN for the user wallet.
+ *
  * @session The server session to use.
  * @mnemonic The user mnemonic.
  * @pin The user pin.
@@ -215,6 +230,7 @@ int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin
 
 /*
  * Send a transaction for the specified address/amount pairs.
+ *
  * @session The server session to use.
  * @addr The addresses to send.
  * @add_siz The count of items in @addr.
@@ -226,6 +242,20 @@ int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin
  */
 int GA_send(struct GA_session* session, const char** addr, size_t add_siz, const uint64_t* amt, size_t amt_siz,
     uint64_t fee_rate, bool send_all);
+
+#ifndef SWIG
+/*
+ * Subscribe to a notification topic.
+ *
+ * @session The server session to use.
+ * @topic The topic to subscribe to.
+ * @callback The callback for the topic value as JSON.
+ *
+ * GA_ERROR if topic cannot be subscribed to.
+ */
+int GA_subscribe_to_topic_as_json(
+    struct GA_session* session, const char* topic, void (*callback)(void*, char* output), void* context);
+#endif
 
 #ifdef __cplusplus
 }

@@ -5,9 +5,6 @@
 #include <ctime>
 #include <memory>
 
-#include "autobahn_wrapper.hpp"
-#include <autobahn/wamp_event_handler.hpp>
-
 #include "amount.hpp"
 #include "containers.hpp"
 #include "network_parameters.hpp"
@@ -115,7 +112,7 @@ namespace sdk {
         tx_list get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount = 0,
             tx_list_sort_by sort_by = ' '_ts, size_t page_id = 0, const std::string& query = std::string());
 
-        void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
+        void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
 
         receive_address get_receive_address(address_type addr_type = address_type::p2wsh, size_t subaccount = 0);
 

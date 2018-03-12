@@ -13,6 +13,7 @@
 #include <wally.hpp>
 
 #include "assertion.hpp"
+#include "autobahn_wrapper.hpp"
 #include "exception.hpp"
 #include "memory.hpp"
 #include "session.hpp"
@@ -108,6 +109,7 @@ namespace sdk {
         tx_list get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
             tx_list_sort_by sort_by, size_t page_id, const std::string& query);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
+        void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
         template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
         available_currencies get_available_currencies() const;
@@ -476,6 +478,17 @@ namespace sdk {
         subscribe_future.get();
     }
 
+    void session::session_impl::subscribe(
+        const std::string& topic, std::function<void(const std::string& output)> callback)
+    {
+        subscribe(topic, [callback](const autobahn::wamp_event& event) {
+            const auto ev = event.argument<msgpack::object>(0);
+            std::stringstream strm;
+            strm << ev;
+            callback(strm.str());
+        });
+    }
+
     amount session::session_impl::get_dust_threshold() const
     {
         return { m_login_data.get<amount::value_type>("dust") };
@@ -730,7 +743,7 @@ namespace sdk {
         const uint32_t index = u.get<uint32_t>("pt_idx");
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
-        const auto out_script = output_script(subaccount, pointer);
+        const auto outscript = output_script(subaccount, pointer);
 
         std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
 
@@ -740,16 +753,17 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack;
-            GA_SDK_VERIFY(wally::tx_witness_stack_init_alloc(0, 2, &witness_stack));
+            GA_SDK_VERIFY(wally::tx_witness_stack_init_alloc(1, 4, &witness_stack));
             wally_tx_witness_stack_ptr witness{ witness_stack };
             GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, sigs[0]));
             GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, sigs[1]));
-            const auto script_bytes = witness_script(out_script);
+            GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, outscript));
+            const auto script_bytes = witness_script(outscript);
             GA_SDK_VERIFY(wally::tx_input_init_alloc(txhash_bytes_rev, index,
                 is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes, witness_stack, &tx_in));
         } else {
             const auto in_script
-                = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN, EC_SIGNATURE_DER_MAX_LEN } }, 2, out_script);
+                = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN + 1, EC_SIGNATURE_DER_MAX_LEN + 1 } }, 2, outscript);
             GA_SDK_VERIFY(wally::tx_input_init_alloc(
                 txhash_bytes_rev, index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script, nullptr, &tx_in));
         }
@@ -763,7 +777,7 @@ namespace sdk {
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
         const uint32_t pt_idx = u.get<uint32_t>("pt_idx");
-        const amount satoshi = u.get<std::string>("value");
+        const amount satoshi = std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
         const auto txhash_bytes = bytes_from_hex(txhash);
@@ -1023,7 +1037,7 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_tx_list(date_range, subaccount, sort_by, page_id, query); });
     }
 
-    void session::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
+    void session::subscribe(const std::string& topic, std::function<void(const std::string& output)> handler)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->subscribe(topic, handler); });
