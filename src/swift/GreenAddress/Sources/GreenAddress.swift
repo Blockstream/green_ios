@@ -103,7 +103,7 @@ public class Session {
         try callWrapper(fun: GA_create_session(&session))
 
         let blocksOpaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(blocksFFIContext).toOpaque())
-        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "blocks", eventHandler, blocksOpaqueContext))
+        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "com.greenaddress.blocks", eventHandler, blocksOpaqueContext))
     }
 
     deinit {
