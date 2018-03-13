@@ -98,9 +98,9 @@ public class Session {
 
     fileprivate let blocksFFIContext = FFIContext()
 
-    fileprivate func subscribeToBlocks() throws -> Void {
-        let blocksOpaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(blocksFFIContext).toOpaque())
-        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "com.greenaddress.blocks", eventHandler, blocksOpaqueContext))
+    fileprivate func subscribeToTopic(topic: String, context: FFIContext) throws -> Void {
+        let opaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(context).toOpaque())
+        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, topic, eventHandler, opaqueContext))
     }
 
     var session: OpaquePointer? = nil
@@ -116,7 +116,7 @@ public class Session {
     public func connect(network: Network, debug: Bool = false) throws {
         try callWrapper(fun: GA_connect(session, network.rawValue, debug ? GA_TRUE : GA_FALSE))
 
-        try subscribeToBlocks()
+        try subscribeToTopic(topic: "com.greenaddress.blocks", context: blocksFFIContext)
     }
 
     public func registerUser(mnemonic: String) throws {
