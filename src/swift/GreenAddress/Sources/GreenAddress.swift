@@ -66,7 +66,7 @@ public class Transaction {
         case Redeposit
     }
 
-    var tx: OpaquePointer? = nil;
+    var tx: OpaquePointer? = nil
 
     public init(tx: OpaquePointer) {
         self.tx = tx
@@ -93,7 +93,7 @@ public class Session {
             GA_destroy_string(p!)
         }
         let context : FFIContext = Unmanaged.fromOpaque(o!).takeRetainedValue()
-        context.data = convertJSONBytesToDict(p!);
+        context.data = convertJSONBytesToDict(p!)
     }
 
     fileprivate let blocksFFIContext = FFIContext()
@@ -151,7 +151,7 @@ public class Session {
     }
 
     public func removeAccount() throws {
-        try callWrapper(fun: GA_remove_account(session));
+        try callWrapper(fun: GA_remove_account(session))
     }
 
     public func getTransactions(subaccount: Int) throws -> [Transaction]? {
@@ -168,7 +168,7 @@ public class Session {
 
         var txss = [Transaction]()
         for i in 0..<count {
-            var tx: OpaquePointer? = nil;
+            var tx: OpaquePointer? = nil
             guard GA_tx_list_get_tx(txs, i, &tx) == GA_OK else {
                 throw GaError.GenericError
             }
