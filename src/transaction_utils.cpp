@@ -121,5 +121,23 @@ namespace sdk {
         GA_SDK_VERIFY(wally::sha256(script_bytes, script, 3));
         return script;
     }
+
+    namespace {
+        size_t tx_get_length(const wally_tx_ptr& tx)
+        {
+            size_t length;
+            GA_SDK_VERIFY(wally::tx_get_length(tx, WALLY_TX_FLAG_USE_WITNESS, &length));
+            return length;
+        }
+    }
+
+    std::vector<unsigned char> tx_to_bytes(const wally_tx_ptr& tx)
+    {
+        std::vector<unsigned char> bytes(tx_get_length(tx));
+        size_t written;
+        GA_SDK_VERIFY(wally::tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, &written, bytes));
+        GA_SDK_RUNTIME_ASSERT(written == bytes.size());
+        return bytes;
+    }
 }
 }

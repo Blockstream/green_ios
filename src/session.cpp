@@ -53,20 +53,6 @@ namespace sdk {
 
             return repr;
         }
-
-        std::vector<unsigned char> tx_to_bytes(const wally_tx_ptr& tx)
-        {
-            std::vector<unsigned char> bytes(1024);
-            bool complete = false;
-
-            while (!complete) {
-                size_t written;
-                GA_SDK_VERIFY(wally::tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, &written, bytes));
-                complete = written <= bytes.size();
-                bytes.resize(written);
-            }
-            return bytes;
-        }
     }
 
     struct event_loop_controller {
