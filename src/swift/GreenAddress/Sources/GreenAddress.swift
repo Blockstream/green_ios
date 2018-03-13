@@ -101,9 +101,6 @@ public class Session {
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
-
-        let blocksOpaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(blocksFFIContext).toOpaque())
-        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "com.greenaddress.blocks", eventHandler, blocksOpaqueContext))
     }
 
     deinit {
@@ -112,6 +109,9 @@ public class Session {
 
     public func connect(network: Network, debug: Bool = false) throws {
         try callWrapper(fun: GA_connect(session, network.rawValue, debug ? GA_TRUE : GA_FALSE))
+
+        let blocksOpaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(blocksFFIContext).toOpaque())
+        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "com.greenaddress.blocks", eventHandler, blocksOpaqueContext))
     }
 
     public func registerUser(mnemonic: String) throws {
