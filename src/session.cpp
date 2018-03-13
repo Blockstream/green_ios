@@ -33,6 +33,12 @@ namespace sdk {
     static const unsigned char GA_LOGIN_NONCE[30] = { 'G', 'r', 'e', 'e', 'n', 'A', 'd', 'd', 'r', 'e', 's', 's', '.',
         'i', 't', ' ', 'H', 'D', ' ', 'w', 'a', 'l', 'l', 'e', 't', ' ', 'p', 'a', 't', 'h' };
 
+    // Dummy data for transaction creation with correctly sized data for fee estimation
+    static const size_t MAX_SIG_LEN = EC_SIGNATURE_DER_MAX_LEN + 1; // Max length of sig + sighash byte
+    static const secure_vector<unsigned char> DUMMY_WITNESS_SCRIPT(3 + SHA256_LEN);
+    static const std::array<std::array<unsigned char, MAX_SIG_LEN>, 2> DUMMY_2OF2_SIGS{ { { { 0 } }, { { 0 } } } };
+    static const std::array<size_t, 2> DUMMY_2OF2_SIG_LENGTHS{ { MAX_SIG_LEN, MAX_SIG_LEN } };
+
     namespace {
         // FIXME: too slow. lacks validation.
         std::array<unsigned char, 32> uint256_to_base256(const std::string& bytes)
@@ -193,8 +199,8 @@ namespace sdk {
         amount get_dust_threshold() const;
         std::string get_raw_output(const std::string& txhash) const;
         secure_vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
-        wally_tx_input_ptr add_utxo(const utxo& u) const;
-        wally_tx_input_ptr sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const;
+        amount add_utxo(const wally_tx_ptr& tx, const utxo& u) const;
+        void sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const;
         amount get_tx_fee(const wally_tx_ptr& tx, amount fee_rate);
 
     private:
@@ -245,7 +251,7 @@ namespace sdk {
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
         GA_SDK_VERIFY(wally::ec_sig_from_bytes(login_priv_key, challenge_hash, EC_FLAG_ECDSA, sig));
 
-        std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN> der;
+        std::array<unsigned char, MAX_SIG_LEN> der;
         size_t der_written;
         GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &der_written, der));
 
@@ -735,53 +741,47 @@ namespace sdk {
         fn.get();
     }
 
-    wally_tx_input_ptr session::session_impl::add_utxo(const utxo& u) const
+    // Add a UTXO to a transaction. Returns the amount added
+    amount session::session_impl::add_utxo(const wally_tx_ptr& tx, const utxo& u) const
     {
         const std::string txhash = u.get<std::string>("txhash");
+        const uint32_t index = u.get<uint32_t>("pt_idx");
+        const uint32_t sequence = is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
-        const uint32_t index = u.get<uint32_t>("pt_idx");
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
+        // FIXME: As we are only adding dummy scripts/witness data for sizing
+        //        purposes, we don't need to actually call output_script here.
+        //        Instead, use fixed length empty arrays for 2of2 and 2of3.
+        //        When we sign the input we create the scripts with the correct
+        //        signatures and overwite these values.
         const auto outscript = output_script(subaccount, pointer);
-
-        std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
-
-        const auto txhash_bytes = bytes_from_hex(txhash);
-        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
-        struct wally_tx_input* tx_in;
+        wally_tx_witness_stack_ptr wit;
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack;
-            GA_SDK_VERIFY(wally::tx_witness_stack_init_alloc(1, 4, &witness_stack));
-            wally_tx_witness_stack_ptr witness{ witness_stack };
-            GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, sigs[0]));
-            GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, sigs[1]));
+            GA_SDK_VERIFY(wally::tx_witness_stack_init_alloc(4, &witness_stack));
+            wit.reset(witness_stack);
+            GA_SDK_VERIFY(wally::tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_NULL));
+            GA_SDK_VERIFY(wally::tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG));
+            GA_SDK_VERIFY(wally::tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG));
             GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, outscript));
-            const auto script_bytes = witness_script(outscript);
-            GA_SDK_VERIFY(wally::tx_input_init_alloc(txhash_bytes_rev, index,
-                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes, witness_stack, &tx_in));
-        } else {
-            const auto in_script
-                = input_script(sigs, { { EC_SIGNATURE_DER_MAX_LEN + 1, EC_SIGNATURE_DER_MAX_LEN + 1 } }, 2, outscript);
-            GA_SDK_VERIFY(wally::tx_input_init_alloc(
-                txhash_bytes_rev, index, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script, nullptr, &tx_in));
         }
 
-        return wally_tx_input_ptr{ tx_in };
+        GA_SDK_VERIFY(wally::tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
+            wit ? DUMMY_WITNESS_SCRIPT : input_script(DUMMY_2OF2_SIGS, DUMMY_2OF2_SIG_LENGTHS, 2, outscript), wit, 0));
+
+        return std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
     }
 
-    wally_tx_input_ptr session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const
+    void session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const
     {
         const std::string txhash = u.get<std::string>("txhash");
         const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
-        const uint32_t pt_idx = u.get<uint32_t>("pt_idx");
         const amount satoshi = std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
         const auto type = script_type(u.get<uint32_t>("script_type"));
-
-        const auto txhash_bytes = bytes_from_hex(txhash);
-        const auto txhash_bytes_rev = std::vector<unsigned char>(txhash_bytes.rbegin(), txhash_bytes.rend());
 
         const auto out_script = output_script(subaccount, pointer);
 
@@ -795,28 +795,23 @@ namespace sdk {
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
         GA_SDK_VERIFY(wally::ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, sig));
 
-        std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2> sigs{ { { { 0 } }, { { 0 } } } };
+        std::array<std::array<unsigned char, MAX_SIG_LEN>, 2> sigs{ { { { 0 } }, { { 0 } } } };
         size_t der_written;
         GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &der_written, sigs[0]));
 
         sigs[0][der_written] = WALLY_SIGHASH_ALL;
 
-        struct wally_tx_input* tx_in;
         if (type == script_type::p2sh_p2wsh_fortified_out) {
-            struct wally_tx_witness_stack* witness_stack{ nullptr };
-            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(0, 1, &witness_stack));
-            wally_tx_witness_stack_ptr witness{ witness_stack };
+            struct wally_tx_witness_stack* witness_stack;
+            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, &witness_stack));
+            wally_tx_witness_stack_ptr wit{ witness_stack };
             GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1));
-            const auto script_bytes = witness_script(out_script);
-            GA_SDK_VERIFY(wally::tx_input_init_alloc(txhash_bytes_rev, pt_idx,
-                is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, script_bytes, witness_stack, &tx_in));
+            GA_SDK_VERIFY(wally::tx_set_input_witness(tx, index, wit));
+            GA_SDK_VERIFY(wally::tx_set_input_script(tx, index, witness_script(out_script)));
         } else {
             const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
-            GA_SDK_VERIFY(wally::tx_input_init_alloc(
-                txhash_bytes_rev, pt_idx, is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE, in_script, nullptr, &tx_in));
+            GA_SDK_VERIFY(wally::tx_set_input_script(tx, index, in_script));
         }
-
-        return wally_tx_input_ptr{ tx_in };
     }
 
     amount session::session_impl::get_tx_fee(const wally_tx_ptr& tx, amount fee_rate)
@@ -833,92 +828,64 @@ namespace sdk {
         return rounded_fee;
     }
 
-    namespace {
-        wally_tx_output_ptr create_tx_output(amount v, const unsigned char* script, size_t size)
-        {
-            struct wally_tx_output* tx_out;
-            GA_SDK_VERIFY(wally_tx_output_init_alloc(v.value(), script, size, &tx_out));
-            return wally_tx_output_ptr{ tx_out };
-        }
-    }
-
     wally_string_ptr session::session_impl::make_raw_tx(
         const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
         amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && !utxos.empty() && (!send_all || address_amount.size() == 1));
 
-        amount total;
-        std::vector<wally_tx_input_ptr> inputs;
-        inputs.reserve(utxos.size());
-        for (auto&& o : utxos) {
+        struct wally_tx* tx_p;
+        GA_SDK_VERIFY(wally::tx_init_alloc(WALLY_TX_VERSION_2, m_block_height, utxos.size(), 2, &tx_p));
+        wally_tx_ptr tx{ tx_p };
+
+        amount total, fee;
+
+        for (auto&& u : utxos) {
             if (!send_all && total >= address_amount[0].second) {
                 break;
             }
-            total += std::stoull(o.get<std::string>("value").c_str(), nullptr, 10);
-            inputs.emplace_back(add_utxo(o));
+            total += add_utxo(tx, u);
         }
 
-        std::vector<wally_tx_output_ptr> outputs;
-        outputs.reserve(2);
+        GA_SDK_VERIFY(wally::tx_add_raw_output(
+            tx, address_amount[0].second.value(), output_script_for_address(address_amount[0].first), 0));
 
-        {
-            const auto script = output_script_for_address(address_amount[0].first);
-            outputs.emplace_back(create_tx_output(address_amount[0].second.value(), script.data(), script.size()));
-        }
-
-        const size_t block_height = m_block_height;
-
-        wally_tx_ptr tx = make_tx(block_height, inputs, outputs);
-
-        struct wally_tx_output* change_output{ nullptr };
-
-        amount fee;
+        bool have_change = false;
+        const amount dust_threshold = get_dust_threshold();
 
         for (;;) {
             fee = get_tx_fee(tx, fee_rate);
-            const amount min_change = change_output ? amount() : get_dust_threshold();
+            const amount min_change = have_change ? amount() : dust_threshold;
             const amount am = address_amount[0].second + fee + min_change;
             if (total < am) {
-                if (inputs.size() == utxos.size()) {
+                if (tx->num_inputs == utxos.size()) {
                     throw std::runtime_error("insufficient funds");
                 }
 
-                const utxo& u = *(utxos.begin() + inputs.size());
-                total += std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
-                inputs.emplace_back(add_utxo(u));
+                total += add_utxo(tx, utxos[tx->num_inputs]);
                 continue;
             }
 
-            if (total == am || change_output) {
+            if (total == am || have_change) {
                 break;
             }
 
-            {
-                const auto change_address = get_receive_address(address_type::p2wsh, 0);
-                const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
-                auto&& change_output_ptr
-                    = create_tx_output(amount().value(), change_output_script.data(), change_output_script.size());
-                change_output = change_output_ptr.get();
-                outputs.emplace_back(std::move(change_output_ptr));
-                tx = make_tx(block_height, inputs, outputs);
-            }
+            // FIXME: Only get segwit change if segwit is enabled
+            const auto change_address = get_receive_address(address_type::p2wsh, 0);
+            const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
+            GA_SDK_VERIFY(wally::tx_add_raw_output(tx, 0, change_output_script, 0));
+            have_change = true;
         }
 
-        if (change_output) {
-            change_output->satoshi = (total - address_amount[0].second - fee).value();
-            tx = make_tx(block_height, inputs, outputs);
+        if (have_change) {
+            tx->outputs[1].satoshi = (total - address_amount[0].second - fee).value();
+            // FIXME: Randomize change output (swap output 0 and 1 with 50% probability)
         }
-
-        std::vector<wally_tx_input_ptr> signed_inputs;
-        signed_inputs.reserve(inputs.size());
 
         auto ub = utxos.begin();
-        for (uint32_t i = 0; i < inputs.size(); ++i) {
-            signed_inputs.emplace_back(sign_input(tx, i, *ub++));
+        for (uint32_t i = 0; i < tx->num_inputs; ++i) {
+            sign_input(tx, i, *ub++);
         }
-
-        tx = make_tx(block_height, signed_inputs, outputs);
 
         return hex_from_bytes(tx_to_bytes(tx));
     }

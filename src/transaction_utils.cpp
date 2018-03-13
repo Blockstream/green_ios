@@ -121,22 +121,5 @@ namespace sdk {
         GA_SDK_VERIFY(wally::sha256(script_bytes, script, 3));
         return script;
     }
-
-    wally_tx_ptr make_tx(uint32_t locktime, const std::vector<wally_tx_input_ptr>& inputs,
-        const std::vector<wally_tx_output_ptr>& outputs)
-    {
-        struct wally_tx* tx;
-        GA_SDK_VERIFY(wally::tx_init_alloc(WALLY_TX_VERSION_2, locktime, inputs.size(), outputs.size(), &tx));
-        wally_tx_ptr tx_ptr{ tx };
-
-        for (auto&& in : inputs) {
-            GA_SDK_VERIFY(wally::tx_add_input(tx, in));
-        }
-        for (auto&& out : outputs) {
-            GA_SDK_VERIFY(wally::tx_add_output(tx, out));
-        }
-
-        return tx_ptr;
-    }
 }
 }

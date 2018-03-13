@@ -84,9 +84,6 @@ namespace sdk {
         const std::array<size_t, 2>& sigs_size, size_t num_sigs, const secure_vector<unsigned char>& output_script);
 
     std::array<unsigned char, 3 + SHA256_LEN> witness_script(const secure_vector<unsigned char>& script_bytes);
-
-    wally_tx_ptr make_tx(uint32_t locktime, const std::vector<wally_tx_input_ptr>& inputs,
-        const std::vector<wally_tx_output_ptr>& outputs);
 }
 }
 
