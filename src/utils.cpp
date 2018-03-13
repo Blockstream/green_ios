@@ -104,13 +104,22 @@ namespace sdk {
         return wally_string_ptr(s);
     }
 
-    secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz)
+    static secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz, bool rev)
     {
         secure_vector<unsigned char> bytes(siz / 2);
         size_t written;
         GA_SDK_VERIFY(wally::hex_to_bytes(hex, &written, bytes));
         bytes.resize(written);
+        if (rev)
+            std::reverse(bytes.begin(), bytes.end());
         return bytes;
+    }
+
+    secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz) { return bytes_from_hex(hex, siz, false); }
+
+    secure_vector<unsigned char> bytes_from_hex_rev(const char* hex, size_t siz)
+    {
+        return bytes_from_hex(hex, siz, true);
     }
 
     secure_array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
