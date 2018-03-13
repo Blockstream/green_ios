@@ -88,13 +88,19 @@ fileprivate class FFIContext {
 public class Session {
     fileprivate typealias EventHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<Int8>?) -> Void
 
-    fileprivate let blocksFFIContext = FFIContext()
     fileprivate let eventHandler : EventHandler = { (o: UnsafeMutableRawPointer?, p: UnsafeMutablePointer<Int8>?) -> Void in
         defer {
             GA_destroy_string(p!)
         }
         let context : FFIContext = Unmanaged.fromOpaque(o!).takeRetainedValue()
         context.data = convertJSONBytesToDict(p!);
+    }
+
+    fileprivate let blocksFFIContext = FFIContext()
+
+    fileprivate func subscribeToBlocks() throws -> Void {
+        let blocksOpaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(blocksFFIContext).toOpaque())
+        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "com.greenaddress.blocks", eventHandler, blocksOpaqueContext))
     }
 
     var session: OpaquePointer? = nil
@@ -110,8 +116,7 @@ public class Session {
     public func connect(network: Network, debug: Bool = false) throws {
         try callWrapper(fun: GA_connect(session, network.rawValue, debug ? GA_TRUE : GA_FALSE))
 
-        let blocksOpaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(blocksFFIContext).toOpaque())
-        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, "com.greenaddress.blocks", eventHandler, blocksOpaqueContext))
+        try subscribeToBlocks()
     }
 
     public func registerUser(mnemonic: String) throws {
