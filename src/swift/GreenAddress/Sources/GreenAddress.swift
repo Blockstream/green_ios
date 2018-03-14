@@ -66,7 +66,7 @@ public class Transaction {
         case Redeposit
     }
 
-    var tx: OpaquePointer? = nil
+    private var tx: OpaquePointer? = nil
 
     public init(tx: OpaquePointer) {
         self.tx = tx
@@ -86,9 +86,9 @@ fileprivate class FFIContext {
 }
 
 public class Session {
-    fileprivate typealias EventHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<Int8>?) -> Void
+    private typealias EventHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<Int8>?) -> Void
 
-    fileprivate let eventHandler : EventHandler = { (o: UnsafeMutableRawPointer?, p: UnsafeMutablePointer<Int8>?) -> Void in
+    private let eventHandler : EventHandler = { (o: UnsafeMutableRawPointer?, p: UnsafeMutablePointer<Int8>?) -> Void in
         defer {
             GA_destroy_string(p!)
         }
@@ -96,14 +96,14 @@ public class Session {
         context.data = convertJSONBytesToDict(p!)
     }
 
-    fileprivate let blocksFFIContext = FFIContext()
+    private let blocksFFIContext = FFIContext()
 
-    fileprivate func subscribeToTopic(topic: String, context: FFIContext) throws -> Void {
+    private func subscribeToTopic(topic: String, context: FFIContext) throws -> Void {
         let opaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(context).toOpaque())
         try callWrapper(fun: GA_subscribe_to_topic_as_json(session, topic, eventHandler, opaqueContext))
     }
 
-    var session: OpaquePointer? = nil
+    private var session: OpaquePointer? = nil
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
