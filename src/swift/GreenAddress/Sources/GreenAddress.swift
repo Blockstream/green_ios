@@ -162,16 +162,12 @@ public class Session {
         }
 
         var count: Int = 0
-        guard GA_tx_list_get_size(txs, &count) == GA_OK else {
-            throw GaError.GenericError
-        }
+        try callWrapper(fun: GA_tx_list_get_size(txs, &count))
 
         var txss = [Transaction]()
         for i in 0..<count {
             var tx: OpaquePointer? = nil
-            guard GA_tx_list_get_tx(txs, i, &tx) == GA_OK else {
-                throw GaError.GenericError
-            }
+            try callWrapper(fun: GA_tx_list_get_tx(txs, i, &tx))
             txss.append(Transaction(tx: tx!))
         }
 
