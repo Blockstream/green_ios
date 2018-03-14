@@ -69,7 +69,7 @@ class TransactionsTableViewModel: NSObject {
                 dateFormatter.dateStyle = .medium
                 dateFormatter.timeStyle = .short
                 let date = dateFormatter.string(from: self.dateFromTimestamp(date: json["timestamp"] as! String))
-                self.items.append(TransactionItem(timestamp: date, address: "", amount: String(json["value"] as! Int64), fiatAmount: ""))
+                self.items.append(TransactionItem(timestamp: date, address: "", amount: (json["value_str"] as! String), fiatAmount: ""))
             }
         }.always {
             tableView.reloadData()
