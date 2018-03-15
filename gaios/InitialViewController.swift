@@ -27,15 +27,6 @@ class InitialViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
 
-    @IBAction func enterMnemonicAction(_ sender: Any) {
-        let trimmedUserProvidedMnemonic = "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive spike pond industry time hero trim verb mammal asthma".trimmingCharacters(in: .whitespacesAndNewlines)
-        retry(session: getSession(), network: Network.TestNet) {
-            wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
-            }.then { (loginData: [String: Any]?) -> Void in
-                getGAService().loginData = loginData
-                self.performSegue(withIdentifier: "MainViewSegue", sender: self)
-            }.catch { error in
-                print("Login failed")
-        }
+    @IBAction func unwindToInitialViewController(segue: UIStoryboardSegue) {
     }
 }

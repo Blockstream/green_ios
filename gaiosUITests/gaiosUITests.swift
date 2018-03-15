@@ -2,9 +2,6 @@
 //  gaiosUITests.swift
 //  gaiosUITests
 //
-//  Created by Goncalo Carvalho on 22/10/2017.
-//  Copyright © 2017 Goncalo Carvalho. All rights reserved.
-//
 
 import XCTest
 

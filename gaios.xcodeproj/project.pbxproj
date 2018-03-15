@@ -29,6 +29,7 @@
 		676FCF571F9D0E7100354E93 /* CreatePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */; };
 		676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF531F9D0E7100354E93 /* CreateViewController.swift */; };
 		677442901FB202AC0082F74A /* ReceiveTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */; };
+		678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */; };
 		67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 /* End PBXBuildFile section */
@@ -83,6 +84,7 @@
 		676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreatePageViewController.swift; sourceTree = "<group>"; };
 		676FCF531F9D0E7100354E93 /* CreateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
 		6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveTableViewControllerScene.swift; sourceTree = "<group>"; };
+		678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicTableViewController.swift; sourceTree = "<group>"; };
 		67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBookTableViewControllerScene.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -185,6 +187,7 @@
 				676846031FACC1E4002D79ED /* PINViewController.swift */,
 				672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */,
 				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
+				678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */,
 			);
 			path = gaios;
 			sourceTree = "<group>";
@@ -506,6 +509,7 @@
 				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
 				676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */,
 				676FCF551F9D0E7100354E93 /* TransactionsTableViewController.swift in Sources */,
+				678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */,
 				6756E8C8204967BA00426EC8 /* QRCodeReaderViewController.swift in Sources */,
 				676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */,
 				674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */,
