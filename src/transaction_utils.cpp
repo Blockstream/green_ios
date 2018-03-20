@@ -112,14 +112,14 @@ namespace sdk {
         return script;
     }
 
-    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const secure_vector<unsigned char>& script_bytes)
+    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const secure_vector<unsigned char>& script)
     {
-        std::array<unsigned char, 3 + SHA256_LEN> script;
-        script[0] = 0x22;
-        script[1] = 0x00;
-        script[2] = 0x20;
-        GA_SDK_VERIFY(wally::sha256(script_bytes, script, 3));
-        return script;
+        const uint32_t flags = WALLY_SCRIPT_SHA256 | WALLY_SCRIPT_AS_PUSH;
+        std::array<unsigned char, 3 + SHA256_LEN> witness;
+        size_t written;
+        GA_SDK_VERIFY(wally::witness_program_from_bytes(script, flags, &written, witness));
+        GA_SDK_RUNTIME_ASSERT(written == witness.size());
+        return witness;
     }
 
     namespace {
