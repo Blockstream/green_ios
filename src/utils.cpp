@@ -64,7 +64,7 @@ namespace sdk {
         }
 
         RAND_add(&tsc, sizeof tsc, 1.5);
-        GA_SDK_VERIFY(wally::clear(&tsc, sizeof tsc));
+        wally::clear(&tsc, sizeof tsc);
 
         // 32 bytes from openssl, 32 from /dev/urandom, 32 from state, 8 from nonce
         std::array<unsigned char, 32 + 32 + 32 + 8> buf;
@@ -79,7 +79,7 @@ namespace sdk {
             GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, buf.data() + 32, 32)) == 32);
         }
 
-        std::array<unsigned char, SHA512_LEN> sha512;
+        std::array<unsigned char, SHA512_LEN> hashed;
         {
             std::unique_lock<std::mutex> l{ curr_state_mutex };
 
@@ -88,28 +88,19 @@ namespace sdk {
                 buf.data() + 96);
             ++nonce;
 
-            GA_SDK_VERIFY(wally::sha512(buf, sha512));
-            std::copy(sha512.begin() + 32, sha512.end(), curr_state.data());
+            sha512(buf, hashed);
+            std::copy(hashed.begin() + 32, hashed.end(), curr_state.data());
         }
 
-        std::copy(sha512.begin(), sha512.begin() + siz, static_cast<unsigned char*>(bytes));
+        std::copy(hashed.begin(), hashed.begin() + siz, static_cast<unsigned char*>(bytes));
 
-        GA_SDK_VERIFY(wally::clear(sha512.data(), sha512.size()));
-    }
-
-    wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz)
-    {
-        char* s;
-        GA_SDK_VERIFY(wally_hex_from_bytes(bytes, siz, &s));
-        return wally_string_ptr(s);
+        wally::clear(hashed);
     }
 
     static secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz, bool rev)
     {
         secure_vector<unsigned char> bytes(siz / 2);
-        size_t written;
-        GA_SDK_VERIFY(wally::hex_to_bytes(hex, &written, bytes));
-        bytes.resize(written);
+        hex_to_bytes(hex, bytes);
         if (rev)
             std::reverse(bytes.begin(), bytes.end());
         return bytes;
@@ -129,23 +120,20 @@ namespace sdk {
         GA_SDK_VERIFY(bip39_get_wordlist(lang.c_str(), &w));
 
         secure_array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
-        size_t written = 0;
-        GA_SDK_VERIFY(bip39_mnemonic_to_bytes(w, mnemonic.c_str(), bytes.data(), bytes.size(), &written));
-        GA_SDK_RUNTIME_ASSERT(written == BIP39_ENTROPY_LEN_256);
-
+        bip39_mnemonic_to_bytes(w, mnemonic, bytes);
         return bytes;
     }
 
-    wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang)
+    std::string mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang)
     {
         struct words* w;
-        GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
+        bip39_get_wordlist(lang, &w);
         char* s;
-        GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, bytes, siz, &s));
-        return wally_string_ptr(s);
+        bip39_mnemonic_from_bytes(w, bytes, siz, &s);
+        return detail::make_string(s);
     }
 
-    wally_string_ptr generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32, "en"); }
+    std::string generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32, "en"); }
 
     bitcoin_uri parse_bitcoin_uri(const std::string& s)
     {

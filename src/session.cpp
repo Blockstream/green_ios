@@ -11,8 +11,6 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 
-#include <wally.hpp>
-
 #include "assertion.hpp"
 #include "autobahn_wrapper.hpp"
 #include "exception.hpp"
@@ -95,7 +93,7 @@ namespace sdk {
         bool set_watch_only(const std::string& username, const std::string& password);
         bool remove_account();
 
-        std::pair<wally_string_ptr, wally_string_ptr> create_subaccount(
+        std::pair<std::string, std::string> create_subaccount(
             subaccount_type type, const std::string& label, const std::string& xpub);
 
         login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
@@ -122,15 +120,15 @@ namespace sdk {
         void delete_address_book_entry(const std::string& address);
 
         utxo_set get_utxos(size_t num_confs, size_t subaccount);
-        wally_string_ptr make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
+        std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const std::vector<utxo>& utxos, amount fee_rate, bool send_all);
-        void send(const wally_string_ptr& raw_tx);
+        void send(const std::string& tx_hex);
         void send(const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
             amount fee_rate, bool send_all);
         void send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all);
 
     private:
-        static std::pair<wally_string_ptr, wally_string_ptr> sign_challenge(
+        static std::pair<std::string, std::string> sign_challenge(
             const wally_ext_key_ptr& master_key, const std::string& challenge);
 
         bool connect_with_tls() const { return boost::algorithm::starts_with(m_params.gait_wamp_url(), "wss://"); }
@@ -226,7 +224,7 @@ namespace sdk {
         tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
     }
 
-    std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::sign_challenge(
+    std::pair<std::string, std::string> session::session_impl::sign_challenge(
         const wally_ext_key_ptr& master_key, const std::string& challenge)
     {
         auto path_bytes = get_random_bytes<8>();
@@ -240,39 +238,34 @@ namespace sdk {
 
         const auto challenge_hash = uint256_to_base256(challenge);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-        GA_SDK_VERIFY(wally::ec_sig_from_bytes(login_priv_key, challenge_hash, EC_FLAG_ECDSA, sig));
+        ec_sig_from_bytes(login_priv_key, challenge_hash, EC_FLAG_ECDSA, sig);
 
-        std::array<unsigned char, MAX_SIG_LEN> der;
-        size_t der_written;
-        GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &der_written, der));
-
-        return { hex_from_bytes(der.data(), der_written), hex_from_bytes(path_bytes) };
+        return { hex_from_bytes(ec_sig_to_der(sig)), hex_from_bytes(path_bytes) };
     }
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
         secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
-        size_t written;
-        GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
+        bip39_mnemonic_to_seed(mnemonic, nullptr, seed);
 
         ext_key master;
-        GA_SDK_VERIFY(wally::bip32_key_from_seed(seed, get_bip32_version(), BIP32_FLAG_SKIP_HASH, &master));
+        bip32_key_from_seed(seed, get_bip32_version(), BIP32_FLAG_SKIP_HASH, &master);
         // Since we don't use the private key or seed further, wipe them immediately
-        GA_SDK_VERIFY(wally::clear(master.priv_key, sizeof(master.priv_key)));
-        GA_SDK_VERIFY(wally::clear(seed));
+        wally::clear(master.priv_key, sizeof(master.priv_key));
+        wally::clear(seed);
 
         std::array<unsigned char, sizeof(master.chain_code) + sizeof(master.pub_key)> path_data;
         init_container(path_data, make_bytes_view(master.chain_code), make_bytes_view(master.pub_key));
 
         std::array<unsigned char, HMAC_SHA512_LEN> path;
-        GA_SDK_VERIFY(wally::hmac_sha512(make_bytes_view(GA_LOGIN_NONCE), path_data, path));
+        hmac_sha512(make_bytes_view(GA_LOGIN_NONCE), path_data, path);
 
         auto pub_key = hex_from_bytes(make_bytes_view(master.pub_key));
         auto chain_code = hex_from_bytes(make_bytes_view(master.chain_code));
         auto hex_path = hex_from_bytes(path);
 
-        auto register_arguments = std::make_tuple(
-            pub_key.get(), chain_code.get(), DEFAULT_USER_AGENT + user_agent + "_ga_sdk", hex_path.get());
+        auto register_arguments
+            = std::make_tuple(pub_key, chain_code, DEFAULT_USER_AGENT + user_agent + "_ga_sdk", hex_path);
         auto fn
             = m_session->call("com.greenaddress.login.register", register_arguments).then([](wamp_call_result result) {
                   GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0));
@@ -283,23 +276,19 @@ namespace sdk {
     login_data session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
     {
         secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
-        size_t written;
-        GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
+        bip39_mnemonic_to_seed(mnemonic, nullptr, seed);
 
         // FIXME: Allocate m_master_key in mlocked memory and pass it
         ext_key* p;
-        GA_SDK_VERIFY(wally::bip32_key_from_seed_alloc(seed, get_bip32_version(), 0, &p));
+        bip32_key_from_seed_alloc(seed, get_bip32_version(), 0, &p);
+
         m_master_key = wally_ext_key_ptr(p);
 
         unsigned char btc_ver[1] = { m_params.btc_version() };
         std::array<unsigned char, sizeof(btc_ver) + sizeof(m_master_key->hash160)> vpkh;
         init_container(vpkh, make_bytes_view(btc_ver), make_bytes_view(m_master_key->hash160));
 
-        char* q;
-        GA_SDK_VERIFY(wally::base58_from_bytes(vpkh, BASE58_FLAG_CHECKSUM, &q));
-        wally_string_ptr base58_pkh(q);
-
-        auto challenge_arguments = std::make_tuple(base58_pkh.get());
+        auto challenge_arguments = std::make_tuple(base58check_from_bytes(vpkh));
         std::string challenge;
         auto fn
             = m_session->call("com.greenaddress.login.get_challenge", challenge_arguments)
@@ -309,7 +298,7 @@ namespace sdk {
 
         auto hexder_path = sign_challenge(m_master_key, challenge);
 
-        auto authenticate_arguments = std::make_tuple(hexder_path.first.get(), false, hexder_path.second.get(),
+        auto authenticate_arguments = std::make_tuple(hexder_path.first, false, hexder_path.second,
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
         fn = m_session->call("com.greenaddress.login.authenticate", authenticate_arguments)
                  .then([this](wamp_call_result result) { m_login_data = result.get().argument<msgpack::object>(0); });
@@ -382,25 +371,23 @@ namespace sdk {
                 hex_from_bytes(make_bytes_view(subkey->pub_key)), hex_from_bytes(make_bytes_view(subkey->chain_code)));
         }
 
-        auto get_recovery_key(const wally_string_ptr& mnemonic, uint32_t bip32_version, uint32_t pointer)
+        auto get_recovery_key(const std::string& mnemonic, uint32_t bip32_version, uint32_t pointer)
         {
             secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
-            size_t written;
-            GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.get(), NULL, seed.data(), seed.size(), &written));
+            bip39_mnemonic_to_seed(mnemonic, nullptr, seed);
 
             ext_key* p;
-            GA_SDK_VERIFY(wally::bip32_key_from_seed_alloc(seed, bip32_version, BIP32_FLAG_SKIP_HASH, &p));
+            bip32_key_from_seed_alloc(seed, bip32_version, BIP32_FLAG_SKIP_HASH, &p);
             wally_ext_key_ptr recovery{ p };
 
             std::array<unsigned char, BIP32_SERIALIZED_LEN> recovery_bytes;
             GA_SDK_VERIFY(bip32_key_serialize(
                 recovery.get(), BIP32_FLAG_KEY_PUBLIC, recovery_bytes.data(), recovery_bytes.size()));
-            char* q;
-            GA_SDK_VERIFY(wally::base58_from_bytes(recovery_bytes, BASE58_FLAG_CHECKSUM, &q));
-            wally_string_ptr recovery_xpub{ q };
 
-            wally_string_ptr recovery_pub_key;
-            wally_string_ptr recovery_chain_code;
+            std::string recovery_xpub = base58check_from_bytes(recovery_bytes);
+
+            std::string recovery_pub_key;
+            std::string recovery_chain_code;
             std::tie(recovery_pub_key, recovery_chain_code) = get_hdkey(recovery, pointer, false);
 
             return std::make_tuple(
@@ -408,18 +395,18 @@ namespace sdk {
         }
     }
 
-    std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::create_subaccount(
+    std::pair<std::string, std::string> session::session_impl::create_subaccount(
         subaccount_type type, const std::string& name, const std::string& xpub)
     {
         GA_SDK_RUNTIME_ASSERT(!name.empty());
         GA_SDK_RUNTIME_ASSERT_MSG(xpub.empty(), "not supported");
 
-        wally_string_ptr recovery_mnemonic;
-        wally_string_ptr pub_key;
-        wally_string_ptr recovery_pub_key;
-        wally_string_ptr chain_code;
-        wally_string_ptr recovery_chain_code;
-        wally_string_ptr recovery_xpub;
+        std::string recovery_mnemonic;
+        std::string pub_key;
+        std::string recovery_pub_key;
+        std::string chain_code;
+        std::string recovery_chain_code;
+        std::string recovery_xpub;
 
         const uint32_t pointer = m_login_data.get_min_unused_pointer();
         {
@@ -439,14 +426,14 @@ namespace sdk {
                     [&receiving_id](wamp_call_result result) { receiving_id = result.get().argument<std::string>(0); });
         };
 
-        auto fn = type == subaccount_type::_2of2 ? create_subaccount(pointer, name, pub_key.get(), chain_code.get())
-                                                 : create_subaccount(pointer, name, pub_key.get(), chain_code.get(),
-                                                       recovery_pub_key.get(), recovery_chain_code.get());
+        auto fn = type == subaccount_type::_2of2
+            ? create_subaccount(pointer, name, pub_key, chain_code)
+            : create_subaccount(pointer, name, pub_key, chain_code, recovery_pub_key, recovery_chain_code);
         fn.get();
 
         m_login_data.insert_subaccount(name, pointer, receiving_id,
-            type == subaccount_type::_2of2 ? std::string() : recovery_pub_key.get(),
-            type == subaccount_type::_2of2 ? std::string() : recovery_chain_code.get(),
+            type == subaccount_type::_2of2 ? std::string() : recovery_pub_key,
+            type == subaccount_type::_2of2 ? std::string() : recovery_chain_code,
             type == subaccount_type::_2of2 ? "simple" : "2of3");
 
         return std::make_pair(std::move(recovery_mnemonic), std::move(recovery_xpub));
@@ -630,12 +617,7 @@ namespace sdk {
 
         GA_SDK_RUNTIME_ASSERT(sc == sc_multisig);
 
-        char* q;
-        GA_SDK_VERIFY(wally::base58_from_bytes(sc, BASE58_FLAG_CHECKSUM, &q));
-        wally_string_ptr base58_pkh(q);
-
-        address.set(addr_type_str, std::string(q));
-
+        address.set(addr_type_str, base58check_from_bytes(sc));
         return address;
     }
 
@@ -704,36 +686,29 @@ namespace sdk {
 
         fn.get();
 
+        secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
+        bip39_mnemonic_to_seed(mnemonic, nullptr, seed);
+        const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
+        const auto salt = get_random_bytes<16>();
         const auto password = get_pin_password(pin, pin_identifier);
 
-        auto salt = get_random_bytes<16>();
-        const auto salt_hex = hex_from_bytes(salt);
-
-        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
-        size_t written;
-        GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.data(), NULL, seed.data(), seed.size(), &written));
-        const auto seed_hex = hex_from_bytes(seed.data(), written);
-        const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
-        const auto mnemonic_hex = hex_from_bytes(mnemonic_bytes);
-
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        GA_SDK_VERIFY(wally::pbkdf2_hmac_sha512(password, salt, 0, 2048, key));
+        pbkdf2_hmac_sha512(password, salt, 0, 2048, key);
 
-        std::array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data;
+        secure_array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data;
         init_container(data, seed, mnemonic_bytes);
-
         const auto iv = get_random_bytes<AES_BLOCK_LEN>();
 
         std::vector<unsigned char> encrypted(iv.size() + ((data.size() / AES_BLOCK_LEN) + 1) * AES_BLOCK_LEN);
         std::copy(iv.begin(), iv.end(), encrypted.begin());
+        size_t written;
         GA_SDK_VERIFY(wally_aes_cbc(key.data(), AES_KEY_LEN_256, iv.data(), iv.size(), data.data(), data.size(),
             AES_FLAG_ENCRYPT, encrypted.data() + iv.size(), encrypted.size() - iv.size(), &written));
         GA_SDK_RUNTIME_ASSERT(written == encrypted.size() - iv.size());
-
-        const auto encrypted_hex = hex_from_bytes(encrypted.data(), iv.size() + written);
+        encrypted.resize(iv.size() + written);
 
         pin_info p;
-        p.emplace("secret", std::string(salt_hex.get()) + std::string(encrypted_hex.get()));
+        p.emplace("secret", hex_from_bytes(salt) + hex_from_bytes(encrypted));
         p.emplace("pin_identifier", pin_identifier);
 
         return p;
@@ -760,8 +735,7 @@ namespace sdk {
         auto secret_bytes = bytes_from_hex(pin_identifier_and_secret.second);
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        GA_SDK_VERIFY(wally_pbkdf2_hmac_sha512(
-            password.data(), password.size(), secret_bytes.data(), 16, 0, 2048, key.data(), key.size()));
+        pbkdf2_hmac_sha512(password, make_bytes_view(secret_bytes, 16), 0, 2048, key);
 
         std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
         size_t written;
@@ -773,7 +747,7 @@ namespace sdk {
 
         const auto mnemonic = mnemonic_from_bytes(plaintext.data() + BIP39_SEED_LEN_512, BIP39_ENTROPY_LEN_256, "en");
 
-        return login(std::string(mnemonic.get()), user_agent);
+        return login(mnemonic, user_agent);
     }
 
     bool session::session_impl::add_address_book_entry(
@@ -830,16 +804,16 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack;
-            GA_SDK_VERIFY(wally::tx_witness_stack_init_alloc(4, &witness_stack));
+            tx_witness_stack_init_alloc(4, &witness_stack);
             wit.reset(witness_stack);
-            GA_SDK_VERIFY(wally::tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_NULL));
-            GA_SDK_VERIFY(wally::tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG));
-            GA_SDK_VERIFY(wally::tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG));
-            GA_SDK_VERIFY(wally::tx_witness_stack_add(witness_stack, outscript));
+            tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_NULL);
+            tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG);
+            tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG);
+            tx_witness_stack_add(witness_stack, outscript);
         }
 
-        GA_SDK_VERIFY(wally::tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
-            wit ? DUMMY_WITNESS_SCRIPT : input_script(DUMMY_2OF2_SIGS, DUMMY_2OF2_SIG_LENGTHS, 2, outscript), wit, 0));
+        tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
+            wit ? DUMMY_WITNESS_SCRIPT : input_script(DUMMY_2OF2_SIGS, DUMMY_2OF2_SIG_LENGTHS, 2, outscript), wit, 0);
 
         return std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
     }
@@ -856,17 +830,16 @@ namespace sdk {
 
         std::array<unsigned char, SHA256_LEN> tx_hash;
         const uint32_t flags = type == script_type::p2sh_p2wsh_fortified_out ? WALLY_TX_FLAG_USE_WITNESS : 0;
-        GA_SDK_VERIFY(wally::tx_get_btc_signature_hash(
-            tx, index, out_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash));
+        tx_get_btc_signature_hash(tx, index, out_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash);
 
         secure_array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
         derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
         std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-        GA_SDK_VERIFY(wally::ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, sig));
+        ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, sig);
 
         std::array<std::array<unsigned char, MAX_SIG_LEN>, 2> sigs{ { { { 0 } }, { { 0 } } } };
         size_t der_written;
-        GA_SDK_VERIFY(wally::ec_sig_to_der(sig, &der_written, sigs[0]));
+        ec_sig_to_der(sig, sigs[0], &der_written);
 
         sigs[0][der_written] = WALLY_SIGHASH_ALL;
 
@@ -875,11 +848,11 @@ namespace sdk {
             GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, &witness_stack));
             wally_tx_witness_stack_ptr wit{ witness_stack };
             GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1));
-            GA_SDK_VERIFY(wally::tx_set_input_witness(tx, index, wit));
-            GA_SDK_VERIFY(wally::tx_set_input_script(tx, index, witness_script(out_script)));
+            tx_set_input_witness(tx, index, wit);
+            tx_set_input_script(tx, index, witness_script(out_script));
         } else {
             const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
-            GA_SDK_VERIFY(wally::tx_set_input_script(tx, index, in_script));
+            tx_set_input_script(tx, index, in_script);
         }
     }
 
@@ -889,7 +862,7 @@ namespace sdk {
         const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
 
         size_t vsize;
-        GA_SDK_VERIFY(wally::tx_get_vsize(tx, &vsize));
+        tx_get_vsize(tx, &vsize);
 
         const double fee = static_cast<double>(vsize) * rate.value() / 1000.0;
         const long rounded_fee = static_cast<long>(std::ceil(fee));
@@ -897,14 +870,13 @@ namespace sdk {
         return rounded_fee;
     }
 
-    wally_string_ptr session::session_impl::make_raw_tx(
-        const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
-        amount fee_rate, bool send_all)
+    std::string session::session_impl::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
+        const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && !utxos.empty() && (!send_all || address_amount.size() == 1));
 
         struct wally_tx* tx_p;
-        GA_SDK_VERIFY(wally::tx_init_alloc(WALLY_TX_VERSION_2, m_block_height, utxos.size(), 2, &tx_p));
+        tx_init_alloc(WALLY_TX_VERSION_2, m_block_height, utxos.size(), 2, &tx_p);
         wally_tx_ptr tx{ tx_p };
 
         amount total, fee;
@@ -916,8 +888,7 @@ namespace sdk {
             total += add_utxo(tx, u);
         }
 
-        GA_SDK_VERIFY(wally::tx_add_raw_output(
-            tx, address_amount[0].second.value(), output_script_for_address(address_amount[0].first), 0));
+        tx_add_raw_output(tx, address_amount[0].second.value(), output_script_for_address(address_amount[0].first), 0);
 
         bool have_change = false;
         const amount dust_threshold = get_dust_threshold();
@@ -942,7 +913,7 @@ namespace sdk {
             // FIXME: Only get segwit change if segwit is enabled
             const auto change_address = get_receive_address(address_type::p2wsh, 0);
             const auto change_output_script = output_script_for_address(change_address.get<std::string>("p2wsh"));
-            GA_SDK_VERIFY(wally::tx_add_raw_output(tx, 0, change_output_script, 0));
+            tx_add_raw_output(tx, 0, change_output_script, 0);
             have_change = true;
         }
 
@@ -959,9 +930,9 @@ namespace sdk {
         return hex_from_bytes(tx_to_bytes(tx));
     }
 
-    void session::session_impl::send(const wally_string_ptr& raw_tx)
+    void session::session_impl::send(const std::string& tx_hex)
     {
-        auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(raw_tx.get()))
+        auto fn = m_session->call("com.greenaddress.vault.send_raw_tx", std::make_tuple(tx_hex.c_str()))
                       .then([](boost::future<autobahn::wamp_call_result> result) { result.get(); });
 
         fn.get();
@@ -1060,7 +1031,7 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->remove_account(); });
     }
 
-    std::pair<wally_string_ptr, wally_string_ptr> session::create_subaccount(
+    std::pair<std::string, std::string> session::create_subaccount(
         subaccount_type type, const std::string& label, const std::string& xpub)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
@@ -1164,17 +1135,17 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_utxos(num_confs, subaccount); });
     }
 
-    wally_string_ptr session::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
+    std::string session::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
         const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->make_raw_tx(address_amount, utxos, fee_rate, send_all); });
     }
 
-    void session::send(const wally_string_ptr& raw_tx)
+    void session::send(const std::string& tx_hex)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        exception_wrapper([&] { m_impl->send(raw_tx); });
+        exception_wrapper([&] { m_impl->send(tx_hex); });
     }
 
     void session::send(const std::vector<std::pair<std::string, amount>>& address_amount,

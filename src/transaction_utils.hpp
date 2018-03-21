@@ -6,30 +6,28 @@
 #include <memory>
 #include <utility>
 
-#include <wally.hpp>
-
 #include "containers.hpp"
 #include "memory.hpp"
 
 namespace std {
 template <> struct default_delete<struct ext_key> {
-    void operator()(struct ext_key* ptr) const { wally::bip32_key_free(ptr); }
+    void operator()(struct ext_key* ptr) const { ::ga::sdk::bip32_key_free(ptr); }
 };
 
 template <> struct default_delete<struct wally_tx_input> {
-    void operator()(struct wally_tx_input* ptr) const { wally::tx_input_free(ptr); }
+    void operator()(struct wally_tx_input* ptr) const { ::ga::sdk::tx_input_free(ptr); }
 };
 
 template <> struct default_delete<struct wally_tx_witness_stack> {
-    void operator()(struct wally_tx_witness_stack* ptr) const { wally::tx_witness_stack_free(ptr); }
+    void operator()(struct wally_tx_witness_stack* ptr) const { ::ga::sdk::tx_witness_stack_free(ptr); }
 };
 
 template <> struct default_delete<struct wally_tx_output> {
-    void operator()(struct wally_tx_output* ptr) const { wally::tx_output_free(ptr); }
+    void operator()(struct wally_tx_output* ptr) const { ::ga::sdk::tx_output_free(ptr); }
 };
 
 template <> struct default_delete<struct wally_tx> {
-    void operator()(struct wally_tx* ptr) const { wally::tx_free(ptr); }
+    void operator()(struct wally_tx* ptr) const { ::ga::sdk::tx_free(ptr); }
 };
 }
 
@@ -57,7 +55,7 @@ namespace sdk {
             flags |= BIP32_FLAG_SKIP_HASH;
         }
         ext_key* p;
-        GA_SDK_VERIFY(wally::bip32_key_from_parent_path_alloc(key, path, flags, &p));
+        bip32_key_from_parent_path_alloc(key, path, flags, &p);
         return wally_ext_key_ptr{ p };
     }
 

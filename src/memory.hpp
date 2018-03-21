@@ -9,9 +9,7 @@
 #include <new>
 #include <vector>
 
-#include <wally.hpp>
-
-#include "assertion.hpp"
+#include <ga_wally.hpp>
 
 namespace ga {
 namespace sdk {
@@ -54,7 +52,7 @@ namespace sdk {
 
             void deallocate(T* ptr, std::size_t n)
             {
-                GA_SDK_VERIFY(wally::clear(ptr, n));
+                wally::clear(ptr, n);
                 munlock(ptr, n);
                 m_alloc.deallocate(ptr, n);
             }

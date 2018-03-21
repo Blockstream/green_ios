@@ -16,7 +16,7 @@ namespace sdk {
         ext_key* p;
         uint32_t version = main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
         const nullbytes nb;
-        GA_SDK_VERIFY(wally::bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, nb, nb, nb, &p));
+        bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, nb, nb, nb, &p);
 
         wally_ext_key_ptr server_pub_key{ p };
 
@@ -35,29 +35,28 @@ namespace sdk {
 
     std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const secure_vector<unsigned char>& script)
     {
+        std::array<unsigned char, HASH160_LEN> hash;
         std::array<unsigned char, HASH160_LEN + 1> addr;
+        hash160(script, hash);
         addr[0] = 196;
-        GA_SDK_VERIFY(wally::hash160(script, addr, 1));
+        std::copy(hash.begin(), hash.end(), addr.begin() + 1);
         return addr;
     }
 
     std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const secure_vector<unsigned char>& script)
     {
-        secure_vector<unsigned char> witness;
-        size_t written;
-        witness.resize(SHA256_LEN + 2);
-        GA_SDK_VERIFY(wally::witness_program_from_bytes(script, WALLY_SCRIPT_SHA256, &written, witness));
-        GA_SDK_RUNTIME_ASSERT(written == witness.size());
+        secure_vector<unsigned char> witness(SHA256_LEN + 2);
+        witness_program_from_bytes(script, WALLY_SCRIPT_SHA256, witness);
         return p2sh_address_from_bytes(witness);
     }
 
     std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address)
     {
         std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc;
-        size_t written;
-        GA_SDK_VERIFY(wally::base58_to_bytes(address, 0, &written, sc));
+        base58_to_bytes(address, 0, sc);
 
         std::array<unsigned char, HASH160_LEN + 3> script;
+        size_t written;
         GA_SDK_VERIFY(
             wally_scriptpubkey_p2sh_from_bytes(sc.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written));
 
@@ -75,7 +74,7 @@ namespace sdk {
         // FIXME: needs code for subaccounts
         //
 
-        size_t n_pubkeys = 2, threshold = 2, written;
+        size_t n_pubkeys = 2, threshold = 2;
         secure_vector<unsigned char> keys;
         keys.reserve(3 * EC_PUBLIC_KEY_LEN);
         keys.insert(keys.end(), server_pub_key->pub_key, server_pub_key->pub_key + EC_PUBLIC_KEY_LEN);
@@ -83,8 +82,7 @@ namespace sdk {
         // FIXME: If 2of3, insert 2nd key and increment n_pubkeys here
         secure_vector<unsigned char> script(3 + n_pubkeys * (EC_PUBLIC_KEY_LEN + 1));
 
-        GA_SDK_VERIFY(wally::scriptpubkey_multisig_from_bytes(keys, threshold, 0, &written, script));
-        GA_SDK_RUNTIME_ASSERT(written == script.size());
+        scriptpubkey_multisig_from_bytes(keys, threshold, 0, script);
         return script;
     }
 
@@ -114,29 +112,17 @@ namespace sdk {
 
     std::array<unsigned char, 3 + SHA256_LEN> witness_script(const secure_vector<unsigned char>& script)
     {
-        const uint32_t flags = WALLY_SCRIPT_SHA256 | WALLY_SCRIPT_AS_PUSH;
         std::array<unsigned char, 3 + SHA256_LEN> witness;
-        size_t written;
-        GA_SDK_VERIFY(wally::witness_program_from_bytes(script, flags, &written, witness));
-        GA_SDK_RUNTIME_ASSERT(written == witness.size());
+        witness_program_from_bytes(script, WALLY_SCRIPT_SHA256 | WALLY_SCRIPT_AS_PUSH, witness);
         return witness;
-    }
-
-    namespace {
-        size_t tx_get_length(const wally_tx_ptr& tx)
-        {
-            size_t length;
-            GA_SDK_VERIFY(wally::tx_get_length(tx, WALLY_TX_FLAG_USE_WITNESS, &length));
-            return length;
-        }
     }
 
     std::vector<unsigned char> tx_to_bytes(const wally_tx_ptr& tx)
     {
-        std::vector<unsigned char> bytes(tx_get_length(tx));
-        size_t written;
-        GA_SDK_VERIFY(wally::tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, &written, bytes));
-        GA_SDK_RUNTIME_ASSERT(written == bytes.size());
+        size_t length;
+        tx_get_length(tx, WALLY_TX_FLAG_USE_WITNESS, &length);
+        std::vector<unsigned char> bytes(length);
+        tx_to_bytes(tx, WALLY_TX_FLAG_USE_WITNESS, bytes);
         return bytes;
     }
 }

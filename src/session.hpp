@@ -105,7 +105,7 @@ namespace sdk {
         bool remove_account();
 
         // FIXME: recovery_mnemonic requires secure clear.
-        std::pair<wally_string_ptr, wally_string_ptr> create_subaccount(
+        std::pair<std::string, std::string> create_subaccount(
             subaccount_type type, const std::string& name, const std::string& xpub = std::string());
 
         template <typename... Args> void change_settings(settings key, Args&&... args)
@@ -140,10 +140,10 @@ namespace sdk {
 
         utxo_set get_utxos(size_t num_confs, size_t subaccount);
 
-        wally_string_ptr make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
+        std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const std::vector<utxo>& utxos, amount fee_rate, bool send_all);
 
-        void send(const wally_string_ptr& raw_tx);
+        void send(const std::string& tx_hex);
         void send(const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
             amount fee_rate, bool send_all = false);
         void send(

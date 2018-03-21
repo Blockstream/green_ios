@@ -6,8 +6,6 @@
 #include <map>
 #include <string>
 
-#include <wally.hpp>
-
 #include "containers.hpp"
 #include "memory.hpp"
 
@@ -90,14 +88,6 @@ namespace sdk {
         }
     }
 
-    using wally_string_ptr = std::unique_ptr<char, detail::wally_string_dtor>;
-
-    wally_string_ptr hex_from_bytes(const unsigned char* bytes, size_t siz);
-    template <typename T> inline wally_string_ptr hex_from_bytes(const T& bytes)
-    {
-        return hex_from_bytes(bytes.data(), bytes.size());
-    }
-
     secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
     inline auto bytes_from_hex(const std::string& hex) { return bytes_from_hex(hex.data(), hex.size()); }
 
@@ -107,8 +97,8 @@ namespace sdk {
     secure_array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
         const std::string& mnemonic, const std::string& lang);
 
-    wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang);
-    wally_string_ptr generate_mnemonic();
+    std::string mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang);
+    std::string generate_mnemonic();
 
     bitcoin_uri parse_bitcoin_uri(const std::string& s);
 }

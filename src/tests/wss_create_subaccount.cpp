@@ -30,8 +30,8 @@ int main(int argc, char** argv)
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
 
-        const std::string name_1{ generate_name().get() };
-        const std::string name_2{ generate_name().get() };
+        const std::string name_1{ generate_name() };
+        const std::string name_2{ generate_name() };
         {
             session.create_subaccount(sdk::subaccount_type::_2of2, name_1);
             session.create_subaccount(sdk::subaccount_type::_2of3, name_2);
