@@ -13,25 +13,25 @@
 namespace ga {
 namespace sdk {
 
-    enum class address_type : int { p2sh, p2wsh };
+    enum class address_type : uint8_t { p2sh, p2wsh };
 
-    enum class settings : int {
+    enum class settings : uint8_t {
         privacy_send_me,
         privacy_show_as_sender,
         tx_limits,
     };
 
-    enum class privacy_send_me : int {
+    enum class privacy_send_me : uint8_t {
         private_,
         addrbook,
         public_,
     };
 
-    enum class privacy_show_as_sender : int { private_, mutual_addrbook, public_ };
+    enum class privacy_show_as_sender : uint8_t { private_, mutual_addrbook, public_ };
 
-    enum class tx_limits : int { is_fiat, per_tx, total };
+    enum class tx_limits : uint8_t { is_fiat, per_tx, total };
 
-    enum class tx_list_sort_by {
+    enum class tx_list_sort_by : uint8_t {
         timestamp,
         timestamp_ascending,
         timestamp_descending,
@@ -40,13 +40,13 @@ namespace sdk {
         value_descending,
     };
 
-    enum class two_factor_type {
+    enum class two_factor_type : uint8_t {
         email,
         gauth,
         phone,
     };
 
-    enum class transaction_priority { high, normal, low, economy, custom, instant };
+    enum class subaccount_type : uint8_t { _2of2, _2of3 };
 
     inline namespace literals {
 
@@ -104,6 +104,10 @@ namespace sdk {
         bool set_watch_only(const std::string& username, const std::string& password);
         bool remove_account();
 
+        // FIXME: recovery_mnemonic requires secure clear.
+        std::pair<wally_string_ptr, wally_string_ptr> create_subaccount(
+            subaccount_type type, const std::string& name, const std::string& xpub = std::string());
+
         template <typename... Args> void change_settings(settings key, Args&&... args)
         {
             change_settings_helper(key, ga::sdk::make_map_from_args(std::forward<Args>(args)...));
@@ -115,6 +119,8 @@ namespace sdk {
         void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
 
         receive_address get_receive_address(address_type addr_type = address_type::p2wsh, size_t subaccount = 0);
+
+        std::vector<subaccount> get_subaccounts();
 
         balance get_balance_for_subaccount(size_t subaccount, size_t num_confs = 0);
         balance get_balance(size_t num_confs = 0);

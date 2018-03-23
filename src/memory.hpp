@@ -11,7 +11,7 @@
 
 #include <wally.hpp>
 
-#include <assertion.hpp>
+#include "assertion.hpp"
 
 namespace ga {
 namespace sdk {

@@ -1,8 +1,10 @@
+#include <queue>
+#include <thread>
+
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "containers.hpp"
-#include "transaction_utils.hpp"
 
 namespace ga {
 namespace sdk {
@@ -21,6 +23,13 @@ namespace sdk {
             }
             return c;
         }
+    }
+
+    fee_estimates& fee_estimates::operator=(const msgpack::object& data)
+    {
+        std::unique_lock<std::mutex> lock{ m_mutex };
+        associate(data);
+        return *this;
     }
 
     amount fee_estimates::get_estimate(uint32_t block, bool instant, amount min_fee_rate, bool main_net)
@@ -54,6 +63,47 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(!main_net || !instant);
 
         return instant ? min_fee_rate * 3 : min_fee_rate;
+    }
+
+    uint32_t login_data::get_min_unused_pointer() const
+    {
+        // FIXME: there may be gaps so bail out early if diff between top and prev_top is greater than 1
+        const auto subaccounts = get<std::vector<msgpack::object>>("subaccounts");
+        std::priority_queue<uint32_t, std::vector<uint32_t>> q;
+        std::for_each(std::begin(subaccounts), std::end(subaccounts), [&q](const msgpack::object& o) {
+            std::map<std::string, msgpack::object> acc;
+            o >> acc;
+            q.push(acc["pointer"].as<uint32_t>());
+        });
+        return !q.empty() ? q.top() + 1 : 1;
+    }
+
+    std::vector<subaccount> login_data::get_subaccounts() const
+    {
+        const auto subaccounts = get<std::vector<msgpack::object>>("subaccounts");
+        std::vector<subaccount> p;
+        p.reserve(subaccounts.size());
+        std::copy(std::begin(subaccounts), std::end(subaccounts), std::back_inserter(p));
+        return p;
+    }
+
+    void login_data::insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
+        const std::string& recovery_pub_key, const std::string& recovery_chain_code, const std::string& type)
+    {
+        std::unordered_map<std::string, msgpack::object> acc;
+        acc["name"] = msgpack::object(name);
+        acc["pointer"] = msgpack::object(pointer);
+        acc["receiving_id"] = msgpack::object(receiving_id);
+        acc["type"] = msgpack::object(type);
+        acc["2of3_backup_pubkey"] = msgpack::object(recovery_pub_key);
+        acc["2of3_backup_chaincode"] = msgpack::object(recovery_chain_code);
+
+        msgpack::zone oz;
+        auto subaccounts = get<std::vector<msgpack::object>>("subaccounts");
+        subaccounts.push_back(msgpack::object(acc, oz));
+
+        msgpack::zone z;
+        set("subaccounts", msgpack::object(subaccounts, z));
     }
 
     void tx::construct_from(const msgpack_object& data)

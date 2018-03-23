@@ -145,6 +145,8 @@ namespace sdk {
         return wally_string_ptr(s);
     }
 
+    wally_string_ptr generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32, "en"); }
+
     bitcoin_uri parse_bitcoin_uri(const std::string& s)
     {
         auto&& split = [](const std::string& s, const std::string& c) {

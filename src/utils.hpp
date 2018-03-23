@@ -108,6 +108,7 @@ namespace sdk {
         const std::string& mnemonic, const std::string& lang);
 
     wally_string_ptr mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang);
+    wally_string_ptr generate_mnemonic();
 
     bitcoin_uri parse_bitcoin_uri(const std::string& s);
 }

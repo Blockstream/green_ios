@@ -2,12 +2,10 @@
 #define GA_SDK_CONTAINERS_HPP
 #pragma once
 
-#include <memory>
+#include <map>
 #include <mutex>
 #include <sstream>
 #include <string>
-#include <thread>
-#include <unordered_map>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
@@ -90,21 +88,27 @@ namespace sdk {
         };
     }
 
-    struct fee_estimates : public detail::object_container<fee_estimates> {
-        fee_estimates& operator=(const msgpack::object& data)
-        {
-            std::unique_lock<std::mutex> lock{ m_mutex };
-            associate(data);
-            return *this;
-        }
+    class fee_estimates : public detail::object_container<fee_estimates> {
+    public:
+        fee_estimates& operator=(const msgpack::object& data);
 
         amount get_estimate(uint32_t block, bool instant, amount min_fee_rate, bool main_net);
 
+    private:
         std::mutex m_mutex;
     };
 
-    class login_data : public detail::object_container<login_data> {
-    public:
+    struct subaccount : public detail::object_container<subaccount> {
+        subaccount(const msgpack::object& other) { associate(other); }
+
+        subaccount& operator=(const msgpack::object& data)
+        {
+            associate(data);
+            return *this;
+        }
+    };
+
+    struct login_data : public detail::object_container<login_data> {
         login_data() = default;
 
         login_data(const login_data& data) { associate(data.get_handle().get()); }
@@ -114,6 +118,12 @@ namespace sdk {
             associate(data);
             return *this;
         }
+
+        uint32_t get_min_unused_pointer() const;
+
+        std::vector<subaccount> get_subaccounts() const;
+        void insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
+            const std::string& recovery_pub_key, const std::string& recovery_chain_code, const std::string& type);
     };
 
     struct receive_address : public detail::object_container<receive_address> {
@@ -126,7 +136,8 @@ namespace sdk {
         std::string get_address() const { return get_with_default("p2sh", get_with_default("p2wsh", std::string())); }
     };
 
-    struct tx : public detail::object_container<tx> {
+    class tx : public detail::object_container<tx> {
+    public:
         tx& operator=(const msgpack_object& data)
         {
             construct_from(data);

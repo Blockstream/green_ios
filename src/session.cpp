@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <ctime>
+#include <queue>
 #include <thread>
 #include <type_traits>
 #include <unordered_map>
@@ -94,6 +95,9 @@ namespace sdk {
         bool set_watch_only(const std::string& username, const std::string& password);
         bool remove_account();
 
+        std::pair<wally_string_ptr, wally_string_ptr> create_subaccount(
+            subaccount_type type, const std::string& label, const std::string& xpub);
+
         login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
             const std::string& user_agent = std::string());
         void change_settings_helper(settings key, const std::map<int, int>& args);
@@ -102,6 +106,7 @@ namespace sdk {
             tx_list_sort_by sort_by, size_t page_id, const std::string& query);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
         void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
+        std::vector<subaccount> get_subaccounts() { return m_login_data.get_subaccounts(); }
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
         template <typename T> balance get_balance(T subaccount, size_t num_confs) const;
         available_currencies get_available_currencies() const;
@@ -284,7 +289,6 @@ namespace sdk {
         // FIXME: Allocate m_master_key in mlocked memory and pass it
         ext_key* p;
         GA_SDK_VERIFY(wally::bip32_key_from_seed_alloc(seed, get_bip32_version(), 0, &p));
-
         m_master_key = wally_ext_key_ptr(p);
 
         unsigned char btc_ver[1] = { m_params.btc_version() };
@@ -368,6 +372,86 @@ namespace sdk {
         return r;
     }
 
+    namespace {
+        auto get_hdkey(const wally_ext_key_ptr& key, uint32_t pointer, bool skip_hash = true)
+        {
+            const auto subkey = derive_key(key,
+                std::array<uint32_t, 2>{ { BIP32_INITIAL_HARDENED_CHILD | 3, BIP32_INITIAL_HARDENED_CHILD | pointer } },
+                false, skip_hash);
+            return std::make_pair(
+                hex_from_bytes(make_bytes_view(subkey->pub_key)), hex_from_bytes(make_bytes_view(subkey->chain_code)));
+        }
+
+        auto get_recovery_key(const wally_string_ptr& mnemonic, uint32_t bip32_version, uint32_t pointer)
+        {
+            secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
+            size_t written;
+            GA_SDK_VERIFY(bip39_mnemonic_to_seed(mnemonic.get(), NULL, seed.data(), seed.size(), &written));
+
+            ext_key* p;
+            GA_SDK_VERIFY(wally::bip32_key_from_seed_alloc(seed, bip32_version, BIP32_FLAG_SKIP_HASH, &p));
+            wally_ext_key_ptr recovery{ p };
+
+            std::array<unsigned char, BIP32_SERIALIZED_LEN> recovery_bytes;
+            GA_SDK_VERIFY(bip32_key_serialize(
+                recovery.get(), BIP32_FLAG_KEY_PUBLIC, recovery_bytes.data(), recovery_bytes.size()));
+            char* q;
+            GA_SDK_VERIFY(wally::base58_from_bytes(recovery_bytes, BASE58_FLAG_CHECKSUM, &q));
+            wally_string_ptr recovery_xpub{ q };
+
+            wally_string_ptr recovery_pub_key;
+            wally_string_ptr recovery_chain_code;
+            std::tie(recovery_pub_key, recovery_chain_code) = get_hdkey(recovery, pointer, false);
+
+            return std::make_tuple(
+                std::move(recovery_pub_key), std::move(recovery_chain_code), std::move(recovery_xpub));
+        }
+    }
+
+    std::pair<wally_string_ptr, wally_string_ptr> session::session_impl::create_subaccount(
+        subaccount_type type, const std::string& name, const std::string& xpub)
+    {
+        GA_SDK_RUNTIME_ASSERT(!name.empty());
+        GA_SDK_RUNTIME_ASSERT_MSG(xpub.empty(), "not supported");
+
+        wally_string_ptr recovery_mnemonic;
+        wally_string_ptr pub_key;
+        wally_string_ptr recovery_pub_key;
+        wally_string_ptr chain_code;
+        wally_string_ptr recovery_chain_code;
+        wally_string_ptr recovery_xpub;
+
+        const uint32_t pointer = m_login_data.get_min_unused_pointer();
+        {
+            std::tie(pub_key, chain_code) = get_hdkey(m_master_key, pointer);
+            if (type == subaccount_type::_2of3) {
+                recovery_mnemonic = generate_mnemonic();
+                std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
+                    = get_recovery_key(recovery_mnemonic, get_bip32_version(), pointer);
+            }
+        }
+
+        std::string receiving_id;
+        auto&& create_subaccount = [this, &receiving_id](auto&&... args) {
+            return m_session
+                ->call("com.greenaddress.txs.create_subaccount", std::make_tuple(std::forward<decltype(args)>(args)...))
+                .then(
+                    [&receiving_id](wamp_call_result result) { receiving_id = result.get().argument<std::string>(0); });
+        };
+
+        auto fn = type == subaccount_type::_2of2 ? create_subaccount(pointer, name, pub_key.get(), chain_code.get())
+                                                 : create_subaccount(pointer, name, pub_key.get(), chain_code.get(),
+                                                       recovery_pub_key.get(), recovery_chain_code.get());
+        fn.get();
+
+        m_login_data.insert_subaccount(name, pointer, receiving_id,
+            type == subaccount_type::_2of2 ? std::string() : recovery_pub_key.get(),
+            type == subaccount_type::_2of2 ? std::string() : recovery_chain_code.get(),
+            type == subaccount_type::_2of2 ? "simple" : "2of3");
+
+        return std::make_pair(std::move(recovery_mnemonic), std::move(recovery_xpub));
+    }
+
     void session::session_impl::change_settings_helper(settings key, const std::map<int, int>& args)
     {
         auto&& to_args = [args](std::vector<std::string> v) {
@@ -395,8 +479,7 @@ namespace sdk {
         }
 
         auto&& change_settings = [this, &key_str](auto arg) {
-            auto change_settings_arguments = std::make_tuple(key_str, arg);
-            auto fn = m_session->call("com.greenaddress.login.change_settings", change_settings_arguments)
+            auto fn = m_session->call("com.greenaddress.login.change_settings", std::make_tuple(key_str, arg))
                           .then([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); });
 
             fn.get();
@@ -977,6 +1060,13 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->remove_account(); });
     }
 
+    std::pair<wally_string_ptr, wally_string_ptr> session::create_subaccount(
+        subaccount_type type, const std::string& label, const std::string& xpub)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->create_subaccount(type, label, xpub); });
+    }
+
     void session::change_settings_helper(settings key, const std::map<int, int>& args)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
@@ -1000,6 +1090,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_receive_address(addr_type, subaccount); });
+    }
+
+    std::vector<subaccount> session::get_subaccounts()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_subaccounts(); });
     }
 
     balance session::get_balance_for_subaccount(size_t subaccount, size_t num_confs)
@@ -1078,21 +1174,21 @@ namespace sdk {
     void session::send(const wally_string_ptr& raw_tx)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->send(raw_tx); });
+        exception_wrapper([&] { m_impl->send(raw_tx); });
     }
 
     void session::send(const std::vector<std::pair<std::string, amount>>& address_amount,
         const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->send(address_amount, utxos, fee_rate, send_all); });
+        exception_wrapper([&] { m_impl->send(address_amount, utxos, fee_rate, send_all); });
     }
 
     void session::send(
         const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->send(address_amount, fee_rate, send_all); });
+        exception_wrapper([&] { m_impl->send(address_amount, fee_rate, send_all); });
     }
 }
 }
