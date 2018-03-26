@@ -7,8 +7,14 @@ public class wss_connect {
             throw new RuntimeException();
         }
         Wally.bip39_get_wordlist("en");
+        int network = GASDK.GA_NETWORK_TESTNET;
+        for (String arg : args) {
+            if (arg.equals("-l")) {
+                network = GASDK.GA_NETWORK_LOCALTEST;
+            }
+        }
         Object session = GASDK.create_session();
-        GASDK.connect(session, GASDK.GA_NETWORK_TESTNET, GASDK.GA_TRUE);
+        GASDK.connect(session, network, GASDK.GA_TRUE);
         byte[] random_bytes = GASDK.get_random_bytes(32);
         String mnemonic = GASDK.generate_mnemonic("en");
     }
