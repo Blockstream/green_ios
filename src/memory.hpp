@@ -98,10 +98,18 @@ namespace sdk {
     template <typename T> class bytes_view {
     private:
         std::reference_wrapper<const T> bytes;
+        std::size_t length;
 
     public:
         bytes_view(const T& a)
             : bytes(std::cref(a))
+            , length(std::extent<T>::value)
+        {
+        }
+
+        bytes_view(const T& a, size_t len)
+            : bytes(std::cref(a))
+            , length(len)
         {
         }
 
@@ -110,10 +118,20 @@ namespace sdk {
         bytes_view& operator=(bytes_view& other) = default;
         bytes_view& operator=(bytes_view&& other) = default;
 
-        const unsigned char* data() const { return wally::detail::get_p(bytes); }
-        constexpr size_t size() const { return std::extent<T>::value; }
+        const unsigned char* data() const { return data(std::is_class<T>()); }
+        constexpr size_t size() const { return length; }
         const unsigned char* end() const { return data() + size(); }
+
+    private:
+        const unsigned char* data(std::true_type) const { return bytes.get().data(); }
+        const unsigned char* data(std::false_type) const { return wally::detail::get_p(bytes); }
     };
+
+    template <typename T> inline const bytes_view<T> make_bytes_view(const T& v) { return bytes_view<T>(v); }
+    template <typename T> inline const bytes_view<T> make_bytes_view(const T& v, size_t n)
+    {
+        return bytes_view<T>(v, n);
+    }
 
     // A class representing a null range of bytes
     class nullbytes {
@@ -127,8 +145,6 @@ namespace sdk {
         const unsigned char* data() const { return nullptr; }
         size_t size() const { return 0; }
     };
-
-    template <typename T> bytes_view<T> make_bytes_view(const T& v) { return bytes_view<T>(v); }
 
     template <typename T, typename T1, typename T2> inline void init_container(T& dst, const T1& arg1, const T2& arg2)
     {
