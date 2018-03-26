@@ -242,6 +242,26 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_login_watch_only, GA_session,
 
 GA_SDK_DEFINE_C_FUNCTION_0(GA_remove_account, GA_session, [](struct GA_session* session) { session->remove_account(); })
 
+GA_SDK_DEFINE_C_FUNCTION_4(GA_create_subaccount, GA_session,
+    [](struct GA_session* session, uint8_t type, const char* name, char** recovery_mnemonic, char** recovery_xpub) {
+        namespace sdk = ga::sdk;
+
+        GA_SDK_RUNTIME_ASSERT(type == GA_2OF2 || type == GA_2OF3);
+        GA_SDK_RUNTIME_ASSERT(name);
+        GA_SDK_RUNTIME_ASSERT(type == GA_2OF2 || recovery_mnemonic);
+        GA_SDK_RUNTIME_ASSERT(type == GA_2OF2 || recovery_xpub);
+
+        std::string rec_mnemonic;
+        std::string rec_xpub;
+        std::tie(rec_mnemonic, rec_xpub) = session->create_subaccount(
+            type == GA_2OF2 ? sdk::subaccount_type::_2of2 : sdk::subaccount_type::_2of3, name);
+        if (type == GA_2OF3) {
+            *recovery_mnemonic = to_c_string(rec_mnemonic);
+            *recovery_xpub = to_c_string(rec_xpub);
+        }
+    },
+    uint8_t, type, const char*, name, char**, recovery_mnemonic, char**, recovery_xpub);
+
 GA_SDK_DEFINE_C_FUNCTION_1(GA_change_settings_privacy_send_me, GA_session,
     [](struct GA_session* session, int param) {
         namespace sdk = ga::sdk;

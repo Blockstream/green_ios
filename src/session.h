@@ -30,9 +30,13 @@ extern "C" {
 #define GA_VALUE_ASCENDING 4
 #define GA_VALUE_DESCENDING 5
 
-/** Value for address types */
+/** Values for address types */
 #define GA_ADDRESS_TYPE_P2SH 0
 #define GA_ADDRESS_TYPE_P2WSH 1
+
+/** Values for subaccount types */
+#define GA_2OF2 0
+#define GA_2OF3 1
 
 /** An server session */
 struct GA_session;
@@ -118,8 +122,24 @@ int GA_login_watch_only(
  * Remove an account.
  *
  * @session The server session to use.
+ *
+ * GA_ERROR if removal is unsuccessful.
  */
 int GA_remove_account(struct GA_session* session);
+
+/**
+ * Create a subaccount.
+ *
+ * @session The server session to use.
+ * @type The subaccount type (one of @GA_2OF2 or @GA_2OF3).
+ * @name The subaccount label.
+ * @recovery_mnemonic The @GA_2OF3 subaccount recovery mnemonic.
+ * @recovery_xpub The @GA_2OF3 subaccount recovery xpub.
+ *
+ * GA_ERROR if creation is unsuccessful.
+ */
+int GA_create_subaccount(
+    struct GA_session* session, uint8_t type, const char* name, char** recovery_mnemonic, char** recovery_xpub);
 
 /**
  * Change privacy (send me) settings.

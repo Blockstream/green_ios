@@ -17,6 +17,11 @@ public enum Network: Int32 {
     case TestNet = 2
 }
 
+public enum SubaccountType: UInt8 {
+    case _2of2
+    case _2of3
+}
+
 fileprivate func errorWrapper(_ r: Int32) throws {
     guard r == GA_OK else {
         switch r {
@@ -152,6 +157,17 @@ public class Session {
 
     public func removeAccount() throws {
         try callWrapper(fun: GA_remove_account(session))
+    }
+
+    public func createSubaccount(type: SubaccountType, name: String) throws -> (String, String)? {
+        var recovery_mnemonic: UnsafeMutablePointer<Int8>? = nil
+        var recovery_xpub: UnsafeMutablePointer<Int8>? = nil
+        try callWrapper(fun: GA_create_subaccount(session, type.rawValue, name, &recovery_mnemonic, &recovery_xpub))
+        defer {
+            GA_destroy_string(recovery_mnemonic)
+            GA_destroy_string(recovery_xpub)
+        }
+        return type == SubaccountType._2of2 ? nil : (String(cString: recovery_mnemonic!), String(cString: recovery_xpub!))
     }
 
     public func getTransactions(subaccount: Int) throws -> [Transaction]? {
