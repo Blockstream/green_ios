@@ -390,8 +390,7 @@ namespace sdk {
             std::string recovery_chain_code;
             std::tie(recovery_pub_key, recovery_chain_code) = get_hdkey(recovery, pointer, false);
 
-            return std::make_tuple(
-                std::move(recovery_pub_key), std::move(recovery_chain_code), std::move(recovery_xpub));
+            return std::make_tuple(recovery_pub_key, recovery_chain_code, recovery_xpub);
         }
     }
 
@@ -431,12 +430,10 @@ namespace sdk {
             : create_subaccount(pointer, name, pub_key, chain_code, recovery_pub_key, recovery_chain_code);
         fn.get();
 
-        m_login_data.insert_subaccount(name, pointer, receiving_id,
-            type == subaccount_type::_2of2 ? std::string() : recovery_pub_key,
-            type == subaccount_type::_2of2 ? std::string() : recovery_chain_code,
+        m_login_data.insert_subaccount(name, pointer, receiving_id, recovery_pub_key, recovery_chain_code,
             type == subaccount_type::_2of2 ? "simple" : "2of3");
 
-        return std::make_pair(std::move(recovery_mnemonic), std::move(recovery_xpub));
+        return std::make_pair(recovery_mnemonic, recovery_xpub);
     }
 
     void session::session_impl::change_settings_helper(settings key, const std::map<int, int>& args)
