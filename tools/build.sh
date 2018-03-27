@@ -52,14 +52,14 @@ function build() {
     export CC="$C_COMPILER"
     export CCC_CC="$C_COMPILER"
     export CC="$C_COMPILER"
-    export BOOST_ROOT="$PWD/build-$C_COMPILER/boost_1_64_0/build"
-    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$C_COMPILER/openssl-1.0.2m/build/lib/pkgconfig"
+    export BOOST_ROOT="$PWD/build-$C_COMPILER/boost_1_66_0/build"
+    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$C_COMPILER/openssl-1.0.2o/build/lib/pkgconfig"
     export WALLY_PKG_CONFIG_PATH="$PWD/build-$C_COMPILER/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     SCAN_BUILD=""
     if [ $ANALYZE == true ] ; then
-        SCAN_BUILD="scan-build --use-cc=$C_COMPILER --use-c++=$CXX_COMPILER"
+        SCAN_BUILD="scan-build$COMPILER_VERSION --use-cc=$C_COMPILER --use-c++=$CXX_COMPILER"
     fi
 
     if [ ! -f "build-$C_COMPILER/build.ninja" ]; then
@@ -75,8 +75,8 @@ function build() {
 function set_cross_build_env() {
     bld_root="$PWD/build-clang-$1-$2"
     ./tools/deps.sh $bld_root
-    export BOOST_ROOT="$bld_root/boost_1_64_0/build"
-    export OPENSSL_PKG_CONFIG_PATH="$bld_root/openssl-1.0.2m/build/lib/pkgconfig"
+    export BOOST_ROOT="$bld_root/boost_1_66_0/build"
+    export OPENSSL_PKG_CONFIG_PATH="$bld_root/openssl-1.0.2o/build/lib/pkgconfig"
     export WALLY_PKG_CONFIG_PATH="$bld_root/libwally-core/build/lib/pkgconfig"
     export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
     export HOST_ARCH=$2
