@@ -28,6 +28,11 @@ if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
+if clang_tidy.found()
+    custom_target('clang-tidy', output : 'clang-tidy', command : [clang_tidy, '-header-filter=../src/*',
+      '-checks=*,-fuchsia*,-google-*,-llvm-*,-mpi-*,-objc-*,-zircon-*', '-p=' + join_paths(meson.source_root(), 'src')])
+endif
+
 dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
 
 link_whole = []

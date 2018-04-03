@@ -8,7 +8,7 @@ fi
 
 ANALYZE=false
 LIBTYPE="shared"
-MESON_OPTIONS="--buildtype=release --werror --strip"
+MESON_OPTIONS="--buildtype=release --werror"
 EXTRA_CXXFLAGS=""
 COMPILER_VERSION=""
 
@@ -17,7 +17,7 @@ if [ "$(uname)" == "Darwin" ]; then
     GETOPT='/usr/local/opt/gnu-getopt/bin/getopt'
 fi
 
-TEMPOPT=`"$GETOPT" -n "'build.sh" -o x,b: -l analyze,clang,gcc,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "'build.sh" -o x,b: -l analyze,clang,gcc,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
@@ -28,6 +28,7 @@ while true; do
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
         --compiler-version) COMPILER_VERSION="-$2"; shift 2 ;;
         --lto) MESON_OPTIONS="$MESON_OPTIONS -Dlto=$2"; shift 2 ;;
+        --clang-tidy-version) MESON_OPTIONS="$MESON_OPTIONS -Dclang-tidy-version=-$2"; shift 2 ;;
         -- ) shift; break ;;
         *) break ;;
     esac

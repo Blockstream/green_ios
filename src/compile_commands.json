@@ -1,0 +1,222 @@
+[
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/swig_java/swig_java@sta -Isrc/swig_java -I../src/swig_java -I/usr/lib/jvm/default-java/include/linux -I/usr/lib/jvm/default-java/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread -fno-strict-aliasing  -MQ 'src/swig_java/swig_java@sta/meson-generated_.._gasdk_wrap.c.o' -MF 'src/swig_java/swig_java@sta/meson-generated_.._gasdk_wrap.c.o.d' -o 'src/swig_java/swig_java@sta/meson-generated_.._gasdk_wrap.c.o' -c src/swig_java/gasdk_wrap.c",
+    "file": "src/swig_java/gasdk_wrap.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/greenaddress@sha -Isrc -I../src -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/greenaddress@sha/amount.cpp.o' -MF 'src/greenaddress@sha/amount.cpp.o.d' -o 'src/greenaddress@sha/amount.cpp.o' -c ../src/amount.cpp",
+    "file": "../src/amount.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/greenaddress@sha -Isrc -I../src -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/greenaddress@sha/assertion.cpp.o' -MF 'src/greenaddress@sha/assertion.cpp.o.d' -o 'src/greenaddress@sha/assertion.cpp.o' -c ../src/assertion.cpp",
+    "file": "../src/assertion.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/greenaddress@sha -Isrc -I../src -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/greenaddress@sha/containers.cpp.o' -MF 'src/greenaddress@sha/containers.cpp.o.d' -o 'src/greenaddress@sha/containers.cpp.o' -c ../src/containers.cpp",
+    "file": "../src/containers.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/greenaddress@sha -Isrc -I../src -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/greenaddress@sha/ffi_c.cpp.o' -MF 'src/greenaddress@sha/ffi_c.cpp.o.d' -o 'src/greenaddress@sha/ffi_c.cpp.o' -c ../src/ffi_c.cpp",
+    "file": "../src/ffi_c.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/greenaddress@sha -Isrc -I../src -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/greenaddress@sha/session.cpp.o' -MF 'src/greenaddress@sha/session.cpp.o.d' -o 'src/greenaddress@sha/session.cpp.o' -c ../src/session.cpp",
+    "file": "../src/session.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/greenaddress@sha -Isrc -I../src -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/greenaddress@sha/transaction_utils.cpp.o' -MF 'src/greenaddress@sha/transaction_utils.cpp.o.d' -o 'src/greenaddress@sha/transaction_utils.cpp.o' -c ../src/transaction_utils.cpp",
+    "file": "../src/transaction_utils.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/greenaddress@sha -Isrc -I../src -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -fPIC -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/greenaddress@sha/utils.cpp.o' -MF 'src/greenaddress@sha/utils.cpp.o.d' -o 'src/greenaddress@sha/utils.cpp.o' -c ../src/utils.cpp",
+    "file": "../src/utils.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/parse_uri@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/parse_uri@exe/parse_uri.cpp.o' -MF 'src/tests/parse_uri@exe/parse_uri.cpp.o.d' -o 'src/tests/parse_uri@exe/parse_uri.cpp.o' -c ../src/tests/parse_uri.cpp",
+    "file": "../src/tests/parse_uri.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/parse_uri@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/parse_uri@exe/argparser.c.o' -MF 'src/tests/parse_uri@exe/argparser.c.o.d' -o 'src/tests/parse_uri@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/parse_uri@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/parse_uri@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/parse_uri@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/parse_uri@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_change_settings@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_change_settings@exe/wss_change_settings.cpp.o' -MF 'src/tests/wss_change_settings@exe/wss_change_settings.cpp.o.d' -o 'src/tests/wss_change_settings@exe/wss_change_settings.cpp.o' -c ../src/tests/wss_change_settings.cpp",
+    "file": "../src/tests/wss_change_settings.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_change_settings@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_change_settings@exe/argparser.c.o' -MF 'src/tests/wss_change_settings@exe/argparser.c.o.d' -o 'src/tests/wss_change_settings@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_change_settings@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_change_settings@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_change_settings@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_change_settings@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_change_settings_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_change_settings_c@exe/wss_change_settings_c.c.o' -MF 'src/tests/wss_change_settings_c@exe/wss_change_settings_c.c.o.d' -o 'src/tests/wss_change_settings_c@exe/wss_change_settings_c.c.o' -c ../src/tests/wss_change_settings_c.c",
+    "file": "../src/tests/wss_change_settings_c.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_change_settings_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_change_settings_c@exe/argparser.c.o' -MF 'src/tests/wss_change_settings_c@exe/argparser.c.o.d' -o 'src/tests/wss_change_settings_c@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_change_settings_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_change_settings_c@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_change_settings_c@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_change_settings_c@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_connect@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_connect@exe/wss_connect.cpp.o' -MF 'src/tests/wss_connect@exe/wss_connect.cpp.o.d' -o 'src/tests/wss_connect@exe/wss_connect.cpp.o' -c ../src/tests/wss_connect.cpp",
+    "file": "../src/tests/wss_connect.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_connect@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_connect@exe/argparser.c.o' -MF 'src/tests/wss_connect@exe/argparser.c.o.d' -o 'src/tests/wss_connect@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_connect@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_connect@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_connect@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_connect@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_create_subaccount@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_create_subaccount@exe/wss_create_subaccount.cpp.o' -MF 'src/tests/wss_create_subaccount@exe/wss_create_subaccount.cpp.o.d' -o 'src/tests/wss_create_subaccount@exe/wss_create_subaccount.cpp.o' -c ../src/tests/wss_create_subaccount.cpp",
+    "file": "../src/tests/wss_create_subaccount.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_create_subaccount@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_create_subaccount@exe/argparser.c.o' -MF 'src/tests/wss_create_subaccount@exe/argparser.c.o.d' -o 'src/tests/wss_create_subaccount@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_create_subaccount@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_create_subaccount@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_create_subaccount@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_create_subaccount@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_get_tx_list@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_get_tx_list@exe/wss_get_tx_list.cpp.o' -MF 'src/tests/wss_get_tx_list@exe/wss_get_tx_list.cpp.o.d' -o 'src/tests/wss_get_tx_list@exe/wss_get_tx_list.cpp.o' -c ../src/tests/wss_get_tx_list.cpp",
+    "file": "../src/tests/wss_get_tx_list.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_get_tx_list@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_get_tx_list@exe/argparser.c.o' -MF 'src/tests/wss_get_tx_list@exe/argparser.c.o.d' -o 'src/tests/wss_get_tx_list@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_get_tx_list@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_get_tx_list@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_get_tx_list@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_get_tx_list@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_get_tx_list_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_get_tx_list_c@exe/wss_get_tx_list_c.c.o' -MF 'src/tests/wss_get_tx_list_c@exe/wss_get_tx_list_c.c.o.d' -o 'src/tests/wss_get_tx_list_c@exe/wss_get_tx_list_c.c.o' -c ../src/tests/wss_get_tx_list_c.c",
+    "file": "../src/tests/wss_get_tx_list_c.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_get_tx_list_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_get_tx_list_c@exe/argparser.c.o' -MF 'src/tests/wss_get_tx_list_c@exe/argparser.c.o.d' -o 'src/tests/wss_get_tx_list_c@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_get_tx_list_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_get_tx_list_c@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_get_tx_list_c@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_get_tx_list_c@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_login@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login@exe/wss_login.cpp.o' -MF 'src/tests/wss_login@exe/wss_login.cpp.o.d' -o 'src/tests/wss_login@exe/wss_login.cpp.o' -c ../src/tests/wss_login.cpp",
+    "file": "../src/tests/wss_login.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_login@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login@exe/argparser.c.o' -MF 'src/tests/wss_login@exe/argparser.c.o.d' -o 'src/tests/wss_login@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_login@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_login@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_login@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_login_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login_c@exe/wss_login_c.c.o' -MF 'src/tests/wss_login_c@exe/wss_login_c.c.o.d' -o 'src/tests/wss_login_c@exe/wss_login_c.c.o' -c ../src/tests/wss_login_c.c",
+    "file": "../src/tests/wss_login_c.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_login_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login_c@exe/argparser.c.o' -MF 'src/tests/wss_login_c@exe/argparser.c.o.d' -o 'src/tests/wss_login_c@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_login_c@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login_c@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_login_c@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_login_c@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_login_new@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login_new@exe/wss_login_new.cpp.o' -MF 'src/tests/wss_login_new@exe/wss_login_new.cpp.o.d' -o 'src/tests/wss_login_new@exe/wss_login_new.cpp.o' -c ../src/tests/wss_login_new.cpp",
+    "file": "../src/tests/wss_login_new.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_login_new@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login_new@exe/argparser.c.o' -MF 'src/tests/wss_login_new@exe/argparser.c.o.d' -o 'src/tests/wss_login_new@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_login_new@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_login_new@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_login_new@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_login_new@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_send@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_send@exe/wss_send.cpp.o' -MF 'src/tests/wss_send@exe/wss_send.cpp.o.d' -o 'src/tests/wss_send@exe/wss_send.cpp.o' -c ../src/tests/wss_send.cpp",
+    "file": "../src/tests/wss_send.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_send@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_send@exe/argparser.c.o' -MF 'src/tests/wss_send@exe/argparser.c.o.d' -o 'src/tests/wss_send@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_send@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_send@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_send@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_send@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_subscribe@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_subscribe@exe/wss_subscribe.cpp.o' -MF 'src/tests/wss_subscribe@exe/wss_subscribe.cpp.o.d' -o 'src/tests/wss_subscribe@exe/wss_subscribe.cpp.o' -c ../src/tests/wss_subscribe.cpp",
+    "file": "../src/tests/wss_subscribe.cpp"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang-5.0  -Isrc/tests/wss_subscribe@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Werror -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_subscribe@exe/argparser.c.o' -MF 'src/tests/wss_subscribe@exe/argparser.c.o.d' -o 'src/tests/wss_subscribe@exe/argparser.c.o' -c ../src/tests/argparser.c",
+    "file": "../src/tests/argparser.c"
+  },
+  {
+    "directory": "/home/goncalo/greenaddress/sdk/build-clang-5.0",
+    "command": "clang++-5.0  -Isrc/tests/wss_subscribe@exe -Isrc/tests -I../src/tests -I../build-clang-5.0/websocketpp-0.7.0 -I../build-clang-5.0/libwally-core/src -Isrc -I../src -I../build-clang-5.0/msgpack/include -I../build-clang-5.0/autobahn-cpp -I/home/goncalo/greenaddress/sdk/build-clang-5.0/libwally-core/build/include -I/home/goncalo/greenaddress/sdk/build-clang-5.0/openssl-1.0.2o/build/include -Xclang -fcolor-diagnostics  -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Werror -std=c++14 -O0 -g -Wextra -Og -g -fno-omit-frame-pointer -DMSGPACK_DEFAULT_API_VERSION=1 -Wno-deprecated-declarations -funsigned-char -isystem/home/goncalo/greenaddress/sdk/build-clang-5.0/boost_1_66_0/build/include -pthread  -MQ 'src/tests/wss_subscribe@exe/http_jsonrpc_interface.cpp.o' -MF 'src/tests/wss_subscribe@exe/http_jsonrpc_interface.cpp.o.d' -o 'src/tests/wss_subscribe@exe/http_jsonrpc_interface.cpp.o' -c ../src/tests/http_jsonrpc_interface.cpp",
+    "file": "../src/tests/http_jsonrpc_interface.cpp"
+  }
+]

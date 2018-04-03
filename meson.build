@@ -84,6 +84,7 @@ build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_
 
 # dependencies
 clang_format = find_program('clang-format', required : false)
+clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)
 
 threads_dep = dependency('threads')
 m_dep = compiler.find_library('m', required : false)
