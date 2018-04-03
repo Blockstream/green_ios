@@ -28,7 +28,7 @@ if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
-custom_target('fix-compile-commands', output : 'compile_commands.json', capture : true, command : ['sed', '-i', '-e', 's/-MD//g', '-e', 's/-pipe//g', 'compile_commands.json'])
+custom_target('fix-compile-commands', output : 'compile_commands.json', capture : true, command : ['sed', '-e', 's/-MD//g', '-e', 's/-pipe//g', 'compile_commands.json'])
 
 if clang_tidy.found()
     custom_target('clang-tidy', output : 'clang-tidy', command : [clang_tidy, '-header-filter=../src/*',

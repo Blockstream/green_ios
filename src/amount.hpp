@@ -28,9 +28,9 @@ namespace sdk {
 
         amount(const amount&) = default;
         amount& operator=(const amount&) = default;
-
         amount(amount&&) = default;
         amount& operator=(amount&&) = default;
+        ~amount() = default;
 
         amount& operator=(value_type v)
         {
@@ -152,7 +152,7 @@ namespace sdk {
 
     inline amount operator+(const amount& x) { return x; }
 
-    inline amount operator-(const amount& x) { return amount(-x.value()); }
+    inline amount operator-(const amount& x) { return { -x.value() }; }
 
     inline bool operator==(const amount& x, const amount& y) { return x.value() == y.value(); }
 

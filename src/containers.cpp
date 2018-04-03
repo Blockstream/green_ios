@@ -11,7 +11,7 @@ namespace sdk {
 
     namespace {
 
-        static std::map<uint32_t, std::pair<double, uint32_t>> convert_to_block_estimates(
+        std::map<uint32_t, std::pair<double, uint32_t>> convert_to_block_estimates(
             const fee_estimates::container& estimates)
         {
             std::map<uint32_t, std::pair<double, uint32_t>> c;
@@ -53,7 +53,8 @@ namespace sdk {
                     return { static_cast<amount::value_type>(fee_rate * 1.1 * 1000 * 1000 * 100) };
                 }
                 break;
-            } else if (actual_block < block) {
+            }
+            if (actual_block < block) {
                 continue;
             }
 
@@ -100,7 +101,7 @@ namespace sdk {
 
         msgpack::zone oz;
         auto subaccounts = get<std::vector<msgpack::object>>("subaccounts");
-        subaccounts.push_back(msgpack::object(acc, oz));
+        subaccounts.emplace_back(msgpack::object(acc, oz));
 
         msgpack::zone z;
         set("subaccounts", msgpack::object(subaccounts, z));

@@ -17,20 +17,20 @@ namespace sdk {
 
         value_type units = 0;
         const char* p = str_value;
-        while (std::isspace(*p)) {
+        while (std::isspace(*p) != 0) {
             p++;
         }
-        for (; *p; p++) {
+        for (; *p != 0; p++) {
             if (*p == '.') {
                 p++;
                 value_type mult = cent * 10;
-                while (std::isdigit(*p) && (mult > 0)) {
+                while (std::isdigit(*p) != 0 && (mult > 0)) {
                     units += mult * (*p++ - '0');
                     mult /= 10;
                 }
                 break;
             }
-            if (std::isspace(*p)) {
+            if (std::isspace(*p) != 0) {
                 break;
             }
             if (!std::isdigit(*p)) {
@@ -38,7 +38,7 @@ namespace sdk {
             }
             str.push_back(*p);
         }
-        for (; *p; p++) {
+        for (; *p != 0; p++) {
             if (!std::isspace(*p)) {
                 throw std::invalid_argument(std::string("found non space in"));
             }
@@ -50,7 +50,7 @@ namespace sdk {
             throw std::out_of_range(str_value);
         }
 
-        const value_type whole = boost::lexical_cast<value_type>(str);
+        const auto whole = boost::lexical_cast<value_type>(str);
         m_value = whole * coin_value + units;
     }
 }

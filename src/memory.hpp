@@ -134,11 +134,11 @@ namespace sdk {
     // A class representing a null range of bytes
     class nullbytes {
     public:
-        nullbytes() {}
-        nullbytes(const nullbytes&) {}
-        nullbytes(nullbytes&&) {}
-        nullbytes& operator=(nullbytes&) { return *this; }
-        nullbytes& operator=(nullbytes&&) { return *this; }
+        nullbytes() = default;
+        nullbytes(const nullbytes& other) = default;
+        nullbytes(nullbytes&& other) = default;
+        nullbytes& operator=(const nullbytes& other) = delete;
+        nullbytes& operator=(nullbytes&& other) noexcept = delete;
 
         const unsigned char* data() const { return nullptr; }
         size_t size() const { return 0; }

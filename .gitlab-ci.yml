@@ -72,38 +72,37 @@ test_osx_ios:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --iphone static
 
-test_osx_clang_ndk_armeabi:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk armeabi
+#test_osx_clang_ndk_armeabi:
+#  tags:
+#    - osx
+#  script:
+#    - cd $CI_PROJECT_DIR
+#    - ./tools/build.sh --ndk armeabi
 
-test_osx_clang_ndk_armeabi-v7a:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk armeabi-v7a
+#test_osx_clang_ndk_armeabi-v7a:
+#  tags:
+#    - osx
+#  script:
+#    - cd $CI_PROJECT_DIR
+#    - ./tools/build.sh --ndk armeabi-v7a
 
-test_osx_clang_ndk_arm64-v8a:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk arm64-v8a
+#test_osx_clang_ndk_arm64-v8a:
+#  tags:
+#    - osx
+#  script:
+#    - cd $CI_PROJECT_DIR
+#    - ./tools/build.sh --ndk arm64-v8a
 
-test_osx_clang_ndk_x86:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk x86
+#test_osx_clang_ndk_x86:
+#  tags:
+#    - osx
+#  script:
+#    - cd $CI_PROJECT_DIR
+#    - ./tools/build.sh --ndk x86
 
-test_osx_clang_ndk_x86_64:
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --ndk x86_64
-
+#test_osx_clang_ndk_x86_64:
+#  tags:
+#    - osx
+#  script:
+#    - cd $CI_PROJECT_DIR
+#    - ./tools/build.sh --ndk x86_64
