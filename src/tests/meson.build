@@ -25,21 +25,22 @@ common_c_cpp_sources = ['argparser.h',
                         'http_jsonrpc_interface.hpp',
                         'http_jsonrpc_interface.cpp']
 
-sources = c_cpp_sources
+libtests_common = static_library('tests_common', common_c_cpp_sources, include_directories : incdir)
+libtests_common_dep = declare_dependency(link_with : libtests_common)
 
 if clang_format.found()
     custom_target('tests-clang-format', input : c_cpp_sources + common_c_cpp_sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
 endif
 
-dependencies = [libga_dep]
+dependencies = [libga_dep, libtests_common_dep]
 
 if host_machine.cpu_family().contains('iphone')
     dependencies += [archiver_dep]
 endif
 
-foreach source : sources
+foreach source : c_cpp_sources
     exe_name = source.split('.')[0]
-    exe_sources = [source] + common_c_cpp_sources
+    exe_sources = [source]
     exe = executable(exe_name, exe_sources,
                      include_directories : incdir,
                      dependencies : dependencies)
