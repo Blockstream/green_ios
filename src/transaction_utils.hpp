@@ -9,28 +9,6 @@
 #include "containers.hpp"
 #include "memory.hpp"
 
-namespace std {
-template <> struct default_delete<struct ext_key> {
-    void operator()(struct ext_key* ptr) const { ::ga::sdk::bip32_key_free(ptr); }
-};
-
-template <> struct default_delete<struct wally_tx_input> {
-    void operator()(struct wally_tx_input* ptr) const { ::ga::sdk::tx_input_free(ptr); }
-};
-
-template <> struct default_delete<struct wally_tx_witness_stack> {
-    void operator()(struct wally_tx_witness_stack* ptr) const { ::ga::sdk::tx_witness_stack_free(ptr); }
-};
-
-template <> struct default_delete<struct wally_tx_output> {
-    void operator()(struct wally_tx_output* ptr) const { ::ga::sdk::tx_output_free(ptr); }
-};
-
-template <> struct default_delete<struct wally_tx> {
-    void operator()(struct wally_tx* ptr) const { ::ga::sdk::tx_free(ptr); }
-};
-}
-
 namespace ga {
 namespace sdk {
     enum class script_type : int {
@@ -39,12 +17,6 @@ namespace sdk {
         redeem_p2sh_fortified = 150,
         redeem_p2sh_p2wsh_fortified = 159
     };
-
-    using wally_ext_key_ptr = std::unique_ptr<struct ext_key>;
-    using wally_tx_input_ptr = std::unique_ptr<struct wally_tx_input>;
-    using wally_tx_witness_stack_ptr = std::unique_ptr<struct wally_tx_witness_stack>;
-    using wally_tx_output_ptr = std::unique_ptr<struct wally_tx_output>;
-    using wally_tx_ptr = std::unique_ptr<struct wally_tx>;
 
     template <typename T>
     inline wally_ext_key_ptr derive_key(

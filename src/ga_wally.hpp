@@ -445,6 +445,53 @@ namespace sdk {
         }
         return der;
     }
+} // namespace sdk
+} // namespace ga
+
+namespace std {
+template <> struct default_delete<struct ext_key> {
+    void operator()(struct ext_key* ptr) const { ::ga::sdk::bip32_key_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx_input> {
+    void operator()(struct wally_tx_input* ptr) const { ::ga::sdk::tx_input_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx_witness_stack> {
+    void operator()(struct wally_tx_witness_stack* ptr) const { ::ga::sdk::tx_witness_stack_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx_output> {
+    void operator()(struct wally_tx_output* ptr) const { ::ga::sdk::tx_output_free(ptr); }
+};
+
+template <> struct default_delete<struct wally_tx> {
+    void operator()(struct wally_tx* ptr) const { ::ga::sdk::tx_free(ptr); }
+};
+} // namespace std
+
+namespace ga {
+namespace sdk {
+    using wally_ext_key_ptr = std::unique_ptr<struct ext_key>;
+    using wally_tx_input_ptr = std::unique_ptr<struct wally_tx_input>;
+    using wally_tx_witness_stack_ptr = std::unique_ptr<struct wally_tx_witness_stack>;
+    using wally_tx_output_ptr = std::unique_ptr<struct wally_tx_output>;
+    using wally_tx_ptr = std::unique_ptr<struct wally_tx>;
+
+    inline wally_tx_witness_stack_ptr tx_witness_stack_init(size_t allocation_len)
+    {
+        struct wally_tx_witness_stack* p;
+        tx_witness_stack_init_alloc(allocation_len, &p);
+        return wally_tx_witness_stack_ptr(p);
+    }
+
+    inline wally_tx_ptr tx_init(uint32_t locktime, size_t inputs_allocation_len, size_t outputs_allocation_len = 2,
+        uint32_t version = WALLY_TX_VERSION_2)
+    {
+        struct wally_tx* p;
+        tx_init_alloc(version, locktime, inputs_allocation_len, outputs_allocation_len, &p);
+        return wally_tx_ptr(p);
+    }
 
 } /* namespace sdk */
 } /* namespace ga */

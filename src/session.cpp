@@ -796,13 +796,11 @@ namespace sdk {
         wally_tx_witness_stack_ptr wit;
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
-            struct wally_tx_witness_stack* witness_stack;
-            tx_witness_stack_init_alloc(4, &witness_stack);
-            wit.reset(witness_stack);
-            tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_NULL);
-            tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG);
-            tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG);
-            tx_witness_stack_add(witness_stack, prevout_script);
+            wit = tx_witness_stack_init(4);
+            tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_NULL);
+            tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG);
+            tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG);
+            tx_witness_stack_add(wit, prevout_script);
         }
 
         tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
@@ -832,10 +830,8 @@ namespace sdk {
         ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, user_sig);
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
-            struct wally_tx_witness_stack* witness_stack;
-            tx_witness_stack_init_alloc(1, &witness_stack);
-            wally_tx_witness_stack_ptr wit{ witness_stack };
-            wally::tx_witness_stack_add(witness_stack, ec_sig_to_der(user_sig, true));
+            auto wit = tx_witness_stack_init(1);
+            tx_witness_stack_add(wit, ec_sig_to_der(user_sig, true));
             tx_set_input_witness(tx, index, wit);
             tx_set_input_script(tx, index, witness_script(prevout_script));
         } else {
@@ -862,9 +858,7 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && !utxos.empty() && (!send_all || address_amount.size() == 1));
 
-        struct wally_tx* tx_p;
-        tx_init_alloc(WALLY_TX_VERSION_2, m_block_height, utxos.size(), 2, &tx_p);
-        wally_tx_ptr tx{ tx_p };
+        auto tx = tx_init(m_block_height, utxos.size());
 
         amount total, fee;
 
