@@ -362,6 +362,7 @@ namespace sdk {
     SDK_FN_BB3_B(ec_sig_verify)
     SDK_FN_BB3_BS(scriptsig_p2pkh_from_sig)
     SDK_FN_BBB3_BS(aes_cbc)
+    SDK_FN_BBB3_BS(scriptsig_multisig_from_bytes)
     SDK_FN_BB_B(hmac_sha256)
     SDK_FN_BB_B(hmac_sha512)
     SDK_FN_BP3_A(addr_segwit_from_bytes)

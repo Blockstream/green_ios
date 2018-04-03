@@ -80,9 +80,17 @@ namespace sdk {
         const std::string& deposit_pub_key, const std::string& gait_path, uint32_t subaccount, uint32_t pointer,
         bool main_net);
 
+    // Make a multisig scriptSig
+    std::vector<unsigned char> input_script(const std::vector<unsigned char>& prevout_script,
+        const std::array<unsigned char, EC_SIGNATURE_LEN> user_sig,
+        const std::array<unsigned char, EC_SIGNATURE_LEN> ga_sig);
+
+    // Make a multisig scriptSig with a user signature and PUSH(0) marker for the GA sig
     std::vector<unsigned char> input_script(
-        const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs,
-        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script);
+        const std::vector<unsigned char>& prevout_script, const std::array<unsigned char, EC_SIGNATURE_LEN> user_sig);
+
+    // Make a multisig scriptSig with dummy signatures for (fee estimation)
+    std::vector<unsigned char> dummy_input_script(const std::vector<unsigned char>& prevout_script);
 
     std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes);
 

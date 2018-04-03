@@ -4,6 +4,17 @@
 
 namespace ga {
 namespace sdk {
+    static const std::array<unsigned char, EC_SIGNATURE_LEN> DUMMY_GA_SIG
+        = { { 0xff, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
+            0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0xff, 0x7f, 0x7f,
+            0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
+            0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f } };
+    static const std::array<unsigned char, 75> DUMMY_GA_SIG_DER_PUSH = { { 0x00, 0x49, 0x30, 0x46, 0x02, 0x21, 0x00,
+        0xff, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
+        0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x02, 0x21, 0x00, 0xff,
+        0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
+        0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x01 } };
+    static const std::array<unsigned char, 3> OP_0_PREFIX = { { 0x00, 0x01, 0x00 } };
 
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net)
@@ -85,28 +96,40 @@ namespace sdk {
         return script;
     }
 
-    std::vector<unsigned char> input_script(
-        const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs,
-        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script)
+    std::vector<unsigned char> input_script(const std::vector<unsigned char>& prevout_script,
+        const std::array<unsigned char, EC_SIGNATURE_LEN> user_sig,
+        const std::array<unsigned char, EC_SIGNATURE_LEN> ga_sig)
     {
-        GA_SDK_RUNTIME_ASSERT(num_sigs > 0 && num_sigs < 3);
-
-        std::vector<unsigned char> script;
-        script.resize(1 + 1 + output_script.size() + (1 + sigs_size[0]) + (num_sigs == 2 ? 1 + sigs_size[1] : 0) + 2);
-
-        unsigned char* p = script.data();
-
+        const std::array<uint32_t, 2> sighashes = { { WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL } };
+        std::array<unsigned char, EC_SIGNATURE_LEN * 2> sigs;
+        init_container(sigs, ga_sig, user_sig);
+        std::vector<unsigned char> script(1 + 74 * 2 + 3 + prevout_script.size());
         size_t written;
-        *p++ = OP_0;
-        *p++ = 1;
-        *p++ = OP_0;
-        for (size_t i = 0; i < num_sigs; ++i) {
-            GA_SDK_VERIFY(wally_script_push_from_bytes(sigs[i].data(), sigs_size[i], 0, p, sigs_size[i] + 1, &written));
-            p += written;
-        }
-        GA_SDK_VERIFY(wally_script_push_from_bytes(
-            output_script.data(), output_script.size(), 0, p, output_script.size() + 1, &written));
+        scriptsig_multisig_from_bytes(prevout_script, sigs, sighashes, 0, script, &written);
+        GA_SDK_RUNTIME_ASSERT(written <= script.size());
+        script.resize(written);
         return script;
+    }
+
+    std::vector<unsigned char> input_script(
+        const std::vector<unsigned char>& prevout_script, const std::array<unsigned char, EC_SIGNATURE_LEN> user_sig)
+    {
+        std::vector<unsigned char> full_script = input_script(prevout_script, user_sig, DUMMY_GA_SIG);
+        // Replace the dummy sig with PUSH(0)
+        GA_SDK_RUNTIME_ASSERT(std::search(full_script.begin(), full_script.end(), DUMMY_GA_SIG_DER_PUSH.begin(),
+                                  DUMMY_GA_SIG_DER_PUSH.end())
+            == full_script.begin());
+        auto suffix = make_bytes_view(
+            full_script.data() + DUMMY_GA_SIG_DER_PUSH.size(), full_script.size() - DUMMY_GA_SIG_DER_PUSH.size());
+
+        std::vector<unsigned char> script(OP_0_PREFIX.size() + suffix.size());
+        init_container(script, OP_0_PREFIX, suffix);
+        return script;
+    }
+
+    std::vector<unsigned char> dummy_input_script(const std::vector<unsigned char>& prevout_script)
+    {
+        return input_script(prevout_script, DUMMY_GA_SIG, DUMMY_GA_SIG);
     }
 
     std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script)

@@ -33,10 +33,7 @@ namespace sdk {
         'i', 't', ' ', 'H', 'D', ' ', 'w', 'a', 'l', 'l', 'e', 't', ' ', 'p', 'a', 't', 'h' };
 
     // Dummy data for transaction creation with correctly sized data for fee estimation
-    static const size_t MAX_SIG_LEN = EC_SIGNATURE_DER_MAX_LEN + 1; // Max length of sig + sighash byte
     static const std::vector<unsigned char> DUMMY_WITNESS_SCRIPT(3 + SHA256_LEN);
-    static const std::array<std::array<unsigned char, MAX_SIG_LEN>, 2> DUMMY_2OF2_SIGS{ { { { 0 } }, { { 0 } } } };
-    static const std::array<size_t, 2> DUMMY_2OF2_SIG_LENGTHS{ { MAX_SIG_LEN, MAX_SIG_LEN } };
 
     namespace {
         // FIXME: too slow. lacks validation.
@@ -796,7 +793,7 @@ namespace sdk {
         //        Instead, use fixed length empty arrays for 2of2 and 2of3.
         //        When we sign the input we create the scripts with the correct
         //        signatures and overwite these values.
-        const auto outscript = output_script(subaccount, pointer);
+        const auto prevout_script = output_script(subaccount, pointer);
         wally_tx_witness_stack_ptr wit;
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
@@ -806,11 +803,11 @@ namespace sdk {
             tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_NULL);
             tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG);
             tx_witness_stack_add_dummy(witness_stack, WALLY_TX_DUMMY_SIG);
-            tx_witness_stack_add(witness_stack, outscript);
+            tx_witness_stack_add(witness_stack, prevout_script);
         }
 
         tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
-            wit ? DUMMY_WITNESS_SCRIPT : input_script(DUMMY_2OF2_SIGS, DUMMY_2OF2_SIG_LENGTHS, 2, outscript), wit, 0);
+            wit ? DUMMY_WITNESS_SCRIPT : dummy_input_script(prevout_script), wit, 0);
 
         return std::stoull(u.get<std::string>("value"), nullptr, 10);
     }
@@ -823,33 +820,27 @@ namespace sdk {
         const amount satoshi = std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
-        const auto out_script = output_script(subaccount, pointer);
+        const auto prevout_script = output_script(subaccount, pointer);
 
         std::array<unsigned char, SHA256_LEN> tx_hash;
         const uint32_t flags = type == script_type::p2sh_p2wsh_fortified_out ? WALLY_TX_FLAG_USE_WITNESS : 0;
-        tx_get_btc_signature_hash(tx, index, out_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash);
+        tx_get_btc_signature_hash(tx, index, prevout_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash);
 
         secure_array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
         derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
-        std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-        ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, sig);
 
-        std::array<std::array<unsigned char, MAX_SIG_LEN>, 2> sigs{ { { { 0 } }, { { 0 } } } };
-        size_t der_written;
-        ec_sig_to_der(sig, sigs[0], &der_written);
-
-        sigs[0][der_written] = WALLY_SIGHASH_ALL;
+        std::array<unsigned char, EC_SIGNATURE_LEN> user_sig;
+        ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, user_sig);
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack;
             GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, &witness_stack));
             wally_tx_witness_stack_ptr wit{ witness_stack };
-            GA_SDK_VERIFY(wally_tx_witness_stack_add(witness_stack, sigs[0].data(), der_written + 1));
+            wally::tx_witness_stack_add(witness_stack, ec_sig_to_der(user_sig, true));
             tx_set_input_witness(tx, index, wit);
-            tx_set_input_script(tx, index, witness_script(out_script));
+            tx_set_input_script(tx, index, witness_script(prevout_script));
         } else {
-            const auto in_script = input_script(sigs, { { der_written + 1, 0 } }, 1, out_script);
-            tx_set_input_script(tx, index, in_script);
+            tx_set_input_script(tx, index, input_script(prevout_script, user_sig));
         }
     }
 
