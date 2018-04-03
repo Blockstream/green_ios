@@ -48,12 +48,12 @@ struct GA_utxo;
 /**
  *
  */
-int GA_convert_tx_list_path_to_dict(struct GA_tx_list* txs, const char* path, struct GA_dict** value);
+int GA_convert_tx_list_path_to_dict(struct GA_tx_list* obj, const char* path, struct GA_dict** value);
 
 /**
  *
  */
-int GA_convert_tx_list_path_to_string(struct GA_tx_list* txs, const char* path, char** value);
+int GA_convert_tx_list_path_to_string(struct GA_tx_list* obj, const char* path, char** value);
 
 /**
  * Get size of transaction list.
@@ -62,7 +62,7 @@ int GA_convert_tx_list_path_to_string(struct GA_tx_list* txs, const char* path, 
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_tx_list_get_size(struct GA_tx_list* txs, size_t* output);
+int GA_tx_list_get_size(struct GA_tx_list* obj, size_t* output);
 
 /**
  * Get the i'th transaction on the list
@@ -71,7 +71,7 @@ int GA_tx_list_get_size(struct GA_tx_list* txs, size_t* output);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_tx_list_get_tx(struct GA_tx_list* txs, size_t i, struct GA_tx** output);
+int GA_tx_list_get_tx(struct GA_tx_list* obj, size_t i, struct GA_tx** output);
 
 /**
  * Convert transaction list to JSON.
@@ -80,7 +80,7 @@ int GA_tx_list_get_tx(struct GA_tx_list* txs, size_t i, struct GA_tx** output);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_convert_tx_list_to_json(struct GA_tx_list* txs, char** output);
+int GA_convert_tx_list_to_json(struct GA_tx_list* obj, char** output);
 
 /**
  * Convert transaction to JSON.
@@ -89,7 +89,7 @@ int GA_convert_tx_list_to_json(struct GA_tx_list* txs, char** output);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_transaction_to_json(struct GA_tx* tx, char** output);
+int GA_transaction_to_json(struct GA_tx* obj, char** output);
 
 /**
  * Convert balance to JSON.
@@ -98,7 +98,7 @@ int GA_transaction_to_json(struct GA_tx* tx, char** output);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_convert_balance_to_json(struct GA_balance* balance, char** output);
+int GA_convert_balance_to_json(struct GA_balance* obj, char** output);
 
 /**
  * Convert login data to JSON.
@@ -107,7 +107,7 @@ int GA_convert_balance_to_json(struct GA_balance* balance, char** output);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_convert_login_data_to_json(struct GA_login_data* login_data, char** output);
+int GA_convert_login_data_to_json(struct GA_login_data* obj, char** output);
 
 /**
  * Convert available currencies to JSON.
@@ -116,7 +116,7 @@ int GA_convert_login_data_to_json(struct GA_login_data* login_data, char** outpu
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_convert_available_currencies_to_json(struct GA_available_currencies* currencies, char** output);
+int GA_convert_available_currencies_to_json(struct GA_available_currencies* obj, char** output);
 
 /**
  * Free a GA_dict.
@@ -132,7 +132,7 @@ void GA_destroy_dict(struct GA_dict* dict);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_tx_list(struct GA_tx_list* txs);
+int GA_destroy_tx_list(struct GA_tx_list* obj);
 
 /**
  * Free a GA_tx.
@@ -140,7 +140,7 @@ int GA_destroy_tx_list(struct GA_tx_list* txs);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_tx(const struct GA_tx* tx);
+int GA_destroy_tx(const struct GA_tx* obj);
 
 /**
  * Free a GA_balance.
@@ -148,7 +148,7 @@ int GA_destroy_tx(const struct GA_tx* tx);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_balance(const struct GA_balance* balance);
+int GA_destroy_balance(const struct GA_balance* obj);
 
 /**
  * Free a GA_available_currencies.
@@ -156,7 +156,7 @@ int GA_destroy_balance(const struct GA_balance* balance);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_available_currencies(const struct GA_available_currencies* currencies);
+int GA_destroy_available_currencies(const struct GA_available_currencies* obj);
 
 /**
  * Free a GA_login_data.
@@ -164,7 +164,7 @@ int GA_destroy_available_currencies(const struct GA_available_currencies* curren
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_login_data(const struct GA_login_data* login_data);
+int GA_destroy_login_data(const struct GA_login_data* obj);
 
 #ifdef __cplusplus
 }

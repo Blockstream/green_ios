@@ -71,10 +71,10 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(RAND_bytes(buf.data(), 32) == 1);
 
         {
-            int random_device = open("/dev/urandom", O_RDONLY);
+            int random_device = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
             GA_SDK_RUNTIME_ASSERT(random_device != -1);
             const auto random_device_ptr = std::unique_ptr<int, std::function<void(int*)>>(
-                &random_device, [](int* device) { ::close(*device); });
+                &random_device, [](const int* device) { ::close(*device); });
 
             GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, buf.data() + 32, 32)) == 32);
         }
@@ -165,10 +165,10 @@ namespace sdk {
 }
 }
 
-int GA_get_random_bytes(size_t num_bytes, unsigned char* bytes, size_t siz)
+int GA_get_random_bytes(size_t num_bytes, unsigned char* bytes, size_t len)
 {
     try {
-        ga::sdk::get_random_bytes(num_bytes, bytes, siz);
+        ga::sdk::get_random_bytes(num_bytes, bytes, len);
         return GA_OK;
     } catch (const std::exception& ex) {
         return GA_ERROR;

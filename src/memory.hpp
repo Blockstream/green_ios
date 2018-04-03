@@ -28,6 +28,7 @@ namespace sdk {
             secure_allocator(secure_allocator&&) = default;
             secure_allocator& operator=(const secure_allocator&) = delete;
             secure_allocator& operator=(secure_allocator&&) = delete;
+            ~secure_allocator() = default;
 
             template <typename U>
             secure_allocator(const secure_allocator<U>& other) noexcept
@@ -82,9 +83,9 @@ namespace sdk {
         }
 
         secure_array(const secure_array& other) = default;
-        secure_array(secure_array&& other) = default;
-        secure_array& operator=(secure_array& other) = default;
-        secure_array& operator=(secure_array&& other) = default;
+        secure_array(secure_array&& other) noexcept = default;
+        secure_array& operator=(const secure_array& other) = default;
+        secure_array& operator=(secure_array&& other) noexcept = default;
 
         using std::array<T, N>::data;
         using std::array<T, N>::size;
@@ -99,7 +100,7 @@ namespace sdk {
         std::size_t length;
 
     public:
-        bytes_view(const T& a)
+        explicit bytes_view(const T& a)
             : bytes(std::cref(a))
             , length(std::extent<T>::value)
         {
@@ -112,9 +113,10 @@ namespace sdk {
         }
 
         bytes_view(const bytes_view& other) = default;
-        bytes_view(bytes_view&& other) = default;
-        bytes_view& operator=(bytes_view& other) = default;
+        bytes_view(bytes_view&& other) noexcept = default;
+        bytes_view& operator=(const bytes_view& other) = default;
         bytes_view& operator=(bytes_view&& other) = default;
+        ~bytes_view() = default;
 
         const unsigned char* data() const { return data(std::is_class<T>()); }
         constexpr size_t size() const { return length; }
@@ -136,9 +138,10 @@ namespace sdk {
     public:
         nullbytes() = default;
         nullbytes(const nullbytes& other) = default;
-        nullbytes(nullbytes&& other) = default;
+        nullbytes(nullbytes&& other) noexcept = default;
         nullbytes& operator=(const nullbytes& other) = delete;
         nullbytes& operator=(nullbytes&& other) noexcept = delete;
+        ~nullbytes() = default;
 
         const unsigned char* data() const { return nullptr; }
         size_t size() const { return 0; }

@@ -38,8 +38,8 @@ int main(int argc, char** argv)
     try {
         sdk::session session_1;
         sdk::session session_2;
-        const auto address_1 = login_and_get_receive_address(session_1, DEFAULT_MNEMONIC_1, options->testnet);
-        const auto address_2 = login_and_get_receive_address(session_2, DEFAULT_MNEMONIC_2, options->testnet);
+        const auto address_1 = login_and_get_receive_address(session_1, DEFAULT_MNEMONIC_1, options->testnet != 0);
+        const auto address_2 = login_and_get_receive_address(session_2, DEFAULT_MNEMONIC_2, options->testnet != 0);
 
         sdk::http_jsonrpc_client rpc;
         const auto send_request = rpc.make_send_to_address(address_1.get<std::string>("p2sh"), "2");

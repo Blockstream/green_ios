@@ -23,7 +23,7 @@ template <typename F, typename Obj, typename... Args> auto c_invoke(F&& f, Obj* 
 
 char* to_c_string(const std::string& s)
 {
-    char* str = new char[s.size() + 1];
+    auto* str = new char[s.size() + 1];
     std::copy(s.begin(), s.end(), str);
     *(str + s.size()) = 0;
     return str;

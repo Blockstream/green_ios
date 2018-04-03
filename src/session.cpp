@@ -472,7 +472,7 @@ namespace sdk {
         if (key == settings::tx_limits) {
             change_settings(to_args({ "is_fiat", "per_tx", "total" }));
         } else {
-            GA_SDK_RUNTIME_ASSERT(args.size());
+            GA_SDK_RUNTIME_ASSERT(!args.empty());
             change_settings((*args.begin()).first);
         }
     }
@@ -812,7 +812,7 @@ namespace sdk {
         tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
             wit ? DUMMY_WITNESS_SCRIPT : input_script(DUMMY_2OF2_SIGS, DUMMY_2OF2_SIG_LENGTHS, 2, outscript), wit, 0);
 
-        return std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
+        return std::stoull(u.get<std::string>("value"), nullptr, 10);
     }
 
     void session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const

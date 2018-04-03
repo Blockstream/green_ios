@@ -439,8 +439,9 @@ namespace sdk {
         ec_sig_to_der(sig, der, &written);
         GA_SDK_RUNTIME_ASSERT(written <= der.size());
         der.resize(written);
-        if (sighash)
+        if (sighash) {
             der.push_back(WALLY_SIGHASH_ALL);
+        }
         return der;
     }
 

@@ -43,9 +43,8 @@ namespace sdk {
                         v = as(v, *p);
                     }
                     return as<U>(v, *p);
-                } else {
-                    return h.template as<U>();
                 }
+                return h.template as<U>();
             }
 
             template <typename U> U get_with_default(const std::string& path, const U& u = U()) const

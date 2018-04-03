@@ -15,8 +15,7 @@ namespace sdk {
 
         ext_key* p;
         uint32_t version = main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
-        const nullbytes nb;
-        bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, nb, nb, nb, &p);
+        bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, nullbytes(), nullbytes(), nullbytes(), &p);
 
         wally_ext_key_ptr server_pub_key{ p };
 
