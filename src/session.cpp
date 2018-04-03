@@ -378,8 +378,7 @@ namespace sdk {
             wally_ext_key_ptr recovery{ p };
 
             std::array<unsigned char, BIP32_SERIALIZED_LEN> recovery_bytes;
-            GA_SDK_VERIFY(bip32_key_serialize(
-                recovery.get(), BIP32_FLAG_KEY_PUBLIC, recovery_bytes.data(), recovery_bytes.size()));
+            bip32_key_serialize(recovery, BIP32_FLAG_KEY_PUBLIC, recovery_bytes);
 
             std::string recovery_xpub = base58check_from_bytes(recovery_bytes);
 
@@ -834,7 +833,7 @@ namespace sdk {
 
         if (type == script_type::p2sh_p2wsh_fortified_out) {
             struct wally_tx_witness_stack* witness_stack;
-            GA_SDK_VERIFY(wally_tx_witness_stack_init_alloc(1, &witness_stack));
+            tx_witness_stack_init_alloc(1, &witness_stack);
             wally_tx_witness_stack_ptr wit{ witness_stack };
             wally::tx_witness_stack_add(witness_stack, ec_sig_to_der(user_sig, true));
             tx_set_input_witness(tx, index, wit);

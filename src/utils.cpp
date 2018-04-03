@@ -117,7 +117,7 @@ namespace sdk {
         const std::string& mnemonic, const std::string& lang)
     {
         struct words* w;
-        GA_SDK_VERIFY(bip39_get_wordlist(lang.c_str(), &w));
+        bip39_get_wordlist(lang, &w);
 
         secure_array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
         bip39_mnemonic_to_bytes(w, mnemonic, bytes);
@@ -180,8 +180,8 @@ int GA_generate_mnemonic(const char* lang, char** output)
     try {
         const auto entropy = ga::sdk::get_random_bytes<32>();
         struct words* w;
-        GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
-        GA_SDK_VERIFY(bip39_mnemonic_from_bytes(w, entropy.data(), entropy.size(), output));
+        ga::sdk::bip39_get_wordlist(lang, &w);
+        ga::sdk::bip39_mnemonic_from_bytes(w, entropy, output);
         return GA_OK;
     } catch (const std::exception& ex) {
         return GA_ERROR;
@@ -192,8 +192,8 @@ int GA_validate_mnemonic(const char* lang, const char* mnemonic)
 {
     try {
         struct words* w;
-        GA_SDK_VERIFY(bip39_get_wordlist(lang, &w));
-        GA_SDK_VERIFY(bip39_mnemonic_validate(w, mnemonic));
+        ga::sdk::bip39_get_wordlist(lang, &w);
+        ga::sdk::bip39_mnemonic_validate(w, mnemonic);
         return GA_TRUE;
     } catch (const std::exception& ex) {
         return GA_FALSE;

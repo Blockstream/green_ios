@@ -72,8 +72,8 @@ namespace sdk {
 
     std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
     std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
-    std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address);
-    std::array<unsigned char, HASH160_LEN + 3> output_script(
+    std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> output_script_for_address(const std::string& address);
+    std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> output_script(
         const std::array<unsigned char, HASH160_LEN + 1>& script_hash);
 
     std::vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,

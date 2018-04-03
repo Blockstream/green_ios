@@ -60,16 +60,13 @@ namespace sdk {
         return p2sh_address_from_bytes(witness);
     }
 
-    std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address)
+    std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> output_script_for_address(const std::string& address)
     {
         std::array<unsigned char, HASH160_LEN + 1 + BASE58_CHECKSUM_LEN> sc;
         base58_to_bytes(address, 0, sc);
 
-        std::array<unsigned char, HASH160_LEN + 3> script;
-        size_t written;
-        GA_SDK_VERIFY(
-            wally_scriptpubkey_p2sh_from_bytes(sc.data() + 1, HASH160_LEN, 0, script.data(), script.size(), &written));
-
+        std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> script;
+        scriptpubkey_p2sh_from_bytes(make_bytes_view(sc.data() + 1, HASH160_LEN), 0, script);
         return script;
     }
 
