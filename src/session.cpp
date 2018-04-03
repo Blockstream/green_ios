@@ -34,7 +34,7 @@ namespace sdk {
 
     // Dummy data for transaction creation with correctly sized data for fee estimation
     static const size_t MAX_SIG_LEN = EC_SIGNATURE_DER_MAX_LEN + 1; // Max length of sig + sighash byte
-    static const secure_vector<unsigned char> DUMMY_WITNESS_SCRIPT(3 + SHA256_LEN);
+    static const std::vector<unsigned char> DUMMY_WITNESS_SCRIPT(3 + SHA256_LEN);
     static const std::array<std::array<unsigned char, MAX_SIG_LEN>, 2> DUMMY_2OF2_SIGS{ { { { 0 } }, { { 0 } } } };
     static const std::array<size_t, 2> DUMMY_2OF2_SIG_LENGTHS{ { MAX_SIG_LEN, MAX_SIG_LEN } };
 
@@ -187,7 +187,7 @@ namespace sdk {
 
         amount get_dust_threshold() const;
         std::string get_raw_output(const std::string& txhash) const;
-        secure_vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
+        std::vector<unsigned char> output_script(uint32_t subaccount, uint32_t pointer) const;
         amount add_utxo(const wally_tx_ptr& tx, const utxo& u) const;
         void sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const;
         amount get_tx_fee(const wally_tx_ptr& tx, amount fee_rate);
@@ -565,7 +565,7 @@ namespace sdk {
         return raw_output;
     }
 
-    secure_vector<unsigned char> session::session_impl::output_script(uint32_t subaccount, uint32_t pointer) const
+    std::vector<unsigned char> session::session_impl::output_script(uint32_t subaccount, uint32_t pointer) const
     {
         GA_SDK_RUNTIME_ASSERT(!m_params.deposit_chain_code().empty());
         GA_SDK_RUNTIME_ASSERT(!m_params.deposit_pub_key().empty());

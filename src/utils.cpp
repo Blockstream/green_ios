@@ -97,18 +97,18 @@ namespace sdk {
         wally::clear(hashed);
     }
 
-    static secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz, bool rev)
+    static std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz, bool rev)
     {
-        secure_vector<unsigned char> bytes(siz / 2);
+        std::vector<unsigned char> bytes(siz / 2);
         hex_to_bytes(hex, bytes);
         if (rev)
             std::reverse(bytes.begin(), bytes.end());
         return bytes;
     }
 
-    secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz) { return bytes_from_hex(hex, siz, false); }
+    std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz) { return bytes_from_hex(hex, siz, false); }
 
-    secure_vector<unsigned char> bytes_from_hex_rev(const char* hex, size_t siz)
+    std::vector<unsigned char> bytes_from_hex_rev(const char* hex, size_t siz)
     {
         return bytes_from_hex(hex, siz, true);
     }

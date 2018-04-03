@@ -88,10 +88,10 @@ namespace sdk {
         }
     }
 
-    secure_vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
+    std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz);
     inline auto bytes_from_hex(const std::string& hex) { return bytes_from_hex(hex.data(), hex.size()); }
 
-    secure_vector<unsigned char> bytes_from_hex_rev(const char* hex, size_t siz);
+    std::vector<unsigned char> bytes_from_hex_rev(const char* hex, size_t siz);
     inline auto bytes_from_hex_rev(const std::string& hex) { return bytes_from_hex_rev(hex.data(), hex.size()); }
 
     secure_array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(

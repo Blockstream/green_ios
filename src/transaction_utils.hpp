@@ -70,23 +70,21 @@ namespace sdk {
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net);
 
-    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(
-        const secure_vector<unsigned char>& script_bytes);
-    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(
-        const secure_vector<unsigned char>& script_bytes);
+    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
+    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
     std::array<unsigned char, HASH160_LEN + 3> output_script_for_address(const std::string& address);
     std::array<unsigned char, HASH160_LEN + 3> output_script(
         const std::array<unsigned char, HASH160_LEN + 1>& script_hash);
 
-    secure_vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,
+    std::vector<unsigned char> output_script(const wally_ext_key_ptr& key, const std::string& deposit_chain_code,
         const std::string& deposit_pub_key, const std::string& gait_path, uint32_t subaccount, uint32_t pointer,
         bool main_net);
 
-    secure_vector<unsigned char> input_script(
+    std::vector<unsigned char> input_script(
         const std::array<std::array<unsigned char, EC_SIGNATURE_DER_MAX_LEN + 1>, 2>& sigs,
-        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const secure_vector<unsigned char>& output_script);
+        const std::array<size_t, 2>& sigs_size, size_t num_sigs, const std::vector<unsigned char>& output_script);
 
-    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const secure_vector<unsigned char>& script_bytes);
+    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes);
 
     std::vector<unsigned char> tx_to_bytes(const wally_tx_ptr& tx);
 }
