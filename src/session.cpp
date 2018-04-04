@@ -80,6 +80,11 @@ namespace sdk {
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
         }
 
+        session_impl(const session_impl& other) = delete;
+        session_impl(session_impl&& other) noexcept = delete;
+        session_impl& operator=(const session_impl& other) = delete;
+        session_impl& operator=(session_impl&& other) noexcept = delete;
+
         ~session_impl() { m_io.stop(); }
 
         void connect();
@@ -91,7 +96,7 @@ namespace sdk {
         bool remove_account();
 
         std::pair<std::string, std::string> create_subaccount(
-            subaccount_type type, const std::string& label, const std::string& xpub);
+            subaccount_type type, const std::string& name, const std::string& xpub);
 
         login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
             const std::string& user_agent = std::string());
@@ -99,7 +104,7 @@ namespace sdk {
 
         tx_list get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, size_t subaccount,
             tx_list_sort_by sort_by, size_t page_id, const std::string& query);
-        void subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler);
+        void subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
         void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
         std::vector<subaccount> get_subaccounts() { return m_login_data.get_subaccounts(); }
         receive_address get_receive_address(address_type addr_type, size_t subaccount) const;
@@ -306,7 +311,7 @@ namespace sdk {
         subscribe("com.greenaddress.blocks", [this](const autobahn::wamp_event& event) {
             block_event block_ev;
             block_ev = event.argument<msgpack::object>(0);
-            const size_t count = block_ev.get<size_t>("count");
+            const auto count = block_ev.get<size_t>("count");
             GA_SDK_RUNTIME_ASSERT(count >= m_block_height);
             m_block_height = count;
         });
@@ -498,7 +503,7 @@ namespace sdk {
         auto&& date_range_str = [&date_range] {
             constexpr auto iso_str_siz = sizeof "0000-00-00T00:00:00.000Z";
 
-            if (!date_range.first && !date_range.second) {
+            if (date_range.first == 0 && date_range.second == 0) {
                 return std::make_pair(std::string(), std::string());
             }
 
@@ -523,9 +528,9 @@ namespace sdk {
         return txs;
     }
 
-    void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& handler)
+    void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback)
     {
-        auto subscribe_future = m_session->subscribe(topic, handler, autobahn::wamp_subscribe_options("exact"))
+        auto subscribe_future = m_session->subscribe(topic, callback, autobahn::wamp_subscribe_options("exact"))
                                     .then([](boost::future<autobahn::wamp_subscription> subscription) {
                                         std::cerr << "subscribed to topic:" << subscription.get().id() << std::endl;
                                     });
@@ -780,11 +785,11 @@ namespace sdk {
     // Add a UTXO to a transaction. Returns the amount added
     amount session::session_impl::add_utxo(const wally_tx_ptr& tx, const utxo& u) const
     {
-        const std::string txhash = u.get<std::string>("txhash");
-        const uint32_t index = u.get<uint32_t>("pt_idx");
+        const auto txhash = u.get<std::string>("txhash");
+        const auto index = u.get<uint32_t>("pt_idx");
         const uint32_t sequence = is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
-        const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
-        const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
+        const auto subaccount = u.get_with_default<uint32_t>("subaccount", 0);
+        const auto pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
         // FIXME: As we are only adding dummy scripts/witness data for sizing
@@ -811,10 +816,10 @@ namespace sdk {
 
     void session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const
     {
-        const std::string txhash = u.get<std::string>("txhash");
-        const uint32_t subaccount = u.get_with_default<uint32_t>("subaccount", 0);
-        const uint32_t pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
-        const amount satoshi = std::stoull(u.get<std::string>("value").c_str(), nullptr, 10);
+        const auto txhash = u.get<std::string>("txhash");
+        const auto subaccount = u.get_with_default<uint32_t>("subaccount", 0);
+        const auto pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
+        const amount satoshi = std::stoull(u.get<std::string>("value"), nullptr, 10);
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
         const auto prevout_script = output_script(subaccount, pointer);
@@ -847,8 +852,8 @@ namespace sdk {
         size_t vsize;
         tx_get_vsize(tx, &vsize);
 
-        const double fee = static_cast<double>(vsize) * rate.value() / 1000.0;
-        const long rounded_fee = static_cast<long>(std::ceil(fee));
+        const auto fee = static_cast<double>(vsize) * rate.value() / 1000.0;
+        const auto rounded_fee = static_cast<long>(std::ceil(fee));
 
         return rounded_fee;
     }
@@ -968,8 +973,8 @@ namespace sdk {
         });
     }
 
-    session::session() {}
-    session::~session() {}
+    session::session() = default;
+    session::~session() = default;
 
     void session::disconnect() { m_impl.reset(); }
 
@@ -1013,10 +1018,10 @@ namespace sdk {
     }
 
     std::pair<std::string, std::string> session::create_subaccount(
-        subaccount_type type, const std::string& label, const std::string& xpub)
+        subaccount_type type, const std::string& name, const std::string& xpub)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->create_subaccount(type, label, xpub); });
+        return exception_wrapper([&] { return m_impl->create_subaccount(type, name, xpub); });
     }
 
     void session::change_settings_helper(settings key, const std::map<int, int>& args)
@@ -1032,10 +1037,10 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_tx_list(date_range, subaccount, sort_by, page_id, query); });
     }
 
-    void session::subscribe(const std::string& topic, std::function<void(const std::string& output)> handler)
+    void session::subscribe(const std::string& topic, std::function<void(const std::string& output)> callback)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        exception_wrapper([&] { m_impl->subscribe(topic, handler); });
+        exception_wrapper([&] { m_impl->subscribe(topic, callback); });
     }
 
     receive_address session::get_receive_address(address_type addr_type, size_t subaccount)

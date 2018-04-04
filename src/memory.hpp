@@ -115,7 +115,7 @@ namespace sdk {
         bytes_view(const bytes_view& other) = default;
         bytes_view(bytes_view&& other) noexcept = default;
         bytes_view& operator=(const bytes_view& other) = default;
-        bytes_view& operator=(bytes_view&& other) = default;
+        bytes_view& operator=(bytes_view&& other) noexcept = default;
         ~bytes_view() = default;
 
         const unsigned char* data() const { return data(std::is_class<T>()); }

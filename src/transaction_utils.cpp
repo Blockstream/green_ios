@@ -94,8 +94,8 @@ namespace sdk {
     }
 
     std::vector<unsigned char> input_script(const std::vector<unsigned char>& prevout_script,
-        const std::array<unsigned char, EC_SIGNATURE_LEN> user_sig,
-        const std::array<unsigned char, EC_SIGNATURE_LEN> ga_sig)
+        const std::array<unsigned char, EC_SIGNATURE_LEN>& user_sig,
+        const std::array<unsigned char, EC_SIGNATURE_LEN>& ga_sig)
     {
         const std::array<uint32_t, 2> sighashes = { { WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL } };
         std::array<unsigned char, EC_SIGNATURE_LEN * 2> sigs;
@@ -109,7 +109,7 @@ namespace sdk {
     }
 
     std::vector<unsigned char> input_script(
-        const std::vector<unsigned char>& prevout_script, const std::array<unsigned char, EC_SIGNATURE_LEN> user_sig)
+        const std::vector<unsigned char>& prevout_script, const std::array<unsigned char, EC_SIGNATURE_LEN>& user_sig)
     {
         std::vector<unsigned char> full_script = input_script(prevout_script, user_sig, DUMMY_GA_SIG);
         // Replace the dummy sig with PUSH(0)

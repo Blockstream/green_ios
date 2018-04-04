@@ -45,34 +45,34 @@ struct GA_session;
  * Create a new server session.
  *
  * This creates a new server session, i.e. initialises internal data structures to allow RPC calls.
- * @obj Destination for the resulting session.
+ * @session Destination for the resulting session.
  *
  * GA_ERROR if memory allocation fails.
  */
-int GA_create_session(struct GA_session** obj);
+int GA_create_session(struct GA_session** session);
 
 /**
  * Free a session allocated by @GA_create_session
  *
- * @obj Session to free.
+ * @session Session to free.
  */
-int GA_destroy_session(struct GA_session* obj);
+int GA_destroy_session(struct GA_session* session);
 
 /**
  * Connect to a remote server using the specified network.
  *
- * @obj The server session to use.
+ * @session The server session to use.
  * @network The network parameters to use.
  * @debug Output transport debug information to stderr.
  *
  * GA_ERROR if connection is unsuccessful.
  */
-int GA_connect(struct GA_session* obj, int network, int debug);
+int GA_connect(struct GA_session* session, int network, int debug);
 
 /**
  * UNUSED
  */
-int GA_disconnect(struct GA_session* obj);
+int GA_disconnect(struct GA_session* session);
 
 /**
  * Create a new user account.
