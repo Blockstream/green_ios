@@ -36,14 +36,14 @@ namespace sdk {
         const wally_ext_key_ptr& key, const T& v, secure_array<unsigned char, EC_PRIVATE_KEY_LEN>& dest)
     {
         wally_ext_key_ptr derived = derive_key(key, v, false);
-        memcpy(dest.data(), derived->priv_key + 1, EC_PRIVATE_KEY_LEN);
+        memcpy(dest.data(), static_cast<unsigned char*>(derived->priv_key) + 1, EC_PRIVATE_KEY_LEN);
     }
 
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net);
 
-    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
-    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script_bytes);
+    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script);
+    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script);
     std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> output_script_for_address(const std::string& address);
     std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> output_script(
         const std::array<unsigned char, HASH160_LEN + 1>& script_hash);
@@ -64,7 +64,7 @@ namespace sdk {
     // Make a multisig scriptSig with dummy signatures for (fee estimation)
     std::vector<unsigned char> dummy_input_script(const std::vector<unsigned char>& prevout_script);
 
-    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script_bytes);
+    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script);
 
     std::vector<unsigned char> tx_to_bytes(const wally_tx_ptr& tx);
 }

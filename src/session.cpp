@@ -253,7 +253,7 @@ namespace sdk {
         ext_key master;
         bip32_key_from_seed(seed, get_bip32_version(), BIP32_FLAG_SKIP_HASH, &master);
         // Since we don't use the private key or seed further, wipe them immediately
-        wally::clear(master.priv_key, sizeof(master.priv_key));
+        wally::clear(static_cast<unsigned char*>(master.priv_key), sizeof(master.priv_key));
         wally::clear(seed);
 
         std::array<unsigned char, sizeof(master.chain_code) + sizeof(master.pub_key)> path_data;

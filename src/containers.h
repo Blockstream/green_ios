@@ -132,7 +132,7 @@ void GA_destroy_dict(struct GA_dict* dict);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_tx_list(struct GA_tx_list* obj);
+int GA_destroy_tx_list(struct GA_tx_list* txs);
 
 /**
  * Free a GA_tx.
@@ -140,7 +140,7 @@ int GA_destroy_tx_list(struct GA_tx_list* obj);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_tx(const struct GA_tx* obj);
+int GA_destroy_tx(const struct GA_tx* tx);
 
 /**
  * Free a GA_balance.
@@ -148,7 +148,7 @@ int GA_destroy_tx(const struct GA_tx* obj);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_balance(const struct GA_balance* obj);
+int GA_destroy_balance(const struct GA_balance* balance);
 
 /**
  * Free a GA_available_currencies.
@@ -156,7 +156,7 @@ int GA_destroy_balance(const struct GA_balance* obj);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_available_currencies(const struct GA_available_currencies* obj);
+int GA_destroy_available_currencies(const struct GA_available_currencies* o);
 
 /**
  * Free a GA_login_data.
@@ -164,7 +164,7 @@ int GA_destroy_available_currencies(const struct GA_available_currencies* obj);
  *
  * GA_ERROR if unsuccessful.
  */
-int GA_destroy_login_data(const struct GA_login_data* obj);
+int GA_destroy_login_data(const struct GA_login_data* login_data);
 
 #ifdef __cplusplus
 }

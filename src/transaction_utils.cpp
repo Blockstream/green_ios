@@ -84,8 +84,10 @@ namespace sdk {
         size_t n_pubkeys = 2, threshold = 2;
         std::vector<unsigned char> keys;
         keys.reserve(3 * EC_PUBLIC_KEY_LEN);
-        keys.insert(keys.end(), server_pub_key->pub_key, server_pub_key->pub_key + EC_PUBLIC_KEY_LEN);
-        keys.insert(keys.end(), client_pub_key->pub_key, client_pub_key->pub_key + EC_PUBLIC_KEY_LEN);
+        const auto spub_key = static_cast<unsigned char*>(server_pub_key->pub_key);
+        const auto cpub_key = static_cast<unsigned char*>(client_pub_key->pub_key);
+        keys.insert(keys.end(), spub_key, spub_key + EC_PUBLIC_KEY_LEN);
+        keys.insert(keys.end(), cpub_key, cpub_key + EC_PUBLIC_KEY_LEN);
         // FIXME: If 2of3, insert 2nd key and increment n_pubkeys here
         std::vector<unsigned char> script(3 + n_pubkeys * (EC_PUBLIC_KEY_LEN + 1));
 
