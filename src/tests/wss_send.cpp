@@ -48,7 +48,7 @@ int main(int argc, char** argv)
         rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
 
         std::cerr << address_2.get<std::string>("p2sh") << std::endl;
-        session_1.send({ { address_2.get<std::string>("p2sh"), 100000 } }, 1000);
+        session_1.send({ { address_2.get<std::string>("p2sh"), sdk::amount{100000} } }, sdk::amount{1000});
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

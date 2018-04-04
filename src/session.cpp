@@ -551,7 +551,7 @@ namespace sdk {
 
     amount session::session_impl::get_dust_threshold() const
     {
-        return { m_login_data.get<amount::value_type>("dust") };
+        return amount{ m_login_data.get<amount::value_type>("dust") };
     }
 
     std::string session::session_impl::get_raw_output(const std::string& txhash) const
@@ -811,7 +811,7 @@ namespace sdk {
         tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
             wit ? DUMMY_WITNESS_SCRIPT : dummy_input_script(prevout_script), wit, 0);
 
-        return std::stoull(u.get<std::string>("value"), nullptr, 10);
+        return amount{ std::stoull(u.get<std::string>("value"), nullptr, 10) };
     }
 
     void session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const
@@ -819,7 +819,7 @@ namespace sdk {
         const auto txhash = u.get<std::string>("txhash");
         const auto subaccount = u.get_with_default<uint32_t>("subaccount", 0);
         const auto pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
-        const amount satoshi = std::stoull(u.get<std::string>("value"), nullptr, 10);
+        const amount satoshi{ std::stoull(u.get<std::string>("value"), nullptr, 10) };
         const auto type = script_type(u.get<uint32_t>("script_type"));
 
         const auto prevout_script = output_script(subaccount, pointer);
@@ -846,16 +846,16 @@ namespace sdk {
 
     amount session::session_impl::get_tx_fee(const wally_tx_ptr& tx, amount fee_rate)
     {
-        const amount min_fee_rate = m_login_data.get<long>("min_fee");
+        const amount min_fee_rate{ m_login_data.get<amount::value_type>("min_fee") };
         const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
 
         size_t vsize;
         tx_get_vsize(tx, &vsize);
 
         const auto fee = static_cast<double>(vsize) * rate.value() / 1000.0;
-        const auto rounded_fee = static_cast<long>(std::ceil(fee));
+        const auto rounded_fee = static_cast<amount::value_type>(std::ceil(fee));
 
-        return rounded_fee;
+        return amount{ rounded_fee };
     }
 
     std::string session::session_impl::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,

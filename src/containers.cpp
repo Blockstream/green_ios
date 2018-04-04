@@ -50,7 +50,7 @@ namespace sdk {
 
             if (instant) {
                 if (actual_block <= 2) {
-                    return { static_cast<amount::value_type>(fee_rate * 1.1 * 1000 * 1000 * 100) };
+                    return amount{ static_cast<amount::value_type>(fee_rate * 1.1 * 1000 * 1000 * 100) };
                 }
                 break;
             }
@@ -58,7 +58,7 @@ namespace sdk {
                 continue;
             }
 
-            return { static_cast<amount::value_type>(fee_rate * 1000 * 1000 * 100) };
+            return amount{ static_cast<amount::value_type>(fee_rate * 1000 * 1000 * 100) };
         }
 
         GA_SDK_RUNTIME_ASSERT(!main_net || !instant);

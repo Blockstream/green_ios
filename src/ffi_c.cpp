@@ -217,9 +217,9 @@ GA_SDK_DEFINE_C_FUNCTION_6(GA_send, GA_session,
         addr_amt.reserve(addr_siz);
         for (size_t i = 0; i < addr_siz; ++i) {
             GA_SDK_RUNTIME_ASSERT(addr[i]);
-            addr_amt.emplace_back(std::make_pair(addr[i], amt[i]));
+            addr_amt.emplace_back(std::make_pair(addr[i], ga::sdk::amount{ amt[i] }));
         }
-        session->send(addr_amt, fee_rate, send_all);
+        session->send(addr_amt, ga::sdk::amount{ fee_rate }, send_all);
     },
     const char**, addr, size_t, addr_siz, const uint64_t*, amt, size_t, amt_siz, uint64_t, fee_rate, bool, send_all);
 

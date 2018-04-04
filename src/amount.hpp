@@ -15,16 +15,12 @@ namespace sdk {
         static constexpr value_type coin_value = 100000000;
         static constexpr value_type cent = 1000000;
 
-        amount(value_type v = 0)
+        explicit amount(value_type v = 0)
             : m_value(v)
         {
         }
 
-        explicit amount(const char* str_value);
-        amount(const std::string& str_value)
-            : amount(str_value.c_str())
-        {
-        }
+        explicit amount(const std::string& str_value);
 
         amount(const amount&) = default;
         amount& operator=(const amount&) = default;
@@ -152,7 +148,7 @@ namespace sdk {
 
     inline amount operator+(const amount& x) { return x; }
 
-    inline amount operator-(const amount& x) { return { -x.value() }; }
+    inline amount operator-(const amount& x) { return amount{ -x.value() }; }
 
     inline bool operator==(const amount& x, const amount& y) { return x.value() == y.value(); }
 

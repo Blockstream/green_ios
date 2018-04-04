@@ -10,13 +10,13 @@ namespace ga {
 namespace sdk {
 
     // convert to internal representation (from Bitcoin Core)
-    amount::amount(const char* str_value)
+    amount::amount(const std::string& str_value)
     {
         std::string str;
-        str.reserve(std::strlen(str_value));
+        str.reserve(str_value.size());
 
         value_type units = 0;
-        const char* p = str_value;
+        const char* p = str_value.c_str();
         while (std::isspace(*p) != 0) {
             p++;
         }
@@ -33,13 +33,13 @@ namespace sdk {
             if (std::isspace(*p) != 0) {
                 break;
             }
-            if (!std::isdigit(*p)) {
+            if (std::isdigit(*p) == 0) {
                 throw std::invalid_argument(std::string("found non digit in: ") + str_value);
             }
             str.push_back(*p);
         }
         for (; *p != 0; p++) {
-            if (!std::isspace(*p)) {
+            if (std::isspace(*p) == 0) {
                 throw std::invalid_argument(std::string("found non space in"));
             }
         }
