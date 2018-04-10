@@ -61,7 +61,7 @@ class TransactionsTableViewModel: NSObject {
     }
 
     func updateViewModel(tableView: UITableView) {
-        getTransactions().then { (txs: [Transaction]?) -> Void in
+        getTransactions().done { (txs: [Transaction]?) in
             self.items.removeAll(keepingCapacity: true)
             for tx in txs ?? [] {
                 let json = try! tx.toJSON()!
@@ -71,9 +71,9 @@ class TransactionsTableViewModel: NSObject {
                 let date = dateFormatter.string(from: self.dateFromTimestamp(date: json["timestamp"] as! String))
                 self.items.append(TransactionItem(timestamp: date, address: "", amount: (json["value_str"] as! String), fiatAmount: ""))
             }
-        }.always {
+        }.ensure {
             tableView.reloadData()
-        }
+        }.catch { _ in }
     }
 }
 

@@ -222,7 +222,6 @@
 				676FCF191F9D0CF800354E93 /* Frameworks */,
 				676FCF1A1F9D0CF800354E93 /* Resources */,
 				D23CE903E100C9C13584F174 /* [CP] Embed Pods Frameworks */,
-				19DEF12055432571332E7966 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -241,8 +240,6 @@
 				676FCF2E1F9D0CF800354E93 /* Sources */,
 				676FCF2F1F9D0CF800354E93 /* Frameworks */,
 				676FCF301F9D0CF800354E93 /* Resources */,
-				DA9C1BBBAB25535267D71804 /* [CP] Embed Pods Frameworks */,
-				A561451ACF6B807308AF7E2D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -262,8 +259,6 @@
 				676FCF391F9D0CF800354E93 /* Sources */,
 				676FCF3A1F9D0CF800354E93 /* Frameworks */,
 				676FCF3B1F9D0CF800354E93 /* Resources */,
-				CE4DC559A508EC6A61EA0504 /* [CP] Embed Pods Frameworks */,
-				FB7488C28DCB5765CA74C3EE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -385,21 +380,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		19DEF12055432571332E7966 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		99CCE11601CC4F788E5063AE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -418,36 +398,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A561451ACF6B807308AF7E2D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CE4DC559A508EC6A61EA0504 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		D23CE903E100C9C13584F174 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -464,36 +414,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DA9C1BBBAB25535267D71804 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FB7488C28DCB5765CA74C3EE /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

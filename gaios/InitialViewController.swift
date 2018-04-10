@@ -16,7 +16,7 @@ class InitialViewController: UIViewController {
         super.viewDidAppear(animated)
         wrap {
             try getSession().connect(network: Network.TestNet, debug: true)
-        }.then {
+        }.done {
             print("Connected to TestNet")
         }.catch { error in
             print("Connection failed")

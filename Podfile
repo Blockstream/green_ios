@@ -6,7 +6,7 @@ target 'gaios' do
   use_frameworks!
 
   # Pods for GreenBitsIOS
-  pod 'PromiseKit', '4.4.0'
+  pod 'PromiseKit', '6.2.3'
 
   target 'gaiosTests' do
     inherit! :search_paths

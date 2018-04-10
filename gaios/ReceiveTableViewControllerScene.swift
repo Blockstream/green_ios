@@ -214,7 +214,7 @@ class ReceiveTableViewModel: NSObject {
     }
 
     func updateViewModel(tableView: UITableView) {
-        generateAddress().then { (address: String) -> Void in
+        generateAddress().done { (address: String) in
             guard let item = self.sections[0].items[1] as? ReceiveTableViewAddressItem else {
                 return
             }
@@ -226,7 +226,7 @@ class ReceiveTableViewModel: NSObject {
             uriItem.address = address
 
             tableView.reloadData()
-        }
+        }.catch { _ in }
     }
 }
 
