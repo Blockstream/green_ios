@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-SHA256SUM_AUTOBAHN=0d70e8a62d3958d959e84cbac6d6f8a54177b1c768e0aa5b4ab218963fc2e350
+SHA256SUM_AUTOBAHN=41733e7c8287c31126e973bb1056a83236cd5bbb9507053a5a84e78f57791b90
 SHA256SUM_WEBSOCKETPP=07b3364ad30cda022d91759d4b83ff902e1ebadb796969e58b59caa535a03923
 SHA256SUM_MSGPACK=6126375af9b204611b9d9f154929f4f747e4599e6ae8443b337915dcf2899d2b
 SHA256SUM_WALLYCORE=f6101684eb49339c813d649366c8941be9da56ce0ba772f2d8fed3761fe16057
@@ -34,7 +34,7 @@ function prepare_pkg() {
     fi
 }
 
-prepare_pkg autobahn-cpp https://github.com/crossbario/autobahn-cpp/archive/2325b7ac4aa7d8812e9902772b1fa6baef4c58e7.tar.gz ${SHA256SUM_AUTOBAHN}
+prepare_pkg autobahn-cpp https://github.com/crossbario/autobahn-cpp/archive/cd74d3ccd7b600e4fef6e1c4cbe584ffd91048f5.tar.gz ${SHA256SUM_AUTOBAHN}
 prepare_pkg websocketpp-0.7.0 https://github.com/zaphoyd/websocketpp/archive/0.7.0.tar.gz ${SHA256SUM_WEBSOCKETPP}
 prepare_pkg msgpack-2.1.5 https://github.com/msgpack/msgpack-c/releases/download/cpp-2.1.5/msgpack-2.1.5.tar.gz ${SHA256SUM_MSGPACK}
 prepare_pkg boost_1_66_0 https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz ${SHA256SUM_BOOST}
@@ -50,5 +50,3 @@ move_if *autobahn* autobahn-cpp
 move_if openssl* openssl-1.0.2o
 move_if *msgpack* msgpack
 move_if libwally-core-* libwally-core
-
-cp tools/wamp_arguments.hpp $DEPS_BLD_DIR/autobahn-cpp/autobahn

@@ -31,11 +31,11 @@ namespace sdk {
         wally_ext_key_ptr server_pub_key{ p };
 
         std::vector<uint32_t> path(32 + 1);
-        path[0] = subaccount ? 3 : 1;
+        path[0] = subaccount != 0 ? 3 : 1;
         adjacent_transform(gait_path_bytes.begin(), gait_path_bytes.end(), path.begin() + 1,
             [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
-        if (subaccount) {
+        if (subaccount != 0) {
             path.push_back(subaccount);
         }
         path.push_back(pointer);

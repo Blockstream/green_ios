@@ -31,7 +31,7 @@ endif
 
 add_project_arguments(['-Wextra'], language : ['c', 'cpp'])
 
-if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address'
+if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address' and compiler.get_id() == 'clang'
     add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
     add_project_link_arguments(['-shared-libasan'], language : ['c', 'cpp'])
 endif
