@@ -291,28 +291,32 @@ public func parseBitcoinUri(uri: String) throws -> [String: Any]? {
 
 public func retry<T>(session: Session,
                      network: Network,
+                     maxRetryCount: UInt = 3,
+                     delay: DispatchTimeInterval = .seconds(2),
                      on: DispatchQueue = DispatchQueue.global(qos : .background),
                      mnemonic: String? = nil,
                      _ fun: @escaping () -> Promise<T>) -> Promise<T> {
+    var attempts = 0
     func retry_() -> Promise<T> {
+        attempts += 1
         return fun().recover { error -> Promise<T> in
-            guard error as! GaError == GaError.ReconnectError else { throw error }
-            return after(interval: 2).then {
+            guard attempts < maxRetryCount && error as! GaError == GaError.ReconnectError else { throw error }
+            return after(delay).then(on: on) {
                 return retry(session: session, network: network, on: on) { wrap { try session.connect(network: network, debug: true) } }
-            }.then(on: on, execute: retry_)
+            }.then(on: on, retry_)
         }
     }
     return retry_()
 }
 
-public func wrap<T>(_ fun: () throws -> T) -> Promise<T> {
-    return Promise { fulfill, reject in
+public func wrap<T>(_ fun: @escaping () throws -> T) -> Promise<T> {
+    return Promise<T> { seal in
         do {
-            fulfill(try fun())
+            seal.fulfill(try fun())
         } catch GaError.ReconnectError {
-            reject(GaError.ReconnectError)
+            seal.reject(GaError.ReconnectError)
         } catch {
-            reject(GaError.GenericError)
+            seal.reject(GaError.GenericError)
         }
     }
 }
