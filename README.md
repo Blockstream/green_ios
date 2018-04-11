@@ -31,15 +31,14 @@ JAVA bindings can be built by installing swig as explained above and setting JAV
 
 * tools/build.sh
 
-With no options it will attempt to build all configurations buildable (i.e. for iphone you can only build on osx)
+With no options it will attempt to build all configurations buildable (i.e. for iphone you can only build on osx).
 
-Different options if you want to build a different configuration (flags in squared brackets are optional):
+Options exist if you want to build a different configuration (flags in squared brackets are optional):
 
 --clang
 --gcc
 --ndk [armeabi armeabi-v7a arm64-v8a x86 x86_64]
 --iphone [static]
---buildtype=debug
 
 for example
 
@@ -85,3 +84,63 @@ if you want to change it for example to ndk armeabi-v7a:
 
 * docker run -v $PWD:/sdk greenaddress/ci bash -c "cd /sdk && ./tools/build.sh --ndk armeabi-v7a"
 
+### Extra build options
+
+#### Disable LTO
+
+By default builds use link time optimisation (except for AARCH64). It can be disabled when invoking build.sh. For example
+
+* tools/build.sh --lto=false --clang
+
+#### Debug builds
+
+By default the build type is release. A debug build can specified as
+
+* tools/build.sh --buildtype=debug --clang
+
+#### Clang Analyzer
+
+To build using clang-analyzer use
+
+* tools/build.sh --analyze --clang
+
+#### Clang tidy
+
+The clang-tidy targets are enabled if found in the PATH. Extra options exist to specify version of it,
+
+* tools/build.sh --clang-tidy-version=5.0 --clang
+
+then use as follows
+
+* ninja src/compile_commands.json (reconstruct compilation commands database due to some options not being recognised by libTooling)
+* ninja src/clang-tidy
+
+#### Sanitizers
+
+A sanitizer build can be invoked using
+
+* tools/build.sh --sanitize=<type> --gcc
+
+where <type> is any available sanitizer of your choice and available on the toolchain being used.
+
+#### Compiler versions
+
+A different compiler version can be specified as
+
+* tools/build.sh --compiler-version=<version>
+
+which allows for multiple side by side installs of compilers in common linux distributions.
+
+### Build examples
+
+Use clang-5.0, no LTO, enable clang-tidy and debug build
+
+* ./tools/build.sh --compiler-version=5.0 --buildtype=debug --lto=false --clang-tidy-version=5.0 --clang
+
+Use address sanitizer with gcc-7, no LTO, enable clang-tidy and debug build
+
+* ./tools/build.sh --compiler-version=7 --buildtype=debug --lto=false --sanitize=address --clang-tidy-version=5.0 --gcc
+
+Use clang-analyzer (it'll analyze GDK and its direct dependencies)
+
+./tools/build.sh -analyze --clang
