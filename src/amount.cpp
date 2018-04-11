@@ -2,7 +2,7 @@
 #include <cstring>
 #include <stdexcept>
 
-#include <boost/lexical_cast.hpp>
+#include "boost_wrapper.hpp"
 
 #include "amount.hpp"
 

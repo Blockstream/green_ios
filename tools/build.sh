@@ -41,22 +41,16 @@ fi
 
 export CFLAGS="$CFLAGS"
 export CPPFLAGS="$CFLAGS"
-export PKG_CONFIG_PATH_BASE=$PKG_CONFIG_PATH
 export PATH_BASE=$PATH
 
 function build() {
     CXX_COMPILER="$2$COMPILER_VERSION"
     C_COMPILER="$1$COMPILER_VERSION"
-    ./tools/deps.sh $PWD/build-$C_COMPILER
     export CXX="$CXX_COMPILER"
     export CCC_CXX="$CXX_COMPILER"
     export CC="$C_COMPILER"
     export CCC_CC="$C_COMPILER"
     export CC="$C_COMPILER"
-    export BOOST_ROOT="$PWD/build-$C_COMPILER/boost_1_66_0/build"
-    export OPENSSL_PKG_CONFIG_PATH="$PWD/build-$C_COMPILER/openssl-1.0.2o/build/lib/pkgconfig"
-    export WALLY_PKG_CONFIG_PATH="$PWD/build-$C_COMPILER/libwally-core/build/lib/pkgconfig"
-    export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
 
     SCAN_BUILD=""
     if [ $ANALYZE == true ] ; then
@@ -75,11 +69,6 @@ function build() {
 
 function set_cross_build_env() {
     bld_root="$PWD/build-clang-$1-$2"
-    ./tools/deps.sh $bld_root
-    export BOOST_ROOT="$bld_root/boost_1_66_0/build"
-    export OPENSSL_PKG_CONFIG_PATH="$bld_root/openssl-1.0.2o/build/lib/pkgconfig"
-    export WALLY_PKG_CONFIG_PATH="$bld_root/libwally-core/build/lib/pkgconfig"
-    export PKG_CONFIG_PATH=$OPENSSL_PKG_CONFIG_PATH:$WALLY_PKG_CONFIG_PATH:$PKG_CONFIG_PATH_BASE
     export HOST_ARCH=$2
     case $2 in
         armeabi)
@@ -201,6 +190,7 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
 
         if [ ! -f "build-clang-$1-$2/build.ninja" ]; then
             rm -rf build-clang-$1-$2/meson-private
+            mkdir -p build-clang-$1-$2
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ios.txt $2 $2
             meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE} --buildtype=release
         fi

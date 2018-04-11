@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <boost/asio.hpp>
+#include "boost_wrapper.hpp"
 
 #include "assertion.hpp"
 #include "http_jsonrpc_interface.hpp"

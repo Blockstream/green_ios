@@ -13,9 +13,9 @@
 #include <x86intrin.h>
 #endif
 
-#include <boost/algorithm/string.hpp>
-
 #include <openssl/rand.h>
+
+#include "boost_wrapper.hpp"
 
 #include "assertion.hpp"
 #include "common.h"

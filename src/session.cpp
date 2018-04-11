@@ -7,9 +7,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/variant.hpp>
+#include "boost_wrapper.hpp"
 
 #include "assertion.hpp"
 #include "autobahn_wrapper.hpp"

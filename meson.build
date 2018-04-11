@@ -29,7 +29,24 @@ if not host_machine.cpu_family().contains('arm64')
     endif
 endif
 
-add_project_arguments(['-Wextra'], language : ['c', 'cpp'])
+common_compile_options = [
+    '-Wextra',
+    '-D_FORTIFY_SOURCE=2',
+    '-fasynchronous-unwind-tables',
+    '-fexceptions',
+    '-fstack-protector-strong',
+]
+add_project_arguments(common_compile_options, language : ['c', 'cpp'])
+
+common_linker_options = [
+    '-Wl,-z,defs',
+    '-Wl,-z,now',
+    '-Wl,-z,relro'
+]
+
+if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+    add_project_link_arguments(common_linker_options, language : ['c', 'cpp'])
+endif
 
 if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address' and compiler.get_id() == 'clang'
     add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
@@ -37,7 +54,7 @@ if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 
 endif
 
 if get_option('buildtype') == 'debug'
-    add_project_arguments(['-Og', '-g', '-fno-omit-frame-pointer'], language : ['c', 'cpp'])
+    add_project_arguments(['-Og', '-g', '-fno-omit-frame-pointer', '-D_GLIBCXX_ASSERTIONS'], language : ['c', 'cpp'])
 endif
 
 if meson.is_cross_build()
@@ -82,50 +99,37 @@ endif
 
 build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_family().contains('iphone')
 
-# dependencies
 clang_format = find_program('clang-format', required : false)
 clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)
 
+# dependencies
 threads_dep = dependency('threads')
 m_dep = compiler.find_library('m', required : false)
 atomic_dep = compiler.find_library('atomic', required : false)
 dl_dep = compiler.find_library('dl', required : false)
 
-subproject_libdirs = []
 subproject_deps = []
-subprojects = [['boost', 'boost_1_66_0', '>= 1.66.0', ['system', 'thread']],
-               ['wallycore', 'libwally-core', '>= 0.4.0', []],
-               ['openssl', 'openssl-1.0.2o', '>= 1.0.2', []]]
 
-foreach sub : subprojects
-    subproject_libdirs += join_paths(meson.build_root(), sub[1], 'build', 'lib')
-    message('Building ' + sub[0] + '...')
-    run_cmd_args = []
-    if meson.is_cross_build()
-        run_cmd_args += ['--' + meson.get_cross_property('target_os')]
-    endif
-    res = run_command(join_paths('tools', 'build' + sub[0] + '.sh'), run_cmd_args)
-    if res.returncode() != 0
-        message('--- Failed to run command (stdout) ---')
-        message(res.stdout())
-        message('--- Failed to run command (stderr) ---')
-        message(res.stderr())
-    endif
-    subproject_deps += dependency(sub[0], modules : sub[3], version : sub[2], static : true)
-endforeach
+wallycore = subproject('wallycore')
+autobahn_cpp = subproject('autobahn-cpp')
+boost = subproject('boost')
+GSL = subproject('GSL')
+msgpack = subproject('msgpack')
+openssl = subproject('openssl')
+websocketpp = subproject('websocketpp')
 
-if build_machine.system() == 'linux'
-    subproject_deps += dependency('libsecp256k1', static : true)
-endif
+subproject_deps += autobahn_cpp.get_variable('autobahn_dep')
+subproject_deps += boost.get_variable('boost_dep')
+subproject_deps += GSL.get_variable('GSL_dep')
+subproject_deps += msgpack.get_variable('msgpack_dep')
+subproject_deps += openssl.get_variable('openssl_dep')
+subproject_deps += wallycore.get_variable('wallycore_dep')
+subproject_deps += websocketpp.get_variable('websocketpp_dep')
 
 # includes
-autobahn_inc_dir = join_paths(meson.build_root().split('/')[-1], 'autobahn-cpp')
-msgpack_inc_dir = join_paths(meson.build_root().split('/')[-1], 'msgpack', 'include')
-websocketpp_inc_dir = join_paths(meson.build_root().split('/')[-1], 'websocketpp-0.7.0')
-wallycore_src_dir = join_paths(meson.build_root().split('/')[-1], 'libwally-core', 'src')
 sdk_inc_dir = 'src'
 
-incdir = include_directories([autobahn_inc_dir, msgpack_inc_dir, sdk_inc_dir, wallycore_src_dir, websocketpp_inc_dir])
+incdir = include_directories([sdk_inc_dir])
 
 # builds
 subdirs = ['src']

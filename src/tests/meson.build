@@ -1,24 +1,17 @@
-exe_names = ['parse_uri',
-             'wss_change_settings',
-             'wss_change_settings_c',
-             'wss_connect',
-             'wss_create_subaccount',
-             'wss_get_tx_list',
-             'wss_get_tx_list_c',
-             'wss_login',
-             'wss_login_c',
-             'wss_login_new',
-             'wss_send',
-             'wss_subscribe']
-
-c_cpp_sources = []
-foreach name : exe_names
-    if name.endswith('_c')
-        c_cpp_sources += [name + '.c']
-    else
-        c_cpp_sources += [name + '.cpp']
-    endif
-endforeach
+c_cpp_sources = [
+    'parse_uri.cpp',
+    'wss_change_settings.cpp',
+    'wss_change_settings_c.c',
+    'wss_connect.cpp',
+    'wss_create_subaccount.cpp',
+    'wss_get_tx_list.cpp',
+    'wss_get_tx_list_c.c',
+    'wss_login.cpp',
+    'wss_login_c.c',
+    'wss_login_new.cpp',
+    'wss_send.cpp',
+    'wss_subscribe.cpp'
+]
 
 common_c_cpp_sources = ['argparser.h',
                         'argparser.c',
@@ -38,10 +31,21 @@ if host_machine.cpu_family().contains('iphone')
     dependencies += [archiver_dep]
 endif
 
+c_cpp_args = []
+link_args = []
+if compiler.get_id() == 'gcc'
+    c_cpp_args = ['-fpie']
+    link_args = ['-Wl,-pie']
+endif
+
 foreach source : c_cpp_sources
     exe_name = source.split('.')[0]
     exe_sources = [source]
-    exe = executable(exe_name, exe_sources,
+    exe = executable(exe_name,
+                     exe_sources,
+                     c_args : c_cpp_args,
+                     cpp_args : c_cpp_args,
+                     link_args : link_args,
                      include_directories : incdir,
                      dependencies : dependencies)
     test(exe_name, exe, timeout : 120)

@@ -1,12 +1,16 @@
 #! /usr/bin/env bash
 set -e
-cd "${MESON_BUILD_ROOT}/openssl-1.0.2o"
-openssl_prefix="${MESON_BUILD_ROOT}/openssl-1.0.2o/build"
+
+OPENSSL_NAME="openssl-OpenSSL_1_0_2o"
+
+cp -r "${MESON_SOURCE_ROOT}/subprojects/${OPENSSL_NAME}" "${MESON_BUILD_ROOT}/openssl"
+cd "${MESON_BUILD_ROOT}/openssl"
+openssl_prefix="${MESON_BUILD_ROOT}/openssl/build"
 if [ \( "$1" = "--ndk" \) ]; then
     if [ "$(uname)" == "Darwin" ]; then
-        gsed -i 's/-mandroid//g' ${MESON_BUILD_ROOT}/openssl-1.0.2o/Configure
+        gsed -i 's/-mandroid//g' ${MESON_BUILD_ROOT}/openssl/Configure
     else
-        sed -i 's/-mandroid//g' ${MESON_BUILD_ROOT}/openssl-1.0.2o/Configure
+        sed -i 's/-mandroid//g' ${MESON_BUILD_ROOT}/openssl/Configure
     fi
     . ${MESON_SOURCE_ROOT}/tools/env.sh
     ./Configure android --prefix="$openssl_prefix" no-krb5 no-shared no-dso

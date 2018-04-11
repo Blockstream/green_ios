@@ -1,12 +1,11 @@
 add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
-foreach libdir : subproject_libdirs
-    add_project_link_arguments(['-Wl,-rpath,' + libdir, '-L' + libdir], language : 'cpp')
-endforeach
 
 sources = ['amount.hpp',
            'amount.cpp',
+           'autobahn_wrapper.hpp',
            'assertion.hpp',
            'assertion.cpp',
+           'boost_wrapper.hpp',
            'containers.hpp',
            'containers.cpp',
            'ffi_c.cpp',
@@ -37,16 +36,15 @@ endif
 
 dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
 
-link_whole = []
 link_args = []
+link_whole = []
 if build_jni
     message('Building JNI bindings...')
     subdir('swig_java')
     link_whole += [libswig_java]
     if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
-        link_args += ['-Wl,--whole-archive', '-lwallycore', '-lsecp256k1', '-Wl,--no-whole-archive']
-    else
-        link_args += ['-Wl,-all_load']
+        wallycore_libdir = wallycore.get_variable('libdir')
+        link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, 'libwallycore.a'), join_paths(wallycore_libdir, 'libsecp256k1.a'), '-Wl,--no-whole-archive']
     endif
 else
     message('Disabled JNI bindings')

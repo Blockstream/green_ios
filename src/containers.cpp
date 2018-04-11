@@ -1,8 +1,7 @@
 #include <queue>
 #include <thread>
 
-#include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
+#include "boost_wrapper.hpp"
 
 #include "containers.hpp"
 

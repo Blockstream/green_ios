@@ -1,5 +1,7 @@
-#include "transaction_utils.hpp"
+#include <gsl/span>
+
 #include "assertion.hpp"
+#include "transaction_utils.hpp"
 #include "utils.hpp"
 
 namespace ga {

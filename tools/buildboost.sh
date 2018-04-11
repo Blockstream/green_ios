@@ -1,7 +1,15 @@
 #! /usr/bin/env bash
 set -e
-boost_src_home="${MESON_BUILD_ROOT}/boost_1_66_0"
-boost_bld_home="${MESON_BUILD_ROOT}/boost_1_66_0/build"
+
+BOOST_NAME="boost_1_66_0"
+
+if [ "x${NUM_JOBS}" == "x" ]; then
+    NUM_JOBS=4
+fi
+
+cp -r "${MESON_SOURCE_ROOT}/subprojects/${BOOST_NAME}" "${MESON_BUILD_ROOT}/boost"
+boost_src_home="${MESON_BUILD_ROOT}/boost"
+boost_bld_home="${MESON_BUILD_ROOT}/boost/build"
 cd $boost_src_home
 if [ \( "$1" = "--ndk" \) ]; then
     cp "${MESON_SOURCE_ROOT}/tools/darwin.jam" "$boost_src_home/tools/build/src/tools"

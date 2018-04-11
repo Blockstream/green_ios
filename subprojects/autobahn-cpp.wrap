@@ -1,0 +1,10 @@
+[wrap-file]
+directory = autobahn-cpp-cd74d3ccd7b600e4fef6e1c4cbe584ffd91048f5
+
+source_url = https://github.com/crossbario/autobahn-cpp/archive/cd74d3ccd7b600e4fef6e1c4cbe584ffd91048f5.tar.gz
+source_filename = autobahn-cpp.tar.gz
+source_hash = 41733e7c8287c31126e973bb1056a83236cd5bbb9507053a5a84e78f57791b90
+
+patch_url = file:./subprojects/autobahn-cpp-meson/autobahn-cpp-meson.tar.gz
+patch_filename = autobahn-cpp-meson.tar.gz
+patch_hash = 63ffdf9c912d2bd7775b2c551134154ff4dd7191ec514b8f5f9b217aeaa39cb7

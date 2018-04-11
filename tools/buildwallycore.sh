@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 set -e
 
+WALLYCORE_NAME="libwally-core-987575025520d18bac31e6e2d27c8c936d812c64"
+
+cp -r "${MESON_SOURCE_ROOT}/subprojects/${WALLYCORE_NAME}" "${MESON_BUILD_ROOT}/libwally-core"
+
 if [ "$(uname)" == "Darwin" ]; then
     export HOST_OS="x86_64-apple-darwin"
     SED=gsed

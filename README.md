@@ -144,3 +144,9 @@ Use address sanitizer with gcc-7, no LTO, enable clang-tidy and debug build
 Use clang-analyzer (it'll analyze GDK and its direct dependencies)
 
 ./tools/build.sh -analyze --clang
+
+### Upgrading dependencies
+
+Use tools/upgrade_deps.sh, for example to upgrade wally
+
+* ./tools/upgrade_deps.sh -l wallycore -s 987575025520d18bac31e6e2d27c8c936d812c64 -u https://github.com/ElementsProject/libwally-core/archive/987575025520d18bac31e6e2d27c8c936d812c64.tar.gz

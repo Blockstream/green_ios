@@ -1,0 +1,10 @@
+[wrap-file]
+directory = libwally-core-987575025520d18bac31e6e2d27c8c936d812c64
+
+source_url = https://github.com/ElementsProject/libwally-core/archive/987575025520d18bac31e6e2d27c8c936d812c64.tar.gz
+source_filename = libwally-core-987575025520d18bac31e6e2d27c8c936d812c64.tar.gz
+source_hash = 40c98d61ba576b6149fd56822a3bc7c5c3db8919550737e3a3360132efb25a6c
+
+patch_url = file:./subprojects/wallycore-meson/wallycore-meson.tar.gz
+patch_filename = wallycore-meson.tar.gz
+patch_hash = 3a0e26f134f281b0a6f6435cc129eefc9f0f1d4b1f1dcc5d79b9b906a2f7b5ec

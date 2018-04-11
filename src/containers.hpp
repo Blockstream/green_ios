@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include <boost/algorithm/string.hpp>
-
 #include <msgpack.hpp>
+
+#include "boost_wrapper.hpp"
 
 #include "amount.hpp"
 #include "assertion.hpp"

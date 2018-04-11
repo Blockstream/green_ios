@@ -3,11 +3,12 @@
 #
 
 !.gitignore
-/build-gcc/
-/build-clang/
-/build-clang-*/
-/deps_cache/
+/build-gcc*/
+/build-clang*/
 /*/*/*/.build/
+/subprojects/*
+!subprojects/*meson*
+!subprojects/*wrap*
 *.swp
 *.class
 *.so
