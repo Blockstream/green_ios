@@ -238,7 +238,7 @@ public class Session {
 
     func toCStr(strings: [String]) -> UnsafeMutablePointer<UnsafePointer<Int8>?> {
         let copies = UnsafeMutablePointer<UnsafePointer<Int8>?>.allocate(capacity: strings.count)
-        copies.initialize(repeating: nil, count: strings.count)
+        copies.initialize(to: nil, count: strings.count)
         let arr = strings.map { str -> UnsafePointer<Int8>? in
             var bytes: UnsafeMutablePointer<Int8>? = nil
             GA_copy_string(str, &bytes)
@@ -257,7 +257,7 @@ public class Session {
             }
         }
         copies.deinitialize(count: count)
-        copies.deallocate()
+        copies.deallocate(capacity: count)
     }
 
     public func send(addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool = false) throws -> Void {
