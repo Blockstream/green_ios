@@ -36,6 +36,16 @@ namespace sdk {
     static const std::vector<unsigned char> DUMMY_WITNESS_SCRIPT(3 + SHA256_LEN);
 
     namespace {
+        std::once_flag one_time_setup_flag;
+
+        void one_time_setup()
+        {
+            std::call_once(one_time_setup_flag, []() {
+                wally::init(0);
+                wally::secp_randomize(get_random_bytes<WALLY_SECP_RANDOMISE_LEN>());
+            });
+        }
+
         // FIXME: too slow. lacks validation.
         std::array<unsigned char, 32> uint256_to_base256(const std::string& bytes)
         {
@@ -77,6 +87,7 @@ namespace sdk {
             , m_master_key(nullptr)
             , m_debug(debug)
         {
+            one_time_setup();
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
         }
 

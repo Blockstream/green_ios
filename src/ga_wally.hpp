@@ -334,6 +334,7 @@ namespace sdk {
 #define SDK_FN_S_S(F)                                                                                                  \
     inline void F(size_t s1, size_t* written) { GA_SDK_VERIFY(wally::F(s1, written)); }
 
+    SDK_FN_3(init)
     SDK_FN_3(cleanup)
     SDK_FN_333_BBBBBA(bip32_key_init_alloc)
     SDK_FN_33SS_A(tx_init_alloc)
