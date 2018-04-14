@@ -21,6 +21,8 @@ namespace sdk {
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net)
     {
+        using nullbytes = std::array<unsigned char, 0>;
+
         // FIXME: cache the top level keys
         const auto dcc_bytes = bytes_from_hex(chain_code);
         const auto dpk_bytes = bytes_from_hex(pub_key);
@@ -28,7 +30,7 @@ namespace sdk {
 
         ext_key* p;
         uint32_t version = main_net ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
-        bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, nullbytes(), nullbytes(), nullbytes(), &p);
+        bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, nullbytes{}, nullbytes{}, nullbytes{}, &p);
 
         wally_ext_key_ptr server_pub_key{ p };
 
@@ -68,7 +70,7 @@ namespace sdk {
         base58_to_bytes(address, 0, sc);
 
         std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> script;
-        scriptpubkey_p2sh_from_bytes(make_bytes_view(sc.data() + 1, HASH160_LEN), 0, script);
+        scriptpubkey_p2sh_from_bytes(gsl::make_span(sc.data() + 1, HASH160_LEN), 0, script);
         return script;
     }
 
@@ -120,7 +122,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(std::search(full_script.begin(), full_script.end(), DUMMY_GA_SIG_DER_PUSH.begin(),
                                   DUMMY_GA_SIG_DER_PUSH.end())
             == full_script.begin());
-        auto suffix = make_bytes_view(
+        auto suffix = gsl::make_span(
             full_script.data() + DUMMY_GA_SIG_DER_PUSH.size(), full_script.size() - DUMMY_GA_SIG_DER_PUSH.size());
 
         std::vector<unsigned char> script(OP_0_PREFIX.size() + suffix.size());

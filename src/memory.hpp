@@ -9,6 +9,8 @@
 #include <new>
 #include <vector>
 
+#include <gsl/gsl_util>
+
 #include <ga_wally.hpp>
 
 namespace ga {
@@ -91,67 +93,16 @@ namespace sdk {
         using std::array<T, N>::size;
         using std::array<T, N>::begin;
         using std::array<T, N>::end;
+        using size_type = typename std::array<T, N>::size_type;
     };
 
-    // A simple class for slicing constant size containers without copying
-    template <typename T> class bytes_view {
-    private:
-        std::reference_wrapper<const T> bytes;
-        std::size_t length;
-
-    public:
-        explicit bytes_view(const T& a)
-            : bytes(std::cref(a))
-            , length(std::extent<T>::value)
-        {
-        }
-
-        bytes_view(const T& a, size_t len)
-            : bytes(std::cref(a))
-            , length(len)
-        {
-        }
-
-        bytes_view(const bytes_view& other) = default;
-        bytes_view(bytes_view&& other) noexcept = default;
-        bytes_view& operator=(const bytes_view& other) = default;
-        bytes_view& operator=(bytes_view&& other) noexcept = default;
-        ~bytes_view() = default;
-
-        const unsigned char* data() const { return data(std::is_class<T>()); }
-        constexpr size_t size() const { return length; }
-        const unsigned char* end() const { return data() + size(); }
-
-    private:
-        const unsigned char* data(std::true_type) const { return bytes.get().data(); }
-        const unsigned char* data(std::false_type) const { return wally::detail::get_p(bytes); }
-    };
-
-    template <typename T> inline const bytes_view<T> make_bytes_view(const T& v) { return bytes_view<T>(v); }
-    template <typename T> inline const bytes_view<T> make_bytes_view(const T& v, size_t n)
+    template <typename T, typename U, typename V> inline void init_container(T& dst, const U& arg1, const V& arg2)
     {
-        return bytes_view<T>(v, n);
-    }
-
-    // A class representing a null range of bytes
-    class nullbytes {
-    public:
-        nullbytes() = default;
-        nullbytes(const nullbytes& other) = default;
-        nullbytes(nullbytes&& other) noexcept = default;
-        nullbytes& operator=(const nullbytes& other) = delete;
-        nullbytes& operator=(nullbytes&& other) noexcept = delete;
-        ~nullbytes() = default;
-
-        const unsigned char* data() const { return nullptr; }
-        size_t size() const { return 0; }
-    };
-
-    template <typename T, typename T1, typename T2> inline void init_container(T& dst, const T1& arg1, const T2& arg2)
-    {
-        GA_SDK_RUNTIME_ASSERT(dst.size() == arg1.size() + arg2.size()); // No partial fills supported
-        std::copy(arg1.data(), arg1.end(), dst.data());
-        std::copy(arg2.data(), arg2.end(), dst.data() + arg1.size());
+        GA_SDK_RUNTIME_ASSERT(arg1.data() && arg2.data());
+        GA_SDK_RUNTIME_ASSERT(
+            dst.size() == gsl::narrow<typename T::size_type>(arg1.size() + arg2.size())); // No partial fills supported
+        std::copy(arg1.begin(), arg1.end(), dst.data());
+        std::copy(arg2.begin(), arg2.end(), dst.data() + arg1.size());
     }
 }
 }

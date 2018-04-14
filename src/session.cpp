@@ -7,6 +7,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <gsl/span>
+
 #include "boost_wrapper.hpp"
 
 #include "assertion.hpp"
@@ -266,13 +268,13 @@ namespace sdk {
         wally::clear(seed);
 
         std::array<unsigned char, sizeof(master.chain_code) + sizeof(master.pub_key)> path_data;
-        init_container(path_data, make_bytes_view(master.chain_code), make_bytes_view(master.pub_key));
+        init_container(path_data, gsl::make_span(master.chain_code), gsl::make_span(master.pub_key));
 
         std::array<unsigned char, HMAC_SHA512_LEN> path;
-        hmac_sha512(make_bytes_view(GA_LOGIN_NONCE), path_data, path);
+        hmac_sha512(gsl::make_span(GA_LOGIN_NONCE), path_data, path);
 
-        auto pub_key = hex_from_bytes(make_bytes_view(master.pub_key));
-        auto chain_code = hex_from_bytes(make_bytes_view(master.chain_code));
+        auto pub_key = hex_from_bytes(gsl::make_span(master.pub_key));
+        auto chain_code = hex_from_bytes(gsl::make_span(master.chain_code));
         auto hex_path = hex_from_bytes(path);
 
         auto register_arguments
@@ -297,7 +299,7 @@ namespace sdk {
 
         unsigned char btc_ver[1] = { m_params.btc_version() };
         std::array<unsigned char, sizeof(btc_ver) + sizeof(m_master_key->hash160)> vpkh;
-        init_container(vpkh, make_bytes_view(btc_ver), make_bytes_view(m_master_key->hash160));
+        init_container(vpkh, gsl::make_span(btc_ver), gsl::make_span(m_master_key->hash160));
 
         auto challenge_arguments = std::make_tuple(base58check_from_bytes(vpkh));
         std::string challenge;
@@ -379,7 +381,7 @@ namespace sdk {
                 std::array<uint32_t, 2>{ { BIP32_INITIAL_HARDENED_CHILD | 3, BIP32_INITIAL_HARDENED_CHILD | pointer } },
                 false, skip_hash);
             return std::make_pair(
-                hex_from_bytes(make_bytes_view(subkey->pub_key)), hex_from_bytes(make_bytes_view(subkey->chain_code)));
+                hex_from_bytes(gsl::make_span(subkey->pub_key)), hex_from_bytes(gsl::make_span(subkey->chain_code)));
         }
 
         auto get_recovery_key(const std::string& mnemonic, uint32_t bip32_version, uint32_t pointer)
@@ -742,7 +744,7 @@ namespace sdk {
         auto secret_bytes = bytes_from_hex(pin_identifier_and_secret.second);
 
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        pbkdf2_hmac_sha512(password, make_bytes_view(secret_bytes, 16), 0, 2048, key);
+        pbkdf2_hmac_sha512(password, gsl::make_span(secret_bytes.data(), 16), 0, 2048, key);
 
         std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
         size_t written;
