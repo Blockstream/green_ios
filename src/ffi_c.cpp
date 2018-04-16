@@ -16,6 +16,8 @@ template <typename F, typename Obj, typename... Args> auto c_invoke(F&& f, Obj* 
         return GA_SESSION_LOST;
     } catch (const ga::sdk::reconnect_error& ex) {
         return GA_RECONNECT;
+    } catch (const ga::sdk::timeout_error& ex) {
+        return GA_TIMEOUT;
     } catch (const std::exception& ex) {
         return GA_ERROR;
     }

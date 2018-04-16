@@ -20,6 +20,15 @@ namespace sdk {
         {
         }
     };
+
+    class timeout_error : public std::runtime_error {
+    public:
+        timeout_error()
+            : std::runtime_error("timeout error")
+        {
+        }
+    };
+
 }
 }
 

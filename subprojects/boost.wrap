@@ -7,4 +7,4 @@ source_hash = bd0df411efd9a585e5a2212275f8762079fed8842264954675a4fddc46cfcf60
 
 patch_url = file:./subprojects/boost-meson/boost-meson.tar.gz
 patch_filename = boost-meson.tar.gz
-patch_hash = 1f50b56fda92f7495598417706e282f6a08dc83ae950067f03d6d1078c517942
+patch_hash = 4b28a233dbb8c0475f00af458564ae2e00db4b63d87d863f146f30ea168f6967

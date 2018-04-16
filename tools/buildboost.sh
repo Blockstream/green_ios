@@ -28,10 +28,11 @@ ${SDK_PLATFORM}-clang++
 <target-os>android
 ;
 EOF
-    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=system,thread
+    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=chrono,system,thread
     ./b2 --clean
-    ./b2 -j$NUM_JOBS --with-thread --with-system cxxflags=-fPIC toolset=darwin-${SDK_ARCH} target-os=android link=static install
+    ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system cxxflags=-fPIC toolset=darwin-${SDK_ARCH} target-os=android link=static install
     if [ "$(uname)" == "Darwin" ]; then
+       ${RANLIB} $boost_bld_home/lib/libboost_chrono.a
        ${RANLIB} $boost_bld_home/lib/libboost_thread.a
        ${RANLIB} $boost_bld_home/lib/libboost_system.a
     fi
@@ -52,11 +53,11 @@ ${XCODE_DEFAULT_PATH}/clang++
 <target-os>iphone
 ;
 EOF
-    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=system,thread
+    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=chrono,system,thread
     ./b2 --clean
-    ./b2 -j$NUM_JOBS --with-thread --with-system toolset=darwin-arm target-os=iphone link=static install
+    ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system toolset=darwin-arm target-os=iphone link=static install
 else
-    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=system,thread
+    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=chrono,system,thread
     ./b2 --clean
-    ./b2 -j$NUM_JOBS --with-thread --with-system cxxflags="-DPIC -fPIC" link=static install
+    ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system cxxflags="-DPIC -fPIC" link=static install
 fi

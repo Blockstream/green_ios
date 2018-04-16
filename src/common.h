@@ -11,6 +11,7 @@ extern "C" {
 #define GA_ERROR (-1)
 #define GA_RECONNECT (-2)
 #define GA_SESSION_LOST (-3)
+#define GA_TIMEOUT (-4)
 
 /** Boolean values */
 #define GA_TRUE 1

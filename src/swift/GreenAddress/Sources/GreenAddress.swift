@@ -9,6 +9,7 @@ public enum GaError: Error {
     case GenericError
     case ReconnectError
     case SessionLost
+    case TimeoutError
 }
 
 public enum Network: Int32 {
@@ -29,6 +30,8 @@ fileprivate func errorWrapper(_ r: Int32) throws {
                 throw GaError.ReconnectError
             case GA_SESSION_LOST:
                 throw GaError.SessionLost
+            case GA_TIMEOUT:
+                throw GaError.TimeoutError
             default:
                 throw GaError.GenericError
         }
@@ -315,6 +318,8 @@ public func wrap<T>(_ fun: @escaping () throws -> T) -> Promise<T> {
             seal.fulfill(try fun())
         } catch GaError.ReconnectError {
             seal.reject(GaError.ReconnectError)
+        } catch GaError.TimeoutError {
+            seal.reject(GaError.TimeoutError)
         } catch {
             seal.reject(GaError.GenericError)
         }
