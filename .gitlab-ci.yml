@@ -7,7 +7,6 @@ test_gcc:
   tags:
     - ga
   script:
-    - apt-get update && apt-get install -yqq git
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --gcc
 
@@ -16,7 +15,6 @@ test_clang:
   tags:
     - ga
   script:
-    - apt-get update && apt-get install -yqq git
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
@@ -25,7 +23,6 @@ test_clang_ndk_armeabi:
   tags:
     - ga
   script:
-    - apt-get update && apt-get install -yqq git
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk armeabi
 
@@ -34,7 +31,6 @@ test_clang_ndk_armeabi-v7a:
   tags:
     - ga
   script:
-    - apt-get update && apt-get install -yqq git
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk armeabi-v7a
 
@@ -43,7 +39,6 @@ test_clang_ndk_arm64-v8a:
   tags:
     - ga
   script:
-    - apt-get update && apt-get install -yqq git
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk arm64-v8a
 
@@ -52,7 +47,6 @@ test_clang_ndk_x86:
   tags:
     - ga
   script:
-    - apt-get update && apt-get install -yqq git
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86
 
@@ -61,7 +55,6 @@ test_clang_ndk_x86_64:
   tags:
     - ga
   script:
-    - apt-get update && apt-get install -yqq git
     - cd $CI_PROJECT_DIR
     - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk x86_64
 

@@ -6,7 +6,7 @@ sed -i 's/deb.debian.org/httpredir.debian.org/g' /etc/apt/sources.list
 apt-get update -qq
 apt-get upgrade -yqq
 
-apt-get install wget unzip autoconf pkg-config build-essential libtool python3-pip ninja-build clang llvm-dev -yqq
+apt-get install wget unzip autoconf pkg-config build-essential libtool python3-pip ninja-build clang llvm-dev git -yqq
 pip3 install --require-hashes -r /requirements.txt
 rm /requirements.txt
 wget -O ndk.zip https://dl.google.com/android/repository/android-ndk-r14b-linux-x86_64.zip
