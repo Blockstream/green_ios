@@ -71,11 +71,6 @@ function set_cross_build_env() {
     bld_root="$PWD/build-clang-$1-$2"
     export HOST_ARCH=$2
     case $2 in
-        armeabi)
-            export SDK_ARCH=arm
-            export SDK_CPU=armv7
-            export SDK_CFLAGS="-march=armv5te -mtune=xscale -msoft-float -mthumb"
-            ;;
         armeabi-v7a)
             export SDK_ARCH=arm
             export SDK_CPU=armv7
@@ -150,7 +145,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     if [ -n "$2" ]; then
         all_archs="$2"
     else
-        all_archs="armeabi armeabi-v7a arm64-v8a x86 x86_64"
+        all_archs="armeabi-v7a arm64-v8a x86 x86_64"
     fi
     for a in $all_archs; do
         set_cross_build_env android $a

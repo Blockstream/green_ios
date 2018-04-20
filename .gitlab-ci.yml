@@ -18,14 +18,6 @@ test_clang:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
-test_clang_ndk_armeabi:
-  image: greenaddress/ci@sha256:7554626627bbf2a57091d1f248e6cc7838738c06f97c3fa59a14aa4636e7cc96
-  tags:
-    - ga
-  script:
-    - cd $CI_PROJECT_DIR
-    - ANDROID_NDK=/android-ndk-r14b ./tools/build.sh --ndk armeabi
-
 test_clang_ndk_armeabi-v7a:
   image: greenaddress/ci@sha256:7554626627bbf2a57091d1f248e6cc7838738c06f97c3fa59a14aa4636e7cc96
   tags:
@@ -71,13 +63,6 @@ test_osx_ios:
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --iphone static
-
-#test_osx_clang_ndk_armeabi:
-#  tags:
-#    - osx
-#  script:
-#    - cd $CI_PROJECT_DIR
-#    - ./tools/build.sh --ndk armeabi
 
 #test_osx_clang_ndk_armeabi-v7a:
 #  tags:
