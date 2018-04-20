@@ -37,7 +37,7 @@ Options exist if you want to build a different configuration (flags in squared b
 
 --clang
 --gcc
---ndk [armeabi armeabi-v7a arm64-v8a x86 x86_64]
+--ndk [armeabi-v7a arm64-v8a x86 x86_64]
 --iphone [static]
 
 for example
