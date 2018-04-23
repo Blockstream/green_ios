@@ -7,4 +7,4 @@ source_hash = 40c98d61ba576b6149fd56822a3bc7c5c3db8919550737e3a3360132efb25a6c
 
 patch_url = file:./subprojects/wallycore-meson/wallycore-meson.tar.gz
 patch_filename = wallycore-meson.tar.gz
-patch_hash = 3a0e26f134f281b0a6f6435cc129eefc9f0f1d4b1f1dcc5d79b9b906a2f7b5ec
+patch_hash = d0a248c7e4586e4b65d840b602bc4ef3a81bb3fc4a63b46e393d441fc65271eb
