@@ -9,6 +9,7 @@ c_cpp_sources = [
     'wss_login.cpp',
     'wss_login_c.c',
     'wss_login_new.cpp',
+    'wss_login_proxy.cpp',
     'wss_send.cpp',
     'wss_subscribe.cpp'
 ]

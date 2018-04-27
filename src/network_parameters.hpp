@@ -13,7 +13,8 @@ namespace sdk {
 
     namespace detail {
 
-#define DEFINE_NETWORK_STRING_PARAM(name, s) const std::string name = s
+#define DEFINE_NETWORK_STRING_PARAM(name, s)                                                                           \
+    const std::string name { s }
 #define DEFINE_NETWORK_VECTOR_STRING_PARAM(name, s, t)                                                                 \
     const std::vector<std::string> name { s, t }
 
@@ -28,10 +29,10 @@ namespace sdk {
                 deposit_chain_code, "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04");
             DEFINE_NETWORK_STRING_PARAM(
                 deposit_pub_key, "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3");
-            DEFINE_NETWORK_STRING_PARAM(gait_onion, "gu5ke7a2aguwfqhz.onion");
+            DEFINE_NETWORK_STRING_PARAM(gait_onion, "ws://gu5ke7a2aguwfqhz.onion/v2/ws");
             DEFINE_NETWORK_STRING_PARAM(default_peer, "");
-            static constexpr unsigned char btc_version = 111;
-            static constexpr bool main_net = false;
+            static constexpr unsigned char btc_version{ 111 };
+            static constexpr bool main_net{ false };
         };
 
         struct regtest_parameters final {
@@ -45,8 +46,8 @@ namespace sdk {
                 deposit_pub_key, "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3");
             DEFINE_NETWORK_STRING_PARAM(gait_onion, "");
             DEFINE_NETWORK_STRING_PARAM(default_peer, "192.168.56.1:19000");
-            static constexpr unsigned char btc_version = 111;
-            static constexpr bool main_net = false;
+            static constexpr unsigned char btc_version{ 111 };
+            static constexpr bool main_net{ false };
         };
 
         struct localtest_parameters final {
@@ -60,8 +61,8 @@ namespace sdk {
                 deposit_pub_key, "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3");
             DEFINE_NETWORK_STRING_PARAM(gait_onion, "");
             DEFINE_NETWORK_STRING_PARAM(default_peer, "");
-            static constexpr unsigned char btc_version = 111;
-            static constexpr bool main_net = false;
+            static constexpr unsigned char btc_version{ 111 };
+            static constexpr bool main_net{ false };
         };
     }
 
@@ -71,17 +72,19 @@ namespace sdk {
     class network_parameters final {
     public:
         template <typename params>
-        explicit network_parameters(params p)
-            : m_gait_wamp_url(p.gait_wamp_url)
-            , m_gait_wamp_cert_pins(p.gait_wamp_cert_pins)
-            , m_block_explorer_address(p.block_explorer_address)
-            , m_block_explorer_tx(p.block_explorer_tx)
-            , m_deposit_chain_code(p.deposit_chain_code)
-            , m_deposit_pub_key(p.deposit_pub_key)
-            , m_gait_onion(p.gait_onion)
-            , m_default_peer(p.default_peer)
-            , m_btc_version(p.btc_version)
-            , m_main_net(p.main_net)
+        explicit network_parameters(params p, const std::string& proxy = std::string(), bool use_tor = false)
+            : m_gait_wamp_url{ p.gait_wamp_url }
+            , m_gait_wamp_cert_pins{ p.gait_wamp_cert_pins }
+            , m_block_explorer_address{ p.block_explorer_address }
+            , m_block_explorer_tx{ p.block_explorer_tx }
+            , m_deposit_chain_code{ p.deposit_chain_code }
+            , m_deposit_pub_key{ p.deposit_pub_key }
+            , m_gait_onion{ p.gait_onion }
+            , m_default_peer{ p.default_peer }
+            , m_proxy{ proxy }
+            , m_btc_version{ p.btc_version }
+            , m_main_net{ p.main_net }
+            , m_use_tor{ use_tor }
         {
         }
 
@@ -98,8 +101,10 @@ namespace sdk {
         const std::string& deposit_chain_code() const { return m_deposit_chain_code; }
         const std::string& deposit_pub_key() const { return m_deposit_pub_key; }
         const std::string& gait_onion() const { return m_gait_onion; }
+        const std::string& get_proxy() const { return m_proxy; }
         unsigned char btc_version() const { return m_btc_version; }
         bool main_net() const { return m_main_net; }
+        bool get_use_tor() const { return m_use_tor; }
 
     private:
         std::string m_gait_wamp_url;
@@ -110,23 +115,25 @@ namespace sdk {
         std::string m_deposit_pub_key;
         std::string m_gait_onion;
         std::string m_default_peer;
+        std::string m_proxy;
         unsigned char m_btc_version;
         bool m_main_net;
+        bool m_use_tor;
     };
 
-    inline network_parameters make_localtest_network()
+    inline network_parameters make_localtest_network(const std::string& proxy = std::string(), bool use_tor = false)
     {
-        return network_parameters(ga::sdk::detail::localtest_parameters());
+        return network_parameters{ ga::sdk::detail::localtest_parameters{}, proxy, use_tor };
     }
 
-    inline network_parameters make_regtest_network()
+    inline network_parameters make_regtest_network(const std::string& proxy = std::string(), bool use_tor = false)
     {
-        return network_parameters(ga::sdk::detail::regtest_parameters());
+        return network_parameters{ ga::sdk::detail::regtest_parameters{}, proxy, use_tor };
     }
 
-    inline network_parameters make_testnet_network()
+    inline network_parameters make_testnet_network(const std::string& proxy = std::string(), bool use_tor = false)
     {
-        return network_parameters(ga::sdk::detail::testnet_parameters());
+        return network_parameters{ ga::sdk::detail::testnet_parameters{}, proxy, use_tor };
     }
 }
 }

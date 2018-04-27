@@ -20,10 +20,23 @@
 
 namespace ga {
 namespace sdk {
-    using client = websocketpp::client<websocketpp::config::asio_client>;
-    using client_tls = websocketpp::client<websocketpp::config::asio_tls_client>;
-    using transport = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_client>;
-    using transport_tls = autobahn::wamp_websocketpp_websocket_transport<websocketpp::config::asio_tls_client>;
+#ifdef NDEBUG
+    using websocketpp_gdk_config = websocketpp::config::asio_client;
+    using websocketpp_gdk_tls_config = websocketpp::config::asio_tls_client;
+#else
+    struct websocketpp_gdk_config : public websocketpp::config::asio_client {
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
+    };
+
+    struct websocketpp_gdk_tls_config : public websocketpp::config::asio_tls_client {
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
+    };
+#endif
+
+    using client = websocketpp::client<websocketpp_gdk_config>;
+    using client_tls = websocketpp::client<websocketpp_gdk_tls_config>;
+    using transport = autobahn::wamp_websocketpp_websocket_transport<websocketpp_gdk_config>;
+    using transport_tls = autobahn::wamp_websocketpp_websocket_transport<websocketpp_gdk_tls_config>;
     using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context>;
     using wamp_call_result = boost::future<autobahn::wamp_call_result>;
     using wamp_session_ptr = std::shared_ptr<autobahn::wamp_session>;
@@ -81,7 +94,7 @@ namespace sdk {
 
     class session::session_impl final {
     public:
-        explicit session_impl(network_parameters params, bool debug)
+        session_impl(network_parameters params, bool debug)
             : m_controller(m_io)
             , m_params(std::move(params))
             , m_block_height(0)
@@ -145,7 +158,11 @@ namespace sdk {
         static std::pair<std::string, std::string> sign_challenge(
             const wally_ext_key_ptr& master_key, const std::string& challenge);
 
-        bool connect_with_tls() const { return boost::algorithm::starts_with(m_params.gait_wamp_url(), "wss://"); }
+        bool connect_with_tls() const
+        {
+            return boost::algorithm::starts_with(
+                !m_params.get_use_tor() ? m_params.gait_wamp_url() : m_params.gait_onion(), "wss://");
+        }
 
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
         template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
@@ -172,9 +189,14 @@ namespace sdk {
             using client_type
                 = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
 
-            m_transport = std::make_shared<T>(*boost::get<client_type>(m_client), m_params.gait_wamp_url(), m_debug),
-            boost::get<std::shared_ptr<T>>(m_transport)
-                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
+            m_transport = std::make_shared<T>(*boost::get<client_type>(m_client),
+                !m_params.get_use_tor() ? m_params.gait_wamp_url() : m_params.gait_onion(), m_debug);
+            auto&& transport = boost::get<std::shared_ptr<T>>(m_transport);
+
+            transport->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
+            if (!m_params.get_proxy().empty()) {
+                transport->set_proxy(m_params.get_proxy());
+            }
         }
 
         template <typename T> void connect_to_endpoint() const
