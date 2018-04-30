@@ -46,12 +46,16 @@ tar zcvf ${DEP_DIR}/${DEP_NAME}.tar.gz ${UNTAR_NAME}-${SHA_SUM} >& /dev/null
 echo "Updating wrap definitions..."
 PATCH_SHA256=$(sha256sum ${DEP_DIR}/${DEP_NAME}.tar.gz | cut -f 1 -d ' ')
 if [ "x${URL}" != "x" ]; then
-    wget -q -O tmp.tar.gz ${URL}
+    wget -O tmp.tar.gz ${URL}
     SOURCE_SHA256=$(sha256sum tmp.tar.gz | cut -f 1 -d ' ')
+    sed -i -e "s!\(source_url.*=\).*!\1 ${URL}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
     sed -i -e "s!\(source_hash.*=\).*!\1 ${SOURCE_SHA256}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 fi
 
-sed -i -e "s!\(${UNTAR_NAME}-\).*!\1${SHA_SUM}\"!" ${TOOLS_DIR}/build${WRAP_NAME}.sh
+if [ "x${DEP_NAME}" == "xwallycore-meson" ]; then
+    sed -i -e "s!\(${UNTAR_NAME}-\).*!\1${SHA_SUM}\"!" ${TOOLS_DIR}/build${WRAP_NAME}.sh
+fi
+
 sed -i -e "s!\(directory.*=\).*!\1 ${UNTAR_NAME}-${SHA_SUM}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(source_filename.*=\).*!\1 ${UNTAR_NAME}-${SHA_SUM}.tar.gz!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(source_url.*archive/\).*!\1${SHA_SUM}.tar.gz!" ${WRAP_DIR}/${WRAP_NAME}.wrap
