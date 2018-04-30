@@ -190,13 +190,10 @@ namespace sdk {
                 = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
 
             m_transport = std::make_shared<T>(*boost::get<client_type>(m_client),
-                !m_params.get_use_tor() ? m_params.gait_wamp_url() : m_params.gait_onion(), m_debug);
-            auto&& transport = boost::get<std::shared_ptr<T>>(m_transport);
-
-            transport->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
-            if (!m_params.get_proxy().empty()) {
-                transport->set_proxy(m_params.get_proxy());
-            }
+                !m_params.get_use_tor() ? m_params.gait_wamp_url() : m_params.gait_onion(), m_params.get_proxy(),
+                std::string(), std::string(), m_debug);
+            boost::get<std::shared_ptr<T>>(m_transport)
+                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
         }
 
         template <typename T> void connect_to_endpoint() const
