@@ -127,6 +127,13 @@ public class Session {
         try subscribeToTopic(topic: "com.greenaddress.blocks", context: blocksFFIContext)
     }
 
+    public func connect(network: Network, proxy_uri: String, use_tor: Bool, debug: Bool = false) throws {
+        try callWrapper(fun: GA_connect_with_proxy(session, network.rawValue, proxy_uri, use_tor ? GA_USE_TOR : GA_NO_TOR,
+                                                    debug ? GA_TRUE : GA_FALSE))
+
+        try subscribeToTopic(topic: "com.greenaddress.blocks", context: blocksFFIContext)
+    }
+
     public func registerUser(mnemonic: String) throws {
         try callWrapper(fun: GA_register_user(session, mnemonic))
     }

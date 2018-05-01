@@ -179,6 +179,23 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_connect, GA_session,
     },
     int, network, int, debug)
 
+GA_SDK_DEFINE_C_FUNCTION_4(GA_connect_with_proxy, GA_session,
+    [](struct GA_session* session, int network, const char* proxy_uri, int use_tor, int debug) {
+        GA_SDK_RUNTIME_ASSERT(proxy_uri);
+        auto&& params = [](int network, const std::string& proxy_uri, bool use_tor) {
+            switch (network) {
+            default:
+            case GA_NETWORK_LOCALTEST:
+                return ga::sdk::make_localtest_network(proxy_uri, use_tor);
+            case GA_NETWORK_TESTNET:
+                return ga::sdk::make_testnet_network(proxy_uri, use_tor);
+            }
+        }(network, proxy_uri, use_tor == GA_USE_TOR);
+
+        session->connect(std::move(params), debug != 0);
+    },
+    int, network, const char*, proxy_uri, int, use_tor, int, debug)
+
 GA_SDK_DEFINE_C_FUNCTION_0(GA_disconnect, GA_session, [](struct GA_session* session) { session->disconnect(); })
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_register_user, GA_session,

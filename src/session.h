@@ -38,6 +38,10 @@ extern "C" {
 #define GA_2OF2 0
 #define GA_2OF3 1
 
+/** Value for onion uri flag */
+#define GA_NO_TOR 0
+#define GA_USE_TOR 1
+
 /** An server session */
 struct GA_session;
 
@@ -68,6 +72,19 @@ int GA_destroy_session(struct GA_session* session);
  * GA_ERROR if connection is unsuccessful.
  */
 int GA_connect(struct GA_session* session, int network, int debug);
+
+/**
+ * Connect to a remote server using the specified network and proxy.
+ *
+ * @session The server session to use.
+ * @network The network parameters to use.
+ * @proxy The proxy server to use.
+ * @use_tor Use the onion address for the @network.
+ * @debug Output transport debug information to stderr.
+ *
+ * GA_ERROR if connection is unsuccessful.
+ */
+int GA_connect_with_proxy(struct GA_session* session, int network, const char* proxy_uri, int use_tor, int debug);
 
 /**
  * UNUSED
