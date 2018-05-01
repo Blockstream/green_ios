@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+set -x
 
 export NUM_JOBS=4
 if [ -f /proc/cpuinfo ]; then
