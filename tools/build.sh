@@ -15,9 +15,11 @@ COMPILER_VERSION=""
 GETOPT='getopt'
 if [ "$(uname)" == "Darwin" ]; then
     GETOPT='/usr/local/opt/gnu-getopt/bin/getopt'
+elif [ "$(uname)" == "FreeBSD" ]; then
+    GETOPT='/usr/local/bin/getopt'
 fi
 
-TEMPOPT=`"$GETOPT" -n "'build.sh" -o x,b: -l analyze,clang,gcc,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "build.sh" -o x,b: -l analyze,clang,gcc,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in

@@ -91,3 +91,20 @@ test_osx_clang_ndk_arm64-v8a:
 #  script:
 #    - cd $CI_PROJECT_DIR
 #    - ./tools/build.sh --ndk x86_64
+#
+
+test_freebsd_gcc:
+  tags:
+    - freebsd
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/clean.sh
+    - ./tools/build.sh --gcc
+
+test_freebsd_clang:
+  tags:
+    - freebsd
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/clean.sh
+    - ./tools/build.sh --clang
