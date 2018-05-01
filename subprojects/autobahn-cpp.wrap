@@ -1,10 +1,10 @@
 [wrap-file]
-directory = autobahn-cpp-a4deb12964fe1739144f2ea37ba4241a779344b7
+directory = autobahn-cpp-d0fcb61cb661241e0c2802abce85df359eb609fd
 
-source_url = https://github.com/glslang/autobahn-cpp/archive/a4deb12964fe1739144f2ea37ba4241a779344b7.tar.gz
-source_filename = autobahn-cpp-a4deb12964fe1739144f2ea37ba4241a779344b7.tar.gz
-source_hash = 0bac834ceecbbe957f299a1c62c4fa593f5eb181ff31cde410e2a2f1eb444607
+source_url = https://github.com/glslang/autobahn-cpp/archive/d0fcb61cb661241e0c2802abce85df359eb609fd.tar.gz
+source_filename = autobahn-cpp-d0fcb61cb661241e0c2802abce85df359eb609fd.tar.gz
+source_hash = cb6fb7a0882eb226d6b334d31ea0b853afbac2667aae11995307ee963d8c4372
 
 patch_url = file:./subprojects/autobahn-cpp-meson/autobahn-cpp-meson.tar.gz
 patch_filename = autobahn-cpp-meson.tar.gz
-patch_hash = d7cbc77a636173dd7f48e201b746cd5bca23678a8c65b8fbf6235a6ed9492cdd
+patch_hash = e25e153e336d446898978ec31a2150bf3169dae7c85f6f52e6df5c3dbd5429f3

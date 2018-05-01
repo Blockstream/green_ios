@@ -191,7 +191,7 @@ namespace sdk {
 
             m_transport = std::make_shared<T>(*boost::get<client_type>(m_client),
                 !m_params.get_use_tor() ? m_params.gait_wamp_url() : m_params.gait_onion(), m_params.get_proxy(),
-                std::string(), std::string(), m_debug);
+                m_debug);
             boost::get<std::shared_ptr<T>>(m_transport)
                 ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
         }
