@@ -1,6 +1,6 @@
 cache:
   paths:
-  - subprojects/packagecache
+  - subprojects/packagecache/
 
 test_gcc:
   image: greenaddress/ci@sha256:7554626627bbf2a57091d1f248e6cc7838738c06f97c3fa59a14aa4636e7cc96
@@ -98,13 +98,11 @@ test_freebsd_gcc:
     - freebsd
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/clean.sh
-    - ./tools/build.sh --gcc
+    - ./tools/build.sh --lto=false --gcc
 
 test_freebsd_clang:
   tags:
     - freebsd
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/clean.sh
-    - ./tools/build.sh --clang
+    - ./tools/build.sh --lto=false --clang

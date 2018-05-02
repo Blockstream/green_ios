@@ -34,10 +34,10 @@ endif
 
 c_cpp_args = []
 link_args = []
-if compiler.get_id() == 'gcc'
-    c_cpp_args = ['-fpie']
-    link_args = ['-Wl,-pie']
-endif
+#if compiler.get_id() == 'gcc'
+#    c_cpp_args = ['-fpie']
+#    link_args = ['-Wl,-pie']
+#endif
 
 foreach source : c_cpp_sources
     exe_name = source.split('.')[0]
