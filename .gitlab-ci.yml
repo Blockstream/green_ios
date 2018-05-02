@@ -10,6 +10,22 @@ test_gcc:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --gcc
 
+test_fedora_gcc:
+  image: greenaddress/fedora_ci@sha256:4c1587a8696e7d9ffe1997b55fff69edd18379cb408ca01d21ead12aa3b1f67e
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --gcc
+
+test_fedora_clang:
+  image: greenaddress/fedora_ci@sha256:4c1587a8696e7d9ffe1997b55fff69edd18379cb408ca01d21ead12aa3b1f67e
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --clang
+
 test_clang:
   image: greenaddress/ci@sha256:7554626627bbf2a57091d1f248e6cc7838738c06f97c3fa59a14aa4636e7cc96
   tags:
