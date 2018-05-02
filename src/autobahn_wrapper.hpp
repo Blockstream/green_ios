@@ -16,6 +16,9 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
+#if __GNUC__ > 7
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 
 #include <autobahn/autobahn.hpp>
 #include <autobahn/wamp_websocketpp_websocket_transport.hpp>

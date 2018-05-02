@@ -47,6 +47,7 @@ foreach source : c_cpp_sources
                      c_args : c_cpp_args,
                      cpp_args : c_cpp_args,
                      link_args : link_args,
+                     link_whole : libtests_common,
                      include_directories : incdir,
                      dependencies : dependencies)
     test(exe_name, exe, timeout : 120)

@@ -9,6 +9,7 @@
 #else
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wparentheses"
 #endif
 
 #include <boost/algorithm/string.hpp>

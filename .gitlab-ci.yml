@@ -11,7 +11,7 @@ test_gcc:
     - ./tools/build.sh --gcc
 
 test_fedora_gcc:
-  image: greenaddress/fedora_ci@sha256:4c1587a8696e7d9ffe1997b55fff69edd18379cb408ca01d21ead12aa3b1f67e
+  image: greenaddress/fedora_ci@sha256:54af8ae317cd1e53b7a45475d58796c072df823cc34aa5a2d585ec41a4f312ed
   tags:
     - ga
   script:
@@ -19,7 +19,7 @@ test_fedora_gcc:
     - ./tools/build.sh --gcc
 
 test_fedora_clang:
-  image: greenaddress/fedora_ci@sha256:4c1587a8696e7d9ffe1997b55fff69edd18379cb408ca01d21ead12aa3b1f67e
+  image: greenaddress/fedora_ci@sha256:54af8ae317cd1e53b7a45475d58796c072df823cc34aa5a2d585ec41a4f312ed
   tags:
     - ga
   script:

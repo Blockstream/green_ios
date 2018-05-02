@@ -34,7 +34,7 @@ if clang_tidy.found()
       '-checks=*,-fuchsia*,-google-*,-llvm-*,-mpi-*,-objc-*,-zircon-*', '-p=' + join_paths(meson.build_root(), 'src')])
 endif
 
-dependencies = [atomic_dep, m_dep, threads_dep] + subproject_deps + [dl_dep]
+dependencies = subproject_deps + [atomic_dep, m_dep, threads_dep, dl_dep]
 
 link_args = []
 link_whole = []
