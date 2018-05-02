@@ -69,7 +69,7 @@ else
     if test_path gcc; then
       echo "PATH WORKED"
     fi
-    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=chrono,system,thread
+    ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=chrono,system,thread --guess-toolset
     ./b2 --clean
     ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system cxxflags="-DPIC -fPIC" link=static install
 fi
