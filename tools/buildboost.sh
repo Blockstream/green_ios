@@ -57,6 +57,18 @@ EOF
     ./b2 --clean
     ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system toolset=darwin-arm target-os=iphone link=static install
 else
+    test_path ()
+    {
+        if `command -v command 1>/dev/null 2>/dev/null`; then
+            command -v $1 1>/dev/null 2>/dev/null
+        else
+            hash $1 1>/dev/null 2>/dev/null
+        fi
+    }
+
+    if test_path gcc; then
+      echo "PATH WORKED"
+    fi
     ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=chrono,system,thread
     ./b2 --clean
     ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system cxxflags="-DPIC -fPIC" link=static install
