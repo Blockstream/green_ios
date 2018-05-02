@@ -1,6 +1,6 @@
 cache:
   paths:
-  - deps_cache
+  - subprojects/packagecache
 
 test_gcc:
   image: greenaddress/ci@sha256:7554626627bbf2a57091d1f248e6cc7838738c06f97c3fa59a14aa4636e7cc96
