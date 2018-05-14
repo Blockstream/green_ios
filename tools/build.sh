@@ -2,7 +2,7 @@
 set -e
 
 if [ \! -e sdk ]; then
-  git clone git@gl.blockstream.io:greenaddress/sdk.git
+  git clone git@gl.blockstream.io:greenaddress/gdk.git
 fi
 
 if [ \! -e Pods ]; then
