@@ -3,6 +3,7 @@ set -e
 
 if test "x$1" == "x--iphone" || test "x$1" == "x--iphonesim"; then
 
+    boost_chrono_lib=$2/boost/build/lib/libboost_chrono
     boost_system_lib=$2/boost/build/lib/libboost_system
     boost_thread_lib=$2/boost/build/lib/libboost_thread
     greenaddress_lib=$2/src/libgreenaddress
@@ -18,7 +19,7 @@ if test "x$1" == "x--iphone" || test "x$1" == "x--iphonesim"; then
     fi
 
     libgreenaddress_for_arch=""
-    libraries="$boost_system_lib $boost_thread_lib $greenaddress_lib $openssl_crypto_lib $openssl_ssl_lib $secp256k1_lib $wally_lib"
+    libraries="$boost_chrono_lib $boost_system_lib $boost_thread_lib $greenaddress_lib $openssl_crypto_lib $openssl_ssl_lib $secp256k1_lib $wally_lib"
     for arch in $all_archs; do
         libraries_for_arch=""
         for lib in $libraries; do
