@@ -1,8 +1,8 @@
 #/usr/bin/env bash
 set -e
 
-git fetch gdk master
-git subtree pull --prefix gdk gdk master
+#git fetch gdk master
+#git subtree pull --prefix gdk gdk master
 
 if [ \! -e Pods ]; then
   pod install
