@@ -1,0 +1,15 @@
+#
+#
+#
+
+!.gitignore
+/build-gcc*/
+/build-clang*/
+/*/*/*/.build/
+/subprojects/*
+!subprojects/*meson*
+!subprojects/*wrap*
+*.swp
+*.class
+*.so
+*.dylib

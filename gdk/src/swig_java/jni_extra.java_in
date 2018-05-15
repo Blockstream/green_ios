@@ -1,0 +1,8 @@
+
+  public final static Object get_tx_list(Object jarg1, Date jarg2, Date jarg3) {
+      return get_tx_list(jarg1, jarg2.getTime() / 1000l, jarg3.getTime() / 1000l, 0, 0, 0, "");
+  }
+
+  public final static byte[] get_random_bytes(long jarg1) {
+      return get_random_bytes(jarg1, 0, 0);
+  }
