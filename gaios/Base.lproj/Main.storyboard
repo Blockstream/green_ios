@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4ce-3b-8z0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4ce-3b-8z0">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -442,30 +442,25 @@
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="24." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6g7-qD-e1J" userLabel="Word Label">
                                             <rect key="frame" x="13" y="12" width="25" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="24.5" id="p2C-EV-NdJ"/>
-                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wDZ-sv-BEl" userLabel="Word Entered" customClass="MnemonicTableViewCellUITextField" customModule="gaios" customModuleProvider="target">
-                                            <rect key="frame" x="52" y="7" width="216" height="30"/>
+                                            <rect key="frame" x="52" y="7" width="241" height="30"/>
                                             <nil key="textColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                                         </textField>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2I1-uN-ZDp">
-                                            <rect key="frame" x="282" y="11" width="22" height="22"/>
-                                        </button>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="wDZ-sv-BEl" firstAttribute="centerY" secondItem="2I1-uN-ZDp" secondAttribute="centerY" id="2rb-Pf-ZIL"/>
-                                        <constraint firstItem="2I1-uN-ZDp" firstAttribute="centerY" secondItem="3fH-j9-RwA" secondAttribute="centerY" constant="0.25" id="33w-Om-c3e"/>
                                         <constraint firstItem="wDZ-sv-BEl" firstAttribute="leading" secondItem="6g7-qD-e1J" secondAttribute="trailing" constant="14" id="Fga-03-D9B"/>
                                         <constraint firstItem="6g7-qD-e1J" firstAttribute="leading" secondItem="3fH-j9-RwA" secondAttribute="leading" constant="13" id="GhR-m3-Dmk"/>
-                                        <constraint firstItem="wDZ-sv-BEl" firstAttribute="centerY" secondItem="6g7-qD-e1J" secondAttribute="centerY" id="McV-gH-xBf"/>
-                                        <constraint firstItem="2I1-uN-ZDp" firstAttribute="leading" secondItem="wDZ-sv-BEl" secondAttribute="trailing" constant="14" id="dOl-Rj-UTm"/>
-                                        <constraint firstItem="wDZ-sv-BEl" firstAttribute="centerX" secondItem="3fH-j9-RwA" secondAttribute="centerX" id="uok-dz-0DM"/>
+                                        <constraint firstAttribute="trailing" secondItem="wDZ-sv-BEl" secondAttribute="trailing" constant="27" id="KBx-Je-Pfg"/>
+                                        <constraint firstAttribute="bottom" secondItem="wDZ-sv-BEl" secondAttribute="bottom" constant="6.5" id="O2G-Ef-HcI"/>
+                                        <constraint firstItem="wDZ-sv-BEl" firstAttribute="top" secondItem="3fH-j9-RwA" secondAttribute="top" constant="7" id="hs4-dc-0pw"/>
+                                        <constraint firstItem="6g7-qD-e1J" firstAttribute="top" secondItem="3fH-j9-RwA" secondAttribute="top" constant="12" id="qdP-7X-Nqj"/>
+                                        <constraint firstAttribute="bottom" secondItem="6g7-qD-e1J" secondAttribute="bottom" constant="10.5" id="tQ0-Zy-Dt5"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>

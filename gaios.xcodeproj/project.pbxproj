@@ -12,7 +12,6 @@
 		672FA1301FB9E846008CDA17 /* SendTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */; };
 		674385B41FA799BF001311DE /* VerifyMnemonicTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */; };
 		674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B71FA8D03B001311DE /* SettingsTableViewController.swift */; };
-		67512A091F9DFF7300D18169 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67512A081F9DFF7200D18169 /* GreenAddress.swift */; };
 		6756E8C8204967BA00426EC8 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E8C7204967B900426EC8 /* QRCodeReaderViewController.swift */; };
 		676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */; };
 		676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */; };
@@ -30,6 +29,7 @@
 		676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF531F9D0E7100354E93 /* CreateViewController.swift */; };
 		677442901FB202AC0082F74A /* ReceiveTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */; };
 		678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */; };
+		6798E1B420AA528300B22DCE /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6798E1B320AA528200B22DCE /* GreenAddress.swift */; };
 		67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 /* End PBXBuildFile section */
@@ -61,7 +61,6 @@
 		672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendTableViewControllerScene.swift; sourceTree = "<group>"; };
 		674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyMnemonicTableViewController.swift; sourceTree = "<group>"; };
 		674385B71FA8D03B001311DE /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
-		67512A081F9DFF7200D18169 /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = sdk/src/swift/GreenAddress/Sources/GreenAddress.swift; sourceTree = SOURCE_ROOT; };
 		6756E8C7204967B900426EC8 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
 		676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTCUnitsTableViewController.swift; sourceTree = "<group>"; };
 		676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceViewController.swift; sourceTree = "<group>"; };
@@ -85,6 +84,7 @@
 		676FCF531F9D0E7100354E93 /* CreateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
 		6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveTableViewControllerScene.swift; sourceTree = "<group>"; };
 		678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicTableViewController.swift; sourceTree = "<group>"; };
+		6798E1B320AA528200B22DCE /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = gdk/src/swift/GreenAddress/Sources/GreenAddress.swift; sourceTree = SOURCE_ROOT; };
 		67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBookTableViewControllerScene.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -167,13 +167,13 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
+				6798E1B320AA528200B22DCE /* GreenAddress.swift */,
 				6756E8C7204967B900426EC8 /* QRCodeReaderViewController.swift */,
 				676FCF2D1F9D0CF800354E93 /* Info.plist */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
 				676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */,
 				676FCF531F9D0E7100354E93 /* CreateViewController.swift */,
 				6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */,
-				67512A081F9DFF7200D18169 /* GreenAddress.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
 				674385B71FA8D03B001311DE /* SettingsTableViewController.swift */,
 				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
@@ -437,8 +437,8 @@
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
 				672FA1301FB9E846008CDA17 /* SendTableViewControllerScene.swift in Sources */,
 				676FCF571F9D0E7100354E93 /* CreatePageViewController.swift in Sources */,
-				67512A091F9DFF7300D18169 /* GreenAddress.swift in Sources */,
 				67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */,
+				6798E1B420AA528300B22DCE /* GreenAddress.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -613,13 +613,13 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-L$(SRCROOT)/sdk/build-clang-ios-iphone/src",
-					"-L$(SRCROOT)/sdk/build-clang-ios-iphonesim/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.gaios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/sdk/src $(SRCROOT)/sdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/sdk/build-clang-ios-iphonesim/libwally-core/build/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -637,13 +637,13 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-L$(SRCROOT)/sdk/build-clang-ios-iphone/src",
-					"-L$(SRCROOT)/sdk/build-clang-ios-iphonesim/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.gaios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/sdk/src $(SRCROOT)/sdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/sdk/build-clang-ios-iphonesim/libwally-core/build/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

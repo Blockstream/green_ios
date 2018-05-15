@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 set -e
 
-if [ \! -e sdk ]; then
+if [ \! -e gdk ]; then
   git clone git@gl.blockstream.io:greenaddress/gdk.git
 fi
 
@@ -9,7 +9,8 @@ if [ \! -e Pods ]; then
   pod install
 fi
 
-cd sdk
+cd gdk
 ./tools/build.sh --iphonesim static
 cd ..
 
+xcodebuild -sdk iphonesimulator11.3 -workspace gaios.xcworkspace -scheme gaios

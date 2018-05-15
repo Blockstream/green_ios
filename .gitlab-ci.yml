@@ -1,0 +1,11 @@
+cache:
+  paths:
+  - gdk/subprojects/packagecache/
+
+test_osx_ios:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh
+
