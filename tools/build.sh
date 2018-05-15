@@ -12,4 +12,4 @@ cd gdk
 ./tools/build.sh --iphonesim static
 cd ..
 
-xcodebuild -sdk iphonesimulator11.3 -workspace gaios.xcworkspace -scheme gaios
+xcodebuild -sdk $(xcodebuild -showsdks | grep iphonesimulator | tr -s ' ' | cut -d ' ' -f 6-) -workspace gaios.xcworkspace -scheme gaios
