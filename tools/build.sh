@@ -1,9 +1,8 @@
 #/usr/bin/env bash
 set -e
 
-if [ \! -e gdk ]; then
-  git clone git@gl.blockstream.io:greenaddress/gdk.git
-fi
+git fetch gdk master
+git subtree pull --prefix gdk gdk master
 
 if [ \! -e Pods ]; then
   pod install
