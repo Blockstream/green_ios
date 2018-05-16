@@ -77,7 +77,7 @@ class VerifyMnemonicTableViewController: UITableViewController, UITextFieldDeleg
         let cell = tableView.dequeueReusableCell(withIdentifier: "MnemonicTableCell", for: indexPath) as! MnemonicTableViewCell
 
         cell.wordEntered!.delegate = self
-        cell.wordEntered!.associatedRow = indexPath.row
+        cell.wordEntered!.associatedRow = Int(wordNumbers[indexPath.row]);
         cell.wordEntered!.inputAccessoryView = MnemonicSuggestionUIInputView()
         cell.wordLabel!.text = "\(wordNumbers[indexPath.row] + 1)."
 
