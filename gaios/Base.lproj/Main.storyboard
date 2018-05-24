@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4ce-3b-8z0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4ce-3b-8z0">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -557,10 +557,13 @@
                     <navigationItem key="navigationItem" id="r0r-w1-08z">
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="MaV-5D-S7k">
                             <connections>
-                                <segue destination="49e-Tb-3d3" kind="show" id="e1U-M6-IdF"/>
+                                <action selector="donePressed:" destination="lxO-yW-mR2" id="C7s-Ld-JsY"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="49e-Tb-3d3" kind="show" identifier="showMainMenu" id="niB-cG-Ly8"/>
+                    </connections>
                 </pageViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ycN-1A-yFx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -621,7 +624,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sb7-Z4-oKS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-798.75" y="1701.7605633802816"/>
+            <point key="canvasLocation" x="-761" y="1754"/>
         </scene>
         <!--Pin View Controller-->
         <scene sceneID="HwV-ED-huv">
@@ -1300,7 +1303,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="hr1-6L-jwu"/>
-        <segue reference="AWk-Ch-Xuc"/>
+        <segue reference="oJc-ls-Tid"/>
+        <segue reference="niB-cG-Ly8"/>
     </inferredMetricsTieBreakers>
 </document>

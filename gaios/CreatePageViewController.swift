@@ -83,4 +83,26 @@ class CreatePageViewController: UIPageViewController, UIPageViewControllerDelega
         let currPageViewController = pageViewController.viewControllers![0]
         pageControl.currentPage = pageViewControllers.index(of: currPageViewController)!
     }
+
+    @IBAction func donePressed(_ sender: UIBarButtonItem) {
+        guard let mnemonicWords = getAppDelegate().getMnemonicWords() else {
+            return
+        }
+        let stringRepresentation = mnemonicWords.joined(separator: " ") // space separated mnemonic list
+        print(stringRepresentation)
+        retry(session: getSession(), network: Network.TestNet) {
+            wrap { return try getSession().registerUser(mnemonic: stringRepresentation) }
+            }.done { () in
+                retry(session: getSession(), network: Network.TestNet) {
+                    wrap { return try getSession().login(mnemonic: stringRepresentation) }
+                    }.done { (loginData: [String: Any]?) in
+                        getGAService().loginData = loginData
+                        self.performSegue(withIdentifier: "showMainMenu", sender: self)
+                    }.catch { error in
+                        print("Login failed")
+                }
+            }.catch { error in
+                print("register failed")
+        }
+    }
 }
