@@ -5,55 +5,42 @@
 
 import UIKit
 
-class PINButton: UIButton {
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        initView()
-        initActions()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-
-        initView()
-        initActions()
-    }
-
-    private func initView() {
-        layer.borderWidth = 1
-        layer.cornerRadius = 30
-        layer.borderColor = UIColor.black.cgColor
-    }
-
-    private func initActions() {
-        addTarget(self, action: #selector(touchDown), for: .touchDown)
-        addTarget(self, action: #selector(touchUp), for: [.touchUpInside, .touchDragOutside, .touchCancel])
-    }
-
-    @objc func touchDown() {
-        doAnimate(.black)
-    }
-
-    @objc func touchUp() {
-        doAnimate(.clear)
-    }
-
-    func doAnimate(_ color: UIColor) {
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                self.backgroundColor = color
-            },
-            completion: nil
-        )
-    }
-}
-
 class PinViewController: UIViewController {
 
-    @IBAction func buttonPress(_ sender: PINButton) {
-        print("Button Press")
+    @IBOutlet weak var pinTextField: UITextField!
+
+    @IBAction func pinTextFieldTouched(_ sender: UITextField) {
+        print("textfield touched")
+    }
+
+    @IBAction func donePressed(_ sender: UIBarButtonItem) {
+      /*  print("done pressed" + pinTextField.text!)
+        let pin = pinTextField.text
+        let mnemonics = getAppDelegate().getMnemonicWordsString()
+            wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: pin!) }
+            .done { (pinData: String) in
+                let login = pinData
+                print("pin data: " + login)
+                print("setPin succeded")
+                self.performSegue(withIdentifier: "showMainMenu", sender: self)
+            }.catch { error in
+                print("setPin failed")
+        }*/
+    }
+
+    func loginWithPinData(_ pin: String, pinData: String) {
+        retry(session: getSession(), network: getNetwork()) {
+            wrap { return try getSession().login(pin: pin, pin_identifier_and_secret: pinData) }
+            }.done { (loginData: [String: Any]?) in
+                getGAService().loginData = loginData
+                print("Login successful")
+            }.catch { error in
+                print("login failed")
+        }
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        pinTextField.keyboardType = UIKeyboardType.numberPad
+        pinTextField.becomeFirstResponder()
     }
 }
