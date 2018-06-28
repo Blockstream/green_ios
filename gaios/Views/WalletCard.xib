@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="WalletTableCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Okw-zb-vhf">
+                    <rect key="frame" x="20" y="40" width="335" height="607"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w3E-Tx-yoW" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                            <rect key="frame" x="10" y="517" width="147.5" height="80"/>
+                            <color key="backgroundColor" red="0.71764705882352942" green="0.74901960784313726" blue="0.79607843137254897" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="80" id="Vjd-uw-fyL"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                            <state key="normal" title="SEND">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" red="0.53725490200000003" green="0.53725490200000003" blue="0.53725490200000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="0.0"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mxa-H3-dl0" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                            <rect key="frame" x="177.5" y="517" width="147.5" height="80"/>
+                            <color key="backgroundColor" red="0.74509803921568629" green="0.77647058823529413" blue="0.82352941176470584" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="80" id="xtG-VW-hBU"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                            <state key="normal" title="RECEIVE">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="0.0"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" red="0.53725490200000003" green="0.53725490200000003" blue="0.53725490200000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aJI-5X-M8M">
+                            <rect key="frame" x="10" y="10" width="92" height="30"/>
+                            <state key="normal" title="Total Balance">
+                                <color key="titleColor" red="0.45882352939999999" green="0.51372549020000002" blue="0.60392156860000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                        </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100 USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e48-H6-ekC">
+                            <rect key="frame" x="10" y="40" width="106" height="32"/>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="26"/>
+                            <color key="textColor" red="0.45882352941176469" green="0.51372549019607838" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="aJI-5X-M8M" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="10" id="3qQ-8c-e1a"/>
+                        <constraint firstItem="e48-H6-ekC" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="10" id="GP7-NZ-Udr"/>
+                        <constraint firstAttribute="centerX" secondItem="w3E-Tx-yoW" secondAttribute="trailing" constant="10" id="JWX-Y3-f0S"/>
+                        <constraint firstAttribute="trailing" secondItem="mxa-H3-dl0" secondAttribute="trailing" constant="10" id="WrA-dE-vcp"/>
+                        <constraint firstItem="e48-H6-ekC" firstAttribute="top" secondItem="aJI-5X-M8M" secondAttribute="bottom" id="Z3s-UH-CkI"/>
+                        <constraint firstAttribute="bottom" secondItem="w3E-Tx-yoW" secondAttribute="bottom" constant="10" id="hvV-YO-Tya"/>
+                        <constraint firstItem="mxa-H3-dl0" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="centerX" constant="10" id="n4G-pu-w6R"/>
+                        <constraint firstItem="w3E-Tx-yoW" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="10" id="oAG-sg-FAW"/>
+                        <constraint firstAttribute="bottom" secondItem="mxa-H3-dl0" secondAttribute="bottom" constant="10" id="syi-MI-KCz"/>
+                        <constraint firstItem="aJI-5X-M8M" firstAttribute="top" secondItem="Okw-zb-vhf" secondAttribute="top" constant="10" id="vQW-hz-LG1"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                            <real key="value" value="1"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                            <color key="value" red="0.53725490200000003" green="0.53725490200000003" blue="0.53725490200000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="Okw-zb-vhf" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="IBt-3s-rjt"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Okw-zb-vhf" secondAttribute="trailing" constant="20" id="YXC-Te-Bfe"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Okw-zb-vhf" secondAttribute="bottom" constant="20" id="sKP-9g-DyQ"/>
+                <constraint firstItem="Okw-zb-vhf" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="20" id="ytN-DZ-slf"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="balance" destination="e48-H6-ekC" id="Sbe-er-66r"/>
+                <outlet property="receiveButton" destination="mxa-H3-dl0" id="DxY-cJ-b42"/>
+                <outlet property="sendButton" destination="w3E-Tx-yoW" id="xo8-GC-xyi"/>
+            </connections>
+            <point key="canvasLocation" x="29.5" y="34.5"/>
+        </view>
+    </objects>
+</document>
