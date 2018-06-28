@@ -32,7 +32,7 @@ func getSession() -> Session {
 }
 
 func getNetwork() -> Network {
-    return Network.TestNet
+    return Network.LocalTest
 }
 
 @UIApplicationMain
