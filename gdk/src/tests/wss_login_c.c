@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "session.h"
+#include <stdio.h>
 
 const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lumber never capital animal era "
                                "coffee shift flame across pitch pipe shiver castle crawl noble obtain response";
@@ -23,6 +24,10 @@ int main(int argc, char* argv[])
 
     struct GA_login_data* login_data = NULL;
     ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC, &login_data) : ret;
+
+    char *bytes;
+    ret = GA_get_receive_address(session, GA_ADDRESS_TYPE_P2SH, 0, &bytes);
+    printf("BYTES %s %d\n", bytes, ret);
 
     GA_destroy_login_data(login_data);
     GA_destroy_session(session);

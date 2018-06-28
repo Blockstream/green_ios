@@ -78,6 +78,14 @@ struct GA_login_data final : public ga::sdk::login_data {
     }
 };
 
+struct GA_system_message final : public ga::sdk::system_message {
+    GA_system_message& operator=(const msgpack_object& data)
+    {
+        ga::sdk::system_message::operator=(data);
+        return *this;
+    }
+};
+
 #define GA_SDK_DEFINE_C_FUNCTION_0(c_function_name, c_obj_name, c_function_body)                                       \
     int c_function_name(struct c_obj_name* obj) { return c_invoke(c_function_body, obj); }
 
@@ -225,6 +233,24 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, GA_session,
         **login_data = result.get_handle().get();
     },
     const char*, pin, const char*, pin_identifier_and_secret, struct GA_login_data**, login_data);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_system_message, GA_session,
+    [](struct GA_session* session, unsigned* message_id, const char** message_text) {
+        GA_SDK_RUNTIME_ASSERT(message_text);
+        GA_SDK_RUNTIME_ASSERT(message_id);
+        const auto message = session->get_system_message(*message_id);
+        *message_text = to_c_string(message.get<std::string>("message"));
+        *message_id = message.get_with_default<unsigned>("next_message_id", 0);
+    },
+    unsigned*, message_id, const char**, message_text);
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_ack_system_message, GA_session,
+    [](struct GA_session* session, unsigned message_id, const char* message_text) {
+        GA_SDK_RUNTIME_ASSERT(session);
+        GA_SDK_RUNTIME_ASSERT(message_text);
+        session->ack_system_message(message_id, message_text);
+    },
+    unsigned, message_id, const char*, message_text);
 
 GA_SDK_DEFINE_C_FUNCTION_6(GA_send, GA_session,
     [](struct GA_session* session, const char** addr, size_t addr_siz, const uint64_t* amt, size_t amt_siz,

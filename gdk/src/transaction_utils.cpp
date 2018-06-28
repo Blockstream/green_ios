@@ -21,7 +21,7 @@ namespace sdk {
     wally_ext_key_ptr ga_pub_key(const std::string& chain_code, const std::string& pub_key,
         const std::string& gait_path, uint32_t subaccount, uint32_t pointer, bool main_net)
     {
-        using nullbytes = std::array<unsigned char, 0>;
+        using nullbytes = std::vector<unsigned char>;
 
         // FIXME: cache the top level keys
         const auto dcc_bytes = bytes_from_hex(chain_code);

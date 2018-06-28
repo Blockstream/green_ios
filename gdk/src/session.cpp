@@ -3,6 +3,7 @@
 #include <ctime>
 #include <map>
 #include <queue>
+#include <string>
 #include <thread>
 #include <type_traits>
 #include <vector>
@@ -154,7 +155,23 @@ namespace sdk {
             amount fee_rate, bool send_all);
         void send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all);
 
+        system_message get_system_message(unsigned system_message_id);
+        void ack_system_message(unsigned system_message_id, const std::string& system_message);
+
     private:
+        template <typename PathT>
+        static std::string sign_hash(
+            const wally_ext_key_ptr& master_key, const PathT& path, const std::array<unsigned char, 32>& hash)
+        {
+            secure_array<unsigned char, EC_PRIVATE_KEY_LEN> login_priv_key;
+            derive_private_key(master_key, path, login_priv_key);
+
+            std::array<unsigned char, EC_SIGNATURE_LEN> sig;
+            ec_sig_from_bytes(login_priv_key, hash, EC_FLAG_ECDSA, sig);
+
+            return hex_from_bytes(ec_sig_to_der(sig));
+        }
+
         static std::pair<std::string, std::string> sign_challenge(
             const wally_ext_key_ptr& master_key, const std::string& challenge);
 
@@ -222,9 +239,12 @@ namespace sdk {
             constexpr uint8_t timeout = 10;
             autobahn::wamp_call_options call_options;
             call_options.set_timeout(std::chrono::seconds(timeout));
-            const auto status = m_session->call(method_name, std::make_tuple(std::forward<Args>(args)...), call_options)
-                                    .then(std::forward<F>(body))
-                                    .wait_for(boost::chrono::seconds(timeout));
+            auto fn =
+                m_session->call(method_name, std::make_tuple(std::forward<Args>(args)...), call_options)
+                .then(std::forward<F>(body));
+            const auto status = fn.wait_for(boost::chrono::seconds(timeout));
+            fn.get();
+
             if (status == boost::future_status::timeout) {
                 throw timeout_error{};
             }
@@ -281,14 +301,30 @@ namespace sdk {
         adjacent_transform(std::begin(path_bytes), std::end(path_bytes), std::begin(path),
             [](auto first, auto second) { return uint32_t((first << 8) + second); });
 
-        secure_array<unsigned char, EC_PRIVATE_KEY_LEN> login_priv_key;
-        derive_private_key(master_key, path, login_priv_key);
-
         const auto challenge_hash = uint256_to_base256(challenge);
-        std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-        ec_sig_from_bytes(login_priv_key, challenge_hash, EC_FLAG_ECDSA, sig);
 
-        return { hex_from_bytes(ec_sig_to_der(sig)), hex_from_bytes(path_bytes) };
+        return { sign_hash(master_key, path, challenge_hash), hex_from_bytes(path_bytes) };
+    }
+
+    void session::session_impl::ack_system_message(unsigned system_message_id, const std::string& system_message)
+    {
+        std::vector<unsigned char> system_message_bytes(system_message.begin(), system_message.end());
+        std::array<unsigned char, SHA256_LEN> system_message_hash;
+        sha256d(system_message_bytes, system_message_hash);
+
+        const auto system_message_hash_hex = hex_from_bytes(system_message_hash);
+        const auto ls_uint32_hex = system_message_hash_hex.substr(system_message_hash_hex.length() - 8);
+        const uint32_t ls_uint32 = std::stoul(ls_uint32_hex, 0, 16);
+        static const auto unharden = ~(0x01 << 31);
+        std::array<uint32_t, 3> path = { {0x4741b11e, 6, ls_uint32 & unharden } };
+
+        std::vector<unsigned char> system_message_hash_hex_bytes(system_message_hash_hex.begin(), system_message_hash_hex.end());
+        std::array<unsigned char, SHA256_LEN> bitcoin_message_hash;
+        format_bitcoin_message(system_message_hash_hex_bytes, BITCOIN_MESSAGE_FLAG_HASH, bitcoin_message_hash);
+        const auto signature = sign_hash(m_master_key, path, bitcoin_message_hash);
+
+        wamp_call([](wamp_call_result result ) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); },
+            "com.greenaddress.login.ack_system_message", system_message_id, system_message_hash_hex, signature);
     }
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
@@ -597,6 +633,20 @@ namespace sdk {
             },
             "com.greenaddress.txs.get_all_unspent_outputs", num_confs, subaccount, "any");
         return unspent;
+    }
+
+    system_message session::session_impl::get_system_message(unsigned system_message_id)
+    {
+        system_message message;
+        wamp_call(
+            [&message](wamp_call_result result) {
+                const auto r = result.get();
+                if (r.number_of_arguments()) {
+                    message = r.argument<msgpack::object>(0);
+                }
+            },
+            "com.greenaddress.login.get_system_message", system_message_id);
+        return message;
     }
 
     receive_address session::session_impl::get_receive_address(address_type addr_type, size_t subaccount) const
@@ -1113,6 +1163,18 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->send(address_amount, fee_rate, send_all); });
+    }
+
+    system_message session::get_system_message(unsigned system_message_id)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_system_message(system_message_id); });
+    }
+
+    void session::ack_system_message(unsigned system_message_id, const std::string& system_message)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        exception_wrapper([&] { m_impl->ack_system_message(system_message_id, system_message); });
     }
 }
 }

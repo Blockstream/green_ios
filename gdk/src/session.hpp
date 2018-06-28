@@ -149,6 +149,9 @@ namespace sdk {
         void send(
             const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all = false);
 
+        system_message get_system_message(unsigned system_message_id);
+        void ack_system_message(unsigned system_message_id, const std::string& system_message);
+
     private:
         void change_settings_helper(settings key, const std::map<int, int>& args);
 

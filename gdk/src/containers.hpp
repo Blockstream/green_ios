@@ -246,6 +246,14 @@ namespace sdk {
         }
     };
 
+    struct system_message : public detail::object_container<system_message> {
+        system_message& operator=(const msgpack_object& data)
+        {
+            associate(data);
+            return *this;
+        }
+    };
+
     struct bitcoin_uri : public detail::object_container<bitcoin_uri> {
         bitcoin_uri()
         {

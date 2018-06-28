@@ -280,6 +280,31 @@ int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin
 int GA_send(struct GA_session* session, const char** addr, size_t add_siz, const uint64_t* amt, size_t amt_siz,
     uint64_t fee_rate, bool send_all);
 
+/*
+ * Get a system message.
+ *
+ * @session The server session to use.
+ * @message_id The id of the message to get. Returns the id of the next message or 0 if none.
+ * @message_text UTF-8 encoded message text.
+ *
+ * GA_ERROR if the message does not exist or could not be retrieved.
+ */
+int GA_get_system_message(struct GA_session* session, unsigned* message_id, const char** message_text);
+
+/*
+ * Sign and acknowledge a system message.
+ *
+ * The message text will be signed with a key derived from the wallet master key and the signature
+ * sent to the server.
+ *
+ * @session The server session to use.
+ * @message_id The id of the message.
+ * @message_text UTF-8 encoded message text being acknowledged.
+ *
+ * GA_ERROR if the message or signature is invalid.
+ */
+int GA_ack_system_message(struct GA_session* session, unsigned message_id, const char* message_text);
+
 #ifndef SWIG
 /*
  * Subscribe to a notification topic.

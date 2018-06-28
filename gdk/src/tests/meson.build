@@ -11,7 +11,9 @@ c_cpp_sources = [
     'wss_login_new.cpp',
     'wss_login_proxy.cpp',
     'wss_send.cpp',
-    'wss_subscribe.cpp'
+    'wss_subscribe.cpp',
+    'wss_system_messages.cpp',
+    'wss_system_messages_c.c'
 ]
 
 common_c_cpp_sources = ['argparser.h',
