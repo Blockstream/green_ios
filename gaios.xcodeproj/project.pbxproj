@@ -26,6 +26,7 @@
 		0992F86020E1B07500F6AAAB /* TransactionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0992F85F20E1B07500F6AAAB /* TransactionsCell.xib */; };
 		0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */; };
 		0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */; };
+		0992F86620E46DB700F6AAAB /* VerifyMnemonicTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86520E46DB700F6AAAB /* VerifyMnemonicTableViewController.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B71FA8D03B001311DE /* SettingsTableViewController.swift */; };
@@ -85,6 +86,7 @@
 		0992F85F20E1B07500F6AAAB /* TransactionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionsCell.xib; sourceTree = "<group>"; };
 		0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetailsViewController.swift; sourceTree = "<group>"; };
 		0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBTCConfirmationViewController.swift; sourceTree = "<group>"; };
+		0992F86520E46DB700F6AAAB /* VerifyMnemonicTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VerifyMnemonicTableViewController.swift; path = "../../gaios 2/gaios/VerifyMnemonicTableViewController.swift"; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 				674385B71FA8D03B001311DE /* SettingsTableViewController.swift */,
 				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
 				676FCF501F9D0E7100354E93 /* TransactionsTableViewController.swift */,
+				0992F86520E46DB700F6AAAB /* VerifyMnemonicTableViewController.swift */,
 				092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */,
 				0967BF5720DB55840062A653 /* WalletViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
@@ -572,6 +575,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0992F86620E46DB700F6AAAB /* VerifyMnemonicTableViewController.swift in Sources */,
 				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
 				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
 				676846041FACC1E4002D79ED /* PINViewController.swift in Sources */,
