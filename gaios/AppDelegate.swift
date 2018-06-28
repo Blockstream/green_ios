@@ -31,6 +31,10 @@ func getSession() -> Session {
     return getGAService().getSession()
 }
 
+func getNetwork() -> Network {
+    return Network.TestNet
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -49,6 +53,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func getMnemonicWords() -> [String]? {
         return mnemonicWords
+    }
+
+    func getMnemonicWordsString() -> String? {
+        return mnemonicWords!.joined(separator: " ")
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
