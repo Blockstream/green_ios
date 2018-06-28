@@ -1,0 +1,134 @@
+//
+//  SendBtcViewController.swift
+//  gaios
+//
+//  Created by Strahinja Markovic on 6/22/18.
+//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
+//
+
+import Foundation
+import UIKit
+import AVFoundation
+
+class SendBtcViewController: UIViewController {
+    
+    @IBOutlet weak var textfield: UITextField!
+    @IBOutlet weak var QRCodeReader: UIView!
+    var captureSession = AVCaptureSession()
+    
+    var videoPreviewLayer: AVCaptureVideoPreviewLayer?
+    var qrCodeFrameView: UIView?
+    
+    private let supportedCodeTypes = [AVMetadataObject.ObjectType.upce,
+                                      AVMetadataObject.ObjectType.code39,
+                                      AVMetadataObject.ObjectType.code39Mod43,
+                                      AVMetadataObject.ObjectType.code93,
+                                      AVMetadataObject.ObjectType.code128,
+                                      AVMetadataObject.ObjectType.ean8,
+                                      AVMetadataObject.ObjectType.ean13,
+                                      AVMetadataObject.ObjectType.aztec,
+                                      AVMetadataObject.ObjectType.pdf417,
+                                      AVMetadataObject.ObjectType.itf14,
+                                      AVMetadataObject.ObjectType.dataMatrix,
+                                      AVMetadataObject.ObjectType.interleaved2of5,
+                                      AVMetadataObject.ObjectType.qr]
+
+    @IBAction func pasteButtonClicked(_ sender: UIButton) {
+        let pasteboardString: String? = UIPasteboard.general.string
+        if let theString = pasteboardString {
+            print("String is \(theString)")
+            textfield.text = theString
+        }
+
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.tabBarController?.tabBar.isHidden = true
+        let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
+        self.QRCodeReader.addGestureRecognizer(gesture)
+        QRCodeReader.isUserInteractionEnabled = true
+    }
+    
+
+    @objc func someAction(_ sender:UITapGestureRecognizer){
+        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+            return
+        }
+        guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+            return
+        }
+        
+        captureSession = AVCaptureSession()
+        if captureSession.canAddInput(captureDeviceInput) {
+            captureSession.addInput(captureDeviceInput)
+        }
+        else {
+            return
+        }
+        
+        let captureMetadataOutput = AVCaptureMetadataOutput()
+        
+        
+        if captureSession.canAddOutput(captureMetadataOutput) {
+            captureSession.addOutput(captureMetadataOutput)
+            captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+            captureMetadataOutput.metadataObjectTypes = supportedCodeTypes
+        }
+        else {
+            return
+        }
+        
+        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        videoPreviewLayer?.frame = QRCodeReader.layer.bounds
+        videoPreviewLayer?.videoGravity = .resizeAspectFill
+        QRCodeReader.layer.addSublayer(videoPreviewLayer!)
+        
+        captureSession.startRunning()
+        
+        // Initialize QR Code Frame to highlight the QR code
+        qrCodeFrameView = UIView()
+        
+        if let qrCodeFrameView = qrCodeFrameView {
+            qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
+            qrCodeFrameView.layer.borderWidth = 2
+            QRCodeReader.addSubview(qrCodeFrameView)
+            QRCodeReader.bringSubview(toFront: qrCodeFrameView)
+        }
+    }
+
+    @IBAction func nextButtonClicked(_ sender: Any) {
+        self.performSegue(withIdentifier: "next", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? SendBtcDetailsViewController {
+            nextController.toAddress = textfield.text
+        }
+    }
+}
+
+extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
+    
+    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+        // Check if the metadataObjects array is not nil and it contains at least one object.
+        if metadataObjects.count == 0 {
+            qrCodeFrameView?.frame = CGRect.zero
+            return
+        }
+        
+        // Get the metadata object.
+        let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
+        
+        if supportedCodeTypes.contains(metadataObj.type) {
+            // If the found metadata is equal to the QR code metadata (or barcode) then update the status label's text and set the bounds
+            let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
+            qrCodeFrameView?.frame = barCodeObject!.bounds
+            
+            if metadataObj.stringValue != nil {
+                 textfield.text = metadataObj.stringValue
+            }
+        }
+        //captureSession.stopRunning()
+    }
+    
+}
