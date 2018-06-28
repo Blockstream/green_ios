@@ -1,0 +1,74 @@
+//
+//  WalletViewController.swift
+//  gaios
+//
+//  Created by Strahinja Markovic on 6/20/18.
+//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
+//
+
+import Foundation
+import UIKit
+
+class WalletViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    @IBOutlet weak var tableView: UITableView!
+    var mainbalance: Double = 0
+    
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let nib = UINib(nibName: "WalletCard", bundle: nil)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.tableFooterView = UIView()
+        tableView.register(nib, forCellReuseIdentifier: "walletCard")
+        tableView.allowsSelection = false
+        tableView.separatorColor = UIColor.clear
+        do {
+            let json = try getSession().getBalance(numConfs: 1)
+            var val:String? = json!["satoshi"] as? String
+            let balance: Int? = Int(val!)
+            print("balance is ", balance)
+            mainbalance = Double(balance!)
+        } catch {
+        }
+        // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    {
+        return 230.0;
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "walletCard", for: indexPath) as! WalletTableCell
+        let balance: Double = Double(mainbalance / 100000000)
+        cell.balance.text = String(format: "%g BTC", balance)
+        cell.sendButton.addTarget(self, action:#selector(self.send), for: .touchUpInside)
+        cell.receiveButton.addTarget(self, action:#selector(self.receive), for: .touchUpInside)
+        return cell;
+        
+    }
+    
+    @objc func send(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "sendBtc", sender: self)
+    }
+    
+    @objc func receive(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "receiveBtc", sender: self)
+    }
+}
+
