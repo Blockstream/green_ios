@@ -64,11 +64,14 @@ class EnterMnemonicTableViewController: UITableViewController, UITextFieldDelega
     @IBAction func doneEnterMnemonic(_ sender: Any) {
         // FIXME: erase it securely
         let _ = mnemonicWords.joined(separator: " ")
-        let trimmedUserProvidedMnemonic = "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive spike pond industry time hero trim verb mammal asthma".trimmingCharacters(in: .whitespacesAndNewlines)
-        retry(session: getSession(), network: Network.TestNet) {
+        let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive spike pond industry time hero trim verb mammal asthma".trimmingCharacters(in: .whitespacesAndNewlines)
+        retry(session: getSession(), network: getNetwork()) {
             wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
         }.done { (loginData: [String: Any]?) in
             getGAService().loginData = loginData
+            /*let subbacounts = loginData!["subaccounts"] as! NSArray
+            let firstResult = subbacounts[0]
+            print(firstResult)*/
             self.performSegue(withIdentifier: "MainEnterMnemonicSegue", sender: self)
         }.catch { error in
             print("Login failed")
