@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "wallet_clicked.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
+      "filename" : "arrow.png",
       "scale" : "2x"
     },
     {
