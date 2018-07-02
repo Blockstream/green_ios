@@ -32,7 +32,7 @@ func getSession() -> Session {
 }
 
 func getNetwork() -> Network {
-    return Network.LocalTest
+    return Network.TestNet
 }
 
 @UIApplicationMain
@@ -61,6 +61,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        wrap {
+            try getSession().connect(network: getNetwork(), debug: true)
+            }.done {
+                print("Connected")
+            }.catch { error in
+                print("Connection failed")
+        }
+        let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
+        if(pinData != nil) {
+            let password = KeychainHelper.loadPassword(service: "password", account: "user")
+            if(password != nil) {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
+                firstVC.password = password!
+                firstVC.pinData = pinData!
+                self.window?.rootViewController = firstVC
+                return true
+            }
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+            firstVC.pinData = pinData!
+            self.window?.rootViewController = firstVC
+        } else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
+            self.window?.rootViewController = firstVC
+        }
         return true
     }
 
