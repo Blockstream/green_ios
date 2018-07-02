@@ -14,18 +14,19 @@ class PinViewController: UIViewController {
     }
 
     @IBAction func donePressed(_ sender: UIBarButtonItem) {
-      /*  print("done pressed" + pinTextField.text!)
+        print("done pressed" + pinTextField.text!)
         let pin = pinTextField.text
         let mnemonics = getAppDelegate().getMnemonicWordsString()
-            wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: pin!) }
+        wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: pin!, device: "bla") }
             .done { (pinData: String) in
                 let login = pinData
                 print("pin data: " + login)
                 print("setPin succeded")
+                KeychainHelper.savePassword(service: "pinData", account: "user", data: pinData)
                 self.performSegue(withIdentifier: "showMainMenu", sender: self)
             }.catch { error in
                 print("setPin failed")
-        }*/
+        }
     }
 
     func loginWithPinData(_ pin: String, pinData: String) {
@@ -38,6 +39,7 @@ class PinViewController: UIViewController {
                 print("login failed")
         }
     }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         pinTextField.keyboardType = UIKeyboardType.numberPad

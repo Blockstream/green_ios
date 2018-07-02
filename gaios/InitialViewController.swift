@@ -24,13 +24,6 @@ class InitialViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        wrap {
-            try getSession().connect(network: getNetwork(), debug: true)
-        }.done {
-            print("Connected")
-        }.catch { error in
-            print("Connection failed")
-        }
     }
 
     override func didReceiveMemoryWarning() {

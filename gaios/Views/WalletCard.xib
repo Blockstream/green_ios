@@ -20,76 +20,75 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Okw-zb-vhf">
                     <rect key="frame" x="20" y="40" width="335" height="607"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w3E-Tx-yoW" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                            <rect key="frame" x="10" y="517" width="147.5" height="80"/>
-                            <color key="backgroundColor" red="0.71764705882352942" green="0.74901960784313726" blue="0.79607843137254897" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallets" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mbS-ok-74X">
+                            <rect key="frame" x="15" y="15" width="78.5" height="29"/>
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hMe-uZ-beg">
+                            <rect key="frame" x="280" y="15" width="40" height="40"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="80" id="Vjd-uw-fyL"/>
+                                <constraint firstAttribute="height" constant="40" id="FQC-BC-jFu"/>
+                                <constraint firstAttribute="width" constant="40" id="UVQ-PA-NpB"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
-                            <state key="normal" title="SEND">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </state>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                    <color key="value" red="0.53725490200000003" green="0.53725490200000003" blue="0.53725490200000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                    <real key="value" value="0.0"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
+                            <state key="normal" image="plus"/>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mxa-H3-dl0" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                            <rect key="frame" x="177.5" y="517" width="147.5" height="80"/>
-                            <color key="backgroundColor" red="0.74509803921568629" green="0.77647058823529413" blue="0.82352941176470584" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Eqh-2S-uEb">
+                            <rect key="frame" x="0.0" y="70" width="335" height="2"/>
+                            <color key="backgroundColor" red="0.4431372549" green="0.49803921569999998" blue="0.58431372550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="80" id="xtG-VW-hBU"/>
+                                <constraint firstAttribute="height" constant="2" id="xoo-Sx-Enu"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
-                            <state key="normal" title="RECEIVE">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </state>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                    <real key="value" value="0.0"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                    <color key="value" red="0.53725490200000003" green="0.53725490200000003" blue="0.53725490200000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aJI-5X-M8M">
-                            <rect key="frame" x="10" y="10" width="92" height="30"/>
-                            <state key="normal" title="Total Balance">
-                                <color key="titleColor" red="0.45882352939999999" green="0.51372549020000002" blue="0.60392156860000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </state>
-                        </button>
+                        </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100 USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e48-H6-ekC">
-                            <rect key="frame" x="10" y="40" width="106" height="32"/>
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="26"/>
+                            <rect key="frame" x="70" y="109.5" width="51.5" height="14.5"/>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                             <color key="textColor" red="0.45882352941176469" green="0.51372549019607838" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wallet1" translatesAutoresizingMaskIntoConstraints="NO" id="D02-OL-iSN">
+                            <rect key="frame" x="15" y="87" width="45" height="45"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="45" id="1Qa-aC-sLl"/>
+                                <constraint firstAttribute="height" constant="45" id="E0P-i6-zp8"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Personal Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o8i-ew-DHd">
+                            <rect key="frame" x="70" y="88.5" width="118" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" red="0.2196078431372549" green="0.23921568627450981" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstItem="aJI-5X-M8M" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="10" id="3qQ-8c-e1a"/>
-                        <constraint firstItem="e48-H6-ekC" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="10" id="GP7-NZ-Udr"/>
-                        <constraint firstAttribute="centerX" secondItem="w3E-Tx-yoW" secondAttribute="trailing" constant="10" id="JWX-Y3-f0S"/>
-                        <constraint firstAttribute="trailing" secondItem="mxa-H3-dl0" secondAttribute="trailing" constant="10" id="WrA-dE-vcp"/>
-                        <constraint firstItem="e48-H6-ekC" firstAttribute="top" secondItem="aJI-5X-M8M" secondAttribute="bottom" id="Z3s-UH-CkI"/>
-                        <constraint firstAttribute="bottom" secondItem="w3E-Tx-yoW" secondAttribute="bottom" constant="10" id="hvV-YO-Tya"/>
-                        <constraint firstItem="mxa-H3-dl0" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="centerX" constant="10" id="n4G-pu-w6R"/>
-                        <constraint firstItem="w3E-Tx-yoW" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="10" id="oAG-sg-FAW"/>
-                        <constraint firstAttribute="bottom" secondItem="mxa-H3-dl0" secondAttribute="bottom" constant="10" id="syi-MI-KCz"/>
-                        <constraint firstItem="aJI-5X-M8M" firstAttribute="top" secondItem="Okw-zb-vhf" secondAttribute="top" constant="10" id="vQW-hz-LG1"/>
+                        <constraint firstItem="e48-H6-ekC" firstAttribute="leading" secondItem="o8i-ew-DHd" secondAttribute="leading" id="20d-Og-aiE"/>
+                        <constraint firstAttribute="trailing" secondItem="hMe-uZ-beg" secondAttribute="trailing" constant="15" id="538-uT-Vhu"/>
+                        <constraint firstItem="e48-H6-ekC" firstAttribute="top" secondItem="o8i-ew-DHd" secondAttribute="bottom" id="7l8-iO-xL9"/>
+                        <constraint firstItem="D02-OL-iSN" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="15" id="BzG-Kf-Zjy"/>
+                        <constraint firstItem="mbS-ok-74X" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="15" id="Kf5-lg-aNh"/>
+                        <constraint firstItem="Eqh-2S-uEb" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" id="jNP-sd-O7I"/>
+                        <constraint firstItem="hMe-uZ-beg" firstAttribute="top" secondItem="Okw-zb-vhf" secondAttribute="top" constant="15" id="kkh-yv-y4y"/>
+                        <constraint firstItem="D02-OL-iSN" firstAttribute="top" secondItem="Eqh-2S-uEb" secondAttribute="bottom" constant="15" id="lN7-dI-EEn"/>
+                        <constraint firstItem="mbS-ok-74X" firstAttribute="top" secondItem="Okw-zb-vhf" secondAttribute="top" constant="15" id="mjC-UI-eKi"/>
+                        <constraint firstItem="Eqh-2S-uEb" firstAttribute="top" secondItem="hMe-uZ-beg" secondAttribute="bottom" constant="15" id="pTu-eU-L1a"/>
+                        <constraint firstAttribute="trailing" secondItem="Eqh-2S-uEb" secondAttribute="trailing" id="wBq-Tg-NnT"/>
+                        <constraint firstItem="e48-H6-ekC" firstAttribute="leading" secondItem="D02-OL-iSN" secondAttribute="trailing" constant="10" id="xld-NB-nuu"/>
+                        <constraint firstItem="e48-H6-ekC" firstAttribute="top" secondItem="D02-OL-iSN" secondAttribute="centerY" id="zPL-6F-mL8"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
                             <real key="value" value="1"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                            <color key="value" red="0.53725490200000003" green="0.53725490200000003" blue="0.53725490200000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="value" red="0.22352941176470589" green="0.23921568627450981" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
+                            <color key="value" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="size" keyPath="shadowOffset">
+                            <size key="value" width="1" height="1"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
@@ -103,11 +102,14 @@
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
+                <outlet property="addAccount" destination="hMe-uZ-beg" id="WZj-lZ-jS0"/>
                 <outlet property="balance" destination="e48-H6-ekC" id="Sbe-er-66r"/>
-                <outlet property="receiveButton" destination="mxa-H3-dl0" id="DxY-cJ-b42"/>
-                <outlet property="sendButton" destination="w3E-Tx-yoW" id="xo8-GC-xyi"/>
             </connections>
             <point key="canvasLocation" x="29.5" y="34.5"/>
         </view>
     </objects>
+    <resources>
+        <image name="plus" width="48" height="48"/>
+        <image name="wallet1" width="19" height="19"/>
+    </resources>
 </document>

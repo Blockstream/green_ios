@@ -18,8 +18,8 @@ class VerifyMnemonicsViewController: UIViewController {
     var questionPosition: Int = 0
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var counterLabel: UILabel!
-    
-    
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -30,7 +30,7 @@ class VerifyMnemonicsViewController: UIViewController {
         questionPosition = Int(wordNumbers[Int(arc4random_uniform(UInt32(wordNumbers.count)))])
         topLabel.text = String(format: "What is the word at position %d ?", questionPosition + 1)
     }
-    
+
     func generateWordNumber(_ bottom: UInt8, _ top: UInt8) -> UInt8 {
         let range: UInt8 = (top - bottom) + 1
         let discard: UInt8 = 255 - 255 % range
@@ -43,14 +43,14 @@ class VerifyMnemonicsViewController: UIViewController {
         randomWord = randomWord % range
         return randomWord + bottom
     }
-    
+
     func generateRandomWordNumbers() {
         repeat {
             wordNumbers = wordNumbers.map { (_) -> UInt8 in generateWordNumber(0, 23) }
         } while Set(wordNumbers).count != 8
     }
 
-    
+
     func createButtons(){
         let screenSize: CGRect = UIScreen.main.bounds
         let leftMargin = 20
@@ -86,7 +86,7 @@ class VerifyMnemonicsViewController: UIViewController {
             }
         }
     }
-    
+
     func updateButtons() {
         var counter = 0
         for button in buttonsArray {
@@ -95,21 +95,21 @@ class VerifyMnemonicsViewController: UIViewController {
             counter += 1
         }
     }
-    
+
     func updateLabels() {
         topLabel.text = String(format: "What is the word at position %d ?", questionPosition + 1)
         counterLabel.text = String(format: "%d/5", questionCounter + 1)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
-    
+
     @IBAction func touchedButton(_ sender: UIButton) {
         print(sender.tag)
     }
-    
-    
+
+
     @objc func buttonClicked(_ sender: UIButton) {
        print("sender is ", sender.titleLabel?.text, " correct answer is ", mnemonics[questionPosition])
         if(sender.titleLabel?.text == mnemonics[questionPosition]) {
@@ -124,7 +124,7 @@ class VerifyMnemonicsViewController: UIViewController {
                         wrap { return try getSession().login(mnemonic: stringRepresentation) }
                             .done { (loginData: [String: Any]?) in
                                 getGAService().loginData = loginData
-                                self.performSegue(withIdentifier: "mainView", sender: self)
+                                self.performSegue(withIdentifier: "tos", sender: self)
                             }.catch { error in
                                 print("Login failed")
                         }
@@ -142,5 +142,5 @@ class VerifyMnemonicsViewController: UIViewController {
             //ALERT
         }
     }
-    
+
 }

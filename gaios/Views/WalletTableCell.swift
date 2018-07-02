@@ -17,8 +17,7 @@ class WalletTableCell: UITableViewCell {
     }
     
     @IBOutlet var balance: UILabel!
-    @IBOutlet weak var sendButton: DesignableButton!
-    @IBOutlet weak var receiveButton: DesignableButton!
+    @IBOutlet weak var addAccount: UIButton!
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
