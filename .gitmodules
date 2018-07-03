@@ -1,0 +1,3 @@
+[submodule "gdk"]
+	path = gdk
+	url = git@gl.blockstream.io:greenaddress/gdk.git
