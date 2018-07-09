@@ -57,9 +57,7 @@ class WalletViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let cell = tableView.dequeueReusableCell(withIdentifier: "walletCard", for: indexPath) as! WalletTableCell
         let balance: Double = Double(mainbalance / 100000000)
         cell.balance.text = String(format: "%g BTC", balance)
-        cell.addAccount.addTarget(self, action:#selector(self.addAccount(_:)), for: .touchUpInside)
         cell.backgroundColor = UIColor.clear
-        cell.addAccount.imageView?.tintColor = UIColor.customLightGreen()
         return cell;
 
     }
