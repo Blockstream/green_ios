@@ -3,18 +3,15 @@ import UIKit
 
 class ColoredCardView: CardView {
 
+    @IBOutlet weak var QRImageView: UIImageView!
+    @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var contentView: UIView!
-    
+    @IBOutlet weak var balanceLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
     var presentedCardViewColor:          UIColor = UIColor.customLightGreen()
     
     lazy var depresentedCardViewColor:   UIColor = { return UIColor.customLightGreen() }()
     
-    @IBOutlet weak var indexLabel: UILabel!
-    var index: Int = 0 {
-        didSet {
-            indexLabel.text = "# \(index)"
-        }
-    }
     
      override func awakeFromNib() {
         
@@ -28,16 +25,9 @@ class ColoredCardView: CardView {
     override var presented: Bool { didSet { presentedDidUpdate() } }
     
     func presentedDidUpdate() {
-        
-        removeCardViewButton.isHidden = !presented
         contentView.backgroundColor = presented ? presentedCardViewColor : depresentedCardViewColor
         contentView.addTransitionFade()
         
     }
-    
-    @IBOutlet weak var removeCardViewButton: UIButton!
-    @IBAction func removeCardView(_ sender: Any) {
-        walletView?.remove(cardView: self, animated: true)
-    }
-    
+
 }

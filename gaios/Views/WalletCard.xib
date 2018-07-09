@@ -6,7 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,44 +17,16 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Okw-zb-vhf">
-                    <rect key="frame" x="20" y="40" width="335" height="607"/>
+                    <rect key="frame" x="20" y="10" width="335" height="657"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallets" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mbS-ok-74X">
-                            <rect key="frame" x="15" y="15" width="78.5" height="29"/>
-                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Account" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r2f-hV-kMF">
+                            <rect key="frame" x="16" y="318" width="64" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hMe-uZ-beg">
-                            <rect key="frame" x="280" y="15" width="40" height="40"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="40" id="FQC-BC-jFu"/>
-                                <constraint firstAttribute="width" constant="40" id="UVQ-PA-NpB"/>
-                            </constraints>
-                            <state key="normal" image="plus"/>
-                        </button>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Eqh-2S-uEb">
-                            <rect key="frame" x="0.0" y="70" width="335" height="2"/>
-                            <color key="backgroundColor" red="0.4431372549" green="0.49803921569999998" blue="0.58431372550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="2" id="xoo-Sx-Enu"/>
-                            </constraints>
-                        </view>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100 USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e48-H6-ekC">
-                            <rect key="frame" x="70" y="109.5" width="51.5" height="14.5"/>
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
-                            <color key="textColor" red="0.45882352941176469" green="0.51372549019607838" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wallet1" translatesAutoresizingMaskIntoConstraints="NO" id="D02-OL-iSN">
-                            <rect key="frame" x="15" y="87" width="45" height="45"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="45" id="1Qa-aC-sLl"/>
-                                <constraint firstAttribute="height" constant="45" id="E0P-i6-zp8"/>
-                            </constraints>
-                        </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Personal Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o8i-ew-DHd">
-                            <rect key="frame" x="70" y="88.5" width="118" height="21"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1.0 BTC" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lFZ-YI-LdB">
+                            <rect key="frame" x="260" y="318" width="59" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -63,19 +34,10 @@
                     </subviews>
                     <color key="backgroundColor" red="0.2196078431372549" green="0.23921568627450981" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstItem="e48-H6-ekC" firstAttribute="leading" secondItem="o8i-ew-DHd" secondAttribute="leading" id="20d-Og-aiE"/>
-                        <constraint firstAttribute="trailing" secondItem="hMe-uZ-beg" secondAttribute="trailing" constant="15" id="538-uT-Vhu"/>
-                        <constraint firstItem="e48-H6-ekC" firstAttribute="top" secondItem="o8i-ew-DHd" secondAttribute="bottom" id="7l8-iO-xL9"/>
-                        <constraint firstItem="D02-OL-iSN" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="15" id="BzG-Kf-Zjy"/>
-                        <constraint firstItem="mbS-ok-74X" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="15" id="Kf5-lg-aNh"/>
-                        <constraint firstItem="Eqh-2S-uEb" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" id="jNP-sd-O7I"/>
-                        <constraint firstItem="hMe-uZ-beg" firstAttribute="top" secondItem="Okw-zb-vhf" secondAttribute="top" constant="15" id="kkh-yv-y4y"/>
-                        <constraint firstItem="D02-OL-iSN" firstAttribute="top" secondItem="Eqh-2S-uEb" secondAttribute="bottom" constant="15" id="lN7-dI-EEn"/>
-                        <constraint firstItem="mbS-ok-74X" firstAttribute="top" secondItem="Okw-zb-vhf" secondAttribute="top" constant="15" id="mjC-UI-eKi"/>
-                        <constraint firstItem="Eqh-2S-uEb" firstAttribute="top" secondItem="hMe-uZ-beg" secondAttribute="bottom" constant="15" id="pTu-eU-L1a"/>
-                        <constraint firstAttribute="trailing" secondItem="Eqh-2S-uEb" secondAttribute="trailing" id="wBq-Tg-NnT"/>
-                        <constraint firstItem="e48-H6-ekC" firstAttribute="leading" secondItem="D02-OL-iSN" secondAttribute="trailing" constant="10" id="xld-NB-nuu"/>
-                        <constraint firstItem="e48-H6-ekC" firstAttribute="top" secondItem="D02-OL-iSN" secondAttribute="centerY" id="zPL-6F-mL8"/>
+                        <constraint firstItem="lFZ-YI-LdB" firstAttribute="centerY" secondItem="Okw-zb-vhf" secondAttribute="centerY" id="TLZ-Tt-EDl"/>
+                        <constraint firstItem="r2f-hV-kMF" firstAttribute="centerY" secondItem="Okw-zb-vhf" secondAttribute="centerY" id="k8U-El-3ly"/>
+                        <constraint firstItem="r2f-hV-kMF" firstAttribute="leading" secondItem="Okw-zb-vhf" secondAttribute="leading" constant="16" id="kR8-i3-cz2"/>
+                        <constraint firstAttribute="trailing" secondItem="lFZ-YI-LdB" secondAttribute="trailing" constant="16" id="nED-X3-77w"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
@@ -97,19 +59,16 @@
             <constraints>
                 <constraint firstItem="Okw-zb-vhf" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="IBt-3s-rjt"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Okw-zb-vhf" secondAttribute="trailing" constant="20" id="YXC-Te-Bfe"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Okw-zb-vhf" secondAttribute="bottom" constant="20" id="sKP-9g-DyQ"/>
-                <constraint firstItem="Okw-zb-vhf" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="20" id="ytN-DZ-slf"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Okw-zb-vhf" secondAttribute="bottom" id="sKP-9g-DyQ"/>
+                <constraint firstItem="Okw-zb-vhf" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="-10" id="ytN-DZ-slf"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
-                <outlet property="addAccount" destination="hMe-uZ-beg" id="WZj-lZ-jS0"/>
-                <outlet property="balance" destination="e48-H6-ekC" id="Sbe-er-66r"/>
+                <outlet property="balance" destination="lFZ-YI-LdB" id="u4J-8D-PR3"/>
+                <outlet property="mainContent" destination="Okw-zb-vhf" id="XpO-LZ-Juu"/>
+                <outlet property="name" destination="r2f-hV-kMF" id="mEp-wQ-Pau"/>
             </connections>
             <point key="canvasLocation" x="29.5" y="34.5"/>
         </view>
     </objects>
-    <resources>
-        <image name="plus" width="48" height="48"/>
-        <image name="wallet1" width="19" height="19"/>
-    </resources>
 </document>

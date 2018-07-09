@@ -66,9 +66,9 @@ open class WalletView: UIView {
      - parameter completion: A block object to be executed when the animation sequence ends.
      */
     open func dismissPresentedCardView(animated: Bool, completion: LayoutCompletion? = nil) {
-        
-        dismissPresentedCardView(animated: animated, animationDuration: animated ? WalletView.dismissingAnimationSpeed : nil, completion: completion)
-        
+        dissmissFooter {
+            self.dismissPresentedCardView(animated: animated, animationDuration: animated ? WalletView.dismissingAnimationSpeed : nil, completion: completion)
+        }
     }
     
     
@@ -148,6 +148,10 @@ open class WalletView: UIView {
      */
     open func remove(cardViews: [CardView]) {
         
+        for view in cardViews {
+            view.removeFromSuperview()
+        }
+
         let newInsertedCardViews = insertedCardViews.filter { !cardViews.contains($0) }
         
         if let presentedCardView = presentedCardView, !newInsertedCardViews.contains(presentedCardView) {
@@ -221,6 +225,7 @@ open class WalletView: UIView {
         }
         
     }
+    var presentedFooterView: cardFooter = cardFooter.nibForClass()
     
     
     /** The receiver’s immediate card views. */
@@ -323,17 +328,13 @@ open class WalletView: UIView {
     func prepareWalletView() {
         
         prepareScrollView()
-        prepareWalletHeaderView()
+        //prepareWalletHeaderView()
         
     }
     
     func insert(cardViews: [CardView]) {
         
         self.insertedCardViews = cardViews
-        
-        if insertedCardViews.count == 1 {
-            presentedCardView = insertedCardViews.first
-        }
         
     }
     
@@ -354,6 +355,7 @@ open class WalletView: UIView {
             presentedCardView = cardView
             layoutWalletView(animationDuration: animated ? animationDuration : nil, placeVisibleCardViews: false, completion: { [weak self] (_) in
                 self?.placeVisibleCardViews()
+                self?.presentFooter()
                 completion?(true)
             })
             
@@ -363,7 +365,7 @@ open class WalletView: UIView {
     
     func dismissPresentedCardView(animated: Bool, animationDuration: TimeInterval?, completion: LayoutCompletion? = nil) {
         
-        if insertedCardViews.count <= 1 || presentedCardView == nil {
+        if insertedCardViews.count <= 0 || presentedCardView == nil {
             completion?(true)
             return
         }
@@ -442,7 +444,7 @@ open class WalletView: UIView {
     
     func grab(cardView: CardView, popup: Bool) {
         
-        if insertedCardViews.count <= 1 || (presentedCardView != nil && presentedCardView != cardView) {
+        if insertedCardViews.count <= 0 || (presentedCardView != nil && presentedCardView != cardView) {
             return
         }
         scrollView.isScrollEnabled = false
@@ -498,11 +500,11 @@ open class WalletView: UIView {
     
     var presentationCenter: CGPoint {
         
-        let centerRect = CGRect(x: 0, y: cardViewTopInset,
-                                width: frame.width,
+        let centerRect = CGRect(x: 16, y: cardViewTopInset,
+                                width: frame.width - 32,
                                 height: frame.height - collapsedCardViewStackHeight - cardViewTopInset)
         
-        return scrollView.convert( CGPoint(x: centerRect.midX, y: centerRect.midY), from: self)
+        return scrollView.convert( CGPoint(x: centerRect.midX, y: 100), from: self)
         
     }
     
@@ -529,7 +531,7 @@ open class WalletView: UIView {
         
         let usableCardViewsHeight = walletHeaderHeight + insertedCardViews.map { _ in cardViewHeight }.reduce(0, { $0 + $1 } )
         
-        distanceBetweenCardViews = max(minimalDistanceBetweenStackedCardViews, usableCardViewsHeight/CGFloat(insertedCardViews.count)/CGFloat(insertedCardViews.count))
+        distanceBetweenCardViews = 65
 
         if shouldLayoutWalletView {
             layoutWalletView()
@@ -633,7 +635,7 @@ open class WalletView: UIView {
             
             let cardView = insertedCardViews[cardViewIndex]
             
-            var cardViewFrame = CGRect(x: 0, y: max(cardViewYPoint, walletHeaderY), width: frame.width, height: cardViewHeight)
+            var cardViewFrame = CGRect(x: 16, y: max(cardViewYPoint, walletHeaderY), width: frame.width-32, height: cardViewHeight)
             
             if cardView == firstCardView {
                 
@@ -716,6 +718,50 @@ open class WalletView: UIView {
             
         }
         
+    }
+    func dissmissFooter(completion: @escaping () -> ()) {
+        if(presentedFooterView != nil) {
+            let animations = { [weak self] in
+                var origin = self?.presentedCardView?.frame.origin
+                origin?.y += (self?.presentedCardView?.frame.height)! - 80
+                var size = self?.presentedCardView?.frame.size
+                size?.height = 70
+                self?.presentedFooterView.frame = CGRect(origin: origin!, size: size!)
+                self?.presentedFooterView.layer.opacity = 0
+            }
+            
+            let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
+            UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: { (_) in
+                completion()
+            })
+        }
+    }
+    
+    
+    func presentFooter() {
+        if (presentedFooterView.superview == nil) {
+            var origin = presentedCardView?.frame.origin
+            origin?.y += (presentedCardView?.frame.height)! - 80
+            var size = presentedCardView?.frame.size
+            size?.height = 70
+            presentedFooterView.layer.cornerRadius = 10
+            presentedFooterView.frame = CGRect(origin: origin!, size: size!)
+            presentedFooterView.layer.opacity = 0
+            presentedFooterView.backgroundColor = UIColor.customWalletCardColor()
+            scrollView.insertSubview(presentedFooterView, belowSubview: presentedCardView!)
+        }
+
+        let animations = { [weak self] in
+            var origin = self?.presentedCardView?.frame.origin
+            origin?.y += (self?.presentedCardView?.frame.height)! - 10
+            var size = self?.presentedCardView?.frame.size
+            size?.height = 70
+            self?.presentedFooterView.frame = CGRect(origin: origin!, size: size!)
+            self?.presentedFooterView.layer.opacity = 1
+        }
+        
+        let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
+        UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: nil)
     }
     
     func placeVisibleCardViews() {
