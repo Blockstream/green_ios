@@ -19,7 +19,7 @@ class InitialViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-         self.navigationController?.setNavigationBarHidden(false, animated: animated)
+         //self.navigationController?.setNavigationBarHidden(, animated: animated)
     }
 
     override func viewDidAppear(_ animated: Bool) {
