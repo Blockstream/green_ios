@@ -15,23 +15,15 @@ class ReceiveBtcViewController: UIViewController {
     @IBOutlet weak var walletAddressLabel: UILabel!
     @IBOutlet weak var walletQRCode: UIImageView!
     var receiveAddress: String? = nil
+    @IBOutlet weak var amountTextfield: UITextField!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
-        do {
-            self.receiveAddress = try getSession().getReceiveAddress()
-            walletAddressLabel.text = receiveAddress
-            walletQRCode.image = generateQRCode(receiveAddress!, self.walletQRCode.frame)
-            self.walletQRCode.image = self.generateQRCode(receiveAddress!, self.walletQRCode.frame)
-        } catch {
-            print("getting receive failed")
-        }
-        generateAddress().done { (address: String) in
-            print(address)
-        }.catch { _ in
-            print("failed again")
-        }
+        walletAddressLabel.text = receiveAddress
+        walletQRCode.image = QRImageGenerator.imageForAddress(address: receiveAddress!, frame: walletQRCode.frame)
+        amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
+                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
     }
     
     func generateQRCode(_ text: String, _ frame: CGRect) -> UIImage {
@@ -51,6 +43,10 @@ class ReceiveBtcViewController: UIViewController {
     
     @IBAction func copyButtonClicked(_ sender: Any) {
         UIPasteboard.general.string = receiveAddress
+    }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        _ = navigationController?.popViewController(animated: true)
     }
 
     func generateAddress() -> Promise<String> {
