@@ -41,11 +41,12 @@ class ViewController: UIViewController {
         for index in 0..<wallets.count {
             let item = wallets[index]
             let cardView = ColoredCardView.nibForClass()
+            cardView.wallet = item
             cardView.balanceLabel.text = String.satoshiToBTC(satoshi: item.balance)
             cardView.addressLabel.text = item.address
             cardView.nameLabel.text = item.name
-            cardView.presentedCardViewColor = UIColor.customWalletCardColor()
-            cardView.depresentedCardViewColor = UIColor.customWalletCardColor()
+            cardView.presentedCardViewColor = UIColor.customTitaniumMedium()
+            cardView.depresentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.presentedDidUpdate()
             cardView.QRImageView.image = QRImageGenerator.imageForAddress(address: item.address, frame: cardView.QRImageView.frame)
             let shadowSize : CGFloat = 5.0
@@ -54,7 +55,7 @@ class ViewController: UIViewController {
                                                        width: cardView.QRImageView.frame.size.width + shadowSize,
                                                        height: cardView.QRImageView.frame.size.height + shadowSize))
             cardView.QRImageView.layer.masksToBounds = false
-            cardView.QRImageView.layer.shadowColor = UIColor.customQRColorGreen().cgColor
+            cardView.QRImageView.layer.shadowColor = UIColor.customMatrixGreen().cgColor
             cardView.QRImageView.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
             cardView.QRImageView.layer.shadowOpacity = 0.5
             cardView.QRImageView.layer.shadowPath = shadowPath.cgPath
@@ -83,7 +84,10 @@ class ViewController: UIViewController {
         walletView.dismissPresentedCardView(animated: true)
         if let nextController = segue.destination as? SendBtcViewController {
             self.navigationController!.navigationBar.isHidden = false
-
+            nextController.wallet = (walletView.presentedCardView as! ColoredCardView).wallet
+        }
+        if let nextController = segue.destination as? ReceiveBtcViewController {
+            nextController.receiveAddress = (walletView.presentedCardView as! ColoredCardView).addressLabel.text
         }
     }
 

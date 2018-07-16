@@ -18,7 +18,7 @@ class EnterMnemonicTableViewController: UITableViewController, UITextFieldDelega
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+        //self.navigationController?.setNavigationBarHidden(true, animated: animated)
 
         mnemonicWords = Array(repeating: String(), count: 27)
     }
@@ -28,7 +28,7 @@ class EnterMnemonicTableViewController: UITableViewController, UITextFieldDelega
 
         mnemonicWords = Array(repeating: String(), count: 27)
 
-        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        //self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -69,9 +69,7 @@ class EnterMnemonicTableViewController: UITableViewController, UITextFieldDelega
             wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
         }.done { (loginData: [String: Any]?) in
             getGAService().loginData = loginData
-            /*let subbacounts = loginData!["subaccounts"] as! NSArray
-            let firstResult = subbacounts[0]
-            print(firstResult)*/
+            AccountStore.shared.initializeAccountStore()
             self.performSegue(withIdentifier: "MainEnterMnemonicSegue", sender: self)
         }.catch { error in
             print("Login failed")

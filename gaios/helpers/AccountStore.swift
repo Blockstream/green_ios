@@ -13,6 +13,10 @@ class AccountStore {
 
     static let shared = AccountStore()
     var m_wallets:Array<WalletItem> = Array()
+    var exchangeRate: Double = 0 //usd for 100000000
+    var feeEstimatelow: Int = 0
+    var feeEstimateMedium: Int = 0
+    var feeEstimateHigh: Int = 0
 
     public func fetchWallets() -> Array<WalletItem> {
         var result = Array<WalletItem>()
@@ -42,9 +46,51 @@ class AccountStore {
     }
 
     private init() { }
-    
+
     func getWallets() -> Promise<Array<WalletItem>> {
         return wrap {self.fetchWallets()}
+    }
+
+    func satoshiToUSD(amount: Int) -> Double {
+        let result: Double = (Double(amount) * exchangeRate) / 100000000
+        return result
+    }
+
+    func USDtoSatoshi(amount: Double) -> Int{
+        let result: Int = Int(amount / exchangeRate) * 100000000
+        return result
+    }
+
+    func USDtoBTC(amount: Double) -> Double{
+        let result: Double = amount / exchangeRate
+        return result
+    }
+
+    func initializeAccountStore() {
+        guard let login = getGAService().loginData else {
+            return
+        }
+
+        if let exch:String = login["fiat_exchange"] as? String{
+            exchangeRate = Double(exch)!
+        }
+
+        if let fee:[String:Any] = login["fee_estimates"] as? [String:Any] {
+            let lowPriority = fee["12"] as! [String : Any]
+            if let lowPriorityFee = lowPriority["feerate"] as? String {
+                feeEstimatelow = Int((Double(lowPriorityFee)! * 100000000) / 1000) //satoshi per byte
+            }
+            let mediumPriority = fee["6"] as! [String : Any]
+            if let mediumPriorityFee = mediumPriority["feerate"] as? String {
+                feeEstimateMedium = Int((Double(mediumPriorityFee)! * 100000000) / 1000) //satoshi per byte
+            }
+            let highPriority = fee["2"] as! [String : Any]
+            if let highPriorityFee = highPriority["feerate"] as? String {
+                feeEstimateHigh = Int((Double(highPriorityFee)! * 100000000) / 1000) //satoshi per byte
+            }
+            print(lowPriority)
+        }
+        print(exchangeRate)
     }
 }
 

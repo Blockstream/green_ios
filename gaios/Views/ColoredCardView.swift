@@ -8,6 +8,8 @@ class ColoredCardView: CardView {
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var balanceLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
+    var wallet: WalletItem? = nil
+
     var presentedCardViewColor:          UIColor = UIColor.customLightGreen()
     
     lazy var depresentedCardViewColor:   UIColor = { return UIColor.customLightGreen() }()

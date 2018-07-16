@@ -747,7 +747,7 @@ open class WalletView: UIView {
             presentedFooterView.layer.cornerRadius = 10
             presentedFooterView.frame = CGRect(origin: origin!, size: size!)
             presentedFooterView.layer.opacity = 0
-            presentedFooterView.backgroundColor = UIColor.customWalletCardColor()
+            presentedFooterView.backgroundColor = UIColor.customTitaniumMedium()
             scrollView.insertSubview(presentedFooterView, belowSubview: presentedCardView!)
         }
 

@@ -20,6 +20,13 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RMx-oq-Www">
                     <rect key="frame" x="0.0" y="20" width="187.5" height="647"/>
                     <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sendAirplane" translatesAutoresizingMaskIntoConstraints="NO" id="DPE-dg-un4">
+                            <rect key="frame" x="51" y="317" width="17" height="13"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="13" id="7fZ-IU-iDr"/>
+                                <constraint firstAttribute="width" constant="17" id="Wjm-uB-12Q"/>
+                            </constraints>
+                        </imageView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jl1-A8-YvP">
                             <rect key="frame" x="8.5" y="0.0" width="169" height="647"/>
                             <state key="normal" title="Send">
@@ -30,15 +37,24 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="jl1-A8-YvP" secondAttribute="bottom" id="0zQ-0J-vdp"/>
+                        <constraint firstItem="DPE-dg-un4" firstAttribute="trailing" secondItem="jl1-A8-YvP" secondAttribute="centerX" constant="-25" id="8Sw-gf-hay"/>
                         <constraint firstItem="jl1-A8-YvP" firstAttribute="centerX" secondItem="RMx-oq-Www" secondAttribute="centerX" id="NIT-KP-Fb1"/>
                         <constraint firstItem="jl1-A8-YvP" firstAttribute="centerY" secondItem="RMx-oq-Www" secondAttribute="centerY" id="QSz-iN-mVX"/>
                         <constraint firstAttribute="trailing" secondItem="jl1-A8-YvP" secondAttribute="trailing" constant="10" id="dT9-wb-qml"/>
                         <constraint firstItem="jl1-A8-YvP" firstAttribute="top" secondItem="RMx-oq-Www" secondAttribute="top" id="mPQ-dQ-XTg"/>
+                        <constraint firstItem="DPE-dg-un4" firstAttribute="centerY" secondItem="RMx-oq-Www" secondAttribute="centerY" id="rWP-7Y-bzu"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nwL-xg-dd3">
-                    <rect key="frame" x="187.5" y="20" width="187.5" height="647"/>
+                    <rect key="frame" x="187" y="20" width="187.5" height="647"/>
                     <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="receivePiggy" translatesAutoresizingMaskIntoConstraints="NO" id="sga-Q5-mAg">
+                            <rect key="frame" x="43" y="317" width="16" height="12"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="12" id="DDU-c9-IYn"/>
+                                <constraint firstAttribute="width" constant="16" id="HBa-bD-ekF"/>
+                            </constraints>
+                        </imageView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xZk-DH-KBp">
                             <rect key="frame" x="0.0" y="0.0" width="187.5" height="647"/>
                             <state key="normal" title="Receive">
@@ -51,8 +67,10 @@
                         <constraint firstAttribute="trailing" secondItem="xZk-DH-KBp" secondAttribute="trailing" id="0I5-uH-Rqj"/>
                         <constraint firstItem="xZk-DH-KBp" firstAttribute="centerX" secondItem="nwL-xg-dd3" secondAttribute="centerX" id="DvV-wF-wr1"/>
                         <constraint firstItem="xZk-DH-KBp" firstAttribute="top" secondItem="nwL-xg-dd3" secondAttribute="top" id="F99-Im-9No"/>
+                        <constraint firstItem="sga-Q5-mAg" firstAttribute="centerY" secondItem="nwL-xg-dd3" secondAttribute="centerY" id="NFp-hZ-OSE"/>
                         <constraint firstItem="xZk-DH-KBp" firstAttribute="leading" secondItem="nwL-xg-dd3" secondAttribute="leading" id="WJd-sp-frW"/>
                         <constraint firstItem="xZk-DH-KBp" firstAttribute="centerY" secondItem="nwL-xg-dd3" secondAttribute="centerY" id="XWY-ct-tBx"/>
+                        <constraint firstItem="sga-Q5-mAg" firstAttribute="trailing" secondItem="xZk-DH-KBp" secondAttribute="centerX" constant="-35" id="bMJ-nb-dHP"/>
                         <constraint firstAttribute="bottom" secondItem="xZk-DH-KBp" secondAttribute="bottom" id="wxm-Xz-mei"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
@@ -64,15 +82,25 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U1U-bv-7sz">
+                    <rect key="frame" x="186.5" y="0.0" width="2" height="667"/>
+                    <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="2" id="XY9-Bi-XZ0"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" red="0.18431372549019609" green="0.20784313725490197" blue="0.22745098039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
+                <constraint firstItem="U1U-bv-7sz" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="AHp-e0-fBD"/>
                 <constraint firstItem="RMx-oq-Www" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="FSr-gi-DLJ"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="RMx-oq-Www" secondAttribute="bottom" id="OKm-Ma-tIw"/>
                 <constraint firstItem="nwL-xg-dd3" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="TE2-uB-zYc"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="nwL-xg-dd3" secondAttribute="bottom" id="Vwz-ws-cIq"/>
                 <constraint firstItem="RMx-oq-Www" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="aaB-dl-YyD"/>
                 <constraint firstItem="nwL-xg-dd3" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="elx-XL-ugI"/>
+                <constraint firstItem="U1U-bv-7sz" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="kuU-Cs-QkC"/>
+                <constraint firstAttribute="bottom" secondItem="U1U-bv-7sz" secondAttribute="bottom" id="pM8-Qh-GqG"/>
                 <constraint firstItem="RMx-oq-Www" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="qSQ-Za-1Au"/>
                 <constraint firstItem="nwL-xg-dd3" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="yix-sN-pD8"/>
             </constraints>
@@ -84,4 +112,8 @@
             <point key="canvasLocation" x="90.5" y="93.5"/>
         </view>
     </objects>
+    <resources>
+        <image name="receivePiggy" width="67" height="50"/>
+        <image name="sendAirplane" width="71" height="54"/>
+    </resources>
 </document>
