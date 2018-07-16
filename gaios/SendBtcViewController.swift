@@ -23,7 +23,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     var wallets:Array<WalletItem> = Array<WalletItem>()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
     var qrCodeFrameView: UIView?
-    
+    var wallet:WalletItem? = nil
     private let supportedCodeTypes = [AVMetadataObject.ObjectType.upce,
                                       AVMetadataObject.ObjectType.code39,
                                       AVMetadataObject.ObjectType.code39Mod43,
@@ -62,6 +62,8 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         topImage.addSubview(blurEffectView)
         textfield.attributedPlaceholder = NSAttributedString(string: "Enter Bitcoin Address",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customLightGray()])
+        textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
+        textfield.leftViewMode = .always
         self.tabBarController?.tabBar.isHidden = true
         let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
         self.QRCodeReader.addGestureRecognizer(gesture)
@@ -74,6 +76,12 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.dataSource = self
         tableView.isUserInteractionEnabled = true
         tableView.allowsSelection = true
+        navigationController?.navigationBar.tintColor = UIColor.white
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = true
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
@@ -150,8 +158,8 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         qrCodeFrameView = UIView()
         
         if let qrCodeFrameView = qrCodeFrameView {
-            qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
-            qrCodeFrameView.layer.borderWidth = 2
+            qrCodeFrameView.layer.borderColor = UIColor.red.cgColor
+            qrCodeFrameView.layer.borderWidth = 4
             QRCodeReader.addSubview(qrCodeFrameView)
             QRCodeReader.bringSubview(toFront: qrCodeFrameView)
         }
@@ -163,6 +171,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcDetailsViewController {
+            nextController.wallet = wallet
             nextController.toAddress = textfield.text
         }
     }
