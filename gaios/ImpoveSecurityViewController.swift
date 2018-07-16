@@ -14,6 +14,8 @@ class ImproveSecurityViewController: UIViewController {
     @IBOutlet weak var topLabel: DesignableLabel!
     @IBOutlet weak var faceIDButton: UIButton!
     let bioID = BiometricIDAuth()
+    @IBOutlet weak var skipButton: UIButton!
+    @IBOutlet weak var pinButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +33,9 @@ class ImproveSecurityViewController: UIViewController {
             faceIDButton.isUserInteractionEnabled = false
             faceIDButton.setTitle("Touch/Face ID not available", for: UIControlState.normal)
         }
+        pinButton.contentHorizontalAlignment = .left
+        faceIDButton.contentHorizontalAlignment = .left
+        skipButton.contentHorizontalAlignment = .left
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -45,6 +50,10 @@ class ImproveSecurityViewController: UIViewController {
     
     @IBAction func setPinClicked(_ sender: Any) {
         self.performSegue(withIdentifier: "setPin", sender: self)
+    }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
     }
     
     @IBAction func faceIDButtonClicked(_ sender: Any) {
