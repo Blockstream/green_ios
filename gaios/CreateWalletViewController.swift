@@ -23,6 +23,9 @@ class CreateWalletViewController: UIViewController {
         mnemonics = getAppDelegate().getMnemonicWords()!
         createViews()
     }
+    @IBAction func backButtonClicked(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
+    }
     
     func createViews() {
         let screenSize: CGRect = UIScreen.main.bounds
@@ -70,7 +73,7 @@ class CreateWalletViewController: UIViewController {
             }
             //top constraint
             if (index < 4) {
-                NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 20).isActive = true
+                NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 40).isActive = true
             } else {
                 NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: viewArray[index - 4], attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -1).isActive = true
             }
