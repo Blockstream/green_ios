@@ -19,8 +19,8 @@ class QRImageGenerator {
         filter!.setValue(data, forKey: "inputMessage")
         filter!.setValue("Q", forKey: "inputCorrectionLevel")
         colorFilter.setValue(filter!.outputImage, forKey: "inputImage")
-        colorFilter.setValue(CIColor(color: UIColor.customQRColorGreen()), forKey: "inputColor1") // Background white
-        colorFilter.setValue(CIColor(color: UIColor.customQRColorDark()), forKey: "inputColor0")
+        colorFilter.setValue(CIColor(color: UIColor.customMatrixGreen()), forKey: "inputColor1") // Background white
+        colorFilter.setValue(CIColor(color: UIColor.customTitaniumDark()), forKey: "inputColor0")
         
         
         guard let qrCodeImage = colorFilter.outputImage
