@@ -20,9 +20,14 @@ class TOSViewController: UIViewController {
         self.performSegue(withIdentifier: "security", sender: self)
     }
 
+    @IBAction func backButtonClicked(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
+    }
+
     @IBAction func agreeTOSClicked(_ sender: UIButton) {
         tosClicked = true
-        sender.backgroundColor = UIColor.customLightGray()
+        sender.backgroundColor = UIColor.customMatrixGreen()
+        sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
         if tosClicked && recoveryClicked {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor.customLightGreen()
@@ -31,10 +36,11 @@ class TOSViewController: UIViewController {
 
     @IBAction func savedRecoverySeedClicked(_ sender: UIButton) {
         recoveryClicked = true
-        sender.backgroundColor = UIColor.customLightGray()
+        sender.backgroundColor = UIColor.customMatrixGreen()
+        sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
         if tosClicked && recoveryClicked {
             nextButton.isUserInteractionEnabled = true
-            nextButton.backgroundColor = UIColor.customLightGreen()
+            nextButton.backgroundColor = UIColor.customMatrixGreen()
         }
     }
 
