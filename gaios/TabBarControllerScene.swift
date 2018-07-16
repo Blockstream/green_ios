@@ -12,6 +12,6 @@ class TabBarControllerScene: UITabBarController {
 
         self.navigationItem.setHidesBackButton(true, animated: false)
 
-        self.selectedIndex = 0
+        self.selectedIndex = 1
     }
 }
