@@ -109,6 +109,9 @@ class VerifyMnemonicsViewController: UIViewController {
         print(sender.tag)
     }
 
+    @IBAction func backButtonClicked(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
+    }
 
     @objc func buttonClicked(_ sender: UIButton) {
        print("sender is ", sender.titleLabel?.text, " correct answer is ", mnemonics[questionPosition])
