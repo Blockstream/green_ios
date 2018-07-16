@@ -22,6 +22,11 @@
 		092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092E1EAF20CF993700362253 /* UIColor+Hex.swift */; };
 		092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092F5DE920F1619D007356F2 /* cardFooter.swift */; };
 		092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092F5DEB20F16353007356F2 /* cardFooter.xib */; };
+		0932D7AF20FC44D80074B48F /* EnterMnemonicsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0932D7AE20FC44D80074B48F /* EnterMnemonicsCell.xib */; };
+		0932D7B120FC44E70074B48F /* EnterMnemonicsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B020FC44E70074B48F /* EnterMnemonicsCell.swift */; };
+		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
+		0932D7B520FC6D760074B48F /* ProgressIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */; };
+		0932D7B720FC6F780074B48F /* ProgressIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */; };
 		0967BF5820DB55840062A653 /* WalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5720DB55840062A653 /* WalletViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
@@ -37,6 +42,7 @@
 		0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */; };
 		0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */; };
 		0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */; };
+		09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A8991520FADFE000E105EC /* IntroPageViewController.swift */; };
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
 		09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */; };
 		09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */; };
@@ -94,6 +100,11 @@
 		092E1EAF20CF993700362253 /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		092F5DE920F1619D007356F2 /* cardFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cardFooter.swift; sourceTree = "<group>"; };
 		092F5DEB20F16353007356F2 /* cardFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = cardFooter.xib; sourceTree = "<group>"; };
+		0932D7AE20FC44D80074B48F /* EnterMnemonicsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EnterMnemonicsCell.xib; sourceTree = "<group>"; };
+		0932D7B020FC44E70074B48F /* EnterMnemonicsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsCell.swift; sourceTree = "<group>"; };
+		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
+		0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicatorView.xib; sourceTree = "<group>"; };
+		0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicatorView.swift; sourceTree = "<group>"; };
 		0967BF5720DB55840062A653 /* WalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
@@ -109,6 +120,7 @@
 		0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+padding.swift"; sourceTree = "<group>"; };
 		0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLoginViewController.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		09A8991520FADFE000E105EC /* IntroPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroPageViewController.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
 		09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricIDAuth.swift; sourceTree = "<group>"; };
 		09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDViewController.swift; sourceTree = "<group>"; };
@@ -187,6 +199,10 @@
 				0967BF5920DB58ED0062A653 /* WalletCard.xib */,
 				092D47F620EA28ED005720F3 /* TransactionCell.xib */,
 				092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */,
+				0932D7AE20FC44D80074B48F /* EnterMnemonicsCell.xib */,
+				0932D7B020FC44E70074B48F /* EnterMnemonicsCell.swift */,
+				0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */,
+				0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -290,9 +306,11 @@
 				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
 				0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */,
 				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
+				09A8991520FADFE000E105EC /* IntroPageViewController.swift */,
 				09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */,
 				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
 				678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */,
+				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
 			);
 			path = gaios;
 			sourceTree = "<group>";
@@ -435,8 +453,10 @@
 				092C7BCE20D238BE00F90DF2 /* ColoredCardView.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */,
+				0932D7B520FC6D760074B48F /* ProgressIndicatorView.xib in Resources */,
 				092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
+				0932D7AF20FC44D80074B48F /* EnterMnemonicsCell.xib in Resources */,
 				092D47F720EA28ED005720F3 /* TransactionCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -630,11 +650,15 @@
 				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
 				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
 				676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */,
+				09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */,
 				678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
+				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
 				09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */,
+				0932D7B720FC6F780074B48F /* ProgressIndicatorView.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
+				0932D7B120FC44E70074B48F /* EnterMnemonicsCell.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */,
