@@ -39,6 +39,7 @@ class SendBtcDetailsViewController: UIViewController {
             nextController.wallet = wallet
             nextController.satoshi_fee = fee
             nextController.btc_amount = btcAmount
+            nextController.satoshi_amount = Int(btcAmount * 100000000)
         }
     }
 
