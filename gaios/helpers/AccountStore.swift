@@ -27,21 +27,23 @@ class AccountStore {
             let mainAddress = try getSession().getReceiveAddress()
             let json = try getSession().getBalance(numConfs: 1)
             let balance:String = json!["satoshi"] as! String
-            let mainWallet:WalletItem = WalletItem(name: "Main Wallet", address: mainAddress, balance: balance, currency: "USD")
+            let mainWallet:WalletItem = WalletItem(name: "Main Wallet", address: mainAddress, balance: balance, currency: "USD", pointer: 0)
             result.append(mainWallet)
             for element in subacounts{
                 let account = (element as? [String: Any])!
                 let address = account["receiving_id"] as! String
                 let satoshi = account["satoshi"] as! String
                 let name = account["name"] as! String
+                let pointer = account["pointer"] as! Int
                 let currency = account["fiat_currency"] as! String
-                let wallet: WalletItem = WalletItem(name: name, address: address, balance: satoshi, currency: currency)
+                let wallet: WalletItem = WalletItem(name: name, address: address, balance: satoshi, currency: currency, pointer: pointer)
                 result.append(wallet)
             }
         } catch {
             print("something went wrong trying to get subbacounts")
         }
         m_wallets = result
+        getTransactions(wallets: result)
         return result
     }
 
@@ -49,6 +51,37 @@ class AccountStore {
 
     func getWallets() -> Promise<Array<WalletItem>> {
         return wrap {self.fetchWallets()}
+    }
+
+    func dateFromTimestamp(date: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return dateFormatter.date(from: date)!
+    }
+
+    func getTransactions(wallets: Array<WalletItem>) {
+        for wallet in wallets {
+            wrap{ try getSession().getTransactions(subaccount: wallet.pointer)
+                }.done { (transactions:[Transaction]?) in
+                    for tx in transactions ?? [] {
+                        let json = try! tx.toJSON()!
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateStyle = .medium
+                        dateFormatter.timeStyle = .short
+                        let date = self.dateFromTimestamp(date: json["timestamp"] as! String)
+                        let dateString = dateFormatter.string(from: date)
+                        dateFormatter.dateFormat = "LLL"
+                        let nameOfMonth = dateFormatter.string(from: date)
+                        dateFormatter.dateFormat = "dd"
+                        let nameOfDay = dateFormatter.string(from: date)
+                        let val:String? = json["value_str"] as? String
+                        let balance: Double? = Double(val!)
+                        let toBtc: Double = balance! / 100000000
+                        let formattedBalance: String = String(format: "%g BTC", toBtc)
+                        let counterparty: String = json["counterparty"] as! String
+                    }
+            }
+        }
     }
 
     func satoshiToUSD(amount: Int) -> Double {
@@ -94,18 +127,18 @@ class AccountStore {
     }
 }
 
-
-
 class WalletItem {
     var name: String
     var address: String
     var balance: String
     var currency: String
+    var pointer: Int
 
-    init(name: String, address: String, balance: String, currency: String) {
+    init(name: String, address: String, balance: String, currency: String, pointer: Int) {
         self.name = name
         self.address = address
         self.balance = balance
         self.currency = currency
+        self.pointer = pointer
     }
 }
