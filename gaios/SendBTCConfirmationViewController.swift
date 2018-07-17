@@ -39,7 +39,10 @@ class SendBTCConfirmationViewController: UIViewController {
     }
 
     @IBAction func sendButtonClicked(_ sender: Any) {
-        wrap { return try getSession().send(addrAmt: [(self.toAddress, 100)], feeRate: 1000) }
+        if (satoshi_amount == 0) {
+            print("sometthin is wrong")
+        }
+        wrap { return try getSession().send(addrAmt: [(self.toAddress, UInt64(self.satoshi_amount))], feeRate: 1000) }
             .done { () in
                 self.navigationController?.popToRootViewController(animated: true)
             }.catch { error in
