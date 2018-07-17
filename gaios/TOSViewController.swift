@@ -28,6 +28,8 @@ class TOSViewController: UIViewController {
         tosClicked = true
         sender.backgroundColor = UIColor.customMatrixGreen()
         sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
+        sender.setImage(UIImage(named: "stepIndicator"), for: UIControlState.normal)
+        sender.tintColor = UIColor.white
         if tosClicked && recoveryClicked {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor.customLightGreen()
@@ -38,6 +40,8 @@ class TOSViewController: UIViewController {
         recoveryClicked = true
         sender.backgroundColor = UIColor.customMatrixGreen()
         sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
+        sender.setImage(UIImage(named: "stepIndicator"), for: UIControlState.normal)
+        sender.tintColor = UIColor.white
         if tosClicked && recoveryClicked {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor.customMatrixGreen()
