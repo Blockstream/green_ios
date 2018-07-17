@@ -17,8 +17,8 @@ class VerifyMnemonicsViewController: UIViewController {
     var questionCounter: Int = 0
     var questionPosition: Int = 0
     @IBOutlet weak var topLabel: UILabel!
-    @IBOutlet weak var counterLabel: UILabel!
-
+    @IBOutlet weak var stepIndicatorView: StepIndicatorView!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +29,19 @@ class VerifyMnemonicsViewController: UIViewController {
         createButtons()
         questionPosition = Int(wordNumbers[Int(arc4random_uniform(UInt32(wordNumbers.count)))])
         topLabel.text = String(format: "What is the word at position %d ?", questionPosition + 1)
+        //Customization by coding:
+        self.stepIndicatorView.numberOfSteps = 5
+        self.stepIndicatorView.currentStep = 0
+        self.stepIndicatorView.circleColor = UIColor(red: 179.0/255.0, green: 189.0/255.0, blue: 194.0/255.0, alpha: 1.0)
+        self.stepIndicatorView.circleTintColor = UIColor(red: 0.0/255.0, green: 180.0/255.0, blue: 124.0/255.0, alpha: 1.0)
+        self.stepIndicatorView.circleStrokeWidth = 3.0
+        self.stepIndicatorView.circleRadius = 10.0
+        self.stepIndicatorView.lineColor = self.stepIndicatorView.circleColor
+        self.stepIndicatorView.lineTintColor = self.stepIndicatorView.circleTintColor
+        self.stepIndicatorView.lineMargin = 4.0
+        self.stepIndicatorView.lineStrokeWidth = 2.0
+        self.stepIndicatorView.displayNumbers = false //indicates if it displays numbers at the center instead of the core circle
+        self.stepIndicatorView.direction = .leftToRight
     }
 
     func generateWordNumber(_ bottom: UInt8, _ top: UInt8) -> UInt8 {
@@ -98,7 +111,6 @@ class VerifyMnemonicsViewController: UIViewController {
 
     func updateLabels() {
         topLabel.text = String(format: "What is the word at position %d ?", questionPosition + 1)
-        counterLabel.text = String(format: "%d/5", questionCounter + 1)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -136,6 +148,7 @@ class VerifyMnemonicsViewController: UIViewController {
                 }
             } else {
                 questionCounter += 1
+                stepIndicatorView.currentStep = questionCounter
                 generateRandomWordNumbers()
                 questionPosition = Int(wordNumbers[Int(arc4random_uniform(UInt32(wordNumbers.count)))])
                 updateButtons()
