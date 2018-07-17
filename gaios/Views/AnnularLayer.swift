@@ -17,7 +17,7 @@ class AnnularLayer: CAShapeLayer {
     lazy private var centerTextLayer = CATextLayer()
     
     static private let originalScale = CATransform3DMakeScale(1.0, 1.0, 1.0)
-    static private let flagImageName = "CYStepIndicator_ic_done_white"
+    static private let flagImageName = "stepIndicator"
     static private var flagCGImage:CGImage?
     
     
