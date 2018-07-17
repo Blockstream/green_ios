@@ -1,9 +1,28 @@
 import UIKit
 import Foundation
+import PromiseKit
 /**
  The WalletView class manages an ordered collection of card view and presents them.
  */
-open class WalletView: UIView {
+open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
+
+    var items = [TransactionItem]()
+
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell", for: indexPath) as! TransactionTableCell
+        let item: TransactionItem = items.reversed()[indexPath.row]
+        cell.address.text = item.address
+        cell.amount.text = item.amount
+        cell.month.text = item.month
+        cell.day.text = item.day
+        cell.walletName.text = (presentedCardView as! ColoredCardView).wallet?.name
+        return cell;
+    }
+
     
     // MARK: Public methods
 
@@ -43,8 +62,45 @@ open class WalletView: UIView {
         calculateLayoutValues()
         
     }
+
+    func dateFromTimestamp(date: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return dateFormatter.date(from: date)!
+    }
+
+    func getTransactions(account: Int) -> Promise<[Transaction]?> {
+        return retry(session: getSession(), network: Network.TestNet) {
+            return wrap { return try getSession().getTransactions(subaccount: account) }
+        }
+    }
     
-    
+    func updateViewModel(account: Int) {
+        getTransactions(account: account).done { (txs: [Transaction]?) in
+            self.items.removeAll(keepingCapacity: true)
+            for tx in txs ?? [] {
+                let json = try! tx.toJSON()!
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateStyle = .medium
+                dateFormatter.timeStyle = .short
+                let date = self.dateFromTimestamp(date: json["timestamp"] as! String)
+                let dateString = dateFormatter.string(from: date)
+                dateFormatter.dateFormat = "LLL"
+                let nameOfMonth = dateFormatter.string(from: date)
+                dateFormatter.dateFormat = "dd"
+                let nameOfDay = dateFormatter.string(from: date)
+                let val:String? = json["value_str"] as? String
+                let balance: Double? = Double(val!)
+                let toBtc: Double = balance! / 100000000
+                let formattedBalance: String = String(format: "%g BTC", toBtc)
+                let counterparty: String = json["counterparty"] as! String
+                print(json)
+                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", month: nameOfMonth, day: nameOfDay))
+            }
+            }.ensure {
+                self.transactionTableView.reloadData()
+            }.catch { _ in }
+    }
     /**
      Presents a card view.
      
@@ -53,7 +109,8 @@ open class WalletView: UIView {
      - parameter completion: A block object to be executed when the animation sequence ends.
      */
     open func present(cardView: CardView, animated: Bool, completion: LayoutCompletion? = nil) {
-        
+        let walletView = cardView as! ColoredCardView
+        updateViewModel(account: (walletView.wallet?.pointer)!)
         present(cardView: cardView, animated: animated, animationDuration: animated ? WalletView.presentingAnimationSpeed : nil, completion: completion)
         
     }
@@ -226,7 +283,7 @@ open class WalletView: UIView {
         
     }
     var presentedFooterView: cardFooter = cardFooter.nibForClass()
-    
+    var transactionTableView: UITableView = UITableView()
     
     /** The receiver’s immediate card views. */
     public var insertedCardViews = [CardView]()    {
@@ -328,6 +385,13 @@ open class WalletView: UIView {
     func prepareWalletView() {
         
         prepareScrollView()
+        let nib = UINib(nibName: "TransactionCell", bundle: nil)
+        transactionTableView.delegate = self
+        transactionTableView.dataSource = self
+        transactionTableView.tableFooterView = UIView()
+        transactionTableView.register(nib, forCellReuseIdentifier: "transactionCell")
+        transactionTableView.allowsSelection = false
+        transactionTableView.separatorColor = UIColor.clear
         //prepareWalletHeaderView()
         
     }
@@ -720,7 +784,7 @@ open class WalletView: UIView {
         
     }
     func dissmissFooter(completion: @escaping () -> ()) {
-        if(presentedFooterView != nil) {
+        if (presentedCardView?.superview != nil) {
             let animations = { [weak self] in
                 var origin = self?.presentedCardView?.frame.origin
                 origin?.y += (self?.presentedCardView?.frame.height)! - 80
@@ -729,12 +793,23 @@ open class WalletView: UIView {
                 self?.presentedFooterView.frame = CGRect(origin: origin!, size: size!)
                 self?.presentedFooterView.layer.opacity = 0
             }
+            let animations1 = { [weak self] in
+                var origin = self?.presentedCardView?.frame.origin
+                origin?.y += (self?.presentedCardView?.frame.height)! - 80
+                var size = self?.presentedCardView?.frame.size
+                size?.height = 70
+                self?.transactionTableView.frame = CGRect(origin: origin!, size: size!)
+                self?.transactionTableView.layer.opacity = 0
+            }
             
             let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
-            UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: { (_) in
-                completion()
+            UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion: { (_) in
+                self.presentedFooterView.removeFromSuperview()
+                UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: { (_) in
+                    completion()
+                })
             })
-        }
+                }
     }
     
     
@@ -750,6 +825,18 @@ open class WalletView: UIView {
             presentedFooterView.backgroundColor = UIColor.customTitaniumMedium()
             scrollView.insertSubview(presentedFooterView, belowSubview: presentedCardView!)
         }
+        
+        if (transactionTableView.superview == nil) {
+            var origin = presentedCardView?.frame.origin
+            origin?.y += (presentedCardView?.frame.height)! - 80
+            var size = presentedCardView?.frame.size
+            size?.height = 90
+
+            transactionTableView.frame = CGRect(origin: origin!, size: size!)
+            transactionTableView.layer.opacity = 0
+            transactionTableView.backgroundColor = UIColor.customTitaniumDark()
+            scrollView.insertSubview(transactionTableView, aboveSubview: presentedFooterView)
+        }
 
         let animations = { [weak self] in
             var origin = self?.presentedCardView?.frame.origin
@@ -760,8 +847,20 @@ open class WalletView: UIView {
             self?.presentedFooterView.layer.opacity = 1
         }
         
+        let animations1 = { [weak self] in
+            var origin = self?.presentedFooterView.frame.origin
+            origin?.y += (self?.presentedFooterView.frame.height)! + 5
+            var size = self?.presentedCardView?.frame.size
+            size?.height = (self?.frame.origin.y)! + (self?.frame.size.height)! - (origin?.y)!
+            self?.transactionTableView.frame = CGRect(origin: origin!, size: size!)
+            self?.transactionTableView.layer.opacity = 1
+        }
+        
         let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
-        UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: nil)
+        UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: {
+            _ in
+            UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion:nil)
+        })
     }
     
     func placeVisibleCardViews() {
