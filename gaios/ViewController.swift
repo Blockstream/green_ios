@@ -80,6 +80,11 @@ class ViewController: UIViewController {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+         walletView.dismissPresentedCardView(animated: true)
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         walletView.dismissPresentedCardView(animated: true)
         if let nextController = segue.destination as? SendBtcViewController {
