@@ -7,5 +7,7 @@ test_osx_ios:
     - osx
   script:
     - cd $CI_PROJECT_DIR
+    - git submodule init
+    - git submodule update
     - ./tools/build.sh
 
