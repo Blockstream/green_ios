@@ -17,6 +17,7 @@ class AccountStore {
     var feeEstimatelow: Int = 0
     var feeEstimateMedium: Int = 0
     var feeEstimateHigh: Int = 0
+    var mainAddress:String = ""
 
     public func fetchWallets() -> Array<WalletItem> {
         var result = Array<WalletItem>()
@@ -24,7 +25,9 @@ class AccountStore {
 
         let subacounts:NSArray = loginData!["subaccounts"] as! NSArray
         do {
-            let mainAddress = try getSession().getReceiveAddress()
+            if(mainAddress == "") {
+                mainAddress = try getSession().getReceiveAddress()
+            }
             let json = try getSession().getBalance(numConfs: 1)
             let balance:String = json!["satoshi"] as! String
             let mainWallet:WalletItem = WalletItem(name: "Main Wallet", address: mainAddress, balance: balance, currency: "USD", pointer: 0)
