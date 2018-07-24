@@ -403,7 +403,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     func present(cardView: CardView, animated: Bool, animationDuration: TimeInterval?, completion: LayoutCompletion? = nil) {
         
         if cardView == presentedCardView {
-            
+
             completion?(true)
             return
             
@@ -755,7 +755,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             
             let cardView = insertedCardViews[cardViewIndex]
             
-            var cardViewFrame = CGRect(x: 0, y: scrollViewFrameMaxY + (collapsedCardViewStackHeight * 2), width: frame.width, height: cardViewHeight)
+            var cardViewFrame = CGRect(x: 0, y: scrollViewFrameMaxY + (collapsedCardViewStackHeight * 2), width: frame.width - 32, height: cardViewHeight)
             
             if cardViewIndex >= firstIndexToMoveY && collapsedCardViewsCount > 0 {
                 
