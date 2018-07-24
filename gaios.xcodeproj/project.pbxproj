@@ -27,6 +27,7 @@
 		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
 		0932D7B520FC6D760074B48F /* ProgressIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */; };
 		0932D7B720FC6F780074B48F /* ProgressIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */; };
+		0933A599210716EC00C43838 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0933A598210716EC00C43838 /* GreenAddress.swift */; };
 		09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */; };
 		09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD120FD671A009DCDEA /* AnnularLayer.swift */; };
 		09342FD420FD671F009DCDEA /* LineLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD320FD671E009DCDEA /* LineLayer.swift */; };
@@ -34,7 +35,6 @@
 		09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD721001A5E009DCDEA /* SettingsViewController.swift */; };
 		09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD921003961009DCDEA /* SettingsCell.swift */; };
 		09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FDB21004309009DCDEA /* CustomAlertInputView.swift */; };
-		09358BD42103FB6F00D1066F /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD32103FB6F00D1066F /* GreenAddress.swift */; };
 		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
 		0967BF5820DB55840062A653 /* WalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5720DB55840062A653 /* WalletViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
@@ -112,6 +112,7 @@
 		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicatorView.xib; sourceTree = "<group>"; };
 		0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicatorView.swift; sourceTree = "<group>"; };
+		0933A598210716EC00C43838 /* GreenAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = gdk/src/swift/GreenAddress/Sources/GreenAddress/GreenAddress.swift; sourceTree = "<group>"; };
 		09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepIndicatorView.swift; sourceTree = "<group>"; };
 		09342FD120FD671A009DCDEA /* AnnularLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnnularLayer.swift; sourceTree = "<group>"; };
 		09342FD320FD671E009DCDEA /* LineLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineLayer.swift; sourceTree = "<group>"; };
@@ -119,7 +120,6 @@
 		09342FD721001A5E009DCDEA /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		09342FD921003961009DCDEA /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		09342FDB21004309009DCDEA /* CustomAlertInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertInputView.swift; sourceTree = "<group>"; };
-		09358BD32103FB6F00D1066F /* GreenAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenAddress.swift; sourceTree = "<group>"; };
 		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
 		0967BF5720DB55840062A653 /* WalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
@@ -273,7 +273,7 @@
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
-				09358BD32103FB6F00D1066F /* GreenAddress.swift */,
+				0933A598210716EC00C43838 /* GreenAddress.swift */,
 				676FCF1E1F9D0CF800354E93 /* gaios */,
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
 				676FCF401F9D0CF800354E93 /* gaiosUITests */,
@@ -653,7 +653,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				09358BD42103FB6F00D1066F /* GreenAddress.swift in Sources */,
+				0933A599210716EC00C43838 /* GreenAddress.swift in Sources */,
 				09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */,
 				0992F86820E470A800F6AAAB /* VerifyMnemonicTableViewController.swift in Sources */,
 				09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */,
