@@ -157,10 +157,8 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 })
                 
                 }, completion: { [weak self] (_) in
-                    
                     self?.reload(cardViews: self?.insertedCardViews ?? [])
                     completion?()
-                    
             })
             
             
@@ -790,6 +788,9 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 origin?.y += (self?.presentedCardView?.frame.height)! - 80
                 var size = self?.presentedCardView?.frame.size
                 size?.height = 70
+                if (origin == nil)  {
+                    return
+                }
                 self?.presentedFooterView.frame = CGRect(origin: origin!, size: size!)
                 self?.presentedFooterView.layer.opacity = 0
             }
@@ -798,14 +799,17 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 origin?.y += (self?.presentedCardView?.frame.height)! - 80
                 var size = self?.presentedCardView?.frame.size
                 size?.height = 70
+                if (origin == nil)  {
+                    return
+                }
                 self?.transactionTableView.frame = CGRect(origin: origin!, size: size!)
                 self?.transactionTableView.layer.opacity = 0
             }
             
             let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
             UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion: { (_) in
-                self.presentedFooterView.removeFromSuperview()
                 UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: { (_) in
+                    self.presentedFooterView.removeFromSuperview()
                     completion()
                 })
             })
