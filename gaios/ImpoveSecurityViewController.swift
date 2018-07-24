@@ -63,9 +63,10 @@ class ImproveSecurityViewController: UIViewController {
                 let deviceid = String.random(length: 14)
                 let mnemonics = getAppDelegate().getMnemonicWordsString()
                 wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: password, device: deviceid) }
-                    .done { (pinData: String) in
+                    .done { (pinIdentifier: String, pinSecret: String) in
                         KeychainHelper.savePassword(service: "password", account: "user", data: password)
-                        KeychainHelper.savePassword(service: "pinData", account: "user", data: pinData)
+                        KeychainHelper.savePassword(service: "pinIdentifier", account: "user", data: pinIdentifier)
+                        KeychainHelper.savePassword(service: "pinSecret", account: "user", data: pinSecret)
                         self.performSegue(withIdentifier: "mainMenu", sender: self)
                     }.catch { error in
                         print("setPin failed")

@@ -22,7 +22,8 @@ class PinLoginViewController: UIViewController {
     var pinCode: String = ""
     var counter: Int = 0
     var setPinMode: Bool = false
-    var pinData: String = ""
+    var pinIdentifier: String = ""
+    var pinSecret: String = ""
 
     var firstPin: String = ""
     var pinConfirm: String = ""
@@ -38,7 +39,7 @@ class PinLoginViewController: UIViewController {
         if (setPinMode == true) {
             topLabel.text = "Choose Pin"
         }
-        KeychainHelper.removePassword(service: "pinData", account: "user")
+        //KeychainHelper.removePassword(service: "pinData", account: "user")
     }
 
     @IBAction func numberClicked(_ sender: UIButton) {
@@ -51,7 +52,7 @@ class PinLoginViewController: UIViewController {
         if (counter == 4) {
             if (setPinMode == false) {
                 //login
-                wrap { return try getSession().login(pin: self.pinCode, pin_identifier_and_secret: self.pinData) }.done { (loginData: [String: Any]?) in
+                wrap { return try getSession().login(pin: self.pinCode, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
                         getGAService().loginData = loginData
                         self.performSegue(withIdentifier: "mainMenu", sender: self)
                     }.catch { error in
@@ -72,8 +73,9 @@ class PinLoginViewController: UIViewController {
             if(firstPin == pinCode) {
                 let mnemonics = getAppDelegate().getMnemonicWordsString()
                 wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 10)) }
-                    .done { (pinData: String) in
-                        KeychainHelper.savePassword(service: "pinData", account: "user", data: pinData)
+                    .done { (pin_identifier: String, pin_secret: String) in
+                        KeychainHelper.savePassword(service: "pinIdentifier", account: "user", data: pin_identifier)
+                        KeychainHelper.savePassword(service: "pinSecret", account: "user", data: pin_secret)
                         self.performSegue(withIdentifier: "mainMenu", sender: self)
                     }.catch { error in
                         print("setPin failed")
@@ -111,6 +113,13 @@ class PinLoginViewController: UIViewController {
         }
     }
     
+    @IBAction func backButtonClicked(_ sender: Any) {
+        if(setPinMode) {
+            self.navigationController?.popViewController(animated: true)
+        } else {
+            self.performSegue(withIdentifier: "entrance", sender: nil)
+        }
+    }
     func updateColor() {
         for i in 0..<counter {
             circles[i].tintColor = UIColor.customLightGreen()

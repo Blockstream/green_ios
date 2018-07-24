@@ -59,6 +59,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return mnemonicWords!.joined(separator: " ")
     }
 
+    func removeKeychainData() {
+        KeychainHelper.removePassword(service: "pinData", account: "user")
+        KeychainHelper.removePassword(service: "password", account: "user")
+    }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         wrap {
@@ -68,20 +73,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }.catch { error in
                 print("Connection failed")
         }
-        let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
-        if(pinData != nil) {
+        //removeKeychainData()
+
+        let pinIdentifier = KeychainHelper.loadPassword(service: "pinIdentifier", account: "user")
+        let pinSecret = KeychainHelper.loadPassword(service: "pinSecret", account: "user")
+        if(pinIdentifier != nil && pinSecret != nil) {
             let password = KeychainHelper.loadPassword(service: "password", account: "user")
             if(password != nil) {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
                 firstVC.password = password!
-                firstVC.pinData = pinData!
+                firstVC.pinSecret = pinSecret!
+                firstVC.pinIdentifier = pinIdentifier!
                 self.window?.rootViewController = firstVC
                 return true
             }
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-            firstVC.pinData = pinData!
+            firstVC.pinSecret = pinSecret!
+            firstVC.pinIdentifier = pinIdentifier!
             self.window?.rootViewController = firstVC
         } else {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
