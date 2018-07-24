@@ -10,6 +10,7 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var addCardViewButton: UIButton!
     var wallets:Array<WalletItem> = Array<WalletItem>()
+    var pager: MainMenuPageViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,13 +72,21 @@ class ViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        showButtons()
         self.navigationController!.navigationBar.isHidden = true
         self.tabBarController?.tabBar.isHidden = false
-        AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
-            self.walletView.remove(cardViews: self.walletView.insertedCardViews)
-            self.wallets = accs.reversed()
-            self.reloadWallets()
+        DispatchQueue.global(qos: .background).async {
+            // Background Thread
+            AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
+                DispatchQueue.main.async {
+                    // Run UI Updates or call completion block
+                    self.walletView.remove(cardViews: self.walletView.insertedCardViews)
+                    self.wallets = accs.reversed()
+                    self.reloadWallets()
+                }
+            }
         }
+
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -94,35 +103,60 @@ class ViewController: UIViewController {
         if let nextController = segue.destination as? ReceiveBtcViewController {
             nextController.receiveAddress = (walletView.presentedCardView as! ColoredCardView).addressLabel.text
         }
+        hideButtons()
     }
 
     @IBAction func addCardViewAction(_ sender: Any) {
     }
 
-    @objc func addAccount(_ sender: UIButton) {
-        let alert = UIAlertController(title: "Name for new wallet", message: "", preferredStyle: .alert)
-
-        alert.addTextField { (textField) in
-            textField.placeholder = "Wallet1"
+    func hideButtons() {
+        if (pager != nil){
+            pager?.button.isHidden = true
+            pager?.button1.isHidden = true
+            pager?.button2.isHidden = true
         }
+    }
 
-        alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { [weak alert] (_) in
-            let textField = alert?.textFields![0] // Force unwrapping because we know it exists.
-            do {
-                try getSession().createSubaccount(type: SubaccountType._2of2, name: (textField?.text)!)
-            } catch {
-                print("something went worng with creating subAccount")
-            }
-        }))
+    func showButtons() {
+        if (pager != nil){
+            pager?.button.isHidden = false
+            pager?.button1.isHidden = false
+            pager?.button2.isHidden = false
+        }
+    }
 
-        self.present(alert, animated: true, completion: nil)
+    @objc func addAccount(_ sender: UIButton) {
+        let customAlert = self.storyboard?.instantiateViewController(withIdentifier: "CustomAlertView") as! CustomAlertInputView
+        customAlert.providesPresentationContextTransitionStyle = true
+        customAlert.definesPresentationContext = true
+        customAlert.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+        customAlert.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        customAlert.delegate = self
+        hideButtons()
+        self.present(customAlert, animated: true, completion: nil)
     }
 
     override var prefersStatusBarHidden: Bool {
         return false
     }
 
+}
 
+extension ViewController: CustomAlertViewInputDelegate {
 
+    func okButtonTapped(selectedOption: String, textFieldValue: String) {
+
+        do {
+            try getSession().createSubaccount(type: SubaccountType._2of2, name: textFieldValue)
+        } catch {
+            print("something went worng with creating subAccount")
+        }
+        showButtons()
+    }
+
+    func cancelButtonTapped() {
+        print("cancelButtonTapped")
+        showButtons()
+    }
 }
 
