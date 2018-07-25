@@ -60,7 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func removeKeychainData() {
-        KeychainHelper.removePassword(service: "pinData", account: "user")
+        KeychainHelper.removePassword(service: "pinIdentifier", account: "user")
+        KeychainHelper.removePassword(service: "pinSecret", account: "user")
         KeychainHelper.removePassword(service: "password", account: "user")
     }
 
