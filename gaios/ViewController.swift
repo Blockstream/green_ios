@@ -2,7 +2,7 @@
 import UIKit
 import PromiseKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, WalletViewDelegate{
 
     @IBOutlet weak var walletHeaderView: UIView!
     @IBOutlet weak var walletView: WalletView!
@@ -20,6 +20,7 @@ class ViewController: UIViewController {
         addWalletButton.imageView?.tintColor = UIColor.customLightGreen()
         walletView.presentedFooterView.receiveButton.addTarget(self, action: #selector(self.receiveToWallet(_:)), for: .touchUpInside)
         walletView.presentedFooterView.sendButton.addTarget(self, action: #selector(self.sendfromWallet(_:)), for: .touchUpInside)
+        walletView.delegate = self
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -123,6 +124,14 @@ class ViewController: UIViewController {
             pager?.button1.isHidden = false
             pager?.button2.isHidden = false
         }
+    }
+
+    func cardViewPresented() {
+        hideButtons()
+    }
+
+    func cardViewDismissed() {
+        showButtons()
     }
 
     @objc func addAccount(_ sender: UIButton) {

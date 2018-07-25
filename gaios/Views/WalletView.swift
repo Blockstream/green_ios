@@ -7,6 +7,7 @@ import PromiseKit
 open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     var items = [TransactionItem]()
+    var delegate: WalletViewDelegate?
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
@@ -111,6 +112,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     open func present(cardView: CardView, animated: Bool, completion: LayoutCompletion? = nil) {
         let walletView = cardView as! ColoredCardView
         updateViewModel(account: (walletView.wallet?.pointer)!)
+        delegate?.cardViewPresented()
         present(cardView: cardView, animated: animated, animationDuration: animated ? WalletView.presentingAnimationSpeed : nil, completion: completion)
         
     }
@@ -124,6 +126,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
      */
     open func dismissPresentedCardView(animated: Bool, completion: LayoutCompletion? = nil) {
         dissmissFooter {
+            self.delegate?.cardViewDismissed()
             self.dismissPresentedCardView(animated: animated, animationDuration: animated ? WalletView.dismissingAnimationSpeed : nil, completion: completion)
         }
     }
@@ -925,5 +928,10 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         
     }
     
+}
+
+protocol WalletViewDelegate: class {
+    func cardViewPresented()
+    func cardViewDismissed()
 }
 
