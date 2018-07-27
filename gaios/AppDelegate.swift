@@ -31,8 +31,14 @@ func getSession() -> Session {
     return getGAService().getSession()
 }
 
+var network: Network = Network.TestNet
+
 func getNetwork() -> Network {
-    return Network.TestNet
+    return network
+}
+
+func setNetwork(net: Network) {
+    network = net
 }
 
 @UIApplicationMain
@@ -59,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return mnemonicWords!.joined(separator: " ")
     }
 
-    func removeKeychainData() {
+    static func removeKeychainData() {
         KeychainHelper.removePassword(service: "pinIdentifier", account: "user")
         KeychainHelper.removePassword(service: "pinSecret", account: "user")
         KeychainHelper.removePassword(service: "password", account: "user")
@@ -74,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }.catch { error in
                 print("Connection failed")
         }
-        //removeKeychainData()
+        //AppDelegate.removeKeychainData()
 
         let pinIdentifier = KeychainHelper.loadPassword(service: "pinIdentifier", account: "user")
         let pinSecret = KeychainHelper.loadPassword(service: "pinSecret", account: "user")

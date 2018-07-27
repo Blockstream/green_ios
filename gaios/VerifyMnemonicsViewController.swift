@@ -138,6 +138,7 @@ class VerifyMnemonicsViewController: UIViewController {
                     .done { () in
                         wrap { return try getSession().login(mnemonic: stringRepresentation) }
                             .done { (loginData: [String: Any]?) in
+                                AppDelegate.removeKeychainData()
                                 getGAService().loginData = loginData
                                 self.performSegue(withIdentifier: "tos", sender: self)
                             }.catch { error in
