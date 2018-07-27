@@ -37,7 +37,6 @@ class ViewController: UIViewController, WalletViewDelegate{
 
 
     func reloadWallets() {
-        walletView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
 
         var coloredCardViews = [ColoredCardView]()
         for index in 0..<wallets.count {
@@ -92,7 +91,7 @@ class ViewController: UIViewController, WalletViewDelegate{
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-         walletView.dismissPresentedCardView(animated: true)
+        //walletView.dismissPresentedCardView(animated: true)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -131,7 +130,9 @@ class ViewController: UIViewController, WalletViewDelegate{
     }
 
     func cardViewDismissed() {
-        showButtons()
+        if(self.viewIfLoaded?.window != nil ) {
+            showButtons()
+        }
     }
 
     @objc func addAccount(_ sender: UIButton) {
