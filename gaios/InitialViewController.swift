@@ -8,6 +8,8 @@ import UIKit
 
 class InitialViewController: UIViewController {
 
+    @IBOutlet weak var topButton: DesignableButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -17,9 +19,13 @@ class InitialViewController: UIViewController {
          self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-         //self.navigationController?.setNavigationBarHidden(, animated: animated)
     }
 
     override func viewDidAppear(_ animated: Bool) {

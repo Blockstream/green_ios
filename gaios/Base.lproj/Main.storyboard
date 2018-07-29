@@ -481,7 +481,7 @@
                                 </state>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="qi9-Hk-q1Y">
-                                <rect key="frame" x="60" y="6" width="200" height="200"/>
+                                <rect key="frame" x="60" y="6.5" width="200" height="200"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="hWX-oS-9jc"/>
                                     <constraint firstAttribute="width" constant="200" id="imA-F6-Qi6"/>
@@ -515,6 +515,9 @@
                         <viewLayoutGuide key="safeArea" id="7hx-b0-XCa"/>
                     </view>
                     <navigationItem key="navigationItem" id="pL2-EH-mPI"/>
+                    <connections>
+                        <outlet property="topButton" destination="lbd-hr-xkm" id="4Ij-L1-qjT"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uYz-un-mGa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1410,6 +1413,7 @@
                         <viewLayoutGuide key="safeArea" id="zrO-ma-neG"/>
                     </view>
                     <connections>
+                        <outlet property="nextButton" destination="Tfw-SF-9Xe" id="9w3-fS-SHc"/>
                         <outlet property="topLabel" destination="uVj-Hk-ibq" id="v6n-6w-g5f"/>
                     </connections>
                 </viewController>
@@ -1508,13 +1512,13 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I agree with Terms Of Service" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VBY-Bz-7sA">
-                                <rect key="frame" x="50" y="216" width="260" height="21"/>
+                                <rect key="frame" x="50" y="216" width="260" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwq-Mt-baI" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="15" y="287" width="25" height="25"/>
+                                <rect key="frame" x="15" y="286.5" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="FsD-v2-GgW"/>
                                     <constraint firstAttribute="height" constant="25" id="PMk-Z1-mRn"/>
@@ -2526,7 +2530,7 @@
         <image name="wallet2" width="108" height="108"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="5cA-KV-clc"/>
+        <segue reference="M6f-wC-TXW"/>
         <segue reference="ho6-WN-AfT"/>
     </inferredMetricsTieBreakers>
 </document>

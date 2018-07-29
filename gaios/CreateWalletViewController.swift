@@ -14,6 +14,7 @@ class CreateWalletViewController: UIViewController {
     @IBOutlet weak var topLabel: UILabel!
     var viewArray: Array<UIView> = []
     var mnemonics:[String] = []
+    @IBOutlet weak var nextButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +24,12 @@ class CreateWalletViewController: UIViewController {
         mnemonics = getAppDelegate().getMnemonicWords()!
         createViews()
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
+
     @IBAction func backButtonClicked(_ sender: Any) {
         navigationController?.popViewController(animated: true)
     }
