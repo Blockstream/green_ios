@@ -31,6 +31,7 @@ class FaceIDViewController: UIViewController {
             if(message == nil) {
                 wrap { return try getSession().login(pin: self.password, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
                     getGAService().loginData = loginData
+                    AccountStore.shared.initializeAccountStore()
                     self.performSegue(withIdentifier: "mainMenu", sender: self)
                     }.catch { error in
                         print("incorrect PIN ", error)
