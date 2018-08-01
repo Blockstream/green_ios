@@ -842,7 +842,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             transactionTableView.frame = CGRect(origin: origin!, size: size!)
             transactionTableView.layer.opacity = 0
             transactionTableView.backgroundColor = UIColor.customTitaniumDark()
-            scrollView.insertSubview(transactionTableView, aboveSubview: presentedFooterView)
+            scrollView.insertSubview(transactionTableView, belowSubview: presentedFooterView)
         }
 
         let animations = { [weak self] in
