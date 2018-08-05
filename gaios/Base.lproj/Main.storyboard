@@ -1767,16 +1767,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter your mnemonics" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WZL-Fg-xk4">
-                                <rect key="frame" x="32" y="80" width="257.5" height="23"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your wallet recovery seed" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WZL-Fg-xk4">
+                                <rect key="frame" x="79" y="80" width="162" height="45.5"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="162" id="18B-fI-OBr"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wdD-2X-pvZ">
-                                <rect key="frame" x="0.0" y="119" width="320" height="372"/>
-                                <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Ka-HY-djy">
                                 <rect key="frame" x="16" y="507" width="288" height="45"/>
                                 <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1794,13 +1793,9 @@
                         </subviews>
                         <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="wdD-2X-pvZ" firstAttribute="top" secondItem="WZL-Fg-xk4" secondAttribute="bottom" constant="16" id="0uW-S3-Srb"/>
-                            <constraint firstItem="t2r-7e-jNo" firstAttribute="trailing" secondItem="wdD-2X-pvZ" secondAttribute="trailing" id="6FW-E4-rKv"/>
                             <constraint firstItem="6Ka-HY-djy" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" constant="16" id="CXP-gV-zbK"/>
                             <constraint firstItem="WZL-Fg-xk4" firstAttribute="centerX" secondItem="5FT-sb-MH7" secondAttribute="centerX" id="EUq-CC-YRu"/>
-                            <constraint firstItem="6Ka-HY-djy" firstAttribute="top" secondItem="wdD-2X-pvZ" secondAttribute="bottom" constant="16" id="VWj-CK-5sM"/>
                             <constraint firstItem="WZL-Fg-xk4" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="16" id="hhl-yu-dpF"/>
-                            <constraint firstItem="wdD-2X-pvZ" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" id="nmK-ZE-Xbo"/>
                             <constraint firstItem="t2r-7e-jNo" firstAttribute="bottom" secondItem="6Ka-HY-djy" secondAttribute="bottom" constant="16" id="pRL-dN-THt"/>
                             <constraint firstItem="t2r-7e-jNo" firstAttribute="trailing" secondItem="6Ka-HY-djy" secondAttribute="trailing" constant="16" id="vbL-u9-2MH"/>
                         </constraints>
@@ -1808,7 +1803,7 @@
                     </view>
                     <connections>
                         <outlet property="doneButton" destination="6Ka-HY-djy" id="tPz-pP-59Y"/>
-                        <outlet property="tableView" destination="wdD-2X-pvZ" id="2Wh-kG-tAG"/>
+                        <outlet property="topLabel" destination="WZL-Fg-xk4" id="t9y-F2-vWH"/>
                         <segue destination="iqZ-ST-Be8" kind="presentation" identifier="mainMenu" id="M6f-wC-TXW"/>
                     </connections>
                 </viewController>
