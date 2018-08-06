@@ -25,6 +25,10 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
     }
 
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+
     @IBAction func doneButtonClicked(_ sender: Any) {
        //let _ = mnemonicWords.joined(separator: " ")
         let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "current tomato armed onion able case donkey summer shrimp ridge into keen motion parent twin mobile paper member satisfy gather crane soft genuine produce".trimmingCharacters(in: .whitespacesAndNewlines)

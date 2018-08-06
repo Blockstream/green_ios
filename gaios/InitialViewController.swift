@@ -9,6 +9,7 @@ import UIKit
 class InitialViewController: UIViewController {
 
     @IBOutlet weak var topButton: DesignableButton!
+    @IBOutlet weak var networkButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,6 +18,15 @@ class InitialViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
          self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    @IBAction func networkButtonClicked(_ sender: Any) {
+        let networkSelector = self.storyboard?.instantiateViewController(withIdentifier: "networkSelection") as! NetworkSelectionSettings
+        networkSelector.providesPresentationContextTransitionStyle = true
+        networkSelector.definesPresentationContext = true
+        networkSelector.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+        networkSelector.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        self.present(networkSelector, animated: true, completion: nil)
     }
 
     override func viewDidLayoutSubviews() {

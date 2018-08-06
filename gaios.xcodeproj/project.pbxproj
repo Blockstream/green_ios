@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0926C14821178FEE0008F94A /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14721178FEE0008F94A /* TextField.swift */; };
+		0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */; };
 		092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */; };
 		092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC820D238BD00F90DF2 /* ViewController.swift */; };
 		092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */; };
@@ -94,6 +95,7 @@
 
 /* Begin PBXFileReference section */
 		0926C14721178FEE0008F94A /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
+		0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionSettings.swift; sourceTree = "<group>"; };
 		092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColoredCardView.swift; sourceTree = "<group>"; };
 		092C7BC820D238BD00F90DF2 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
@@ -309,6 +311,7 @@
 				092D5C6320C04D130077048C /* CreateWalletViewController.swift */,
 				09342FDB21004309009DCDEA /* CustomAlertInputView.swift */,
 				09358BD52106A57D00D1066F /* CustomAletView.swift */,
+				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
 				674385B71FA8D03B001311DE /* SettingsTableViewController.swift */,
 				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
@@ -680,6 +683,7 @@
 				09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */,
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */,
+				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
 				09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */,
@@ -877,7 +881,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				INFOPLIST_FILE = gaios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -901,7 +905,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				INFOPLIST_FILE = gaios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
