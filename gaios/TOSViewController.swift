@@ -11,13 +11,15 @@ import UIKit
 
 class TOSViewController: UIViewController {
 
-    
+
     @IBOutlet weak var nextButton: UIButton!
     var tosClicked: Bool = false
     var recoveryClicked: Bool = false
+    @IBOutlet weak var topLabel: UILabel!
+    @IBOutlet weak var tosLabel: UILabel!
 
     @IBAction func nextButtonClicked(_ sender: Any) {
-        self.performSegue(withIdentifier: "security", sender: self)
+        self.performSegue(withIdentifier: "next", sender: self)
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
@@ -33,6 +35,8 @@ class TOSViewController: UIViewController {
         if tosClicked && recoveryClicked {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor.customLightGreen()
+            nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+
         }
     }
 
@@ -45,12 +49,29 @@ class TOSViewController: UIViewController {
         if tosClicked && recoveryClicked {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor.customMatrixGreen()
+            nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         }
+    }
+
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        UIApplication.shared.open(URL, options: [:])
+        return false
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         nextButton.isUserInteractionEnabled = false
         nextButton.backgroundColor = UIColor.customLightGray()
+        let tosString = NSMutableAttributedString(string: "I agree to the Terms of Service")
+        tosString.addAttribute(.link, value: "https://www.google.com", range: NSRange(location: 15, length: 16))
+        tosLabel.attributedText = tosString
+        tosLabel.isUserInteractionEnabled = true
+        let topString = NSMutableAttributedString(string: "GREEN is non-custodial\n Bitcoin wallet.")
+        topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
+        topLabel.attributedText = topString
     }
 }
