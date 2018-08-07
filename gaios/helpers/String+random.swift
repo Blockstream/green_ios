@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension String {
 
@@ -31,4 +32,14 @@ extension String {
         let result: String = String(format: "%g BTC", btc)
         return result
     }
+
+}
+
+extension NSMutableAttributedString {
+
+    func setColor(color: UIColor, forText stringValue: String) {
+        let range: NSRange = self.mutableString.range(of: stringValue, options: .caseInsensitive)
+        self.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: range)
+    }
+
 }
