@@ -14,7 +14,16 @@ class CreateWalletViewController: UIViewController {
     @IBOutlet weak var topLabel: UILabel!
     var viewArray: Array<UIView> = []
     var mnemonics:[String] = []
+    var pageCounter:Int = 0;
     @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var word1: UILabel!
+    @IBOutlet weak var word2: UILabel!
+    @IBOutlet weak var word3: UILabel!
+    @IBOutlet weak var word4: UILabel!
+    @IBOutlet weak var word5: UILabel!
+    @IBOutlet weak var word6: UILabel!
+    lazy var arrayLabels: [UILabel] = [self.word1, self.word2, self.word3, self.word4, self.word5, self.word6]
+    @IBOutlet weak var imageIndicator: UIImageView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +31,8 @@ class CreateWalletViewController: UIViewController {
             getAppDelegate().setMnemonicWords(try! generateMnemonic(lang: "en").components(separatedBy: " "))
         }
         mnemonics = getAppDelegate().getMnemonicWords()!
-        createViews()
+        //createViews()
+        loadWords()
     }
 
     override func viewDidLayoutSubviews() {
@@ -30,8 +40,43 @@ class CreateWalletViewController: UIViewController {
         nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
+    @IBAction func nextButtonClicked(_ sender: Any) {
+        if (pageCounter == 3) {
+            self.performSegue(withIdentifier: "next", sender: nil)
+        } else {
+            pageCounter += 1
+            loadWords()
+        }
+    }
+
+    func loadWords() {
+        let start = pageCounter * 6
+        let end = start + 6
+        for index in start..<end {
+            let real = index+1
+            let formattedString = NSMutableAttributedString(string: String(format: "%d. %@", real, mnemonics[index]))
+            formattedString.setColor(color: UIColor.customMatrixGreen(), forText: String(format: "%d.", real))
+            arrayLabels[index % 6].attributedText = formattedString
+            arrayLabels[index % 6].sizeToFit()
+        }
+        if(pageCounter == 0) {
+            imageIndicator.image = #imageLiteral(resourceName: "rowone")
+        } else if (pageCounter == 1) {
+             imageIndicator.image = #imageLiteral(resourceName: "rowtwo")
+        } else if (pageCounter == 2) {
+             imageIndicator.image = #imageLiteral(resourceName: "rowfour")
+        } else if (pageCounter == 3) {
+            imageIndicator.image = #imageLiteral(resourceName: "rowfour")
+        }
+     }
+
     @IBAction func backButtonClicked(_ sender: Any) {
-        navigationController?.popViewController(animated: true)
+        if(pageCounter == 0) {
+            navigationController?.popViewController(animated: true)
+        } else {
+            pageCounter -= 1
+            loadWords()
+        }
     }
     
     func createViews() {
