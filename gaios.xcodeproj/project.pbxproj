@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0926C14821178FEE0008F94A /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14721178FEE0008F94A /* TextField.swift */; };
 		0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */; };
+		0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14B211912AE0008F94A /* InstructionViewController.swift */; };
 		092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */; };
 		092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC820D238BD00F90DF2 /* ViewController.swift */; };
 		092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */; };
@@ -96,6 +97,7 @@
 /* Begin PBXFileReference section */
 		0926C14721178FEE0008F94A /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionSettings.swift; sourceTree = "<group>"; };
+		0926C14B211912AE0008F94A /* InstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionViewController.swift; sourceTree = "<group>"; };
 		092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColoredCardView.swift; sourceTree = "<group>"; };
 		092C7BC820D238BD00F90DF2 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
 				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
 				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
+				0926C14B211912AE0008F94A /* InstructionViewController.swift */,
 				0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */,
 				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
 				09A8991520FADFE000E105EC /* IntroPageViewController.swift */,
@@ -698,6 +701,7 @@
 				676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */,
 				09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
+				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */,
 				09342FD620FDD569009DCDEA /* MainMenuPageViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
