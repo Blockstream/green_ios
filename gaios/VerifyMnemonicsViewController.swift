@@ -11,14 +11,21 @@ import UIKit
 
 
 class VerifyMnemonicsViewController: UIViewController {
-    var wordNumbers: [UInt8] = [UInt8](repeating: 0, count: 8)
-    var buttonsArray: Array<UIButton> = []
+    var wordNumbers: [UInt8] = [UInt8](repeating: 0, count: 4)
     var mnemonics:[String] = []
     var questionCounter: Int = 0
     var questionPosition: Int = 0
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var stepIndicatorView: StepIndicatorView!
+    @IBOutlet weak var button0: DesignableButton!
+    @IBOutlet weak var button1: DesignableButton!
+    @IBOutlet weak var button2: DesignableButton!
+    @IBOutlet weak var button3: DesignableButton!
+    let numberOfSteps: Int = 3
+    @IBOutlet weak var bottomText: UILabel!
     
+    lazy var buttonsArray: Array<UIButton> = [button0, button1, button2, button3]
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,11 +33,11 @@ class VerifyMnemonicsViewController: UIViewController {
         generateRandomWordNumbers()
         wordNumbers.sort { $0 < $1 }
         mnemonics = getAppDelegate().getMnemonicWords()!
-        createButtons()
+        //createButtons()
         questionPosition = Int(wordNumbers[Int(arc4random_uniform(UInt32(wordNumbers.count)))])
         topLabel.text = String(format: "What is the word at position %d ?", questionPosition + 1)
         //Customization by coding:
-        self.stepIndicatorView.numberOfSteps = 5
+        self.stepIndicatorView.numberOfSteps = numberOfSteps
         self.stepIndicatorView.currentStep = 0
         self.stepIndicatorView.circleColor = UIColor(red: 179.0/255.0, green: 189.0/255.0, blue: 194.0/255.0, alpha: 1.0)
         self.stepIndicatorView.circleTintColor = UIColor(red: 0.0/255.0, green: 180.0/255.0, blue: 124.0/255.0, alpha: 1.0)
@@ -42,6 +49,8 @@ class VerifyMnemonicsViewController: UIViewController {
         self.stepIndicatorView.lineStrokeWidth = 2.0
         self.stepIndicatorView.displayNumbers = false //indicates if it displays numbers at the center instead of the core circle
         self.stepIndicatorView.direction = .leftToRight
+        updateButtons()
+        setSelector()
     }
 
     func generateWordNumber(_ bottom: UInt8, _ top: UInt8) -> UInt8 {
@@ -60,43 +69,12 @@ class VerifyMnemonicsViewController: UIViewController {
     func generateRandomWordNumbers() {
         repeat {
             wordNumbers = wordNumbers.map { (_) -> UInt8 in generateWordNumber(0, 23) }
-        } while Set(wordNumbers).count != 8
+        } while Set(wordNumbers).count != 4
     }
 
-
-    func createButtons(){
-        let screenSize: CGRect = UIScreen.main.bounds
-        let leftMargin = 20
-        let betweenButtonMargin = 15
-        let buttonWidth = (screenSize.width - CGFloat((leftMargin * 2 + betweenButtonMargin * 3))) / 4
-        let buttonHeight = buttonWidth / 1.61
-        for index in 0...7 {
-            let button:UIButton = UIButton(frame: CGRect(x: 100 + index * 70, y: 400, width: 60, height: 30))
-            button.backgroundColor = UIColor.customLightGreen()
-            button.setTitle(mnemonics[Int(wordNumbers[index])], for: .normal)
+    func setSelector() {
+        for button in buttonsArray {
             button.addTarget(self, action:#selector(self.buttonClicked), for: .touchUpInside)
-            button.layer.cornerRadius = 5
-            self.view.addSubview(button)
-            button.tag = Int(wordNumbers[index])
-            button.contentEdgeInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
-            button.titleLabel?.adjustsFontSizeToFitWidth = true
-            button.translatesAutoresizingMaskIntoConstraints = false
-            buttonsArray.append(button)
-            //width & height
-            NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: buttonWidth).isActive = true
-            NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: buttonHeight).isActive = true
-            //topConstraint
-            if(index < 4) {
-                NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 70).isActive = true
-            } else {
-                NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: buttonsArray[index - 4], attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 20).isActive = true
-            }
-            //left constraint
-            if(index % 4 == 0) {
-                NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.left, multiplier: 1, constant: CGFloat(leftMargin)).isActive = true
-            } else {
-                NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: buttonsArray[index - 1], attribute: NSLayoutAttribute.right, multiplier: 1, constant: CGFloat(betweenButtonMargin)).isActive = true
-            }
         }
     }
 
@@ -107,6 +85,33 @@ class VerifyMnemonicsViewController: UIViewController {
             button.tag = Int(wordNumbers[counter])
             counter += 1
         }
+        //questionPosition
+        var rangeStart = 0
+        var rangeEnd = 0
+        if(questionPosition < 2) {
+            rangeStart = 0
+            rangeEnd = 5
+        } else if (questionPosition >= 2 && questionPosition <= 21){
+            rangeStart = questionPosition - 2
+            rangeEnd = questionPosition + 3
+        } else if (questionPosition > 21) {
+            rangeEnd = 24
+            rangeStart = 24 - 5
+        }
+
+        var placeHolder:String = ""
+        for index in rangeStart..<rangeEnd {
+            if(index == questionPosition) {
+                placeHolder += "  ______   "
+            } else {
+                placeHolder += mnemonics[index] + " "
+            }
+
+        }
+        let attributedString = NSMutableAttributedString(string: placeHolder)
+        attributedString.setColor(color: UIColor.customMatrixGreen(), forText: "______")
+        bottomText.attributedText = attributedString
+        //range
     }
 
     func updateLabels() {
@@ -128,7 +133,7 @@ class VerifyMnemonicsViewController: UIViewController {
     @objc func buttonClicked(_ sender: UIButton) {
        print("sender is ", sender.titleLabel?.text, " correct answer is ", mnemonics[questionPosition])
         if(sender.titleLabel?.text == mnemonics[questionPosition]) {
-            if(questionCounter == 4) {
+            if(questionCounter == numberOfSteps - 1) {
                 guard let mnemonicWords = getAppDelegate().getMnemonicWords() else {
                     return
                 }
@@ -140,7 +145,7 @@ class VerifyMnemonicsViewController: UIViewController {
                             .done { (loginData: [String: Any]?) in
                                 AppDelegate.removeKeychainData()
                                 getGAService().loginData = loginData
-                                self.performSegue(withIdentifier: "tos", sender: self)
+                                self.performSegue(withIdentifier: "security", sender: self)
                             }.catch { error in
                                 print("Login failed")
                         }
