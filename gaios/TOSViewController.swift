@@ -12,7 +12,7 @@ import UIKit
 class TOSViewController: UIViewController {
 
 
-    @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var nButton: UIButton!
     var tosClicked: Bool = false
     var recoveryClicked: Bool = false
     @IBOutlet weak var topLabel: UILabel!
@@ -33,9 +33,9 @@ class TOSViewController: UIViewController {
         sender.setImage(UIImage(named: "stepIndicator"), for: UIControlState.normal)
         sender.tintColor = UIColor.white
         if tosClicked && recoveryClicked {
-            nextButton.isUserInteractionEnabled = true
-            nextButton.backgroundColor = UIColor.customLightGreen()
-            nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+            nButton.isUserInteractionEnabled = true
+            nButton.backgroundColor = UIColor.customLightGreen()
+            nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
 
         }
     }
@@ -47,9 +47,9 @@ class TOSViewController: UIViewController {
         sender.setImage(UIImage(named: "stepIndicator"), for: UIControlState.normal)
         sender.tintColor = UIColor.white
         if tosClicked && recoveryClicked {
-            nextButton.isUserInteractionEnabled = true
-            nextButton.backgroundColor = UIColor.customMatrixGreen()
-            nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+            nButton.isUserInteractionEnabled = true
+            nButton.backgroundColor = UIColor.customMatrixGreen()
+            nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         }
     }
 
@@ -62,10 +62,14 @@ class TOSViewController: UIViewController {
         super.viewDidLayoutSubviews()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        nButton.backgroundColor = UIColor.customLightGray()
+        nButton.isUserInteractionEnabled = false
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        nextButton.isUserInteractionEnabled = false
-        nextButton.backgroundColor = UIColor.customLightGray()
         let tosString = NSMutableAttributedString(string: "I agree to the Terms of Service")
         tosString.addAttribute(.link, value: "https://www.google.com", range: NSRange(location: 15, length: 16))
         tosLabel.attributedText = tosString
