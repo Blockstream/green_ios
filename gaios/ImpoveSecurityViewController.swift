@@ -11,15 +11,14 @@ import UIKit
 
 class ImproveSecurityViewController: UIViewController {
     
-    @IBOutlet weak var topLabel: DesignableLabel!
     @IBOutlet weak var faceIDButton: UIButton!
     let bioID = BiometricIDAuth()
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var pinButton: UIButton!
+    @IBOutlet weak var twoFactorButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        topLabel.padding = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 50)
         if(bioID.canEvaluatePolicy()){
             if(bioID.biometricType() == BiometricType.faceID) {
                 faceIDButton.setTitle("Use Face ID to protect wallet", for: UIControlState.normal)
@@ -36,6 +35,7 @@ class ImproveSecurityViewController: UIViewController {
         pinButton.contentHorizontalAlignment = .left
         faceIDButton.contentHorizontalAlignment = .left
         skipButton.contentHorizontalAlignment = .left
+        twoFactorButton.contentHorizontalAlignment = .left
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
