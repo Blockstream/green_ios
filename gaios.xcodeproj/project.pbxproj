@@ -10,6 +10,10 @@
 		0926C14821178FEE0008F94A /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14721178FEE0008F94A /* TextField.swift */; };
 		0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */; };
 		0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14B211912AE0008F94A /* InstructionViewController.swift */; };
+		092A84CF211BFE120062F0B2 /* CongratsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84CE211BFE120062F0B2 /* CongratsViewController.swift */; };
+		092A84D1211C082F0062F0B2 /* TwoFactorSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */; };
+		092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */; };
+		092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */; };
 		092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */; };
 		092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC820D238BD00F90DF2 /* ViewController.swift */; };
 		092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */; };
@@ -98,6 +102,10 @@
 		0926C14721178FEE0008F94A /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionSettings.swift; sourceTree = "<group>"; };
 		0926C14B211912AE0008F94A /* InstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionViewController.swift; sourceTree = "<group>"; };
+		092A84CE211BFE120062F0B2 /* CongratsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongratsViewController.swift; sourceTree = "<group>"; };
+		092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSelectorViewController.swift; sourceTree = "<group>"; };
+		092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmailViewController.swift; sourceTree = "<group>"; };
+		092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyTwoFactorViewController.swift; sourceTree = "<group>"; };
 		092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColoredCardView.swift; sourceTree = "<group>"; };
 		092C7BC820D238BD00F90DF2 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
@@ -319,6 +327,7 @@
 				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
 				0992F86720E470A800F6AAAB /* VerifyMnemonicTableViewController.swift */,
 				092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */,
+				092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */,
 				0967BF5720DB55840062A653 /* WalletViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
@@ -331,6 +340,9 @@
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
 				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
 				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
+				092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */,
+				092A84CE211BFE120062F0B2 /* CongratsViewController.swift */,
+				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
 				0926C14B211912AE0008F94A /* InstructionViewController.swift */,
 				0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */,
 				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
@@ -672,9 +684,11 @@
 				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
 				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
 				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
+				092A84CF211BFE120062F0B2 /* CongratsViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */,
 				676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
+				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */,
 				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
@@ -687,6 +701,7 @@
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
+				092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
 				09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */,
@@ -694,6 +709,7 @@
 				092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
 				0932D7B120FC44E70074B48F /* EnterMnemonicsCell.swift in Sources */,
+				092A84D1211C082F0062F0B2 /* TwoFactorSelectorViewController.swift in Sources */,
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
