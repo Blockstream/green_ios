@@ -145,7 +145,7 @@ class VerifyMnemonicsViewController: UIViewController {
                             .done { (loginData: [String: Any]?) in
                                 AppDelegate.removeKeychainData()
                                 getGAService().loginData = loginData
-                                self.performSegue(withIdentifier: "security", sender: self)
+                                self.performSegue(withIdentifier: "congrats", sender: self)
                             }.catch { error in
                                 print("Login failed")
                         }
