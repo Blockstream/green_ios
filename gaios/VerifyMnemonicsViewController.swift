@@ -9,7 +9,6 @@
 import Foundation
 import UIKit
 
-
 class VerifyMnemonicsViewController: UIViewController {
     var wordNumbers: [UInt8] = [UInt8](repeating: 0, count: 4)
     var mnemonics:[String] = []
@@ -29,7 +28,6 @@ class VerifyMnemonicsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         generateRandomWordNumbers()
         wordNumbers.sort { $0 < $1 }
         mnemonics = getAppDelegate().getMnemonicWords()!
