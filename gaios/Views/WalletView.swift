@@ -72,7 +72,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     func getTransactions(account: Int) -> Promise<[Transaction]?> {
         return retry(session: getSession(), network: Network.TestNet) {
-            return wrap { return try getSession().getTransactions(subaccount: account) }
+            return wrap { return try getSession().getTransactions(subaccount: UInt32(account)) }
         }
     }
     
@@ -111,7 +111,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
      */
     open func present(cardView: CardView, animated: Bool, completion: LayoutCompletion? = nil) {
         let walletView = cardView as! ColoredCardView
-        updateViewModel(account: (walletView.wallet?.pointer)!)
+        updateViewModel(account: Int((walletView.wallet?.pointer)!))
         delegate?.cardViewPresented()
         present(cardView: cardView, animated: animated, animationDuration: animated ? WalletView.presentingAnimationSpeed : nil, completion: completion)
         
