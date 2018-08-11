@@ -48,10 +48,4 @@ class ReceiveBtcViewController: UIViewController {
     @IBAction func backButtonClicked(_ sender: Any) {
         _ = navigationController?.popViewController(animated: true)
     }
-
-    func generateAddress() -> Promise<String> {
-        return retry(session: getSession(), network: Network.TestNet) {
-            return wrap { return try getSession().getReceiveAddress() }
-        }
-    }
 }

@@ -42,7 +42,7 @@ class SendBTCConfirmationViewController: UIViewController {
         if (satoshi_amount == 0) {
             print("sometthin is wrong")
         }
-        wrap { return try getSession().send(addrAmt: [(self.toAddress, UInt64(self.satoshi_amount))], feeRate: 1000) }
+        wrap { return try getSession().send(subaccount: (self.wallet?.pointer)!, addrAmt: [(self.toAddress, UInt64(self.satoshi_amount))], feeRate: 1000) }
             .done { () in
                 self.navigationController?.popToRootViewController(animated: true)
             }.catch { error in

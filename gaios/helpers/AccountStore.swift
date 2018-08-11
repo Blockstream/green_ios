@@ -26,9 +26,9 @@ class AccountStore {
         let subacounts:NSArray = loginData!["subaccounts"] as! NSArray
         do {
             if(mainAddress == "") {
-                mainAddress = try getSession().getReceiveAddress()
+                mainAddress = try getSession().getReceiveAddress(subaccount: 0)
             }
-            let json = try getSession().getBalance(numConfs: 1)
+            let json = try getSession().getBalance(subaccount: 0, numConfs: 1)
             let balance:String = json!["satoshi"] as! String
             let mainWallet:WalletItem = WalletItem(name: "Main Wallet", address: mainAddress, balance: balance, currency: "USD", pointer: 0)
             result.append(mainWallet)
@@ -37,7 +37,7 @@ class AccountStore {
                 let address = account["receiving_id"] as! String
                 let satoshi = account["satoshi"] as! String
                 let name = account["name"] as! String
-                let pointer = account["pointer"] as! Int
+                let pointer = account["pointer"] as! UInt32
                 let currency = account["fiat_currency"] as! String
                 let wallet: WalletItem = WalletItem(name: name, address: address, balance: satoshi, currency: currency, pointer: pointer)
                 result.append(wallet)
@@ -135,9 +135,9 @@ class WalletItem {
     var address: String
     var balance: String
     var currency: String
-    var pointer: Int
+    var pointer: UInt32
 
-    init(name: String, address: String, balance: String, currency: String, pointer: Int) {
+    init(name: String, address: String, balance: String, currency: String, pointer: UInt32) {
         self.name = name
         self.address = address
         self.balance = balance
