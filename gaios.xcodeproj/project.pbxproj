@@ -43,7 +43,6 @@
 		09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD921003961009DCDEA /* SettingsCell.swift */; };
 		09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FDB21004309009DCDEA /* CustomAlertInputView.swift */; };
 		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
-		0967BF5820DB55840062A653 /* WalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5720DB55840062A653 /* WalletViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
 		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
@@ -135,7 +134,6 @@
 		09342FD921003961009DCDEA /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		09342FDB21004309009DCDEA /* CustomAlertInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertInputView.swift; sourceTree = "<group>"; };
 		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
-		0967BF5720DB55840062A653 /* WalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
 		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
@@ -328,7 +326,6 @@
 				0992F86720E470A800F6AAAB /* VerifyMnemonicTableViewController.swift */,
 				092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */,
 				092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */,
-				0967BF5720DB55840062A653 /* WalletViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
@@ -656,10 +653,12 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -721,7 +720,6 @@
 				674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */,
 				09342FD620FDD569009DCDEA /* MainMenuPageViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
-				0967BF5820DB55840062A653 /* WalletViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
 				092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */,
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
