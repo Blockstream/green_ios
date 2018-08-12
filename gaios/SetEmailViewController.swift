@@ -8,8 +8,9 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class SetEmailViewController: UIViewController {
+class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
 
 
     @IBOutlet weak var textField: UITextField!
@@ -38,11 +39,29 @@ class SetEmailViewController: UIViewController {
     }
 
     @IBAction func getCodeClicked(_ sender: Any) {
-        wrap { return try getSession().getTwoFactorConfig() }.done { (config: [String: Any]?) in
-            wrap { try getSession().setEmail(email: self.textField.text!, twofactor_data: config!)}.done { () in
-                print("done")
-                self.performSegue(withIdentifier: "code", sender: nil)
+        DispatchQueue.global(qos: .background).async {
+            wrap { return try getSession().getTwoFactorConfig() }.done { (config: [String: Any]?) in
+                wrap { try getSession().setEmail(email: self.textField.text!, twofactor_data: config!)}.done { () in
+                    DispatchQueue.main.async {
+                        self.stopAnimating()
+                        print("done")
+                        self.performSegue(withIdentifier: "code", sender: nil)
+                    }
+                }.catch { error in
+                    self.failureMessage()
+                }
+            }.catch { error in
+                self.failureMessage()
             }
+        }
+    }
+
+    func failureMessage() {
+        DispatchQueue.main.async {
+            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+        }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.stopAnimating()
         }
     }
 

@@ -8,8 +8,9 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class VerifyMnemonicsViewController: UIViewController {
+class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewable {
     var wordNumbers: [UInt8] = [UInt8](repeating: 0, count: 4)
     var mnemonics:[String] = []
     var questionCounter: Int = 0
@@ -128,6 +129,38 @@ class VerifyMnemonicsViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    func registerAndLogin(mnemonics: String) {
+        let size = CGSize(width: 30, height: 30)
+        startAnimating(size, message: "Registering...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+        DispatchQueue.global(qos: .background).async {
+            wrap { return try getSession().registerUser(mnemonic: mnemonics) }
+                .done { () in
+                    wrap { return try getSession().login(mnemonic: mnemonics) }
+                        .done { (loginData: [String: Any]?) in
+                            DispatchQueue.main.async {
+                                self.stopAnimating()
+                                AppDelegate.removeKeychainData()
+                                getGAService().loginData = loginData
+                                self.performSegue(withIdentifier: "congrats", sender: self)
+                            }
+                        }.catch { error in
+                            print("Login failed")
+                            DispatchQueue.main.async() {
+                                NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed...")
+                            }
+                    }
+                }.catch { error in
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                        NVActivityIndicatorPresenter.sharedInstance.setMessage("Register Failed...")
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                        self.stopAnimating()
+                    }
+                    print("register failed")
+            }
+        }
+    }
+
     @objc func buttonClicked(_ sender: UIButton) {
        print("sender is ", sender.titleLabel?.text, " correct answer is ", mnemonics[questionPosition])
         if(sender.titleLabel?.text == mnemonics[questionPosition]) {
@@ -137,19 +170,7 @@ class VerifyMnemonicsViewController: UIViewController {
                 }
                 let stringRepresentation = mnemonicWords.joined(separator: " ") // space separated mnemonic list
                 print(stringRepresentation)
-                wrap { return try getSession().registerUser(mnemonic: stringRepresentation) }
-                    .done { () in
-                        wrap { return try getSession().login(mnemonic: stringRepresentation) }
-                            .done { (loginData: [String: Any]?) in
-                                AppDelegate.removeKeychainData()
-                                getGAService().loginData = loginData
-                                self.performSegue(withIdentifier: "congrats", sender: self)
-                            }.catch { error in
-                                print("Login failed")
-                        }
-                    }.catch { error in
-                        print("register failed")
-                }
+                registerAndLogin(mnemonics: stringRepresentation)
             } else {
                 questionCounter += 1
                 stepIndicatorView.currentStep = questionCounter

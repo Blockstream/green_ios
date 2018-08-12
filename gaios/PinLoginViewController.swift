@@ -8,9 +8,9 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-
-class PinLoginViewController: UIViewController {
+class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
 
     @IBOutlet weak var topLabel: UILabel!
@@ -52,13 +52,23 @@ class PinLoginViewController: UIViewController {
         if (counter == 4) {
             if (setPinMode == false) {
                 //login
-                wrap { return try getSession().login(pin: self.pinCode, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
-                        getGAService().loginData = loginData
-                        self.performSegue(withIdentifier: "mainMenu", sender: self)
+                let size = CGSize(width: 30, height: 30)
+                startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+                DispatchQueue.global(qos: .background).async {
+                    wrap { return try getSession().login(pin: self.pinCode, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
+
                     }.catch { error in
                         print("incorrect PIN ", error)
-                        self.resetEverything()
+                        DispatchQueue.main.async {
+                            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            self.stopAnimating()
+                            self.resetEverything()
+                        }
+
                     }
+                }
                 return
             }
             if (firstStep) {
@@ -72,13 +82,26 @@ class PinLoginViewController: UIViewController {
             }
             if(firstPin == pinCode) {
                 let mnemonics = getAppDelegate().getMnemonicWordsString()
-                wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 10)) }
-                    .done { (pin_identifier: String, pin_secret: String) in
-                        KeychainHelper.savePassword(service: "pinIdentifier", account: "user", data: pin_identifier)
-                        KeychainHelper.savePassword(service: "pinSecret", account: "user", data: pin_secret)
-                        self.performSegue(withIdentifier: "mainMenu", sender: self)
-                    }.catch { error in
-                        print("setPin failed")
+                let size = CGSize(width: 30, height: 30)
+                startAnimating(size, message: "Setting pin...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+                DispatchQueue.global(qos: .background).async {
+                    wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 10)) }
+                        .done { (pin_identifier: String, pin_secret: String) in
+                            DispatchQueue.main.async {
+                                self.stopAnimating()
+                                KeychainHelper.savePassword(service: "pinIdentifier", account: "user", data: pin_identifier)
+                                KeychainHelper.savePassword(service: "pinSecret", account: "user", data: pin_secret)
+                                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                            }
+                        }.catch { error in
+                            print("setPin failed")
+                            DispatchQueue.main.async {
+                                NVActivityIndicatorPresenter.sharedInstance.setMessage("Setting pin failed")
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                self.stopAnimating()
+                            }
+                    }
                 }
                 return
             }

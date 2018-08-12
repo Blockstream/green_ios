@@ -8,8 +8,9 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class FaceIDViewController: UIViewController {
+class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
     
     var password: String = ""
     var pinIdentifier: String = ""
@@ -29,12 +30,24 @@ class FaceIDViewController: UIViewController {
         super.viewDidAppear(animated)
         bioID.authenticateUser { (message) in
             if(message == nil) {
-                wrap { return try getSession().login(pin: self.password, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
-                    getGAService().loginData = loginData
-                    AccountStore.shared.initializeAccountStore()
-                    self.performSegue(withIdentifier: "mainMenu", sender: self)
+                let size = CGSize(width: 30, height: 30)
+                self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+                DispatchQueue.global(qos: .background).async {
+                    wrap { return try getSession().login(pin: self.password, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
+                        DispatchQueue.main.async {
+                            getGAService().loginData = loginData
+                            AccountStore.shared.initializeAccountStore()
+                            self.performSegue(withIdentifier: "mainMenu", sender: self)
+                        }
                     }.catch { error in
                         print("incorrect PIN ", error)
+                        DispatchQueue.main.async {
+                            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            self.stopAnimating()
+                        }
+                    }
                 }
             } else {
                 //error
