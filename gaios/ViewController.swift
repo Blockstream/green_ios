@@ -49,7 +49,8 @@ class ViewController: UIViewController, WalletViewDelegate{
             cardView.presentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.depresentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.presentedDidUpdate()
-            cardView.QRImageView.image = QRImageGenerator.imageForAddress(address: item.address, frame: cardView.QRImageView.frame)
+            let uri = bip21Helper.btcURIforAddress(address: item.address)
+            cardView.QRImageView.image = QRImageGenerator.imageForText(text: uri, frame: cardView.QRImageView.frame)
             let shadowSize : CGFloat = 5.0
             let shadowPath = UIBezierPath(rect: CGRect(x: 0,
                                                        y: 0,
