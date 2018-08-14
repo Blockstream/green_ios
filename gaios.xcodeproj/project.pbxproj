@@ -58,6 +58,8 @@
 		0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */; };
 		0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */; };
 		09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A8991520FADFE000E105EC /* IntroPageViewController.swift */; };
+		09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AA2122357700989B1D /* UIViewController+helpers.swift */; };
+		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
 		09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */; };
 		09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */; };
@@ -149,6 +151,8 @@
 		0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLoginViewController.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		09A8991520FADFE000E105EC /* IntroPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroPageViewController.swift; sourceTree = "<group>"; };
+		09B761AA2122357700989B1D /* UIViewController+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+helpers.swift"; sourceTree = "<group>"; };
+		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
 		09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricIDAuth.swift; sourceTree = "<group>"; };
 		09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDViewController.swift; sourceTree = "<group>"; };
@@ -250,11 +254,13 @@
 				092E1EAF20CF993700362253 /* UIColor+Hex.swift */,
 				0926C14721178FEE0008F94A /* TextField.swift */,
 				092C7BD420D599D700F90DF2 /* UIView+helpers.swift */,
+				09B761AA2122357700989B1D /* UIViewController+helpers.swift */,
 				0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */,
 				09DA612520E73A2300C3EA03 /* String+random.swift */,
 				0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */,
 				09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */,
 				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
+				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
 			);
 			path = helpers;
@@ -689,6 +695,7 @@
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
+				09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */,
 				0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */,
 				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
 				092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */,
@@ -730,6 +737,7 @@
 				092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */,
 				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
+				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
