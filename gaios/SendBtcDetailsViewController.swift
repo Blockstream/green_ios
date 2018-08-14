@@ -54,6 +54,11 @@ class SendBtcDetailsViewController: UIViewController {
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customLightGray()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         mediumFeeClicked(0)
+        if (btcAmount != 0) {
+            updateEstimate()
+            let fiat = AccountStore.shared.btcToUSD(amount: btcAmount)
+            amountTextField.text = String(format: "%.2f", fiat)
+        }
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -64,7 +69,11 @@ class SendBtcDetailsViewController: UIViewController {
         }
         let bitcoin_amount = AccountStore.shared.USDtoBTC(amount: fiat_d)
         btcAmount = bitcoin_amount
-        btcAmountEstimate.text = String(format: "~%g BTC", bitcoin_amount)
+        updateEstimate()
+    }
+
+    func updateEstimate() {
+        btcAmountEstimate.text = String(format: "~%g BTC", btcAmount)
     }
     
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
