@@ -92,7 +92,11 @@ class AccountStore {
         return result
     }
 
-    func USDtoSatoshi(amount: Double) -> Int{
+    func btcToUSD(amount: Double) ->Double {
+        return satoshiToUSD(amount: Int(amount * 100000000))
+    }
+
+    func USDtoSatoshi(amount: Double) -> Int {
         let result: Int = Int(amount / exchangeRate) * 100000000
         return result
     }
