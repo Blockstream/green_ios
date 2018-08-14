@@ -17,7 +17,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var topImage: UIImageView!
     @IBOutlet weak var header: UIView!
-    
+    var prefillAmount:Double = 0
 
     var captureSession = AVCaptureSession()
     var wallets:Array<WalletItem> = Array<WalletItem>()
@@ -173,6 +173,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let nextController = segue.destination as? SendBtcDetailsViewController {
             nextController.wallet = wallet
             nextController.toAddress = textfield.text
+            nextController.btcAmount = prefillAmount
         }
     }
 }
@@ -195,7 +196,28 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
             qrCodeFrameView?.frame = barCodeObject!.bounds
             
             if metadataObj.stringValue != nil {
-                 textfield.text = metadataObj.stringValue
+                let uri = metadataObj.stringValue
+                wrap{try parseBitcoinUri(uri: uri!)}.done { (uriData: [String: Any]?) in
+                    var dic: [String: Any]? = uriData
+                    guard let recipient = dic!["recipient"] as? String else {
+                        return
+                    }
+                    self.textfield.text = recipient
+                    guard let amount = dic!["amount"] as? String else {
+                        self.captureSession.stopRunning()
+                        self.videoPreviewLayer?.removeFromSuperlayer()
+                        self.qrCodeFrameView?.frame = CGRect.zero
+                        self.performSegue(withIdentifier: "next", sender: self)
+                        return
+                    }
+                    self.prefillAmount = Double(amount)!
+                    self.captureSession.stopRunning()
+                    self.videoPreviewLayer?.removeFromSuperlayer()
+                    self.qrCodeFrameView?.frame = CGRect.zero
+                    self.performSegue(withIdentifier: "next", sender: self)
+                    }.catch { error in
+                        print(error)
+                    }
             }
         }
         //captureSession.stopRunning()
