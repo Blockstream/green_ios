@@ -758,7 +758,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             
             let cardView = insertedCardViews[cardViewIndex]
             
-            var cardViewFrame = CGRect(x: 0, y: scrollViewFrameMaxY + (collapsedCardViewStackHeight * 2), width: frame.width - 32, height: cardViewHeight)
+            var cardViewFrame = CGRect(x: 16, y: scrollViewFrameMaxY + (collapsedCardViewStackHeight * 2), width: frame.width - 32, height: cardViewHeight)
             
             if cardViewIndex >= firstIndexToMoveY && collapsedCardViewsCount > 0 {
                 
