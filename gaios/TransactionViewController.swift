@@ -48,8 +48,6 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         let item: TransactionItem = items.reversed()[indexPath.row]
         cell.address.text = item.address
         cell.amount.text = item.amount
-        cell.month.text = item.month
-        cell.day.text = item.day
         return cell;
         
     }
@@ -81,12 +79,15 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
                 let nameOfMonth = dateFormatter.string(from: date)
                 dateFormatter.dateFormat = "dd"
                 let nameOfDay = dateFormatter.string(from: date)
+                dateFormatter.dateFormat = "YYYY"
+                let nameOfYear = dateFormatter.string(from: date)
+                let formatedTransactionDate = String(format: "%@%@%@", nameOfDay, nameOfMonth, nameOfYear)
                 let val:String? = json["value_str"] as? String
                 let balance: Double? = Double(val!)
                 let toBtc: Double = balance! / 100000000
                 let formattedBalance: String = String(format: "%g BTC", toBtc)
                 let counterparty: String = json["counterparty"] as! String
-                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", month: nameOfMonth, day: nameOfDay))
+                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: toBtc))
             }
             }.ensure {
                 self.tableView.reloadData()
@@ -99,15 +100,15 @@ class TransactionItem {
     var address: String
     var amount: String
     var fiatAmount: String
-    var month: String
-    var day: String
+    var date: String
+    var btc_amount: Double
 
-    init(timestamp: String, address: String, amount: String, fiatAmount: String, month: String, day: String) {
+    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double) {
         self.timestamp = timestamp
         self.address = address
         self.amount = amount
         self.fiatAmount = fiatAmount
-        self.day = day
-        self.month = month
+        self.date = date
+        self.btc_amount = btc
     }
 }
