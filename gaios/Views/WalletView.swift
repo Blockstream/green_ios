@@ -13,14 +13,21 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         return items.count
     }
 
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 55
+    }
+
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell", for: indexPath) as! TransactionTableCell
         let item: TransactionItem = items.reversed()[indexPath.row]
         cell.address.text = item.address
         cell.amount.text = item.amount
-        cell.month.text = item.month
-        cell.day.text = item.day
-        cell.walletName.text = (presentedCardView as! ColoredCardView).wallet?.name
+        if(item.btc_amount > 0) {
+            cell.amount.textColor = UIColor.customMatrixGreen()
+        } else {
+            cell.amount.textColor = UIColor.white
+        }
+        cell.date.text = item.date
         return cell;
     }
 
@@ -90,13 +97,16 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 let nameOfMonth = dateFormatter.string(from: date)
                 dateFormatter.dateFormat = "dd"
                 let nameOfDay = dateFormatter.string(from: date)
+                dateFormatter.dateFormat = "YYYY"
+                let nameOfYear = dateFormatter.string(from: date)
+                let formatedTransactionDate = String(format: "%@ %@ %@", nameOfDay, nameOfMonth, nameOfYear)
                 let val:String? = json["value_str"] as? String
                 let balance: Double? = Double(val!)
                 let toBtc: Double = balance! / 100000000
                 let formattedBalance: String = String(format: "%g BTC", toBtc)
                 let counterparty: String = json["counterparty"] as! String
                 print(json)
-                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", month: nameOfMonth, day: nameOfDay))
+                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: toBtc))
             }
             }.ensure {
                 self.transactionTableView.reloadData()
@@ -418,6 +428,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         } else {
             
             presentedCardView = cardView
+            self.bringSubview(toFront: presentedCardView!)
             layoutWalletView(animationDuration: animated ? animationDuration : nil, placeVisibleCardViews: false, completion: { [weak self] (_) in
                 self?.placeVisibleCardViews()
                 self?.presentFooter()
@@ -808,7 +819,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 self?.transactionTableView.frame = CGRect(origin: origin!, size: size!)
                 self?.transactionTableView.layer.opacity = 0
             }
-            
+
             let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
             UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion: { (_) in
                 UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: { (_) in
@@ -832,7 +843,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             presentedFooterView.backgroundColor = UIColor.customTitaniumMedium()
             scrollView.insertSubview(presentedFooterView, belowSubview: presentedCardView!)
         }
-        
+
         if (transactionTableView.superview == nil) {
             var origin = presentedCardView?.frame.origin
             origin?.y += (presentedCardView?.frame.height)! - 80
@@ -853,23 +864,32 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             self?.presentedFooterView.frame = CGRect(origin: origin!, size: size!)
             self?.presentedFooterView.layer.opacity = 1
         }
-        
+
         let animations1 = { [weak self] in
+            if (self?.items.count == 0) {
+                return
+            }
+
             var origin = self?.presentedFooterView.frame.origin
-            origin?.y += (self?.presentedFooterView.frame.height)! + 5
+            origin?.y += (self?.presentedFooterView.frame.height)!
             var size = self?.presentedCardView?.frame.size
-            size?.height = (self?.frame.origin.y)! + (self?.frame.size.height)! - (origin?.y)!
+            let maxHeight = (self?.frame.origin.y)! + (self?.frame.size.height)! - (origin?.y)! + 5
+            size?.height = maxHeight
             self?.transactionTableView.frame = CGRect(origin: origin!, size: size!)
             self?.transactionTableView.layer.opacity = 1
         }
-        
+
         let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
         UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: {
             _ in
-            UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion:nil)
+            self.presentedCardView?.layer.zPosition = 1
+            //self.presentedFooterView.layer.zPosition = 2
+            UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion:{ _ in
+                self.transactionTableView.layer.zPosition = 3
+            })
         })
     }
-    
+
     func placeVisibleCardViews() {
         
         var cardViewIndex = [CGFloat: (index: Int, cardView: CardView)]()
