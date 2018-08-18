@@ -29,8 +29,21 @@ extension String {
     static func satoshiToBTC(satoshi: String) -> String {
         let satoshi: Double = Double(satoshi)!
         let btc = satoshi / 100000000
-        let result: String = String(format: "%g BTC", btc)
+        let result: String = String(format: "%g", btc)
         return result
+    }
+
+    static func satoshiToBTC(satoshi: Int) -> String {
+        let satoshi: Double = Double(satoshi)
+        let btc = satoshi / 100000000
+        let result: String = String(format: "%.6f", btc)
+        return result
+    }
+
+    func heightWithConstrainedWidth(width: CGFloat, font: UIFont) -> CGFloat {
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = self.boundingRect(with: constraintRect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedStringKey.font: font], context: nil)
+        return boundingBox.height
     }
 
 }
