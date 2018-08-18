@@ -46,7 +46,6 @@ class AccountStore {
             print("something went wrong trying to get subbacounts")
         }
         m_wallets = result
-        getTransactions(wallets: result)
         return result
     }
 
@@ -60,31 +59,6 @@ class AccountStore {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return dateFormatter.date(from: date)!
-    }
-
-    func getTransactions(wallets: Array<WalletItem>) {
-        for wallet in wallets {
-            wrap{ try getSession().getTransactions(subaccount: wallet.pointer)
-                }.done { (transactions:[Transaction]?) in
-                    for tx in transactions ?? [] {
-                        let json = try! tx.toJSON()!
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateStyle = .medium
-                        dateFormatter.timeStyle = .short
-                        let date = self.dateFromTimestamp(date: json["timestamp"] as! String)
-                        let dateString = dateFormatter.string(from: date)
-                        dateFormatter.dateFormat = "LLL"
-                        let nameOfMonth = dateFormatter.string(from: date)
-                        dateFormatter.dateFormat = "dd"
-                        let nameOfDay = dateFormatter.string(from: date)
-                        let val:String? = json["value_str"] as? String
-                        let balance: Double? = Double(val!)
-                        let toBtc: Double = balance! / 100000000
-                        let formattedBalance: String = String(format: "%g BTC", toBtc)
-                        let counterparty: String = json["counterparty"] as! String
-                    }
-            }
-        }
     }
 
     func satoshiToUSD(amount: Int) -> Double {
@@ -130,6 +104,8 @@ class AccountStore {
             }
             print(lowPriority)
         }
+        NotificationStore.shared.initializeNotificationStore()
+
         print(exchangeRate)
     }
 }
