@@ -77,14 +77,14 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         return dateFormatter.date(from: date)!
     }
 
-    func getTransactions(account: Int) -> Promise<[Transaction]?> {
+    func getTransactions(account: Int) -> Promise<([Transaction]?, account: UInt32)> {
         return retry(session: getSession(), network: Network.TestNet) {
             return wrap { return try getSession().getTransactions(subaccount: UInt32(account)) }
         }
     }
     
     func updateViewModel(account: Int) {
-        getTransactions(account: account).done { (txs: [Transaction]?) in
+        getTransactions(account: account).done { (txs: [Transaction]?, account: UInt32) in
             self.items.removeAll(keepingCapacity: true)
             for tx in txs ?? [] {
                 let json = try! tx.toJSON()!
