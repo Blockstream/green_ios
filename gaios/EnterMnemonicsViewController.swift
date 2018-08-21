@@ -13,7 +13,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
-    var textFiels:[UITextField] = []
+    var textFields: Array<UITextField> = []
     var box:UIView = UIView()
     var constraint: NSLayoutConstraint? = nil
 
@@ -34,10 +34,20 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         self.navigationController?.popViewController(animated: true)
     }
 
+    func mergeTextFields() -> String {
+        var result = ""
+        for textfield in textFields {
+            result += textfield.text! + " "
+        }
+        result = String(result.dropLast())
+        return result.lowercased()
+    }
+
     @IBAction func doneButtonClicked(_ sender: Any) {
-       //let _ = mnemonicWords.joined(separator: " ")
-        let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "current tomato armed onion able case donkey summer shrimp ridge into keen motion parent twin mobile paper member satisfy gather crane soft genuine produce".trimmingCharacters(in: .whitespacesAndNewlines)
-       // let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive spike pond industry time hero trim verb mammal asthma".trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedUserProvidedMnemonic = mergeTextFields()
+        print(trimmedUserProvidedMnemonic)
+        //let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "current tomato armed onion able case donkey summer shrimp ridge into keen motion parent twin mobile paper member satisfy gather crane soft genuine produce".trimmingCharacters(in: .whitespacesAndNewlines)
+        //let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive spike pond industry time hero trim verb mammal asthma".trimmingCharacters(in: .whitespacesAndNewlines)
         retry(session: getSession(), network: getNetwork()) {
             wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
             }.done { (loginData: [String: Any]?) in
@@ -100,6 +110,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         textField.adjustsFontSizeToFitWidth = true
         textField.delegate = self
         block.addSubview(textField)
+        textFields.append(textField)
+
         NSLayoutConstraint(item: textField, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: label, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 5).isActive = true
         NSLayoutConstraint(item: textField, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: block, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: -5).isActive = true
         NSLayoutConstraint(item: textField, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: block, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -1).isActive = true
