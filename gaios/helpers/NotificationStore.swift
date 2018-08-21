@@ -27,12 +27,15 @@ import Foundation
 class NotificationStore {
 
     static let shared = NotificationStore()
-    
+    var delegate: NotificationDelegate?
+    var refreshNotifications: (()->())?
+
     private init() { }
     
     var notifications: [String: NotificationItem] = [String: NotificationItem]()
     var localNotification: [String: NotificationItem] = [String: NotificationItem]()
     var allNotifications: [String: NotificationItem] = [String: NotificationItem]()
+    var newNotificationCount = 0
 
     func getTransactions() {
         AccountStore.shared.getWallets().done { (wallets: Array<WalletItem>) in
@@ -51,13 +54,16 @@ class NotificationStore {
                             let note: NotificationItem = self.createNotification(timestamp: timestamp, hash: hash, amount: satoshi, counterparty: counterparty)
                             if (self.allNotifications[hash] == nil) {
                                 self.allNotifications[hash] = note
+                                self.newNotificationCount += 1
+                                self.delegate?.newNotification()
+                                self.writeNotificationsToDisk()
+                                self.refreshNotifications?()
                             }
                         }
                     }.catch {error in
                         print("error getting transaction")
                 }
             }
-            self.writeNotificationsToDisk()
         }.catch{ error in
             print("error getting wallets")
         }
@@ -124,6 +130,36 @@ class NotificationStore {
         }
     }
 
+    func setSeen(id: String) {
+        guard let item = allNotifications[id] else {
+            return
+        }
+        if (item.seen == true) {
+            item.seen = false
+            self.newNotificationCount -= 1
+        }
+        delegate?.dismissNotification()
+    }
+
+    func createWelcomeNotification() -> NotificationItem{
+        let date = Date()
+        let dateText = dateToText(date: date)
+        return NotificationItem(date: dateText, title: "Welcome", text: "Thank you for downloading Green! please leave us a review when you get a chance.", id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970)
+    }
+
+    func maybeAddWelcomeNotification() {
+        let welcome = createWelcomeNotification()
+        if(allNotifications[welcome.id] == nil) {
+            allNotifications[welcome.id] = welcome
+            self.newNotificationCount += 1
+            writeNotificationsToDisk()
+        }
+    }
+
+    func hasNewNotifications() -> Bool{
+        return newNotificationCount > 0
+    }
+
     func createNotification(timestamp: String, hash: String, amount: Int, counterparty: String) -> NotificationItem {
         let date = self.dateFromTimestamp(date: timestamp)
         let dateText = dateToText(date: date)
@@ -143,7 +179,8 @@ class NotificationStore {
 
     func initializeNotificationStore() {
         allNotifications = loadNotificationsFromDisk()
-        
+        maybeAddWelcomeNotification()
+        refreshNotifications?()
         getTransactions()
     }
 
@@ -168,4 +205,10 @@ class NotificationItem: Codable{
         self.seen = seen
         self.timestamp = timestamp
     }
+}
+
+protocol NotificationDelegate: class {
+    func newNotification()
+    func dismissNotification()
+    func notificationChanged()
 }

@@ -33,6 +33,9 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.separatorColor = UIColor.customLightGray()
         tableView.tableHeaderView = headerView
         updateViewModel()
+        NotificationStore.shared.refreshNotifications = {
+            self.updateViewModel()
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
@@ -40,7 +43,6 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         let item = items[indexPath.row]
         let widthContraint = self.tableView.frame.size.width - 84
         let height = item.text.heightWithConstrainedWidth(width: widthContraint, font: UIFont.systemFont(ofSize: 12, weight: .light))
-        //let size = item.text
         let total = 88 + height + 40
         return total
     }
@@ -58,6 +60,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         cell.date.text = item.date
         cell.date.sizeToFit()
         cell.title.sizeToFit()
+        NotificationStore.shared.setSeen(id: item.id)
         cell.separatorInset = UIEdgeInsetsMake(0, 42, 0, 16)
         return cell;
         

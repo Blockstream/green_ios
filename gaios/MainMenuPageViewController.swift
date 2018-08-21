@@ -9,13 +9,12 @@
 import Foundation
 import UIKit
 
-class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDelegate, UIPageViewControllerDataSource
+class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDelegate, UIPageViewControllerDataSource, NotificationDelegate
 {
     var pageControl = UIPageControl()
     var button:UIButton = UIButton()
     var button1:UIButton = UIButton()
     var button2:UIButton = UIButton()
-    
     var viewControllerIndex = 1
 
     fileprivate lazy var pages: [UIViewController] = {
@@ -25,18 +24,18 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
             self.getViewController(withIdentifier: "notifications")
         ]
     }()
-    
+
     fileprivate func getViewController(withIdentifier identifier: String) -> UIViewController
     {
         return UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier)
     }
-    
+
     override func viewDidLoad()
     {
         super.viewDidLoad()
         self.dataSource = self
         self.delegate   = self
-        
+        NotificationStore.shared.delegate = self
         let firstVC: UINavigationController = pages[viewControllerIndex] as! UINavigationController
         let view = firstVC.viewControllers[0] as! ViewController
         view.pager = self
@@ -132,45 +131,68 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         setViewControllers([viewController], direction:
             UIPageViewControllerNavigationDirection.forward, animated: true, completion: {_ in self.viewControllerIndex = 2})
     }
-    
-    
+
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        
+
         guard let viewControllerIndex = pages.index(of: viewController) else { return nil }
-        
+
         let previousIndex = viewControllerIndex - 1
-        
+
         guard previousIndex >= 0          else { return pages.last }
-        
+
         guard pages.count > previousIndex else { return nil        }
-        
+
         return pages[previousIndex]
     }
-    
+
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController?
     {
         guard let viewControllerIndex = pages.index(of: viewController) else { return nil }
-        
+
         let nextIndex = viewControllerIndex + 1
-        
+
         guard nextIndex < pages.count else { return pages.first }
-        
+
         guard pages.count > nextIndex else { return nil         }
-        
+
         return pages[nextIndex]
     }
-    
+
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         let pageContentViewController = pageViewController.viewControllers![0]
         viewControllerIndex = pages.index(of: pageContentViewController)!
     }
-    
+
     func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
         return 3
     }
-    
+
     func presentationIndexForPageViewController(pageViewController: UIPageViewController) -> Int {
         return 0
     }
-    
+
+    func newNotification() {
+        button1.setImage(UIImage(named: "newNotification"), for: UIControlState.normal)
+    }
+
+    func dismissNotification() {
+        button1.setImage(UIImage(named: "notification"), for: UIControlState.normal)
+    }
+
+    func notificationChanged() {
+
+    }
+
+    func showButtons() {
+        button.isHidden = true
+        button1.isHidden = true
+        button2.isHidden = true
+    }
+
+    func hideButtons() {
+        button.isHidden = false
+        button1.isHidden = false
+        button2.isHidden = false
+    }
+
 }
