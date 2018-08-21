@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,18 +14,6 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Shadow" translatesAutoresizingMaskIntoConstraints="NO" id="nBp-qR-HbH">
-                    <rect key="frame" x="-2" y="-4" width="324" height="20"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="20" id="zTo-8q-qjH"/>
-                    </constraints>
-                </imageView>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Shadow" translatesAutoresizingMaskIntoConstraints="NO" id="0O6-Zo-qgT">
-                    <rect key="frame" x="-2" y="464" width="324" height="20"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="20" id="5tp-Zu-PGm"/>
-                    </constraints>
-                </imageView>
                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OGR-lR-C5v">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                     <subviews>
@@ -83,14 +70,8 @@
             <constraints>
                 <constraint firstItem="OGR-lR-C5v" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="6Au-be-gZ8"/>
                 <constraint firstItem="OGR-lR-C5v" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="AG8-xl-na4"/>
-                <constraint firstAttribute="trailing" secondItem="nBp-qR-HbH" secondAttribute="trailing" constant="-2" id="HWI-5Z-tUp"/>
                 <constraint firstItem="OGR-lR-C5v" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="TEo-HT-6Tw"/>
-                <constraint firstItem="nBp-qR-HbH" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="-2" id="YfS-a6-yot"/>
-                <constraint firstAttribute="bottom" secondItem="0O6-Zo-qgT" secondAttribute="bottom" constant="-4" id="dyb-5Z-TyC"/>
                 <constraint firstItem="OGR-lR-C5v" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="e7s-HL-Ytp"/>
-                <constraint firstAttribute="trailing" secondItem="0O6-Zo-qgT" secondAttribute="trailing" constant="-2" id="fJY-lv-HYd"/>
-                <constraint firstItem="nBp-qR-HbH" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="-4" id="qCQ-Wu-GFd"/>
-                <constraint firstItem="0O6-Zo-qgT" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="-2" id="xAF-8i-ptM"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <userDefinedRuntimeAttributes>
@@ -114,7 +95,4 @@
             <point key="canvasLocation" x="-124" y="-55"/>
         </view>
     </objects>
-    <resources>
-        <image name="Shadow" width="27" height="18"/>
-    </resources>
 </document>
