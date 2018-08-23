@@ -14,7 +14,8 @@ class VerifyTwoFactorViewController: UIViewController {
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
     @IBOutlet weak var confirmButton: UIButton!
-    
+    var twoFactor: TwoFactorCall? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(VerifyTwoFactorViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -31,9 +32,11 @@ class VerifyTwoFactorViewController: UIViewController {
     }
 
     @IBAction func confirmButtonClicked(_ sender: Any) {
-        wrap { try getSession().activateEmail(code: self.textField.text!)}.done{ () in
+        wrap { try self.twoFactor?.resolveCode(code: self.textField.text!)}.done{ _ in
             print("email activated")
             self.performSegue(withIdentifier: "mainView", sender: nil)
+            }.catch { error in
+            print("something went wrong with validating pin?")
         }
     }
     

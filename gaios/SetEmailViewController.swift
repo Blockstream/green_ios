@@ -16,6 +16,7 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var getCodeButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
+    var emailFactor: TwoFactorCall? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,8 +42,9 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
     @IBAction func getCodeClicked(_ sender: Any) {
         DispatchQueue.global(qos: .background).async {
             wrap { return try getSession().getTwoFactorConfig() }.done { (config: [String: Any]?) in
-                wrap { try getSession().setEmail(email: self.textField.text!, twofactor_data: config!)}.done { () in
+                wrap { try getSession().setEmail(email: self.textField.text!)}.done { (twoFactor: TwoFactorCall) in
                     DispatchQueue.main.async {
+                        self.emailFactor = twoFactor
                         self.stopAnimating()
                         print("done")
                         self.performSegue(withIdentifier: "code", sender: nil)
@@ -75,6 +77,12 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
                 }
                 buttonConstraint.constant += keyboardHeight
             }
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.twoFactor = emailFactor
         }
     }
 
