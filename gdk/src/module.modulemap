@@ -1,0 +1,11 @@
+module ga [extern_c] {
+    module sdk {
+        header "common.h"
+        header "containers.h"
+        header "session.h"
+        header "utils.h"
+        header "twofactor.h"
+        link "greenaddress"
+        export *
+    }
+}

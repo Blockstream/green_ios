@@ -1,0 +1,139 @@
+project('sdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.41.1', default_options : ['cpp_std=c++14'])
+
+# header checks (must be architecture independent)
+compiler = meson.get_compiler('cpp')
+
+check_headers = [
+    'fcntl.h',
+    'stddef.h',
+    'stdint.h',
+    'string.h',
+    'sys/epoll.h',
+    'sys/stat.h',
+    'time.h',
+    'unistd.h'
+]
+
+foreach h : check_headers
+    compiler.has_header(h)
+endforeach
+
+# language related arguments
+if not host_machine.cpu_family().contains('arm64')
+    if get_option('lto')
+        add_project_arguments(['-flto'], language : 'cpp')
+        add_project_link_arguments(['-flto'], language : 'cpp')
+    endif
+    if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+        add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
+    endif
+endif
+
+common_compile_options = [
+    '-Wextra',
+    '-D_FORTIFY_SOURCE=2',
+    '-fasynchronous-unwind-tables',
+    '-fexceptions',
+    '-fstack-protector-strong',
+]
+
+add_project_arguments(common_compile_options, language : ['c', 'cpp'])
+
+common_linker_options = [
+    '-Wl,-z,defs',
+    '-Wl,-z,now',
+    '-Wl,-z,relro'
+]
+
+if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+    add_project_link_arguments(common_linker_options, language : ['c', 'cpp'])
+endif
+
+if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address' and compiler.get_id() == 'clang'
+    add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
+    add_project_link_arguments(['-shared-libasan'], language : ['c', 'cpp'])
+endif
+
+if get_option('buildtype') == 'debug'
+    add_project_arguments(['-g', '-fno-omit-frame-pointer', '-D_GLIBCXX_ASSERTIONS'], language : ['c', 'cpp'])
+endif
+
+if meson.is_cross_build()
+    archs = meson.get_cross_property('archs')
+    if archs != []
+        add_project_arguments(meson.get_cross_property('archs'), language : ['c', 'cpp'])
+    endif
+    if host_machine.cpu_family().contains('iphone')
+        add_project_arguments(['-fembed-bitcode'], language : ['c', 'cpp'])
+    endif
+endif
+
+swift = add_languages('swift', required : false)
+if swift
+    add_project_arguments(['-I' + join_paths(meson.source_root(), 'src')], language : 'swift')
+    add_project_arguments(['-I' + join_paths(meson.build_root(), 'libwally-core', 'include')], language : 'swift')
+    add_project_arguments(['-I' + join_paths(meson.source_root(), 'src', 'swift', 'GreenAddress', '.build', 'debug')], language : 'swift')
+    add_project_link_arguments(['-L' + join_paths(meson.build_root(), 'src')], language : 'swift')
+    add_project_link_arguments(['-L' + join_paths(meson.source_root(), 'src', 'swift', 'GreenAddress')], language : 'swift')
+    add_project_link_arguments(['-lGreenAddress'], language : 'swift')
+    add_project_link_arguments(['-lPromiseKit'], language : 'swift')
+endif
+
+swig = find_program('swig', required : false)
+if swig.found()
+    pymodule = import('python3')
+    python3 = pymodule.find_python()
+    res = run_command(python3, '-c', 'import os; print(os.environ["JAVA_HOME"], end = "")')
+    if res.returncode() == 0
+        java_home = res.stdout()
+        message('JAVA_HOME set to ' + java_home)
+    else
+        java_home = ''
+    endif
+    javac = add_languages('java', required : false)
+    if not javac or java_home == ''
+        message('Java not found or $JAVA_HOME not set. JNI bindings are disabled.')
+    else
+        java = find_program('java')
+    endif
+endif
+
+build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_family().contains('iphone')
+
+clang_format = find_program('clang-format', required : false)
+clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)
+
+# dependencies
+threads_dep = dependency('threads')
+m_dep = compiler.find_library('m', required : false)
+atomic_dep = compiler.find_library('atomic', required : false)
+dl_dep = compiler.find_library('dl', required : false)
+
+subproject_deps = []
+
+wallycore = subproject('libwally-core')
+autobahn_cpp = subproject('autobahn-cpp')
+boost = subproject('boost')
+GSL = subproject('GSL')
+msgpack = subproject('msgpack')
+openssl = subproject('openssl')
+websocketpp = subproject('websocketpp')
+
+subproject_deps += autobahn_cpp.get_variable('autobahn_dep')
+subproject_deps += boost.get_variable('boost_dep')
+subproject_deps += GSL.get_variable('GSL_dep')
+subproject_deps += msgpack.get_variable('msgpack_dep')
+subproject_deps += openssl.get_variable('openssl_dep')
+subproject_deps += wallycore.get_variable('wallycore_dep')
+subproject_deps += websocketpp.get_variable('websocketpp_dep')
+
+# includes
+sdk_inc_dir = '.'
+
+incdir = include_directories([sdk_inc_dir])
+
+# builds
+subdirs = ['src']
+foreach n : subdirs
+    subdir(n)
+endforeach

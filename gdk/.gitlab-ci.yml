@@ -1,0 +1,232 @@
+cache:
+  paths:
+    - subprojects/packagecache/
+
+before_script:
+  - ./tools/clean.sh meson
+
+test_gcc:
+  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --gcc
+
+test_fedora_gcc:
+  image: greenaddress/fedora_ci@sha256:c0f8a6ae3f383d6188e860baf5c531204353d4920c9e372a488480c1164b992d
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --gcc
+
+test_fedora_clang:
+  image: greenaddress/fedora_ci@sha256:c0f8a6ae3f383d6188e860baf5c531204353d4920c9e372a488480c1164b992d
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --clang
+
+test_clang:
+  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --clang
+    - ./tools/format.sh && git diff --exit-code
+
+test_clang_ndk_armeabi-v7a:
+  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  tags:
+    - ga
+  artifacts:
+    expire_in: 1 day
+    name: linux_ndk_armeabi-v7a
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --ndk armeabi-v7a
+
+test_clang_ndk_arm64-v8a:
+  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  tags:
+    - ga
+  artifacts:
+    expire_in: 1 day
+    name: linux_ndk_arm64-v8a
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --ndk arm64-v8a
+
+test_clang_ndk_x86:
+  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  tags:
+    - ga
+  artifacts:
+    expire_in: 1 day
+    name: linux_ndk_x86
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --ndk x86
+
+test_clang_ndk_x86_64:
+  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  tags:
+    - ga
+  artifacts:
+    expire_in: 1 day
+    name: linux_ndk_x86_64
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --ndk x86_64
+
+test_osx_clang:
+  tags:
+    - osx
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - subprojects/packagecache/
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --clang
+
+test_osx_ios:
+  tags:
+    - osx
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - subprojects/packagecache/
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --iphone static
+
+test_osx_clang_ndk_armeabi-v7a:
+  tags:
+    - osx
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - subprojects/packagecache/
+  artifacts:
+    expire_in: 1 day
+    name: osx_ndk_armeabi-v7a
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk armeabi-v7a
+
+test_osx_clang_ndk_arm64-v8a:
+  tags:
+    - osx
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - subprojects/packagecache/
+  artifacts:
+    expire_in: 1 day
+    name: osx_ndk_arm64-v8a
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk arm64-v8a
+
+test_osx_clang_ndk_x86:
+  tags:
+    - osx
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - subprojects/packagecache/
+  artifacts:
+    expire_in: 1 day
+    name: osx_ndk_x86
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk x86
+
+test_osx_clang_ndk_x86_64:
+  tags:
+    - osx
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - subprojects/packagecache/
+  artifacts:
+    expire_in: 1 day
+    name: osx_ndk_x86_64
+    when: on_success
+    paths:
+    - build-clang-*/src/libgreenaddress.so
+    - build-clang-*/src/swig_java/com/blockstream/libgreenaddress/GASDK.java
+    - build-clang-*/libwally-core/src/swig_java/src/com/blockstream/libwally/Wally.java
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --ndk x86_64
+
+test_freebsd_gcc:
+  tags:
+    - freebsd
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --lto=false --gcc
+
+test_freebsd_clang:
+  tags:
+    - freebsd
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --lto=false --clang
+
+package_release:
+  tags:
+    - garelease
+  stage: deploy
+  artifacts:
+    expire_in: 14 days
+    paths:
+    - build-clang-*/*
+    - SHA256SUM.asc
+    when: on_success
+  script: cd $CI_PROJECT_DIR && /opt/process_release
+  dependencies:
+  - test_clang_ndk_armeabi-v7a
+  - test_clang_ndk_arm64-v8a
+  - test_clang_ndk_x86
+  - test_clang_ndk_x86_64
