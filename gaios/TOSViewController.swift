@@ -13,8 +13,6 @@ class TOSViewController: UIViewController {
 
 
     @IBOutlet weak var nButton: UIButton!
-    var tosClicked: Bool = false
-    var recoveryClicked: Bool = false
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var tosLabel: UILabel!
 
@@ -27,30 +25,13 @@ class TOSViewController: UIViewController {
     }
 
     @IBAction func agreeTOSClicked(_ sender: UIButton) {
-        tosClicked = true
         sender.backgroundColor = UIColor.customMatrixGreen()
         sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
         sender.setImage(UIImage(named: "stepIndicator"), for: UIControlState.normal)
         sender.tintColor = UIColor.white
-        if tosClicked && recoveryClicked {
-            nButton.isUserInteractionEnabled = true
-            nButton.backgroundColor = UIColor.customLightGreen()
-            nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-
-        }
-    }
-
-    @IBAction func savedRecoverySeedClicked(_ sender: UIButton) {
-        recoveryClicked = true
-        sender.backgroundColor = UIColor.customMatrixGreen()
-        sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        sender.setImage(UIImage(named: "stepIndicator"), for: UIControlState.normal)
-        sender.tintColor = UIColor.white
-        if tosClicked && recoveryClicked {
-            nButton.isUserInteractionEnabled = true
-            nButton.backgroundColor = UIColor.customMatrixGreen()
-            nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-        }
+        nButton.isUserInteractionEnabled = true
+        nButton.backgroundColor = UIColor.customLightGreen()
+        nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
