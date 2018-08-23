@@ -45,6 +45,8 @@
 		09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD721001A5E009DCDEA /* SettingsViewController.swift */; };
 		09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD921003961009DCDEA /* SettingsCell.swift */; };
 		09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FDB21004309009DCDEA /* CustomAlertInputView.swift */; };
+		093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D5212E844400134235 /* CurrencySelectorViewController.swift */; };
+		093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D7212E86DF00134235 /* CurrencyCell.swift */; };
 		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
@@ -68,7 +70,6 @@
 		09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
-		674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B71FA8D03B001311DE /* SettingsTableViewController.swift */; };
 		676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */; };
 		676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */; };
 		676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */; };
@@ -141,6 +142,8 @@
 		09342FD721001A5E009DCDEA /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		09342FD921003961009DCDEA /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		09342FDB21004309009DCDEA /* CustomAlertInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertInputView.swift; sourceTree = "<group>"; };
+		093544D5212E844400134235 /* CurrencySelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectorViewController.swift; sourceTree = "<group>"; };
+		093544D7212E86DF00134235 /* CurrencyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCell.swift; sourceTree = "<group>"; };
 		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
@@ -168,7 +171,6 @@
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
-		674385B71FA8D03B001311DE /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTCUnitsTableViewController.swift; sourceTree = "<group>"; };
 		676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceViewController.swift; sourceTree = "<group>"; };
 		676FCF1C1F9D0CF800354E93 /* gaios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gaios.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -243,6 +245,7 @@
 				0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */,
 				09342FD921003961009DCDEA /* SettingsCell.swift */,
 				092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */,
+				093544D7212E86DF00134235 /* CurrencyCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -336,7 +339,6 @@
 				09358BD52106A57D00D1066F /* CustomAletView.swift */,
 				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
-				674385B71FA8D03B001311DE /* SettingsTableViewController.swift */,
 				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
 				0992F86720E470A800F6AAAB /* VerifyMnemonicTableViewController.swift */,
 				092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */,
@@ -362,6 +364,7 @@
 				09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */,
 				09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
+				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
 				678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */,
 				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
@@ -726,6 +729,7 @@
 				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
 				092A84D1211C082F0062F0B2 /* TwoFactorSelectorViewController.swift in Sources */,
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
+				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
@@ -734,7 +738,6 @@
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
-				674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */,
 				09342FD620FDD569009DCDEA /* MainMenuPageViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
@@ -743,6 +746,7 @@
 				09342FD420FD671F009DCDEA /* LineLayer.swift in Sources */,
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
 				092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */,
+				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */,
 				67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */,

@@ -39,6 +39,9 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         let firstVC: UINavigationController = pages[viewControllerIndex] as! UINavigationController
         let view = firstVC.viewControllers[0] as! ViewController
         view.pager = self
+        let settings: UINavigationController = pages[0] as! UINavigationController
+        let settingsVC = settings.viewControllers[0] as! SettingsViewController
+        settingsVC.pager = self
         setViewControllers([firstVC], direction: .forward, animated: true, completion: nil)
         let appearance = UIPageControl.appearance(whenContainedInInstancesOf: [IntroPageViewController.self])
         appearance.pageIndicatorTintColor = UIColor.customTitaniumMedium()
@@ -183,13 +186,13 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
 
     }
 
-    func showButtons() {
+    func hideButtons() {
         button.isHidden = true
         button1.isHidden = true
         button2.isHidden = true
     }
 
-    func hideButtons() {
+    func showButtons() {
         button.isHidden = false
         button1.isHidden = false
         button2.isHidden = false

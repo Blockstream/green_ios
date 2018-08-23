@@ -19,6 +19,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     let sectionAdvanced:[String] = ["Enable Segwit", "nLockTimeTransactions", "SPV Synchronization"]
     let sectionAbout:[String] = ["Version", "Terms of use", "Privacy Policy"]
     let settingsIcon:[UIImage] = [#imageLiteral(resourceName: "account"),#imageLiteral(resourceName: "security"),#imageLiteral(resourceName: "advanced"),#imageLiteral(resourceName: "about")]
+    var pager: MainMenuPageViewController? = nil
 
     lazy var allSettings:[[String]] = [sectionAccount, sectionSecurity, sectionAdvanced, sectionAbout]
 
@@ -41,6 +42,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 45
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if(indexPath.section == 0) {
+            if (indexPath.row == 0) {
+                pager?.hideButtons()
+                self.performSegue(withIdentifier: "currency", sender: nil)
+            }
+        }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -75,5 +85,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        pager?.showButtons()
     }
 }
