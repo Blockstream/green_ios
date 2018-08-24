@@ -127,7 +127,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ZW2-ot-cFm">
-                                <rect key="frame" x="0.0" y="277" width="320" height="291"/>
+                                <rect key="frame" x="0.0" y="290" width="320" height="278"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="pBX-bn-UIZ" customClass="CurrencyCell" customModule="gaios" customModuleProvider="target">
@@ -172,7 +172,7 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Search" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Yow-vt-kAL">
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Search" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Yow-vt-kAL" customClass="SearchTextField" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="16" y="121" width="288" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="35" id="mxD-KG-0g0"/>
@@ -201,20 +201,43 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="search" translatesAutoresizingMaskIntoConstraints="NO" id="G9o-TV-lse">
+                                <rect key="frame" x="26" y="131" width="15" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="15" id="HI6-Ui-6eV"/>
+                                    <constraint firstAttribute="height" constant="15" id="ZFQ-yD-lUn"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nbb-lh-eRt">
+                                <rect key="frame" x="16" y="23" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="S4Q-Yj-Qim"/>
+                                    <constraint firstAttribute="width" secondItem="Nbb-lh-eRt" secondAttribute="height" multiplier="27:27" id="yy2-CL-IK0"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
+                                <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonPressed:" destination="pU1-Se-Foe" eventType="touchUpInside" id="AWd-Va-KPA"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="ZW2-ot-cFm" firstAttribute="leading" secondItem="zgX-yG-gIb" secondAttribute="leading" id="1FF-PK-1T9"/>
                             <constraint firstItem="zgX-yG-gIb" firstAttribute="trailing" secondItem="Yow-vt-kAL" secondAttribute="trailing" constant="16" id="4kl-Xk-c2j"/>
                             <constraint firstAttribute="bottom" secondItem="ZW2-ot-cFm" secondAttribute="bottom" id="559-Ig-wuw"/>
-                            <constraint firstItem="83T-x6-5F9" firstAttribute="top" secondItem="Yow-vt-kAL" secondAttribute="bottom" constant="3" id="7dW-S1-AOw"/>
+                            <constraint firstItem="83T-x6-5F9" firstAttribute="top" secondItem="Yow-vt-kAL" secondAttribute="bottom" constant="16" id="7dW-S1-AOw"/>
                             <constraint firstItem="ZW2-ot-cFm" firstAttribute="top" secondItem="erf-Ov-BjI" secondAttribute="bottom" constant="100" id="Cog-uh-NDu"/>
+                            <constraint firstItem="G9o-TV-lse" firstAttribute="leading" secondItem="Yow-vt-kAL" secondAttribute="leading" constant="10" id="Hu9-1F-kkI"/>
                             <constraint firstItem="hPI-T5-0JQ" firstAttribute="top" secondItem="zgX-yG-gIb" secondAttribute="top" constant="10" id="HwJ-zp-CQq"/>
+                            <constraint firstItem="hPI-T5-0JQ" firstAttribute="centerY" secondItem="Nbb-lh-eRt" secondAttribute="centerY" id="Jyz-iA-Wkk"/>
                             <constraint firstItem="zgX-yG-gIb" firstAttribute="trailing" secondItem="ZW2-ot-cFm" secondAttribute="trailing" id="NHq-c1-hwE"/>
                             <constraint firstItem="Yow-vt-kAL" firstAttribute="top" secondItem="hPI-T5-0JQ" secondAttribute="bottom" constant="70" id="TFA-ob-PX1"/>
+                            <constraint firstItem="Nbb-lh-eRt" firstAttribute="leading" secondItem="zgX-yG-gIb" secondAttribute="leading" constant="16" id="TOr-OS-JFU"/>
                             <constraint firstItem="zgX-yG-gIb" firstAttribute="trailing" secondItem="83T-x6-5F9" secondAttribute="trailing" constant="16" id="VQt-rV-QTr"/>
-                            <constraint firstItem="erf-Ov-BjI" firstAttribute="top" secondItem="Yow-vt-kAL" secondAttribute="bottom" constant="3" id="ewe-Ja-BF2"/>
+                            <constraint firstItem="erf-Ov-BjI" firstAttribute="top" secondItem="Yow-vt-kAL" secondAttribute="bottom" constant="16" id="ewe-Ja-BF2"/>
                             <constraint firstItem="Yow-vt-kAL" firstAttribute="leading" secondItem="zgX-yG-gIb" secondAttribute="leading" constant="16" id="gBW-fW-ZHe"/>
+                            <constraint firstItem="G9o-TV-lse" firstAttribute="centerY" secondItem="Yow-vt-kAL" secondAttribute="centerY" id="i3G-6B-e7N"/>
                             <constraint firstItem="hPI-T5-0JQ" firstAttribute="centerX" secondItem="FNv-hI-ukq" secondAttribute="centerX" id="ppK-Gm-bGS"/>
                             <constraint firstItem="erf-Ov-BjI" firstAttribute="leading" secondItem="zgX-yG-gIb" secondAttribute="leading" constant="16" id="zDN-0U-Vsk"/>
                         </constraints>
@@ -222,11 +245,12 @@
                     </view>
                     <connections>
                         <outlet property="tableView" destination="ZW2-ot-cFm" id="z5F-EH-pBY"/>
+                        <outlet property="textField" destination="Yow-vt-kAL" id="xHX-Va-em0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xz8-EI-Koh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10650" y="-2156"/>
+            <point key="canvasLocation" x="10650" y="-2157.0422535211269"/>
         </scene>
         <!--Custom Alert Input View-->
         <scene sceneID="0bg-Gs-gf9">
@@ -3569,6 +3593,7 @@
         <image name="pinCircle" width="48" height="48"/>
         <image name="plus" width="48" height="48"/>
         <image name="scan" width="283" height="281"/>
+        <image name="search" width="75" height="75"/>
         <image name="testnet" width="200" height="200"/>
         <image name="transactions" width="24" height="17"/>
         <image name="user" width="66" height="66"/>
@@ -3581,24 +3606,15 @@
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumMedium">
-            <color red="0.21568627450980393" green="0.24705882352941178" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.21568627450980393" green="0.24705882352941178" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="VVU-0l-yPI"/>
+        <segue reference="QaF-5U-DEq"/>
         <segue reference="4Ug-fi-57N"/>
     </inferredMetricsTieBreakers>
 </document>
