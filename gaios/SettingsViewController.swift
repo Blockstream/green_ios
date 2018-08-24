@@ -36,6 +36,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath) as! SettingsCell
         let settingsGroup = allSettings[indexPath.section]
         cell.label.text = settingsGroup[indexPath.row]
+        cell.selectionStyle = .none
         cell.separatorInset = UIEdgeInsetsMake(0, 16, 0, 10)
         return cell
     }
