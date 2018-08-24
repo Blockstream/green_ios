@@ -105,7 +105,7 @@ class AccountStore {
             print(lowPriority)
         }
         NotificationStore.shared.initializeNotificationStore()
-
+        SettingsStore.shared.initSettingsStore()
         print(exchangeRate)
     }
 }

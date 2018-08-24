@@ -13,6 +13,7 @@ class SettingsCell: UITableViewCell {
 
 
     @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var rightLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

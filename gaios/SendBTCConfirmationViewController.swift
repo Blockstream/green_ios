@@ -32,10 +32,11 @@ class SendBTCConfirmationViewController: UIViewController {
         walletNameLabel.text = walletName
         recepientAddressLabel.text = toAddress
         fiatFeeAmount = AccountStore.shared.satoshiToUSD(amount: satoshi_fee * 250)
-        totalLabel.text = String(format: "%.2f USD", fiat_amount+fiatFeeAmount)
+        let currency = SettingsStore.shared.getCurrencyString()!
+        totalLabel.text = String(format: "%.2f %@", fiat_amount+fiatFeeAmount, currency)
         self.tabBarController?.tabBar.isHidden = true
         walletNameLabel.text = wallet?.name
-        feelabel.text = String(format: "(incl. %.2f USD fee)", fiatFeeAmount)
+        feelabel.text = String(format: "(incl. %.2f %@ fee)", fiatFeeAmount, currency)
     }
 
     @IBAction func sendButtonClicked(_ sender: Any) {

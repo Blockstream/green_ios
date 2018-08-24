@@ -35,6 +35,7 @@
 		092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092F5DE920F1619D007356F2 /* cardFooter.swift */; };
 		092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092F5DEB20F16353007356F2 /* cardFooter.xib */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
+		09309F1C212FB55000DE093B /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1B212FB55000DE093B /* SettingsStore.swift */; };
 		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
 		0932D7B520FC6D760074B48F /* ProgressIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */; };
 		0932D7B720FC6F780074B48F /* ProgressIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */; };
@@ -133,6 +134,7 @@
 		092F5DE920F1619D007356F2 /* cardFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cardFooter.swift; sourceTree = "<group>"; };
 		092F5DEB20F16353007356F2 /* cardFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = cardFooter.xib; sourceTree = "<group>"; };
 		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
+		09309F1B212FB55000DE093B /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicatorView.xib; sourceTree = "<group>"; };
 		0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicatorView.swift; sourceTree = "<group>"; };
@@ -273,6 +275,7 @@
 				09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */,
 				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
 				092D05AE2123E27A00B9B7CD /* NotificationStore.swift */,
+				09309F1B212FB55000DE093B /* SettingsStore.swift */,
 				092D05B221277E2E00B9B7CD /* Date+helpers.swift */,
 				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
@@ -697,6 +700,7 @@
 				0933A599210716EC00C43838 /* GreenAddress.swift in Sources */,
 				09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */,
 				0992F86820E470A800F6AAAB /* VerifyMnemonicTableViewController.swift in Sources */,
+				09309F1C212FB55000DE093B /* SettingsStore.swift in Sources */,
 				09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */,
 				0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* TransactionViewController.swift in Sources */,

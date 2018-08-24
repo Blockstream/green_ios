@@ -15,6 +15,8 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
     var currencyList: Array<CurrencyItem> = Array<CurrencyItem>()
     var searchCurrencyList: Array<CurrencyItem> = Array<CurrencyItem>()
     @IBOutlet weak var textField: SearchTextField!
+    @IBOutlet weak var currentCurrency: UILabel!
+    @IBOutlet weak var currentExchange: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +27,13 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
         hideKeyboardWhenTappedAround()
         textField.delegate = self
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        refreshCurrency()
+    }
+
+    func refreshCurrency() {
+        let currencySettings = SettingsStore.shared.getCurrencySettings()
+        currentCurrency.text = currencySettings?.settingsProperty["currency"]
+        currentExchange.text = currencySettings?.settingsProperty["exchange"]
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -68,6 +77,13 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
         cell.selectionStyle = .none
         cell.separatorInset = UIEdgeInsetsMake(0, 16, 0, 16)
         return cell;
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currency = searchCurrencyList[indexPath.row]
+        SettingsStore.shared.setCurrency(currency: currency.currency, exchange: currency.exchange).done {
+             self.refreshCurrency()
+        }
     }
 
     func reloadData() {

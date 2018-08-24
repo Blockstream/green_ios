@@ -24,6 +24,7 @@ class SendBtcDetailsViewController: UIViewController {
     var wallet: WalletItem? = nil
     var fee: Int = 1
     var btcAmount: Double = 0
+    @IBOutlet weak var currencyLabel: UILabel!
 
     @IBAction func nextButtonClicked(_ sender: UIButton) {
         self.performSegue(withIdentifier: "confirm", sender: self)
@@ -59,12 +60,14 @@ class SendBtcDetailsViewController: UIViewController {
             let fiat = AccountStore.shared.btcToUSD(amount: btcAmount)
             amountTextField.text = String(format: "%.2f", fiat)
         }
+        currencyLabel.text = SettingsStore.shared.getCurrencyString()
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
         let fiat_amount: String = textField.text!
         guard let fiat_d = Double(fiat_amount) else {
-            btcAmountEstimate.text = "~0.00 BTC"
+            let currency = SettingsStore.shared.getCurrencyString()!
+            btcAmountEstimate.text = String(format: "~0.00 %@", currency)
             return
         }
         let bitcoin_amount = AccountStore.shared.USDtoBTC(amount: fiat_d)

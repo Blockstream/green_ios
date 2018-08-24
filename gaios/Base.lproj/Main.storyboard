@@ -75,25 +75,34 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="downArrow" translatesAutoresizingMaskIntoConstraints="NO" id="O76-3o-oVZ">
-                                                    <rect key="frame" x="295" y="17" width="10" height="16"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="downArrow" translatesAutoresizingMaskIntoConstraints="NO" id="O76-3o-oVZ">
+                                                    <rect key="frame" x="300" y="17" width="10" height="16"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="10" id="Bfi-fM-8BT"/>
                                                         <constraint firstAttribute="height" constant="16" id="lvb-ff-oEg"/>
                                                     </constraints>
                                                 </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IWS-Pe-9Bk">
+                                                    <rect key="frame" x="254" y="17" width="36" height="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" name="customTitaniumLight"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstItem="hNT-a7-oZy" firstAttribute="leading" secondItem="Lfg-yx-cuX" secondAttribute="leading" constant="16" id="0uq-pa-i2D"/>
                                                 <constraint firstAttribute="trailing" secondItem="O76-3o-oVZ" secondAttribute="trailing" constant="10" id="ARI-9k-EtY"/>
+                                                <constraint firstItem="IWS-Pe-9Bk" firstAttribute="centerY" secondItem="Lfg-yx-cuX" secondAttribute="centerY" id="IoY-OZ-nCp"/>
                                                 <constraint firstItem="hNT-a7-oZy" firstAttribute="centerY" secondItem="Lfg-yx-cuX" secondAttribute="centerY" id="LMT-3b-z8t"/>
                                                 <constraint firstItem="O76-3o-oVZ" firstAttribute="centerY" secondItem="Lfg-yx-cuX" secondAttribute="centerY" id="obz-xv-KQY"/>
+                                                <constraint firstItem="O76-3o-oVZ" firstAttribute="leading" secondItem="IWS-Pe-9Bk" secondAttribute="trailing" constant="10" id="ukF-4r-EK5"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <connections>
                                             <outlet property="label" destination="hNT-a7-oZy" id="BgY-fN-WtB"/>
+                                            <outlet property="rightLabel" destination="IWS-Pe-9Bk" id="aeD-sK-JuM"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -244,6 +253,8 @@
                         <viewLayoutGuide key="safeArea" id="zgX-yG-gIb"/>
                     </view>
                     <connections>
+                        <outlet property="currentCurrency" destination="erf-Ov-BjI" id="Eub-Az-hb8"/>
+                        <outlet property="currentExchange" destination="83T-x6-5F9" id="HlJ-Wc-uPE"/>
                         <outlet property="tableView" destination="ZW2-ot-cFm" id="z5F-EH-pBY"/>
                         <outlet property="textField" destination="Yow-vt-kAL" id="xHX-Va-em0"/>
                     </connections>
@@ -3410,6 +3421,7 @@
                         <outlet property="addressLabel" destination="rKw-yW-cT6" id="TGp-aY-FkR"/>
                         <outlet property="amountTextField" destination="G2d-3m-rN6" id="ycI-vf-ZoX"/>
                         <outlet property="btcAmountEstimate" destination="Jv7-Ug-6mG" id="WHE-Hs-5Yb"/>
+                        <outlet property="currencyLabel" destination="3or-PJ-k3k" id="wzQ-03-k35"/>
                         <outlet property="customfeeButton" destination="Dhv-KP-hgk" id="cFn-SX-aXY"/>
                         <outlet property="highFeeButton" destination="Iyz-82-YFW" id="oQR-2k-In0"/>
                         <outlet property="lowFeeButton" destination="IaS-5u-88S" id="GkC-uJ-U3W"/>
@@ -3605,6 +3617,9 @@
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumLight">
+            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

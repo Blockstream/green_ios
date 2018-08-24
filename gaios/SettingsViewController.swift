@@ -36,6 +36,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath) as! SettingsCell
         let settingsGroup = allSettings[indexPath.section]
         cell.label.text = settingsGroup[indexPath.row]
+        if (indexPath.row == 0 && indexPath.section == 0) {
+            cell.rightLabel.text = SettingsStore.shared.getCurrencyString()!
+        } else {
+            cell.rightLabel.text = ""
+        }
         cell.selectionStyle = .none
         cell.separatorInset = UIEdgeInsetsMake(0, 16, 0, 10)
         return cell
