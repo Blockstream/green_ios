@@ -121,6 +121,7 @@
                     <connections>
                         <outlet property="tableView" destination="r4T-PV-5vR" id="TLZ-m8-HfM"/>
                         <segue destination="pU1-Se-Foe" kind="show" identifier="currency" id="ohf-w7-4lz"/>
+                        <segue destination="qMa-Ep-FVb" kind="show" identifier="switch" id="1zM-rW-Pdo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -261,7 +262,62 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xz8-EI-Koh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10650" y="-2157.0422535211269"/>
+            <point key="canvasLocation" x="9649" y="-2734"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="VEz-jo-YyG">
+            <objects>
+                <viewController id="qMa-Ep-FVb" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="7pL-9r-rw3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QT9-jr-xS9">
+                                <rect key="frame" x="16" y="36" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="QT9-jr-xS9" secondAttribute="height" multiplier="27:27" id="9kq-ov-IyJ"/>
+                                    <constraint firstAttribute="height" constant="35" id="rI2-vr-LPo"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
+                                <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonPressed:" destination="pU1-Se-Foe" eventType="touchUpInside" id="L8a-Ty-FrQ"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Setting Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AeJ-l0-hIZ">
+                                <rect key="frame" x="108" y="43" width="104" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable setting name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="atf-bZ-hc4">
+                                <rect key="frame" x="16" y="136" width="155.5" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="15v-PA-Qfh">
+                                <rect key="frame" x="255" y="131" width="51" height="31"/>
+                            </switch>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="QT9-jr-xS9" firstAttribute="top" secondItem="0e6-hM-Yvb" secondAttribute="top" constant="16" id="3u0-YZ-3dd"/>
+                            <constraint firstItem="AeJ-l0-hIZ" firstAttribute="centerX" secondItem="7pL-9r-rw3" secondAttribute="centerX" id="Utg-s2-XDB"/>
+                            <constraint firstItem="atf-bZ-hc4" firstAttribute="leading" secondItem="0e6-hM-Yvb" secondAttribute="leading" constant="16" id="Whq-Na-4at"/>
+                            <constraint firstItem="atf-bZ-hc4" firstAttribute="top" secondItem="QT9-jr-xS9" secondAttribute="bottom" constant="65" id="aaS-c6-wMd"/>
+                            <constraint firstItem="15v-PA-Qfh" firstAttribute="centerY" secondItem="atf-bZ-hc4" secondAttribute="centerY" id="dST-L4-2WD"/>
+                            <constraint firstItem="QT9-jr-xS9" firstAttribute="width" secondItem="QT9-jr-xS9" secondAttribute="height" multiplier="27:27" id="gJk-Yd-EKV"/>
+                            <constraint firstItem="AeJ-l0-hIZ" firstAttribute="centerY" secondItem="QT9-jr-xS9" secondAttribute="centerY" id="mZd-5V-MOE"/>
+                            <constraint firstItem="QT9-jr-xS9" firstAttribute="leading" secondItem="0e6-hM-Yvb" secondAttribute="leading" constant="16" id="ojS-1h-nIe"/>
+                            <constraint firstItem="0e6-hM-Yvb" firstAttribute="trailing" secondItem="15v-PA-Qfh" secondAttribute="trailing" constant="16" id="xNn-5q-3X8"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="0e6-hM-Yvb"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Jnc-gd-37Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10539" y="-2735"/>
         </scene>
         <!--Custom Alert Input View-->
         <scene sceneID="0bg-Gs-gf9">
@@ -3614,6 +3670,9 @@
         <image name="world" width="100" height="103"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
