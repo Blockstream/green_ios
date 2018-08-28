@@ -36,6 +36,8 @@
 		092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092F5DEB20F16353007356F2 /* cardFooter.xib */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
 		09309F1C212FB55000DE093B /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1B212FB55000DE093B /* SettingsStore.swift */; };
+		09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */; };
+		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
 		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
 		0932D7B520FC6D760074B48F /* ProgressIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */; };
 		0932D7B720FC6F780074B48F /* ProgressIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */; };
@@ -135,6 +137,8 @@
 		092F5DEB20F16353007356F2 /* cardFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = cardFooter.xib; sourceTree = "<group>"; };
 		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		09309F1B212FB55000DE093B /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleSettingsViewController.swift; sourceTree = "<group>"; };
+		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicatorView.xib; sourceTree = "<group>"; };
 		0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicatorView.swift; sourceTree = "<group>"; };
@@ -370,7 +374,9 @@
 				09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */,
 				09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
+				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
+				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
 				678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */,
 				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
@@ -718,6 +724,7 @@
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */,
 				0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */,
+				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
 				092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */,
 				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
@@ -758,6 +765,7 @@
 				092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */,
 				67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */,
+				09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */,
 				092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */,
 				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,

@@ -12,35 +12,42 @@ import UIKit
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
-    
-    let settingTitles:[String] = ["Account", "Security", "Advanced", "About"]
-    let sectionAccount:[String] = ["Alternative currency", "Show Bitcoin in", "Watch-only Login"]
-    let sectionSecurity:[String] = ["Show Recovery Seed", "Screen Lock", "Two-factor Authentication", "Support"]
-    let sectionAdvanced:[String] = ["Enable Segwit", "nLockTimeTransactions", "SPV Synchronization"]
-    let sectionAbout:[String] = ["Version", "Terms of use", "Privacy Policy"]
     let settingsIcon:[UIImage] = [#imageLiteral(resourceName: "account"),#imageLiteral(resourceName: "security"),#imageLiteral(resourceName: "advanced"),#imageLiteral(resourceName: "about")]
     var pager: MainMenuPageViewController? = nil
 
-    lazy var allSettings:[[String]] = [sectionAccount, sectionSecurity, sectionAdvanced, sectionAbout]
+    var sections: Array<SettingsSection> = Array<SettingsSection>()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.tableFooterView = UIView()
+        sections = SettingsStore.shared.getAllSections()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        pager?.showButtons()
+        sections = SettingsStore.shared.getAllSections()
+        tableView.reloadData()
+    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let settingsGroup = allSettings[section]
-        return  settingsGroup.count
+        let settingsGroup = sections[section]
+        return  settingsGroup.settingsInSection.count
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return  allSettings.count
+        return  sections.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath) as! SettingsCell
-        let settingsGroup = allSettings[indexPath.section]
-        cell.label.text = settingsGroup[indexPath.row]
-        if (indexPath.row == 0 && indexPath.section == 0) {
-            cell.rightLabel.text = SettingsStore.shared.getCurrencyString()!
-        } else {
-            cell.rightLabel.text = ""
-        }
+        let section = sections[indexPath.section]
+        let settings = section.settingsInSection[indexPath.row]
+
+        cell.label.text = settings.text
+        cell.rightLabel.text = settings.secondaryText
         cell.selectionStyle = .none
         cell.separatorInset = UIEdgeInsetsMake(0, 16, 0, 10)
         return cell
@@ -56,10 +63,45 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 pager?.hideButtons()
                 self.performSegue(withIdentifier: "currency", sender: nil)
             }
+        } else if (indexPath.section == 1) {
+            if (indexPath.row == 0) {
+                self.performSegue(withIdentifier: "recovery", sender: nil)
+            } else if (indexPath.row == 1) {
+                self.performSegue(withIdentifier: "screenLock", sender: nil)
+            } else if (indexPath.row == 2) {
+                self.performSegue(withIdentifier: "twoFactor", sender: nil)
+            }  else if (indexPath.row == 3) {
+                if let url = URL(string: SettingsStore.shared.supportURL) {
+                    UIApplication.shared.open(url, options: [:])
+                }
+            }
+        } else if (indexPath.section == 2) {
+            if (indexPath.row == 0) {
+                self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
+            } else if (indexPath.row == 1) {
+                self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
+            }
+        } else if (indexPath.section == 3) {
+            if (indexPath.row == 1) {
+                if let url = URL(string: SettingsStore.shared.tosURL) {
+                    UIApplication.shared.open(url, options: [:])
+                }
+            } else if (indexPath.row == 2) {
+                if let url = URL(string: SettingsStore.shared.privacyPolicyURL) {
+                    UIApplication.shared.open(url, options: [:])
+                }
+            }
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? ToggleSettingsViewController {
+            nextController.settings = sender as? SettingsItem
         }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let sectionItem = sections[section]
         let header = UIView()
         header.backgroundColor = UIColor.customTitaniumDark()
         let imageView = UIImageView()
@@ -67,7 +109,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         imageView.image = settingsIcon[section]
         header.insertSubview(imageView, at: 0)
         let title = UILabel()
-        title.text = settingTitles[section]
+        title.text = sectionItem.sectionName
         title.frame = CGRect(x: 0, y: 0, width: 21, height: 41)
         title.translatesAutoresizingMaskIntoConstraints = false
         title.textColor = UIColor.customTitaniumLight()
@@ -84,17 +126,5 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         NSLayoutConstraint(item: title, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: imageView, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 5).isActive = true
 
         return header
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.tableFooterView = UIView()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        pager?.showButtons()
     }
 }
