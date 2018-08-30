@@ -1,7 +1,7 @@
 [wrap-file]
 directory = autobahn-cpp-933e107cf86267bfe7c9337c286083fa8c36ff23
 
-source_url = https://github.com/jkauffman1/autobahn-cpp/archive/933e107cf86267bfe7c9337c286083fa8c36ff23.tar.gz
+source_url = https://github.com/greenaddress/autobahn-cpp/archive/933e107cf86267bfe7c9337c286083fa8c36ff23.tar.gz
 source_filename = autobahn-cpp-933e107cf86267bfe7c9337c286083fa8c36ff23.tar.gz
 source_hash = 2714fd94d54702f99b0469704f535fa0ad1f040881d743099657c55e4a9a0fcf
 

@@ -588,7 +588,7 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_resolve_code, struct GA_twofactor_call*,
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_twofactor_call, struct GA_twofactor_call*, call, { (*call)(); });
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_next, struct GA_twofactor_call*, call, struct GA_twofactor_call**, next, {
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_next_call, struct GA_twofactor_call*, call, struct GA_twofactor_call**, next, {
     GA_SDK_RUNTIME_ASSERT(next);
     *next = call->get_next_call();
 });

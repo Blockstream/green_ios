@@ -149,7 +149,7 @@ public class TwoFactorCall {
     public func call() throws -> Promise<TwoFactorCall?> {
         try callWrapper(fun: GA_twofactor_call(self.optr))
         var next: OpaquePointer? = nil
-        try callWrapper(fun: GA_twofactor_next(self.optr, &next))
+        try callWrapper(fun: GA_twofactor_next_call(self.optr, &next))
         let next_: TwoFactorCall? = next == nil ? nil : TwoFactorCall(optr: next!, parent: self)
         return Promise<TwoFactorCall?> { seal in seal.fulfill(next_) }
     }

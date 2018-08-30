@@ -137,7 +137,7 @@ void resolve_2fa(struct GA_twofactor_call* call)
 
     /* Resolve the next call (if any) */
     struct GA_twofactor_call* next = 0;
-    CALL(GA_twofactor_next(call, &next))
+    CALL(GA_twofactor_next_call(call, &next))
     if (next) {
         resolve_2fa(next);
     }

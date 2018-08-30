@@ -37,7 +37,7 @@ extern "C" {
  *     GA_twofactor_call(call);
  *
  *     const GA_twofactor_call* next;
- *     GA_twofactor_next(call, &next);
+ *     GA_twofactor_next_call(call, &next);
  *     if (next) {
  *         resolve_2fa(next);
  *     }
@@ -127,7 +127,7 @@ int GA_twofactor_resolve_code(struct GA_twofactor_call* call, const char* code);
  * @call The call with any two factor authentication already resolved
  *
  * Requires that 2fa has already been resolved. After a successful call to GA_twofactor_call
- * the caller should pass the call to GA_twofactor_next and proceed to handle the next call
+ * the caller should pass the call to GA_twofactor_next_call and proceed to handle the next call
  * (if any) in the same way.
  */
 int GA_twofactor_call(struct GA_twofactor_call* call);
@@ -142,17 +142,17 @@ int GA_twofactor_call(struct GA_twofactor_call* call);
  * requires calling twofactor.init_enable_sms and then twofactor.enable_sms, but both of those
  * underlying calls are implemented by the GA_twofactor_call returned by GA_twofactor_enable("sms").
  *
- * After calling GA_twofactor_call successfully the caller should call GA_twofactor_next to
+ * After calling GA_twofactor_call successfully the caller should call GA_twofactor_next_call to
  * determine if there is a further call to be resolved and called to complete the operation.
  */
-int GA_twofactor_next(struct GA_twofactor_call* call, struct GA_twofactor_call** next);
+int GA_twofactor_next_call(struct GA_twofactor_call* call, struct GA_twofactor_call** next);
 
 /**
  * Free a GA_twofactor_call
  * @call Call to free
  *
  * GA_twofactor_call pointers returned by GA_twofactor_xxx functions need to be freed by
- * calling GA_destroy_twofactor_call. Note that calls returned by calling GA_twofactor_next
+ * calling GA_destroy_twofactor_call. Note that calls returned by calling GA_twofactor_next_call
  * are automatically freed when the parent call is freed and so MUST NOT be passed to
  * GA_destroy_twofactor_call.
  */

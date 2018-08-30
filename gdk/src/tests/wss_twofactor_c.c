@@ -108,7 +108,7 @@ void resolve_2fa(struct GA_twofactor_call* call)
 
     /* Resolve the next call (if any) */
     struct GA_twofactor_call* next = 0;
-    CALL(GA_twofactor_next(call, &next))
+    CALL(GA_twofactor_next_call(call, &next))
     if (next) {
         resolve_2fa(next);
     }
@@ -132,7 +132,7 @@ void twofactor_disable(struct GA_session* session, const char* factor)
     CALL_2FA(GA_twofactor_disable(session, factor, &call));
 }
 
-void assert_2fa_config(struct GA_session* session, const char* key, const char* value)
+void assert_twofactor_config(struct GA_session* session, const char* key, const char* value)
 {
     char* json = get_2fa_config_(session);
     const char* value_ = json_extract(json, key);
@@ -145,48 +145,47 @@ void assert_2fa_config(struct GA_session* session, const char* key, const char* 
 
 void test(struct GA_session* session)
 {
-    // Check initial config
-    char* json = get_2fa_config_(session);
-    ASSERT(strcmp(json_extract(json, "email"), "false") == 0);
-    ASSERT(strcmp(json_extract(json, "phone"), "false") == 0);
-    ASSERT(strcmp(json_extract(json, "sms"), "false") == 0);
-    ASSERT(strcmp(json_extract(json, "gauth"), "false") == 0);
-    ASSERT(strcmp(json_extract(json, "email_addr"), "null") == 0);
-    ASSERT(strcmp(json_extract(json, "email_confirmed"), "false") == 0);
-
-    twofactor_enable(session, "sms", "12345678");
-    assert_2fa_config(session, "sms", "true");
     twofactor_disable(session, "sms");
-    assert_2fa_config(session, "sms", "false");
+    assert_twofactor_config(session, "sms", "false");
+    twofactor_enable(session, "sms", "12345678");
+    assert_twofactor_config(session, "sms", "true");
+    twofactor_disable(session, "sms");
+    assert_twofactor_config(session, "sms", "false");
 
-    twofactor_enable(session, "phone", "12345678");
-    assert_2fa_config(session, "phone", "true");
     twofactor_disable(session, "phone");
-    assert_2fa_config(session, "phone", "false");
+    assert_twofactor_config(session, "phone", "false");
+    twofactor_enable(session, "phone", "12345678");
+    assert_twofactor_config(session, "phone", "true");
+    twofactor_disable(session, "phone");
+    assert_twofactor_config(session, "phone", "false");
 
-    twofactor_enable(session, "gauth", "<ignored>");
-    assert_2fa_config(session, "gauth", "true");
     twofactor_disable(session, "gauth");
-    assert_2fa_config(session, "gauth", "false");
+    assert_twofactor_config(session, "gauth", "false");
+    twofactor_enable(session, "gauth", "<ignored>");
+    assert_twofactor_config(session, "gauth", "true");
+    twofactor_disable(session, "gauth");
+    assert_twofactor_config(session, "gauth", "false");
 
+    twofactor_disable(session, "email");
+    assert_twofactor_config(session, "email", "false");
     set_email(session, "foo@baz.com");
-    assert_2fa_config(session, "email_confirmed", "true");
-    assert_2fa_config(session, "email_addr", "\"foo@baz.com\"");
-    assert_2fa_config(session, "email", "false");
+    assert_twofactor_config(session, "email_confirmed", "true");
+    assert_twofactor_config(session, "email_addr", "\"foo@baz.com\"");
+    assert_twofactor_config(session, "email", "false");
 
     twofactor_enable(session, "email", "foo@bar.com");
-    assert_2fa_config(session, "email", "true");
-    assert_2fa_config(session, "email_confirmed", "true");
-    assert_2fa_config(session, "email_addr", "\"foo@bar.com\"");
+    assert_twofactor_config(session, "email", "true");
+    assert_twofactor_config(session, "email_confirmed", "true");
+    assert_twofactor_config(session, "email_addr", "\"foo@bar.com\"");
     twofactor_disable(session, "email");
-    assert_2fa_config(session, "email", "false");
-    assert_2fa_config(session, "email_confirmed", "true");
-    assert_2fa_config(session, "email_addr", "\"foo@bar.com\"");
+    assert_twofactor_config(session, "email", "false");
+    assert_twofactor_config(session, "email_confirmed", "true");
+    assert_twofactor_config(session, "email_addr", "\"foo@bar.com\"");
 
     set_email(session, "foo@baz.com");
-    assert_2fa_config(session, "email_confirmed", "true");
-    assert_2fa_config(session, "email_addr", "\"foo@baz.com\"");
-    assert_2fa_config(session, "email", "false");
+    assert_twofactor_config(session, "email_confirmed", "true");
+    assert_twofactor_config(session, "email_addr", "\"foo@baz.com\"");
+    assert_twofactor_config(session, "email", "false");
 }
 
 int main(int argc, char* argv[])
