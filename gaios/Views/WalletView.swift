@@ -8,6 +8,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     var items = [TransactionItem]()
     var delegate: WalletViewDelegate?
+    var presentingWallet: WalletItem? = nil
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
@@ -20,11 +21,12 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell", for: indexPath) as! TransactionTableCell
         let item: TransactionItem = items.reversed()[indexPath.row]
-        cell.address.text = item.address
         cell.amount.text = item.amount
         if(item.btc_amount > 0) {
+            cell.address.text = presentingWallet?.name
             cell.amount.textColor = UIColor.customMatrixGreen()
         } else {
+            cell.address.text = item.address
             cell.amount.textColor = UIColor.white
         }
         cell.date.text = item.date
@@ -102,11 +104,11 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 let formatedTransactionDate = String(format: "%@ %@ %@", nameOfDay, nameOfMonth, nameOfYear)
                 let val:String? = json["value_str"] as? String
                 let balance: Double? = Double(val!)
-                let toBtc: Double = balance! / 100000000
-                let formattedBalance: String = String(format: "%g BTC", toBtc)
+                let btcFormatted = String.satoshiToBTC(satoshi: Int(balance!))
+                let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
                 let counterparty: String = json["counterparty"] as! String
                 print(json)
-                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: toBtc))
+                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: balance!))
             }
             }.ensure {
                 self.transactionTableView.reloadData()
@@ -121,6 +123,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
      */
     open func present(cardView: CardView, animated: Bool, completion: LayoutCompletion? = nil) {
         let walletView = cardView as! ColoredCardView
+        self.presentingWallet = walletView.wallet
         updateViewModel(account: Int((walletView.wallet?.pointer)!))
         delegate?.cardViewPresented()
         present(cardView: cardView, animated: animated, animationDuration: animated ? WalletView.presentingAnimationSpeed : nil, completion: completion)

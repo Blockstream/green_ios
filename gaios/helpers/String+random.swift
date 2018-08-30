@@ -38,7 +38,17 @@ extension String {
             div = 100
         }
         let btc = satoshi / div
-        let result: String = String(format: "%g", btc)
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 6
+        var result: String = formatter.string(from: NSNumber(value: btc))!
+        if (btc < 1 && btc > 0) {
+            result = "0" + result
+        } else if (btc < 0 && btc > -1) {
+            result = "-0" + String(result.dropFirst())
+        } else if ( btc == 0) {
+            result = "0"
+        }
         return result
     }
 
@@ -54,7 +64,17 @@ extension String {
             div = 100
         }
         let btc = satoshi / div
-        let result: String = String(format: "%.6f", btc)
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 6
+        var result: String = formatter.string(from: NSNumber(value: btc))!
+        if (btc < 1 && btc > 0) {
+            result = "0" + result
+        } else if (btc < 0 && btc > -1) {
+            result = "-0" + String(result.dropFirst())
+        } else if ( btc == 0) {
+            result = "0"
+        }
         return result
     }
 

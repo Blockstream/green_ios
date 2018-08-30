@@ -97,6 +97,7 @@ class AccountStore {
     }
 
     func initializeAccountStore() {
+        SettingsStore.shared.initSettingsStore()
         guard let login = getGAService().loginData else {
             return
         }
@@ -121,7 +122,6 @@ class AccountStore {
             print(lowPriority)
         }
         NotificationStore.shared.initializeNotificationStore()
-        SettingsStore.shared.initSettingsStore()
         print(exchangeRate)
     }
 }
