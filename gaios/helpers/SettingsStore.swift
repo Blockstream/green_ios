@@ -78,8 +78,18 @@ class SettingsStore {
             }
     }
 
-    func getAvailableCurrency() {
+    func setDenominationSettings(denomination: String) {
+        if (denomination != denominationPrimary && denomination != denominationMilli && denomination != denominationMicro) {
+            return
+        }
+        let denominationProperty = [settingsDenomination: denomination]
+        allSettings[settingsDenomination] = SettingsItem(settingsName: settingsDenomination, property: denominationProperty, text: accountDenomination, secondaryText: denomination)
+        loadAllSections()
+        writeSettingsToDisk()
+    }
 
+    func getDenominationSettings() -> String {
+        return (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!
     }
 
     func getCurrencySettings() -> SettingsItem? {

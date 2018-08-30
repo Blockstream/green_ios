@@ -19,6 +19,10 @@ class AccountStore {
     var feeEstimateHigh: Int = 0
     var mainAddress:String = ""
 
+    let denominationBTC: Double = 100000000
+    let denominationMilliBTC: Double = 100000
+    let denominationMicroBTC: Double = 100
+
     public func fetchWallets() -> Array<WalletItem> {
         var result = Array<WalletItem>()
         let loginData = getGAService().loginData
@@ -55,6 +59,18 @@ class AccountStore {
         return wrap {self.fetchWallets()}
     }
 
+    func getDenomination() -> Double  {
+        let denomination = SettingsStore.shared.getDenominationSettings()
+        if (denomination == SettingsStore.shared.denominationPrimary) {
+            return denominationBTC
+        } else if (denomination == SettingsStore.shared.denominationMilli) {
+            return denominationMilliBTC
+        } else if (denomination == SettingsStore.shared.denominationMicro) {
+            return denominationMicroBTC
+        }
+        return denominationBTC
+    }
+
     func dateFromTimestamp(date: String) -> Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -62,17 +78,17 @@ class AccountStore {
     }
 
     func satoshiToUSD(amount: Int) -> Double {
-        let result: Double = (Double(amount) * exchangeRate) / 100000000
+        let result: Double = (Double(amount) * exchangeRate) / getDenomination()
         return result
     }
 
     func btcToUSD(amount: Double) ->Double {
-        return satoshiToUSD(amount: Int(amount * 100000000))
+        return satoshiToUSD(amount: Int(amount * getDenomination()))
     }
 
     func USDtoSatoshi(amount: Double) -> Int {
-        let result: Int = Int(amount / exchangeRate) * 100000000
-        return result
+        let result = (amount / exchangeRate) * getDenomination()
+        return Int(result)
     }
 
     func USDtoBTC(amount: Double) -> Double{
@@ -92,15 +108,15 @@ class AccountStore {
         if let fee:[String:Any] = login["fee_estimates"] as? [String:Any] {
             let lowPriority = fee["12"] as! [String : Any]
             if let lowPriorityFee = lowPriority["feerate"] as? String {
-                feeEstimatelow = Int((Double(lowPriorityFee)! * 100000000) / 1000) //satoshi per byte
+                feeEstimatelow = Int((Double(lowPriorityFee)! * getDenomination()) / 1000) //satoshi per byte
             }
             let mediumPriority = fee["6"] as! [String : Any]
             if let mediumPriorityFee = mediumPriority["feerate"] as? String {
-                feeEstimateMedium = Int((Double(mediumPriorityFee)! * 100000000) / 1000) //satoshi per byte
+                feeEstimateMedium = Int((Double(mediumPriorityFee)! * getDenomination()) / 1000) //satoshi per byte
             }
             let highPriority = fee["2"] as! [String : Any]
             if let highPriorityFee = highPriority["feerate"] as? String {
-                feeEstimateHigh = Int((Double(highPriorityFee)! * 100000000) / 1000) //satoshi per byte
+                feeEstimateHigh = Int((Double(highPriorityFee)! * getDenomination()) / 1000) //satoshi per byte
             }
             print(lowPriority)
         }

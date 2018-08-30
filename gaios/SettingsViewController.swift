@@ -62,13 +62,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if (indexPath.row == 0) {
                 pager?.hideButtons()
                 self.performSegue(withIdentifier: "currency", sender: nil)
+            } else if (indexPath.row == 1) {
+                pager?.hideButtons()
+                self.performSegue(withIdentifier: "denomination", sender: nil)
             }
         } else if (indexPath.section == 1) {
             if (indexPath.row == 0) {
+                pager?.hideButtons()
                 self.performSegue(withIdentifier: "recovery", sender: nil)
             } else if (indexPath.row == 1) {
+                pager?.hideButtons()
                 self.performSegue(withIdentifier: "screenLock", sender: nil)
             } else if (indexPath.row == 2) {
+                pager?.hideButtons()
                 self.performSegue(withIdentifier: "twoFactor", sender: nil)
             }  else if (indexPath.row == 3) {
                 if let url = URL(string: SettingsStore.shared.supportURL) {
@@ -77,8 +83,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }
         } else if (indexPath.section == 2) {
             if (indexPath.row == 0) {
+                pager?.hideButtons()
                 self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
             } else if (indexPath.row == 1) {
+                pager?.hideButtons()
                 self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
             }
         } else if (indexPath.section == 3) {

@@ -125,11 +125,104 @@
                         <segue destination="7ZH-ab-tzB" kind="show" identifier="twoFactor" id="9SJ-qc-TwB"/>
                         <segue destination="KCm-9R-mRR" kind="show" identifier="screenLock" id="OQJ-Pn-CpN"/>
                         <segue destination="s51-Si-EAJ" kind="show" identifier="recovery" id="HPP-44-6o5"/>
+                        <segue destination="HFJ-t3-WQm" kind="show" identifier="denomination" id="sYN-Li-Q3m"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="9649" y="-1893"/>
+        </scene>
+        <!--Denomination Selector View Controller-->
+        <scene sceneID="qfd-mo-sot">
+            <objects>
+                <viewController id="HFJ-t3-WQm" customClass="DenominationSelectorViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="k93-Qm-LGe">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jqu-xj-iPl">
+                                <rect key="frame" x="16" y="36" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="VL2-ee-XUl"/>
+                                    <constraint firstAttribute="width" secondItem="Jqu-xj-iPl" secondAttribute="height" multiplier="27:27" id="bam-gW-Jll"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
+                                <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonClicked:" destination="HFJ-t3-WQm" eventType="touchUpInside" id="0ri-bn-NIn"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Denomination" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DMO-e9-Sh1">
+                                <rect key="frame" x="107" y="43" width="106" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="8yx-ts-xxY">
+                                <rect key="frame" x="0.0" y="338" width="320" height="230"/>
+                                <color key="backgroundColor" name="customTitaniumMedium"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="230" id="BiA-9d-hhO"/>
+                                </constraints>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="mQL-et-iyQ" customClass="DenominationCell" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="mQL-et-iyQ" id="6RJ-YO-g2x">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fy0-Lf-GB1">
+                                                    <rect key="frame" x="16" y="13" width="37.5" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="stepIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="UZ7-UP-bH3">
+                                                    <rect key="frame" x="292" y="16" width="12" height="12"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="12" id="DdX-1u-Fgr"/>
+                                                        <constraint firstAttribute="height" constant="12" id="c2M-Cs-jpJ"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" name="customTitaniumMedium"/>
+                                            <constraints>
+                                                <constraint firstItem="fy0-Lf-GB1" firstAttribute="leading" secondItem="6RJ-YO-g2x" secondAttribute="leading" constant="16" id="CQv-Yu-qBX"/>
+                                                <constraint firstItem="fy0-Lf-GB1" firstAttribute="centerY" secondItem="6RJ-YO-g2x" secondAttribute="centerY" id="Ixm-iK-O4f"/>
+                                                <constraint firstAttribute="trailing" secondItem="UZ7-UP-bH3" secondAttribute="trailing" constant="16" id="YY1-G9-urq"/>
+                                                <constraint firstItem="UZ7-UP-bH3" firstAttribute="centerY" secondItem="6RJ-YO-g2x" secondAttribute="centerY" id="nAI-K9-kob"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" name="customTitaniumMedium"/>
+                                        <connections>
+                                            <outlet property="leftLabel" destination="fy0-Lf-GB1" id="c9i-9O-gP1"/>
+                                            <outlet property="rightImageView" destination="UZ7-UP-bH3" id="CbF-uG-UWE"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="DMO-e9-Sh1" firstAttribute="centerX" secondItem="k93-Qm-LGe" secondAttribute="centerX" id="4ie-Ac-DCv"/>
+                            <constraint firstItem="Jqu-xj-iPl" firstAttribute="leading" secondItem="fzP-ZX-Meg" secondAttribute="leading" constant="16" id="5uu-DI-HoE"/>
+                            <constraint firstItem="Jqu-xj-iPl" firstAttribute="width" secondItem="Jqu-xj-iPl" secondAttribute="height" multiplier="27:27" id="FyJ-1O-okA"/>
+                            <constraint firstItem="8yx-ts-xxY" firstAttribute="leading" secondItem="fzP-ZX-Meg" secondAttribute="leading" id="JRa-Of-cMJ"/>
+                            <constraint firstItem="DMO-e9-Sh1" firstAttribute="centerY" secondItem="Jqu-xj-iPl" secondAttribute="centerY" id="N7A-0o-HfR"/>
+                            <constraint firstItem="Jqu-xj-iPl" firstAttribute="top" secondItem="fzP-ZX-Meg" secondAttribute="top" constant="16" id="kSj-vz-T8P"/>
+                            <constraint firstItem="8yx-ts-xxY" firstAttribute="trailing" secondItem="fzP-ZX-Meg" secondAttribute="trailing" id="ld9-uk-QVk"/>
+                            <constraint firstAttribute="bottom" secondItem="8yx-ts-xxY" secondAttribute="bottom" id="mtr-D4-clh"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="fzP-ZX-Meg"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="8yx-ts-xxY" id="09h-mL-RUK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Bby-ks-DlF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8861.25" y="-2735.9154929577467"/>
         </scene>
         <!--Currency Selector View Controller-->
         <scene sceneID="nqH-JI-YBf">
@@ -3635,6 +3728,7 @@
         <image name="plus" width="48" height="48"/>
         <image name="scan" width="283" height="281"/>
         <image name="search" width="75" height="75"/>
+        <image name="stepIndicator" width="18" height="18"/>
         <image name="testnet" width="200" height="200"/>
         <image name="transactions" width="24" height="17"/>
         <image name="user" width="66" height="66"/>
@@ -3643,9 +3737,6 @@
         <image name="world" width="100" height="103"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

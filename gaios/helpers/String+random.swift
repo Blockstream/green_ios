@@ -28,14 +28,32 @@ extension String {
 
     static func satoshiToBTC(satoshi: String) -> String {
         let satoshi: Double = Double(satoshi)!
-        let btc = satoshi / 100000000
+        let dSettings = SettingsStore.shared.getDenominationSettings()
+        var div: Double = 100000000
+        if (dSettings == SettingsStore.shared.denominationPrimary) {
+            div = 100000000
+        } else if (dSettings == SettingsStore.shared.denominationMilli) {
+            div = 100000
+        } else if (dSettings == SettingsStore.shared.denominationMicro) {
+            div = 100
+        }
+        let btc = satoshi / div
         let result: String = String(format: "%g", btc)
         return result
     }
 
     static func satoshiToBTC(satoshi: Int) -> String {
         let satoshi: Double = Double(satoshi)
-        let btc = satoshi / 100000000
+        let dSettings = SettingsStore.shared.getDenominationSettings()
+        var div: Double = 100000000
+        if (dSettings == SettingsStore.shared.denominationPrimary) {
+            div = 100000000
+        } else if (dSettings == SettingsStore.shared.denominationMilli) {
+            div = 100000
+        } else if (dSettings == SettingsStore.shared.denominationMicro) {
+            div = 100
+        }
+        let btc = satoshi / div
         let result: String = String(format: "%.6f", btc)
         return result
     }

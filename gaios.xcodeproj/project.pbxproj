@@ -35,9 +35,11 @@
 		092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092F5DE920F1619D007356F2 /* cardFooter.swift */; };
 		092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092F5DEB20F16353007356F2 /* cardFooter.xib */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
-		09309F1C212FB55000DE093B /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1B212FB55000DE093B /* SettingsStore.swift */; };
 		09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */; };
 		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
+		09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */; };
+		09309F2521365E6900DE093B /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1B212FB55000DE093B /* SettingsStore.swift */; };
+		09309F272136888C00DE093B /* DenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F262136888C00DE093B /* DenominationCell.swift */; };
 		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
 		0932D7B520FC6D760074B48F /* ProgressIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */; };
 		0932D7B720FC6F780074B48F /* ProgressIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */; };
@@ -139,6 +141,8 @@
 		09309F1B212FB55000DE093B /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleSettingsViewController.swift; sourceTree = "<group>"; };
 		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
+		09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationSelectorViewController.swift; sourceTree = "<group>"; };
+		09309F262136888C00DE093B /* DenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationCell.swift; sourceTree = "<group>"; };
 		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicatorView.xib; sourceTree = "<group>"; };
 		0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicatorView.swift; sourceTree = "<group>"; };
@@ -252,6 +256,7 @@
 				0932D7B620FC6F780074B48F /* ProgressIndicatorView.swift */,
 				0932D7B420FC6D760074B48F /* ProgressIndicatorView.xib */,
 				09342FD921003961009DCDEA /* SettingsCell.swift */,
+				09309F262136888C00DE093B /* DenominationCell.swift */,
 				092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
 			);
@@ -376,6 +381,7 @@
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
 				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
+				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
 				678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */,
@@ -706,12 +712,12 @@
 				0933A599210716EC00C43838 /* GreenAddress.swift in Sources */,
 				09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */,
 				0992F86820E470A800F6AAAB /* VerifyMnemonicTableViewController.swift in Sources */,
-				09309F1C212FB55000DE093B /* SettingsStore.swift in Sources */,
 				09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */,
 				0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* TransactionViewController.swift in Sources */,
 				092D05AF2123E27A00B9B7CD /* NotificationStore.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
+				09309F2521365E6900DE093B /* SettingsStore.swift in Sources */,
 				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
 				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
 				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
@@ -726,6 +732,7 @@
 				0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
+				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,
 				092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */,
 				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
 				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
@@ -743,6 +750,7 @@
 				092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
 				092A84D1211C082F0062F0B2 /* TwoFactorSelectorViewController.swift in Sources */,
+				09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */,
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
