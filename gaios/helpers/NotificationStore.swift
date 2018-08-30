@@ -143,8 +143,7 @@ class NotificationStore {
 
     func createWelcomeNotification() -> NotificationItem{
         let date = Date()
-        let dateText = dateToText(date: date)
-        return NotificationItem(date: dateText, title: "Welcome", text: "Thank you for downloading Green! please leave us a review when you get a chance.", id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970)
+        return NotificationItem(date: date, title: "Welcome", text: "Thank you for downloading Green! please leave us a review when you get a chance.", id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970)
     }
 
     func maybeAddWelcomeNotification() {
@@ -162,7 +161,6 @@ class NotificationStore {
 
     func createNotification(timestamp: String, hash: String, amount: Int, counterparty: String) -> NotificationItem {
         let date = self.dateFromTimestamp(date: timestamp)
-        let dateText = dateToText(date: date)
         var title: String = ""
         var bodyText = ""
         let amountText = String.satoshiToBTC(satoshi: abs(amount))
@@ -174,7 +172,7 @@ class NotificationStore {
             bodyText = String(format: "Your  %@ BTC sent to %@ has been confirmed", amountText, counterparty)
         }
         
-        return NotificationItem(date: dateText, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970)
+        return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970)
     }
 
     func initializeNotificationStore() {
@@ -192,12 +190,12 @@ class NotificationStore {
 class NotificationItem: Codable{
     var title: String
     var text: String
-    var date: String
+    var date: Date
     var timestamp: Double
     var id: String
     var seen: Bool
 
-    init(date: String, title: String, text: String, id: String, seen: Bool, timestamp: Double) {
+    init(date: Date, title: String, text: String, id: String, seen: Bool, timestamp: Double) {
         self.title = title
         self.text = text
         self.date = date

@@ -57,7 +57,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         let item: NotificationItem = items.reversed()[indexPath.row]
         cell.mainText.text = item.text
         cell.title.text = item.title
-        cell.date.text = item.date
+        cell.date.text = NotificationStore.shared.dateToText(date: item.date)
         cell.date.sizeToFit()
         cell.title.sizeToFit()
         NotificationStore.shared.setSeen(id: item.id)
