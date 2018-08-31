@@ -14,6 +14,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var tableView: UITableView!
     let settingsIcon:[UIImage] = [#imageLiteral(resourceName: "account"),#imageLiteral(resourceName: "security"),#imageLiteral(resourceName: "advanced"),#imageLiteral(resourceName: "about")]
     var pager: MainMenuPageViewController? = nil
+    @IBOutlet weak var fotterView: UIView!
 
     var sections: Array<SettingsSection> = Array<SettingsSection>()
 
@@ -21,8 +22,17 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.tableFooterView = UIView()
+        tableView.tableFooterView = fotterView
         sections = SettingsStore.shared.getAllSections()
+    }
+
+    @IBAction func logoutClicked(_ sender: Any) {
+        //TODO: important! remove keychain data, remove notifications and settings
+        wrap { try getSession().removeAccount()}.done {
+            self.performSegue(withIdentifier: "logout", sender: nil)
+            }.catch { error in
+            print("problem while logging out")
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

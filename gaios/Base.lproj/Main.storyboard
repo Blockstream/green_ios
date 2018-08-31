@@ -56,10 +56,38 @@
                                         <constraint firstItem="fn9-uI-Loh" firstAttribute="centerX" secondItem="RIv-03-SQg" secondAttribute="centerX" id="mUd-MA-09V"/>
                                     </constraints>
                                 </view>
-                                <view key="tableFooterView" contentMode="scaleToFill" id="rTf-uQ-jzA">
-                                    <rect key="frame" x="0.0" y="123" width="320" height="44"/>
+                                <view key="tableFooterView" contentMode="scaleToFill" id="5g8-8E-neB">
+                                    <rect key="frame" x="0.0" y="123" width="320" height="90"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YxU-9m-6PU">
+                                            <rect key="frame" x="16" y="22.5" width="288" height="45"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="45" id="Z6G-D5-qJl"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <state key="normal" title="Log Out">
+                                                <color key="titleColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                    <real key="value" value="1"/>
+                                                </userDefinedRuntimeAttribute>
+                                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                    <color key="value" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="logoutClicked:" destination="FMS-m7-CQZ" eventType="touchUpInside" id="dta-NC-0N3"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <color key="backgroundColor" name="customTitaniumDark"/>
+                                    <constraints>
+                                        <constraint firstItem="YxU-9m-6PU" firstAttribute="centerY" secondItem="5g8-8E-neB" secondAttribute="centerY" id="FSl-RF-iZP"/>
+                                        <constraint firstAttribute="trailing" secondItem="YxU-9m-6PU" secondAttribute="trailing" constant="16" id="Ojm-qo-WZM"/>
+                                        <constraint firstItem="YxU-9m-6PU" firstAttribute="leading" secondItem="5g8-8E-neB" secondAttribute="leading" constant="16" id="jGk-5i-c1X"/>
+                                    </constraints>
                                 </view>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="settingsCell" rowHeight="51" id="LHm-QM-Sbm" customClass="SettingsCell" customModule="gaios" customModuleProvider="target">
@@ -119,6 +147,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="4Mn-Wu-Qi7"/>
                     <connections>
+                        <outlet property="fotterView" destination="5g8-8E-neB" id="oEX-jD-6mk"/>
                         <outlet property="tableView" destination="r4T-PV-5vR" id="TLZ-m8-HfM"/>
                         <segue destination="pU1-Se-Foe" kind="show" identifier="currency" id="ohf-w7-4lz"/>
                         <segue destination="qMa-Ep-FVb" kind="show" identifier="switch" id="1zM-rW-Pdo"/>
@@ -126,6 +155,7 @@
                         <segue destination="KCm-9R-mRR" kind="show" identifier="screenLock" id="OQJ-Pn-CpN"/>
                         <segue destination="s51-Si-EAJ" kind="show" identifier="recovery" id="HPP-44-6o5"/>
                         <segue destination="HFJ-t3-WQm" kind="show" identifier="denomination" id="sYN-Li-Q3m"/>
+                        <segue destination="B5O-7h-VGM" kind="presentation" identifier="logout" id="yIW-Ly-oWL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3741,6 +3771,9 @@
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -3750,7 +3783,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QaF-5U-DEq"/>
-        <segue reference="4Ug-fi-57N"/>
+        <segue reference="yIW-Ly-oWL"/>
         <segue reference="9SJ-qc-TwB"/>
         <segue reference="OQJ-Pn-CpN"/>
     </inferredMetricsTieBreakers>
