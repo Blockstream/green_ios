@@ -159,6 +159,7 @@ class SettingsStore {
         accountSettings.append(currency!)
         accountSettings.append(denomination!)
         accountSettings.append(watch!)
+        allSettings[settingsDenomination] = denomination
         let section = SettingsSection(sectionName: sectionAccount, settingsInSection: accountSettings)
         return section
     }

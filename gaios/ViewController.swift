@@ -62,6 +62,7 @@ class ViewController: UIViewController, WalletViewDelegate{
             cardView.QRImageView.layer.shadowColor = UIColor.customMatrixGreen().cgColor
             cardView.QRImageView.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
             cardView.QRImageView.layer.shadowOpacity = 0.5
+            cardView.QRImageView.layer.cornerRadius = 8
             cardView.QRImageView.layer.shadowPath = shadowPath.cgPath
             coloredCardViews.append(cardView)
         }
