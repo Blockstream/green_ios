@@ -6,6 +6,7 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -58,7 +59,7 @@
                             </constraints>
                         </imageView>
                     </subviews>
-                    <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" name="customTitaniumDark"/>
                     <constraints>
                         <constraint firstItem="IeI-c0-CbE" firstAttribute="leading" secondItem="j0F-JE-8LN" secondAttribute="trailing" constant="2" id="Qbg-He-tSP"/>
                         <constraint firstItem="j0F-JE-8LN" firstAttribute="leading" secondItem="Ibg-h6-Z32" secondAttribute="leading" id="Shc-wr-YkI"/>
@@ -93,5 +94,8 @@
     </objects>
     <resources>
         <image name="arrow" width="31" height="25"/>
+        <namedColor name="customTitaniumDark">
+            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

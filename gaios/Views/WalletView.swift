@@ -15,7 +15,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 55
+        return 65
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -30,6 +30,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             cell.amount.textColor = UIColor.white
         }
         cell.date.text = item.date
+        cell.separatorInset = UIEdgeInsetsMake(0, 16, 0, 15)
         return cell;
     }
 
@@ -395,7 +396,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         transactionTableView.tableFooterView = UIView()
         transactionTableView.register(nib, forCellReuseIdentifier: "transactionCell")
         transactionTableView.allowsSelection = false
-        transactionTableView.separatorColor = UIColor.clear
+        transactionTableView.separatorColor = UIColor.customTitaniumLight()
         //prepareWalletHeaderView()
         
     }
@@ -847,10 +848,35 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             origin?.y += (presentedCardView?.frame.height)! - 80
             var size = presentedCardView?.frame.size
             size?.height = 90
-
+            transactionTableView.showsVerticalScrollIndicator = false
             transactionTableView.frame = CGRect(origin: origin!, size: size!)
             transactionTableView.layer.opacity = 0
             transactionTableView.backgroundColor = UIColor.customTitaniumDark()
+            let header = UIView()
+            header.backgroundColor = UIColor.customTitaniumDark()
+            header.frame = CGRect(x: 0, y: 0, width: (size?.width)!, height: 65)
+            let label = UILabel()
+            label.frame = CGRect(x: 0, y: 0, width: 120, height: 20)
+            label.text = "TRANSACTIONS"
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.textColor = UIColor.customTitaniumLight()
+            label.sizeToFit()
+            label.font = label.font.withSize(16)
+            header.addSubview(label)
+            let line = UIView()
+            line.frame = CGRect(x: 0, y: 0, width: (size?.width)!, height: 1)
+            line.backgroundColor = UIColor.customTitaniumLight()
+            line.translatesAutoresizingMaskIntoConstraints = false
+            header.addSubview(line)
+            //LABEL CONSTRAINTS
+            NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 8).isActive = true
+            NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 16).isActive = true
+            //LINE CONSTRAINTS
+            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 16).isActive = true
+            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.right, multiplier: 1, constant: -15).isActive = true
+            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 0.5).isActive = true
+            transactionTableView.tableHeaderView = header
             scrollView.insertSubview(transactionTableView, belowSubview: presentedFooterView)
         }
 

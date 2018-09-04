@@ -23,6 +23,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = fotterView
+        tableView.separatorColor = UIColor.customTitaniumLight()
         sections = SettingsStore.shared.getAllSections()
     }
 

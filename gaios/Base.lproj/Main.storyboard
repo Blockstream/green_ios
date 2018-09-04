@@ -50,7 +50,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" name="customTitaniumDark"/>
                                     <constraints>
                                         <constraint firstItem="fn9-uI-Loh" firstAttribute="centerY" secondItem="RIv-03-SQg" secondAttribute="centerY" id="8JU-nl-oB9"/>
                                         <constraint firstItem="fn9-uI-Loh" firstAttribute="centerX" secondItem="RIv-03-SQg" secondAttribute="centerX" id="mUd-MA-09V"/>
@@ -117,7 +117,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" name="customTitaniumDark"/>
                                             <constraints>
                                                 <constraint firstItem="hNT-a7-oZy" firstAttribute="leading" secondItem="Lfg-yx-cuX" secondAttribute="leading" constant="16" id="0uq-pa-i2D"/>
                                                 <constraint firstAttribute="trailing" secondItem="O76-3o-oVZ" secondAttribute="trailing" constant="10" id="ARI-9k-EtY"/>
@@ -127,7 +127,7 @@
                                                 <constraint firstItem="O76-3o-oVZ" firstAttribute="leading" secondItem="IWS-Pe-9Bk" secondAttribute="trailing" constant="10" id="ukF-4r-EK5"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" name="customTitaniumDark"/>
                                         <connections>
                                             <outlet property="label" destination="hNT-a7-oZy" id="BgY-fN-WtB"/>
                                             <outlet property="rightLabel" destination="IWS-Pe-9Bk" id="aeD-sK-JuM"/>
