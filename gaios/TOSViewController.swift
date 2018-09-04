@@ -30,7 +30,7 @@ class TOSViewController: UIViewController {
         sender.setImage(UIImage(named: "stepIndicator"), for: UIControlState.normal)
         sender.tintColor = UIColor.white
         nButton.isUserInteractionEnabled = true
-        nButton.backgroundColor = UIColor.customLightGreen()
+        nButton.backgroundColor = UIColor.customMatrixGreen()
         nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
@@ -45,7 +45,7 @@ class TOSViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        nButton.backgroundColor = UIColor.customLightGray()
+        nButton.backgroundColor = UIColor.customTitaniumLight()
         nButton.isUserInteractionEnabled = false
     }
 

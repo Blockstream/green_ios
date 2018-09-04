@@ -28,7 +28,7 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        getCodeButton.backgroundColor = UIColor.customLightGray()
+        getCodeButton.backgroundColor = UIColor.customTitaniumLight()
         textField.becomeFirstResponder()
     }
 

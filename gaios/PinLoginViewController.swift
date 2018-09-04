@@ -31,10 +31,10 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        circle1.tintColor = UIColor.customLightGray()
-        circle2.tintColor = UIColor.customLightGray()
-        circle3.tintColor = UIColor.customLightGray()
-        circle4.tintColor = UIColor.customLightGray()
+        circle1.tintColor = UIColor.customTitaniumLight()
+        circle2.tintColor = UIColor.customTitaniumLight()
+        circle3.tintColor = UIColor.customTitaniumLight()
+        circle4.tintColor = UIColor.customTitaniumLight()
         circles = [circle1, circle2, circle3, circle4]
         if (setPinMode == true) {
             topLabel.text = "Choose Pin"
@@ -147,10 +147,10 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
     func updateColor() {
         for i in 0..<counter {
-            circles[i].tintColor = UIColor.customLightGreen()
+            circles[i].tintColor = UIColor.customMatrixGreen()
         }
         for i in 0..<4-counter {
-            circles[3-i].tintColor = UIColor.customLightGray()
+            circles[3-i].tintColor = UIColor.customTitaniumLight()
         }
     }
 }

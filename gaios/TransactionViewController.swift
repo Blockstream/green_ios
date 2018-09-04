@@ -30,7 +30,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.tableFooterView = UIView()
         tableView.register(nib, forCellReuseIdentifier: "NotificationCell")
         tableView.allowsSelection = false
-        tableView.separatorColor = UIColor.customLightGray()
+        tableView.separatorColor = UIColor.customTitaniumLight()
         tableView.tableHeaderView = headerView
         updateViewModel()
         NotificationStore.shared.refreshNotifications = {

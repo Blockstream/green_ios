@@ -52,7 +52,7 @@ class SendBtcDetailsViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = true
         addressLabel.text = toAddress
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customLightGray()])
+                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         mediumFeeClicked(0)
         if (btcAmount != 0) {
@@ -104,34 +104,34 @@ class SendBtcDetailsViewController: UIViewController {
         fee = AccountStore.shared.feeEstimatelow
         setLabel(button: lowFeeButton, fee: fee)
         lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
-        highFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
-        customfeeButton.layer.borderColor = UIColor.customLightGray().cgColor
+        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
         fee = AccountStore.shared.feeEstimateMedium
         setLabel(button: mediumFeeButton, fee: fee)
-        lowFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
+        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        highFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
-        customfeeButton.layer.borderColor = UIColor.customLightGray().cgColor
+        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
         fee = AccountStore.shared.feeEstimateHigh
         setLabel(button: highFeeButton, fee: fee)
-        lowFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
+        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        customfeeButton.layer.borderColor = UIColor.customLightGray().cgColor
+        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
     }
 
     @IBAction func customFeeClicked(_ sender: Any) {
         fee = 2
-        lowFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
-        highFeeButton.layer.borderColor = UIColor.customLightGray().cgColor
+        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         customfeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
     }
 }

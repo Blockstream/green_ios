@@ -227,14 +227,14 @@ class CreateWalletViewController: UIViewController {
             let myView = UIView(frame: CGRect(x: 0, y: 0, width: viewWidth, height: viewHeight))
             myView.translatesAutoresizingMaskIntoConstraints = false
             myView.borderWidth = 1
-            myView.borderColor = UIColor.customLightGray()
+            myView.borderColor = UIColor.customTitaniumLight()
             viewArray.append(myView)
             //index label
             let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
             label.textAlignment = .center
             label.text = String(index + 1)
             label.font = UIFont.systemFont(ofSize: 12)
-            label.textColor = UIColor.customLightGray()
+            label.textColor = UIColor.customTitaniumLight()
             label.translatesAutoresizingMaskIntoConstraints = false
             myView.addSubview(label)
             NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
@@ -246,7 +246,7 @@ class CreateWalletViewController: UIViewController {
             menmonicLabel.textAlignment = .center
             menmonicLabel.text = mnemonics[index]
             menmonicLabel.font = UIFont.systemFont(ofSize: 16)
-            menmonicLabel.textColor = UIColor.customLightGray()
+            menmonicLabel.textColor = UIColor.customTitaniumLight()
             menmonicLabel.translatesAutoresizingMaskIntoConstraints = false
             myView.addSubview(menmonicLabel)
             NSLayoutConstraint(item: menmonicLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true

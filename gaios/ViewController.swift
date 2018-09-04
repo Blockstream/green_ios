@@ -17,7 +17,7 @@ class ViewController: UIViewController, WalletViewDelegate{
 
         self.navigationController!.navigationBar.isHidden = true
         addWalletButton.addTarget(self, action:#selector(self.addAccount(_:)), for: .touchUpInside)
-        addWalletButton.imageView?.tintColor = UIColor.customLightGreen()
+        addWalletButton.imageView?.tintColor = UIColor.customMatrixGreen()
         walletView.presentedFooterView.receiveButton.addTarget(self, action: #selector(self.receiveToWallet(_:)), for: .touchUpInside)
         walletView.presentedFooterView.sendButton.addTarget(self, action: #selector(self.sendfromWallet(_:)), for: .touchUpInside)
         walletView.delegate = self

@@ -61,7 +61,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         topImage.addSubview(blurEffectView)
         textfield.attributedPlaceholder = NSAttributedString(string: "Enter Bitcoin Address",
-                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customLightGray()])
+                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always
         self.tabBarController?.tabBar.isHidden = true

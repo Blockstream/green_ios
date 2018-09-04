@@ -825,6 +825,11 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     
     func presentFooter() {
+
+        if(presentedCardView == nil) {
+            return
+        }
+
         if (presentedFooterView.superview == nil) {
             var origin = presentedCardView?.frame.origin
             origin?.y += (presentedCardView?.frame.height)! - 80
