@@ -863,11 +863,20 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             label.sizeToFit()
             label.font = label.font.withSize(16)
             header.addSubview(label)
+
             let line = UIView()
             line.frame = CGRect(x: 0, y: 0, width: (size?.width)!, height: 1)
             line.backgroundColor = UIColor.customTitaniumLight()
             line.translatesAutoresizingMaskIntoConstraints = false
             header.addSubview(line)
+
+            let imageView = UIImageView()
+            line.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
+            imageView.image = #imageLiteral(resourceName: "transactionFilter")
+            imageView.contentMode  = .scaleAspectFit
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            header.addSubview(imageView)
+
             //LABEL CONSTRAINTS
             NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 8).isActive = true
             NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 16).isActive = true
@@ -876,6 +885,12 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 16).isActive = true
             NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.right, multiplier: 1, constant: -15).isActive = true
             NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 0.5).isActive = true
+            //IMAGEVIEW
+            NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 19).isActive = true
+            NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 22).isActive = true
+            NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.right, multiplier: 1, constant: -15).isActive = true
+            NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 8).isActive = true
+
             transactionTableView.tableHeaderView = header
             scrollView.insertSubview(transactionTableView, belowSubview: presentedFooterView)
         }
