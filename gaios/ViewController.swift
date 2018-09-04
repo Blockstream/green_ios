@@ -160,11 +160,11 @@ extension ViewController: CustomAlertViewInputDelegate {
 
     func okButtonTapped(selectedOption: String, textFieldValue: String) {
 
-        do {
+     /* do {
             try getSession().createSubaccount(type: SubaccountType._2of2, name: textFieldValue)
         } catch {
             print("something went worng with creating subAccount")
-        }
+        }*/
         showButtons()
     }
 

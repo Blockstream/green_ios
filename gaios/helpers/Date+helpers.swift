@@ -54,4 +54,25 @@ extension Date {
         if nanoseconds(from: date) > 0 { return "\(nanoseconds(from: date))ns" }
         return ""
     }
+
+    static func dateFromString(dateString: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
+        let date = dateFormatter.date(from:dateString)!
+        return date
+    }
+
+    static func dayMonthYear(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateFormat = "LLL"
+        let nameOfMonth = dateFormatter.string(from: date)
+        dateFormatter.dateFormat = "dd"
+        let nameOfDay = dateFormatter.string(from: date)
+        dateFormatter.dateFormat = "YYYY"
+        let nameOfYear = dateFormatter.string(from: date)
+        return String(format: "%@ %@ %@", nameOfDay, nameOfMonth, nameOfYear)
+    }
 }

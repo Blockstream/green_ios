@@ -33,7 +33,7 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
                 let size = CGSize(width: 30, height: 30)
                 self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
                 DispatchQueue.global(qos: .background).async {
-                    wrap { return try getSession().login(pin: self.password, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
+                   /* wrap { return try getSession().login(pin: self.password, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
                         DispatchQueue.main.async {
                             getGAService().loginData = loginData
                             AccountStore.shared.initializeAccountStore()
@@ -47,7 +47,7 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
                         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
                             self.stopAnimating()
                         }
-                    }
+                    }*/
                 }
             } else {
                 //error

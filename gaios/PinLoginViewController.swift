@@ -54,7 +54,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 //login
                 let size = CGSize(width: 30, height: 30)
                 startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-                DispatchQueue.global(qos: .background).async {
+               /* DispatchQueue.global(qos: .background).async {
                     wrap { return try getSession().login(pin: self.pinCode, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
 
                     }.catch { error in
@@ -68,7 +68,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                         }
 
                     }
-                }
+                }*/
                 return
             }
             if (firstStep) {
@@ -86,11 +86,13 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 startAnimating(size, message: "Setting pin...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
                 DispatchQueue.global(qos: .background).async {
                     wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 10)) }
-                        .done { (pin_identifier: String, pin_secret: String) in
+                        .done { (result: [String: Any]?) in
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                KeychainHelper.savePassword(service: "pinIdentifier", account: "user", data: pin_identifier)
-                                KeychainHelper.savePassword(service: "pinSecret", account: "user", data: pin_secret)
+                                let secret = result!["secret"] as! String
+                                let pinIdentifier = result!["pin_identifier"] as! String
+                                KeychainHelper.savePassword(service: "pinIdentifier", account: "user", data: pinIdentifier)
+                                KeychainHelper.savePassword(service: "pinSecret", account: "user", data: secret)
                                 self.performSegue(withIdentifier: "mainMenu", sender: self)
                             }
                         }.catch { error in

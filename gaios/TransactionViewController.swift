@@ -79,13 +79,15 @@ class TransactionItem: Codable {
     var fiatAmount: String
     var date: String
     var btc_amount: Double
+    var type: String
 
-    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double) {
+    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double, type: String) {
         self.timestamp = timestamp
         self.address = address
         self.amount = amount
         self.fiatAmount = fiatAmount
         self.date = date
         self.btc_amount = btc
+        self.type = type
     }
 }

@@ -71,7 +71,7 @@ class SettingsStore {
     private init() { }
 
     func setCurrency(currency: String, exchange: String) -> Promise<Void> {
-       return wrap{ try getSession().set_pricing_source(currency: currency, exchange: exchange)}.done {
+       return wrap{ try getSession().changeSettingsPricingSource(currency: currency, exchange: exchange)}.done {
         self.allSettings[self.settingsCurrency] = SettingsItem(settingsName: self.settingsCurrency, property: ["currency": currency, "exchange": exchange], text: self.accountCurrency, secondaryText: currency)
             self.loadAllSections()
             self.writeSettingsToDisk()

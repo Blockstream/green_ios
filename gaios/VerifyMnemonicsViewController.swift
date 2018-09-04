@@ -40,12 +40,12 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         self.stepIndicatorView.currentStep = 0
         self.stepIndicatorView.circleColor = UIColor(red: 179.0/255.0, green: 189.0/255.0, blue: 194.0/255.0, alpha: 1.0)
         self.stepIndicatorView.circleTintColor = UIColor(red: 0.0/255.0, green: 180.0/255.0, blue: 124.0/255.0, alpha: 1.0)
-        self.stepIndicatorView.circleStrokeWidth = 3.0
-        self.stepIndicatorView.circleRadius = 10.0
+        self.stepIndicatorView.circleStrokeWidth = 1.0
+        self.stepIndicatorView.circleRadius = 8.0
         self.stepIndicatorView.lineColor = self.stepIndicatorView.circleColor
         self.stepIndicatorView.lineTintColor = self.stepIndicatorView.circleTintColor
-        self.stepIndicatorView.lineMargin = 4.0
-        self.stepIndicatorView.lineStrokeWidth = 2.0
+        self.stepIndicatorView.lineMargin = 8.0
+        self.stepIndicatorView.lineStrokeWidth = 1.0
         self.stepIndicatorView.displayNumbers = false //indicates if it displays numbers at the center instead of the core circle
         self.stepIndicatorView.direction = .leftToRight
         updateButtons()
@@ -134,13 +134,13 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         startAnimating(size, message: "Registering...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
         DispatchQueue.global(qos: .background).async {
             wrap { return try getSession().registerUser(mnemonic: mnemonics) }
-                .done { () in
+                .done { _ in
                     wrap { return try getSession().login(mnemonic: mnemonics) }
-                        .done { (loginData: [String: Any]?) in
+                        .done { _ in
                             DispatchQueue.main.async {
                                 self.stopAnimating()
+                                AccountStore.shared.initializeAccountStore()
                                 AppDelegate.removeKeychainData()
-                                getGAService().loginData = loginData
                                 self.performSegue(withIdentifier: "congrats", sender: self)
                             }
                         }.catch { error in

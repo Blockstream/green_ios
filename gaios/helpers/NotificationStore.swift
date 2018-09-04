@@ -40,18 +40,18 @@ class NotificationStore {
     func getTransactions() {
         AccountStore.shared.getWallets().done { (wallets: Array<WalletItem>) in
             for wallet in wallets {
-                wrap{ try getSession().getTransactions(subaccount: wallet.pointer)
-                    }.done { (transactions:[Transaction]?, ptx: UInt32 ) in
-                        for tx in transactions ?? [] {
-                            let json = try! tx.toJSON()!
-                            guard let val:String = json["value_str"] as? String else {
-                                continue
-                            }
-                            let satoshi:Int = Int(val)!
-                            let hash: String! = json["hash"] as! String
-                            let counterparty: String = json["counterparty"] as! String
-                            let timestamp = json["timestamp"] as! String
-                            let note: NotificationItem = self.createNotification(timestamp: timestamp, hash: hash, amount: satoshi, counterparty: counterparty)
+                wrap{ try getSession().getTransactions(subaccount: wallet.pointer, page: 0)
+                    }.done { (transactions: [String: Any]?) in
+                        let list = transactions!["list"] as! NSArray
+                        for tx in list {
+                            print(tx)
+                            print("haha")
+                            let transaction = tx as! [String : Any]
+                            let satoshi:Int = transaction["value"] as! Int
+                            let hash = transaction["txhash"] as! String
+                            let dateString = transaction["created_at"] as! String
+                            let date = Date.dateFromString(dateString: dateString)
+                            let note: NotificationItem = self.createNotification(date: date, hash: hash, amount: satoshi, counterparty: "placeholder")
                             if (self.allNotifications[hash] == nil) {
                                 self.allNotifications[hash] = note
                                 self.newNotificationCount += 1
@@ -104,12 +104,6 @@ class NotificationStore {
         return Array(allNotifications.values).sorted(by: { $0.timestamp < ($1.timestamp) })
     }
 
-    func dateFromTimestamp(date: String) -> Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return dateFormatter.date(from: date)!
-    }
-
     func dateToText(date: Date) -> String {
         let now = Date()
         if (now.days(from: date) < 1) {
@@ -159,8 +153,7 @@ class NotificationStore {
         return newNotificationCount > 0
     }
 
-    func createNotification(timestamp: String, hash: String, amount: Int, counterparty: String) -> NotificationItem {
-        let date = self.dateFromTimestamp(date: timestamp)
+    func createNotification(date: Date, hash: String, amount: Int, counterparty: String) -> NotificationItem {
         var title: String = ""
         var bodyText = ""
         let amountText = String.satoshiToBTC(satoshi: abs(amount))

@@ -18,7 +18,7 @@ extension UIColor {
     }
 
     class func customMatrixGreen() -> UIColor {
-        return UIColor(red:0.0/255.0, green:180.0/255.0, blue:106.0/255.0, alpha:1);
+        return UIColor(red:0.0/255.0, green:180.0/255.0, blue:90.0/255.0, alpha:1);
     }
 
     class func customMatrixGreenDark() -> UIColor {

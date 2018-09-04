@@ -17,7 +17,6 @@ class AccountStore {
     var feeEstimatelow: Int = 0
     var feeEstimateMedium: Int = 0
     var feeEstimateHigh: Int = 0
-    var mainAddress:String = ""
 
     let denominationBTC: Double = 100000000
     let denominationMilliBTC: Double = 100000
@@ -25,24 +24,17 @@ class AccountStore {
 
     public func fetchWallets() -> Array<WalletItem> {
         var result = Array<WalletItem>()
-        let loginData = getGAService().loginData
-
-        let subacounts:NSArray = loginData!["subaccounts"] as! NSArray
         do {
-            if(mainAddress == "") {
-                mainAddress = try getSession().getReceiveAddress(subaccount: 0)
-            }
-            let json = try getSession().getBalance(subaccount: 0, numConfs: 1)
-            let balance:String = json!["satoshi"] as! String
-            let mainWallet:WalletItem = WalletItem(name: "Main Wallet", address: mainAddress, balance: balance, currency: "USD", pointer: 0)
-            result.append(mainWallet)
+            let json = try getSession().getSubaccounts()
+            let subacounts = json!["array"] as! NSArray
             for element in subacounts{
                 let account = (element as? [String: Any])!
                 let address = account["receiving_id"] as! String
-                let satoshi = account["satoshi"] as! String
-                let name = account["name"] as! String
                 let pointer = account["pointer"] as! UInt32
-                let currency = account["fiat_currency"] as! String
+                let balance = try getSession().getBalance(subaccount: pointer, numConfs: 1)
+                let satoshi = balance!["satoshi"] as! String
+                let name = pointer == 0 ? "Main Wallet" : account["name"] as! String
+                let currency = balance!["fiat_currency"] as! String
                 let wallet: WalletItem = WalletItem(name: name, address: address, balance: satoshi, currency: currency, pointer: pointer)
                 result.append(wallet)
             }
@@ -98,31 +90,8 @@ class AccountStore {
 
     func initializeAccountStore() {
         SettingsStore.shared.initSettingsStore()
-        guard let login = getGAService().loginData else {
-            return
-        }
-
-        if let exch:String = login["fiat_exchange"] as? String{
-            exchangeRate = Double(exch)!
-        }
-
-        if let fee:[String:Any] = login["fee_estimates"] as? [String:Any] {
-            let lowPriority = fee["12"] as! [String : Any]
-            if let lowPriorityFee = lowPriority["feerate"] as? String {
-                feeEstimatelow = Int((Double(lowPriorityFee)! * getDenomination()) / 1000) //satoshi per byte
-            }
-            let mediumPriority = fee["6"] as! [String : Any]
-            if let mediumPriorityFee = mediumPriority["feerate"] as? String {
-                feeEstimateMedium = Int((Double(mediumPriorityFee)! * getDenomination()) / 1000) //satoshi per byte
-            }
-            let highPriority = fee["2"] as! [String : Any]
-            if let highPriorityFee = highPriority["feerate"] as? String {
-                feeEstimateHigh = Int((Double(highPriorityFee)! * getDenomination()) / 1000) //satoshi per byte
-            }
-            print(lowPriority)
-        }
+        exchangeRate = 1 //get exchange rate
         NotificationStore.shared.initializeNotificationStore()
-        print(exchangeRate)
     }
 }
 

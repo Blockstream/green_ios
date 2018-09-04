@@ -22,7 +22,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell", for: indexPath) as! TransactionTableCell
         let item: TransactionItem = items.reversed()[indexPath.row]
         cell.amount.text = item.amount
-        if(item.btc_amount > 0) {
+        if(item.type == "incoming" || item.type == "redeposit") {
             cell.address.text = presentingWallet?.name
             cell.amount.textColor = UIColor.customMatrixGreen()
         } else {
@@ -72,48 +72,38 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         calculateLayoutValues()
         
     }
-
-    func dateFromTimestamp(date: String) -> Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return dateFormatter.date(from: date)!
-    }
-
-    func getTransactions(account: Int) -> Promise<([Transaction]?, account: UInt32)> {
-        return retry(session: getSession(), network: Network.TestNet) {
-            return wrap { return try getSession().getTransactions(subaccount: UInt32(account)) }
-        }
-    }
     
     func updateViewModel(account: Int) {
-        getTransactions(account: account).done { (txs: [Transaction]?, account: UInt32) in
-            self.items.removeAll(keepingCapacity: true)
-            for tx in txs ?? [] {
-                let json = try! tx.toJSON()!
+        items.removeAll(keepingCapacity: true)
+        wrap {
+            try getSession().getTransactions(subaccount: UInt32(account), page: 0)
+        }.done { (transactions: [String : Any]?) in
+            let list = transactions!["list"] as! NSArray
+            for tx in list {
+                print(tx)
+                let transaction = tx as! [String : Any]
+                let satoshi:Int = transaction["value"] as! Int
+                let hash = transaction["txhash"] as! String
+                let dateString = transaction["created_at"] as! String
+                let type = transaction["type"] as! String
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateStyle = .medium
                 dateFormatter.timeStyle = .short
-                let date = self.dateFromTimestamp(date: json["timestamp"] as! String)
-                let dateString = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "LLL"
-                let nameOfMonth = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "dd"
-                let nameOfDay = dateFormatter.string(from: date)
-                dateFormatter.dateFormat = "YYYY"
-                let nameOfYear = dateFormatter.string(from: date)
-                let formatedTransactionDate = String(format: "%@ %@ %@", nameOfDay, nameOfMonth, nameOfYear)
-                let val:String? = json["value_str"] as? String
-                let balance: Double? = Double(val!)
-                let btcFormatted = String.satoshiToBTC(satoshi: Int(balance!))
+                let date = Date.dateFromString(dateString: dateString)
+                let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
                 let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
-                let counterparty: String = json["counterparty"] as! String
-                print(json)
-                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: balance!))
+                let counterparty = ""
+                let formatedTransactionDate = Date.dayMonthYear(date: date)
+                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type))
             }
-            }.ensure {
-                self.transactionTableView.reloadData()
-            }.catch { _ in }
+            print("success")
+        }.ensure {
+            self.transactionTableView.reloadData()
+        }.catch { error in
+            print("error")
+        }
     }
+
     /**
      Presents a card view.
      
