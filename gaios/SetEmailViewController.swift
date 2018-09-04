@@ -22,6 +22,8 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        textField.attributedPlaceholder = NSAttributedString(string: "email@domainm.com",
+                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
     }
 
     override func viewWillAppear(_ animated: Bool) {

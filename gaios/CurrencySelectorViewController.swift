@@ -23,9 +23,12 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
+        tableView.separatorColor = UIColor.customTitaniumLight()
         getAvailableCurrencies()
         hideKeyboardWhenTappedAround()
         textField.delegate = self
+        textField.attributedPlaceholder = NSAttributedString(string: "Search",
+                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         refreshCurrency()
     }
