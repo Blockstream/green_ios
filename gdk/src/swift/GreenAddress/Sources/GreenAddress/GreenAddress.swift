@@ -19,11 +19,6 @@ public enum Network: UInt32 {
     case RegTest = 101
 }
 
-public enum SubaccountType: UInt32 {
-    case _2of2 = 0
-    case _2of3 = 1
-}
-
 fileprivate func errorWrapper(_ r: Int32) throws {
     guard r == GA_OK else {
         switch r {
@@ -44,29 +39,39 @@ fileprivate func callWrapper(fun call: @autoclosure () -> Int32) throws {
 }
 
 fileprivate func convertJSONBytesToDict(_ input_bytes: UnsafeMutablePointer<Int8>) -> [String: Any]? {
-    var dict: [String: Any]? = nil
-
+    var dict: Any?
     let json = String(cString: input_bytes)
     if let data = json.data(using: .utf8) {
         do {
-            dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            dict = try JSONSerialization.jsonObject(with: data, options: [])
+            if let object = dict as? [String: Any] {
+                // json is a dictionary
+                return object
+            } else if let object = dict as? [Any] {
+                // json is an array
+                return ["array" : object]
+            } else {
+                print("JSON is invalid")
+            }
         }
         catch {
             return nil
         }
     }
-
-    return dict
+    return dict as? [String: Any]
 }
 
-fileprivate func convertDictToJSONString(dict: [String: Any]) throws -> String {
+fileprivate func convertDictToJSON(dict: [String: Any]) throws -> OpaquePointer {
     let utf8_bytes = try JSONSerialization.data(withJSONObject: dict)
-    return String(data: utf8_bytes, encoding: String.Encoding.utf8)!
+    var result: OpaquePointer? = nil
+    let input = String(data: utf8_bytes, encoding: String.Encoding.utf8)!
+    try callWrapper(fun: GA_convert_string_to_json(input, &result))
+    return result!
 }
 
-fileprivate func convertOpaqueJsonToDict<T>(fun call: (T, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32, o: T) throws -> [String: Any]? {
+fileprivate func convertOpaqueJsonToDict(o: OpaquePointer) throws -> [String: Any]? {
     var buff: UnsafeMutablePointer<Int8>? = nil
-    try callWrapper(fun: call(o, &buff))
+    try callWrapper(fun: GA_convert_json_to_string(o, &buff))
     defer {
         GA_destroy_string(buff)
     }
@@ -155,28 +160,6 @@ public class TwoFactorCall {
     }
 }
 
-public class Transaction {
-    public enum TransactionType {
-        case Out
-        case In
-        case Redeposit
-    }
-
-    private var tx: OpaquePointer? = nil
-
-    public init(tx: OpaquePointer) {
-        self.tx = tx
-    }
-
-    deinit {
-        GA_destroy_tx(tx)
-    }
-
-    public func toJSON() throws -> [String: Any]? {
-        return try convertOpaqueJsonToDict(fun: GA_transaction_to_json, o: self.tx!)
-    }
-}
-
 fileprivate class FFIContext {
     var data: [String: Any]?
 }
@@ -215,7 +198,7 @@ public class Session {
         //try subscribeToTopic(topic: "com.greenaddress.blocks", context: blocksFFIContext)
     }
 
-    public func connect(network: Network, proxy_uri: String, use_tor: Bool, debug: Bool = false) throws {
+    public func connectWithProxy(network: Network, proxy_uri: String, use_tor: Bool, debug: Bool = false) throws {
         try callWrapper(fun: GA_connect_with_proxy(session, network.rawValue, proxy_uri, UInt32(use_tor ? GA_USE_TOR : GA_NO_TOR),
                                                     UInt32(debug ? GA_TRUE : GA_FALSE)))
 
@@ -226,66 +209,58 @@ public class Session {
         try callWrapper(fun: GA_register_user(session, mnemonic))
     }
 
-    public func login(mnemonic: String) throws -> [String: Any]? {
-        var login_data: OpaquePointer? = nil
-        try callWrapper(fun: GA_login(session, mnemonic, &login_data))
-        defer {
-            GA_destroy_login_data(login_data)
-        }
-        return try convertOpaqueJsonToDict(fun: GA_convert_login_data_to_json, o: login_data!)
+    public func login(mnemonic: String) throws {
+        try callWrapper(fun: GA_login(session, mnemonic))
     }
 
-    public func login(pin: String, pin_identifier:String, pin_secret:String) throws -> [String: Any]? {
-        var login_data: OpaquePointer? = nil
-        try callWrapper(fun: GA_login_with_pin(session, pin, pin_identifier, pin_secret, &login_data))
+    public func loginWithPin(pin: String, pin_data:String) throws {
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_convert_string_to_json(pin_data, &result))
+        try callWrapper(fun: GA_login_with_pin(session, pin, result))
         defer {
-            GA_destroy_login_data(login_data)
+            GA_destroy_json(result)
         }
-        return try convertOpaqueJsonToDict(fun: GA_convert_login_data_to_json, o: login_data!)
     }
 
-    public func login(username: String, password: String) throws -> [String: Any]? {
-        var login_data: OpaquePointer? = nil
-        try callWrapper(fun: GA_login_watch_only(session, username, password, &login_data))
-        defer {
-            GA_destroy_login_data(login_data)
-        }
-        return try convertOpaqueJsonToDict(fun: GA_convert_login_data_to_json, o: login_data!)
+    public func loginWatchOnly(username: String, password: String) throws {
+        try callWrapper(fun: GA_login_watch_only(session, username, password))
     }
 
-    public func removeAccount() throws {
-        try callWrapper(fun: GA_remove_account(session))
+    public func removeAccount(twofactor_data: [String: Any]) throws {
+        var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)
+        try callWrapper(fun: GA_remove_account(session, twofactor_json))
+        defer {
+            GA_destroy_json(twofactor_json)
+        }
     }
 
-    public func createSubaccount(type: SubaccountType, name: String) throws -> (String, String)? {
-        var recovery_mnemonic: UnsafeMutablePointer<Int8>? = nil
-        var recovery_xpub: UnsafeMutablePointer<Int8>? = nil
-        try callWrapper(fun: GA_create_subaccount(session, type.rawValue, name, &recovery_mnemonic, &recovery_xpub))
+    public func createSubaccount(details: [String: Any]) throws -> [String: Any]? {
+        var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_create_subaccount(session, details_json, &result))
         defer {
-            GA_destroy_string(recovery_mnemonic)
-            GA_destroy_string(recovery_xpub)
+            GA_destroy_json(details_json)
+            GA_destroy_json(result)
         }
-        return type == SubaccountType._2of2 ? nil : (String(cString: recovery_mnemonic!), String(cString: recovery_xpub!))
+        return try convertOpaqueJsonToDict(o: result!)
     }
 
-    public func getTransactions(subaccount: UInt32) throws -> ([Transaction]?, UInt32) {
-        var txs: OpaquePointer? = nil
-        try callWrapper(fun: GA_get_tx_list(session, subaccount, 0, 0, 0, 0, String(), &txs))
+    public func getSubaccounts() throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_get_subaccounts(session, &result))
         defer {
-            GA_destroy_tx_list(txs)
+            GA_destroy_json(result)
         }
+        return try convertOpaqueJsonToDict(o: result!)
+    }
 
-        var count: Int = 0 // FIXME: Should be a size_t, whatever that maps to
-        try callWrapper(fun: GA_tx_list_get_size(txs, &count))
-
-        var txss = [Transaction]()
-        for i in 0..<count {
-            var tx: OpaquePointer? = nil
-            try callWrapper(fun: GA_tx_list_get_tx(txs, i, &tx))
-            txss.append(Transaction(tx: tx!))
+    public func getTransactions(subaccount: UInt32, page: UInt32) throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_get_transactions(session, subaccount, page, &result))
+        defer {
+            GA_destroy_json(result)
         }
-
-        return (txss, subaccount)
+        return try convertOpaqueJsonToDict(o: result!)
     }
 
     public func getReceiveAddress(subaccount: UInt32) throws -> String {
@@ -298,42 +273,40 @@ public class Session {
     }
 
     public func getBalance(subaccount: UInt32, numConfs: UInt32) throws -> [String: Any]? {
-        var balance: OpaquePointer? = nil
-        try callWrapper(fun: GA_get_balance(session, subaccount, numConfs, &balance))
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_get_balance(session, subaccount, numConfs, &result))
         defer {
-            GA_destroy_balance(balance)
+            GA_destroy_json(result)
         }
 
-        return try convertOpaqueJsonToDict(fun: GA_convert_balance_to_json, o: balance!)
+        return try convertOpaqueJsonToDict(o: result!)
     }
 
     public func getAvailableCurrencies() throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         try callWrapper(fun: GA_get_available_currencies(session, &result))
         defer {
-            GA_destroy_available_currencies(result)
+            GA_destroy_json(result)
         }
-        return try convertOpaqueJsonToDict(fun: GA_convert_available_currencies_to_json, o: result!)
+        return try convertOpaqueJsonToDict(o: result!)
     }
 
-    public func setPin(mnemonic: String, pin: String, device: String) throws -> (String, String) {
-        var identifier: UnsafeMutablePointer<Int8>? = nil
-        var secret: UnsafeMutablePointer<Int8>? = nil
-        try callWrapper(fun: GA_set_pin(session, mnemonic, pin, device, &identifier, &secret))
+    public func setPin(mnemonic: String, pin: String, device: String) throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_set_pin(session, mnemonic, pin, device, &result))
         defer {
-            GA_destroy_string(identifier)
-            GA_destroy_string(secret)
+            GA_destroy_json(result)
         }
-        return (String(cString: identifier!), String(cString: secret!))
+        return try convertOpaqueJsonToDict(o: result!)
     }
 
     public func getTwoFactorConfig() throws -> [String: Any]? {
-        var twofactor_config: OpaquePointer? = nil
-        try callWrapper(fun: GA_get_twofactor_config(session, &twofactor_config))
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_get_twofactor_config(session, &result))
         defer {
-            GA_destroy_twofactor_config(twofactor_config)
+            GA_destroy_json(result)
         }
-        return try convertOpaqueJsonToDict(fun: GA_convert_twofactor_config_to_json, o: twofactor_config!)
+        return try convertOpaqueJsonToDict(o: result!)
     }
 
     func toCStr(strings: [String]) -> UnsafeMutablePointer<UnsafePointer<Int8>?> {
@@ -360,20 +333,22 @@ public class Session {
         copies.deallocate(capacity: count)
     }
 
-    public func send(subaccount: UInt32, addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool) throws -> Void {
+    public func send(subaccount: UInt32, addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool, twofactor_data: [String: Any]) throws -> Void {
+        var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)
         let addresses = toCStr(strings: addrAmt.map { $0.0 })
         defer {
             clearCStr(copies: addresses, count: addrAmt.count)
+            GA_destroy_json(twofactor_json)
         }
-        try callWrapper(fun: GA_send(session, subaccount, addresses, addrAmt.count, addrAmt.map { $0.1 }, addrAmt.count, feeRate, UInt32(sendAll ? GA_TRUE : GA_FALSE)))
+        try callWrapper(fun: GA_send(session, subaccount, addresses, addrAmt.count, addrAmt.map { $0.1 }, addrAmt.count, feeRate, UInt32(sendAll ? GA_TRUE : GA_FALSE), twofactor_json))
     }
 
-    public func set_transaction_memo(txhash_hex: String, memo: String, memo_type: UInt32) throws -> Void {
+    public func setTransactionMemo(txhash_hex: String, memo: String, memo_type: UInt32) throws -> Void {
         try callWrapper(fun: GA_set_transaction_memo(session, txhash_hex, memo, memo_type))
     }
 
-    public func set_pricing_source(currency: String, exchange: String) throws -> Void {
-        try callWrapper(fun: GA_set_pricing_source(session, currency, exchange))
+    public func changeSettingsPricingSource(currency: String, exchange: String) throws -> Void {
+        try callWrapper(fun: GA_change_settings_pricing_source(session, currency, exchange))
     }
 
     public func setEmail(email: String) throws -> TwoFactorCall {
@@ -412,7 +387,12 @@ public func validateMnemonic(lang: String, mnemonic: String) -> Bool {
 }
 
 public func parseBitcoinUri(uri: String) throws -> [String: Any]? {
-    return try convertOpaqueJsonToDict(fun: GA_parse_bitcoin_uri_to_json, o: uri)
+    var result: OpaquePointer? = nil
+    try callWrapper(fun: GA_parse_bitcoin_uri(uri, &result))
+    defer {
+        GA_destroy_json(result)
+    }
+    return try convertOpaqueJsonToDict(o: result!)
 }
 
 public func retry<T>(session: Session,

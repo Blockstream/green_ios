@@ -34,14 +34,14 @@ else
     exit 1
 fi
 
-TEMPOPT=`"$GETOPT" -n "build.sh" -o x,b: -l analyze,clang,gcc,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "build.sh" -o x,b: -l analyze,clang,gcc,mingw-w64,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
         -x | --analyze ) ANALYZE=true; shift ;;
         -b | --buildtype ) MESON_OPTIONS="$MESON_OPTIONS --buildtype=$2"; BUILDTYPE=$2; shift 2 ;;
         --sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=$2"; shift 2 ;;
-        --clang | --gcc | --ndk ) break ;;
+        --clang | --gcc | --ndk | --mingw-w64 ) break ;;
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
         --compiler-version) COMPILER_VERSION="-$2"; shift 2 ;;
         --lto) MESON_OPTIONS="$MESON_OPTIONS -Dlto=$2"; shift 2 ;;
@@ -77,7 +77,7 @@ function compress_patch() {
         pwd=$PWD
         pushd . > /dev/null
         cd ${tmpdir}
-        $TAR --sort=name --owner=0 --group=0 --numeric-owner --mtime="2018-08-01 00:00Z" -cf ${pwd}/$(dirname ${meson_files[$i]})/${patch_names[$i]} ${directories[$i]}
+        $TAR --mode=go=rX,u+rw,a-s --sort=name --owner=0 --group=0 --numeric-owner --mtime="2018-08-01 00:00Z" -cf ${pwd}/$(dirname ${meson_files[$i]})/${patch_names[$i]} ${directories[$i]}
         popd > /dev/null
         rm -rf ${tmpdir}
     done
@@ -245,4 +245,31 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
     fi
     set_cross_build_env ios $PLATFORM
     build ios $PLATFORM
+fi
+
+if [ \( $# -eq 0 \) -o \( "$1" = "--mingw-w64" \) ]; then
+
+    function build() {
+        bld_root="$PWD/build-$1-$2"
+
+        export SDK_CFLAGS_NO_ARCH="$SDK_CFLAGS"
+        export SDK_CFLAGS="$SDK_CFLAGS $ARCHS"
+        export SDK_CPPFLAGS="$SDK_CFLAGS"
+        export SDK_LDFLAGS="$SDK_CFLAGS"
+        export AR="x86_64-w64-mingw32-gcc-ar"
+        export RANLIB="x86_64-w64-mingw32-ranlib"
+        if [ ! -f "build-$1-$2/build.ninja" ]; then
+            rm -rf build-$1-$2/meson-private
+            mkdir -p $bld_root
+            ./tools/make_txt.sh $bld_root $bld_root/$1.txt $1 $1
+            compress_patch
+            meson $bld_root --cross-file $bld_root/$1.txt --default-library=${LIBTYPE} --buildtype=release
+        fi
+        cd $bld_root
+        $NINJA -j$NUM_JOBS -v
+        cd ..
+    }
+
+    set_cross_build_env windows mingw-w64
+    build windows mingw-w64
 fi

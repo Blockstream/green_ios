@@ -6,7 +6,7 @@ before_script:
   - ./tools/clean.sh meson
 
 test_gcc:
-  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  image: greenaddress/ci@sha256:bdd5e21a22a6e642268f44e968932a1e6f4181b4e14af626c0f36ed469fe2977
   tags:
     - ga
   script:
@@ -30,7 +30,7 @@ test_fedora_clang:
     - ./tools/build.sh --clang
 
 test_clang:
-  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  image: greenaddress/ci@sha256:bdd5e21a22a6e642268f44e968932a1e6f4181b4e14af626c0f36ed469fe2977
   tags:
     - ga
   script:
@@ -39,7 +39,7 @@ test_clang:
     - ./tools/format.sh && git diff --exit-code
 
 test_clang_ndk_armeabi-v7a:
-  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  image: greenaddress/ci@sha256:bdd5e21a22a6e642268f44e968932a1e6f4181b4e14af626c0f36ed469fe2977
   tags:
     - ga
   artifacts:
@@ -55,7 +55,7 @@ test_clang_ndk_armeabi-v7a:
     - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --ndk armeabi-v7a
 
 test_clang_ndk_arm64-v8a:
-  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  image: greenaddress/ci@sha256:bdd5e21a22a6e642268f44e968932a1e6f4181b4e14af626c0f36ed469fe2977
   tags:
     - ga
   artifacts:
@@ -71,7 +71,7 @@ test_clang_ndk_arm64-v8a:
     - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --ndk arm64-v8a
 
 test_clang_ndk_x86:
-  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  image: greenaddress/ci@sha256:bdd5e21a22a6e642268f44e968932a1e6f4181b4e14af626c0f36ed469fe2977
   tags:
     - ga
   artifacts:
@@ -87,7 +87,7 @@ test_clang_ndk_x86:
     - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --ndk x86
 
 test_clang_ndk_x86_64:
-  image: greenaddress/ci@sha256:571873428cc1e8243e78d10a38ec835819eeeb8421fdaf599d65554441d8453d
+  image: greenaddress/ci@sha256:bdd5e21a22a6e642268f44e968932a1e6f4181b4e14af626c0f36ed469fe2977
   tags:
     - ga
   artifacts:
@@ -170,7 +170,7 @@ test_osx_clang_ndk_x86:
     paths:
       - subprojects/packagecache/
   artifacts:
-    expire_in: 1 day
+    expire_in: 1 hour
     name: osx_ndk_x86
     when: on_success
     paths:
@@ -189,7 +189,7 @@ test_osx_clang_ndk_x86_64:
     paths:
       - subprojects/packagecache/
   artifacts:
-    expire_in: 1 day
+    expire_in: 1 hour
     name: osx_ndk_x86_64
     when: on_success
     paths:
@@ -213,6 +213,20 @@ test_freebsd_clang:
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --lto=false --clang
+
+test_windows_mingw_w64_cross:
+  image: greenaddress/ci@sha256:bdd5e21a22a6e642268f44e968932a1e6f4181b4e14af626c0f36ed469fe2977
+  tags:
+    - ga
+  artifacts:
+    expire_in: 1 hour
+    when: on_success
+    paths:
+    - build-windows-mingw-w64/src/libgreenaddress*
+    - build-windows-mingw-w64/src/examples/green-cli*
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --lto=false --mingw-w64
 
 package_release:
   tags:

@@ -74,6 +74,37 @@ namespace sdk {
 
             return repr;
         }
+
+        template <typename T> nlohmann::json get_json_result(const T& result)
+        {
+            auto obj = result.template argument<msgpack::object>(0);
+            std::stringstream ss;
+            ss << obj;
+            return nlohmann::json::parse(ss.str());
+        }
+
+        nlohmann::json get_fees_as_json(const autobahn::wamp_event& event)
+        {
+            auto obj = event.argument<msgpack::object>(0);
+            std::stringstream ss;
+            ss << obj;
+            std::string fee_json = ss.str();
+            // FIXME: Remove this once the server is fixed to use string keys
+            fee_json.reserve(fee_json.size() + 6 * 2); // 6 pairs of quotes
+            boost::algorithm::replace_first(fee_json, "1:", "\"1\":");
+            boost::algorithm::replace_first(fee_json, "2:", "\"2\":");
+            boost::algorithm::replace_first(fee_json, "3:", "\"3\":");
+            boost::algorithm::replace_first(fee_json, "6:", "\"6\":");
+            boost::algorithm::replace_first(fee_json, "12:", "\"12\":");
+            boost::algorithm::replace_first(fee_json, "24:", "\"24\":");
+            return nlohmann::json::parse(fee_json);
+        }
+
+        msgpack::object_handle as_messagepack(const nlohmann::json& json)
+        {
+            const auto buffer = nlohmann::json::to_msgpack(json);
+            return msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+        }
     } // namespace
 
     struct event_loop_controller {
@@ -98,9 +129,14 @@ namespace sdk {
         session_impl(network_parameters net_params, bool debug)
             : m_controller(m_io)
             , m_net_params(std::move(net_params))
+            , m_next_subaccount(0)
             , m_block_height(0)
             , m_master_key(nullptr)
+            , m_system_message_id(0)
+            , m_system_message_ack_id(0)
             , m_watch_only(true)
+            , m_rfc2818_verifier(websocketpp::uri(m_net_params.gait_wamp_url()).get_host())
+            , m_cert_pin_validated(false)
             , m_debug(debug)
         {
             one_time_setup();
@@ -116,79 +152,83 @@ namespace sdk {
 
         void connect();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
-        login_data login(const std::string& mnemonic, const std::string& user_agent);
-        login_data login_watch_only(
-            const std::string& username, const std::string& password, const std::string& user_agent);
+        void login(const std::string& mnemonic, const std::string& user_agent);
+        void login(
+            const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent = std::string());
+        void login_watch_only(const std::string& username, const std::string& password, const std::string& user_agent);
         bool set_watch_only(const std::string& username, const std::string& password);
-        bool remove_account();
+        bool remove_account(const nlohmann::json& twofactor_data);
 
-        std::pair<std::string, std::string> create_subaccount(
-            subaccount_type type, const std::string& name, const std::string& xpub);
-
-        wally_ext_key_ptr get_backup_extkey(uint32_t subaccount) const;
-
-        login_data login(const std::string& pin, const std::pair<std::string, std::string>& pin_identifier_and_secret,
-            const std::string& user_agent = std::string());
+        wally_ext_key_ptr get_recovery_extkey(uint32_t subaccount) const;
 
         template <typename T>
-        void change_settings(const std::string& key, T value, const map_strstr& twofactor_data = {});
-        void change_settings_tx_limits(bool is_fiat, uint32_t per_tx, uint32_t total, const map_strstr& twofactor_data);
+        void change_settings(const std::string& key, const T& value, const nlohmann::json& twofactor_data);
+        void change_settings_tx_limits(
+            bool is_fiat, uint32_t per_tx, uint32_t total, const nlohmann::json& twofactor_data);
 
-        template <typename T>
-        tx_list get_tx_list(T subaccount, const std::pair<std::time_t, std::time_t>& date_range,
-            tx_list_sort_by sort_by, uint32_t page_id, const std::string& query);
+        nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
         void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
-        std::vector<subaccount_details> get_subaccounts() { return m_login_data.get_subaccounts(); }
-        receive_address get_receive_address(uint32_t subaccount, address_type addr_type) const;
-        template <typename T> balance get_balance(T subaccount, uint32_t num_confs) const;
-        available_currencies get_available_currencies() const;
+        nlohmann::json get_subaccounts() const;
+        nlohmann::json get_subaccount(uint32_t subaccount) const;
+        nlohmann::json create_subaccount(const nlohmann::json& details);
+        nlohmann::json get_receive_address(uint32_t subaccount, address_type addr_type) const;
+        template <typename T> nlohmann::json get_balance(T subaccount, uint32_t num_confs) const;
+        nlohmann::json get_available_currencies() const;
         bool is_rbf_enabled() const;
         bool is_watch_only() const;
         address_type get_default_address_type() const;
 
-        twofactor_config get_twofactor_config();
-        bool set_twofactor(twofactor_type type, const std::string& code, const std::string& proxy_code);
+        nlohmann::json get_twofactor_config();
 
-        void set_email(const std::string& email, const map_strstr& twofactor_data);
+        void set_email(const std::string& email, const nlohmann::json& twofactor_data);
         void activate_email(const std::string& code);
         void init_enable_twofactor(
-            const std::string& method, const std::string& data, const map_strstr& twofactor_data);
+            const std::string& method, const std::string& data, const nlohmann::json& twofactor_data);
         void enable_twofactor(const std::string& method, const std::string& code);
-        void enable_gauth(const std::string& code, const map_strstr& twofactor_data);
-        void disable_twofactor(const std::string& method, const map_strstr& twofactor_data);
+        void enable_gauth(const std::string& code, const nlohmann::json& twofactor_data);
+        void disable_twofactor(const std::string& method, const nlohmann::json& twofactor_data);
 
-        void twofactor_request_code(const std::string& method, const std::string& action, const map_strstr& data);
+        void twofactor_request_code(const std::string& method, const std::string& action, const nlohmann::json& data);
 
-        pin_info set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
+        nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 
         bool add_address_book_entry(const std::string& address, const std::string& name);
         bool edit_address_book_entry(const std::string& address, const std::string& name);
         void delete_address_book_entry(const std::string& address);
 
-        template <typename T> utxo_set get_utxos(T subaccount, uint32_t num_confs);
+        template <typename T> nlohmann::json get_utxos(T subaccount, uint32_t num_confs);
         std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
-            const std::vector<utxo>& utxos, amount fee_rate, bool send_all);
-        void send(const std::string& tx_hex, const map_strstr& twofactor_data);
-        void send(const std::vector<std::pair<std::string, amount>>& address_amount, const std::vector<utxo>& utxos,
-            amount fee_rate, bool send_all, const map_strstr& twofactor_data);
+            const nlohmann::json& utxos, amount fee_rate, bool send_all);
+        void send(const std::string& tx_hex, const nlohmann::json& twofactor_data);
+        void send(const std::vector<std::pair<std::string, amount>>& address_amount, const nlohmann::json& utxos,
+            amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
+
         template <typename T>
         void send(T subaccount, const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate,
-            bool send_all, const map_strstr& twofactor_data);
+            bool send_all, const nlohmann::json& twofactor_data);
 
         void set_transaction_memo(const std::string& txhash_hex, const std::string& memo, const std::string& memo_type);
 
-        void set_pricing_source(const std::string& currency, const std::string& exchange);
+        void change_settings_pricing_source(const std::string& currency, const std::string& exchange);
 
-        system_message get_system_message(uint32_t system_message_id);
-        void ack_system_message(uint32_t system_message_id, const std::string& system_message);
+        std::string get_system_message();
+        void ack_system_message(const std::string& system_message);
 
     private:
+        void set_login_data(nlohmann::json&& login_data, bool watch_only);
+        void on_new_transaction(const nlohmann::json& details);
+
+        nlohmann::json insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
+            const std::string& recovery_pub_key, const std::string& recovery_chain_code, const std::string& type,
+            bool has_txs);
+
         template <typename PathT>
         static std::string sign_hash(
             const wally_ext_key_ptr& master_key, const PathT& path, const std::array<unsigned char, 32>& hash)
         {
-            secure_array<unsigned char, EC_PRIVATE_KEY_LEN> login_priv_key;
+            // FIXME: secure_array
+            std::array<unsigned char, EC_PRIVATE_KEY_LEN> login_priv_key;
             derive_private_key(master_key, path, login_priv_key);
 
             std::array<unsigned char, EC_SIGNATURE_LEN> sig;
@@ -209,12 +249,56 @@ namespace sdk {
         template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
         template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
         {
-            // FIXME: these options need to be checked.
-            boost::get<std::unique_ptr<T>>(m_client)->set_tls_init_handler([](websocketpp::connection_hdl) {
-                context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
+            m_cert_pin_validated = false;
+            boost::get<std::unique_ptr<T>>(m_client)->set_tls_init_handler([this](const websocketpp::connection_hdl) {
+                const context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
                 ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2
                     | boost::asio::ssl::context::no_sslv3 | boost::asio::ssl::context::no_tlsv1
                     | boost::asio::ssl::context::no_tlsv1_1 | boost::asio::ssl::context::single_dh_use);
+                ctx->set_verify_mode(
+                    boost::asio::ssl::context::verify_peer | boost::asio::ssl::context::verify_fail_if_no_peer_cert);
+                // attempt to load system roots
+                ctx->set_default_verify_paths();
+                const auto& roots = m_net_params.gait_wamp_cert_roots();
+                for (const auto& root : roots) {
+                    if (root.empty()) {
+                        // FIXME: at the moment looks like the roots/pins are empty string when absent
+                        break;
+                    }
+                    // add network provided root
+                    const boost::asio::const_buffer root_const_buff(root.c_str(), root.size());
+                    ctx->add_certificate_authority(root_const_buff);
+                }
+                const auto& pins = m_net_params.gait_wamp_cert_pins();
+                if (pins.empty() || pins[0].empty()) {
+                    // no pins for this network, just do rfc2818 validation
+                    ctx->set_verify_callback(m_rfc2818_verifier);
+                    return ctx;
+                }
+
+                ctx->set_verify_callback([this](bool preverified, boost::asio::ssl::verify_context& ctx) {
+                    if (!preverified) {
+                        return false;
+                    }
+                    const auto cert = X509_STORE_CTX_get_current_cert(ctx.native_handle());
+                    if (!cert) {
+                        return false;
+                    }
+                    std::array<unsigned char, SHA256_LEN> buf;
+                    unsigned int written = 0;
+                    if (!X509_digest(cert, EVP_sha256(), buf.data(), &written) || written != buf.size()) {
+                        return false;
+                    }
+                    const auto& pins = m_net_params.gait_wamp_cert_pins();
+                    const auto hex_digest = hex_from_bytes(buf);
+                    if (std::find(pins.begin(), pins.end(), hex_digest) != pins.end()) {
+                        m_cert_pin_validated = true;
+                    }
+                    // on top of rfc2818, enforce pin if this is the last cert in the chain
+                    const int depth = X509_STORE_CTX_get_error_depth(ctx.native_handle());
+                    return m_rfc2818_verifier(m_cert_pin_validated || depth != 0, ctx);
+                });
+
                 return ctx;
             });
         }
@@ -279,9 +363,9 @@ namespace sdk {
 
         amount get_dust_threshold() const;
         std::string get_raw_output(const std::string& txhash) const;
-        template <typename T> std::vector<unsigned char> output_script(uint32_t subaccount, const T& data) const;
-        amount add_utxo(const wally_tx_ptr& tx, const utxo& u) const;
-        void sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const;
+        std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
+        amount add_utxo(const wally_tx_ptr& tx, const nlohmann::json& u) const;
+        void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
         amount get_tx_fee(const wally_tx_ptr& tx, amount fee_rate);
 
         uint32_t get_bip32_version() const
@@ -298,12 +382,19 @@ namespace sdk {
 
         network_parameters m_net_params;
 
-        login_data m_login_data;
-        fee_estimates m_fee_estimates;
-        std::atomic<size_t> m_block_height;
+        nlohmann::json m_login_data;
+        std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
+        uint32_t m_next_subaccount;
+        nlohmann::json m_fee_estimates;
+        std::atomic<uint32_t> m_block_height;
         wally_ext_key_ptr m_master_key;
 
+        uint32_t m_system_message_id; // Next system message
+        uint32_t m_system_message_ack_id; // Currently returned message id to ack
+        std::string m_system_message_ack; // Currently returned message to ack
         bool m_watch_only;
+        const boost::asio::ssl::rfc2818_verification m_rfc2818_verifier;
+        bool m_cert_pin_validated;
         bool m_debug;
     };
 
@@ -330,34 +421,14 @@ namespace sdk {
         return { sign_hash(master_key, path, challenge_hash), hex_from_bytes(path_bytes) };
     }
 
-    void session::session_impl::ack_system_message(uint32_t message_id, const std::string& message)
-    {
-        std::array<unsigned char, SHA256_LEN> message_hash;
-        sha256d(std::vector<unsigned char>(message.begin(), message.end()), message_hash);
-
-        const auto message_hash_hex = hex_from_bytes(message_hash);
-        const auto ls_uint32_hex = message_hash_hex.substr(message_hash_hex.length() - 8);
-        const uint32_t ls_uint32 = std::stoul(ls_uint32_hex, 0, 16);
-        static const auto unharden = ~(0x01 << 31);
-        std::array<uint32_t, 3> path = { { 0x4741b11e, 6, ls_uint32 & unharden } };
-
-        std::vector<unsigned char> message_hex_bytes(message_hash_hex.begin(), message_hash_hex.end());
-        std::array<unsigned char, SHA256_LEN> hash;
-        const size_t written = format_bitcoin_message(message_hex_bytes, BITCOIN_MESSAGE_FLAG_HASH, hash);
-        GA_SDK_RUNTIME_ASSERT(written == hash.size());
-        const auto signature = sign_hash(m_master_key, path, hash);
-
-        wamp_call([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); },
-            "com.greenaddress.login.ack_system_message", message_id, message_hash_hex, signature);
-    }
-
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
         // Only the English word list is supported. This check is important because bip39_mnemonic_to_seed
         // does not do any validation (by design)
         mnemonic_validate("en", mnemonic);
 
-        secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
+        // FIXME: secure_array
+        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
         GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
 
         ext_key master;
@@ -381,9 +452,50 @@ namespace sdk {
             "com.greenaddress.login.register", pub_key, chain_code, ua, hex_path);
     }
 
-    login_data session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
+    void session::session_impl::set_login_data(nlohmann::json&& login_data, bool watch_only)
     {
-        secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
+        m_login_data = login_data;
+
+        m_subaccounts.clear();
+        m_next_subaccount = 0;
+        for (const auto& subaccount : m_login_data["subaccounts"]) {
+            const uint32_t pointer = subaccount["pointer"];
+            std::string type = subaccount["type"];
+            if (type == "simple")
+                type = "2of2";
+            insert_subaccount(subaccount["name"], pointer, subaccount["receiving_id"],
+                json_get_value(subaccount, "2of3_backup_pubkey", std::string()),
+                json_get_value(subaccount, "2of3_backup_chaincode", std::string()), type,
+                subaccount.value("has_txs", false));
+            if (pointer > m_next_subaccount)
+                m_next_subaccount = pointer;
+        }
+        ++m_next_subaccount;
+
+        // Insert the main account so callers can treat all accounts equally
+        const bool has_txs = m_login_data.value("has_txs", false);
+        insert_subaccount(
+            std::string(), 0, m_login_data["receiving_id"], std::string(), std::string(), "2of2", has_txs);
+
+        m_system_message_id = m_login_data.value("next_system_message_id", 0);
+        m_system_message_ack_id = 0;
+        m_system_message_ack = std::string();
+        m_watch_only = watch_only;
+    }
+
+    void session::session_impl::on_new_transaction(const nlohmann::json& details)
+    {
+        // FIXME: Update have_transactions in each affected subaccount,
+        // mark cached tx lists (when implemented) as dirty, and notify the user
+        (void)details;
+    }
+
+    void session::session_impl::login(const std::string& mnemonic, const std::string& user_agent)
+    {
+        mnemonic_validate("en", mnemonic);
+
+        // FIXME: secure_array
+        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
         GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
 
         // FIXME: Allocate m_master_key in mlocked memory and pass it
@@ -401,51 +513,116 @@ namespace sdk {
             "com.greenaddress.login.get_challenge", base58check_from_bytes(vpkh));
 
         const auto hexder_path = sign_challenge(m_master_key, challenge);
-        wamp_call([this](wamp_call_result result) { m_login_data = result.get().argument<msgpack::object>(0); },
+        wamp_call([this](wamp_call_result result) { set_login_data(get_json_result(result.get()), false); },
             "com.greenaddress.login.authenticate", hexder_path.first, false, hexder_path.second,
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
 
-        m_block_height = m_login_data.get<size_t>("block_height");
+        const uint32_t block_height = m_login_data["block_height"];
+        m_block_height = block_height;
+
+        const std::string receiving_id = m_login_data["receiving_id"];
+        subscribe("com.greenaddress.txs.wallet_" + receiving_id,
+            [this](const autobahn::wamp_event& event) { on_new_transaction(get_json_result(event)); });
+
         subscribe("com.greenaddress.blocks", [this](const autobahn::wamp_event& event) {
-            block_event block_ev;
-            block_ev = event.argument<msgpack::object>(0);
-            const auto count = block_ev.get<size_t>("count");
-            GA_SDK_RUNTIME_ASSERT(count >= m_block_height);
-            m_block_height = count;
+            const nlohmann::json block_ev = get_json_result(event);
+            const uint32_t block_height = block_ev["count"];
+            GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
+            m_block_height = block_height;
         });
 
-        m_fee_estimates = m_login_data.get<msgpack::object>("fee_estimates");
+        m_fee_estimates = m_login_data["fee_estimates"];
         subscribe("com.greenaddress.fee_estimates",
-            [this](const autobahn::wamp_event& event) { m_fee_estimates = event.argument<msgpack::object>(0); });
+            [this](const autobahn::wamp_event& event) { m_fee_estimates = get_fees_as_json(event); });
 
-        if (m_login_data.get<bool>("segwit_server") && !m_login_data.get<bool>("appearance/use_segwit")) {
+        if (m_login_data.value("segwit_server", true) && !m_login_data["appearance"].value("use_segwit", false)) {
             // Enable segwit
-            m_login_data.set<bool>("appearance/use_segwit", true);
-            const auto appearance = m_login_data.get<msgpack::object>("appearance");
+            m_login_data["appearance"]["use_segwit"] = true;
 
             /* FIXME: Server doesn't return a value in all envs yet
             bool r;
             wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
             */
-            wamp_call(
-                [](wamp_call_result result) { (void)result; }, "com.greenaddress.login.set_appearance", appearance);
+            wamp_call([](wamp_call_result result) { result.get(); }, "com.greenaddress.login.set_appearance",
+                as_messagepack(m_login_data["appearance"]).get());
             // FIXME GA_SDK_RUNTIME_ASSERT(r);
         }
-
-        m_watch_only = false;
-        return m_login_data;
     }
 
-    login_data session::session_impl::login_watch_only(
+    void session::session_impl::login(
+        const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
+    {
+        const auto password = get_pin_password(pin, pin_data["pin_identifier"]);
+
+        auto secret_bytes = bytes_from_hex(pin_data["secret"]);
+
+        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
+        pbkdf2_hmac_sha512(password, gsl::make_span(secret_bytes.data(), 16), 0, 2048, key);
+
+        std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
+        size_t written;
+        GA_SDK_VERIFY(wally_aes_cbc(key.data(), AES_KEY_LEN_256, secret_bytes.data(), 16,
+            secret_bytes.data() + 16 + AES_BLOCK_LEN, secret_bytes.size() - AES_BLOCK_LEN - 16, AES_FLAG_DECRYPT,
+            plaintext.data(), plaintext.size(), &written));
+
+        GA_SDK_RUNTIME_ASSERT(written <= plaintext.size() && (plaintext.size() - written <= AES_BLOCK_LEN));
+
+        const auto mnemonic = mnemonic_from_bytes(plaintext.data() + BIP39_SEED_LEN_512, BIP39_ENTROPY_LEN_256, "en");
+
+        login(mnemonic, user_agent);
+    }
+
+    void session::session_impl::login_watch_only(
         const std::string& username, const std::string& password, const std::string& user_agent)
     {
-        wamp_call([this](wamp_call_result result) { m_login_data = result.get().argument<msgpack::object>(0); },
-            "com.greenaddress.login.watch_only_v2", "custom",
-            map_strstr({ { "username", username }, { "password", password } }),
-            DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
+        const std::map<std::string, std::string> args = { { "username", username }, { "password", password } };
+        wamp_call([this](wamp_call_result result) { set_login_data(get_json_result(result.get()), true); },
+            "com.greenaddress.login.watch_only_v2", "custom", args, DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
+    }
 
-        m_watch_only = true;
-        return m_login_data;
+    std::string session::session_impl::get_system_message()
+    {
+        if (!m_system_message_ack.empty())
+            return m_system_message_ack; // Existing unacked message
+
+        if (is_watch_only() || m_system_message_id == 0)
+            return std::string(); // Watch-only user, or no outstanding messages
+
+        // Get the next message to ack
+        nlohmann::json details;
+        wamp_call([&details](wamp_call_result result) { details = get_json_result(result.get()); },
+            "com.greenaddress.login.get_system_message", m_system_message_id);
+
+        // Note the inconsistency with login_data key "next_system_message_id":
+        // We don't rename the key as we don't expose the details JSON to callers
+        m_system_message_id = details["next_message_id"];
+        m_system_message_ack_id = details["message_id"];
+        m_system_message_ack = details["message"];
+        return m_system_message_ack;
+    }
+
+    void session::session_impl::ack_system_message(const std::string& message)
+    {
+        GA_SDK_RUNTIME_ASSERT(!message.empty() && message == m_system_message_ack);
+
+        std::array<unsigned char, SHA256_LEN> message_hash;
+        sha256d(std::vector<unsigned char>(message.begin(), message.end()), message_hash);
+
+        const auto message_hash_hex = hex_from_bytes(message_hash);
+        const auto ls_uint32_hex = message_hash_hex.substr(message_hash_hex.length() - 8);
+        const uint32_t ls_uint32 = std::stoul(ls_uint32_hex, 0, 16);
+        static const auto unharden = ~(0x01 << 31);
+        std::array<uint32_t, 3> path = { { 0x4741b11e, 6, ls_uint32 & unharden } };
+
+        std::vector<unsigned char> message_hex_bytes(message_hash_hex.begin(), message_hash_hex.end());
+        std::array<unsigned char, SHA256_LEN> hash;
+        const size_t written = format_bitcoin_message(message_hex_bytes, BITCOIN_MESSAGE_FLAG_HASH, hash);
+        GA_SDK_RUNTIME_ASSERT(written == hash.size());
+        const auto signature = sign_hash(m_master_key, path, hash);
+
+        wamp_call([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); },
+            "com.greenaddress.login.ack_system_message", m_system_message_ack_id, message_hash_hex, signature);
+        m_system_message_ack = std::string();
     }
 
     bool session::session_impl::set_watch_only(const std::string& username, const std::string& password)
@@ -456,11 +633,11 @@ namespace sdk {
         return r;
     }
 
-    bool session::session_impl::remove_account()
+    bool session::session_impl::remove_account(const nlohmann::json& twofactor_data)
     {
         bool r;
         wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
-            "com.greenaddress.login.remove_account", map_strstr{});
+            "com.greenaddress.login.remove_account", as_messagepack(twofactor_data).get());
         return r;
     }
 
@@ -476,7 +653,10 @@ namespace sdk {
 
         auto get_recovery_key(const std::string& mnemonic, uint32_t bip32_version, uint32_t pointer)
         {
-            secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
+            mnemonic_validate("en", mnemonic);
+
+            // FIXME: secure_array
+            std::array<unsigned char, BIP39_SEED_LEN_512> seed;
             GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
 
             ext_key* p;
@@ -514,7 +694,7 @@ namespace sdk {
             case address_type::p2sh:
                 return base58check_from_bytes(p2sh_address_from_bytes(script));
             case address_type::p2wsh:
-                // Fall through
+            // Fall through
             case address_type::csv:
                 return base58check_from_bytes(p2wsh_address_from_bytes(script));
             }
@@ -539,58 +719,89 @@ namespace sdk {
         }
     } // namespace
 
-    std::pair<std::string, std::string> session::session_impl::create_subaccount(
-        subaccount_type type, const std::string& name, const std::string& xpub)
+    nlohmann::json session::session_impl::get_subaccounts() const
     {
-        GA_SDK_RUNTIME_ASSERT(!name.empty());
-        GA_SDK_RUNTIME_ASSERT_MSG(xpub.empty(), "not supported");
+        std::vector<nlohmann::json> subaccounts;
+        subaccounts.reserve(m_subaccounts.size());
+        for (auto s : m_subaccounts)
+            subaccounts.push_back(s.second);
+        return nlohmann::json(subaccounts);
+    }
 
+    nlohmann::json session::session_impl::get_subaccount(uint32_t subaccount) const
+    {
+        const auto p = m_subaccounts.find(subaccount);
+        GA_SDK_RUNTIME_ASSERT(p != m_subaccounts.end());
+        return p->second;
+    }
+
+    nlohmann::json session::session_impl::insert_subaccount(const std::string& name, uint32_t pointer,
+        const std::string& receiving_id, const std::string& recovery_pub_key, const std::string& recovery_chain_code,
+        const std::string& type, bool has_txs)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_subaccounts.find(pointer) == m_subaccounts.end());
+        GA_SDK_RUNTIME_ASSERT(type == "2of2" || type == "2of3");
+
+        nlohmann::json subaccount = { { "name", name }, { "pointer", pointer }, { "receiving_id", receiving_id },
+            { "type", type }, { "recovery_pub_key", recovery_pub_key }, { "recovery_chain_code", recovery_chain_code },
+            { "has_transactions", has_txs } };
+        m_subaccounts[pointer] = subaccount;
+        return subaccount;
+    }
+
+    nlohmann::json session::session_impl::create_subaccount(const nlohmann::json& details)
+    {
+        const std::string name = details.at("name");
+        const std::string type = details.at("type");
         std::string recovery_mnemonic;
         std::string pub_key;
-        std::string recovery_pub_key;
         std::string chain_code;
+        std::string recovery_pub_key;
         std::string recovery_chain_code;
         std::string recovery_xpub;
 
-        const uint32_t pointer = m_login_data.get_min_unused_pointer();
-        {
-            std::tie(pub_key, chain_code) = get_hdkey(m_master_key, pointer);
-            if (type == subaccount_type::_2of3) {
+        const uint32_t pointer = m_next_subaccount;
+
+        std::tie(pub_key, chain_code) = get_hdkey(m_master_key, pointer);
+        if (type == "2of3") {
+            // The user can provide a recovery mnemonic, if not, we generate it for them
+            const auto user_recovery_mnemonic = details.value("recovery_mnemonic", std::string());
+            if (user_recovery_mnemonic.empty()) {
                 recovery_mnemonic = generate_mnemonic();
-                std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
-                    = get_recovery_key(recovery_mnemonic, get_bip32_version(), pointer);
+            } else {
+                recovery_mnemonic = user_recovery_mnemonic; // User provided
             }
+            std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
+                = get_recovery_key(recovery_mnemonic, get_bip32_version(), pointer);
         }
 
         std::string receiving_id;
-        auto&& create_subaccount = [this, &receiving_id](auto&&... args) {
-            wamp_call(
-                [&receiving_id](wamp_call_result result) { receiving_id = result.get().argument<std::string>(0); },
-                "com.greenaddress.txs.create_subaccount", args...);
-        };
+        wamp_call([&receiving_id](wamp_call_result result) { receiving_id = result.get().argument<std::string>(0); },
+            "com.greenaddress.txs.create_subaccount", pointer, name, pub_key, chain_code, recovery_pub_key,
+            recovery_chain_code);
 
-        if (type == subaccount_type::_2of2) {
-            create_subaccount(pointer, name, pub_key, chain_code);
-        } else {
-            create_subaccount(pointer, name, pub_key, chain_code, recovery_pub_key, recovery_chain_code);
+        ++m_next_subaccount;
+
+        const bool has_txs = false;
+        nlohmann::json subaccount
+            = insert_subaccount(name, pointer, receiving_id, recovery_pub_key, recovery_chain_code, type, has_txs);
+        if (type == "2of3") {
+            subaccount["recovery_mnemonic"] = recovery_mnemonic;
+            subaccount["recovery_xpub"] = recovery_xpub;
         }
+        return subaccount;
+    } // namespace sdk
 
-        m_login_data.insert_subaccount(name, pointer, receiving_id, recovery_pub_key, recovery_chain_code,
-            type == subaccount_type::_2of2 ? "simple" : "2of3");
-
-        return std::make_pair(recovery_mnemonic, recovery_xpub);
-    }
-
-    wally_ext_key_ptr session::session_impl::get_backup_extkey(uint32_t subaccount) const
+    wally_ext_key_ptr session::session_impl::get_recovery_extkey(uint32_t subaccount) const
     {
         using bytes = std::vector<unsigned char>;
 
         if (subaccount == 0)
             return wally_ext_key_ptr(); // Main account is always 2of2
 
-        const subaccount_details details = m_login_data.get_subaccount(subaccount);
-        const auto chain_code = details.get<std::string>("2of3_backup_chaincode");
-        const auto pub_key = details.get<std::string>("2of3_backup_pubkey");
+        const nlohmann::json details = get_subaccount(subaccount);
+        const std::string chain_code = details["recovery_chain_code"];
+        const std::string pub_key = details["recovery_pub_key"];
 
         if (chain_code.empty() || pub_key.empty())
             return wally_ext_key_ptr();
@@ -604,66 +815,166 @@ namespace sdk {
     }
 
     template <typename T>
-    void session::session_impl::change_settings(const std::string& key, T value, const map_strstr& twofactor_data)
+    void session::session_impl::change_settings(
+        const std::string& key, const T& value, const nlohmann::json& twofactor_data)
     {
         bool r{ false };
         wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
-            "com.greenaddress.login.change_settings", key, value, twofactor_data);
+            "com.greenaddress.login.change_settings", key, value, as_messagepack(twofactor_data).get());
         GA_SDK_RUNTIME_ASSERT(r);
     }
 
     void session::session_impl::change_settings_tx_limits(
-        bool is_fiat, uint32_t per_tx, uint32_t total, const map_strstr& twofactor_data)
+        bool is_fiat, uint32_t per_tx, uint32_t total, const nlohmann::json& twofactor_data)
     {
-        std::map<std::string, std::string> args = { { "is_fiat", is_fiat ? "true" : "false" },
-            { "per_tx", std::to_string(per_tx) }, { "total", std::to_string(total) } };
-        change_settings("tx_limits", args, twofactor_data);
+        const nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", per_tx }, { "total", total } };
+        change_settings("tx_limits", as_messagepack(args).get(), twofactor_data);
     }
 
-    template <typename T>
-    tx_list session::session_impl::get_tx_list(T subaccount, const std::pair<std::time_t, std::time_t>& date_range,
-        tx_list_sort_by sort_by, uint32_t page_id, const std::string& query)
+    void session::session_impl::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
     {
-        auto&& sort_by_str = [sort_by] {
-            switch (sort_by) {
-            default:
-                __builtin_unreachable();
-            case tx_list_sort_by::timestamp:
-                return "ts";
-            case tx_list_sort_by::timestamp_ascending:
-                return "+ts";
-            case tx_list_sort_by::timestamp_descending:
-                return "-ts";
-            case tx_list_sort_by::value:
-                return "value";
-            case tx_list_sort_by::value_ascending:
-                return "+value";
-            case tx_list_sort_by::value_descending:
-                return "-value";
+        wamp_call([](boost::future<autobahn::wamp_call_result> result) { result.get(); },
+            "com.greenaddress.login.set_pricing_source", currency, exchange);
+    }
+
+    nlohmann::json session::session_impl::get_transactions(uint32_t subaccount, uint32_t page_id)
+    {
+        nlohmann::json txs;
+        wamp_call([&txs](wamp_call_result result) { txs = get_json_result(result.get()); },
+            "com.greenaddress.txs.get_list_v2", page_id, std::string(), std::string(), std::string(), subaccount);
+
+        // Update our local block height from the returned results
+        // TODO: Use block_hash/height reversal to detect reorgs & uncache
+        const uint32_t block_height = txs["cur_block"];
+        GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
+        m_block_height = block_height;
+        txs.erase("cur_block");
+        txs.erase("block_hash");
+
+        // Postprocess the returned API data
+        // FIXME: confidential transactions, social payments/BIP70
+        txs.erase("unclaimed"); // Always empty, never used
+        txs.erase("fiat_currency");
+        txs.erase("fiat_value");
+        txs["page_id"] = page_id;
+        json_add_if_missing(txs, "next_page_id", 0, true);
+
+        for (auto& tx : txs["list"]) {
+            const uint32_t tx_block_height = json_add_if_missing(tx, "block_height", 0, true);
+            // TODO: Remove? subaccount has no meaning at the tx level
+            json_add_if_missing(tx, "subaccount", 0, true);
+            json_add_if_missing(tx, "has_payment_request", false);
+            json_add_if_missing(tx, "memo", std::string());
+            const std::string fee_str = tx["fee"];
+            tx["fee"] = boost::lexical_cast<uint64_t>(fee_str);
+
+            amount received, spent;
+            bool is_from_me = false; // Are any inputs from our wallet?
+            std::map<uint32_t, nlohmann::json> in_map, out_map;
+
+            // Clean up and categorise the endpoints
+            for (auto& ep : tx["eps"]) {
+                ep.erase("id");
+                json_add_if_missing(ep, "subaccount", 0, true);
+                json_rename_key(ep, "pubkey_pointer", "pointer");
+                json_rename_key(ep, "ad", "address");
+                json_add_if_missing(ep, "pointer", 0, true);
+                const std::string value_str = ep["value"];
+                const auto value = boost::lexical_cast<uint64_t>(value_str);
+                ep["value"] = value;
+
+                if (ep.find("is_output") == ep.end()) {
+                    // FIXME: not needed after next backend update
+                    json_rename_key(ep, "is_credit", "is_output");
+                } else {
+                    ep.erase("is_credit");
+                }
+
+                const bool is_tx_output = ep.value("is_output", false);
+                const bool is_relevant = ep.value("is_relevant", false);
+
+                if (is_relevant) {
+                    // Compute the effect of the input/output on the wallets balance
+                    // TODO: Figure out what redeemable value for social payments is about
+                    auto& which_balance = is_tx_output ? received : spent;
+                    which_balance += value;
+                    is_from_me |= !is_tx_output;
+                }
+
+                ep["addressee"] = std::string(); // default here, set below where needed
+
+                const uint32_t pt_idx = ep["pt_idx"];
+                auto& m = is_tx_output ? out_map : in_map;
+                m.emplace(pt_idx, ep);
             }
-        };
 
-        auto&& date_range_str = [&date_range] {
-            constexpr auto iso_str_siz = sizeof "0000-00-00T00:00:00.000Z";
+            // Store the endpoints as inputs/outputs in tx index order
+            nlohmann::json::array_t inputs, outputs;
+            for (auto& it : in_map) {
+                inputs.emplace_back(it.second);
+            }
+            tx["inputs"] = inputs;
 
-            if (date_range.first == 0 && date_range.second == 0) {
-                return std::make_pair(std::string(), std::string());
+            for (auto& it : out_map) {
+                outputs.emplace_back(it.second);
+            }
+            tx["outputs"] = outputs;
+            tx.erase("eps");
+
+            // Compute tx economics and label addressees
+            const bool net_positive = received > spent;
+            const bool is_confirmed = tx_block_height != 0;
+            std::vector<std::string> addressees;
+
+            if (net_positive) {
+                for (auto& ep : tx["inputs"]) {
+                    std::string addressee;
+                    if (!ep.value("is_relevant", false)) {
+                        // Add unique addressees that aren't ourselves
+                        addressee = ep.value("social_source", ep["address"]);
+                        if (std::find(std::begin(addressees), std::end(addressees), addressee)
+                            == std::end(addressees)) {
+                            addressees.push_back(addressee);
+                        }
+                        ep["addressee"] = addressee;
+                    }
+                }
+                tx["type"] = "incoming";
+                tx["can_rbf"] = false;
+                tx["can_cpfp"] = !is_confirmed;
+            } else {
+                for (auto& ep : tx["outputs"]) {
+                    std::string addressee;
+                    if (!ep.value("is_relevant", false)) {
+                        // Add unique addressees that aren't ourselves
+                        const auto& social_destination = ep.find("social_destination");
+                        if (social_destination != ep.end()) {
+                            if (social_destination->is_object()) {
+                                addressee = (*social_destination)["name"];
+                            } else {
+                                addressee = *social_destination;
+                            }
+                        } else {
+                            addressee = ep["address"];
+                        }
+
+                        if (std::find(std::begin(addressees), std::end(addressees), addressee)
+                            == std::end(addressees)) {
+                            addressees.push_back(addressee);
+                        }
+                        ep["addressee"] = addressee;
+                    }
+                }
+                tx["type"] = addressees.empty() ? "redeposit" : "outgoing";
+                tx["can_rbf"] = !is_confirmed && tx.value("rbf_optin", false);
+                tx["can_cpfp"] = false;
             }
 
-            std::array<char, iso_str_siz> begin_date_str = { { 0 } };
-            std::array<char, iso_str_siz> end_date_str = { { 0 } };
+            tx["addressees"] = addressees;
 
-            struct tm tm_;
-            std::strftime(
-                begin_date_str.data(), begin_date_str.size(), "%FT%T.000Z", gmtime_r(&date_range.first, &tm_));
-            std::strftime(end_date_str.data(), end_date_str.size(), "%FT%T.000Z", gmtime_r(&date_range.second, &tm_));
-
-            return std::make_pair(std::string(begin_date_str.data()), std::string(end_date_str.data()));
-        };
-
-        tx_list txs;
-        wamp_call([&txs](wamp_call_result result) { txs = result.get().argument<msgpack::object>(0); },
-            "com.greenaddress.txs.get_list_v2", page_id, query, sort_by_str(), date_range_str(), subaccount);
+            const amount total = net_positive ? received - spent : spent - received;
+            tx["value"] = total.value();
+        }
         return txs;
     }
 
@@ -690,7 +1001,8 @@ namespace sdk {
 
     amount session::session_impl::get_dust_threshold() const
     {
-        return amount{ m_login_data.get<amount::value_type>("dust") };
+        const amount::value_type v = m_login_data["dust"];
+        return amount(v);
     }
 
     std::string session::session_impl::get_raw_output(const std::string& txhash) const
@@ -701,69 +1013,52 @@ namespace sdk {
         return raw_output;
     }
 
-    template <typename T>
-    std::vector<unsigned char> session::session_impl::output_script(uint32_t subaccount, const T& data) const
+    std::vector<unsigned char> session::session_impl::output_script(
+        uint32_t subaccount, const nlohmann::json& data) const
     {
-        uint32_t pointer;
-        script_type type;
         GA_SDK_RUNTIME_ASSERT(!is_watch_only());
+        const uint32_t pointer = data["pointer"];
+        script_type type;
 
-        if (data.template contains<std::string>("addr_type")) {
+        auto addr_type = data.find("addr_type");
+        if (addr_type != data.end()) {
             // Address
-            pointer = data.template get<uint32_t>("pointer");
-            const auto addr_type_str = data.template get<std::string>("addr_type");
-            type = get_script_type_from_address_type_string(addr_type_str);
+            // FIXME: set script_type in addresses returned from the API
+            type = get_script_type_from_address_type_string(*addr_type);
         } else {
-            // UTXO. TODO: get_list_v2 returns pubkey_pointer instead of pointer
-            pointer
-                = data.template get_with_default<uint32_t>("pubkey_pointer", data.template get<uint32_t>("pointer"));
-            type = script_type(data.template get<uint32_t>("script_type"));
+            type = data["script_type"];
         }
         uint32_t subtype = 0;
         if (type == script_type::p2sh_p2wsh_csv_fortified_out)
-            subtype = data.template get<uint32_t>("subtype");
+            subtype = data["subtype"];
 
-        return ga::sdk::output_script(m_net_params, m_master_key, get_backup_extkey(subaccount),
-            m_login_data.get<std::string>("gait_path"), type, subtype, subaccount, pointer);
+        return ga::sdk::output_script(m_net_params, m_master_key, get_recovery_extkey(subaccount),
+            m_login_data["gait_path"], type, subtype, subaccount, pointer);
     }
 
-    template <typename T> utxo_set session::session_impl::get_utxos(T subaccount, uint32_t num_confs)
+    template <typename T> nlohmann::json session::session_impl::get_utxos(T subaccount, uint32_t num_confs)
     {
-        utxo_set unspent;
+        nlohmann::json unspent;
         wamp_call(
             [&unspent](wamp_call_result result) {
                 const auto r = result.get();
                 if (r.number_of_arguments()) {
-                    unspent = r.argument<msgpack::object>(0);
+                    unspent = get_json_result(r);
                 }
             },
             "com.greenaddress.txs.get_all_unspent_outputs", num_confs, subaccount, "any");
         return unspent;
     }
 
-    system_message session::session_impl::get_system_message(uint32_t system_message_id)
-    {
-        system_message message;
-        wamp_call(
-            [&message](wamp_call_result result) {
-                const auto r = result.get();
-                if (r.number_of_arguments()) {
-                    message = r.argument<msgpack::object>(0);
-                }
-            },
-            "com.greenaddress.login.get_system_message", system_message_id);
-        return message;
-    }
-
-    receive_address session::session_impl::get_receive_address(uint32_t subaccount, address_type addr_type) const
+    nlohmann::json session::session_impl::get_receive_address(uint32_t subaccount, address_type addr_type) const
     {
         const std::string addr_type_str = get_address_type_string(addr_type);
 
-        receive_address address;
-        wamp_call([&address](wamp_call_result result) { address = result.get().argument<msgpack::object>(0); },
+        nlohmann::json address;
+        wamp_call([&address](wamp_call_result result) { address = get_json_result(result.get()); },
             "com.greenaddress.vault.fund", subaccount, true, addr_type_str);
 
-        const auto server_script = bytes_from_hex(address.get<std::string>("script"));
+        const auto server_script = bytes_from_hex(address["script"]);
         const auto server_address = get_address_from_script(server_script, addr_type);
 
         if (!is_watch_only()) {
@@ -773,58 +1068,52 @@ namespace sdk {
             GA_SDK_RUNTIME_ASSERT(server_address == user_address);
         }
 
-        address.set_address(server_address);
+        address["address"] = server_address;
         return address;
     }
 
-    template <typename T> balance session::session_impl::get_balance(T subaccount, uint32_t num_confs) const
+    template <typename T> nlohmann::json session::session_impl::get_balance(T subaccount, uint32_t num_confs) const
     {
-        balance b;
-        wamp_call([&b](wamp_call_result result) { b = result.get().argument<msgpack::object>(0); },
+        nlohmann::json b;
+        wamp_call([&b](wamp_call_result result) { b = get_json_result(result.get()); },
             "com.greenaddress.txs.get_balance", subaccount, num_confs);
         return b;
     }
 
-    available_currencies session::session_impl::get_available_currencies() const
+    nlohmann::json session::session_impl::get_available_currencies() const
     {
-        available_currencies a;
-        wamp_call([&a](wamp_call_result result) { a = result.get().argument<msgpack::object>(0); },
+        nlohmann::json a;
+        wamp_call([&a](wamp_call_result result) { a = get_json_result(result.get()); },
             "com.greenaddress.login.available_currencies");
         return a;
     }
 
-    bool session::session_impl::is_rbf_enabled() const { return m_login_data.get<bool>("rbf"); }
+    bool session::session_impl::is_rbf_enabled() const { return m_login_data["rbf"]; }
 
     bool session::session_impl::is_watch_only() const { return m_watch_only; }
 
     address_type session::session_impl::get_default_address_type() const
     {
-        if (m_login_data.get_with_default<bool>("appearance/use_csv", false))
+        const auto& appearance = m_login_data["appearance"];
+        if (appearance.value("use_csv", false))
             return address_type::csv;
-        else if (m_login_data.get<bool>("appearance/use_segwit"))
+        else if (appearance.value("use_segwit", false))
             return address_type::p2wsh;
         return address_type::p2sh;
     }
 
-    twofactor_config session::session_impl::get_twofactor_config()
+    nlohmann::json session::session_impl::get_twofactor_config()
     {
-        twofactor_config f;
-        wamp_call([&f](wamp_call_result result) { f = result.get().argument<msgpack::object>(0); },
+        nlohmann::json f;
+        wamp_call([&f](wamp_call_result result) { f = get_json_result(result.get()); },
             "com.greenaddress.twofactor.get_config");
         return f;
     }
 
-    bool session::session_impl::set_twofactor(__attribute__((unused)) twofactor_type type, const std::string& code,
-        __attribute__((unused)) const std::string& proxy_code)
+    void session::session_impl::set_email(const std::string& email, const nlohmann::json& twofactor_data)
     {
-        wamp_call([](wamp_call_result result) { result.get(); }, "com.greenaddress.twofactor.enable_gauth", code,
-            map_strstr());
-        return false;
-    }
-
-    void session::session_impl::set_email(const std::string& email, const map_strstr& data)
-    {
-        wamp_call([](wamp_call_result result) { result.get(); }, "com.greenaddress.twofactor.set_email", email, data);
+        wamp_call([](wamp_call_result result) { result.get(); }, "com.greenaddress.twofactor.set_email", email,
+            as_messagepack(twofactor_data).get());
     }
 
     void session::session_impl::activate_email(const std::string& code)
@@ -833,10 +1122,11 @@ namespace sdk {
     }
 
     void session::session_impl::init_enable_twofactor(
-        const std::string& method, const std::string& data, const map_strstr& twofactor_data)
+        const std::string& method, const std::string& data, const nlohmann::json& twofactor_data)
     {
         const std::string api_method = "com.greenaddress.twofactor.init_enable_" + method;
-        wamp_call([](wamp_call_result result) { result.get(); }, api_method, data, twofactor_data);
+        wamp_call(
+            [](wamp_call_result result) { result.get(); }, api_method, data, as_messagepack(twofactor_data).get());
     }
 
     void session::session_impl::enable_twofactor(const std::string& method, const std::string& code)
@@ -845,28 +1135,31 @@ namespace sdk {
         wamp_call([](wamp_call_result result) { result.get(); }, api_method, code);
     }
 
-    void session::session_impl::enable_gauth(const std::string& code, const map_strstr& twofactor_data)
+    void session::session_impl::enable_gauth(const std::string& code, const nlohmann::json& twofactor_data)
     {
         wamp_call([](wamp_call_result result) { result.get(); }, "com.greenaddress.twofactor.enable_gauth", code,
-            twofactor_data);
+            as_messagepack(twofactor_data).get());
     }
 
-    void session::session_impl::disable_twofactor(const std::string& method, const map_strstr& twofactor_data)
+    void session::session_impl::disable_twofactor(const std::string& method, const nlohmann::json& twofactor_data)
     {
         const std::string api_method = "com.greenaddress.twofactor.disable_" + method;
-        wamp_call([](wamp_call_result result) { result.get(); }, api_method, twofactor_data);
+        wamp_call([](wamp_call_result result) { result.get(); }, api_method, as_messagepack(twofactor_data).get());
     }
 
     void session::session_impl::twofactor_request_code(
-        const std::string& method, const std::string& action, const map_strstr& data)
+        const std::string& method, const std::string& action, const nlohmann::json& twofactor_data)
     {
-        const std::string& api_method = "com.greenaddress.twofactor.request_" + method;
-        wamp_call([](wamp_call_result result) { result.get(); }, api_method, action, data);
+        const std::string api_method = "com.greenaddress.twofactor.request_" + method;
+        wamp_call(
+            [](wamp_call_result result) { result.get(); }, api_method, action, as_messagepack(twofactor_data).get());
     }
 
-    pin_info session::session_impl::set_pin(
+    nlohmann::json session::session_impl::set_pin(
         const std::string& mnemonic, const std::string& pin, const std::string& device)
     {
+        mnemonic_validate("en", mnemonic);
+
         GA_SDK_RUNTIME_ASSERT(pin.length() >= 4);
 
         std::string pin_identifier;
@@ -874,7 +1167,8 @@ namespace sdk {
             [&pin_identifier](wamp_call_result result) { pin_identifier = result.get().argument<std::string>(0); },
             "com.greenaddress.pin.set_pin_login", pin, device);
 
-        secure_array<unsigned char, BIP39_SEED_LEN_512> seed;
+        // FIXME: secure_array
+        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
         GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
         const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
         const auto salt = get_random_bytes<16>();
@@ -883,7 +1177,8 @@ namespace sdk {
         std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
         pbkdf2_hmac_sha512(password, salt, 0, 2048, key);
 
-        secure_array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data;
+        // FIXME: secure_array
+        std::array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data;
         init_container(data, seed, mnemonic_bytes);
         const auto iv = get_random_bytes<AES_BLOCK_LEN>();
 
@@ -895,11 +1190,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(written == encrypted.size() - iv.size());
         encrypted.resize(iv.size() + written);
 
-        pin_info p;
-        p.emplace("secret", hex_from_bytes(salt) + hex_from_bytes(encrypted));
-        p.emplace("pin_identifier", pin_identifier);
-
-        return p;
+        return { { "secret", hex_from_bytes(salt) + hex_from_bytes(encrypted) }, { "pin_identifier", pin_identifier } };
     }
 
     std::vector<unsigned char> session::session_impl::get_pin_password(
@@ -910,29 +1201,6 @@ namespace sdk {
             "com.greenaddress.pin.get_password", pin, pin_identifier);
 
         return std::vector<unsigned char>(password.begin(), password.end());
-    }
-
-    login_data session::session_impl::login(const std::string& pin,
-        const std::pair<std::string, std::string>& pin_identifier_and_secret, const std::string& user_agent)
-    {
-        const auto password = get_pin_password(pin, pin_identifier_and_secret.first);
-
-        auto secret_bytes = bytes_from_hex(pin_identifier_and_secret.second);
-
-        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        pbkdf2_hmac_sha512(password, gsl::make_span(secret_bytes.data(), 16), 0, 2048, key);
-
-        std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
-        size_t written;
-        GA_SDK_VERIFY(wally_aes_cbc(key.data(), AES_KEY_LEN_256, secret_bytes.data(), 16,
-            secret_bytes.data() + 16 + AES_BLOCK_LEN, secret_bytes.size() - AES_BLOCK_LEN - 16, AES_FLAG_DECRYPT,
-            plaintext.data(), plaintext.size(), &written));
-
-        GA_SDK_RUNTIME_ASSERT(written <= plaintext.size() && (plaintext.size() - written <= AES_BLOCK_LEN));
-
-        const auto mnemonic = mnemonic_from_bytes(plaintext.data() + BIP39_SEED_LEN_512, BIP39_ENTROPY_LEN_256, "en");
-
-        return login(mnemonic, user_agent);
     }
 
     bool session::session_impl::add_address_book_entry(const std::string& address, const std::string& name)
@@ -957,13 +1225,13 @@ namespace sdk {
     }
 
     // Add a UTXO to a transaction. Returns the amount added
-    amount session::session_impl::add_utxo(const wally_tx_ptr& tx, const utxo& u) const
+    amount session::session_impl::add_utxo(const wally_tx_ptr& tx, const nlohmann::json& u) const
     {
-        const auto txhash = u.get<std::string>("txhash");
-        const auto index = u.get<uint32_t>("pt_idx");
+        const std::string txhash = u["txhash"];
+        const uint32_t index = u["pt_idx"];
         const uint32_t sequence = is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
-        const auto subaccount = u.get_with_default<uint32_t>("subaccount", 0);
-        const auto type = script_type(u.get<uint32_t>("script_type"));
+        const uint32_t subaccount = u.value("subaccount", 0);
+        const auto type = script_type(u["script_type"]);
 
         // TODO: Create correctly sized dummys instead of actual script (faster)
         const auto prevout_script = output_script(subaccount, u);
@@ -981,16 +1249,18 @@ namespace sdk {
         tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
             wit ? DUMMY_WITNESS_SCRIPT : dummy_input_script(prevout_script), wit, 0);
 
-        return amount{ std::stoull(u.get<std::string>("value"), nullptr, 10) };
+        const std::string v = u["value"]; // FIXME: Allow amount conversions directly
+        return amount{ std::stoull(v, nullptr, 10) };
     }
 
-    void session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const utxo& u) const
+    void session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const
     {
-        const auto txhash = u.get<std::string>("txhash");
-        const auto subaccount = u.get_with_default<uint32_t>("subaccount", 0);
-        const auto pointer = u.get_with_default<uint32_t>("pubkey_pointer", u.get<uint32_t>("pointer"));
-        const amount satoshi{ std::stoull(u.get<std::string>("value"), nullptr, 10) };
-        const script_type type = script_type(u.get<uint32_t>("script_type"));
+        const auto txhash = u["txhash"];
+        const uint32_t subaccount = u.value("subaccount", 0);
+        const uint32_t pointer = u["pointer"];
+        const std::string v = u["value"];
+        const amount satoshi{ std::stoull(v, nullptr, 10) };
+        const script_type type = script_type(u["script_type"]);
 
         const auto prevout_script = output_script(subaccount, u);
 
@@ -998,7 +1268,8 @@ namespace sdk {
         const uint32_t flags = is_segwit_script_type(type) ? WALLY_TX_FLAG_USE_WITNESS : 0;
         tx_get_btc_signature_hash(tx, index, prevout_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash);
 
-        secure_array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
+        // FIXME: secure_array
+        std::array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
         derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
 
         std::array<unsigned char, EC_SIGNATURE_LEN> user_sig;
@@ -1018,7 +1289,8 @@ namespace sdk {
 
     amount session::session_impl::get_tx_fee(const wally_tx_ptr& tx, amount fee_rate)
     {
-        const amount min_fee_rate{ m_login_data.get<amount::value_type>("min_fee") };
+        const amount::value_type v = m_login_data["min_fee"];
+        const amount min_fee_rate(v);
         const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
 
         const size_t vsize = tx_get_vsize(tx);
@@ -1030,7 +1302,7 @@ namespace sdk {
     }
 
     std::string session::session_impl::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
+        const nlohmann::json& utxos, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && (!send_all || address_amount.size() == 1));
 
@@ -1041,9 +1313,9 @@ namespace sdk {
         required_total = std::accumulate(std::begin(address_amount), std::end(address_amount), required_total,
             [](const amount& l, const auto& r) { return l + r.second; });
 
-        uint32_t change_subaccount = utxos[0].get<uint32_t>("subaccount");
+        uint32_t change_subaccount = utxos[0]["subaccount"];
         if (std::find_if(std::begin(utxos), std::end(utxos),
-                [change_subaccount](const utxo& u) { return u.get<uint32_t>("subaccount") != change_subaccount; })
+                [change_subaccount](const nlohmann::json& u) { return u["subaccount"] != change_subaccount; })
             != std::end(utxos)) {
             // Send change to main when sending from multiple subaccounts
             change_subaccount = 0;
@@ -1082,7 +1354,7 @@ namespace sdk {
 
             const auto addr_type = get_default_address_type();
             const auto change_address = get_receive_address(change_subaccount, addr_type);
-            const auto change_output_script = output_script_for_address(m_net_params, change_address.get_address());
+            const auto change_output_script = output_script_for_address(m_net_params, change_address["address"]);
             tx_add_raw_output(tx, 0, change_output_script, 0);
             have_change = true;
         }
@@ -1101,35 +1373,30 @@ namespace sdk {
         return hex_from_bytes(tx_to_bytes(tx));
     }
 
-    void session::session_impl::send(const std::string& tx_hex, const map_strstr& twofactor_data)
+    void session::session_impl::send(const std::string& tx_hex, const nlohmann::json& twofactor_data)
     {
         const size_t MAX_TX_WEIGHT = 400000;
         const auto tx = tx_from_hex(tx_hex, WALLY_TX_FLAG_USE_WITNESS);
         GA_SDK_RUNTIME_ASSERT(tx_get_weight(tx) < MAX_TX_WEIGHT);
 
         wamp_call([](boost::future<autobahn::wamp_call_result> result) { result.get(); },
-            "com.greenaddress.vault.send_raw_tx", tx_hex, twofactor_data);
+            "com.greenaddress.vault.send_raw_tx", tx_hex, as_messagepack(twofactor_data).get());
     }
 
     void session::session_impl::send(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const std::vector<utxo>& utxos, amount fee_rate, bool send_all, const map_strstr& twofactor_data)
+        const nlohmann::json& utxos, amount fee_rate, bool send_all, const nlohmann::json& twofactor_data)
     {
         send(make_raw_tx(address_amount, utxos, fee_rate, send_all), twofactor_data);
     }
 
     template <typename T>
     void session::session_impl::send(T subaccount, const std::vector<std::pair<std::string, amount>>& address_amount,
-        amount fee_rate, bool send_all, const map_strstr& twofactor_data)
+        amount fee_rate, bool send_all, const nlohmann::json& twofactor_data)
     {
         const uint32_t required_confs = 1; // FIXME: 0 for testnet?
         const auto utxos = get_utxos(subaccount, required_confs);
 
-        std::vector<utxo> utxos_in_use;
-        for (auto&& u : utxos) {
-            utxos_in_use.emplace_back(u);
-        }
-
-        send(address_amount, utxos_in_use, fee_rate, send_all, twofactor_data);
+        send(address_amount, utxos, fee_rate, send_all, twofactor_data);
     }
 
     void session::session_impl::set_transaction_memo(
@@ -1137,12 +1404,6 @@ namespace sdk {
     {
         wamp_call([](boost::future<autobahn::wamp_call_result> result) { result.get(); },
             "com.greenaddress.txs.change_memo", txhash_hex, memo, memo_type);
-    }
-
-    void session::session_impl::set_pricing_source(const std::string& currency, const std::string& exchange)
-    {
-        wamp_call([](boost::future<autobahn::wamp_call_result> result) { result.get(); },
-            "com.greenaddress.login.set_pricing_source", currency, exchange);
     }
 
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
@@ -1187,24 +1448,23 @@ namespace sdk {
         exception_wrapper([&] { m_impl->register_user(mnemonic, user_agent); });
     }
 
-    login_data session::login(const std::string& mnemonic, const std::string& user_agent)
+    void session::login(const std::string& mnemonic, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->login(mnemonic, user_agent); });
+        return exception_wrapper([&] { m_impl->login(mnemonic, user_agent); });
     }
 
-    login_data session::login(const std::string& pin,
-        const std::pair<std::string, std::string>& pin_identifier_and_secret, const std::string& user_agent)
+    void session::login(const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->login(pin, pin_identifier_and_secret, user_agent); });
+        return exception_wrapper([&] { m_impl->login(pin, pin_data, user_agent); });
     }
 
-    login_data session::login_watch_only(
+    void session::login_watch_only(
         const std::string& username, const std::string& password, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->login_watch_only(username, password, user_agent); });
+        return exception_wrapper([&] { m_impl->login_watch_only(username, password, user_agent); });
     }
 
     bool session::set_watch_only(const std::string& username, const std::string& password)
@@ -1213,50 +1473,54 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->set_watch_only(username, password); });
     }
 
-    bool session::remove_account()
+    bool session::remove_account(const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->remove_account(); });
+        return exception_wrapper([&] { return m_impl->remove_account(twofactor_data); });
     }
 
-    std::pair<std::string, std::string> session::create_subaccount(
-        subaccount_type type, const std::string& name, const std::string& xpub)
+    nlohmann::json session::create_subaccount(const nlohmann::json& details)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->create_subaccount(type, name, xpub); });
+        return exception_wrapper([&] { return m_impl->create_subaccount(details); });
+    }
+
+    nlohmann::json session::get_subaccounts()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_subaccounts(); });
     }
 
     void session::change_settings_privacy_send_me(privacy_send_me value)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->change_settings("privacy.send_me", int(value)); });
+        return exception_wrapper([&] { m_impl->change_settings("privacy.send_me", int(value), nlohmann::json()); });
     }
 
     void session::change_settings_privacy_show_as_sender(privacy_show_as_sender value)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->change_settings("privacy.show_as_sender", int(value)); });
+        return exception_wrapper(
+            [&] { m_impl->change_settings("privacy.show_as_sender", int(value), nlohmann::json()); });
     }
 
     void session::change_settings_tx_limits(
-        bool is_fiat, uint32_t per_tx, uint32_t total, const map_strstr& twofactor_data)
+        bool is_fiat, uint32_t per_tx, uint32_t total, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { m_impl->change_settings_tx_limits(is_fiat, per_tx, total, twofactor_data); });
     }
 
-    tx_list session::get_tx_list(uint32_t subaccount, const std::pair<std::time_t, std::time_t>& date_range,
-        tx_list_sort_by sort_by, uint32_t page_id, const std::string& query)
+    void session::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_tx_list(subaccount, date_range, sort_by, page_id, query); });
+        exception_wrapper([&] { m_impl->change_settings_pricing_source(currency, exchange); });
     }
 
-    tx_list session::get_tx_list(const std::pair<std::time_t, std::time_t>& date_range, tx_list_sort_by sort_by,
-        uint32_t page_id, const std::string& query)
+    nlohmann::json session::get_transactions(uint32_t subaccount, uint32_t page_id)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_tx_list("all", date_range, sort_by, page_id, query); });
+        return exception_wrapper([&] { return m_impl->get_transactions(subaccount, page_id); });
     }
 
     void session::subscribe(const std::string& topic, std::function<void(const std::string& output)> callback)
@@ -1265,31 +1529,25 @@ namespace sdk {
         exception_wrapper([&] { m_impl->subscribe(topic, callback); });
     }
 
-    receive_address session::get_receive_address(uint32_t subaccount, address_type addr_type)
+    nlohmann::json session::get_receive_address(uint32_t subaccount, address_type addr_type)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_receive_address(subaccount, addr_type); });
     }
 
-    std::vector<subaccount_details> session::get_subaccounts()
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_subaccounts(); });
-    }
-
-    balance session::get_balance(uint32_t num_confs)
+    nlohmann::json session::get_balance(uint32_t num_confs)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_balance("all", num_confs); });
     }
 
-    balance session::get_balance(uint32_t subaccount, uint32_t num_confs)
+    nlohmann::json session::get_balance(uint32_t subaccount, uint32_t num_confs)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_balance(subaccount, num_confs); });
     }
 
-    available_currencies session::get_available_currencies()
+    nlohmann::json session::get_available_currencies()
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_available_currencies(); });
@@ -1313,22 +1571,16 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_default_address_type(); });
     }
 
-    twofactor_config session::get_twofactor_config()
+    nlohmann::json session::get_twofactor_config()
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_twofactor_config(); });
     }
 
-    bool session::set_twofactor(twofactor_type type, const std::string& code, const std::string& proxy_code)
+    void session::set_email(const std::string& email, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->set_twofactor(type, code, proxy_code); });
-    }
-
-    void session::set_email(const std::string& email, const map_strstr& data)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        exception_wrapper([&] { m_impl->set_email(email, data); });
+        exception_wrapper([&] { m_impl->set_email(email, twofactor_data); });
     }
 
     void session::activate_email(const std::string& code)
@@ -1338,7 +1590,7 @@ namespace sdk {
     }
 
     void session::init_enable_twofactor(
-        const std::string& method, const std::string& data, const map_strstr& twofactor_data)
+        const std::string& method, const std::string& data, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->init_enable_twofactor(method, data, twofactor_data); });
@@ -1350,25 +1602,26 @@ namespace sdk {
         exception_wrapper([&] { m_impl->enable_twofactor(method, code); });
     }
 
-    void session::enable_gauth(const std::string& code, const map_strstr& twofactor_data)
+    void session::enable_gauth(const std::string& code, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->enable_gauth(code, twofactor_data); });
     }
 
-    void session::disable_twofactor(const std::string& method, const map_strstr& twofactor_data)
+    void session::disable_twofactor(const std::string& method, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->disable_twofactor(method, twofactor_data); });
     }
 
-    void session::twofactor_request_code(const std::string& method, const std::string& action, const map_strstr& data)
+    void session::twofactor_request_code(
+        const std::string& method, const std::string& action, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        exception_wrapper([&] { m_impl->twofactor_request_code(method, action, data); });
+        exception_wrapper([&] { m_impl->twofactor_request_code(method, action, twofactor_data); });
     }
 
-    pin_info session::set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device)
+    nlohmann::json session::set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->set_pin(mnemonic, pin, device); });
@@ -1392,47 +1645,47 @@ namespace sdk {
         exception_wrapper([&] { m_impl->delete_address_book_entry(address); });
     }
 
-    utxo_set session::get_utxos(uint32_t num_confs)
+    nlohmann::json session::get_utxos(uint32_t num_confs)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_utxos("all", num_confs); });
     }
 
-    utxo_set session::get_utxos(uint32_t subaccount, uint32_t num_confs)
+    nlohmann::json session::get_utxos(uint32_t subaccount, uint32_t num_confs)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_utxos(subaccount, num_confs); });
     }
 
     std::string session::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const std::vector<utxo>& utxos, amount fee_rate, bool send_all)
+        const nlohmann::json& utxos, amount fee_rate, bool send_all)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->make_raw_tx(address_amount, utxos, fee_rate, send_all); });
     }
 
-    void session::send(const std::string& tx_hex, const map_strstr& twofactor_data)
+    void session::send(const std::string& tx_hex, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->send(tx_hex, twofactor_data); });
     }
 
-    void session::send(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const std::vector<utxo>& utxos, amount fee_rate, bool send_all, const map_strstr& twofactor_data)
+    void session::send(const std::vector<std::pair<std::string, amount>>& address_amount, const nlohmann::json& utxos,
+        amount fee_rate, bool send_all, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->send(address_amount, utxos, fee_rate, send_all, twofactor_data); });
     }
 
     void session::send(uint32_t subaccount, const std::vector<std::pair<std::string, amount>>& address_amount,
-        amount fee_rate, bool send_all, const map_strstr& twofactor_data)
+        amount fee_rate, bool send_all, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->send(subaccount, address_amount, fee_rate, send_all, twofactor_data); });
     }
 
     void session::send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate,
-        bool send_all, const map_strstr& twofactor_data)
+        bool send_all, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->send("all", address_amount, fee_rate, send_all, twofactor_data); });
@@ -1445,22 +1698,16 @@ namespace sdk {
         exception_wrapper([&] { m_impl->set_transaction_memo(txhash_hex, memo, memo_type); });
     }
 
-    void session::set_pricing_source(const std::string& currency, const std::string& exchange)
+    std::string session::get_system_message()
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        exception_wrapper([&] { m_impl->set_pricing_source(currency, exchange); });
+        return exception_wrapper([&] { return m_impl->get_system_message(); });
     }
 
-    system_message session::get_system_message(uint32_t system_message_id)
+    void session::ack_system_message(const std::string& system_message)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_system_message(system_message_id); });
-    }
-
-    void session::ack_system_message(uint32_t system_message_id, const std::string& system_message)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        exception_wrapper([&] { m_impl->ack_system_message(system_message_id, system_message); });
+        exception_wrapper([&] { m_impl->ack_system_message(system_message); });
     }
 } // namespace sdk
 } // namespace ga

@@ -15,10 +15,10 @@ int main(int argc, char** argv)
 
     try {
         auto uri_elements = sdk::parse_bitcoin_uri("bitcoin:" + recipient);
-        GA_SDK_RUNTIME_ASSERT(uri_elements.get<std::string>("recipient") == recipient);
+        GA_SDK_RUNTIME_ASSERT(uri_elements["recipient"] == recipient);
         uri_elements = sdk::parse_bitcoin_uri("bitcoin:" + recipient + "?amount=0.001");
-        GA_SDK_RUNTIME_ASSERT(uri_elements.get<std::string>("recipient") == recipient);
-        GA_SDK_RUNTIME_ASSERT(uri_elements.get<std::string>("amount") == "0.001");
+        GA_SDK_RUNTIME_ASSERT(recipient == uri_elements["recipient"]);
+        GA_SDK_RUNTIME_ASSERT(uri_elements["amount"] == "0.001");
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

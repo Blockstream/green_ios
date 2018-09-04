@@ -21,8 +21,7 @@ int main(int argc, char** argv)
                                          : sdk::make_localtest_network("socks5://localhost"),
             true);
         session.register_user(DEFAULT_MNEMONIC);
-        auto result = session.login(DEFAULT_MNEMONIC);
-        GA_SDK_RUNTIME_ASSERT(result.get<bool>("appearance/use_segwit"));
+        session.login(DEFAULT_MNEMONIC);
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

@@ -63,11 +63,11 @@ static const char* rawinput()
  */
 char* get_2fa_config_(struct GA_session* session)
 {
-    struct GA_twofactor_config* config = NULL;
+    GA_json* config = NULL;
     CALL(GA_get_twofactor_config(session, &config))
     char* json;
-    CALL(GA_convert_twofactor_config_to_json(config, &json));
-    CALL(GA_destroy_twofactor_config(config));
+    CALL(GA_convert_json_to_string(config, &json));
+    CALL(GA_destroy_json(config));
     return json;
 }
 
@@ -176,12 +176,12 @@ void getreceiveaddress(struct GA_session* session)
 
 void getbalance(struct GA_session* session)
 {
-    struct GA_balance* balance;
+    GA_json* balance;
     CALL(GA_get_balance(session, 0, 0, &balance));
     char* json;
-    CALL(GA_convert_balance_to_json(balance, &json));
+    CALL(GA_convert_json_to_string(balance, &json));
     printf("%s\n", json);
-    CALL(GA_destroy_balance(balance));
+    CALL(GA_destroy_json(balance));
 }
 
 void send(struct GA_session* session, const char* address, const char* amount)
@@ -201,8 +201,7 @@ int main(int argc, char* argv[])
     CALL(GA_connect(session, GA_NETWORK_LOCALTEST, 0))
     CALL(GA_register_user(session, DEFAULT_MNEMONIC))
 
-    struct GA_login_data* login_data = NULL;
-    CALL(GA_login(session, DEFAULT_MNEMONIC, &login_data))
+    CALL(GA_login(session, DEFAULT_MNEMONIC))
 
     assert(argc > 1);
     const char* action = argv[1];
@@ -233,7 +232,6 @@ int main(int argc, char* argv[])
         printf("Unknown action: %s\n", action);
     }
 
-    GA_destroy_login_data(login_data);
     GA_destroy_session(session);
 
     return GA_OK;

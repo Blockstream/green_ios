@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -23,21 +24,21 @@ int main(int argc, char* argv[])
     ret = ret == GA_OK ? GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 1) : ret;
     ret = ret == GA_OK ? GA_register_user(session, DEFAULT_MNEMONIC) : ret;
 
-    struct GA_login_data* login_data = NULL;
-    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC, &login_data) : ret;
+    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC) : ret;
 
-    struct GA_tx_list* txs = NULL;
-    ret = ret == GA_OK ? GA_get_tx_list(session, 0, 0, 0, GA_TIMESTAMP_ASCENDING, 0, "", &txs) : ret;
+    GA_json* txs = NULL;
+    ret = ret == GA_OK ? GA_get_transactions(session, 0, 0, &txs) : ret;
 
-    char* fiat_currency = NULL;
-    ret = ret == GA_OK ? GA_convert_tx_list_path_to_string(txs, "fiat_currency", &fiat_currency) : ret;
-    if (ret != GA_OK || strcmp(fiat_currency, "USD")) {
-        ret = GA_ERROR;
+    uint32_t next_page_id = 0;
+    ret = ret == GA_OK ? GA_convert_json_value_to_uint32(txs, "next_page_id", &next_page_id) : ret;
+
+    char* json_str = NULL;
+    ret = ret == GA_OK ? GA_convert_json_to_string(txs, &json_str) : ret;
+    if (ret == GA_OK) {
+        // printf("\nReturned:\n%s\n", json_str);
+        GA_destroy_string(json_str);
     }
-
-    GA_destroy_string(fiat_currency);
-    GA_destroy_tx_list(txs);
-    GA_destroy_login_data(login_data);
+    GA_destroy_json(txs);
     GA_destroy_session(session);
 
     return ret;

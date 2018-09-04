@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "argparser.h"
-#include "json.h"
 
 #include "src/common.h"
 #include "src/session.h"
@@ -17,10 +16,9 @@ const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lum
 
 #define CALL(fn)                                                                                                       \
     {                                                                                                                  \
-        int ret = fn;                                                                                                  \
-        if (ret != GA_OK) {                                                                                            \
-            printf("FAIL(%d) line %d: %s\n", ret, __LINE__, #fn);                                                      \
-            exit(ret);                                                                                                 \
+        if (fn != GA_OK) {                                                                                             \
+            printf("FAIL line %d: %s\n", __LINE__, #fn);                                                               \
+            abort();                                                                                                   \
         }                                                                                                              \
     }
 
@@ -35,36 +33,15 @@ const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lum
 #define ASSERT(x)                                                                                                      \
     if (!(x)) {                                                                                                        \
         fprintf(stderr, "assertion failed line %d %s\n", __LINE__, #x);                                                \
-        exit(-1);                                                                                                      \
+        abort();                                                                                                       \
     }
 
 /* In test mode there is no interaction, all 2fa codes are fixed as 555555 */
 static const char* test_twofactor_code = "555555";
 static int test_twofactor_factor_index = 0;
 
-/**
- * Return 2fa config as json string
- */
-char* get_2fa_config_(struct GA_session* session)
-{
-    struct GA_twofactor_config* config = NULL;
-    CALL(GA_get_twofactor_config(session, &config))
-    char* json;
-    CALL(GA_convert_twofactor_config_to_json(config, &json));
-    CALL(GA_destroy_twofactor_config(config));
-    return json;
-}
-
-void get_2fa_config(struct GA_session* session)
-{
-    printf("Two factor authentication config:\n");
-    char* json = get_2fa_config_(session);
-    printf("%s\n", json);
-    GA_destroy_string(json);
-}
-
 /* Prompt user at console to select 2fa factor */
-const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* call)
+static const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* call)
 {
     size_t factor_count;
     struct GA_twofactor_factor* selected = NULL;
@@ -80,7 +57,7 @@ const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* 
 }
 
 /* Prompt user at console for 2fa code */
-const char* _user_get_code(__attribute__((unused)) const struct GA_twofactor_factor* factor)
+static const char* _user_get_code(__attribute__((unused)) const struct GA_twofactor_factor* factor)
 {
     return test_twofactor_code;
 }
@@ -91,7 +68,7 @@ const char* _user_get_code(__attribute__((unused)) const struct GA_twofactor_fac
  * Some incarnation of this method will need to be implemented in each
  * client, for example in a GUI app it will pop up dialog boxes.
  */
-void resolve_2fa(struct GA_twofactor_call* call)
+static void resolve_2fa(struct GA_twofactor_call* call)
 {
     /**
      * If the call requires 2fa get the user to select the factor, request the
@@ -114,78 +91,97 @@ void resolve_2fa(struct GA_twofactor_call* call)
     }
 }
 
-void set_email(struct GA_session* session, const char* email)
+static void set_email(struct GA_session* session, const char* email)
 {
     printf("Setting email to %s\n", email);
     CALL_2FA(GA_twofactor_set_email(session, email, &call));
 }
 
-void twofactor_enable(struct GA_session* session, const char* factor, const char* data)
+static void twofactor_enable(struct GA_session* session, const char* factor, const char* data)
 {
     printf("Enabling two factor authentication factor %s:%s\n", factor, data);
     CALL_2FA(GA_twofactor_enable(session, factor, data, &call));
 }
 
-void twofactor_disable(struct GA_session* session, const char* factor)
+static void twofactor_disable(struct GA_session* session, const char* factor)
 {
     printf("Disabling two factor authentication factor %s\n", factor);
     CALL_2FA(GA_twofactor_disable(session, factor, &call));
 }
 
-void assert_twofactor_config(struct GA_session* session, const char* key, const char* value)
+static void assert_json_value(GA_json* json, const char* key, const char* expected, bool is_bool)
 {
-    char* json = get_2fa_config_(session);
-    const char* value_ = json_extract(json, key);
-    if (strcmp(value_, value) != 0) {
-        fprintf(stderr, "%s != %s\n", value_, value);
+    char* result;
+    if (is_bool) {
+        uint32_t b;
+        CALL(GA_convert_json_value_to_bool(json, key, &b));
+        result = (char*)(b ? "true" : "false");
+    } else {
+        CALL(GA_convert_json_value_to_string(json, key, &result));
+    }
+    if (strcmp(result, expected) != 0) {
+        fprintf(stderr, "%s != %s\n", result, expected);
         ASSERT(false);
-        exit(-1);
+        abort();
+    }
+    if (!is_bool) {
+        GA_destroy_string(result);
     }
 }
 
-void test(struct GA_session* session)
+static void assert_twofactor_config(struct GA_session* session, const char* key, const char* expected, bool is_bool)
 {
+    GA_json* config = NULL;
+    CALL(GA_get_twofactor_config(session, &config))
+    assert_json_value(config, key, expected, is_bool);
+    GA_destroy_json(config);
+}
+
+static void test(struct GA_session* session)
+{
+    // FIXME: currently fail due to the code being invalid/Needs backend hack
+
     twofactor_disable(session, "sms");
-    assert_twofactor_config(session, "sms", "false");
+    assert_twofactor_config(session, "sms", "false", true);
     twofactor_enable(session, "sms", "12345678");
-    assert_twofactor_config(session, "sms", "true");
+    assert_twofactor_config(session, "sms", "true", true);
     twofactor_disable(session, "sms");
-    assert_twofactor_config(session, "sms", "false");
+    assert_twofactor_config(session, "sms", "false", true);
 
     twofactor_disable(session, "phone");
-    assert_twofactor_config(session, "phone", "false");
+    assert_twofactor_config(session, "phone", "false", true);
     twofactor_enable(session, "phone", "12345678");
-    assert_twofactor_config(session, "phone", "true");
+    assert_twofactor_config(session, "phone", "true", true);
     twofactor_disable(session, "phone");
-    assert_twofactor_config(session, "phone", "false");
+    assert_twofactor_config(session, "phone", "false", true);
 
     twofactor_disable(session, "gauth");
-    assert_twofactor_config(session, "gauth", "false");
+    assert_twofactor_config(session, "gauth", "false", true);
     twofactor_enable(session, "gauth", "<ignored>");
-    assert_twofactor_config(session, "gauth", "true");
+    assert_twofactor_config(session, "gauth", "true", true);
     twofactor_disable(session, "gauth");
-    assert_twofactor_config(session, "gauth", "false");
+    assert_twofactor_config(session, "gauth", "false", true);
 
     twofactor_disable(session, "email");
-    assert_twofactor_config(session, "email", "false");
+    assert_twofactor_config(session, "email", "false", true);
     set_email(session, "foo@baz.com");
-    assert_twofactor_config(session, "email_confirmed", "true");
-    assert_twofactor_config(session, "email_addr", "\"foo@baz.com\"");
-    assert_twofactor_config(session, "email", "false");
+    assert_twofactor_config(session, "email_confirmed", "true", true);
+    assert_twofactor_config(session, "email_addr", "\"foo@baz.com\"", false);
+    assert_twofactor_config(session, "email", "false", true);
 
     twofactor_enable(session, "email", "foo@bar.com");
-    assert_twofactor_config(session, "email", "true");
-    assert_twofactor_config(session, "email_confirmed", "true");
-    assert_twofactor_config(session, "email_addr", "\"foo@bar.com\"");
+    assert_twofactor_config(session, "email", "true", true);
+    assert_twofactor_config(session, "email_confirmed", "true", true);
+    assert_twofactor_config(session, "email_addr", "\"foo@bar.com\"", false);
     twofactor_disable(session, "email");
-    assert_twofactor_config(session, "email", "false");
-    assert_twofactor_config(session, "email_confirmed", "true");
-    assert_twofactor_config(session, "email_addr", "\"foo@bar.com\"");
+    assert_twofactor_config(session, "email", "false", true);
+    assert_twofactor_config(session, "email_confirmed", "true", true);
+    assert_twofactor_config(session, "email_addr", "\"foo@bar.com\"", false);
 
     set_email(session, "foo@baz.com");
-    assert_twofactor_config(session, "email_confirmed", "true");
-    assert_twofactor_config(session, "email_addr", "\"foo@baz.com\"");
-    assert_twofactor_config(session, "email", "false");
+    assert_twofactor_config(session, "email_confirmed", "true", true);
+    assert_twofactor_config(session, "email_addr", "\"foo@baz.com\"", false);
+    assert_twofactor_config(session, "email", "false", true);
 }
 
 int main(int argc, char* argv[])
@@ -199,12 +195,10 @@ int main(int argc, char* argv[])
     CALL(GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 0))
     CALL(GA_register_user(session, DEFAULT_MNEMONIC))
 
-    struct GA_login_data* login_data = NULL;
-    CALL(GA_login(session, DEFAULT_MNEMONIC, &login_data))
+    CALL(GA_login(session, DEFAULT_MNEMONIC))
 
     test(session);
 
-    GA_destroy_login_data(login_data);
     GA_destroy_session(session);
 
     return GA_OK;

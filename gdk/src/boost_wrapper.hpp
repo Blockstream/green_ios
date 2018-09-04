@@ -12,6 +12,9 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 #endif
 
+#if defined _WIN32 || defined WIN32 || defined __CYGWIN__
+#include <winsock2.h>
+#endif
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>

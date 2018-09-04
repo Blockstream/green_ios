@@ -22,9 +22,7 @@ c_cpp_sources = [
 common_c_cpp_sources = ['argparser.h',
                         'argparser.c',
                         'http_jsonrpc_interface.hpp',
-                        'http_jsonrpc_interface.cpp',
-                        'json.h',
-                        'json.c']
+                        'http_jsonrpc_interface.cpp']
 
 libtests_common = static_library('tests_common', common_c_cpp_sources, include_directories : incdir, dependencies : subproject_deps)
 libtests_common_dep = declare_dependency(link_with : libtests_common)

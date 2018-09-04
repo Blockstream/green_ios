@@ -18,8 +18,8 @@ int main(int argc, char** argv)
 
     auto&& generate_name = [] { return sdk::hex_from_bytes(sdk::get_random_bytes<8>()); };
     auto&& assert_account_exists = [](const std::string& name, const auto& subaccounts) {
-        GA_SDK_RUNTIME_ASSERT(std::any_of(std::begin(subaccounts), std::end(subaccounts),
-            [name](const auto& acc) { return acc.template get<std::string>("name") == name; }));
+        GA_SDK_RUNTIME_ASSERT(std::any_of(
+            std::begin(subaccounts), std::end(subaccounts), [name](const auto& acc) { return acc["name"] == name; }));
     };
 
     struct options* options;
@@ -33,8 +33,15 @@ int main(int argc, char** argv)
         const std::string name_1{ generate_name() };
         const std::string name_2{ generate_name() };
         {
-            session.create_subaccount(sdk::subaccount_type::_2of2, name_1);
-            session.create_subaccount(sdk::subaccount_type::_2of3, name_2);
+            const nlohmann::json sa1 = session.create_subaccount({ { "name", name_1 }, { "type", "2of2" } });
+            GA_SDK_RUNTIME_ASSERT(sa1["name"] == name_1);
+            GA_SDK_RUNTIME_ASSERT(sa1["type"] == "2of2");
+            const nlohmann::json sa2 = session.create_subaccount({ { "name", name_2 }, { "type", "2of3" } });
+            GA_SDK_RUNTIME_ASSERT(sa2["name"] == name_2);
+            GA_SDK_RUNTIME_ASSERT(sa2["type"] == "2of3");
+            const std::string foo = sa2.dump();
+            GA_SDK_RUNTIME_ASSERT(!sa2["recovery_mnemonic"].empty());
+            GA_SDK_RUNTIME_ASSERT(!sa2["recovery_xpub"].empty());
 
             const auto subaccounts = session.get_subaccounts();
             assert_account_exists(name_1, subaccounts);
@@ -42,8 +49,8 @@ int main(int argc, char** argv)
         }
 
         {
-            const auto login_data = session.login(DEFAULT_MNEMONIC);
-            const auto subaccounts = login_data.get_subaccounts();
+            session.login(DEFAULT_MNEMONIC);
+            const auto subaccounts = session.get_subaccounts();
             assert_account_exists(name_1, subaccounts);
             assert_account_exists(name_2, subaccounts);
         }

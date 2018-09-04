@@ -44,10 +44,17 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     make -o configure clean -j$NUM_JOBS
     make -o configure -j$NUM_JOBS
     make -o configure install
+elif [ \( "$1" = "--windows" \) ]; then
+     export CC=x86_64-w64-mingw32-gcc-posix
+     export CXX=x86_64-w64-mingw32-g++-posix
+    ./configure --disable-swig-java --host=x86_64-w64-mingw32 --build=$HOST_OS --enable-static --disable-shared $ENABLE_DEBUG --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+
+    make -j$NUM_JOBS
+    make install
 else
     export CFLAGS="$SDK_CFLAGS -DPIC -fPIC"
     ENABLE_DEBUG=""
-    if [ $BUILDTYPE = "debug" ]; then
+    if [[ $BUILDTYPE == "debug" ]]; then
         ENABLE_DEBUG="--enable-debug"
     fi
 

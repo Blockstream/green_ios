@@ -4,6 +4,7 @@
 
 #include <sys/types.h>
 
+#include "common.h"
 #include "containers.h"
 
 #ifdef __cplusplus
@@ -22,23 +23,11 @@ extern "C" {
 #define GA_MUTUAL_ADDRBOOK 1
 #define GA_PUBLIC 2
 
-/** Values for transactions list */
-#define GA_TIMESTAMP 0
-#define GA_TIMESTAMP_ASCENDING 1
-#define GA_TIMESTAMP_DESCENDING 2
-#define GA_VALUE 3
-#define GA_VALUE_ASCENDING 4
-#define GA_VALUE_DESCENDING 5
-
 /** Values for address types */
 #define GA_ADDRESS_TYPE_P2SH 0
 #define GA_ADDRESS_TYPE_P2WSH 1
 #define GA_ADDRESS_TYPE_CSV 2
 #define GA_ADDRESS_TYPE_DEFAULT 0xffffffff
-
-/** Values for subaccount types */
-#define GA_2OF2 0
-#define GA_2OF3 1
 
 /** Values for onion uri flag */
 #define GA_NO_TOR 0
@@ -51,7 +40,7 @@ extern "C" {
 #define GA_MEMO_USER 0
 #define GA_MEMO_BIP70 1
 
-#/** An server session */
+/** An server session */
 struct GA_session;
 
 /**
@@ -62,14 +51,14 @@ struct GA_session;
  *
  * GA_ERROR if memory allocation fails.
  */
-int GA_create_session(struct GA_session** session);
+GASDK_API int GA_create_session(struct GA_session** session);
 
 /**
  * Free a session allocated by @GA_create_session
  *
  * @session Session to free.
  */
-int GA_destroy_session(struct GA_session* session);
+GASDK_API int GA_destroy_session(struct GA_session* session);
 
 /**
  * Connect to a remote server using the specified network.
@@ -80,7 +69,7 @@ int GA_destroy_session(struct GA_session* session);
  *
  * GA_ERROR if connection is unsuccessful.
  */
-int GA_connect(struct GA_session* session, uint32_t network, uint32_t debug);
+GASDK_API int GA_connect(struct GA_session* session, uint32_t network, uint32_t debug);
 
 /**
  * Connect to a remote server using the specified network and proxy.
@@ -93,13 +82,13 @@ int GA_connect(struct GA_session* session, uint32_t network, uint32_t debug);
  *
  * GA_ERROR if connection is unsuccessful.
  */
-int GA_connect_with_proxy(
+GASDK_API int GA_connect_with_proxy(
     struct GA_session* session, uint32_t network, const char* proxy_uri, uint32_t use_tor, uint32_t debug);
 
 /**
  * UNUSED
  */
-int GA_disconnect(struct GA_session* session);
+GASDK_API int GA_disconnect(struct GA_session* session);
 
 /**
  * Create a new user account.
@@ -109,7 +98,7 @@ int GA_disconnect(struct GA_session* session);
  *
  * GA_ERROR if registration is unsuccessful.
  */
-int GA_register_user(struct GA_session* session, const char* mnemonic);
+GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic);
 
 /**
  * Authenticate an user.
@@ -119,20 +108,18 @@ int GA_register_user(struct GA_session* session, const char* mnemonic);
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-int GA_login(struct GA_session* session, const char* mnemonic, struct GA_login_data** login_data);
+GASDK_API int GA_login(struct GA_session* session, const char* mnemonic);
 
 /**
  * Authenticate an user.
  *
  * @session The server session to use.
  * @pin The user pin.
- * @pin_identifier The pin identifier returned by @GA_set_pin.
- * @secret The secret returned by @GA_set_pin.
+ * @pin_data The encrypted pin data returned by @GA_set_pin.
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-int GA_login_with_pin(struct GA_session* session, const char* pin, const char* pin_identifier, const char* secret,
-    struct GA_login_data** login_data);
+GASDK_API int GA_login_with_pin(struct GA_session* session, const char* pin, const GA_json* pin_data);
 
 /**
  * Authenticate an user in watch only mode.
@@ -143,8 +130,7 @@ int GA_login_with_pin(struct GA_session* session, const char* pin, const char* p
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-int GA_login_watch_only(
-    struct GA_session* session, const char* username, const char* password, struct GA_login_data** login_data);
+GASDK_API int GA_login_watch_only(struct GA_session* session, const char* username, const char* password);
 
 /**
  * Remove an account.
@@ -153,21 +139,34 @@ int GA_login_watch_only(
  *
  * GA_ERROR if removal is unsuccessful.
  */
-int GA_remove_account(struct GA_session* session);
+GASDK_API int GA_remove_account(struct GA_session* session, const GA_json* twofactor_data);
 
 /**
  * Create a subaccount.
  *
  * @session The server session to use.
- * @type The subaccount type (one of @GA_2OF2 or @GA_2OF3).
- * @name The subaccount label.
- * @recovery_mnemonic The @GA_2OF3 subaccount recovery mnemonic.
- * @recovery_xpub The @GA_2OF3 subaccount recovery xpub.
+ * @details The subaccount details. "name" (which must not be already used in
+ *     the wallet) and "type" (either "2of2" or "2of3") must be populated. For
+ *     type "2of3" the caller may provide "recovery_mnemonic" if they do not
+ *     wish to have one generated automatically. All other fields are ignored.
+ * @subaccount Destination for the created subaccount details. For 2of3
+ *     subaccounts the extra fields "recovery_mnemonic" and "recovery_xpub"
+ *     are populated. These values should be stored safely as they will not
+ *     be returned again by any GDK call such as GA_get_subaccounts.
  *
  * GA_ERROR if creation is unsuccessful.
  */
-int GA_create_subaccount(
-    struct GA_session* session, uint32_t type, const char* name, char** recovery_mnemonic, char** recovery_xpub);
+GASDK_API int GA_create_subaccount(struct GA_session* session, const GA_json* details, GA_json** subaccount);
+
+/**
+ * Get the user's subaccount details.
+ *
+ * @session The server session to use.
+ * @subaccounts Destination for the user's subaccounts.
+ *
+ * GA_ERROR if subaccounts could not be fetched.
+ */
+GASDK_API int GA_get_subaccounts(struct GA_session* session, GA_json** subaccounts);
 
 /**
  * Change privacy (send me) settings.
@@ -177,7 +176,7 @@ int GA_create_subaccount(
  *
  * GA_ERROR if settings could not be changed.
  */
-int GA_change_settings_privacy_send_me(struct GA_session* session, uint32_t value);
+GASDK_API int GA_change_settings_privacy_send_me(struct GA_session* session, uint32_t value);
 
 /**
  * Change privacy (show as sender) settings.
@@ -187,7 +186,7 @@ int GA_change_settings_privacy_send_me(struct GA_session* session, uint32_t valu
  *
  * GA_ERROR if settings could not be changed.
  */
-int GA_change_settings_privacy_show_as_sender(struct GA_session* session, uint32_t value);
+GASDK_API int GA_change_settings_privacy_show_as_sender(struct GA_session* session, uint32_t value);
 
 /**
  * Change transaction limits settings.
@@ -199,34 +198,45 @@ int GA_change_settings_privacy_show_as_sender(struct GA_session* session, uint32
  *
  * GA_ERROR if transaction limits could not be changed.
  */
-int GA_change_settings_tx_limits(struct GA_session* session, uint32_t is_fiat, uint32_t per_tx, uint32_t total);
+GASDK_API int GA_change_settings_tx_limits(
+    struct GA_session* session, uint32_t is_fiat, uint32_t per_tx, uint32_t total, const GA_json* twofactor_data);
 
 /**
- * Get list of user's transactions for a subaccount on the specified date range.
+ * Set the pricing source for a user's GreenAddress wallet.
  *
  * @session The server session to use.
- * @subaccount The subaccount to which transactions belong to, or GA_ALL_ACCOUNTS.
- * @begin_date The begin date of the date range to search.
- * @end_date The end date of the date range to search.
- * @sort_by Return results ordered by timestamp or by value.
- * @page_id The page to fetch.
- * @query Extra query parameters.
+ * @currency The currency to use.
+ * @exchange The exchange to use.
+ *
+ * GA_ERROR if the currency or exchange are invalid.
+ */
+GASDK_API int GA_change_settings_pricing_source(struct GA_session* session, const char* currency, const char* exchange);
+
+/**
+ * Get a page of the user's transaction history.
+ *
+ * @session The server session to use.
+ * @subaccount The subaccount to fetch transactions for.
+ * @page_id The page to fetch, starting from 0.
  * @txs The list of transactions.
  *
+ * Transactions are returned from newest to oldest with up to 30 transactions per page.
  * GA_ERROR if transactions could not be fetched.
  */
-int GA_get_tx_list(struct GA_session* session, uint32_t subaccount, time_t begin_date, time_t end_date,
-    uint32_t sort_by, uint32_t page_id, const char* query, struct GA_tx_list** txs);
+GASDK_API int GA_get_transactions(struct GA_session* session, uint32_t subaccount, uint32_t page_id, GA_json** txs);
 
 /**
+ * An address to receive coins to.
+ *
  * @session The server session to use.
  * @subaccount The subaccount to generate an address for.
- * @addr_type The type of address P2SH or P2WSH.
- * @address The generated address.
+ * @addr_type The type of address: P2SH, P2WSH, CSV or DEFAULT.
+ * @output The generated address.
  *
  * GA_ERROR if address could not be generated.
  */
-int GA_get_receive_address(struct GA_session* session, uint32_t subaccount, uint32_t addr_type, char** address);
+GASDK_API int GA_get_receive_address(
+    struct GA_session* session, uint32_t subaccount, uint32_t addr_type, char** output);
 
 /**
  * The sum of unspent outputs destined to user’s wallet.
@@ -238,7 +248,7 @@ int GA_get_receive_address(struct GA_session* session, uint32_t subaccount, uint
  *
  * GA_ERROR if balance could not be retrieved.
  */
-int GA_get_balance(struct GA_session* session, uint32_t subaccount, uint32_t num_confs, struct GA_balance** balance);
+GASDK_API int GA_get_balance(struct GA_session* session, uint32_t subaccount, uint32_t num_confs, GA_json** balance);
 
 /**
  * The list of allowed currencies for all available pricing sources.
@@ -246,9 +256,9 @@ int GA_get_balance(struct GA_session* session, uint32_t subaccount, uint32_t num
  * @session The server session to use.
  * @available_currencies The returned list of currencies.
  *
- * GA_ERROR if available_currencies could not be retrieved.
+ * GA_ERROR if available currencies could not be retrieved.
  */
-int GA_get_available_currencies(struct GA_session* session, struct GA_available_currencies** available_currencies);
+GASDK_API int GA_get_available_currencies(struct GA_session* session, GA_json** available_currencies);
 
 /**
  * Set a PIN for the user wallet.
@@ -257,13 +267,12 @@ int GA_get_available_currencies(struct GA_session* session, struct GA_available_
  * @mnemonic The user mnemonic.
  * @pin The user pin.
  * @device The user device identifier.
- * @pin_identifier The returned identifier.
- * @secret The returned secret.
+ * @pin_data The returned encrypted PIN data.
  *
  * GA_ERROR if pin could not be set.
  */
-int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin, const char* device,
-    char** pin_identifier, char** secret);
+GASDK_API int GA_set_pin(
+    struct GA_session* session, const char* mnemonic, const char* pin, const char* device, GA_json** pin_data);
 
 /*
  * Send a transaction for the specified address/amount pairs.
@@ -279,11 +288,11 @@ int GA_set_pin(struct GA_session* session, const char* mnemonic, const char* pin
  *
  * GA_ERROR if raw transaction could not be created.
  */
-int GA_send(struct GA_session* session, uint32_t subaccount, const char** addr, size_t add_siz, const uint64_t* amt,
-    size_t amt_siz, uint64_t fee_rate, uint32_t send_all);
+GASDK_API int GA_send(struct GA_session* session, uint32_t subaccount, const char** addr, size_t add_siz,
+    const uint64_t* amt, size_t amt_siz, uint64_t fee_rate, uint32_t send_all, const GA_json* twofactor_data);
 
 /**
- * Add a transaction memo to a users' GreenAddress transaction.
+ * Add a transaction memo to a user's GreenAddress transaction.
  *
  * @session The server session to use.
  * @txhash_hex The transaction hash to associate the memo with.
@@ -293,29 +302,19 @@ int GA_send(struct GA_session* session, uint32_t subaccount, const char** addr, 
  * GA_ERROR if the memo is invalid, the transaction does not belong to the
  * user or the type is unknown.
  */
-int GA_set_transaction_memo(struct GA_session* session, const char* txhash_hex, const char* memo, uint32_t memo_type);
-
-/**
- * Set the pricing source for a users' GreenAddress wallet.
- *
- * @session The server session to use.
- * @currency The currency to use.
- * @exchange The exchange to use.
- *
- * GA_ERROR if the currency or exchange are invalid.
- */
-int GA_set_pricing_source(struct GA_session* session, const char* currency, const char* exchange);
+GASDK_API int GA_set_transaction_memo(
+    struct GA_session* session, const char* txhash_hex, const char* memo, uint32_t memo_type);
 
 /*
- * Get a system message.
+ * Get the latest un-acknowledged system message.
  *
  * @session The server session to use.
- * @message_id The id of the message to get. Returns the id of the next message or 0 if none.
- * @message_text UTF-8 encoded message text.
+ * @message_text The returned UTF-8 encoded message text.
  *
- * GA_ERROR if the message does not exist or could not be retrieved.
+ * GA_ERROR if the message could not be retrieved. If all current messages
+ * are acknowledged, an empty string is returned.
  */
-int GA_get_system_message(struct GA_session* session, uint32_t* message_id, const char** message_text);
+GASDK_API int GA_get_system_message(struct GA_session* session, const char** message_text);
 
 /*
  * Sign and acknowledge a system message.
@@ -324,14 +323,13 @@ int GA_get_system_message(struct GA_session* session, uint32_t* message_id, cons
  * sent to the server.
  *
  * @session The server session to use.
- * @message_id The id of the message.
  * @message_text UTF-8 encoded message text being acknowledged.
  *
- * GA_ERROR if the message or signature is invalid.
+ * GA_ERROR if the message is not the latest message from GA_get_system_message.
  */
-int GA_ack_system_message(struct GA_session* session, uint32_t message_id, const char* message_text);
+GASDK_API int GA_ack_system_message(struct GA_session* session, const char* message_text);
 
-int GA_get_twofactor_config(struct GA_session* session, struct GA_twofactor_config** config);
+GASDK_API int GA_get_twofactor_config(struct GA_session* session, GA_json** config);
 
 #ifndef SWIG
 /*
@@ -343,7 +341,7 @@ int GA_get_twofactor_config(struct GA_session* session, struct GA_twofactor_conf
  *
  * GA_ERROR if topic cannot be subscribed to.
  */
-int GA_subscribe_to_topic_as_json(
+GASDK_API int GA_subscribe_to_topic_as_json(
     struct GA_session* session, const char* topic, void (*callback)(void*, char* output), void* context);
 #endif
 

@@ -25,7 +25,61 @@ static uint32_t uint32_cast(JNIEnv *jenv, jlong value) {
     return (uint32_t)value;
 }
 
-/* Use a static class to hold our opaque pointers */
+#define SDK_CLASS "com/blockstream/libgreenaddress/GASDK"
+
+/* Create and return a native json object from GA_json */
+static jobject create_json(JNIEnv *jenv, void *p) {
+    char* json_cstring = NULL;
+    jstring json_string;
+    jobject json_obj;
+    jclass clazz;
+    jmethodID convert_fn;
+
+    if (GA_convert_json_to_string((GA_json *)p, &json_cstring) != GA_OK) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "GA_json");
+        return NULL;
+    }
+
+    json_string = (*jenv)->NewStringUTF(jenv, json_cstring);
+    GA_destroy_string(json_cstring);
+
+    // FIXME: Cache FindClass/GetStaticMethodID in global references for efficiency
+    // See https://www.fer.unizg.hr/_download/repository/jni.pdf page 63 for details
+    if (!json_string)
+        return NULL;
+    if (!(clazz = (*jenv)->FindClass(jenv, SDK_CLASS)))
+        return NULL;
+    if (!(convert_fn = (*jenv)->GetStaticMethodID(jenv, clazz, "toJSONObject", "(Ljava/lang/String;)Ljava/lang/Object;")))
+        return NULL;
+    if (!(json_obj = (*jenv)->CallStaticObjectMethod(jenv, clazz, convert_fn, json_string)))
+        return NULL;
+    GA_destroy_json((GA_json *)p);
+    return json_obj;
+}
+
+/* Create and return a GA_json from a native json object */
+static void* get_json_or_throw(JNIEnv *jenv, jobject json_obj) {
+    const char* json_cstring;
+    GA_json* json = NULL;
+    jstring json_string;
+    jclass clazz;
+    jmethodID convert_fn;
+
+    if (!(clazz = (*jenv)->FindClass(jenv, SDK_CLASS)))
+        return NULL;
+    if (!(convert_fn = (*jenv)->GetStaticMethodID(jenv, clazz, "toJSONString", "(Ljava/lang/Object;)Ljava/lang/String;")))
+        return NULL;
+    if (!(json_string = (*jenv)->CallStaticObjectMethod(jenv, clazz, convert_fn, json_obj)))
+        return NULL;
+    if (!(json_cstring = (*jenv)->GetStringUTFChars(jenv, json_string, NULL)))
+        return NULL;
+    GA_convert_string_to_json(json_cstring, &json);
+    (*jenv)->ReleaseStringUTFChars(jenv, json_string, json_cstring);
+    if (!json)
+        SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "GA_json");
+    return json;
+}
+
 #define OBJ_CLASS "com/blockstream/libgreenaddress/GASDK$Obj"
 
 /* Create and return a java object to hold an opaque pointer */
@@ -104,6 +158,27 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
         return enabled;
     }
 
+   public interface JSONConverter {
+       Object toJSONObject(final String jsonString);
+       String toJSONString(final Object jsonObject);
+   }
+    private static JSONConverter mJSONConverter = null;
+
+    public static void setJSONConverter(final JSONConverter jsonConverter) {
+        mJSONConverter = jsonConverter;
+    }
+
+    private static Object toJSONObject(final String jsonString) {
+        if (mJSONConverter == null)
+            return (Object) jsonString;
+        return mJSONConverter.toJSONObject(jsonString);
+    }
+    private static String toJSONString(final Object jsonObject) {
+        if (mJSONConverter == null)
+            return (String) jsonObject;
+        return mJSONConverter.toJSONString(jsonObject);
+    }
+
     static final class Obj {
         private final transient long ptr;
         private final int id;
@@ -147,11 +222,31 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
     $1 = (uint64_t)($input);
 }
 
-/* time_t are treated as uint64_t */
-%typemap(in) uint64_t {
-    $1 = (uint64_t)($input);
+/* time_t are treated as uint32_t */
+/* FIXME: take Dates or remove these from the API */
+%typemap(in) time_t {
+    $1 = uint32_cast(jenv, $input);
 }
 
+/* JSON */
+%typemap(in, numinputs=0) GA_json** (GA_json* w) {
+    w = 0; $1 = ($1_ltype)&w;
+}
+%typemap(argout) GA_json** {
+    if (*$1) {
+        $result = create_json(jenv, *$1);
+    }
+}
+%typemap(in) GA_json* {
+    $1 = (GA_json*) get_json_or_throw(jenv, $input);
+    if (!$1) {
+        return $null;
+    }
+}
+%typemap(jtype) GA_json* "Object"
+%typemap(jni) GA_json* "jobject"
+
+/* Opaque structures */
 %define %java_opaque_struct(NAME, ID)
 %typemap(in, numinputs=0) struct NAME** (struct NAME* w) {
     w = 0; $1 = ($1_ltype)&w;
@@ -214,35 +309,30 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %enddef
 
 %java_opaque_struct(GA_session, 1)
-%java_opaque_struct(GA_tx_list, 2)
-%java_opaque_struct(GA_dict, 3)
-%java_opaque_struct(GA_login_data, 4)
 
 %returns_struct(GA_create_session, GA_session)
+%returns_struct(GA_create_subaccount, GA_json)
 %returns_void__(GA_destroy_session)
 %returns_void__(GA_connect)
 %returns_void__(GA_register_user)
-%returns_struct(GA_login, GA_login_data)
-%returns_struct(GA_login_with_pin, GA_login_data)
-%returns_struct(GA_login_watch_only, GA_login_data)
-%returns_struct(GA_get_tx_list, GA_tx_list)
-%returns_void__(GA_destroy_tx_list)
-%returns_string(GA_convert_tx_list_to_json)
-%returns_struct(GA_convert_tx_list_path_to_dict, GA_dict)
-%returns_string(GA_convert_tx_list_path_to_string)
+%returns_void__(GA_login)
+%returns_void__(GA_login_with_pin)
+%returns_void__(GA_login_watch_only)
+%returns_struct(GA_get_subaccounts, GA_json)
+%returns_struct(GA_get_transactions, GA_json)
+%returns_struct(GA_get_balance, GA_json)
+%returns_struct(GA_get_twofactor_config, GA_json)
+%returns_struct(GA_get_available_currencies, GA_json)
+%returns_string(GA_convert_json_to_string)
+%returns_string(GA_convert_json_value_to_string)
+%returns_struct(GA_convert_string_to_json, GA_json)
 %returns_string(GA_get_receive_address)
 %returns_string(GA_set_pin)
 %returns_string(GA_transaction_to_json)
-%returns_string(GA_convert_balance_to_json)
-%returns_void__(GA_destroy_balance)
-%returns_string(GA_convert_available_currencies_to_json)
-%returns_void__(GA_destroy_available_currencies)
-%returns_string(GA_convert_login_data_to_json)
-%returns_string(GA_convert_twofactor_config_to_json)
-%returns_void__(GA_destroy_login_data)
+%returns_void__(GA_destroy_json)
 %returns_array_(GA_get_random_bytes, 2, 3, jarg1)
 %returns_string(GA_generate_mnemonic)
-%returns_void__(GA_set_pricing_source)
+%returns_void__(GA_change_settings_pricing_source)
 
 %include "../common.h"
 %include "../containers.h"

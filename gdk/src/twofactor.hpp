@@ -2,13 +2,8 @@
 #define GA_SDK_TWOFACTOR_HPP
 #pragma once
 
-#include "autobahn_wrapper.hpp"
-
-#include "common.h"
 #include "containers.hpp"
-#include "session.h"
 #include "session.hpp"
-#include "twofactor.h"
 
 struct GA_twofactor_factor {
 public:
@@ -50,11 +45,11 @@ public:
 
     std::vector<GA_twofactor_factor> get_all_twofactor_factors() const;
 
-    ga::sdk::map_strstr get_twofactor_data() const;
+    nlohmann::json get_twofactor_data() const;
 
     const std::vector<GA_twofactor_factor>& get_twofactor_factors() const;
 
-    void request_code_(const GA_twofactor_factor& factor, const std::string& action, const ga::sdk::map_strstr& data);
+    void request_code_(const GA_twofactor_factor& factor, const std::string& action, const nlohmann::json& data);
 
     void resolve_code(const std::string& code);
 
@@ -125,11 +120,11 @@ private:
 };
 
 struct GA_enable_gauth_call : public GA_twofactor_call {
-    GA_enable_gauth_call(ga::sdk::session& session, const ga::sdk::map_strstr& twofactor_data);
+    GA_enable_gauth_call(ga::sdk::session& session, const nlohmann::json& twofactor_data);
     virtual void operator()();
 
 private:
-    ga::sdk::map_strstr m_twofactor_data;
+    nlohmann::json m_twofactor_data;
 };
 
 struct GA_init_enable_gauth_call : public GA_twofactor_call_with_next {

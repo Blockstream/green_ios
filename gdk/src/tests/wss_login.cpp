@@ -19,12 +19,11 @@ int main(int argc, char** argv)
         sdk::session session;
         session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
         session.register_user(DEFAULT_MNEMONIC);
-        auto result = session.login(DEFAULT_MNEMONIC);
-        GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);
-        GA_SDK_RUNTIME_ASSERT(result.get<bool>("appearance/use_segwit"));
+        session.login(DEFAULT_MNEMONIC);
+        // TODO GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);
         if (options->testnet) {
             auto r = session.get_available_currencies();
-            auto v = r.get<std::vector<std::string>>("per_exchange/LOCALBTC");
+            std::vector<std::string> v = r["per_exchange/LOCALBTC"];
             GA_SDK_RUNTIME_ASSERT(std::find(v.begin(), v.end(), "GBP") != v.end());
         }
     } catch (const std::exception& e) {

@@ -18,13 +18,16 @@ foreach h : check_headers
     compiler.has_header(h)
 endforeach
 
+cross_win_build = meson.is_cross_build() and meson.get_cross_property('target_os') == 'windows'
+use_gold = (build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')) and not cross_win_build
+
 # language related arguments
 if not host_machine.cpu_family().contains('arm64')
     if get_option('lto')
         add_project_arguments(['-flto'], language : 'cpp')
         add_project_link_arguments(['-flto'], language : 'cpp')
     endif
-    if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+    if use_gold
         add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
     endif
 endif
@@ -35,6 +38,7 @@ common_compile_options = [
     '-fasynchronous-unwind-tables',
     '-fexceptions',
     '-fstack-protector-strong',
+    '-DGASDK_BUILD',
 ]
 
 add_project_arguments(common_compile_options, language : ['c', 'cpp'])
@@ -45,7 +49,7 @@ common_linker_options = [
     '-Wl,-z,relro'
 ]
 
-if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+if use_gold
     add_project_link_arguments(common_linker_options, language : ['c', 'cpp'])
 endif
 
@@ -98,7 +102,7 @@ if swig.found()
     endif
 endif
 
-build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_family().contains('iphone')
+build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_family().contains('iphone') and not cross_win_build
 
 clang_format = find_program('clang-format', required : false)
 clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)
@@ -108,6 +112,9 @@ threads_dep = dependency('threads')
 m_dep = compiler.find_library('m', required : false)
 atomic_dep = compiler.find_library('atomic', required : false)
 dl_dep = compiler.find_library('dl', required : false)
+ws2_dep = compiler.find_library('ws2_32', required : cross_win_build)
+bcrypt_dep = compiler.find_library('bcrypt', required : cross_win_build)
+ssp_dep = compiler.find_library('ssp', required : cross_win_build)
 
 subproject_deps = []
 
@@ -115,6 +122,7 @@ wallycore = subproject('libwally-core')
 autobahn_cpp = subproject('autobahn-cpp')
 boost = subproject('boost')
 GSL = subproject('GSL')
+json = subproject('json')
 msgpack = subproject('msgpack')
 openssl = subproject('openssl')
 websocketpp = subproject('websocketpp')
@@ -122,6 +130,7 @@ websocketpp = subproject('websocketpp')
 subproject_deps += autobahn_cpp.get_variable('autobahn_dep')
 subproject_deps += boost.get_variable('boost_dep')
 subproject_deps += GSL.get_variable('GSL_dep')
+subproject_deps += json.get_variable('nlohmann_json_dep')
 subproject_deps += msgpack.get_variable('msgpack_dep')
 subproject_deps += openssl.get_variable('openssl_dep')
 subproject_deps += wallycore.get_variable('wallycore_dep')

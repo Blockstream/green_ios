@@ -6,9 +6,11 @@
 
 #include <string>
 
+#include "common.h"
+
 namespace ga {
 namespace sdk {
-    void runtime_assert_message(
+    void GASDK_API runtime_assert_message(
         bool condition, const std::string& error_message, const char* file, const char* func, const char* line);
 }
 } // namespace ga

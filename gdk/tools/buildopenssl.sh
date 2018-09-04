@@ -122,6 +122,11 @@ EOF
 		     build-arm64/tmp/arm64/lib/libssl.a \
              -output $openssl_prefix/lib/libssl.a
     fi
+elif [ \( "$1" = "--windows" \) ]; then
+    ./Configure mingw64 --cross-compile-prefix=x86_64-w64-mingw32- --prefix="$openssl_prefix" no-krb5 no-shared no-dso
+    make depend
+    make -j$NUM_JOBS 2> /dev/null
+    make install_sw
 else
     if [ "$(uname)" == "Darwin" ]; then
         ./Configure darwin64-x86_64-cc --prefix="$openssl_prefix" no-shared
@@ -133,4 +138,3 @@ else
     make -j$NUM_JOBS 2> /dev/null
     make install_sw
 fi
-

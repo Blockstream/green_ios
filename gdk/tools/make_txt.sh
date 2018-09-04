@@ -18,10 +18,35 @@ elif [ \( "$3" = "iphone" \) -o \( "$3" = "iphonesim" \) ]; then
     CFLAGS=$(comma_separate "-isysroot $IOS_SDK_PATH" "-stdlib=libc++" $SDK_CFLAGS_NO_ARCH)
     LDFLAGS=$(comma_separate "-isysroot $IOS_SDK_PATH" "-stdlib=libc++" $SDK_LDFLAGS)
     ARCHS=$(comma_separate $ARCHS)
+elif [ \( "$3" = "windows" \) ]; then
+    C_COMPILER="x86_64-w64-mingw32-gcc-posix"
+    CXX_COMPILER="x86_64-w64-mingw32-g++-posix"
+    STRIP="x86_64-w64-mingw32-strip"
 else
     echo "cross build type not supported" && exit 1
 fi
 
+if [ \( "$3" = "windows" \) ]; then
+cat > $2 << EOF
+
+[binaries]
+c = '$C_COMPILER'
+cpp = '$CXX_COMPILER'
+ar = '$AR'
+pkgconfig = 'pkg-config'
+strip = '$STRIP'
+
+[properties]
+target_os = '$4'
+archs = '-pipe'
+
+[host_machine]
+system = 'linux'
+cpu_family = 'x86_64'
+cpu = 'i686'
+endian = 'little'
+EOF
+else
 cat > $2 << EOF
 
 [binaries]
@@ -45,3 +70,4 @@ cpu_family = '$3-$SDK_ARCH'
 cpu = '$3-$SDK_ARCH'
 endian = 'little'
 EOF
+fi

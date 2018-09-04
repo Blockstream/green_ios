@@ -6,6 +6,20 @@
 extern "C" {
 #endif
 
+#ifndef GASDK_API
+#if defined(_WIN32)
+#ifdef GASDK_BUILD
+#define GASDK_API __declspec(dllexport)
+#else
+#define GASDK_API
+#endif
+#elif defined(__GNUC__) && defined(GASDK_BUILD)
+#define GASDK_API __attribute__((visibility("default")))
+#else
+#define GASDK_API
+#endif
+#endif
+
 /** Error codes for API calls */
 #define GA_OK 0
 #define GA_ERROR (-1)

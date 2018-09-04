@@ -2,6 +2,7 @@
 #define GA_SDK_UTILS_H
 #pragma once
 
+#include "containers.h"
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -16,7 +17,7 @@ extern "C" {
  *
  * GA_ERROR if unsuccessful.
  */
-void GA_copy_string(const char* src, char** dst);
+GASDK_API void GA_copy_string(const char* src, char** dst);
 
 /**
  * Free a string.
@@ -24,7 +25,7 @@ void GA_copy_string(const char* src, char** dst);
  *
  * GA_ERROR if unsuccessful.
  */
-void GA_destroy_string(const char* str);
+GASDK_API void GA_destroy_string(const char* str);
 #endif
 
 /**
@@ -36,7 +37,7 @@ void GA_destroy_string(const char* str);
  *
  * GA_ERROR if it fails to generate the requested amount of random bytes.
  */
-int GA_get_random_bytes(size_t num_bytes, unsigned char* output_bytes, size_t len);
+GASDK_API int GA_get_random_bytes(size_t num_bytes, unsigned char* output_bytes, size_t len);
 
 /**
  * Generate mnemonic.
@@ -47,7 +48,7 @@ int GA_get_random_bytes(size_t num_bytes, unsigned char* output_bytes, size_t le
  *
  * GA_ERROR if mnemonic generation fails
  */
-int GA_generate_mnemonic(const char* lang, char** output);
+GASDK_API int GA_generate_mnemonic(const char* lang, char** output);
 
 /**
  * Validate mnemonic.
@@ -58,7 +59,7 @@ int GA_generate_mnemonic(const char* lang, char** output);
  *
  * GA_FALSE if mnemonic validation fails
  */
-int GA_validate_mnemonic(const char* lang, const char* mnemonic);
+GASDK_API int GA_validate_mnemonic(const char* lang, const char* mnemonic);
 
 #ifndef SWIG
 /**
@@ -69,7 +70,7 @@ int GA_validate_mnemonic(const char* lang, const char* mnemonic);
  *
  * GA_FALSE if parsing fails
  */
-int GA_parse_bitcoin_uri_to_json(const char* uri, char** output);
+GASDK_API int GA_parse_bitcoin_uri(const char* uri, GA_json** output);
 #endif
 
 #ifdef __cplusplus

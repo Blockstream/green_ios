@@ -14,7 +14,6 @@ int main(int argc, char** argv)
 {
     using namespace std::chrono;
     using namespace ga;
-    using namespace ga::sdk::literals;
 
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
@@ -24,17 +23,20 @@ int main(int argc, char** argv)
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
 
-        const auto txs = session.get_tx_list(0, std::make_pair(0, 0), '+'_ts, 0, "");
-        GA_SDK_RUNTIME_ASSERT(txs.get<std::string>("fiat_currency") == "USD");
+        const auto txs = session.get_transactions(0, 0);
+        const uint32_t next_page_id = txs["next_page_id"];
+        (void)next_page_id;
 
+#if 0
         for (auto&& tx : txs) {
             sdk::tx t;
             t = tx;
         }
+#endif
 
         const auto balance = session.get_balance(0);
         const auto twofactor_config = session.get_twofactor_config();
-        const auto gauth_url = twofactor_config.get<std::string>("gauth_url");
+        const std::string gauth_url = twofactor_config["gauth_url"];
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

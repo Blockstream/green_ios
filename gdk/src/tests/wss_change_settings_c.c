@@ -22,14 +22,12 @@ int main(int argc, char* argv[])
                        : ret;
     ret = ret == GA_OK ? GA_register_user(session, DEFAULT_MNEMONIC) : ret;
 
-    struct GA_login_data* login_data = NULL;
-    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC, &login_data) : ret;
+    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC) : ret;
 
     ret = ret == GA_OK ? GA_change_settings_privacy_send_me(session, GA_ADDRBOOK) : ret;
     ret = ret == GA_OK ? GA_change_settings_privacy_show_as_sender(session, GA_MUTUAL_ADDRBOOK) : ret;
-    ret = ret == GA_OK ? GA_change_settings_tx_limits(session, 1, 2, 3) : ret;
+    ret = ret == GA_OK ? GA_change_settings_tx_limits(session, 1, 2, 3, NULL) : ret;
 
-    GA_destroy_login_data(login_data);
     GA_destroy_session(session);
 
     return ret;

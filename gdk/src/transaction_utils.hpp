@@ -33,9 +33,10 @@ namespace sdk {
         return wally_ext_key_ptr{ p };
     }
 
+    // FIXME: secure_array
     template <typename T>
     inline void derive_private_key(
-        const wally_ext_key_ptr& key, const T& v, secure_array<unsigned char, EC_PRIVATE_KEY_LEN>& dest)
+        const wally_ext_key_ptr& key, const T& v, std::array<unsigned char, EC_PRIVATE_KEY_LEN>& dest)
     {
         wally_ext_key_ptr derived = derive_key(key, v, false);
         memcpy(dest.data(), static_cast<unsigned char*>(derived->priv_key) + 1, EC_PRIVATE_KEY_LEN);
