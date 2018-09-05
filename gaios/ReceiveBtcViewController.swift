@@ -17,6 +17,7 @@ class ReceiveBtcViewController: UIViewController {
     var receiveAddress: String? = nil
     @IBOutlet weak var amountTextfield: UITextField!
     @IBOutlet weak var estimateLabel: UILabel!
+    @IBOutlet weak var shareButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,13 +33,18 @@ class ReceiveBtcViewController: UIViewController {
         self.hideKeyboardWhenTappedAround()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        shareButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
+
     func generateQRCode(_ text: String, _ frame: CGRect) -> UIImage {
         let data = text.data(using: String.Encoding.ascii, allowLossyConversion: false)
-        
+
         let filter = CIFilter(name: "CIQRCodeGenerator")
         filter!.setValue(data, forKey: "inputMessage")
         filter!.setValue("Q", forKey: "inputCorrectionLevel")
-        
+
         let image = filter!.outputImage!
         let scaleX = frame.size.width / image.extent.size.width
         let scaleY = frame.size.height / image.extent.size.height

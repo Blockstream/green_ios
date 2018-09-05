@@ -1746,7 +1746,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8E7-ps-dg2">
-                                <rect key="frame" x="0.0" y="64" width="320" height="65"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="75"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallets" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zy5-MX-eHb">
                                         <rect key="frame" x="16" y="10" width="76" height="30"/>
@@ -1775,12 +1775,12 @@
                                     <constraint firstItem="Swf-zp-Rd6" firstAttribute="centerY" secondItem="Zy5-MX-eHb" secondAttribute="centerY" id="8WN-IU-9bI"/>
                                     <constraint firstAttribute="trailing" secondItem="Swf-zp-Rd6" secondAttribute="trailing" constant="10" id="O3S-md-SGi"/>
                                     <constraint firstItem="Zy5-MX-eHb" firstAttribute="top" secondItem="8E7-ps-dg2" secondAttribute="top" constant="10" id="VlR-bz-M4e"/>
-                                    <constraint firstAttribute="height" constant="65" id="jEl-bw-Q7b"/>
+                                    <constraint firstAttribute="height" constant="75" id="jEl-bw-Q7b"/>
                                     <constraint firstItem="Zy5-MX-eHb" firstAttribute="leading" secondItem="8E7-ps-dg2" secondAttribute="leading" constant="16" id="yZe-eI-4DL"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q5h-rw-ynl" customClass="WalletView" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="129" width="320" height="379"/>
+                                <rect key="frame" x="0.0" y="139" width="320" height="369"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                             </view>
                         </subviews>
@@ -3599,6 +3599,9 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="flj-QC-HKf">
                                 <rect key="frame" x="0.0" y="64" width="320" height="260"/>
                                 <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="matrixSquares" translatesAutoresizingMaskIntoConstraints="NO" id="FiJ-t4-rfR">
+                                        <rect key="frame" x="-5" y="0.0" width="330" height="265"/>
+                                    </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CTl-Qj-jvB">
                                         <rect key="frame" x="85" y="55" width="150" height="150"/>
                                         <constraints>
@@ -3609,7 +3612,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Go-uJ-SYf">
                                         <rect key="frame" x="16" y="220" width="288" height="18"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
-                                        <color key="textColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x06-1c-UoH">
@@ -3618,7 +3621,7 @@
                                             <constraint firstAttribute="width" secondItem="x06-1c-UoH" secondAttribute="height" multiplier="27:27" id="Stv-gE-JbT"/>
                                             <constraint firstAttribute="height" constant="35" id="ygS-if-DBr"/>
                                         </constraints>
-                                        <inset key="imageEdgeInsets" minX="10" minY="6" maxX="10" maxY="6"/>
+                                        <inset key="imageEdgeInsets" minX="12" minY="8" maxX="12" maxY="8"/>
                                         <state key="normal" image="backarrow"/>
                                         <connections>
                                             <action selector="backButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="iOV-e4-Uus"/>
@@ -3635,12 +3638,16 @@
                                 <constraints>
                                     <constraint firstItem="9Go-uJ-SYf" firstAttribute="top" secondItem="CTl-Qj-jvB" secondAttribute="bottom" constant="15" id="7XH-lr-ZUu"/>
                                     <constraint firstAttribute="height" constant="260" id="7lb-7V-MyZ"/>
+                                    <constraint firstItem="FiJ-t4-rfR" firstAttribute="leading" secondItem="flj-QC-HKf" secondAttribute="leading" constant="-5" id="ax0-F7-D32"/>
                                     <constraint firstItem="9Go-uJ-SYf" firstAttribute="leading" secondItem="flj-QC-HKf" secondAttribute="leading" constant="16" id="bil-q5-ZMA"/>
                                     <constraint firstItem="CTl-Qj-jvB" firstAttribute="centerX" secondItem="flj-QC-HKf" secondAttribute="centerX" id="ebR-sW-hSw"/>
                                     <constraint firstItem="x06-1c-UoH" firstAttribute="top" secondItem="flj-QC-HKf" secondAttribute="top" constant="5" id="kij-iF-fwk"/>
                                     <constraint firstAttribute="trailing" secondItem="9Go-uJ-SYf" secondAttribute="trailing" constant="16" id="lOu-zT-TBG"/>
+                                    <constraint firstAttribute="bottom" secondItem="FiJ-t4-rfR" secondAttribute="bottom" constant="-5" id="onv-qt-44c"/>
+                                    <constraint firstAttribute="trailing" secondItem="FiJ-t4-rfR" secondAttribute="trailing" constant="-5" id="ot4-Yi-5wo"/>
                                     <constraint firstItem="KWd-Su-raz" firstAttribute="centerX" secondItem="flj-QC-HKf" secondAttribute="centerX" id="qhh-cL-h2m"/>
                                     <constraint firstItem="CTl-Qj-jvB" firstAttribute="centerY" secondItem="flj-QC-HKf" secondAttribute="centerY" id="rCR-7S-qTh"/>
+                                    <constraint firstItem="FiJ-t4-rfR" firstAttribute="top" secondItem="flj-QC-HKf" secondAttribute="top" id="xDm-2a-S89"/>
                                     <constraint firstItem="x06-1c-UoH" firstAttribute="leading" secondItem="flj-QC-HKf" secondAttribute="leading" constant="16" id="z48-0e-eOv"/>
                                     <constraint firstItem="KWd-Su-raz" firstAttribute="centerY" secondItem="x06-1c-UoH" secondAttribute="centerY" id="zb2-LX-QYG"/>
                                 </constraints>
@@ -3714,6 +3721,7 @@
                     <connections>
                         <outlet property="amountTextfield" destination="Lu5-Gv-g6o" id="bpD-Dh-dgs"/>
                         <outlet property="estimateLabel" destination="2aZ-Zn-588" id="sdX-v5-imF"/>
+                        <outlet property="shareButton" destination="Hzc-Uv-9ws" id="9bD-eO-ukm"/>
                         <outlet property="walletAddressLabel" destination="9Go-uJ-SYf" id="Haz-aH-8Os"/>
                         <outlet property="walletQRCode" destination="CTl-Qj-jvB" id="eJC-Nw-ORB"/>
                     </connections>
@@ -3752,6 +3760,7 @@
         <image name="liquid" width="200" height="101"/>
         <image name="logo" width="394" height="483"/>
         <image name="mainnet" width="200" height="200"/>
+        <image name="matrixSquares" width="693" height="484"/>
         <image name="north" width="1000" height="750"/>
         <image name="page1" width="314" height="708"/>
         <image name="page2" width="283" height="518"/>
