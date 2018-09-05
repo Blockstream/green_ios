@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -e
 
-WALLYCORE_NAME="libwally-core-6066aecea4544891e4c5abe7a0f9bc549cc04c06"
+WALLYCORE_NAME="libwally-core-51709a91b228240e6c26207a382ba972ac701c22"
 
 cp -r "${MESON_SOURCE_ROOT}/subprojects/${WALLYCORE_NAME}" "${MESON_BUILD_ROOT}/libwally-core"
 

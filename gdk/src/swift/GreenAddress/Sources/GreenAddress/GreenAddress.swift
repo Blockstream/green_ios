@@ -50,8 +50,6 @@ fileprivate func convertJSONBytesToDict(_ input_bytes: UnsafeMutablePointer<Int8
             } else if let object = dict as? [Any] {
                 // json is an array
                 return ["array" : object]
-            } else {
-                print("JSON is invalid")
             }
         }
         catch {
@@ -121,7 +119,7 @@ public class TwoFactorCall {
         var methods: OpaquePointer? = nil
         try callWrapper(fun: GA_twofactor_get_factors(self.optr, &methods))
 
-        var count: Int = 0
+        var count: UInt32 = 0
         try callWrapper(fun: GA_twofactor_factor_list_get_size(methods, &count))
 
         var factors: [AuthenticationFactor] = []

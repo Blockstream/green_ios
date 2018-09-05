@@ -11,6 +11,7 @@
 #include <gsl/span>
 
 #include "boost_wrapper.hpp"
+#include <boost/beast/core/detail/base64.hpp>
 
 #include "assertion.hpp"
 #include "autobahn_wrapper.hpp"
@@ -73,6 +74,13 @@ namespace sdk {
             }
 
             return repr;
+        }
+
+        void get_pin_key(const std::vector<unsigned char>& password, const std::string& salt,
+            std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN>& out)
+        {
+            const auto salt_bytes = gsl::make_span(reinterpret_cast<const unsigned char*>(salt.data()), salt.size());
+            pbkdf2_hmac_sha512_256(password, salt_bytes, 0, 2048, out);
         }
 
         template <typename T> nlohmann::json get_json_result(const T& result)
@@ -232,7 +240,7 @@ namespace sdk {
             derive_private_key(master_key, path, login_priv_key);
 
             std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-            ec_sig_from_bytes(login_priv_key, hash, EC_FLAG_ECDSA, sig);
+            ec_sig_from_bytes(login_priv_key, hash, EC_FLAG_ECDSA | EC_FLAG_GRIND_R, sig);
 
             return hex_from_bytes(ec_sig_to_der(sig));
         }
@@ -552,24 +560,24 @@ namespace sdk {
     void session::session_impl::login(
         const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
     {
+        // FIXME: clear password after use
         const auto password = get_pin_password(pin, pin_data["pin_identifier"]);
 
-        auto secret_bytes = bytes_from_hex(pin_data["secret"]);
+        const auto encrypted = bytes_from_hex(pin_data["encrypted_data"]);
+        const auto iv = gsl::make_span(encrypted.data(), AES_BLOCK_LEN);
+        const auto ciphertext = gsl::make_span(encrypted.data() + iv.size(), encrypted.size() - iv.size());
 
-        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        pbkdf2_hmac_sha512(password, gsl::make_span(secret_bytes.data(), 16), 0, 2048, key);
+        std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN> key;
+        get_pin_key(password, pin_data["salt"], key);
 
-        std::vector<unsigned char> plaintext(secret_bytes.size() - AES_BLOCK_LEN - 16);
-        size_t written;
-        GA_SDK_VERIFY(wally_aes_cbc(key.data(), AES_KEY_LEN_256, secret_bytes.data(), 16,
-            secret_bytes.data() + 16 + AES_BLOCK_LEN, secret_bytes.size() - AES_BLOCK_LEN - 16, AES_FLAG_DECRYPT,
-            plaintext.data(), plaintext.size(), &written));
+        std::vector<unsigned char> plaintext(ciphertext.size());
+        const auto written = aes_cbc(key, iv, ciphertext, AES_FLAG_DECRYPT, plaintext);
+        GA_SDK_RUNTIME_ASSERT(written <= plaintext.size());
 
-        GA_SDK_RUNTIME_ASSERT(written <= plaintext.size() && (plaintext.size() - written <= AES_BLOCK_LEN));
-
-        const auto mnemonic = mnemonic_from_bytes(plaintext.data() + BIP39_SEED_LEN_512, BIP39_ENTROPY_LEN_256, "en");
-
-        login(mnemonic, user_agent);
+        // FIXME: clear data somehow?
+        const auto data = nlohmann::json::parse(std::begin(plaintext), std::begin(plaintext) + written);
+        // FIXME: log in directly from the seed instead of the mnemonic
+        login(data["mnemonic"], user_agent);
     }
 
     void session::session_impl::login_watch_only(
@@ -651,6 +659,13 @@ namespace sdk {
                 hex_from_bytes(gsl::make_span(subkey->pub_key)), hex_from_bytes(gsl::make_span(subkey->chain_code)));
         }
 
+        auto get_recovery_key(const wally_ext_key_ptr& hdkey, const std::string& xpub, uint32_t pointer)
+        {
+            std::string pub_key, chain_code;
+            std::tie(pub_key, chain_code) = get_hdkey(hdkey, pointer, false);
+            return std::make_tuple(pub_key, chain_code, xpub);
+        }
+
         auto get_recovery_key(const std::string& mnemonic, uint32_t bip32_version, uint32_t pointer)
         {
             mnemonic_validate("en", mnemonic);
@@ -661,18 +676,20 @@ namespace sdk {
 
             ext_key* p;
             bip32_key_from_seed_alloc(seed, bip32_version, BIP32_FLAG_SKIP_HASH, &p);
-            wally_ext_key_ptr recovery{ p };
+            wally_ext_key_ptr hdkey(p);
+            std::array<unsigned char, BIP32_SERIALIZED_LEN> xpub_bytes;
+            bip32_key_serialize(hdkey, BIP32_FLAG_KEY_PUBLIC, xpub_bytes);
+            return get_recovery_key(hdkey, base58check_from_bytes(xpub_bytes), pointer);
+        }
 
-            std::array<unsigned char, BIP32_SERIALIZED_LEN> recovery_bytes;
-            bip32_key_serialize(recovery, BIP32_FLAG_KEY_PUBLIC, recovery_bytes);
+        auto get_recovery_key(const std::string& xpub, uint32_t pointer)
+        {
+            std::array<unsigned char, BIP32_SERIALIZED_LEN + BASE58_CHECKSUM_LEN> xpub_bytes;
+            GA_SDK_RUNTIME_ASSERT(base58check_to_bytes(xpub, xpub_bytes) == BIP32_SERIALIZED_LEN);
 
-            std::string recovery_xpub = base58check_from_bytes(recovery_bytes);
-
-            std::string recovery_pub_key;
-            std::string recovery_chain_code;
-            std::tie(recovery_pub_key, recovery_chain_code) = get_hdkey(recovery, pointer, false);
-
-            return std::make_tuple(recovery_pub_key, recovery_chain_code, recovery_xpub);
+            ext_key* p;
+            bip32_key_unserialize_alloc(gsl::make_span(xpub_bytes.data(), BIP32_SERIALIZED_LEN), &p);
+            return get_recovery_key(wally_ext_key_ptr(p), xpub, pointer);
         }
 
         std::string get_address_type_string(address_type addr_type)
@@ -764,15 +781,22 @@ namespace sdk {
 
         std::tie(pub_key, chain_code) = get_hdkey(m_master_key, pointer);
         if (type == "2of3") {
-            // The user can provide a recovery mnemonic, if not, we generate it for them
-            const auto user_recovery_mnemonic = details.value("recovery_mnemonic", std::string());
-            if (user_recovery_mnemonic.empty()) {
-                recovery_mnemonic = generate_mnemonic();
+            // The user can provide a recovery mnemonic or xpub; if not,
+            // we generate and return a mnemonic for them.
+            const auto user_recovery_xpub = details.value("recovery_xpub", std::string());
+            if (!user_recovery_xpub.empty()) {
+                std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
+                    = get_recovery_key(user_recovery_xpub, pointer);
             } else {
-                recovery_mnemonic = user_recovery_mnemonic; // User provided
+                const auto user_recovery_mnemonic = details.value("recovery_mnemonic", std::string());
+                if (user_recovery_mnemonic.empty()) {
+                    recovery_mnemonic = generate_mnemonic();
+                } else {
+                    recovery_mnemonic = user_recovery_mnemonic; // User provided
+                }
+                std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
+                    = get_recovery_key(recovery_mnemonic, get_bip32_version(), pointer);
             }
-            std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
-                = get_recovery_key(recovery_mnemonic, get_bip32_version(), pointer);
         }
 
         std::string receiving_id;
@@ -1161,7 +1185,9 @@ namespace sdk {
         mnemonic_validate("en", mnemonic);
 
         GA_SDK_RUNTIME_ASSERT(pin.length() >= 4);
+        GA_SDK_RUNTIME_ASSERT(!device.empty() && device.length() <= 100);
 
+        // Ask the server to create a new PIN identifier and PIN password
         std::string pin_identifier;
         wamp_call(
             [&pin_identifier](wamp_call_result result) { pin_identifier = result.get().argument<std::string>(0); },
@@ -1170,27 +1196,35 @@ namespace sdk {
         // FIXME: secure_array
         std::array<unsigned char, BIP39_SEED_LEN_512> seed;
         GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
-        const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
-        const auto salt = get_random_bytes<16>();
+        // const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic, "en");
+
+        // TODO: Get password from pin.set_pin_login when server is updated
         const auto password = get_pin_password(pin, pin_identifier);
 
-        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> key;
-        pbkdf2_hmac_sha512(password, salt, 0, 2048, key);
+        // Encrypt the users mnemonic and seed using a key dervied from the
+        // PIN password and a randomly generated salt.
+        // Note the use of base64 here is to remain binary compatible with
+        // old GreenBits installs.
+        const auto salt = get_random_bytes<16>();
+        const auto salt_b64 = boost::beast::detail::base64_encode(salt.data(), salt.size());
+        std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN> key;
+        get_pin_key(password, salt_b64, key);
 
         // FIXME: secure_array
-        std::array<unsigned char, BIP39_SEED_LEN_512 + BIP39_ENTROPY_LEN_256> data;
-        init_container(data, seed, mnemonic_bytes);
         const auto iv = get_random_bytes<AES_BLOCK_LEN>();
+        // FIXME: secure string
+        const std::string json = nlohmann::json({ { "mnemonic", mnemonic }, { "seed", hex_from_bytes(seed) } }).dump();
+        const auto plaintext = gsl::make_span(reinterpret_cast<const unsigned char*>(json.data()), json.size());
 
-        std::vector<unsigned char> encrypted(iv.size() + ((data.size() / AES_BLOCK_LEN) + 1) * AES_BLOCK_LEN);
+        const size_t plaintext_padded_size = (json.size() / AES_BLOCK_LEN + 1) * AES_BLOCK_LEN;
+        std::vector<unsigned char> encrypted(iv.size() + plaintext_padded_size);
+        auto ciphertext = gsl::make_span(encrypted.data() + iv.size(), plaintext_padded_size);
+        const auto written = aes_cbc(key, iv, plaintext, AES_FLAG_ENCRYPT, ciphertext);
+        GA_SDK_RUNTIME_ASSERT(written == static_cast<size_t>(ciphertext.size()));
         std::copy(iv.begin(), iv.end(), encrypted.begin());
-        size_t written;
-        GA_SDK_VERIFY(wally_aes_cbc(key.data(), AES_KEY_LEN_256, iv.data(), iv.size(), data.data(), data.size(),
-            AES_FLAG_ENCRYPT, encrypted.data() + iv.size(), encrypted.size() - iv.size(), &written));
-        GA_SDK_RUNTIME_ASSERT(written == encrypted.size() - iv.size());
-        encrypted.resize(iv.size() + written);
 
-        return { { "secret", hex_from_bytes(salt) + hex_from_bytes(encrypted) }, { "pin_identifier", pin_identifier } };
+        return { { "pin_identifier", pin_identifier }, { "salt", salt_b64 },
+            { "encrypted_data", hex_from_bytes(encrypted) } };
     }
 
     std::vector<unsigned char> session::session_impl::get_pin_password(
@@ -1273,7 +1307,7 @@ namespace sdk {
         derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
 
         std::array<unsigned char, EC_SIGNATURE_LEN> user_sig;
-        ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA, user_sig);
+        ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA | EC_FLAG_GRIND_R, user_sig);
 
         if (is_segwit_script_type(type)) {
             // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)

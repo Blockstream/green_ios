@@ -43,7 +43,7 @@ static int test_twofactor_factor_index = 0;
 /* Prompt user at console to select 2fa factor */
 static const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* call)
 {
-    size_t factor_count;
+    uint32_t factor_count;
     struct GA_twofactor_factor* selected = NULL;
     struct GA_twofactor_factor_list* factors = NULL;
     CALL(GA_twofactor_get_factors(call, &factors));

@@ -82,7 +82,7 @@ void get_2fa_config(struct GA_session* session)
 /* Prompt user at console to select 2fa factor */
 const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* call)
 {
-    size_t factor_count;
+    uint32_t factor_count;
     struct GA_twofactor_factor* selected = NULL;
     struct GA_twofactor_factor_list* factors = NULL;
     CALL(GA_twofactor_get_factors(call, &factors));
@@ -92,11 +92,11 @@ const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* 
     } else if (factor_count > 1) {
         printf("Please select 2fa factor\n");
         struct GA_twofactor_factor* option;
-        for (size_t i = 0; i < factor_count; ++i) {
+        for (uint32_t i = 0; i < factor_count; ++i) {
             const char* type;
             CALL(GA_twofactor_factor_list_get_factor(factors, i, &option))
             CALL(GA_twofactor_factor_type(option, &type))
-            printf("%li) %s\n", i, type);
+            printf("%u) %s\n", i, type);
         }
         printf("? ");
         int selection = atoi(rawinput());

@@ -322,7 +322,7 @@ GA_SDK_DEFINE_C_FUNCTION_5(GA_set_pin, struct GA_session*, session, const char*,
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_string_to_json, const char*, input, GA_json**, output, {
     GA_SDK_RUNTIME_ASSERT(output);
-    *json_cast(output) = new nlohmann::json(input);
+    *json_cast(output) = new nlohmann::json(nlohmann::json::parse(input));
 });
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_json_to_string, const GA_json*, json, char**, output, {
@@ -334,12 +334,12 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_json_to_string, const GA_json*, json, char
 //
 
 GA_SDK_DEFINE_C_FUNCTION_2(
-    GA_twofactor_factor_list_get_size, struct GA_twofactor_factor_list*, factors, size_t*, output, {
+    GA_twofactor_factor_list_get_size, struct GA_twofactor_factor_list*, factors, uint32_t*, output, {
         GA_SDK_RUNTIME_ASSERT(output);
         *output = factors->size();
     });
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_factor_list_get_factor, struct GA_twofactor_factor_list*, factors, size_t, i,
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_factor_list_get_factor, struct GA_twofactor_factor_list*, factors, uint32_t, i,
     struct GA_twofactor_factor**, output, {
         GA_SDK_RUNTIME_ASSERT(output);
         *output = new GA_twofactor_factor((*factors)[i]);
@@ -415,15 +415,15 @@ GA_SDK_DEFINE_C_FUNCTION_3(
         *call = new GA_change_tx_limits_call(*session, total);
     });
 
-GA_SDK_DEFINE_C_FUNCTION_8(GA_twofactor_send, struct GA_session*, session, const char**, addr, size_t, addr_siz,
-    const uint64_t*, amt, size_t, amt_siz, uint64_t, fee_rate, uint32_t, send_all, struct GA_twofactor_call**, call, {
+GA_SDK_DEFINE_C_FUNCTION_8(GA_twofactor_send, struct GA_session*, session, const char**, addr, uint32_t, addr_siz,
+    const uint64_t*, amt, uint32_t, amt_siz, uint64_t, fee_rate, uint32_t, send_all, struct GA_twofactor_call**, call, {
         GA_SDK_RUNTIME_ASSERT(session);
         GA_SDK_RUNTIME_ASSERT(addr);
         GA_SDK_RUNTIME_ASSERT(amt);
         GA_SDK_RUNTIME_ASSERT(addr_siz == amt_siz);
         std::vector<ga::sdk::session::address_amount_pair> addr_amt;
         addr_amt.reserve(addr_siz);
-        for (size_t i = 0; i < addr_siz; ++i) {
+        for (uint32_t i = 0; i < addr_siz; ++i) {
             GA_SDK_RUNTIME_ASSERT(addr[i]);
             addr_amt.emplace_back(std::make_pair(addr[i], ga::sdk::amount{ amt[i] }));
         }

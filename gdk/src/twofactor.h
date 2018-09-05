@@ -65,13 +65,13 @@ struct GA_twofactor_factor_list;
 /**
  * Return the size of a list of 2fa factors
  */
-GASDK_API int GA_twofactor_factor_list_get_size(struct GA_twofactor_factor_list* factors, size_t* output);
+GASDK_API int GA_twofactor_factor_list_get_size(struct GA_twofactor_factor_list* factors, uint32_t* output);
 
 /**
  * Return a factor from a list of 2fa factors
  */
 GASDK_API int GA_twofactor_factor_list_get_factor(
-    struct GA_twofactor_factor_list* factors, size_t i, struct GA_twofactor_factor** output);
+    struct GA_twofactor_factor_list* factors, uint32_t i, struct GA_twofactor_factor** output);
 
 /**
  * Return all 2fa factors available for a call
@@ -189,8 +189,8 @@ GASDK_API int GA_twofactor_change_tx_limits(
 /**
  * 2fa wrapper around send
  */
-GASDK_API int GA_twofactor_send(struct GA_session* session, const char** addr, size_t add_siz, const uint64_t* amt,
-    size_t amt_siz, uint64_t fee_rate, uint32_t send_all, struct GA_twofactor_call** call);
+GASDK_API int GA_twofactor_send(struct GA_session* session, const char** addr, uint32_t add_siz, const uint64_t* amt,
+    uint32_t amt_siz, uint64_t fee_rate, uint32_t send_all, struct GA_twofactor_call** call);
 
 #ifdef __cplusplus
 }

@@ -114,8 +114,8 @@ GASDK_API int GA_login(struct GA_session* session, const char* mnemonic);
  * Authenticate an user.
  *
  * @session The server session to use.
- * @pin The user pin.
- * @pin_data The encrypted pin data returned by @GA_set_pin.
+ * @pin The user PIN.
+ * @pin_data The PIN data returned by @GA_set_pin.
  *
  * GA_ERROR if authentication is unsuccessful.
  */
@@ -147,12 +147,14 @@ GASDK_API int GA_remove_account(struct GA_session* session, const GA_json* twofa
  * @session The server session to use.
  * @details The subaccount details. "name" (which must not be already used in
  *     the wallet) and "type" (either "2of2" or "2of3") must be populated. For
- *     type "2of3" the caller may provide "recovery_mnemonic" if they do not
- *     wish to have one generated automatically. All other fields are ignored.
+ *     type "2of3" the caller may provide either "recovery_mnemonic" or "recovery_xpub"
+ *     if they do not wish to have a mnemonic generated automatically. All other
+ *     fields are ignored.
  * @subaccount Destination for the created subaccount details. For 2of3
- *     subaccounts the extra fields "recovery_mnemonic" and "recovery_xpub"
- *     are populated. These values should be stored safely as they will not
- *     be returned again by any GDK call such as GA_get_subaccounts.
+ *     subaccounts the field "recovery_xpub" will be populated, and "recovery_mnemonic"
+ *     will contain the recovery mnemonic if one was generated. These values
+ *     should be stored safely by the caller as they will not be returned again
+ *     by any GDK call such as GA_get_subaccounts.
  *
  * GA_ERROR if creation is unsuccessful.
  */
@@ -265,11 +267,11 @@ GASDK_API int GA_get_available_currencies(struct GA_session* session, GA_json** 
  *
  * @session The server session to use.
  * @mnemonic The user mnemonic.
- * @pin The user pin.
+ * @pin The user PIN.
  * @device The user device identifier.
- * @pin_data The returned encrypted PIN data.
+ * @pin_data The returned PIN data containing the users encrypted mnemonics.
  *
- * GA_ERROR if pin could not be set.
+ * GA_ERROR if the PIN could not be set.
  */
 GASDK_API int GA_set_pin(
     struct GA_session* session, const char* mnemonic, const char* pin, const char* device, GA_json** pin_data);

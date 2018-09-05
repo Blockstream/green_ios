@@ -479,6 +479,11 @@ namespace sdk {
         return base58_from_bytes(i1, BASE58_FLAG_CHECKSUM);
     }
 
+    template <class P1, class O> GA_USE_RESULT inline size_t base58check_to_bytes(const P1& p1, O& out)
+    {
+        return base58_to_bytes(p1, BASE58_FLAG_CHECKSUM, out);
+    }
+
     template <class I1> inline const std::vector<unsigned char> ec_sig_to_der(const I1& sig, bool sighash = false)
     {
         std::vector<unsigned char> der(EC_SIGNATURE_DER_MAX_LEN + (sighash ? 1 : 0));
@@ -543,6 +548,17 @@ namespace sdk {
         struct wally_tx* p;
         tx_from_hex(tx_hex, flags, &p);
         return wally_tx_ptr(p);
+    }
+
+    // SHA512, truncated to 256 bits
+    template <class I1, class I2, class O>
+    inline void pbkdf2_hmac_sha512_256(const I1& i1, const I2& i2, uint32_t i321, uint32_t i322, O& out)
+    {
+        GA_SDK_RUNTIME_ASSERT(out.size() == PBKDF2_HMAC_SHA256_LEN);
+        // FIXME: secure_array
+        std::array<unsigned char, PBKDF2_HMAC_SHA512_LEN> tmp;
+        GA_SDK_VERIFY(wally::pbkdf2_hmac_sha512(i1, i2, i321, i322, tmp));
+        std::copy(std::begin(tmp), std::begin(tmp) + PBKDF2_HMAC_SHA256_LEN, std::begin(out));
     }
 
 #undef GA_USE_RESULT
