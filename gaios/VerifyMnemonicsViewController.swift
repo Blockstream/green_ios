@@ -41,10 +41,10 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         self.stepIndicatorView.circleColor = UIColor(red: 179.0/255.0, green: 189.0/255.0, blue: 194.0/255.0, alpha: 1.0)
         self.stepIndicatorView.circleTintColor = UIColor(red: 0.0/255.0, green: 180.0/255.0, blue: 124.0/255.0, alpha: 1.0)
         self.stepIndicatorView.circleStrokeWidth = 1.0
-        self.stepIndicatorView.circleRadius = 8.0
+        self.stepIndicatorView.circleRadius = 5.0
         self.stepIndicatorView.lineColor = self.stepIndicatorView.circleColor
         self.stepIndicatorView.lineTintColor = self.stepIndicatorView.circleTintColor
-        self.stepIndicatorView.lineMargin = 8.0
+        self.stepIndicatorView.lineMargin = 12.0
         self.stepIndicatorView.lineStrokeWidth = 1.0
         self.stepIndicatorView.displayNumbers = false //indicates if it displays numbers at the center instead of the core circle
         self.stepIndicatorView.direction = .leftToRight
