@@ -803,6 +803,9 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 self?.presentedFooterView.layer.opacity = 0
             }
             let animations1 = { [weak self] in
+                if (self?.items.count == 0) {
+                    return
+                }
                 var origin = self?.presentedCardView?.frame.origin
                 origin?.y += (self?.presentedCardView?.frame.height)! - 80
                 var size = self?.presentedCardView?.frame.size
@@ -921,8 +924,6 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
         UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: {
             _ in
-            self.presentedCardView?.layer.zPosition = 1
-            //self.presentedFooterView.layer.zPosition = 2
             UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion:{ _ in
                 self.transactionTableView.layer.zPosition = 3
             })
