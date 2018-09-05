@@ -30,7 +30,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             cell.amount.textColor = UIColor.white
         }
         cell.date.text = item.date
-        cell.separatorInset = UIEdgeInsetsMake(0, 16, 0, 15)
+        cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0)
         return cell;
     }
 
@@ -882,11 +882,11 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
 
             //LABEL CONSTRAINTS
             NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 8).isActive = true
-            NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 16).isActive = true
+            NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 0).isActive = true
             //LINE CONSTRAINTS
             NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 0).isActive = true
-            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 16).isActive = true
-            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.right, multiplier: 1, constant: -15).isActive = true
+            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.left, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: header, attribute: NSLayoutAttribute.right, multiplier: 1, constant: 0).isActive = true
             NSLayoutConstraint(item: line, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 0.5).isActive = true
             //IMAGEVIEW
             NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 19).isActive = true
