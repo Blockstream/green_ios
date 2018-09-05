@@ -10,9 +10,9 @@ class ColoredCardView: CardView {
     @IBOutlet weak var nameLabel: UILabel!
     var wallet: WalletItem? = nil
 
-    var presentedCardViewColor:          UIColor = UIColor.customMatrixGreen()
+    var presentedCardViewColor:          UIColor = UIColor.customTitaniumMedium()
     
-    lazy var depresentedCardViewColor:   UIColor = { return UIColor.customMatrixGreen() }()
+    lazy var depresentedCardViewColor:   UIColor = UIColor.customTitaniumMedium()
     
     
      override func awakeFromNib() {
