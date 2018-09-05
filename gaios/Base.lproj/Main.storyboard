@@ -1749,7 +1749,7 @@
                                 <rect key="frame" x="0.0" y="64" width="320" height="75"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallets" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zy5-MX-eHb">
-                                        <rect key="frame" x="16" y="10" width="76" height="30"/>
+                                        <rect key="frame" x="19" y="15" width="76" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="s2l-7h-KSK"/>
                                         </constraints>
@@ -1758,7 +1758,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Swf-zp-Rd6">
-                                        <rect key="frame" x="280" y="10" width="30" height="30"/>
+                                        <rect key="frame" x="275" y="15" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="VLE-fC-gso"/>
                                             <constraint firstAttribute="width" constant="30" id="nBn-aS-Omf"/>
@@ -1773,10 +1773,10 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="Swf-zp-Rd6" firstAttribute="centerY" secondItem="Zy5-MX-eHb" secondAttribute="centerY" id="8WN-IU-9bI"/>
-                                    <constraint firstAttribute="trailing" secondItem="Swf-zp-Rd6" secondAttribute="trailing" constant="10" id="O3S-md-SGi"/>
-                                    <constraint firstItem="Zy5-MX-eHb" firstAttribute="top" secondItem="8E7-ps-dg2" secondAttribute="top" constant="10" id="VlR-bz-M4e"/>
+                                    <constraint firstAttribute="trailing" secondItem="Swf-zp-Rd6" secondAttribute="trailing" constant="15" id="O3S-md-SGi"/>
+                                    <constraint firstItem="Zy5-MX-eHb" firstAttribute="top" secondItem="8E7-ps-dg2" secondAttribute="top" constant="15" id="VlR-bz-M4e"/>
                                     <constraint firstAttribute="height" constant="75" id="jEl-bw-Q7b"/>
-                                    <constraint firstItem="Zy5-MX-eHb" firstAttribute="leading" secondItem="8E7-ps-dg2" secondAttribute="leading" constant="16" id="yZe-eI-4DL"/>
+                                    <constraint firstItem="Zy5-MX-eHb" firstAttribute="leading" secondItem="8E7-ps-dg2" secondAttribute="leading" constant="19" id="yZe-eI-4DL"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q5h-rw-ynl" customClass="WalletView" customModule="gaios" customModuleProvider="target">

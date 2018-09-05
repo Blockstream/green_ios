@@ -17,23 +17,29 @@
                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OGR-lR-C5v">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                     <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="matrixSquares" translatesAutoresizingMaskIntoConstraints="NO" id="xwO-qZ-A4k">
+                            <rect key="frame" x="-5" y="0.0" width="330" height="485"/>
+                        </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Main Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0ks-p9-g31">
                             <rect key="frame" x="16" y="16" width="87" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="21" id="2PR-RH-YAL"/>
+                            </constraints>
                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="balance" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yht-F1-PR7">
                             <rect key="frame" x="244" y="16" width="60" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="21" id="dh4-nX-3xL"/>
+                            </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="matrixSquares" translatesAutoresizingMaskIntoConstraints="NO" id="xwO-qZ-A4k">
-                            <rect key="frame" x="-5" y="0.0" width="330" height="485"/>
-                        </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7UN-hy-Qsx">
-                            <rect key="frame" x="91.5" y="171.5" width="137" height="137"/>
+                            <rect key="frame" x="91.5" y="178.5" width="137" height="137"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="137" id="881-sL-3RW"/>
@@ -57,7 +63,7 @@
                         <constraint firstAttribute="trailing" secondItem="xwO-qZ-A4k" secondAttribute="trailing" constant="-5" id="cop-jP-BuZ"/>
                         <constraint firstItem="Yht-F1-PR7" firstAttribute="top" secondItem="OGR-lR-C5v" secondAttribute="top" constant="16" id="dIC-Ea-7eB"/>
                         <constraint firstAttribute="bottom" secondItem="APM-Iq-Ile" secondAttribute="bottom" constant="16" id="j9l-cf-xZJ"/>
-                        <constraint firstItem="7UN-hy-Qsx" firstAttribute="centerY" secondItem="OGR-lR-C5v" secondAttribute="centerY" id="lO1-AV-gpv"/>
+                        <constraint firstItem="7UN-hy-Qsx" firstAttribute="centerY" secondItem="OGR-lR-C5v" secondAttribute="centerY" constant="7" id="lO1-AV-gpv"/>
                         <constraint firstItem="7UN-hy-Qsx" firstAttribute="centerX" secondItem="OGR-lR-C5v" secondAttribute="centerX" id="le8-ac-dfc"/>
                         <constraint firstItem="APM-Iq-Ile" firstAttribute="leading" secondItem="OGR-lR-C5v" secondAttribute="leading" constant="10" id="qlR-E4-SGr"/>
                         <constraint firstAttribute="trailing" secondItem="APM-Iq-Ile" secondAttribute="trailing" constant="10" id="saq-fV-iri"/>
