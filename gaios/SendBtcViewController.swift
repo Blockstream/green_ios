@@ -18,6 +18,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var topImage: UIImageView!
     @IBOutlet weak var header: UIView!
     var prefillAmount:Double = 0
+    @IBOutlet weak var bottomButton: UIButton!
 
     var captureSession = AVCaptureSession()
     var wallets:Array<WalletItem> = Array<WalletItem>()
@@ -82,8 +83,10 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = true
+        bottomButton.layoutIfNeeded()
+        bottomButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
         return 65;

@@ -18,17 +18,20 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var customfeeButton: DesignableButton!
     @IBOutlet weak var maxAmountLabel: UILabel!
-    @IBOutlet weak var btcAmountEstimate: UILabel!
     @IBOutlet weak var amountTextField: UITextField!
     var feeLabel: UILabel = UILabel()
     var wallet: WalletItem? = nil
     var fee: Int = 1
     var btcAmount: Double = 0
-    @IBOutlet weak var currencyLabel: UILabel!
     @IBOutlet weak var reviewButton: UIButton!
+    @IBOutlet weak var currencySwitch: UIButton!
 
     @IBAction func nextButtonClicked(_ sender: UIButton) {
         self.performSegue(withIdentifier: "confirm", sender: self)
+    }
+
+    @IBAction func switchCurrency(_ sender: Any) {
+        print("switch currency")
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -61,11 +64,12 @@ class SendBtcDetailsViewController: UIViewController {
             let fiat = AccountStore.shared.btcToUSD(amount: btcAmount)
             amountTextField.text = String(format: "%.2f", fiat)
         }
-        currencyLabel.text = SettingsStore.shared.getCurrencyString()
+        currencySwitch.setTitle(SettingsStore.shared.getCurrencyString(), for: UIControlState.normal)
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        reviewButton.layoutIfNeeded()
         reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
@@ -73,7 +77,6 @@ class SendBtcDetailsViewController: UIViewController {
         let fiat_amount: String = textField.text!
         guard let fiat_d = Double(fiat_amount) else {
             let currency = SettingsStore.shared.getCurrencyString()!
-            btcAmountEstimate.text = String(format: "~0.00 %@", currency)
             return
         }
         let bitcoin_amount = AccountStore.shared.USDtoBTC(amount: fiat_d)
@@ -82,7 +85,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateEstimate() {
-        btcAmountEstimate.text = String(format: "~%g BTC", btcAmount)
+       // btcAmountEstimate.text = String(format: "~%g BTC", btcAmount)
     }
     
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
