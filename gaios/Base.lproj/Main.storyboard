@@ -2385,12 +2385,6 @@
                                     <action selector="agreeTOSClicked:" destination="K3z-Ps-3aO" eventType="touchUpInside" id="9bR-sB-GIr"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I agree with Terms Of Service" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VBY-Bz-7sA">
-                                <rect key="frame" x="50" y="440" width="260" height="18"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="muR-8b-EIA">
                                 <rect key="frame" x="10" y="36" width="35" height="35"/>
                                 <constraints>
@@ -2465,6 +2459,24 @@
                                     <constraint firstItem="tdc-MV-QE3" firstAttribute="leading" secondItem="5Y3-K0-zZ0" secondAttribute="leading" constant="16" id="rJ2-jW-l3h"/>
                                 </constraints>
                             </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h8f-hD-Okk">
+                                <rect key="frame" x="50" y="432" width="251" height="34"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="251" id="2zZ-9b-a4D"/>
+                                    <constraint firstAttribute="height" constant="34" id="Jgn-Q4-5Ha"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="I agree with Terms of Service">
+                                        <attributes>
+                                            <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <font key="NSFont" metaFont="system" size="16"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
@@ -2472,31 +2484,30 @@
                             <constraint firstItem="Kg9-Fy-R7c" firstAttribute="leading" secondItem="MvP-Nb-9KG" secondAttribute="leading" constant="16" id="2dM-SP-i83"/>
                             <constraint firstAttribute="bottom" secondItem="A16-4e-Dvj" secondAttribute="bottom" id="8BF-dg-fqm"/>
                             <constraint firstItem="5Y3-K0-zZ0" firstAttribute="trailing" secondItem="MvP-Nb-9KG" secondAttribute="trailing" id="8Dt-6o-PWf"/>
+                            <constraint firstItem="h8f-hD-Okk" firstAttribute="centerY" secondItem="8u0-hi-RfJ" secondAttribute="centerY" id="91f-fz-IRJ"/>
                             <constraint firstItem="ztZ-Xi-jb7" firstAttribute="top" secondItem="txa-gC-c1U" secondAttribute="bottom" constant="30" id="9kr-1D-BdG"/>
                             <constraint firstItem="MvP-Nb-9KG" firstAttribute="trailing" secondItem="ztZ-Xi-jb7" secondAttribute="trailing" constant="30" id="Aaf-0G-YTL"/>
+                            <constraint firstItem="5Y3-K0-zZ0" firstAttribute="top" secondItem="8u0-hi-RfJ" secondAttribute="bottom" constant="36.5" id="BTf-E4-M8J"/>
                             <constraint firstItem="Kg9-Fy-R7c" firstAttribute="top" secondItem="muR-8b-EIA" secondAttribute="bottom" constant="30" id="C8C-eh-zw1"/>
-                            <constraint firstItem="VBY-Bz-7sA" firstAttribute="leading" secondItem="8u0-hi-RfJ" secondAttribute="trailing" constant="10" id="Fge-El-w8S"/>
                             <constraint firstAttribute="trailing" secondItem="A16-4e-Dvj" secondAttribute="trailing" id="NfN-As-wab"/>
                             <constraint firstItem="ztZ-Xi-jb7" firstAttribute="leading" secondItem="MvP-Nb-9KG" secondAttribute="leading" constant="30" id="QYP-7N-a6C"/>
-                            <constraint firstItem="5Y3-K0-zZ0" firstAttribute="top" secondItem="VBY-Bz-7sA" secondAttribute="bottom" constant="40" id="Qvy-ou-xAm"/>
                             <constraint firstItem="txa-gC-c1U" firstAttribute="centerX" secondItem="Fpd-gZ-cfS" secondAttribute="centerX" id="U8q-1C-ESB"/>
-                            <constraint firstItem="MvP-Nb-9KG" firstAttribute="trailing" secondItem="VBY-Bz-7sA" secondAttribute="trailing" constant="10" id="bJZ-Nf-5Hg"/>
                             <constraint firstItem="A16-4e-Dvj" firstAttribute="leading" secondItem="Fpd-gZ-cfS" secondAttribute="leading" id="c0j-ci-STy"/>
                             <constraint firstItem="MvP-Nb-9KG" firstAttribute="trailing" secondItem="Kg9-Fy-R7c" secondAttribute="trailing" constant="16" id="duI-jk-jUs"/>
                             <constraint firstItem="muR-8b-EIA" firstAttribute="width" secondItem="muR-8b-EIA" secondAttribute="height" multiplier="27:27" id="eUw-4S-myn"/>
+                            <constraint firstItem="h8f-hD-Okk" firstAttribute="leading" secondItem="8u0-hi-RfJ" secondAttribute="trailing" constant="10" id="gwH-If-Isx"/>
                             <constraint firstItem="muR-8b-EIA" firstAttribute="leading" secondItem="MvP-Nb-9KG" secondAttribute="leading" constant="10" id="hFl-Dx-5dH"/>
                             <constraint firstItem="muR-8b-EIA" firstAttribute="top" secondItem="MvP-Nb-9KG" secondAttribute="top" constant="16" id="jI9-2c-8yy"/>
                             <constraint firstItem="5Y3-K0-zZ0" firstAttribute="leading" secondItem="MvP-Nb-9KG" secondAttribute="leading" id="lTH-hD-Y3M"/>
                             <constraint firstItem="5Y3-K0-zZ0" firstAttribute="bottom" secondItem="MvP-Nb-9KG" secondAttribute="bottom" id="ymC-T3-EMY"/>
                             <constraint firstItem="txa-gC-c1U" firstAttribute="top" secondItem="Kg9-Fy-R7c" secondAttribute="bottom" constant="20" id="zQG-xe-ntb"/>
-                            <constraint firstItem="VBY-Bz-7sA" firstAttribute="centerY" secondItem="8u0-hi-RfJ" secondAttribute="centerY" id="zR4-bW-QqZ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="MvP-Nb-9KG"/>
                     </view>
                     <connections>
                         <outlet property="nButton" destination="tdc-MV-QE3" id="4I0-dq-ORA"/>
                         <outlet property="topLabel" destination="Kg9-Fy-R7c" id="HTS-st-Wl1"/>
-                        <outlet property="tosLabel" destination="VBY-Bz-7sA" id="MHC-he-jrV"/>
+                        <outlet property="tosTextView" destination="h8f-hD-Okk" id="dd5-rG-FoL"/>
                         <segue destination="L8U-ic-Qn1" kind="show" identifier="next" id="J4O-s5-XFN"/>
                     </connections>
                 </viewController>

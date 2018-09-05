@@ -14,7 +14,7 @@ class TOSViewController: UIViewController {
 
     @IBOutlet weak var nButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
-    @IBOutlet weak var tosLabel: UILabel!
+    @IBOutlet weak var tosTextView: UITextView!
 
     @IBAction func nextButtonClicked(_ sender: Any) {
         self.performSegue(withIdentifier: "next", sender: self)
@@ -34,11 +34,6 @@ class TOSViewController: UIViewController {
         nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        UIApplication.shared.open(URL, options: [:])
-        return false
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
     }
@@ -52,10 +47,20 @@ class TOSViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let tosString = NSMutableAttributedString(string: "I agree to the Terms of Service")
-        tosString.addAttribute(.link, value: "https://www.google.com", range: NSRange(location: 15, length: 16))
-        tosLabel.attributedText = tosString
-        tosLabel.isUserInteractionEnabled = true
+        tosString.addAttribute(.link, value: SettingsStore.shared.tosURL, range: NSRange(location: 15, length: 16))
+        tosString.setColor(color: UIColor.white, forText: "I agree to the")
+        let linkAttributes: [String : Any] = [
+            NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
+            NSAttributedStringKey.underlineColor.rawValue: UIColor.customMatrixGreen(),
+            NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
+        ]
+        tosTextView.linkTextAttributes = linkAttributes
+        tosTextView.attributedText = tosString
+        tosTextView.font = UIFont.systemFont(ofSize: 16)
+        tosTextView.isUserInteractionEnabled = true
+
         let topString = NSMutableAttributedString(string: "GREEN is non-custodial\n Bitcoin wallet.")
+
         topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
         topLabel.attributedText = topString
     }
