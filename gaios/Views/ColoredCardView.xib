@@ -33,11 +33,11 @@
                             <rect key="frame" x="-5" y="0.0" width="330" height="485"/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7UN-hy-Qsx">
-                            <rect key="frame" x="100" y="180" width="120" height="120"/>
+                            <rect key="frame" x="91.5" y="171.5" width="137" height="137"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="120" id="881-sL-3RW"/>
-                                <constraint firstAttribute="height" constant="120" id="PQf-Qg-Jjt"/>
+                                <constraint firstAttribute="width" constant="137" id="881-sL-3RW"/>
+                                <constraint firstAttribute="height" constant="137" id="PQf-Qg-Jjt"/>
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="APM-Iq-Ile">
