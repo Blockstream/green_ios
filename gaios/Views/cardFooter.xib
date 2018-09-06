@@ -45,9 +45,8 @@
                                 <constraint firstAttribute="width" constant="60" id="qeE-u4-V7U"/>
                             </constraints>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jl1-A8-YvP">
-                            <rect key="frame" x="-1" y="0.0" width="189" height="647"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jl1-A8-YvP">
+                            <rect key="frame" x="0.0" y="0.0" width="186.5" height="647"/>
                             <state key="normal">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -56,6 +55,10 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="46c-5P-c7a" firstAttribute="centerY" secondItem="RMx-oq-Www" secondAttribute="centerY" constant="5" id="Hqt-eF-PU1"/>
+                        <constraint firstItem="jl1-A8-YvP" firstAttribute="leading" secondItem="RMx-oq-Www" secondAttribute="leading" id="KZM-SC-tB6"/>
+                        <constraint firstAttribute="trailing" secondItem="jl1-A8-YvP" secondAttribute="trailing" id="O2P-T3-SNp"/>
+                        <constraint firstAttribute="bottom" secondItem="jl1-A8-YvP" secondAttribute="bottom" id="aju-wU-CFe"/>
+                        <constraint firstItem="jl1-A8-YvP" firstAttribute="top" secondItem="RMx-oq-Www" secondAttribute="top" id="hbj-NB-zlw"/>
                         <constraint firstItem="46c-5P-c7a" firstAttribute="centerX" secondItem="RMx-oq-Www" secondAttribute="centerX" id="uEe-Wv-BHg"/>
                     </constraints>
                 </view>
