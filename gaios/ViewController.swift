@@ -114,19 +114,11 @@ class ViewController: UIViewController, WalletViewDelegate{
     }
 
     func hideButtons() {
-        if (pager != nil){
-            pager?.button.isHidden = true
-            pager?.button1.isHidden = true
-            pager?.button2.isHidden = true
-        }
+        pager?.hideButtons()
     }
 
     func showButtons() {
-        if (pager != nil){
-            pager?.button.isHidden = false
-            pager?.button1.isHidden = false
-            pager?.button2.isHidden = false
-        }
+        pager?.showButtons()
     }
 
     func cardViewPresented() {

@@ -85,6 +85,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tabBarController?.tabBar.isHidden = true
         bottomButton.layoutIfNeeded()
         bottomButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat

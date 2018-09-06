@@ -190,12 +190,14 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         button.isHidden = true
         button1.isHidden = true
         button2.isHidden = true
+        self.isPagingEnabled = false
     }
 
     func showButtons() {
         button.isHidden = false
         button1.isHidden = false
         button2.isHidden = false
+        self.isPagingEnabled = true
     }
 
 }
