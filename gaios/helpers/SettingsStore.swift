@@ -26,7 +26,6 @@ class SettingsStore {
         let advancedImage = #imageLiteral(resourceName: "advanced")
         let advancedSegwit = "Enable Segwit"
         let advancedNLock = "nLockTimeTransactions"
-        let advancedSPV = "SPV Synchronization"
     let sectionAbout = "About"
         let aboutImage = #imageLiteral(resourceName: "about")
         let aboutVersion = "Version"
@@ -43,7 +42,6 @@ class SettingsStore {
     let settingsSupport = "settingsSupport"
 
     let settingsNLockTime = "settingsNLockTime"
-    let settingsSPV = "settingsSPV"
 
     let settingsVersion = "settingsVersion"
     let settingsTOS = "settingsTOS"
@@ -134,10 +132,6 @@ class SettingsStore {
         return SettingsItem(settingsName: settingsNLockTime, property:[String : String](), text: advancedNLock, secondaryText: "")
     }
 
-    func defaultSPV() -> SettingsItem {
-        return SettingsItem(settingsName: settingsSPV, property:[String : String](), text: advancedSPV, secondaryText: "")
-    }
-
     func defaultVersion() -> SettingsItem {
         let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
         return SettingsItem(settingsName: settingsVersion, property:[String : String](), text: aboutVersion, secondaryText: version as! String)
@@ -181,9 +175,7 @@ class SettingsStore {
     func createAdvancedSection() -> SettingsSection {
         var advancedSettings = Array<SettingsItem>()
         let nlock = allSettings[settingsNLockTime] == nil ? defaultNlockTime() : allSettings[settingsNLockTime]
-        let spv = allSettings[settingsSPV] == nil ? defaultSPV() : allSettings[settingsSPV]
         advancedSettings.append(nlock!)
-        advancedSettings.append(spv!)
         let section = SettingsSection(sectionName: sectionAdvanced, settingsInSection: advancedSettings)
         return section
     }
