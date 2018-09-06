@@ -915,7 +915,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             var origin = self?.presentedFooterView.frame.origin
             origin?.y += (self?.presentedFooterView.frame.height)!
             var size = self?.presentedCardView?.frame.size
-            let maxHeight = (self?.frame.origin.y)! + (self?.frame.size.height)! - (origin?.y)! + 5
+            let maxHeight = (self?.frame.origin.y)! + (self?.frame.size.height)! - (origin?.y)! - 20
             size?.height = maxHeight
             self?.transactionTableView.frame = CGRect(origin: origin!, size: size!)
             self?.transactionTableView.layer.opacity = 1
