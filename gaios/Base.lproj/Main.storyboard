@@ -1794,6 +1794,7 @@
                         <outlet property="addWalletButton" destination="Swf-zp-Rd6" id="5K4-uH-ozJ"/>
                         <outlet property="walletHeaderView" destination="8E7-ps-dg2" id="Pcn-Cu-2bY"/>
                         <outlet property="walletView" destination="q5h-rw-ynl" id="HxT-6b-1e9"/>
+                        <outlet property="walletsLabel" destination="Zy5-MX-eHb" id="IBb-1C-r9C"/>
                         <segue destination="6PL-t1-BTP" kind="show" identifier="sendBTC" id="wWN-mn-bga"/>
                         <segue destination="jsC-nu-G2U" kind="show" identifier="receiveBTC" id="ylx-4t-VJB"/>
                     </connections>

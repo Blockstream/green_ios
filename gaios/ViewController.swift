@@ -7,6 +7,7 @@ class ViewController: UIViewController, WalletViewDelegate{
     @IBOutlet weak var walletHeaderView: UIView!
     @IBOutlet weak var walletView: WalletView!
     @IBOutlet weak var addWalletButton: UIButton!
+    @IBOutlet weak var walletsLabel: UILabel!
 
     @IBOutlet weak var addCardViewButton: UIButton!
     var wallets:Array<WalletItem> = Array<WalletItem>()
@@ -115,10 +116,14 @@ class ViewController: UIViewController, WalletViewDelegate{
 
     func hideButtons() {
         pager?.hideButtons()
+        walletsLabel.isHidden = true
+        addWalletButton.isHidden = true
     }
 
     func showButtons() {
         pager?.showButtons()
+        walletsLabel.isHidden = false
+        addWalletButton.isHidden = false
     }
 
     func cardViewPresented() {
