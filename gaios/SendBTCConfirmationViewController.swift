@@ -9,8 +9,8 @@
 import Foundation
 import UIKit
 
-class SendBTCConfirmationViewController: UIViewController {
-    
+class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate{
+
     var toAddress: String = ""
     var fiat_amount: Double = 0
     var fiatFeeAmount: Double = 0
@@ -20,6 +20,7 @@ class SendBTCConfirmationViewController: UIViewController {
     var walletName: String = ""
     var wallet: WalletItem? = nil
 
+    @IBOutlet weak var slidingButton: SlidingButton!
     @IBOutlet weak var fiatAmountLabel: UILabel!
     @IBOutlet weak var walletNameLabel: UILabel!
     @IBOutlet weak var recepientAddressLabel: UILabel!
@@ -34,17 +35,14 @@ class SendBTCConfirmationViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = true
         walletNameLabel.text = wallet?.name
         hideKeyboardWhenTappedAround()
+        slidingButton.delegate = self
     }
 
-    @IBAction func sendButtonClicked(_ sender: Any) {
-        if (satoshi_amount == 0) {
-            print("sometthin is wrong")
+    func completed(slidingButton: SlidingButton) {
+        print("send now!")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.navigationController?.popToRootViewController(animated: true)
         }
-       /* wrap { return try getSession().send(subaccount: (self.wallet?.pointer)!, addrAmt: [(self.toAddress, UInt64(self.satoshi_amount))], feeRate: 1000, sendAll: false) }
-            .done { () in
-                self.navigationController?.popToRootViewController(animated: true)
-            }.catch { error in
-                print("sending failed ", error)
-        }*/
     }
+
 }

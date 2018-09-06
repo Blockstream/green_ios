@@ -54,6 +54,7 @@
 		093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D5212E844400134235 /* CurrencySelectorViewController.swift */; };
 		093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D7212E86DF00134235 /* CurrencyCell.swift */; };
 		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
+		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
 		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
@@ -155,6 +156,7 @@
 		093544D5212E844400134235 /* CurrencySelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectorViewController.swift; sourceTree = "<group>"; };
 		093544D7212E86DF00134235 /* CurrencyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCell.swift; sourceTree = "<group>"; };
 		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
+		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
 		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
@@ -255,6 +257,7 @@
 				09309F262136888C00DE093B /* DenominationCell.swift */,
 				092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
+				0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -751,6 +754,7 @@
 				676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */,
 				09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
+				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
 				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				09342FD620FDD569009DCDEA /* MainMenuPageViewController.swift in Sources */,
