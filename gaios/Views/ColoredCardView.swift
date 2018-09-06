@@ -8,6 +8,7 @@ class ColoredCardView: CardView {
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var balanceLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
+    var index: Int = 0
     var wallet: WalletItem? = nil
 
     var presentedCardViewColor:          UIColor = UIColor.customTitaniumMedium()

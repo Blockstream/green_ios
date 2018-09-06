@@ -116,7 +116,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         let walletView = cardView as! ColoredCardView
         self.presentingWallet = walletView.wallet
         updateViewModel(account: Int((walletView.wallet?.pointer)!))
-        delegate?.cardViewPresented()
+        delegate?.cardViewPresented(cardView: cardView)
         present(cardView: cardView, animated: animated, animationDuration: animated ? WalletView.presentingAnimationSpeed : nil, completion: completion)
         
     }
@@ -130,7 +130,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
      */
     open func dismissPresentedCardView(animated: Bool, completion: LayoutCompletion? = nil) {
         dissmissFooter {
-            self.delegate?.cardViewDismissed()
+            self.delegate?.cardViewDismissed(cardView: self.presentedCardView!)
             self.dismissPresentedCardView(animated: animated, animationDuration: animated ? WalletView.dismissingAnimationSpeed : nil, completion: completion)
         }
     }
@@ -262,7 +262,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     /** This block is called after the receiver’s card view is presented or dimissed. */
     public var didUpdatePresentedCardViewBlock: PresentedCardViewDidUpdateBlock?
-    
+
     /** Returns an accessory view that is displayed above the wallet view. */
     @IBOutlet public weak var walletHeader: UIView? {
         willSet {
@@ -408,7 +408,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
     
     func present(cardView: CardView, animated: Bool, animationDuration: TimeInterval?, completion: LayoutCompletion? = nil) {
-        
+
         if cardView == presentedCardView {
 
             completion?(true)
@@ -991,7 +991,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
 }
 
 protocol WalletViewDelegate: class {
-    func cardViewPresented()
-    func cardViewDismissed()
+    func cardViewPresented(cardView: CardView)
+    func cardViewDismissed(cardView: CardView)
 }
 

@@ -49,6 +49,14 @@ class ViewController: UIViewController, WalletViewDelegate{
             cardView.balanceLabel.text = String(format: "%@ %@", balance, denomination)
             cardView.addressLabel.text = item.address
             cardView.nameLabel.text = item.name
+            cardView.index = index
+            if(index < wallets.count - 1) {
+                cardView.balanceLabel.textColor = UIColor.customTitaniumLight()
+                cardView.nameLabel.textColor = UIColor.customTitaniumLight()
+            } else {
+                cardView.balanceLabel.textColor = UIColor.white
+                cardView.nameLabel.textColor = UIColor.white
+            }
             cardView.presentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.depresentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.presentedDidUpdate()
@@ -70,7 +78,7 @@ class ViewController: UIViewController, WalletViewDelegate{
 
         walletView.reload(cardViews: coloredCardViews)
 
-        walletView.didUpdatePresentedCardViewBlock = { [weak self] (_) in
+        walletView.didUpdatePresentedCardViewBlock = { [weak self] (card: CardView?) in
             self?.addCardViewButton.addTransitionFade()
         }
     }
@@ -126,13 +134,24 @@ class ViewController: UIViewController, WalletViewDelegate{
         addWalletButton.isHidden = false
     }
 
-    func cardViewPresented() {
+    func cardViewPresented(cardView: CardView) {
         hideButtons()
+        let wallet = cardView as! ColoredCardView
+        wallet.balanceLabel.textColor = UIColor.white
+        wallet.nameLabel.textColor = UIColor.white
     }
 
-    func cardViewDismissed() {
+    func cardViewDismissed(cardView: CardView) {
         if(self.viewIfLoaded?.window != nil ) {
             showButtons()
+        }
+        let wallet = cardView as! ColoredCardView
+        if(wallet.index < wallets.count - 1) {
+            wallet.balanceLabel.textColor = UIColor.customTitaniumLight()
+            wallet.nameLabel.textColor = UIColor.customTitaniumLight()
+        } else {
+            wallet.balanceLabel.textColor = UIColor.white
+            wallet.nameLabel.textColor = UIColor.white
         }
     }
 
