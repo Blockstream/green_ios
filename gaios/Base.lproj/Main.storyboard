@@ -3257,7 +3257,7 @@
                                         </userDefinedRuntimeAttributes>
                                     </textField>
                                 </subviews>
-                                <color key="backgroundColor" red="0.23529411764705882" green="0.27058823529411763" blue="0.29803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" name="customTitaniumMedium"/>
                                 <constraints>
                                     <constraint firstItem="zyg-ZI-zXV" firstAttribute="top" secondItem="E7e-MO-BsI" secondAttribute="bottom" constant="15" id="B9u-Mw-S2e"/>
                                     <constraint firstItem="E7e-MO-BsI" firstAttribute="centerX" secondItem="Z6Y-bU-qR2" secondAttribute="centerX" id="Bjm-N0-R60"/>
@@ -3285,7 +3285,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" red="0.23529411759999999" green="0.27058823529999998" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" name="customTitaniumMedium"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="IJv-vh-tUZ"/>
                                     <constraint firstAttribute="bottom" secondItem="yKw-zw-wMj" secondAttribute="bottom" id="MBo-Kj-vkM"/>
@@ -3303,11 +3303,11 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TRANSFER TO OTHER WALLETS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Iz-Fi-ha4">
                                         <rect key="frame" x="16" y="14.5" width="225" height="18"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <color key="textColor" red="0.70588235290000001" green="0.35294117650000001" blue="0.3921568627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="textColor" name="customTitaniumLight"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
-                                <color key="backgroundColor" red="0.12156862745098039" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" name="customVeryDark"/>
                                 <constraints>
                                     <constraint firstItem="6Iz-Fi-ha4" firstAttribute="centerY" secondItem="2Tj-sc-2Uk" secondAttribute="centerY" id="RFp-Nf-WIq"/>
                                     <constraint firstAttribute="height" constant="47" id="XBj-Iv-5Jk"/>
@@ -3315,7 +3315,7 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" red="0.23529411759999999" green="0.27058823529999998" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" name="customTitaniumMedium"/>
                         <constraints>
                             <constraint firstItem="0zh-xv-K5C" firstAttribute="leading" secondItem="hJ3-UV-Z3M" secondAttribute="leading" id="33L-2X-nyJ"/>
                             <constraint firstItem="owv-rr-Wjs" firstAttribute="leading" secondItem="hJ3-UV-Z3M" secondAttribute="leading" id="5t1-JZ-e2Z"/>
@@ -3680,6 +3680,27 @@
                                 <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TCo-xL-xoX">
+                                <rect key="frame" x="244" y="381" width="60" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="JQt-y3-MzR"/>
+                                    <constraint firstAttribute="width" constant="60" id="g9J-si-Ifd"/>
+                                </constraints>
+                                <state key="normal" title="USD">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" name="customMatrixGreen"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="switchButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="3BR-al-5Qn"/>
+                                </connections>
+                            </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0.00" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lu5-Gv-g6o">
                                 <rect key="frame" x="16" y="379" width="67.5" height="36"/>
                                 <constraints>
@@ -3717,9 +3738,11 @@
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="Hzc-Uv-9ws" secondAttribute="trailing" constant="17" id="3lQ-31-Q7I"/>
                             <constraint firstItem="eBg-Hb-Ejr" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" id="6Tq-qI-put"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="bottom" secondItem="Hzc-Uv-9ws" secondAttribute="bottom" constant="17" id="BdX-hG-wDT"/>
+                            <constraint firstItem="TCo-xL-xoX" firstAttribute="centerY" secondItem="P4c-iC-p2c" secondAttribute="centerY" id="EKf-Zc-LUs"/>
                             <constraint firstItem="flj-QC-HKf" firstAttribute="top" secondItem="PyK-Y4-Zyi" secondAttribute="top" id="Ijq-Ka-6Jh"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="flj-QC-HKf" secondAttribute="trailing" id="LTg-mT-Nca"/>
                             <constraint firstItem="gLm-OG-5hq" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="16" id="LUz-1d-f0Y"/>
+                            <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="TCo-xL-xoX" secondAttribute="trailing" constant="16" id="TEH-05-dVf"/>
                             <constraint firstItem="Lu5-Gv-g6o" firstAttribute="top" secondItem="gLm-OG-5hq" secondAttribute="bottom" constant="8" id="V0n-Zt-nEq"/>
                             <constraint firstItem="Lu5-Gv-g6o" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="16" id="WlT-PJ-T6v"/>
                             <constraint firstItem="eBg-Hb-Ejr" firstAttribute="top" secondItem="flj-QC-HKf" secondAttribute="bottom" id="XVJ-3x-gLH"/>
@@ -3739,6 +3762,7 @@
                     <connections>
                         <outlet property="amountTextfield" destination="Lu5-Gv-g6o" id="bpD-Dh-dgs"/>
                         <outlet property="estimateLabel" destination="2aZ-Zn-588" id="sdX-v5-imF"/>
+                        <outlet property="fiatSwitchButton" destination="TCo-xL-xoX" id="VcI-M6-ERr"/>
                         <outlet property="shareButton" destination="Hzc-Uv-9ws" id="9bD-eO-ukm"/>
                         <outlet property="walletAddressLabel" destination="9Go-uJ-SYf" id="Haz-aH-8Os"/>
                         <outlet property="walletQRCode" destination="CTl-Qj-jvB" id="eJC-Nw-ORB"/>
@@ -3800,11 +3824,17 @@
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumLight">
+            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -3817,6 +3847,9 @@
         </namedColor>
         <namedColor name="customVeryDark">
             <color red="0.1019607843" green="0.1176470588" blue="0.1450980392" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customVeryDark">
+            <color red="0.10196078431372549" green="0.11764705882352941" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>

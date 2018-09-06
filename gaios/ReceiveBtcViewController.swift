@@ -18,13 +18,14 @@ class ReceiveBtcViewController: UIViewController {
     @IBOutlet weak var amountTextfield: UITextField!
     @IBOutlet weak var estimateLabel: UILabel!
     @IBOutlet weak var shareButton: UIButton!
+    @IBOutlet weak var fiatSwitchButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
         walletAddressLabel.text = receiveAddress
         let uri = bip21Helper.btcURIforAddress(address: receiveAddress!)
-        walletQRCode.image = QRImageGenerator.imageForText(text: uri, frame: walletQRCode.frame)
+        walletQRCode.image = QRImageGenerator.imageForTextDark(text: uri, frame: walletQRCode.frame)
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
 
@@ -33,24 +34,12 @@ class ReceiveBtcViewController: UIViewController {
         self.hideKeyboardWhenTappedAround()
     }
 
+    @IBAction func switchButtonClicked(_ sender: Any) {
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         shareButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-    }
-
-    func generateQRCode(_ text: String, _ frame: CGRect) -> UIImage {
-        let data = text.data(using: String.Encoding.ascii, allowLossyConversion: false)
-
-        let filter = CIFilter(name: "CIQRCodeGenerator")
-        filter!.setValue(data, forKey: "inputMessage")
-        filter!.setValue("Q", forKey: "inputCorrectionLevel")
-
-        let image = filter!.outputImage!
-        let scaleX = frame.size.width / image.extent.size.width
-        let scaleY = frame.size.height / image.extent.size.height
-        let scaledImage = image.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-
-        return UIImage(ciImage: scaledImage)
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -61,7 +50,7 @@ class ReceiveBtcViewController: UIViewController {
             return
         }
 
-        walletQRCode.image = QRImageGenerator.imageForText(text: bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: btc_amount_double), frame: walletQRCode.frame)
+        walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: btc_amount_double), frame: walletQRCode.frame)
 
         let satoshi: Int = Int(btc_amount_double * 100000000)
         let usd_amount = AccountStore.shared.satoshiToUSD(amount: satoshi)
