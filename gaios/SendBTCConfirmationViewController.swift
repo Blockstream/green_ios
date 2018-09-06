@@ -23,8 +23,6 @@ class SendBTCConfirmationViewController: UIViewController {
     @IBOutlet weak var fiatAmountLabel: UILabel!
     @IBOutlet weak var walletNameLabel: UILabel!
     @IBOutlet weak var recepientAddressLabel: UILabel!
-    @IBOutlet weak var totalLabel: UILabel!
-    @IBOutlet weak var feelabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,10 +31,9 @@ class SendBTCConfirmationViewController: UIViewController {
         recepientAddressLabel.text = toAddress
         fiatFeeAmount = AccountStore.shared.satoshiToUSD(amount: satoshi_fee * 250)
         let currency = SettingsStore.shared.getCurrencyString()!
-        totalLabel.text = String(format: "%.2f %@", fiat_amount+fiatFeeAmount, currency)
         self.tabBarController?.tabBar.isHidden = true
         walletNameLabel.text = wallet?.name
-        feelabel.text = String(format: "(incl. %.2f %@ fee)", fiatFeeAmount, currency)
+        hideKeyboardWhenTappedAround()
     }
 
     @IBAction func sendButtonClicked(_ sender: Any) {
