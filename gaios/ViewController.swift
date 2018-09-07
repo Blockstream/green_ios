@@ -142,7 +142,7 @@ class ViewController: UIViewController, WalletViewDelegate{
     }
 
     func cardViewDismissed(cardView: CardView) {
-        if(self.viewIfLoaded?.window != nil ) {
+        if(self.navigationController?.viewControllers.count == 1) {
             showButtons()
         }
         let wallet = cardView as! ColoredCardView
