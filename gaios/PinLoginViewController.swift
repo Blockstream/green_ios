@@ -22,8 +22,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var pinCode: String = ""
     var counter: Int = 0
     var setPinMode: Bool = false
-    var pinIdentifier: String = ""
-    var pinSecret: String = ""
+    var pinData: String = ""
 
     var firstPin: String = ""
     var pinConfirm: String = ""
@@ -54,9 +53,13 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 //login
                 let size = CGSize(width: 30, height: 30)
                 startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-               /* DispatchQueue.global(qos: .background).async {
-                    wrap { return try getSession().login(pin: self.pinCode, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
-
+                DispatchQueue.global(qos: .background).async {
+                    wrap { return try getSession().loginWithPin(pin: self.pinCode, pin_data: self.pinData) }.done { _ in
+                        DispatchQueue.main.async {
+                            self.stopAnimating()
+                            AccountStore.shared.initializeAccountStore()
+                            self.performSegue(withIdentifier: "mainMenu", sender: self)
+                        }
                     }.catch { error in
                         print("incorrect PIN ", error)
                         DispatchQueue.main.async {
@@ -68,7 +71,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                         }
 
                     }
-                }*/
+                }
                 return
             }
             if (firstStep) {
@@ -86,13 +89,14 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 startAnimating(size, message: "Setting pin...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
                 DispatchQueue.global(qos: .background).async {
                     wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 10)) }
-                        .done { (result: [String: Any]?) in
+                        .done { (result: String?) in
+                            guard result != nil else {
+                                self.stopAnimating()
+                                return
+                            }
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                let secret = result!["secret"] as! String
-                                let pinIdentifier = result!["pin_identifier"] as! String
-                                KeychainHelper.savePassword(service: "pinIdentifier", account: "user", data: pinIdentifier)
-                                KeychainHelper.savePassword(service: "pinSecret", account: "user", data: secret)
+                                KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
                                 self.performSegue(withIdentifier: "mainMenu", sender: self)
                             }
                         }.catch { error in

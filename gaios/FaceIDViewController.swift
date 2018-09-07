@@ -13,8 +13,7 @@ import NVActivityIndicatorView
 class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
     
     var password: String = ""
-    var pinIdentifier: String = ""
-    var pinSecret: String = ""
+    var pinData: String = ""
     let bioID = BiometricIDAuth()
     
     override func viewDidLoad() {
@@ -33,9 +32,9 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
                 let size = CGSize(width: 30, height: 30)
                 self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
                 DispatchQueue.global(qos: .background).async {
-                   /* wrap { return try getSession().login(pin: self.password, pin_identifier: self.pinIdentifier, pin_secret: self.pinSecret) }.done { (loginData: [String: Any]?) in
+                    wrap { return try getSession().loginWithPin(pin: self.password, pin_data: self.pinData) }.done { _ in
                         DispatchQueue.main.async {
-                            getGAService().loginData = loginData
+                            self.stopAnimating()
                             AccountStore.shared.initializeAccountStore()
                             self.performSegue(withIdentifier: "mainMenu", sender: self)
                         }
@@ -47,7 +46,7 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
                         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
                             self.stopAnimating()
                         }
-                    }*/
+                    }
                 }
             } else {
                 //error

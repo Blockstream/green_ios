@@ -66,8 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     static func removeKeychainData() {
-        KeychainHelper.removePassword(service: "pinIdentifier", account: "user")
-        KeychainHelper.removePassword(service: "pinSecret", account: "user")
+        KeychainHelper.removePassword(service: "pinData", account: "user")
         KeychainHelper.removePassword(service: "password", account: "user")
     }
 
@@ -82,23 +81,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         //AppDelegate.removeKeychainData()
 
-        let pinIdentifier = KeychainHelper.loadPassword(service: "pinIdentifier", account: "user")
-        let pinSecret = KeychainHelper.loadPassword(service: "pinSecret", account: "user")
-        if(pinIdentifier != nil && pinSecret != nil) {
+        let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
+        if(pinData != nil) {
             let password = KeychainHelper.loadPassword(service: "password", account: "user")
             if(password != nil) {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
                 firstVC.password = password!
-                firstVC.pinSecret = pinSecret!
-                firstVC.pinIdentifier = pinIdentifier!
+                firstVC.pinData = pinData!
                 self.window?.rootViewController = firstVC
                 return true
             }
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-            firstVC.pinSecret = pinSecret!
-            firstVC.pinIdentifier = pinIdentifier!
+            firstVC.pinData = pinData!
             self.window?.rootViewController = firstVC
         } else {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)

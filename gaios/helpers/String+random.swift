@@ -93,4 +93,9 @@ extension NSMutableAttributedString {
         self.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: range)
     }
 
+    func setFont(font: UIFont, stringValue: String) {
+        let range: NSRange = self.mutableString.range(of: stringValue, options: .caseInsensitive)
+        self.addAttributes([NSAttributedStringKey.font: font], range: range)
+    }
+
 }

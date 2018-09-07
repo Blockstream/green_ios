@@ -201,10 +201,11 @@ class CreateWalletViewController: UIViewController {
         let end = start + 6
         for index in start..<end {
             let real = index+1
-            let formattedString = NSMutableAttributedString(string: String(format: "%d. %@", real, mnemonics[index]))
-            formattedString.setColor(color: UIColor.customMatrixGreen(), forText: String(format: "%d.", real))
+            let formattedString = NSMutableAttributedString(string: String(format: "%d  %@", real, mnemonics[index]))
+            formattedString.setColor(color: UIColor.customMatrixGreen(), forText: String(format: "%d", real))
+            formattedString.setFont(font: UIFont.systemFont(ofSize: 13), stringValue: String(format: "%d", real))
             arrayLabels[index % 6].attributedText = formattedString
-            arrayLabels[index % 6].sizeToFit()
+
         }
      }
 
