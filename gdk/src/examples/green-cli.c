@@ -93,10 +93,11 @@ const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* 
         printf("Please select 2fa factor\n");
         struct GA_twofactor_factor* option;
         for (uint32_t i = 0; i < factor_count; ++i) {
-            const char* type;
+            char* type;
             CALL(GA_twofactor_factor_list_get_factor(factors, i, &option))
             CALL(GA_twofactor_factor_type(option, &type))
             printf("%u) %s\n", i, type);
+            GA_destroy_string(type);
         }
         printf("? ");
         int selection = atoi(rawinput());
@@ -108,9 +109,10 @@ const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* 
 /* Prompt user at console for 2fa code */
 const char* _user_get_code(const struct GA_twofactor_factor* factor)
 {
-    const char* type;
+    char* type;
     CALL(GA_twofactor_factor_type(factor, &type))
     printf("Please enter 2fa code sent via %s: ", type);
+    GA_destroy_string(type);
     return rawinput();
 }
 

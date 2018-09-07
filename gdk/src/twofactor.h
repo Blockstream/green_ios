@@ -103,7 +103,7 @@ int GA_destroy_twofactor_factor_list(struct GA_twofactor_factor_list* factors);
  *
  * Possible types: 'email', 'sms', 'phone', 'gauth'
  */
-GASDK_API int GA_twofactor_factor_type(const struct GA_twofactor_factor* factor, const char** type);
+GASDK_API int GA_twofactor_factor_type(const struct GA_twofactor_factor* factor, char** type);
 
 /**
  * Request a two factor authentication code be sent from the server

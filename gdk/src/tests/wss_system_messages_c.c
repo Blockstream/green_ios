@@ -25,11 +25,11 @@ int main(int argc, char* argv[])
     ret = ret == GA_OK ? GA_register_user(session, DEFAULT_MNEMONIC) : ret;
     ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC) : ret;
 
-    const char* message_text = NULL;
+    char* message_text = NULL;
 
     while ((ret = GA_get_system_message(session, &message_text)) == GA_OK && *message_text) {
         // Fetching the message again should return the same message
-        const char* same_text = NULL;
+        char* same_text = NULL;
         ret = GA_get_system_message(session, &same_text);
         if (ret == GA_OK) {
             ret = strcmp(message_text, same_text) ? GA_ERROR : GA_OK;
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
         }
 
         // Try acking with a munged text: it should fail
-        const char* munged_text = message_text + 1;
+        char* munged_text = message_text + 1;
         ret = ret == GA_OK ? GA_ack_system_message(session, munged_text) : ret;
         ret = ret == GA_OK ? GA_ERROR : GA_OK;
 

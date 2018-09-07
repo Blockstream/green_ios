@@ -106,21 +106,26 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name);
         void delete_address_book_entry(const std::string& address);
 
-        nlohmann::json get_utxos(uint32_t num_confs);
-        nlohmann::json get_utxos(uint32_t subaccount, uint32_t num_confs);
+        nlohmann::json get_unspent_outputs(uint32_t num_confs);
+        nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
+        nlohmann::json get_transaction_details(const std::string& txhash_hex);
 
         std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const nlohmann::json& utxos, amount fee_rate, bool send_all);
 
-        void send(const std::string& tx_hex, const nlohmann::json& twofactor_data);
-        void send(const std::vector<std::pair<std::string, amount>>& address_amount, const nlohmann::json& utxos,
-            amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
-        void send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all,
-            const nlohmann::json& twofactor_data);
-        void send(uint32_t subaccount, const std::vector<std::pair<std::string, amount>>& address_amount,
+        nlohmann::json send(const std::string& tx_hex, const nlohmann::json& twofactor_data);
+        nlohmann::json send(const std::vector<std::pair<std::string, amount>>& address_amount,
+            const nlohmann::json& utxos, amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
+        nlohmann::json send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate,
+            bool send_all, const nlohmann::json& twofactor_data);
+        nlohmann::json send(uint32_t subaccount, const std::vector<std::pair<std::string, amount>>& address_amount,
             amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
 
+        void send_nlocktimes();
+
         void set_transaction_memo(const std::string& txhash_hex, const std::string& memo, const std::string& memo_type);
+
+        std::string get_mnemmonic_passphrase(const std::string& password);
 
         std::string get_system_message();
         void ack_system_message(const std::string& system_message);

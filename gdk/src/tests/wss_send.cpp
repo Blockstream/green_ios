@@ -55,7 +55,15 @@ int main(int argc, char** argv)
         const std::string addr{"bcrt1q0wamd2z3yxrwa3c96knlfdjntj6hhngweuj4vv"}; // P2WPKH
         const std::string addr{ "bcrt1qkk3vjcjsvy3kd6389lavdkt5f2h5k3d2ekt25l8uhyc7uw64sfvsk5excw" }; // P2WSH
 #endif
-        session_1.send(0, { { addr, sdk::amount{ 100000 } } }, sdk::amount{ 1000 }, false, nlohmann::json());
+        nlohmann::json utxos = session_1.get_unspent_outputs(0, 0);
+        (void)utxos;
+
+        nlohmann::json details
+            = session_1.send(0, { { addr, sdk::amount{ 100000 } } }, sdk::amount{ 1000 }, false, nlohmann::json());
+
+        nlohmann::json tx_details = session_1.get_transaction_details(details["txhash"]);
+        (void)tx_details;
+
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

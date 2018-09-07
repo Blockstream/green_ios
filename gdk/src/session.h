@@ -94,7 +94,7 @@ GASDK_API int GA_disconnect(struct GA_session* session);
  * Create a new user account.
  *
  * @session The server session to use.
- * @mnemonic The user mnemonic.
+ * @mnemonic The user's mnemonic passphrase.
  *
  * GA_ERROR if registration is unsuccessful.
  */
@@ -104,7 +104,7 @@ GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic)
  * Authenticate an user.
  *
  * @session The server session to use.
- * @mnemonic The user mnemonic.
+ * @mnemonic The user's mnemonic passphrase.
  *
  * GA_ERROR if authentication is unsuccessful.
  */
@@ -148,12 +148,12 @@ GASDK_API int GA_remove_account(struct GA_session* session, const GA_json* twofa
  * @details The subaccount details. "name" (which must not be already used in
  *     the wallet) and "type" (either "2of2" or "2of3") must be populated. For
  *     type "2of3" the caller may provide either "recovery_mnemonic" or "recovery_xpub"
- *     if they do not wish to have a mnemonic generated automatically. All other
- *     fields are ignored.
+ *     if they do not wish to have a mnemonic passphrase generated automatically.
+ *     All other fields are ignored.
  * @subaccount Destination for the created subaccount details. For 2of3
  *     subaccounts the field "recovery_xpub" will be populated, and "recovery_mnemonic"
- *     will contain the recovery mnemonic if one was generated. These values
- *     should be stored safely by the caller as they will not be returned again
+ *     will contain the recovery mnemonic passphrase if one was generated. These
+ *     values should be stored safely by the caller as they will not be returned again
  *     by any GDK call such as GA_get_subaccounts.
  *
  * GA_ERROR if creation is unsuccessful.
@@ -241,6 +241,30 @@ GASDK_API int GA_get_receive_address(
     struct GA_session* session, uint32_t subaccount, uint32_t addr_type, char** output);
 
 /**
+ * Get the user's unspent transaction outputs.
+ *
+ * @session The server session to use.
+ * @subaccount The subaccount to fetch UTXOs from.
+ * @num_confs The minimum number of confirmations required for UTXOs to return.
+ * @utxos Destination for the returned utxos.
+ *
+ * GA_ERROR if utxos could not be retrieved.
+ */
+GASDK_API int GA_get_unspent_outputs(
+    struct GA_session* session, uint32_t subaccount, uint32_t num_confs, GA_json** utxos);
+
+/**
+ * Get a transaction's details.
+ *
+ * @session The server session to use.
+ * @txhash_hex The transaction hash of the transaction to fetch.
+ * @transaction Destination for the transaction details.
+ *
+ * GA_ERROR if the transaction details could not be fetched.
+ */
+GASDK_API int GA_get_transaction_details(struct GA_session* session, const char* txhash_hex, GA_json** transaction);
+
+/**
  * The sum of unspent outputs destined to user’s wallet.
  *
  * @session The server session to use.
@@ -266,10 +290,10 @@ GASDK_API int GA_get_available_currencies(struct GA_session* session, GA_json** 
  * Set a PIN for the user wallet.
  *
  * @session The server session to use.
- * @mnemonic The user mnemonic.
+ * @mnemonic The user's mnemonic passphrase.
  * @pin The user PIN.
  * @device The user device identifier.
- * @pin_data The returned PIN data containing the users encrypted mnemonics.
+ * @pin_data The returned PIN data containing the user's encrypted mnemonic passphrase.
  *
  * GA_ERROR if the PIN could not be set.
  */
@@ -287,11 +311,22 @@ GASDK_API int GA_set_pin(
  * @amt_siz The count of items in @amt.
  * @fee_rate The fee rate.
  * @send_all One of @GA_TRUE or @GA_FALSE.
+ * @transaction destination for the resulting transaction's details.
  *
  * GA_ERROR if raw transaction could not be created.
  */
 GASDK_API int GA_send(struct GA_session* session, uint32_t subaccount, const char** addr, size_t add_siz,
-    const uint64_t* amt, size_t amt_siz, uint64_t fee_rate, uint32_t send_all, const GA_json* twofactor_data);
+    const uint64_t* amt, size_t amt_siz, uint64_t fee_rate, uint32_t send_all, const GA_json* twofactor_data,
+    GA_json** transaction);
+
+/**
+ * Request an email containing the user’s nLockTime transactions.
+ *
+ * @session The server session to use.
+ *
+ * GA_ERROR if nLockTime transactions could not be sent
+ */
+GASDK_API int GA_send_nlocktimes(struct GA_session* session);
 
 /**
  * Add a transaction memo to a user's GreenAddress transaction.
@@ -308,6 +343,19 @@ GASDK_API int GA_set_transaction_memo(
     struct GA_session* session, const char* txhash_hex, const char* memo, uint32_t memo_type);
 
 /*
+ * Get the user's mnemonic passphrase.
+ *
+ * @session The server session to use.
+ * @password Optional password to encrypt the users mnemonic passphrase with.
+ * @mnemonic Destination for the users 24 word mnemonic passphrase. if a
+ *     non-empty password is given, the returned mnemonic passphrase will be
+ *     27 words long and will require the password to use for logging in.
+ *
+ * GA_ERROR if the user is not logged in or logged in in watch-only mode.
+ */
+GASDK_API int GA_get_mnemmonic_passphrase(struct GA_session* session, const char* password, char** mnemonic);
+
+/*
  * Get the latest un-acknowledged system message.
  *
  * @session The server session to use.
@@ -316,7 +364,7 @@ GASDK_API int GA_set_transaction_memo(
  * GA_ERROR if the message could not be retrieved. If all current messages
  * are acknowledged, an empty string is returned.
  */
-GASDK_API int GA_get_system_message(struct GA_session* session, const char** message_text);
+GASDK_API int GA_get_system_message(struct GA_session* session, char** message_text);
 
 /*
  * Sign and acknowledge a system message.
