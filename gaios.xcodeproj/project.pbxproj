@@ -950,6 +950,15 @@
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
+				);
+				"OTHER_LDFLAGS[arch=*]" = (
+					"$(inherited)",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
+					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -974,6 +983,15 @@
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
+				);
+				"OTHER_LDFLAGS[arch=*]" = (
+					"$(inherited)",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
+					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
