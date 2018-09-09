@@ -139,8 +139,9 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                         .done { _ in
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                AccountStore.shared.initializeAccountStore()
                                 AppDelegate.removeKeychainData()
+                                Storage.wipeAll()
+                                AccountStore.shared.initializeAccountStore()
                                 self.performSegue(withIdentifier: "congrats", sender: self)
                             }
                         }.catch { error in

@@ -18,4 +18,30 @@ class Storage {
         }
     }
 
+    static func wipeSettings() {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("settings.json") else {
+            return
+        }
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch let error as NSError {
+            print("Error: \(error.domain)")
+        }
+    }
+
+    static func wipeNotifications() {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("notifications.json") else {
+            return
+        }
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch let error as NSError {
+            print("Error: \(error.domain)")
+        }
+    }
+
+    static func wipeAll() {
+        wipeSettings()
+        wipeNotifications()
+    }
 }

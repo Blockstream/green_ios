@@ -51,6 +51,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         retry(session: getSession(), network: getNetwork()) {
             wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
             }.done { _ in
+                Storage.wipeAll()
+                AppDelegate.removeKeychainData()
                 AccountStore.shared.initializeAccountStore()
                 self.performSegue(withIdentifier: "mainMenu", sender: self)
             }.catch { error in
