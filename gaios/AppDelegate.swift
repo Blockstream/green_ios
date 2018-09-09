@@ -70,15 +70,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         KeychainHelper.removePassword(service: "password", account: "user")
     }
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+    func connect() {
         wrap {
             try getSession().connect(network: getNetwork(), debug: true)
             }.done {
                 print("Connected")
             }.catch { error in
-                print("Connection failed")
+                DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                    self.connect()
+                }
         }
+    }
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        connect()
         //AppDelegate.removeKeychainData()
 
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
@@ -116,6 +122,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        connect()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
