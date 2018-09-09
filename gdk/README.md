@@ -2,7 +2,7 @@
 
 ## Meson/Ninja build:
 
-### Deps:
+### Build dependencies:
 
 For Debian Stretch:
 
@@ -29,11 +29,9 @@ JAVA bindings can be built by installing swig as explained above and setting JAV
 
 ### To build:
 
-* tools/build.sh
+* tools/build.sh <options>
 
-With no options it will attempt to build all configurations buildable (i.e. for iphone you can only build on osx).
-
-Options exist if you want to build a different configuration (flags in squared brackets are optional):
+Options exist to build for a particular configuration/platform (flags in squared brackets are optional):
 
 --clang
 --gcc

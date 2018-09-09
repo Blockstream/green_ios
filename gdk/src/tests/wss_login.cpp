@@ -23,7 +23,7 @@ int main(int argc, char** argv)
         // TODO GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);
         if (options->testnet) {
             auto r = session.get_available_currencies();
-            std::vector<std::string> v = r["per_exchange/LOCALBTC"];
+            std::vector<std::string> v = r["per_exchange"]["LOCALBTC"];
             GA_SDK_RUNTIME_ASSERT(std::find(v.begin(), v.end(), "GBP") != v.end());
         }
     } catch (const std::exception& e) {

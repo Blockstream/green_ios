@@ -406,7 +406,7 @@ public class Session {
         return TwoFactorCall(optr: optr!);
     }
 
-    public func get_transaction_details(txhash: String) throws -> [String: Any]? {
+    public func getTransactionDetails(txhash: String) throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         try callWrapper(fun: GA_get_transaction_details(session, txhash, &result))
         defer {
@@ -415,9 +415,18 @@ public class Session {
         return try convertOpaqueJsonToDict(o: result!)
     }
 
+    public func getFeeEstimates() throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        try callWrapper(fun: GA_get_fee_estimates(session, &result))
+        defer {
+            GA_destroy_json(result)
+        }
+        return try convertOpaqueJsonToDict(o: result!)
+    }
+
     public func getMnemmonicPassphrase(password: String) throws -> String {
         var buff: UnsafeMutablePointer<Int8>? = nil
-        try callWrapper(fun: GA_get_mnemmonic_passphrase(session, password, &buff))
+        try callWrapper(fun: GA_get_mnemonic_passphrase(session, password, &buff))
         defer {
             GA_destroy_string(buff)
         }

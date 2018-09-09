@@ -177,10 +177,15 @@ GA_SDK_DEFINE_C_FUNCTION_3(
         session->login_watch_only(username, password);
     })
 
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_fee_estimates, struct GA_session*, session, GA_json**, estimates, {
+    GA_SDK_RUNTIME_ASSERT(estimates);
+    *json_cast(estimates) = new nlohmann::json(session->get_fee_estimates());
+})
+
 GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_get_mnemmonic_passphrase, struct GA_session*, session, const char*, password, char**, mnemonic, {
+    GA_get_mnemonic_passphrase, struct GA_session*, session, const char*, password, char**, mnemonic, {
         GA_SDK_RUNTIME_ASSERT(mnemonic);
-        *mnemonic = to_c_string(session->get_mnemmonic_passphrase(password ? password : std::string()));
+        *mnemonic = to_c_string(session->get_mnemonic_passphrase(password ? password : std::string()));
     })
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_get_system_message, struct GA_session*, session, char**, message_text, {

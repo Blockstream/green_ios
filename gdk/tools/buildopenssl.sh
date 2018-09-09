@@ -26,9 +26,9 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     export CROSS_SDK="${IOS_PLATFORM}.sdk"
     export PATH="${XCODE_DEFAULT_PATH}:$PATH"
     if test "x$1" == "x--iphonesim"; then
-        all_archs="i386 x86_64"
+        all_archs="x86_64"
     else
-        all_archs="armv7 armv7s arm64"
+        all_archs="arm64"
     fi
     for arch in $all_archs; do
         export CURRENT_ARCH=$arch
@@ -82,12 +82,8 @@ EOF
 #endif
 #endif
 EOF
-        lipo -create build-i386/tmp/i386/lib/libcrypto.a \
-                     build-x86_64/tmp/x86_64/lib/libcrypto.a \
-             -output $openssl_prefix/lib/libcrypto.a
-        lipo -create build-i386/tmp/i386/lib/libssl.a \
-                     build-x86_64/tmp/x86_64/lib/libssl.a \
-         -output $openssl_prefix/lib/libssl.a
+	cp build-x86_64/tmp/x86_64/lib/libcrypto.a $openssl_prefix/lib/libcrypto.a
+	cp build-x86_64/tmp/x86_64/lib/libssl.a $openssl_prefix/lib/libssl.a
     else
         cat > $openssl_prefix/include/openssl/opensslconf.h << EOF
 #if __ARM_ARCH_7A__
@@ -115,14 +111,8 @@ EOF
 #endif
 #endif
 EOF
-        lipo -create build-armv7/tmp/armv7/lib/libcrypto.a \
-                     build-armv7s/tmp/armv7s/lib/libcrypto.a \
-                     build-arm64/tmp/arm64/lib/libcrypto.a \
-             -output $openssl_prefix/lib/libcrypto.a
-        lipo -create build-armv7/tmp/armv7/lib/libssl.a \
-                     build-armv7s/tmp/armv7s/lib/libssl.a \
-                     build-arm64/tmp/arm64/lib/libssl.a \
-             -output $openssl_prefix/lib/libssl.a
+	cp build-arm64/tmp/arm64/lib/libcrypto.a $openssl_prefix/lib/libcrypto.a
+	cp build-arm64/tmp/arm64/lib/libssl.a $openssl_prefix/lib/libssl.a
     fi
 elif [ \( "$1" = "--windows" \) ]; then
     ./Configure mingw64 --cross-compile-prefix=x86_64-w64-mingw32- --prefix="$openssl_prefix" $OPENSSL_OPTIONS

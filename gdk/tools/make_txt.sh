@@ -11,7 +11,7 @@ if [ \( "$3" = "android" \) ]; then
     STRIP="$1/toolchain/bin/$SDK_PLATFORM-strip"
     CFLAGS=$(comma_separate "--sysroot=$1/toolchain/sysroot" $SDK_CFLAGS)
     LDFLAGS=$(comma_separate $SDK_LDFLAGS)
-    ARCHS="''"
+    ARCHS="[]"
 elif [ \( "$3" = "iphone" \) -o \( "$3" = "iphonesim" \) ]; then
     C_COMPILER="clang"
     CXX_COMPILER="clang++"
@@ -22,6 +22,7 @@ elif [ \( "$3" = "windows" \) ]; then
     C_COMPILER="x86_64-w64-mingw32-gcc-posix"
     CXX_COMPILER="x86_64-w64-mingw32-g++-posix"
     STRIP="x86_64-w64-mingw32-strip"
+    ARCHS="[]"
 else
     echo "cross build type not supported" && exit 1
 fi
@@ -38,7 +39,7 @@ strip = '$STRIP'
 
 [properties]
 target_os = '$4'
-archs = '-pipe'
+archs = $ARCHS
 
 [host_machine]
 system = 'linux'

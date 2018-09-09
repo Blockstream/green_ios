@@ -125,7 +125,9 @@ namespace sdk {
 
         void set_transaction_memo(const std::string& txhash_hex, const std::string& memo, const std::string& memo_type);
 
-        std::string get_mnemmonic_passphrase(const std::string& password);
+        nlohmann::json get_fee_estimates();
+
+        std::string get_mnemonic_passphrase(const std::string& password);
 
         std::string get_system_message();
         void ack_system_message(const std::string& system_message);

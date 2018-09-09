@@ -186,7 +186,7 @@ void getbalance(struct GA_session* session)
     CALL(GA_destroy_json(balance));
 }
 
-void send(struct GA_session* session, const char* address, const char* amount)
+void send_to_address(struct GA_session* session, const char* address, const char* amount)
 {
     const char* addresses[] = { address };
     uint64_t amount_ = atoi(amount);
@@ -229,7 +229,7 @@ int main(int argc, char* argv[])
     } else if (strcmp(action, "get-balance") == 0) {
         getbalance(session);
     } else if (strcmp(action, "send") == 0) {
-        send(session, argv[2], argv[3]);
+        send_to_address(session, argv[2], argv[3]);
     } else {
         printf("Unknown action: %s\n", action);
     }

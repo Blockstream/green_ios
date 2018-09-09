@@ -16,15 +16,19 @@ sources = ['amount.hpp',
            'session.cpp',
            'transaction_utils.hpp',
            'transaction_utils.cpp',
-           'twofactor.h',
            'twofactor.hpp',
            'twofactor.cpp',
            'utils.hpp',
-           'utils.cpp',
-           'common.h',
+           'utils.cpp']
+
+headers = ['common.h',
            'containers.h',
            'session.h',
-           'utils.h']
+           'twofactor.h',
+           'utils.h'
+]
+
+sources += headers
 
 if clang_format.found()
     custom_target('clang-format', input : sources, output : 'clang-format', command : [clang_format, '-i', '@INPUT@'])
@@ -39,48 +43,49 @@ endif
 
 dependencies = subproject_deps + [atomic_dep, m_dep, threads_dep, dl_dep, ws2_dep, bcrypt_dep, ssp_dep]
 
-link_args = []
+local_link_args = []
 link_whole = []
 if build_jni
     message('Building JNI bindings...')
     subdir('swig_java')
     link_whole += [libswig_java]
-    wallycore_libdir = wallycore.get_variable('libdir')
-    if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
-        link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, 'libwallycore.a'), join_paths(wallycore_libdir, 'libsecp256k1.a'), '-Wl,--no-whole-archive']
-        if build_machine.system() == 'darwin'
-            link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, '..', '..', 'src', '.libs', 'libswig_java.a'), '-Wl,--no-whole-archive']
-        endif
-    elif build_machine.system() == 'darwin'
-        link_args += ['-Wl,-force_load', join_paths(wallycore_libdir, 'libwallycore.a')]
-    endif
 else
     message('Disabled JNI bindings')
 endif
 
-libga = library('greenaddress',
-                sources,
-                include_directories : incdir,
-                link_whole : link_whole,
-                link_args : link_args,
-                dependencies : dependencies)
+wallycore_libdir = wallycore.get_variable('libdir')
+if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+    local_link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, 'libwallycore.a'), '-Wl,--no-whole-archive']
+    if build_jni and build_machine.system() == 'darwin'
+        local_link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, '..', '..', 'src', '.libs', 'libswig_java.a'), '-Wl,--no-whole-archive']
+    endif
+elif build_machine.system() == 'darwin'
+    local_link_args += ['-Wl,-force_load', join_paths(wallycore_libdir, 'libwallycore.a')]
+endif
 
-libga_dep = declare_dependency(include_directories : incdir, link_with : libga, dependencies : dependencies)
+install_headers(
+    headers,
+    subdir : 'gdk'
+)
+
+libga = both_libraries('greenaddress',
+                        sources,
+                        include_directories : incdir,
+                        link_whole : link_whole,
+                        link_args : local_link_args,
+                        dependencies : dependencies,
+                        install : true)
+
+libga_dep = declare_dependency(include_directories : incdir, link_with : libga.get_static_lib())
 
 if host_machine.cpu_family().contains('iphone')
-    output = 'single_arch_libgreenaddress_armv7.a'
-    if host_machine.cpu_family().contains('sim')
-        output = 'single_arch_libgreenaddress_x86_64.a'
-    endif
+    output = 'allsym_libgreenaddress.a'
     archiver = custom_target('archiver',
                              output : output,
-                             command : [join_paths(meson.source_root(), 'tools', 'archiver.sh'), '--' + meson.get_cross_property('target_os'),
-                                        meson.build_root()],
+                             command : [join_paths(meson.source_root(), 'tools', 'archiver.sh'), meson.build_root()],
                              build_always : true,
                              build_by_default : true,
                              depends : libga)
-
-    archiver_dep = declare_dependency(dependencies : libga_dep)
 endif
 
 # tests

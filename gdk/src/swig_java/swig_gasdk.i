@@ -139,7 +139,6 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %}
 
 %javaconst(1);
-%ignore GA_destroy_dict;
 %ignore GA_destroy_string;
 
 %pragma(java) jniclasscode=%{
@@ -326,7 +325,8 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %returns_string(GA_generate_mnemonic)
 %returns_struct(GA_get_available_currencies, GA_json)
 %returns_struct(GA_get_balance, GA_json)
-%returns_string(GA_get_mnemmonic_passphrase)
+%returns_struct(GA_get_fee_estimates, GA_json)
+%returns_string(GA_get_mnemonic_passphrase)
 %returns_array_(GA_get_random_bytes, 2, 3, jarg1)
 %returns_struct(GA_get_transaction_details, GA_json)
 %returns_struct(GA_get_subaccounts, GA_json)
@@ -342,7 +342,7 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %returns_void__(GA_remove_account)
 %returns_struct(GA_send, GA_json)
 %returns_void__(GA_send_nlocktimes)
-%returns_string(GA_set_pin)
+%returns_struct(GA_set_pin, GA_json)
 %returns_void__(GA_set_transaction_memo)
 
 %include "../common.h"

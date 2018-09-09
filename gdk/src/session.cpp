@@ -52,6 +52,9 @@ namespace sdk {
     static const std::vector<unsigned char> DUMMY_WITNESS_SCRIPT(3 + SHA256_LEN);
 
     namespace {
+        const uint32_t DEFAULT_MIN_FEE = 1000; // 1 satoshi/byte
+        const uint32_t NUM_FEE_ESTIMATES = 24;
+
         std::once_flag one_time_setup_flag;
 
         void one_time_setup()
@@ -137,6 +140,7 @@ namespace sdk {
         session_impl(network_parameters net_params, bool debug)
             : m_controller(m_io)
             , m_net_params(std::move(net_params))
+            , m_min_fee(DEFAULT_MIN_FEE)
             , m_next_subaccount(0)
             , m_block_height(0)
             , m_master_key(nullptr)
@@ -148,6 +152,7 @@ namespace sdk {
             , m_debug(debug)
         {
             one_time_setup();
+            m_fee_estimates.assign(NUM_FEE_ESTIMATES, m_min_fee);
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
         }
 
@@ -156,7 +161,11 @@ namespace sdk {
         session_impl& operator=(const session_impl& other) = delete;
         session_impl& operator=(session_impl&& other) noexcept = delete;
 
-        ~session_impl() { m_io.stop(); }
+        ~session_impl()
+        {
+            disconnect();
+            m_io.stop();
+        }
 
         void connect();
         void disconnect();
@@ -225,7 +234,9 @@ namespace sdk {
 
         void change_settings_pricing_source(const std::string& currency, const std::string& exchange);
 
-        std::string get_mnemmonic_passphrase(const std::string& password);
+        nlohmann::json get_fee_estimates();
+
+        std::string get_mnemonic_passphrase(const std::string& password);
 
         std::string get_system_message();
         void ack_system_message(const std::string& system_message);
@@ -254,6 +265,8 @@ namespace sdk {
 
         static std::pair<std::string, std::string> sign_challenge(
             const wally_ext_key_ptr& master_key, const std::string& challenge);
+
+        void set_fee_estimates(const nlohmann::json& fee_estimates);
 
         bool connect_with_tls() const
         {
@@ -399,10 +412,11 @@ namespace sdk {
         network_parameters m_net_params;
 
         nlohmann::json m_login_data;
-        std::string m_mnemmonic;
+        std::string m_mnemonic;
+        amount::value_type m_min_fee;
         std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
         uint32_t m_next_subaccount;
-        nlohmann::json m_fee_estimates;
+        std::vector<uint32_t> m_fee_estimates;
         std::atomic<uint32_t> m_block_height;
         wally_ext_key_ptr m_master_key;
 
@@ -426,7 +440,7 @@ namespace sdk {
 
     void session::session_impl::disconnect()
     {
-        m_mnemmonic.clear(); // FIXME: securely clear
+        m_mnemonic.clear(); // FIXME: securely clear
         // FIXME: unsubscribe/kill WAMP connection
         // FIXME: securely destroy all held data
     }
@@ -443,6 +457,53 @@ namespace sdk {
         const auto challenge_hash = uint256_to_base256(challenge);
 
         return { sign_hash(master_key, path, challenge_hash), hex_from_bytes(path_bytes) };
+    }
+
+    void session::session_impl::set_fee_estimates(const nlohmann::json& fee_estimates)
+    {
+        // Convert server estimates into an array of NUM_FEE_ESTIMATES estimates ordered by block
+        std::vector<uint32_t> new_estimates(NUM_FEE_ESTIMATES);
+        std::map<uint32_t, uint32_t> ordered_estimates;
+        for (const auto& e : fee_estimates) {
+            const auto& feerate = e["feerate"];
+            double btc_per_k;
+            if (feerate.is_string()) {
+                const std::string feerate_str = feerate;
+                btc_per_k = boost::lexical_cast<double>(feerate_str);
+            } else {
+                btc_per_k = feerate;
+            }
+            if (btc_per_k > 0) {
+                const uint32_t actual_block = e["blocks"];
+                if (actual_block > 0 && actual_block <= new_estimates.size()) {
+                    const long long satoshi_per_k = std::lround(btc_per_k * amount::coin_value);
+                    const long long uint32_t_max = std::numeric_limits<uint32_t>::max();
+                    if (satoshi_per_k >= DEFAULT_MIN_FEE && satoshi_per_k <= uint32_t_max) {
+                        ordered_estimates[actual_block] = static_cast<uint32_t>(satoshi_per_k);
+                    }
+                }
+            }
+        }
+        size_t i = 0;
+        for (const auto& e : ordered_estimates) {
+            while (i < e.first) {
+                new_estimates[i] = e.second;
+                ++i;
+            }
+        }
+
+        // FIXME locking for m_fee_estimates
+        if (i) {
+            while (i < new_estimates.size()) {
+                new_estimates[i] = new_estimates[i - 1];
+                ++i;
+            }
+        } else {
+            // No usable estimates, use existing ones until new ones arrive
+            return;
+        }
+
+        std::swap(m_fee_estimates, new_estimates);
     }
 
     void session::session_impl::register_user(const std::string& mnemonic, const std::string& user_agent)
@@ -480,6 +541,15 @@ namespace sdk {
     {
         m_login_data = login_data;
 
+        const uint32_t min_fee = m_login_data["min_fee"];
+        if (min_fee != m_min_fee) {
+            m_min_fee = min_fee;
+            m_fee_estimates.assign(NUM_FEE_ESTIMATES, m_min_fee);
+        }
+
+        const uint32_t block_height = m_login_data["block_height"];
+        m_block_height = block_height;
+
         m_subaccounts.clear();
         m_next_subaccount = 0;
         for (const auto& subaccount : m_login_data["subaccounts"]) {
@@ -505,6 +575,8 @@ namespace sdk {
         m_system_message_ack_id = 0;
         m_system_message_ack = std::string();
         m_watch_only = watch_only;
+
+        set_fee_estimates(m_login_data["fee_estimates"]);
     }
 
     void session::session_impl::on_new_transaction(const nlohmann::json& details)
@@ -541,10 +613,7 @@ namespace sdk {
             "com.greenaddress.login.authenticate", hexder_path.first, false, hexder_path.second,
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
 
-        m_mnemmonic = mnemonic;
-
-        const uint32_t block_height = m_login_data["block_height"];
-        m_block_height = block_height;
+        m_mnemonic = mnemonic;
 
         const std::string receiving_id = m_login_data["receiving_id"];
         subscribe("com.greenaddress.txs.wallet_" + receiving_id,
@@ -557,9 +626,8 @@ namespace sdk {
             m_block_height = block_height;
         });
 
-        m_fee_estimates = m_login_data["fee_estimates"];
         subscribe("com.greenaddress.fee_estimates",
-            [this](const autobahn::wamp_event& event) { m_fee_estimates = get_fees_as_json(event); });
+            [this](const autobahn::wamp_event& event) { set_fee_estimates(get_fees_as_json(event)); });
 
         if (m_login_data.value("segwit_server", true) && !m_login_data["appearance"].value("use_segwit", false)) {
             // Enable segwit
@@ -595,10 +663,10 @@ namespace sdk {
         // FIXME: clear data somehow?
         const auto data = nlohmann::json::parse(std::begin(plaintext), std::begin(plaintext) + written);
 
-        m_mnemmonic = data["mnemonic"];
+        m_mnemonic = data["mnemonic"];
 
         // FIXME: log in directly from the seed instead of the mnemonic
-        login(m_mnemmonic, user_agent);
+        login(m_mnemonic, user_agent);
     }
 
     void session::session_impl::login_watch_only(
@@ -607,15 +675,20 @@ namespace sdk {
         const std::map<std::string, std::string> args = { { "username", username }, { "password", password } };
         wamp_call([this](wamp_call_result result) { set_login_data(get_json_result(result.get()), true); },
             "com.greenaddress.login.watch_only_v2", "custom", args, DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
-        m_mnemmonic.clear(); // FIXME: secure clear
     }
 
-    std::string session::session_impl::get_mnemmonic_passphrase(const std::string& password)
+    nlohmann::json session::session_impl::get_fee_estimates()
+    {
+        // FIXME: locking, augment with last_updated, user preference for display?
+        return { { "estimates", m_fee_estimates } };
+    }
+
+    std::string session::session_impl::get_mnemonic_passphrase(const std::string& password)
     {
         GA_SDK_RUNTIME_ASSERT(!is_watch_only());
         GA_SDK_RUNTIME_ASSERT(password.empty()); // FIXME: Implement encryption
-        GA_SDK_RUNTIME_ASSERT(!m_mnemmonic.empty());
-        return m_mnemmonic;
+        GA_SDK_RUNTIME_ASSERT(!m_mnemonic.empty());
+        return m_mnemonic;
     }
 
     std::string session::session_impl::get_system_message()
@@ -1518,13 +1591,7 @@ namespace sdk {
     session::session() = default;
     session::~session() = default;
 
-    void session::disconnect()
-    {
-        if (m_impl.get()) {
-            m_impl->disconnect();
-        }
-        m_impl.reset();
-    }
+    void session::disconnect() { m_impl.reset(); }
 
     void session::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
@@ -1804,10 +1871,16 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_system_message(); });
     }
 
-    std::string session::get_mnemmonic_passphrase(const std::string& password)
+    nlohmann::json session::get_fee_estimates()
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_mnemmonic_passphrase(password); });
+        return exception_wrapper([&] { return m_impl->get_fee_estimates(); });
+    }
+
+    std::string session::get_mnemonic_passphrase(const std::string& password)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_mnemonic_passphrase(password); });
     }
 
     void session::ack_system_message(const std::string& system_message)

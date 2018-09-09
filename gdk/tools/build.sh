@@ -13,10 +13,11 @@ fi
 
 ANALYZE=false
 LIBTYPE="shared"
-MESON_OPTIONS="--buildtype=release --werror"
+MESON_OPTIONS=""
+NINJA_TARGET=""
 EXTRA_CXXFLAGS=""
 COMPILER_VERSION=""
-BUILDTYPE=""
+BUILDTYPE="release"
 
 GETOPT='getopt'
 if [ "$(uname)" == "Darwin" ]; then
@@ -34,12 +35,18 @@ else
     exit 1
 fi
 
-TEMPOPT=`"$GETOPT" -n "build.sh" -o x,b: -l analyze,clang,gcc,mingw-w64,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
+if (($# < 1)); then
+    echo "Usage: build.sh [args] --compiler/platform. Please see README.md for examples."
+    exit 0
+fi
+
+TEMPOPT=`"$GETOPT" -n "build.sh" -o x,b: -l analyze,clang,gcc,mingw-w64,install:,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
         -x | --analyze ) ANALYZE=true; shift ;;
-        -b | --buildtype ) MESON_OPTIONS="$MESON_OPTIONS --buildtype=$2"; BUILDTYPE=$2; shift 2 ;;
+        -b | --buildtype ) BUILDTYPE=$2; shift 2 ;;
+        --install ) MESON_OPTIONS="$MESON_OPTIONS --prefix=$2"; NINJA_TARGET="install"; shift 2 ;;
         --sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=$2"; shift 2 ;;
         --clang | --gcc | --ndk | --mingw-w64 ) break ;;
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
@@ -64,6 +71,14 @@ export CFLAGS="$CFLAGS"
 export CPPFLAGS="$CFLAGS"
 export PATH_BASE=$PATH
 export BUILDTYPE
+
+MESON_OPTIONS="${MESON_OPTIONS} --buildtype=${BUILDTYPE}"
+
+if [ \( "$BUILDTYPE" = "release" \) ]; then
+    if ! [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
+        MESON_OPTIONS="${MESON_OPTIONS} --strip"
+    fi
+fi
 
 function compress_patch() {
     meson_files=($(find subprojects -mindepth 2 -maxdepth 2 -not -wholename '*packagecache*' -wholename '*-meson/meson.build*' | sort))
@@ -100,11 +115,11 @@ function build() {
     if [ ! -f "build-$C_COMPILER/build.ninja" ]; then
         rm -rf build-$C_COMPILER/meson-private
         compress_patch
-        CXXFLAGS=$EXTRA_CXXFLAGS $SCAN_BUILD meson build-$C_COMPILER --default-library=${LIBTYPE} ${MESON_OPTIONS}
+        CXXFLAGS=$EXTRA_CXXFLAGS $SCAN_BUILD meson build-$C_COMPILER --default-library=${LIBTYPE} --werror ${MESON_OPTIONS}
     fi
 
     cd build-$C_COMPILER
-    $NINJA -j$NUM_JOBS
+    $NINJA -j$NUM_JOBS $NINJA_TARGET
     cd ..
 }
 
@@ -178,10 +193,10 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
             export RANLIB="$bld_root/toolchain/bin/$SDK_PLATFORM-ranlib"
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $1 ndk
             compress_patch
-            meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt --default-library=${LIBTYPE} --buildtype=release
+            meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt --default-library=${LIBTYPE} ${MESON_OPTIONS}
         fi
         cd $bld_root
-        $NINJA -j$NUM_JOBS -v
+        $NINJA -j$NUM_JOBS -v $NINJA_TARGET
         cd ..
     }
 
@@ -196,7 +211,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     done
 fi
 
-if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
+if [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
 
     function build() {
         bld_root="$PWD/build-clang-$1-$2"
@@ -214,9 +229,9 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
         export PATH=$XCODE_DEFAULT_PATH:$XCODE_IOS_PATH:$PATH_BASE
 
         if test "x$2" == "xiphone"; then
-            export ARCHS="-arch armv7 -arch armv7s -arch arm64"
+            export ARCHS="-arch arm64"
         else
-            export ARCHS="-arch i386 -arch x86_64"
+            export ARCHS="-arch x86_64"
         fi
 
         export SDK_CFLAGS_NO_ARCH="$SDK_CFLAGS"
@@ -231,10 +246,10 @@ if [ \( "$(uname)" = "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--iphone" \) -o
             mkdir -p build-clang-$1-$2
             ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ios.txt $2 $2
             compress_patch
-            meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE} --buildtype=release
+            meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE} ${MESON_OPTIONS}
         fi
         cd $bld_root
-        $NINJA -j$NUM_JOBS -v
+        $NINJA -j$NUM_JOBS -v $NINJA_TARGET
         cd ..
     }
 
@@ -263,10 +278,10 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--mingw-w64" \) ]; then
             mkdir -p $bld_root
             ./tools/make_txt.sh $bld_root $bld_root/$1.txt $1 $1
             compress_patch
-            meson $bld_root --cross-file $bld_root/$1.txt --default-library=${LIBTYPE} --buildtype=release
+            meson $bld_root --cross-file $bld_root/$1.txt --default-library=${LIBTYPE} ${MESON_OPTIONS}
         fi
         cd $bld_root
-        $NINJA -j$NUM_JOBS -v
+        $NINJA -j$NUM_JOBS -v $NINJA_TARGET
         cd ..
     }
 

@@ -24,6 +24,11 @@ cd "${MESON_BUILD_ROOT}/libwally-core"
 
 $SED -i 's/\"wallycore\"/\"greenaddress\"/' ${MESON_BUILD_ROOT}/libwally-core/src/swig_java/swig.i
 
+ENABLE_DEBUG=""
+if [[ $BUILDTYPE == "debug" ]]; then
+    ENABLE_DEBUG="--enable-debug"
+fi
+
 if [ \( "$1" = "--ndk" \) ]; then
     . ${MESON_SOURCE_ROOT}/tools/env.sh
     . tools/android_helpers.sh
@@ -31,7 +36,7 @@ if [ \( "$1" = "--ndk" \) ]; then
     export CFLAGS="$SDK_CFLAGS -DPIC -fPIC"
 
     android_build_wally $HOST_ARCH "${MESON_BUILD_ROOT}/toolchain" $ANDROID_VERSION --host=$SDK_PLATFORM --build=$HOST_OS \
-          --enable-static --disable-shared --$ENABLE_SWIG_JAVA --target=$SDK_PLATFORM --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+          --enable-static --disable-shared --$ENABLE_SWIG_JAVA --disable-swig-python --target=$SDK_PLATFORM $ENABLE_DEBUG --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
 
     make -o configure install
 elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
@@ -40,6 +45,7 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     export CC=${XCODE_DEFAULT_PATH}/clang
     export CXX=${XCODE_DEFAULT_PATH}/clang++
     ./configure --host=armv7-apple-darwin --with-sysroot=${IOS_SDK_PATH} --build=$HOST_OS \
+                --disable-swig-java --disable-swig-python \
                 --enable-static --disable-shared --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
     make -o configure clean -j$NUM_JOBS
     make -o configure -j$NUM_JOBS
@@ -47,16 +53,12 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
 elif [ \( "$1" = "--windows" \) ]; then
      export CC=x86_64-w64-mingw32-gcc-posix
      export CXX=x86_64-w64-mingw32-g++-posix
-    ./configure --disable-swig-java --host=x86_64-w64-mingw32 --build=$HOST_OS --enable-static --disable-shared $ENABLE_DEBUG --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+    ./configure --disable-swig-java --disable-swig-python --host=x86_64-w64-mingw32 --build=$HOST_OS --enable-static --disable-shared $ENABLE_DEBUG --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
 
     make -j$NUM_JOBS
     make install
 else
     export CFLAGS="$SDK_CFLAGS -DPIC -fPIC"
-    ENABLE_DEBUG=""
-    if [[ $BUILDTYPE == "debug" ]]; then
-        ENABLE_DEBUG="--enable-debug"
-    fi
 
     ./configure --$ENABLE_SWIG_JAVA --host=$HOST_OS --enable-static --disable-shared $ENABLE_DEBUG --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
 

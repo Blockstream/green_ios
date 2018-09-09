@@ -41,7 +41,7 @@ UNTAR_DIR=$(tar ztf tmp.tar.gz | head -1 | cut -f 1 -d '/')
 echo "  Generating meson build patch..."
 mkdir -p ${UNTAR_DIR}
 cp ${DEP_DIR}/meson.build ${UNTAR_DIR}
-tar --sort=name --owner=0 --group=0 --numeric-owner --mtime="2018-08-01 00:00Z" -cf ${DEP_NAME}.tar ${UNTAR_DIR}
+tar --mode=go=rX,u+rw,a-s --sort=name --owner=0 --group=0 --numeric-owner --mtime="2018-08-01 00:00Z" -cf ${DEP_NAME}.tar ${UNTAR_DIR}
 PATCH_SHA256=$(sha256sum ${DEP_NAME}.tar | cut -f 1 -d ' ')
 
 sed -i -e "s!\(source_url.*=\).*!\1 ${URL}!" ${WRAP_DIR}/${WRAP_NAME}.wrap

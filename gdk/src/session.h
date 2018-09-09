@@ -343,6 +343,16 @@ GASDK_API int GA_set_transaction_memo(
     struct GA_session* session, const char* txhash_hex, const char* memo, uint32_t memo_type);
 
 /*
+ * Get the current network's fee estimates.
+ *
+ * @session The server session to use.
+ * @estimates Destination for the returned estimates.
+ *
+ * GA_ERROR if the user is not logged in or logged in in watch-only mode.
+ */
+GASDK_API int GA_get_fee_estimates(struct GA_session* session, GA_json** estimates);
+
+/*
  * Get the user's mnemonic passphrase.
  *
  * @session The server session to use.
@@ -353,7 +363,7 @@ GASDK_API int GA_set_transaction_memo(
  *
  * GA_ERROR if the user is not logged in or logged in in watch-only mode.
  */
-GASDK_API int GA_get_mnemmonic_passphrase(struct GA_session* session, const char* password, char** mnemonic);
+GASDK_API int GA_get_mnemonic_passphrase(struct GA_session* session, const char* password, char** mnemonic);
 
 /*
  * Get the latest un-acknowledged system message.

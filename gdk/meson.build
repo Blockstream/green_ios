@@ -1,4 +1,4 @@
-project('sdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.41.1', default_options : ['cpp_std=c++14'])
+project('sdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.46', default_options : ['cpp_std=c++14'])
 
 # header checks (must be architecture independent)
 compiler = meson.get_compiler('cpp')
@@ -17,6 +17,8 @@ check_headers = [
 foreach h : check_headers
     compiler.has_header(h)
 endforeach
+
+static_libstdc = compiler.has_link_argument('-static-libstdc++')
 
 cross_win_build = meson.is_cross_build() and meson.get_cross_property('target_os') == 'windows'
 use_gold = (build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')) and not cross_win_build
@@ -43,17 +45,18 @@ common_compile_options = [
 
 add_project_arguments(common_compile_options, language : ['c', 'cpp'])
 
-common_linker_options = [
+common_link_args = [
     '-Wl,-z,defs',
     '-Wl,-z,now',
-    '-Wl,-z,relro'
+    '-Wl,-z,relro',
+    '-Wl,-z,noexecstack'
 ]
 
 if use_gold
-    add_project_link_arguments(common_linker_options, language : ['c', 'cpp'])
+    add_project_link_arguments(common_link_args, language : ['c', 'cpp'])
 endif
 
-if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address' and compiler.get_id() == 'clang'
+if get_option('b_sanitize') == 'address' and compiler.get_id() == 'clang'
     add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
     add_project_link_arguments(['-shared-libasan'], language : ['c', 'cpp'])
 endif
@@ -81,6 +84,23 @@ if swift
     add_project_link_arguments(['-L' + join_paths(meson.source_root(), 'src', 'swift', 'GreenAddress')], language : 'swift')
     add_project_link_arguments(['-lGreenAddress'], language : 'swift')
     add_project_link_arguments(['-lPromiseKit'], language : 'swift')
+endif
+
+executable_c_cpp_args = ['-fPIE']
+executable_link_args = []
+if static_libstdc
+    executable_link_args += ['-static-libstdc++']
+endif
+
+executable_link_args = []
+if compiler.get_id() == 'gcc'
+    executable_c_cpp_args += ['-pie']
+else
+    executable_link_args += ['-pie']
+endif
+
+if cross_win_build
+    executable_link_args += ['-static', '-static-libgcc']
 endif
 
 swig = find_program('swig', required : false)
@@ -119,22 +139,14 @@ ssp_dep = compiler.find_library('ssp', required : cross_win_build)
 subproject_deps = []
 
 wallycore = subproject('libwally-core')
-autobahn_cpp = subproject('autobahn-cpp')
-boost = subproject('boost')
-GSL = subproject('GSL')
-json = subproject('json')
-msgpack = subproject('msgpack')
-openssl = subproject('openssl')
-websocketpp = subproject('websocketpp')
-
-subproject_deps += autobahn_cpp.get_variable('autobahn_dep')
-subproject_deps += boost.get_variable('boost_dep')
-subproject_deps += GSL.get_variable('GSL_dep')
-subproject_deps += json.get_variable('nlohmann_json_dep')
-subproject_deps += msgpack.get_variable('msgpack_dep')
-subproject_deps += openssl.get_variable('openssl_dep')
 subproject_deps += wallycore.get_variable('wallycore_dep')
-subproject_deps += websocketpp.get_variable('websocketpp_dep')
+subproject_deps += dependency('external_autobahn-cpp', fallback : ['autobahn-cpp', 'autobahn_dep'])
+subproject_deps += dependency('external_boost', fallback : ['boost', 'boost_dep'])
+subproject_deps += dependency('external_GSL', fallback : ['GSL', 'GSL_dep'])
+subproject_deps += dependency('external_json', fallback : ['json', 'nlohmann_json_dep'])
+subproject_deps += dependency('external_msgpack', fallback : ['msgpack', 'msgpack_dep'])
+subproject_deps += dependency('external_openssl', fallback : ['openssl', 'openssl_dep'])
+subproject_deps += dependency('external_websocketpp', fallback : ['websocketpp', 'websocketpp_dep'])
 
 # includes
 sdk_inc_dir = '.'
