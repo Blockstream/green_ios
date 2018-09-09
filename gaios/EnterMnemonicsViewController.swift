@@ -54,7 +54,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
                 Storage.wipeAll()
                 AppDelegate.removeKeychainData()
                 AccountStore.shared.initializeAccountStore()
-                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                self.performSegue(withIdentifier: "security", sender: self)
             }.catch { error in
                 print("Login failed")
         }
