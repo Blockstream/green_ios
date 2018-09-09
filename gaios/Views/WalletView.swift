@@ -130,6 +130,9 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
      */
     open func dismissPresentedCardView(animated: Bool, completion: LayoutCompletion? = nil) {
         dissmissFooter {
+            guard self.presentedCardView != nil else {
+                return
+            }
             self.delegate?.cardViewDismissed(cardView: self.presentedCardView!)
             self.dismissPresentedCardView(animated: animated, animationDuration: animated ? WalletView.dismissingAnimationSpeed : nil, completion: completion)
         }
