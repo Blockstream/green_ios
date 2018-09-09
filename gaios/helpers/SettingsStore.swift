@@ -153,7 +153,9 @@ class SettingsStore {
         accountSettings.append(currency!)
         accountSettings.append(denomination!)
         accountSettings.append(watch!)
+        allSettings[settingsCurrency] = currency
         allSettings[settingsDenomination] = denomination
+        allSettings[settingsWatchOnly] = watch
         let section = SettingsSection(sectionName: sectionAccount, settingsInSection: accountSettings)
         return section
     }
@@ -168,6 +170,10 @@ class SettingsStore {
         securitySettings.append(screenLock!)
         securitySettings.append(twoFactor!)
         securitySettings.append(support!)
+        allSettings[settingsRecovery] = recovery
+        allSettings[settingsScreenLock] = screenLock
+        allSettings[settingsTwoFactor] = twoFactor
+        allSettings[settingsSupport] = support
         let section = SettingsSection(sectionName: sectionSecurity, settingsInSection: securitySettings)
         return section
     }
@@ -176,6 +182,7 @@ class SettingsStore {
         var advancedSettings = Array<SettingsItem>()
         let nlock = allSettings[settingsNLockTime] == nil ? defaultNlockTime() : allSettings[settingsNLockTime]
         advancedSettings.append(nlock!)
+        allSettings[settingsNLockTime] = nlock
         let section = SettingsSection(sectionName: sectionAdvanced, settingsInSection: advancedSettings)
         return section
     }
@@ -188,6 +195,9 @@ class SettingsStore {
         aboutSettings.append(version!)
         aboutSettings.append(tos!)
         aboutSettings.append(privacy!)
+        allSettings[settingsVersion] = version
+        allSettings[settingsTOS] = tos
+        allSettings[settingsPrivacy] = privacy
         let section = SettingsSection(sectionName: sectionAbout, settingsInSection: aboutSettings)
         return section
     }

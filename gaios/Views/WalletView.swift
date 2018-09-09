@@ -555,7 +555,11 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             let yPoints = frame.maxY - (presentationCenter.y - maximumCardViewHeight / 2)
             let velocityY = grabbedCardView.panGestureRecognizer.velocity(in: grabbedCardView).y
             let animationDuration = min(WalletView.dismissingAnimationSpeed * 1.5, TimeInterval(yPoints / velocityY))
-            dismissPresentedCardView(animated: true, animationDuration: animationDuration)
+            //dismissPresentedCardView(animated: true, animationDuration: animationDuration)
+            dissmissFooter {
+                self.delegate?.cardViewDismissed(cardView: self.presentedCardView!)
+                self.dismissPresentedCardView(animated: true, animationDuration: animationDuration)
+            }
         } else if let grabbedCardView = grabbedCardView,
             presentedCardView == nil && grabbedCardView.presented == false,
             grabbedCardView.frame.origin.y < grabbedCardViewOriginalY - maximumCardViewHeight / 4 {
