@@ -16,7 +16,7 @@ class TOSViewController: UIViewController {
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var tosTextView: UITextView!
     @IBOutlet weak var tosButton: DesignableButton!
-r
+
     @IBAction func nextButtonClicked(_ sender: Any) {
         self.performSegue(withIdentifier: "next", sender: self)
     }
