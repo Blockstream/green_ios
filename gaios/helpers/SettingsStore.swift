@@ -104,7 +104,7 @@ class SettingsStore {
     }
 
     func defaultCurrencySettings() -> SettingsItem {
-        let currencyProperty = ["exchange": "bitstamp", "currency": "USD"]
+        let currencyProperty = ["exchange": "BITSTAMP", "currency": "USD"]
         return SettingsItem(settingsName: settingsCurrency, property: currencyProperty, text: accountCurrency, secondaryText: "USD")
     }
 
