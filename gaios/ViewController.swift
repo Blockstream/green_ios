@@ -92,6 +92,9 @@ class ViewController: UIViewController, WalletViewDelegate{
             // Background Thread
             AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
                 DispatchQueue.main.async {
+                    if(accs.count == 0) {
+                        return
+                    }
                     // Run UI Updates or call completion block
                     self.walletView.remove(cardViews: self.walletView.insertedCardViews)
                     self.wallets = accs.reversed()
