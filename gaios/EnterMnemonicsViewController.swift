@@ -52,6 +52,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
             wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
             }.done { _ in
                 Storage.wipeAll()
+                let array = getAppDelegate().getMnemonicsArray(mnemonics: trimmedUserProvidedMnemonic)
+                getAppDelegate().setMnemonicWords(array!)
                 AppDelegate.removeKeychainData()
                 AccountStore.shared.initializeAccountStore()
                 self.performSegue(withIdentifier: "security", sender: self)

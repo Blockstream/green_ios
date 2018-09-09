@@ -65,6 +65,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return mnemonicWords!.joined(separator: " ")
     }
 
+    func getMnemonicsArray(mnemonics: String) -> [String]? {
+        let result = mnemonics.components(separatedBy: " ")
+        return result
+    }
+
     static func removeKeychainData() {
         KeychainHelper.removePassword(service: "pinData", account: "user")
         KeychainHelper.removePassword(service: "password", account: "user")
