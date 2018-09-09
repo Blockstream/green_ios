@@ -86,6 +86,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         bottomButton.layoutIfNeeded()
         bottomButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        scan()
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
@@ -124,6 +125,28 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
     @objc func someAction(_ sender:UITapGestureRecognizer){
+
+        scan()
+    }
+
+    func scan() {
+        if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
+            //already authorized
+            startScan()
+        } else {
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
+                if granted {
+                    //access allowed
+                    self.startScan()
+                } else {
+                    print("fuck")
+                    //Send user to settings to allow camera
+                }
+            })
+        }
+    }
+
+    func startScan() {
         guard let captureDevice = AVCaptureDevice.default(for: .video) else {
             return
         }
@@ -150,7 +173,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         else {
             return
         }
-        
+        QRCodeReader.layoutIfNeeded()
         videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         videoPreviewLayer?.frame = QRCodeReader.layer.bounds
         videoPreviewLayer?.videoGravity = .resizeAspectFill
