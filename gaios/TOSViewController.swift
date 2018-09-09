@@ -15,7 +15,8 @@ class TOSViewController: UIViewController {
     @IBOutlet weak var nButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var tosTextView: UITextView!
-
+    @IBOutlet weak var tosButton: DesignableButton!
+r
     @IBAction func nextButtonClicked(_ sender: Any) {
         self.performSegue(withIdentifier: "next", sender: self)
     }
@@ -42,6 +43,10 @@ class TOSViewController: UIViewController {
         super.viewWillAppear(animated)
         nButton.backgroundColor = UIColor.customTitaniumLight()
         nButton.isUserInteractionEnabled = false
+        nButton.layer.sublayers?.removeFirst()
+        tosButton.backgroundColor = UIColor.clear
+        tosButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        tosButton.setImage(nil, for: UIControlState.normal)
     }
 
     override func viewDidLoad() {

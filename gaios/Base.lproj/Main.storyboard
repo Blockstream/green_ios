@@ -744,7 +744,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bitcoin's most secure wallet." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="foO-sh-acY">
-                                <rect key="frame" x="57.5" y="254" width="206" height="19.5"/>
+                                <rect key="frame" x="57.5" y="254" width="206" height="20"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -2233,7 +2233,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="What is word at position x ?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u4N-Oz-uOG">
-                                <rect key="frame" x="49.5" y="99.5" width="221.5" height="21"/>
+                                <rect key="frame" x="49.5" y="99.5" width="221.5" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -2247,7 +2247,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8l0-Vs-wHx" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="459.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="460.5" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55" id="PtR-vI-9Km"/>
                                 </constraints>
@@ -2274,7 +2274,7 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rpD-pK-Vgo" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="317.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="318.5" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55" id="HTS-xC-Qzk"/>
                                 </constraints>
@@ -2301,7 +2301,7 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ihj-Me-kJe" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="246.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="247.5" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="6zW-L5-4bU"/>
                                     <constraint firstAttribute="height" constant="55" id="jkp-XF-VhE"/>
@@ -2329,13 +2329,13 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="some word go in here" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ueP-Wq-fNm">
-                                <rect key="frame" x="16" y="140.5" width="288" height="16"/>
+                                <rect key="frame" x="16" y="141.5" width="288" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c3W-43-Qov" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="388.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="389.5" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55" id="m8q-Ew-Bt5"/>
                                 </constraints>
@@ -2552,6 +2552,7 @@
                     <connections>
                         <outlet property="nButton" destination="tdc-MV-QE3" id="4I0-dq-ORA"/>
                         <outlet property="topLabel" destination="Kg9-Fy-R7c" id="HTS-st-Wl1"/>
+                        <outlet property="tosButton" destination="8u0-hi-RfJ" id="Lwa-ek-igO"/>
                         <outlet property="tosTextView" destination="h8f-hD-Okk" id="dd5-rG-FoL"/>
                         <segue destination="L8U-ic-Qn1" kind="show" identifier="next" id="J4O-s5-XFN"/>
                     </connections>
