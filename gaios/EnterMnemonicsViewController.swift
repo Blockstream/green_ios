@@ -142,7 +142,6 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
 
         for index in 0..<24 {
-            print(index)
             let row:Int = index / 4
             let block = createBlock(number: index)
             box.addSubview(block)
