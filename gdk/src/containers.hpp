@@ -13,7 +13,6 @@
 
 #include "common.h"
 
-#include "amount.hpp"
 #include "assertion.hpp"
 #include <json.hpp>
 

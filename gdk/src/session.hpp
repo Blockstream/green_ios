@@ -132,6 +132,8 @@ namespace sdk {
         std::string get_system_message();
         void ack_system_message(const std::string& system_message);
 
+        nlohmann::json convert_amount(const nlohmann::json& amount_json);
+
     private:
         template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);
 

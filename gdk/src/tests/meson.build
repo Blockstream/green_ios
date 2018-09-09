@@ -1,4 +1,5 @@
 c_cpp_sources = [
+    'amount.cpp',
     'parse_uri.cpp',
     'wss_change_settings.cpp',
     'wss_change_settings_c.c',

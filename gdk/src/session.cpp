@@ -241,6 +241,8 @@ namespace sdk {
         std::string get_system_message();
         void ack_system_message(const std::string& system_message);
 
+        nlohmann::json convert_amount(const nlohmann::json& amount_json);
+
     private:
         void set_login_data(nlohmann::json&& login_data, bool watch_only);
         void on_new_transaction(const nlohmann::json& details);
@@ -734,6 +736,11 @@ namespace sdk {
         wamp_call([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); },
             "com.greenaddress.login.ack_system_message", m_system_message_ack_id, message_hash_hex, signature);
         m_system_message_ack = std::string();
+    }
+
+    nlohmann::json session::session_impl::convert_amount(const nlohmann::json& amount_json)
+    {
+        return amount::convert(amount_json, "USD", "6435.00"); // FIXME
     }
 
     bool session::session_impl::set_watch_only(const std::string& username, const std::string& password)
@@ -1888,5 +1895,12 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->ack_system_message(system_message); });
     }
+
+    nlohmann::json session::convert_amount(const nlohmann::json& amount_json)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->convert_amount(amount_json); });
+    }
+
 } // namespace sdk
 } // namespace ga

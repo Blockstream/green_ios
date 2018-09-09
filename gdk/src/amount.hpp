@@ -2,6 +2,7 @@
 #define GA_SDK_AMOUNT_HPP
 #pragma once
 
+#include <json.hpp>
 #include <ostream>
 #include <string>
 
@@ -10,6 +11,7 @@ namespace sdk {
 
     class amount final {
     public:
+        // Internally, BTC amounts are held as sotoshi
         using value_type = uint64_t;
 
         static constexpr value_type coin_value = 100000000;
@@ -27,6 +29,10 @@ namespace sdk {
         amount(amount&&) = default;
         amount& operator=(amount&&) = default;
         ~amount() = default;
+
+        // General purpose conversion to/from fiat
+        static nlohmann::json convert(
+            const nlohmann::json& amount_json, const std::string& fiat_currency, const std::string& fiat_rate);
 
         amount& operator=(value_type v)
         {
