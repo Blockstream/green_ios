@@ -5,23 +5,7 @@
 //  Created by Strahinja Markovic on 8/14/18.
 //  Copyright © 2018 Goncalo Carvalho. All rights reserved.
 //
-/*
- load notification from disk
- get transactions all
- parse them to notification format
- check if newly parsed notification contain anything that's not included in old
- Notification format:
- deposit
- confirmation
- amount
- date
- id
- ////
- store notification to disk
- 
- 
- check if there is new notific
- */
+
 import Foundation
 
 class NotificationStore {
