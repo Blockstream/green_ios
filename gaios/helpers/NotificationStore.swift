@@ -51,8 +51,16 @@ class NotificationStore {
                             let dateString = transaction["created_at"] as! String
                             let date = Date.dateFromString(dateString: dateString)
                             let type = transaction["type"] as! String
-
-                            let note: NotificationItem = self.createNotification(date: date, hash: hash, amount: satoshi, counterparty: "placeholder", type: type)
+                            if(type == "outgoing") {
+                                print(tx)
+                                print("blah")
+                            }
+                            let adressees = transaction["addressees"] as! [String]
+                            var counterparty = ""
+                            if (adressees.count > 0) {
+                                counterparty = adressees[0]
+                            }
+                            let note: NotificationItem = self.createNotification(date: date, hash: hash, amount: satoshi, counterparty: counterparty, type: type)
                             if (self.allNotifications[hash] == nil) {
                                 self.allNotifications[hash] = note
                                 self.newNotificationCount += 1
