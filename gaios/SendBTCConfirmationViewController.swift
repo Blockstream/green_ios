@@ -31,7 +31,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate{
         walletNameLabel.text = walletName
         recepientAddressLabel.text = toAddress
         fiatFeeAmount = AccountStore.shared.satoshiToUSD(amount: satoshi_fee * 250)
-        let currency = SettingsStore.shared.getCurrencyString()!
+        let currency = SettingsStore.shared.getCurrencyString()
         self.tabBarController?.tabBar.isHidden = true
         walletNameLabel.text = wallet?.name
         hideKeyboardWhenTappedAround()

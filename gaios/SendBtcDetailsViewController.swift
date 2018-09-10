@@ -25,13 +25,69 @@ class SendBtcDetailsViewController: UIViewController {
     var btcAmount: Double = 0
     @IBOutlet weak var reviewButton: UIButton!
     @IBOutlet weak var currencySwitch: UIButton!
+    var selectedType = TransactionType.FIAT
+    var maxAmountBTC = 0
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.tabBarController?.tabBar.isHidden = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
+        self.view.addGestureRecognizer(tapGesture)
+        self.tabBarController?.tabBar.isHidden = true
+        addressLabel.text = toAddress
+        amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
+                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        mediumFeeClicked(0)
+        if (btcAmount != 0) {
+            updateEstimate()
+            let fiat = AccountStore.shared.btcToUSD(amount: btcAmount)
+            amountTextField.text = String(format: "%.2f", fiat)
+        }
+        updateMaxAmountLabel()
+        setButton()
+    }
+
+    func setButton() {
+        if (selectedType == TransactionType.BTC) {
+            currencySwitch.setTitle(SettingsStore.shared.getDenominationSettings(), for: UIControlState.normal)
+            currencySwitch.backgroundColor = UIColor.customMatrixGreen()
+            currencySwitch.setTitleColor(UIColor.white, for: UIControlState.normal)
+        } else {
+            currencySwitch.setTitle(SettingsStore.shared.getCurrencyString(), for: UIControlState.normal)
+            currencySwitch.backgroundColor = UIColor.clear
+            currencySwitch.setTitleColor(UIColor.white, for: UIControlState.normal)
+        }
+    }
+
+    func updateMaxAmountLabel() {
+        if (selectedType == TransactionType.BTC) {
+            maxAmountLabel.text = String(format: "%f %@", maxAmountBTC, SettingsStore.shared.getDenominationSettings())
+        } else {
+            let maxFiat = maxAmountBTC //FIXME
+            maxAmountLabel.text = String(format: "%f %@", maxFiat, SettingsStore.shared.getCurrencyString())
+
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        reviewButton.layoutIfNeeded()
+        reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
 
     @IBAction func nextButtonClicked(_ sender: UIButton) {
         self.performSegue(withIdentifier: "confirm", sender: self)
     }
 
     @IBAction func switchCurrency(_ sender: Any) {
-        print("switch currency")
+        if (selectedType == TransactionType.BTC) {
+            selectedType = TransactionType.FIAT
+        } else {
+            selectedType = TransactionType.BTC
+        }
+        setButton()
+        updateMaxAmountLabel()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -48,35 +104,10 @@ class SendBtcDetailsViewController: UIViewController {
         }
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.tabBarController?.tabBar.isHidden = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
-        self.view.addGestureRecognizer(tapGesture)
-        self.tabBarController?.tabBar.isHidden = true
-        addressLabel.text = toAddress
-        amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        mediumFeeClicked(0)
-        if (btcAmount != 0) {
-            updateEstimate()
-            let fiat = AccountStore.shared.btcToUSD(amount: btcAmount)
-            amountTextField.text = String(format: "%.2f", fiat)
-        }
-        currencySwitch.setTitle(SettingsStore.shared.getCurrencyString(), for: UIControlState.normal)
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        reviewButton.layoutIfNeeded()
-        reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-    }
-
     @objc func textFieldDidChange(_ textField: UITextField) {
         let fiat_amount: String = textField.text!
         guard let fiat_d = Double(fiat_amount) else {
-            let currency = SettingsStore.shared.getCurrencyString()!
+            let currency = SettingsStore.shared.getCurrencyString()
             return
         }
         let bitcoin_amount = AccountStore.shared.USDtoBTC(amount: fiat_d)
@@ -87,7 +118,7 @@ class SendBtcDetailsViewController: UIViewController {
     func updateEstimate() {
        // btcAmountEstimate.text = String(format: "~%g BTC", btcAmount)
     }
-    
+
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
         amountTextField.resignFirstResponder()
     }
@@ -100,7 +131,7 @@ class SendBtcDetailsViewController: UIViewController {
 
         let usdValue:Double = AccountStore.shared.satoshiToUSD(amount: fee * 250)
 
-        feeLabel.text = String(format: "~%.2f USD \n (1 satoshi / byte)", usdValue)
+        feeLabel.text = String(format: "~%.2f %@ \n (1 satoshi / byte)", usdValue, SettingsStore.shared.getCurrencyString())
         feeLabel.numberOfLines = 2
         feeLabel.font = feeLabel.font.withSize(13)
         feeLabel.translatesAutoresizingMaskIntoConstraints = false
