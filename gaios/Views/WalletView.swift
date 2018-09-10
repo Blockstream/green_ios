@@ -93,7 +93,11 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 let date = Date.dateFromString(dateString: dateString)
                 let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
                 let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
-                let counterparty = ""
+                let adressees = transaction["addressees"] as! [String]
+                var counterparty = ""
+                if (adressees.count > 0) {
+                    counterparty = adressees[0]
+                }
                 let formatedTransactionDate = Date.dayMonthYear(date: date)
                 self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type))
             }
