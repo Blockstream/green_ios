@@ -58,11 +58,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func getMnemonicWords() -> [String]? {
-        return mnemonicWords
+        var mnemonics: [String]? = nil
+        do {
+            let mn = try getSession().getMnemmonicPassphrase(password: "")
+            mnemonics = getMnemonicsArray(mnemonics: mn)
+        } catch {
+            print("somethin went wrong")
+        }
+        return mnemonics
     }
 
     func getMnemonicWordsString() -> String? {
-        return mnemonicWords!.joined(separator: " ")
+        return getMnemonicWords()!.joined(separator: " ")
     }
 
     func getMnemonicsArray(mnemonics: String) -> [String]? {
