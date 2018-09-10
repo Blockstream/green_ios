@@ -94,8 +94,8 @@ class SettingsStore {
         return allSettings[settingsCurrency]
     }
 
-    func getCurrencyString() -> String? {
-        return allSettings[settingsCurrency]?.settingsProperty["currency"]
+    func getCurrencyString() -> String {
+        return (allSettings[settingsCurrency]?.settingsProperty["currency"])!
     }
 
     func defaultDenominationSettings() -> SettingsItem {
