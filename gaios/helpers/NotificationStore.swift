@@ -45,13 +45,14 @@ class NotificationStore {
                         let list = transactions!["list"] as! NSArray
                         for tx in list {
                             print(tx)
-                            print("haha")
                             let transaction = tx as! [String : Any]
                             let satoshi:Int = transaction["value"] as! Int
                             let hash = transaction["txhash"] as! String
                             let dateString = transaction["created_at"] as! String
                             let date = Date.dateFromString(dateString: dateString)
-                            let note: NotificationItem = self.createNotification(date: date, hash: hash, amount: satoshi, counterparty: "placeholder")
+                            let type = transaction["type"] as! String
+
+                            let note: NotificationItem = self.createNotification(date: date, hash: hash, amount: satoshi, counterparty: "placeholder", type: type)
                             if (self.allNotifications[hash] == nil) {
                                 self.allNotifications[hash] = note
                                 self.newNotificationCount += 1
@@ -153,13 +154,13 @@ class NotificationStore {
         return newNotificationCount > 0
     }
 
-    func createNotification(date: Date, hash: String, amount: Int, counterparty: String) -> NotificationItem {
+    func createNotification(date: Date, hash: String, amount: Int, counterparty: String, type: String) -> NotificationItem {
         var title: String = ""
         var bodyText = ""
         let amountText = String.satoshiToBTC(satoshi: abs(amount))
-        if(amount > 0) {
+        if(type != "outgoing") {
             title = "Deposit"
-            bodyText = String(format: "You have received %@ BTC from %@", amountText, counterparty)
+            bodyText = String(format: "You have received %@ BTC", amountText)
         } else {
             title = "Confirmation"
             bodyText = String(format: "Your  %@ BTC sent to %@ has been confirmed", amountText, counterparty)
