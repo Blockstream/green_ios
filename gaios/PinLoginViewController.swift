@@ -96,6 +96,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             }
                             DispatchQueue.main.async {
                                 self.stopAnimating()
+                                SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
                                 KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
                                 self.performSegue(withIdentifier: "mainMenu", sender: self)
                             }

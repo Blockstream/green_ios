@@ -86,6 +86,34 @@ class SettingsStore {
         writeSettingsToDisk()
     }
 
+    func stringForScreenLockSettings(screenLock: ScreenLock) -> String{
+        if (screenLock == ScreenLock.None) {
+            return "None"
+        } else if (screenLock == ScreenLock.FaceID) {
+            return "FaceID"
+        } else if (screenLock == ScreenLock.TouchID) {
+            return "TouchID"
+        } else if (screenLock == ScreenLock.Pin) {
+            return "PIN"
+        }
+        return ""
+    }
+
+    func setScreenLockSettings(screenLock: ScreenLock) {
+        let screenLockProperty = [settingsScreenLock: String(screenLock.rawValue)]
+        let setting = SettingsItem(settingsName: settingsScreenLock, property: screenLockProperty, text: securityScreenLock, secondaryText: stringForScreenLockSettings(screenLock: screenLock))
+        allSettings[settingsScreenLock] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
+    func getScreenLockSetting() -> ScreenLock {
+        let setting = allSettings[settingsScreenLock]
+        let property = setting?.settingsProperty[settingsScreenLock]
+        let raw = UInt32(property!)
+        return ScreenLock(rawValue: raw!)!
+    }
+
     func getDenominationSettings() -> String {
         return (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!
     }
@@ -117,7 +145,7 @@ class SettingsStore {
     }
 
     func defaultScreenLock() -> SettingsItem {
-        return SettingsItem(settingsName: settingsScreenLock, property:[String : String](), text: securityScreenLock, secondaryText: "None")
+        return SettingsItem(settingsName: settingsScreenLock, property:[settingsScreenLock : String(ScreenLock.None.rawValue)], text: securityScreenLock, secondaryText: stringForScreenLockSettings(screenLock: ScreenLock.None))
     }
 
     func defaultTwoFactor() -> SettingsItem {
@@ -283,5 +311,12 @@ class SettingsSection: Codable {
         self.sectionName = sectionName
         self.settingsInSection = settingsInSection
     }
+}
+
+public enum ScreenLock: UInt32 {
+    case None = 0
+    case Pin = 1
+    case TouchID = 2
+    case FaceID = 3
 }
 

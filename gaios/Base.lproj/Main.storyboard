@@ -2575,11 +2575,11 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="ef5-GN-iag"/>
                                 </constraints>
-                                <state key="normal" title="Improve security">
+                                <state key="normal" title="Enable Face ID">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <segue destination="KCm-9R-mRR" kind="show" id="2a5-0F-DNI"/>
+                                    <action selector="EnableBioClicked:" destination="EvG-OO-UNI" eventType="touchUpInside" id="9Aa-NJ-TZ1"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZdV-zv-1vW">
@@ -2587,7 +2587,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="RBh-yF-ekD"/>
                                 </constraints>
-                                <state key="normal" title="Go to wallet">
+                                <state key="normal" title="Set PIN">
                                     <color key="titleColor" name="customMatrixGreen"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>
@@ -2599,7 +2599,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="iqZ-ST-Be8" kind="show" id="muz-XS-i1A"/>
+                                    <segue destination="kWT-Yh-qgi" kind="show" id="cPf-Ot-shi"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Congrats! you are now a proud owner of bitcoin wallet" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fiG-BW-Ekc">
@@ -2627,6 +2627,7 @@
                         <outlet property="bottomButton" destination="ZdV-zv-1vW" id="grw-vR-yr3"/>
                         <outlet property="topButton" destination="IqO-ed-IBI" id="NMC-6q-SCC"/>
                         <outlet property="topLabel" destination="fiG-BW-Ekc" id="4cc-jF-OF9"/>
+                        <segue destination="iqZ-ST-Be8" kind="showDetail" identifier="mainMenu" id="eGI-fa-57A"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sZk-ql-Cwp" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3975,9 +3976,10 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QaF-5U-DEq"/>
+        <segue reference="eGI-fa-57A"/>
         <segue reference="4Ug-fi-57N"/>
         <segue reference="K1M-k2-k0W"/>
-        <segue reference="2a5-0F-DNI"/>
+        <segue reference="Tys-xL-Ald"/>
+        <segue reference="cPf-Ot-shi"/>
     </inferredMetricsTieBreakers>
 </document>
