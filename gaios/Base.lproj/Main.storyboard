@@ -3219,7 +3219,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="matrix404" translatesAutoresizingMaskIntoConstraints="NO" id="M4J-Wt-adP">
-                                <rect key="frame" x="0.0" y="20" width="320" height="210"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="210"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LMt-RK-bpl">
                                 <rect key="frame" x="16" y="36" width="35" height="35"/>
@@ -3230,17 +3230,17 @@
                                 <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
                                 <state key="normal" image="backarrow"/>
                                 <connections>
-                                    <action selector="backButtonClicked:" destination="rrT-db-w5X" eventType="touchUpInside" id="g0E-5l-NQe"/>
+                                    <action selector="backButtonClicked:" destination="u6s-K9-Nys" eventType="touchUpInside" id="tmf-XR-QDO"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You are not connected to the internet. Please connect and retry." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rov-Ro-6LU">
-                                <rect key="frame" x="30" y="270" width="260" height="61"/>
+                                <rect key="frame" x="30" y="250" width="260" height="61"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NA4-vg-1vN">
-                                <rect key="frame" x="0.0" y="492" width="320" height="76"/>
+                                <rect key="frame" x="0.0" y="472" width="320" height="96"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="urq-rH-JSB">
                                         <rect key="frame" x="17" y="17" width="286" height="42"/>
@@ -3256,8 +3256,8 @@
                                 <color key="backgroundColor" name="customTitaniumMedium"/>
                                 <constraints>
                                     <constraint firstItem="urq-rH-JSB" firstAttribute="leading" secondItem="NA4-vg-1vN" secondAttribute="leading" constant="17" id="6kt-Ad-pVR"/>
-                                    <constraint firstAttribute="bottom" secondItem="urq-rH-JSB" secondAttribute="bottom" constant="17" id="81W-pg-cJT"/>
-                                    <constraint firstAttribute="height" constant="76" id="Dup-dn-7c2"/>
+                                    <constraint firstAttribute="bottom" secondItem="urq-rH-JSB" secondAttribute="bottom" constant="37" id="81W-pg-cJT"/>
+                                    <constraint firstAttribute="height" constant="96" id="Dup-dn-7c2"/>
                                     <constraint firstAttribute="trailing" secondItem="urq-rH-JSB" secondAttribute="trailing" constant="17" id="Mpk-td-2Yz"/>
                                     <constraint firstItem="urq-rH-JSB" firstAttribute="top" secondItem="NA4-vg-1vN" secondAttribute="top" constant="17" id="aef-rm-dUh"/>
                                 </constraints>
@@ -3274,7 +3274,7 @@
                             <constraint firstItem="Rov-Ro-6LU" firstAttribute="centerX" secondItem="cll-s2-onx" secondAttribute="centerX" id="438-iC-is9"/>
                             <constraint firstItem="fu0-Yu-U7z" firstAttribute="trailing" secondItem="Rov-Ro-6LU" secondAttribute="trailing" constant="30" id="47q-Yn-27D"/>
                             <constraint firstItem="M4J-Wt-adP" firstAttribute="leading" secondItem="fu0-Yu-U7z" secondAttribute="leading" id="4co-4C-OCl"/>
-                            <constraint firstItem="M4J-Wt-adP" firstAttribute="top" secondItem="cll-s2-onx" secondAttribute="top" constant="20" id="8fr-dK-cM1"/>
+                            <constraint firstItem="M4J-Wt-adP" firstAttribute="top" secondItem="cll-s2-onx" secondAttribute="top" id="8fr-dK-cM1"/>
                             <constraint firstItem="LMt-RK-bpl" firstAttribute="leading" secondItem="fu0-Yu-U7z" secondAttribute="leading" constant="16" id="LtA-te-u00"/>
                             <constraint firstItem="Rov-Ro-6LU" firstAttribute="leading" secondItem="fu0-Yu-U7z" secondAttribute="leading" constant="30" id="TXk-B1-GYn"/>
                             <constraint firstItem="NA4-vg-1vN" firstAttribute="leading" secondItem="fu0-Yu-U7z" secondAttribute="leading" id="eGe-dY-rYq"/>

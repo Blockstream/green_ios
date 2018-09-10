@@ -59,6 +59,9 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
                 self.performSegue(withIdentifier: "security", sender: self)
             }.catch { error in
                 print("Login failed")
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let errorViewController = storyboard.instantiateViewController(withIdentifier: "error") as! NoInternetViewController
+                self.navigationController?.pushViewController(errorViewController, animated: true)
         }
     }
 

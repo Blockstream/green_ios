@@ -25,6 +25,12 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
         self.performSegue(withIdentifier: "entrance", sender: self)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.view.layoutIfNeeded()
+        self.view.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         bioID.authenticateUser { (message) in
