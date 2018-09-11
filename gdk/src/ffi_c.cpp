@@ -321,12 +321,9 @@ GA_SDK_DEFINE_C_FUNCTION_4(
 
 GA_SDK_DEFINE_C_FUNCTION_4(
     GA_get_balance, struct GA_session*, session, uint32_t, subaccount, uint32_t, num_confs, GA_json**, balance, {
+        GA_SDK_RUNTIME_ASSERT(subaccount != GA_ALL_ACCOUNTS);
         GA_SDK_RUNTIME_ASSERT(balance);
-        if (subaccount == GA_ALL_ACCOUNTS) {
-            *json_cast(balance) = new nlohmann::json(session->get_balance(num_confs));
-        } else {
-            *json_cast(balance) = new nlohmann::json(session->get_balance(subaccount, num_confs));
-        }
+        *json_cast(balance) = new nlohmann::json(session->get_balance(subaccount, num_confs));
     })
 
 GA_SDK_DEFINE_C_FUNCTION_4(
@@ -346,6 +343,12 @@ GA_SDK_DEFINE_C_FUNCTION_3(
 GA_SDK_DEFINE_C_FUNCTION_2(GA_get_available_currencies, struct GA_session*, session, GA_json**, available_currencies, {
     GA_SDK_RUNTIME_ASSERT(available_currencies);
     *json_cast(available_currencies) = new nlohmann::json(session->get_available_currencies());
+})
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_amount, struct GA_session*, session, const GA_json*, json, GA_json**, output, {
+    GA_SDK_RUNTIME_ASSERT(json);
+    GA_SDK_RUNTIME_ASSERT(output);
+    *json_cast(output) = new nlohmann::json(session->convert_amount(*json_cast(json)));
 })
 
 GA_SDK_DEFINE_C_FUNCTION_5(GA_set_pin, struct GA_session*, session, const char*, mnemonic, const char*, pin,

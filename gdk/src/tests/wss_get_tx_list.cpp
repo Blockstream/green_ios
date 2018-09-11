@@ -34,7 +34,7 @@ int main(int argc, char** argv)
         }
 #endif
 
-        const auto balance = session.get_balance(0);
+        const auto balance = session.get_balance(0, 0);
         const auto twofactor_config = session.get_twofactor_config();
         const std::string gauth_url = twofactor_config["gauth_url"];
     } catch (const std::exception& e) {

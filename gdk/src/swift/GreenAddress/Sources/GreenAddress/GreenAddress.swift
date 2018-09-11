@@ -349,6 +349,17 @@ public class Session {
         copies.deallocate(capacity: count)
     }
 
+    public func convertAmount(input: [String: Any]) throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        var input_json: OpaquePointer = try convertDictToJSON(dict: input)
+        defer {
+            GA_destroy_json(input_json)
+            GA_destroy_json(result)
+        }
+        try callWrapper(fun: GA_convert_amount(session, input_json, &result));
+        return try convertOpaqueJsonToDict(o: result!)
+    }
+
     public func send(subaccount: UInt32, addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool, twofactor_data: [String: Any]) throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)

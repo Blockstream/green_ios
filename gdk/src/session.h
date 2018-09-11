@@ -268,7 +268,7 @@ GASDK_API int GA_get_transaction_details(struct GA_session* session, const char*
  * The sum of unspent outputs destined to user’s wallet.
  *
  * @session The server session to use.
- * @subaccount The subaccount to get the balance for, or GA_ALL_ACCOUNTS.
+ * @subaccount The subaccount to get the balance for.
  * @num_confs The number of required confirmations.
  * @balance The returned balance.
  *
@@ -285,6 +285,17 @@ GASDK_API int GA_get_balance(struct GA_session* session, uint32_t subaccount, ui
  * GA_ERROR if available currencies could not be retrieved.
  */
 GASDK_API int GA_get_available_currencies(struct GA_session* session, GA_json** available_currencies);
+
+/**
+ * Convert Fiat to BTC and vice-versa.
+ *
+ * @session The server session to use.
+ * @json JSON giving the value to convert.
+ * @output Destination for the converted values.
+ *
+ * GA_ERROR if the conversion couldn't be performed.
+ */
+GASDK_API int GA_convert_amount(struct GA_session* session, const GA_json* json, GA_json** output);
 
 /**
  * Set a PIN for the user wallet.

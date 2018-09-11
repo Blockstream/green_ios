@@ -140,7 +140,7 @@ namespace sdk {
         session_impl(network_parameters net_params, bool debug)
             : m_controller(m_io)
             , m_net_params(std::move(net_params))
-            , m_min_fee(DEFAULT_MIN_FEE)
+            , m_min_fee_rate(DEFAULT_MIN_FEE)
             , m_next_subaccount(0)
             , m_block_height(0)
             , m_master_key(nullptr)
@@ -152,7 +152,7 @@ namespace sdk {
             , m_debug(debug)
         {
             one_time_setup();
-            m_fee_estimates.assign(NUM_FEE_ESTIMATES, m_min_fee);
+            m_fee_estimates.assign(NUM_FEE_ESTIMATES, m_min_fee_rate);
             connect_with_tls() ? make_client<client_tls>() : make_client<client>();
         }
 
@@ -191,7 +191,7 @@ namespace sdk {
         nlohmann::json get_subaccount(uint32_t subaccount) const;
         nlohmann::json create_subaccount(const nlohmann::json& details);
         nlohmann::json get_receive_address(uint32_t subaccount, address_type addr_type) const;
-        template <typename T> nlohmann::json get_balance(T subaccount, uint32_t num_confs) const;
+        nlohmann::json get_balance(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_available_currencies() const;
         bool is_rbf_enabled() const;
         bool is_watch_only() const;
@@ -415,7 +415,11 @@ namespace sdk {
 
         nlohmann::json m_login_data;
         std::string m_mnemonic;
-        amount::value_type m_min_fee;
+        amount::value_type m_min_fee_rate;
+        std::string m_fiat_source;
+        std::string m_fiat_rate;
+        std::string m_fiat_currency;
+
         std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
         uint32_t m_next_subaccount;
         std::vector<uint32_t> m_fee_estimates;
@@ -543,11 +547,14 @@ namespace sdk {
     {
         m_login_data = login_data;
 
-        const uint32_t min_fee = m_login_data["min_fee"];
-        if (min_fee != m_min_fee) {
-            m_min_fee = min_fee;
-            m_fee_estimates.assign(NUM_FEE_ESTIMATES, m_min_fee);
+        const uint32_t min_fee_rate = m_login_data["min_fee"];
+        if (min_fee_rate != m_min_fee_rate) {
+            m_min_fee_rate = min_fee_rate;
+            m_fee_estimates.assign(NUM_FEE_ESTIMATES, m_min_fee_rate);
         }
+        m_fiat_source = login_data["exchange"];
+        m_fiat_currency = login_data["fiat_currency"];
+        m_fiat_rate = login_data["fiat_exchange"];
 
         const uint32_t block_height = m_login_data["block_height"];
         m_block_height = block_height;
@@ -740,7 +747,7 @@ namespace sdk {
 
     nlohmann::json session::session_impl::convert_amount(const nlohmann::json& amount_json)
     {
-        return amount::convert(amount_json, "USD", "6435.00"); // FIXME
+        return amount::convert(amount_json, m_fiat_currency, m_fiat_rate);
     }
 
     bool session::session_impl::set_watch_only(const std::string& username, const std::string& password)
@@ -967,8 +974,16 @@ namespace sdk {
 
     void session::session_impl::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
     {
-        wamp_call([](boost::future<autobahn::wamp_call_result> result) { result.get(); },
-            "com.greenaddress.login.set_pricing_source", currency, exchange);
+        std::string fiat_rate;
+        wamp_call(
+            [&fiat_rate](boost::future<autobahn::wamp_call_result> result) {
+                fiat_rate = result.get().argument<std::string>(0);
+            },
+            "com.greenaddress.login.set_pricing_source_v2", currency, exchange);
+        // FIXME: Locking
+        m_fiat_source = exchange;
+        m_fiat_currency = currency;
+        m_fiat_rate = fiat_rate;
     }
 
     nlohmann::json session::session_impl::get_transactions(uint32_t subaccount, uint32_t page_id)
@@ -1207,12 +1222,15 @@ namespace sdk {
         return address;
     }
 
-    template <typename T> nlohmann::json session::session_impl::get_balance(T subaccount, uint32_t num_confs) const
+    nlohmann::json session::session_impl::get_balance(uint32_t subaccount, uint32_t num_confs)
     {
-        nlohmann::json b;
-        wamp_call([&b](wamp_call_result result) { b = get_json_result(result.get()); },
+        nlohmann::json balance;
+        wamp_call([&balance](wamp_call_result result) { balance = get_json_result(result.get()); },
             "com.greenaddress.txs.get_balance", subaccount, num_confs);
-        return b;
+        // FIXME: Locking, Make sure another session didn't change fiat currency
+        json_rename_key(balance, "fiat_exchange", "fiat_rate");
+        m_fiat_rate = balance["fiat_rate"];
+        return balance;
     }
 
     nlohmann::json session::session_impl::get_available_currencies() const
@@ -1434,8 +1452,7 @@ namespace sdk {
 
     amount session::session_impl::get_tx_fee(const wally_tx_ptr& tx, amount fee_rate)
     {
-        const amount::value_type v = m_login_data["min_fee"];
-        const amount min_fee_rate(v);
+        const amount min_fee_rate(m_min_fee_rate);
         const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
 
         const size_t vsize = tx_get_vsize(tx);
@@ -1692,12 +1709,6 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_receive_address(subaccount, addr_type); });
-    }
-
-    nlohmann::json session::get_balance(uint32_t num_confs)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_balance("all", num_confs); });
     }
 
     nlohmann::json session::get_balance(uint32_t subaccount, uint32_t num_confs)

@@ -62,8 +62,6 @@ namespace sdk {
         } else {
             const std::string fiat_str = *fiat_p;
             const conversion_type btc_decimal = conversion_type(fiat_str) / fr;
-            const std::string foo = btc_decimal.str();
-            (void)foo;
             satoshi = (btc_type(btc_decimal) * COIN_VALUE_DECIMAL).convert_to<value_type>();
         }
 
