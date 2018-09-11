@@ -1,6 +1,8 @@
 import Dispatch
 import Foundation
+
 import PromiseKit
+
 import ga.sdk
 
 public enum GaError: Error {
