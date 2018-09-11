@@ -41,7 +41,7 @@ class SendBtcDetailsViewController: UIViewController {
         mediumFeeClicked(0)
         if (btcAmount != 0) {
             updateEstimate()
-            let fiat = AccountStore.shared.btcToUSD(amount: btcAmount)
+            let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
             amountTextField.text = String(format: "%.2f", fiat)
         }
         updateMaxAmountLabel()

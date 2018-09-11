@@ -74,8 +74,30 @@ class AccountStore {
         return result
     }
 
-    func btcToUSD(amount: Double) ->Double {
-        return satoshiToUSD(amount: Int(amount * getDenomination()))
+    func btcToFiat(amount: Double) -> Double {
+        let dict = ["btc" : String(amount)]
+        var amount: Double = 0
+        do {
+            let json = try getSession().convertAmount(input: dict)
+            amount = Double(json!["fiat"] as! String)!
+        } catch {
+            print("something went wrong")
+        }
+
+        return amount
+    }
+
+    func fiatToBtc(amount: Double) -> Double {
+        let dict = ["fiat" : String(amount)]
+        var amount: Double = 0
+        do {
+            let json = try getSession().convertAmount(input: dict)
+            amount = Double(json!["btc"] as! String)!
+        } catch {
+            print("something went wrong")
+        }
+
+        return amount
     }
 
     func USDtoSatoshi(amount: Double) -> Int {

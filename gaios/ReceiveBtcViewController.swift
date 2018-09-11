@@ -76,10 +76,23 @@ class ReceiveBtcViewController: UIViewController {
     }
 
     func updateEstimate() {
+        let amount: String = amountTextfield.text!
+
+        guard let amount_double = Double(amount) else {
+            if (selectedType == TransactionType.BTC) {
+                estimateLabel.text = "~0.00 " + SettingsStore.shared.getCurrencyString()
+            } else {
+                estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings()
+            }
+            return
+        }
+
         if (selectedType == TransactionType.BTC) {
-            estimateLabel.text = "~"
+            let converted = AccountStore.shared.btcToFiat(amount: amount_double)
+            estimateLabel.text = String(format: "~%.2f %@", converted, SettingsStore.shared.getCurrencyString())
         } else {
-            estimateLabel.text = "~"
+            let converted = AccountStore.shared.fiatToBtc(amount: amount_double)
+            estimateLabel.text = String(format: "~%f %@", converted, SettingsStore.shared.getDenominationSettings())
         }
     }
 
@@ -92,15 +105,17 @@ class ReceiveBtcViewController: UIViewController {
         let btc_amount: String = textField.text!
 
         guard let btc_amount_double = Double(btc_amount) else {
-            estimateLabel.text = "~0.00 USD"
+            if (selectedType == TransactionType.BTC) {
+                estimateLabel.text = "~0.00 " + SettingsStore.shared.getCurrencyString()
+            } else {
+                estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings()
+            }
             return
         }
 
         walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: btc_amount_double), frame: walletQRCode.frame)
 
-        let satoshi: Int = Int(btc_amount_double * 100000000)
-        let usd_amount = AccountStore.shared.satoshiToUSD(amount: satoshi)
-        estimateLabel.text = String(format: "~%.2f USD", usd_amount)
+        updateEstimate()
     }
 
     @IBAction func shareButtonClicked(_ sender: Any) {
