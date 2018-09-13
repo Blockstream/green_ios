@@ -86,6 +86,8 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
         let currency = searchCurrencyList[indexPath.row]
         SettingsStore.shared.setCurrency(currency: currency.currency, exchange: currency.exchange).done {
              self.refreshCurrency()
+            }.catch { error in
+                print("couldn't change currency")
         }
     }
 
