@@ -148,6 +148,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                             print("Login failed")
                             DispatchQueue.main.async() {
                                 NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed...")
+                                self.stopAnimating()
                             }
                     }
                 }.catch { error in
