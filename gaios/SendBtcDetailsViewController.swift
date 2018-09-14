@@ -21,12 +21,15 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var amountTextField: UITextField!
     var feeLabel: UILabel = UILabel()
     var wallet: WalletItem? = nil
-    var fee: Int = 1
-    var btcAmount: Double = 0
     @IBOutlet weak var reviewButton: UIButton!
     @IBOutlet weak var currencySwitch: UIButton!
+
     var selectedType = TransactionType.FIAT
     var maxAmountBTC = 0
+    var btcAmount: Double = 0
+    var fee: UInt64 = 1
+    var selectedButton : UIButton? = nil
+    var g_payload: [String: Any]? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,9 +65,11 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updateMaxAmountLabel() {
         if (selectedType == TransactionType.BTC) {
+            //maxAmountBTC = wallet?.balance
             maxAmountLabel.text = String(format: "%f %@", maxAmountBTC, SettingsStore.shared.getDenominationSettings())
         } else {
             let maxFiat = maxAmountBTC //FIXME
+           //maxFiat = AccountStore.shared.btcToFiat(amount: wallet?.balance)
             maxAmountLabel.text = String(format: "%f %@", maxFiat, SettingsStore.shared.getCurrencyString())
 
         }
@@ -74,6 +79,7 @@ class SendBtcDetailsViewController: UIViewController {
         super.viewDidAppear(animated)
         reviewButton.layoutIfNeeded()
         reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        updateButton()
     }
 
     @IBAction func nextButtonClicked(_ sender: UIButton) {
@@ -93,43 +99,100 @@ class SendBtcDetailsViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBTCConfirmationViewController {
             nextController.toAddress = toAddress!
-            let fiat_amount: String = amountTextField.text!
-            if let fiat_d = Double(fiat_amount)  {
-                nextController.fiat_amount = fiat_d
+            if ( selectedType == TransactionType.FIAT) {
+                let amount = amountTextField.text!
+                nextController.fiat_amount = Double(amount)!
+                nextController.btc_amount = AccountStore.shared.fiatToBtc(amount: nextController.fiat_amount)
+            } else {
+                let amount = amountTextField.text!
+                nextController.btc_amount = Double(amount)!
+                nextController.fiat_amount = AccountStore.shared.btcToFiat(amount: nextController.btc_amount)
             }
             nextController.wallet = wallet
-            nextController.satoshi_fee = fee
-            nextController.btc_amount = btcAmount
+            nextController.satoshi_fee = Int(fee)
             nextController.satoshi_amount = Int(btcAmount * 100000000)
+            nextController.payload = g_payload
+            nextController.selectedType = selectedType
         }
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
-        let fiat_amount: String = textField.text!
-        guard let fiat_d = Double(fiat_amount) else {
-            let currency = SettingsStore.shared.getCurrencyString()
+        let amount: String = textField.text!
+        guard let amount_d = Double(amount) else {
             return
         }
-        let bitcoin_amount = AccountStore.shared.USDtoBTC(amount: fiat_d)
-        btcAmount = bitcoin_amount
+        if (selectedType == TransactionType.BTC) {
+            btcAmount = amount_d
+        } else if (selectedType == TransactionType.FIAT) {
+            btcAmount = AccountStore.shared.USDtoBTC(amount: amount_d)
+        }
         updateEstimate()
     }
 
     func updateEstimate() {
-       // btcAmountEstimate.text = String(format: "~%g BTC", btcAmount)
+
+        if (btcAmount == 0) {
+            setLabel(button: selectedButton!, fee: 0)
+            g_payload = nil
+            updateButton()
+            return
+        }
+
+        var details = [String: Any]()
+        let satoshi: UInt64 = UInt64(btcAmount * 100000000)
+        var toAddress = [String: Any]()
+        toAddress["satoshi"] = satoshi
+        toAddress["address"] = addressLabel.text
+
+        details["fee_rate"] = fee
+        details["addressees"] = [toAddress]
+
+        do {
+            let unspent = try getSession().getUnspentOutputs(subaccount: (wallet?.pointer)!, num_confs: 1)
+            details["utxos"] = unspent?["array"]
+            print(details)
+            let payload = try getSession().createTransaction(details: details)
+            g_payload = payload
+            updateButton()
+            let fee = payload!["fee"] as! UInt64
+            setLabel(button: selectedButton!, fee: fee)
+            return
+        } catch {
+            print("couldn't cteate transcation")
+        }
+        g_payload = nil
+        updateButton()
+        setLabel(button: selectedButton!, fee: 0)
+    }
+
+    func updateButton() {
+        if (g_payload == nil) {
+            if (reviewButton.layer.sublayers?.count == 2) {
+                reviewButton.layer.sublayers?.removeFirst()
+            }
+            reviewButton.isUserInteractionEnabled = false
+            reviewButton.backgroundColor = UIColor.lightGray
+        } else {
+            reviewButton.isUserInteractionEnabled = true
+            reviewButton.backgroundColor = UIColor.customMatrixGreen()
+            reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        }
     }
 
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
         amountTextField.resignFirstResponder()
     }
 
-    func setLabel(button: UIButton, fee: Int) {
+    func setLabel(button: UIButton, fee: UInt64) {
         feeLabel.removeFromSuperview()
+        if(fee == 0) {
+            return
+        }
         feeLabel = UILabel(frame: CGRect(x: button.center.x, y: button.center.y + button.frame.size.height / 2 + 21, width: 150, height: 21))
         feeLabel.textAlignment = .center
         feeLabel.textColor = UIColor.customTitaniumLight()
 
-        let usdValue:Double = AccountStore.shared.satoshiToUSD(amount: fee * 250)
+        let usdValue:Double = AccountStore.shared.satoshiToUSD(amount: fee)
 
         feeLabel.text = String(format: "~%.2f %@ \n (1 satoshi / byte)", usdValue, SettingsStore.shared.getCurrencyString())
         feeLabel.numberOfLines = 2
@@ -141,8 +204,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @IBAction func lowFeeClicked(_ sender: Any) {
-        fee = AccountStore.shared.feeEstimatelow
-        setLabel(button: lowFeeButton, fee: fee)
+        selectedButton = lowFeeButton
+        fee = AccountStore.shared.getFeeRateLow()
+        updateEstimate()
         lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
         mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -154,8 +218,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
-        fee = AccountStore.shared.feeEstimateMedium
-        setLabel(button: mediumFeeButton, fee: fee)
+        selectedButton = mediumFeeButton
+        fee = AccountStore.shared.getFeeRateMedium()
+        updateEstimate()
         mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
         lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -167,8 +232,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
-        fee = AccountStore.shared.feeEstimateHigh
-        setLabel(button: highFeeButton, fee: fee)
+        selectedButton = highFeeButton
+        fee = AccountStore.shared.getFeeRateHigh()
+        updateEstimate()
         lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor

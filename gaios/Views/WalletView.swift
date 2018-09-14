@@ -80,7 +80,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             try getSession().getTransactions(subaccount: UInt32(account), page: 0)
         }.done { (transactions: [String : Any]?) in
             let list = transactions!["list"] as! NSArray
-            for tx in list {
+            for tx in list.reversed() {
                 print(tx)
                 let transaction = tx as! [String : Any]
                 let satoshi:Int = transaction["value"] as! Int

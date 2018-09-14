@@ -29,8 +29,8 @@ class AccountStore {
             let subacounts = json!["array"] as! NSArray
             for element in subacounts{
                 let account = (element as? [String: Any])!
-                let address = account["receiving_id"] as! String
                 let pointer = account["pointer"] as! UInt32
+                let address = try getSession().getReceiveAddress(subaccount: pointer)
                 let balance = try getSession().getBalance(subaccount: pointer, numConfs: 1)
                 let satoshi = balance!["satoshi"] as! String
                 let name = pointer == 0 ? "Main Wallet" : account["name"] as! String
@@ -51,6 +51,42 @@ class AccountStore {
         return wrap {self.fetchWallets()}
     }
 
+    func getFeeRateHigh() -> UInt64 {
+        do {
+            let json = try getSession().getFeeEstimates()
+            let estimates = json!["estimates"] as! NSArray
+            let result = estimates[2] as! UInt64
+            return result
+        } catch {
+            print("something went wrong")
+        }
+        return 0
+    }
+
+    func getFeeRateMedium() -> UInt64 {
+        do {
+            let json = try getSession().getFeeEstimates()
+            let estimates = json!["estimates"] as! NSArray
+            let result = estimates[6] as! UInt64
+            return result
+        } catch {
+            print("something went wrong")
+        }
+        return 0
+    }
+
+    func getFeeRateLow() -> UInt64 {
+        do {
+            let json = try getSession().getFeeEstimates()
+            let estimates = json!["estimates"] as! NSArray
+            let result = estimates[12] as! UInt64
+            return result
+        } catch {
+            print("something went wrong")
+        }
+        return 0
+    }
+
     func getDenomination() -> Double  {
         let denomination = SettingsStore.shared.getDenominationSettings()
         if (denomination == SettingsStore.shared.denominationPrimary) {
@@ -69,9 +105,16 @@ class AccountStore {
         return dateFormatter.date(from: date)!
     }
 
-    func satoshiToUSD(amount: Int) -> Double {
-        let result: Double = (Double(amount) * exchangeRate) / getDenomination()
-        return result
+    func satoshiToUSD(amount: UInt64) -> Double {
+        let dict = ["satoshi" : amount]
+        var amount: Double = 0
+        do {
+            let json = try getSession().convertAmount(input: dict)
+            amount = Double(json!["fiat"] as! String)!
+        } catch {
+            print("something went wrong")
+        }
+        return amount
     }
 
     func btcToFiat(amount: Double) -> Double {

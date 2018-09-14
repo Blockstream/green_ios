@@ -62,17 +62,6 @@ class ViewController: UIViewController, WalletViewDelegate{
             cardView.presentedDidUpdate()
             let uri = bip21Helper.btcURIforAddress(address: item.address)
             cardView.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: cardView.QRImageView.frame)
-            /*let shadowSize : CGFloat = 5.0
-            let shadowPath = UIBezierPath(rect: CGRect(x: 0,
-                                                       y: 0,
-                                                       width: cardView.QRImageView.frame.size.width + shadowSize,
-                                                       height: cardView.QRImageView.frame.size.height + shadowSize))
-            cardView.QRImageView.layer.masksToBounds = false
-            cardView.QRImageView.layer.shadowColor = UIColor.customMatrixGreen().cgColor
-            cardView.QRImageView.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-            cardView.QRImageView.layer.shadowOpacity = 0.5
-            cardView.QRImageView.layer.cornerRadius = 8
-            cardView.QRImageView.layer.shadowPath = shadowPath.cgPath*/
             coloredCardViews.append(cardView)
         }
 
