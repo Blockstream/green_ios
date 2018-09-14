@@ -6,7 +6,7 @@ namespace {
 bool is_twofactor_required_error(const autobahn::call_error& e)
 {
     const autobahn::call_error::args_type& args = e.get_args();
-    if (args.size() > 0) {
+    if (!args.empty()) {
         std::string uri;
         args[0].convert(uri);
         if (uri == "http://greenaddressit.com/error#auth") {
@@ -16,11 +16,6 @@ bool is_twofactor_required_error(const autobahn::call_error& e)
     return false;
 }
 } // namespace
-
-GA_twofactor_factor::GA_twofactor_factor(const std::string& type)
-    : m_type(type)
-{
-}
 
 std::vector<GA_twofactor_factor> GA_twofactor_call::get_all_twofactor_factors() const
 {
@@ -43,20 +38,18 @@ GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session)
 {
 }
 
-GA_twofactor_call::GA_twofactor_call(
-    ga::sdk::session& session, const std::vector<GA_twofactor_factor>& twofactor_factors_)
+GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, std::vector<GA_twofactor_factor> twofactor_factors)
     : m_session(session)
-    , m_twofactor_factors(twofactor_factors_)
+    , m_twofactor_factors(std::move(twofactor_factors))
 {
 }
 
 nlohmann::json GA_twofactor_call::get_twofactor_data() const
 {
-    if (m_twofactor_factor_selected) {
+    if (m_twofactor_factor_selected != nullptr) {
         // If this assert fires check that the call has been resolved
         // by calling GA_twofactor_resolve_code
         GA_SDK_RUNTIME_ASSERT(!m_twofactor_code.empty());
-        GA_SDK_RUNTIME_ASSERT(m_twofactor_factor_selected != nullptr);
 
         return { { "method", m_twofactor_factor_selected->get_type() }, { "code", m_twofactor_code } };
     }
@@ -84,8 +77,6 @@ void GA_twofactor_call::resolve_code(const std::string& code)
     m_twofactor_factors.clear();
 }
 
-GA_twofactor_call::~GA_twofactor_call() {}
-
 GA_twofactor_call_with_next::GA_twofactor_call_with_next(ga::sdk::session& session, next_ptr&& next)
     : GA_twofactor_call(session)
     , m_next(std::move(next))
@@ -101,9 +92,9 @@ GA_activate_email_call::GA_activate_email_call(ga::sdk::session& session)
 
 void GA_activate_email_call::operator()() { m_session.activate_email(m_twofactor_code); }
 
-GA_set_email_call::GA_set_email_call(ga::sdk::session& session, const std::string& email)
-    : GA_twofactor_call_with_next(session, next_ptr(new GA_activate_email_call(session)))
-    , m_email(email)
+GA_set_email_call::GA_set_email_call(ga::sdk::session& session, std::string email)
+    : GA_twofactor_call_with_next(session, std::make_unique<GA_activate_email_call>(session))
+    , m_email(std::move(email))
 {
 }
 
@@ -115,7 +106,7 @@ void GA_set_email_call::request_code(const GA_twofactor_factor& factor)
 void GA_set_email_call::operator()()
 {
     const auto twofactor_data = get_twofactor_data();
-    m_session.set_email(m_email.c_str(), twofactor_data);
+    m_session.set_email(m_email, twofactor_data);
 }
 
 // enable...
@@ -129,9 +120,9 @@ GA_enable_twofactor::GA_enable_twofactor(ga::sdk::session& session, const std::s
 void GA_enable_twofactor::operator()() { m_session.enable_twofactor(m_factor, m_twofactor_code); }
 
 // gauth is different
-GA_enable_gauth_call::GA_enable_gauth_call(ga::sdk::session& session, const nlohmann::json& twofactor_data)
+GA_enable_gauth_call::GA_enable_gauth_call(ga::sdk::session& session, nlohmann::json twofactor_data)
     : GA_twofactor_call(session, { { "gauth" } })
-    , m_twofactor_data(twofactor_data)
+    , m_twofactor_data(std::move(twofactor_data))
 {
 }
 
@@ -140,10 +131,10 @@ void GA_enable_gauth_call::operator()() { m_session.enable_gauth(m_twofactor_cod
 // init_enable
 
 GA_init_enable_twofactor::GA_init_enable_twofactor(
-    ga::sdk::session& session, const std::string& factor, const std::string& data)
-    : GA_twofactor_call_with_next(session, next_ptr(new GA_enable_twofactor(session, factor)))
+    ga::sdk::session& session, const std::string& factor, std::string data)
+    : GA_twofactor_call_with_next(session, std::make_unique<GA_enable_twofactor>(session, factor))
     , m_factor(factor)
-    , m_data(data)
+    , m_data(std::move(data))
 {
 }
 
@@ -179,9 +170,9 @@ void GA_init_enable_gauth_call::operator()()
 
 // disable
 
-GA_disable_twofactor::GA_disable_twofactor(ga::sdk::session& session, const std::string& factor)
+GA_disable_twofactor::GA_disable_twofactor(ga::sdk::session& session, std::string factor)
     : GA_twofactor_call(session)
-    , m_factor(factor)
+    , m_factor(std::move(factor))
 {
 }
 
@@ -219,9 +210,9 @@ void GA_attempt_twofactor_call::operator()()
     }
 }
 
-GA_change_tx_limits_call::GA_change_tx_limits_call(ga::sdk::session& session, const std::string& total)
+GA_change_tx_limits_call::GA_change_tx_limits_call(ga::sdk::session& session, std::string total)
     : GA_attempt_twofactor_call(session)
-    , m_total(total)
+    , m_total(std::move(total))
 {
 }
 
@@ -234,13 +225,12 @@ void GA_change_tx_limits_call::request_code(const GA_twofactor_factor& factor)
 void GA_change_tx_limits_call::call()
 {
     const auto twofactor_data = get_twofactor_data();
-    m_session.change_settings_tx_limits(0, 0, std::stoi(m_total), twofactor_data);
+    m_session.change_settings_tx_limits(false, 0, std::stoi(m_total), twofactor_data);
 }
 
-GA_send_call::GA_send_call(
-    ga::sdk::session& session, const outputs_t& addr_amount, const fee_rate_t& fee_rate, bool send_all)
+GA_send_call::GA_send_call(ga::sdk::session& session, outputs_t addr_amount, const fee_rate_t& fee_rate, bool send_all)
     : GA_attempt_twofactor_call(session)
-    , m_outputs(addr_amount)
+    , m_outputs(std::move(addr_amount))
     , m_fee_rate(fee_rate)
     , m_send_all(send_all)
 {

@@ -360,6 +360,30 @@ public class Session {
         return try convertOpaqueJsonToDict(o: result!)
     }
 
+    public func createTransaction(details: [String: Any]) throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+        defer {
+            GA_destroy_json(details_json)
+            GA_destroy_json(result)
+        }
+        try callWrapper(fun: GA_create_transaction(session, details_json, &result));
+        return try convertOpaqueJsonToDict(o: result!)
+    }
+
+    public func sendTransaction(details: [String: Any], twofactor_data: [String: Any]) throws -> [String: Any]? {
+        var result: OpaquePointer? = nil
+        var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+        var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)
+        defer {
+            GA_destroy_json(details_json)
+            GA_destroy_json(twofactor_json)
+            GA_destroy_json(result)
+        }
+        try callWrapper(fun: GA_send_transaction(session, details_json, twofactor_json, &result));
+        return try convertOpaqueJsonToDict(o: result!)
+    }
+
     public func send(subaccount: UInt32, addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool, twofactor_data: [String: Any]) throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)

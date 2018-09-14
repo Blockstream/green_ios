@@ -21,6 +21,8 @@ namespace sdk {
         return buff;
     }
 
+    GASDK_API uint32_t get_random_uint32();
+
     template <typename InputIt, typename OutputIt, typename BinaryOperation>
     void adjacent_transform(InputIt first, InputIt last, OutputIt d_first, BinaryOperation binary_op)
     {

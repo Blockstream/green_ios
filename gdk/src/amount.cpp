@@ -77,7 +77,7 @@ namespace sdk {
         // FIXME: add fixed precision decimal values with trailing 0's, have server return ISO
         // country code and return it so the caller can do locale aware formatting
         return { { "satoshi", satoshi }, { "btc", btc }, { "mbtc", mbtc }, { "ubtc", ubtc }, { "bits", ubtc },
-            { "fiat", fiat }, { "fiat_currency", fiat_currency } };
+            { "fiat", fiat }, { "fiat_currency", fiat_currency }, { "fiat_rate", fr.str() } };
     }
 
 } // namespace sdk

@@ -23,12 +23,6 @@ extern "C" {
 #define GA_MUTUAL_ADDRBOOK 1
 #define GA_PUBLIC 2
 
-/** Values for address types */
-#define GA_ADDRESS_TYPE_P2SH 0
-#define GA_ADDRESS_TYPE_P2WSH 1
-#define GA_ADDRESS_TYPE_CSV 2
-#define GA_ADDRESS_TYPE_DEFAULT 0xffffffff
-
 /** Values for onion uri flag */
 #define GA_NO_TOR 0
 #define GA_USE_TOR 1
@@ -136,6 +130,7 @@ GASDK_API int GA_login_watch_only(struct GA_session* session, const char* userna
  * Remove an account.
  *
  * @session The server session to use.
+ * @twofactor_data Two factor authentication details for the action.
  *
  * GA_ERROR if removal is unsuccessful.
  */
@@ -197,6 +192,7 @@ GASDK_API int GA_change_settings_privacy_show_as_sender(struct GA_session* sessi
  * @is_fiat One of @GA_TRUE or @GA_FALSE.
  * @per_tx Amount per transaction in satoshis.
  * @total Amount in total per transaction in satoshis.
+ * @twofactor_data Two factor authentication details for the action.
  *
  * GA_ERROR if transaction limits could not be changed.
  */
@@ -312,21 +308,47 @@ GASDK_API int GA_set_pin(
     struct GA_session* session, const char* mnemonic, const char* pin, const char* device, GA_json** pin_data);
 
 /*
+ * Construct a transaction.
+ *
+ * @session The server session to use.
+ * @transaction_details The transaction details for constructing.
+ * @transaction destination for the resulting transaction's details.
+ *
+ * GA_ERROR if the transaction could not be created.
+ */
+GASDK_API int GA_create_transaction(
+    struct GA_session* session, const GA_json* transaction_details, GA_json** transaction);
+
+/*
+ * Send a transaction created by GA_create_transaction.
+ *
+ * @session The server session to use.
+ * @transaction_details The transaction details for sending.
+ * @twofactor_data Two factor authentication details for the action.
+ * @transaction destination for the resulting transaction's details.
+ *
+ * GA_ERROR if the raw transaction could not be sent.
+ */
+GASDK_API int GA_send_transaction(struct GA_session* session, const GA_json* transaction_details,
+    const GA_json* twofactor_data, GA_json** transaction);
+
+/*
  * Send a transaction for the specified address/amount pairs.
  *
  * @session The server session to use.
  * @subaccount The subaccount to send from, or GA_ALL_ACCOUNTS.
  * @addr The addresses to send.
- * @add_siz The count of items in @addr.
+ * @addr_siz The count of items in @addr.
  * @amt The amounts to send.
  * @amt_siz The count of items in @amt.
  * @fee_rate The fee rate.
  * @send_all One of @GA_TRUE or @GA_FALSE.
+ * @twofactor_data Two factor authentication details for the action.
  * @transaction destination for the resulting transaction's details.
  *
  * GA_ERROR if raw transaction could not be created.
  */
-GASDK_API int GA_send(struct GA_session* session, uint32_t subaccount, const char** addr, size_t add_siz,
+GASDK_API int GA_send(struct GA_session* session, uint32_t subaccount, const char** addr, size_t addr_siz,
     const uint64_t* amt, size_t amt_siz, uint64_t fee_rate, uint32_t send_all, const GA_json* twofactor_data,
     GA_json** transaction);
 

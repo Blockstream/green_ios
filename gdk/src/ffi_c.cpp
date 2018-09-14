@@ -203,6 +203,22 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_get_twofactor_config, struct GA_session*, session,
     *json_cast(config) = new nlohmann::json(session->get_twofactor_config());
 })
 
+GA_SDK_DEFINE_C_FUNCTION_3(
+    GA_create_transaction, struct GA_session*, session, const GA_json*, transaction_details, GA_json**, transaction, {
+        GA_SDK_RUNTIME_ASSERT(transaction_details);
+        GA_SDK_RUNTIME_ASSERT(transaction);
+        *json_cast(transaction) = new nlohmann::json(session->create_transaction(*json_cast(transaction_details)));
+    })
+
+GA_SDK_DEFINE_C_FUNCTION_4(GA_send_transaction, struct GA_session*, session, const GA_json*, transaction_details,
+    const GA_json*, twofactor_data, GA_json**, transaction, {
+        GA_SDK_RUNTIME_ASSERT(transaction_details);
+        GA_SDK_RUNTIME_ASSERT(transaction);
+        const nlohmann::json empty;
+        *json_cast(transaction) = new nlohmann::json(
+            session->send(*json_cast(transaction_details), twofactor_data ? *json_cast(twofactor_data) : empty));
+    })
+
 GA_SDK_DEFINE_C_FUNCTION_10(GA_send, struct GA_session*, session, uint32_t, subaccount, const char**, addr, size_t,
     addr_siz, const uint64_t*, amt, size_t, amt_siz, uint64_t, fee_rate, uint32_t, send_all, const GA_json*,
     twofactor_data, GA_json**, transaction, {
@@ -300,22 +316,8 @@ GA_SDK_DEFINE_C_FUNCTION_4(
 
 GA_SDK_DEFINE_C_FUNCTION_4(
     GA_get_receive_address, struct GA_session*, session, uint32_t, subaccount, uint32_t, addr_type, char**, output, {
-        namespace sdk = ga::sdk;
         GA_SDK_RUNTIME_ASSERT(output);
-        sdk::address_type type;
-        if (addr_type == GA_ADDRESS_TYPE_CSV) {
-            type = sdk::address_type::csv;
-        } else if (addr_type == GA_ADDRESS_TYPE_P2WSH) {
-            type = sdk::address_type::p2wsh;
-        } else if (addr_type == GA_ADDRESS_TYPE_P2SH) {
-            type = sdk::address_type::p2sh;
-        } else if (addr_type == GA_ADDRESS_TYPE_DEFAULT) {
-            type = session->get_default_address_type();
-        } else {
-            GA_SDK_RUNTIME_ASSERT(false);
-            __builtin_unreachable();
-        }
-        const auto r = session->get_receive_address(subaccount, type);
+        const auto r = session->get_receive_address(subaccount, static_cast<ga::sdk::address_type>(addr_type));
         *output = to_c_string(r["address"]);
     })
 

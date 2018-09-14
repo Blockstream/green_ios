@@ -5,10 +5,12 @@
 #include "containers.hpp"
 #include "session.hpp"
 
-struct GA_twofactor_factor {
+struct GA_twofactor_factor final {
 public:
-    GA_twofactor_factor(const std::string& type);
-    GA_twofactor_factor(const GA_twofactor_factor&) = default;
+    GA_twofactor_factor(std::string type)
+        : m_type(std::move(type))
+    {
+    }
 
     const std::string& get_type() const { return m_type; }
 
@@ -21,16 +23,12 @@ public:
     using value_container = std::vector<GA_twofactor_factor>;
     using size_type = value_container::size_type;
 
-    GA_twofactor_factor_list(const value_container& list)
-        : m_list(list)
+    explicit GA_twofactor_factor_list(value_container list)
+        : m_list(std::move(list))
     {
     }
 
-    GA_twofactor_factor operator[](size_t i) const
-    {
-        GA_twofactor_factor factor(m_list[i]);
-        return factor;
-    }
+    GA_twofactor_factor operator[](size_t i) const { return GA_twofactor_factor(m_list[i]); }
 
     size_type size() const { return m_list.size(); }
 
@@ -40,8 +38,13 @@ private:
 
 struct GA_twofactor_call {
 public:
-    GA_twofactor_call(ga::sdk::session& session);
-    GA_twofactor_call(ga::sdk::session& session, const std::vector<GA_twofactor_factor>& twofactor_factors_);
+    explicit GA_twofactor_call(ga::sdk::session& session);
+    GA_twofactor_call(ga::sdk::session& session, std::vector<GA_twofactor_factor> twofactor_factors);
+    GA_twofactor_call(const GA_twofactor_call&) = delete;
+    GA_twofactor_call& operator=(const GA_twofactor_call&) = delete;
+    GA_twofactor_call(GA_twofactor_call&&) = delete;
+    GA_twofactor_call& operator=(GA_twofactor_call&&) = delete;
+    virtual ~GA_twofactor_call() = default;
 
     std::vector<GA_twofactor_factor> get_all_twofactor_factors() const;
 
@@ -49,17 +52,16 @@ public:
 
     const std::vector<GA_twofactor_factor>& get_twofactor_factors() const;
 
-    void request_code_(const GA_twofactor_factor& factor, const std::string& action, const nlohmann::json& data);
+    void request_code_(
+        const GA_twofactor_factor& factor, const std::string& action, const nlohmann::json& twofactor_data);
 
     void resolve_code(const std::string& code);
 
     virtual void request_code(const GA_twofactor_factor& factor);
 
-    virtual GA_twofactor_call* get_next_call() { return 0; }
+    virtual GA_twofactor_call* get_next_call() { return nullptr; }
 
     virtual void operator()() = 0;
-
-    virtual ~GA_twofactor_call();
 
 protected:
     ga::sdk::session& m_session;
@@ -79,23 +81,23 @@ protected:
 struct GA_twofactor_call_with_next : public GA_twofactor_call {
     using next_ptr = std::unique_ptr<GA_twofactor_call>;
 
-    GA_twofactor_call_with_next(ga::sdk::session& session, next_ptr&& next = next_ptr());
+    explicit GA_twofactor_call_with_next(ga::sdk::session& session, next_ptr&& next = next_ptr());
 
-    virtual GA_twofactor_call* get_next_call();
+    GA_twofactor_call* get_next_call() override;
 
 protected:
     next_ptr m_next;
 };
 
 struct GA_activate_email_call : public GA_twofactor_call {
-    GA_activate_email_call(ga::sdk::session& session);
-    virtual void operator()();
+    explicit GA_activate_email_call(ga::sdk::session& session);
+    void operator()() override;
 };
 
 struct GA_set_email_call : public GA_twofactor_call_with_next {
-    GA_set_email_call(ga::sdk::session& session, const std::string& email);
-    virtual void request_code(const GA_twofactor_factor& factor);
-    virtual void operator()();
+    GA_set_email_call(ga::sdk::session& session, std::string email);
+    void request_code(const GA_twofactor_factor& factor) override;
+    void operator()() override;
 
 private:
     std::string m_email;
@@ -103,16 +105,16 @@ private:
 
 struct GA_enable_twofactor : public GA_twofactor_call {
     GA_enable_twofactor(ga::sdk::session& session, const std::string& factor);
-    virtual void operator()();
+    void operator()() override;
 
 private:
     std::string m_factor;
 };
 
 struct GA_init_enable_twofactor : public GA_twofactor_call_with_next {
-    GA_init_enable_twofactor(ga::sdk::session& session, const std::string& factor, const std::string& data);
-    virtual void request_code(const GA_twofactor_factor& factor);
-    virtual void operator()();
+    GA_init_enable_twofactor(ga::sdk::session& session, const std::string& factor, std::string data);
+    void request_code(const GA_twofactor_factor& factor) override;
+    void operator()() override;
 
 private:
     std::string m_factor;
@@ -120,23 +122,23 @@ private:
 };
 
 struct GA_enable_gauth_call : public GA_twofactor_call {
-    GA_enable_gauth_call(ga::sdk::session& session, const nlohmann::json& twofactor_data);
-    virtual void operator()();
+    GA_enable_gauth_call(ga::sdk::session& session, nlohmann::json twofactor_data);
+    void operator()() override;
 
 private:
     nlohmann::json m_twofactor_data;
 };
 
 struct GA_init_enable_gauth_call : public GA_twofactor_call_with_next {
-    GA_init_enable_gauth_call(ga::sdk::session& session);
-    virtual void request_code(const GA_twofactor_factor& factor);
-    virtual void operator()();
+    explicit GA_init_enable_gauth_call(ga::sdk::session& session);
+    void request_code(const GA_twofactor_factor& factor) override;
+    void operator()() override;
 };
 
 struct GA_disable_twofactor : public GA_twofactor_call {
-    GA_disable_twofactor(ga::sdk::session& session, const std::string& factor);
-    virtual void request_code(const GA_twofactor_factor& factor);
-    virtual void operator()();
+    GA_disable_twofactor(ga::sdk::session& session, std::string factor);
+    void request_code(const GA_twofactor_factor& factor) override;
+    void operator()() override;
 
 private:
     std::string m_factor;
@@ -148,9 +150,9 @@ private:
 //   try the api call without 2fa
 //   if call fails with 2fa required, try again with 2fa
 struct GA_attempt_twofactor_call : public GA_twofactor_call {
-    GA_attempt_twofactor_call(ga::sdk::session& session);
-    virtual GA_twofactor_call* get_next_call();
-    virtual void operator()();
+    explicit GA_attempt_twofactor_call(ga::sdk::session& session);
+    GA_twofactor_call* get_next_call() override;
+    void operator()() override;
     virtual void call() = 0;
 
 private:
@@ -158,9 +160,9 @@ private:
 };
 
 struct GA_change_tx_limits_call : public GA_attempt_twofactor_call {
-    GA_change_tx_limits_call(ga::sdk::session& session, const std::string& total);
-    virtual void request_code(const GA_twofactor_factor& factor);
-    virtual void call();
+    GA_change_tx_limits_call(ga::sdk::session& session, std::string total);
+    void request_code(const GA_twofactor_factor& factor) override;
+    void call() override;
 
 private:
     std::string m_total;
@@ -170,10 +172,10 @@ struct GA_send_call : public GA_attempt_twofactor_call {
     using outputs_t = std::vector<ga::sdk::session::address_amount_pair>;
     using fee_rate_t = ga::sdk::amount;
 
-    GA_send_call(ga::sdk::session& session, const outputs_t& addr_amount, const fee_rate_t& fee_rate, bool send_all);
+    GA_send_call(ga::sdk::session& session, outputs_t addr_amount, const fee_rate_t& fee_rate, bool send_all);
 
-    virtual void request_code(const GA_twofactor_factor& factor);
-    virtual void call();
+    void request_code(const GA_twofactor_factor& factor) override;
+    void call() override;
 
 private:
     outputs_t m_outputs;

@@ -100,7 +100,7 @@ const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* 
             GA_destroy_string(type);
         }
         printf("? ");
-        int selection = atoi(rawinput());
+        int selection = strtoul(rawinput(), NULL, 10);
         CALL(GA_twofactor_factor_list_get_factor(factors, selection, &selected))
     }
     return selected;
@@ -189,7 +189,7 @@ void getbalance(struct GA_session* session)
 void send_to_address(struct GA_session* session, const char* address, const char* amount)
 {
     const char* addresses[] = { address };
-    uint64_t amount_ = atoi(amount);
+    uint64_t amount_ = strtoul(amount, NULL, 10);
     uint64_t amounts[] = { amount_ };
     CALL_2FA(GA_twofactor_send(session, addresses, 1, amounts, 1, 200, 0, &call));
 }

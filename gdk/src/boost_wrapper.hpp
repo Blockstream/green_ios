@@ -12,6 +12,8 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 #endif
 
+#define BOOST_ASIO_DISABLE_IOCP
+
 #if defined _WIN32 || defined WIN32 || defined __CYGWIN__
 #include <winsock2.h>
 #endif

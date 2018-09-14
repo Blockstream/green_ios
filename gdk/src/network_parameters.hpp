@@ -159,7 +159,7 @@ emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
     class network_parameters final {
     public:
         template <typename params>
-        explicit network_parameters(params p, const std::string& proxy = std::string(), bool use_tor = false)
+        explicit network_parameters(params p, std::string proxy = std::string(), bool use_tor = false)
             : m_gait_wamp_url{ p.gait_wamp_url }
             , m_gait_wamp_cert_pins{ p.gait_wamp_cert_pins }
             , m_gait_wamp_cert_roots{ p.gait_wamp_cert_roots }
@@ -169,7 +169,7 @@ emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
             , m_pub_key{ p.deposit_pub_key }
             , m_gait_onion{ p.gait_onion }
             , m_default_peer{ p.default_peer }
-            , m_proxy{ proxy }
+            , m_proxy{ std::move(proxy) }
             , m_bech32_prefix{ p.bech32_prefix }
             , m_btc_version{ p.btc_version }
             , m_btc_p2sh_version{ p.btc_p2sh_version }
@@ -177,6 +177,8 @@ emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
             , m_use_tor{ use_tor }
         {
         }
+
+        ~network_parameters() = default;
 
         network_parameters(const network_parameters&) = delete;
         network_parameters& operator=(const network_parameters&) = delete;

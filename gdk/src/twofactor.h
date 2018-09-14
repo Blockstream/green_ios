@@ -189,7 +189,7 @@ GASDK_API int GA_twofactor_change_tx_limits(
 /**
  * 2fa wrapper around send
  */
-GASDK_API int GA_twofactor_send(struct GA_session* session, const char** addr, uint32_t add_siz, const uint64_t* amt,
+GASDK_API int GA_twofactor_send(struct GA_session* session, const char** addr, uint32_t addr_siz, const uint64_t* amt,
     uint32_t amt_siz, uint64_t fee_rate, uint32_t send_all, struct GA_twofactor_call** call);
 
 #ifdef __cplusplus

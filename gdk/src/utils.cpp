@@ -105,6 +105,13 @@ namespace sdk {
         wally::clear(hashed);
     }
 
+    uint32_t get_random_uint32()
+    {
+        uint32_t ret;
+        memcpy(&ret, get_random_bytes<sizeof(ret)>().data(), sizeof(ret));
+        return ret;
+    }
+
     static std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz, bool rev)
     {
         std::vector<unsigned char> buff(siz / 2);

@@ -15,7 +15,12 @@
 namespace ga {
 namespace sdk {
 
-    enum class address_type : uint32_t { p2sh, p2wsh, csv };
+    enum class address_type : uint32_t {
+        p2sh = GA_ADDRESS_TYPE_P2SH,
+        p2wsh = GA_ADDRESS_TYPE_P2WSH,
+        csv = GA_ADDRESS_TYPE_CSV,
+        default_ = GA_ADDRESS_TYPE_DEFAULT
+    };
 
     enum class privacy_send_me : uint32_t {
         private_,
@@ -108,6 +113,8 @@ namespace sdk {
         nlohmann::json get_unspent_outputs(uint32_t num_confs);
         nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_transaction_details(const std::string& txhash_hex);
+
+        nlohmann::json create_transaction(const nlohmann::json& details);
 
         std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const nlohmann::json& utxos, amount fee_rate, bool send_all);

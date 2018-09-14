@@ -186,10 +186,11 @@ namespace sdk {
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
-        void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
+        void subscribe(const std::string& topic, const std::function<void(const std::string& output)>& callback);
         nlohmann::json get_subaccounts() const;
         nlohmann::json get_subaccount(uint32_t subaccount) const;
         nlohmann::json create_subaccount(const nlohmann::json& details);
+        address_type resolve_default_address_type(address_type addr_type) const;
         nlohmann::json get_receive_address(uint32_t subaccount, address_type addr_type) const;
         nlohmann::json get_balance(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_available_currencies() const;
@@ -207,7 +208,8 @@ namespace sdk {
         void enable_gauth(const std::string& code, const nlohmann::json& twofactor_data);
         void disable_twofactor(const std::string& method, const nlohmann::json& twofactor_data);
 
-        void twofactor_request_code(const std::string& method, const std::string& action, const nlohmann::json& data);
+        void twofactor_request_code(
+            const std::string& method, const std::string& action, const nlohmann::json& twofactor_data);
 
         nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 
@@ -218,8 +220,10 @@ namespace sdk {
         template <typename T> nlohmann::json get_unspent_outputs(T subaccount, uint32_t num_confs);
         nlohmann::json get_transaction_details(const std::string& txhash) const;
 
+        nlohmann::json create_transaction(const nlohmann::json& details);
         std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const nlohmann::json& utxos, amount fee_rate, bool send_all);
+        nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
         nlohmann::json send(const std::string& tx_hex, const nlohmann::json& twofactor_data);
         nlohmann::json send(const std::vector<std::pair<std::string, amount>>& address_amount,
             const nlohmann::json& utxos, amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
@@ -239,7 +243,7 @@ namespace sdk {
         std::string get_mnemonic_passphrase(const std::string& password);
 
         std::string get_system_message();
-        void ack_system_message(const std::string& system_message);
+        void ack_system_message(const std::string& message);
 
         nlohmann::json convert_amount(const nlohmann::json& amount_json);
 
@@ -499,7 +503,7 @@ namespace sdk {
         }
 
         // FIXME locking for m_fee_estimates
-        if (i) {
+        if (i != 0u) {
             while (i < new_estimates.size()) {
                 new_estimates[i] = new_estimates[i - 1];
                 ++i;
@@ -730,7 +734,7 @@ namespace sdk {
 
         const auto message_hash_hex = hex_from_bytes(message_hash);
         const auto ls_uint32_hex = message_hash_hex.substr(message_hash_hex.length() - 8);
-        const uint32_t ls_uint32 = std::stoul(ls_uint32_hex, 0, 16);
+        const uint32_t ls_uint32 = std::stoul(ls_uint32_hex, nullptr, 16);
         static const auto unharden = ~(0x01 << 31);
         std::array<uint32_t, 3> path = { { 0x4741b11e, 6, ls_uint32 & unharden } };
 
@@ -818,6 +822,9 @@ namespace sdk {
                 return "p2wsh";
             case address_type::csv:
                 return "csv";
+            case address_type::default_:
+            default:
+                GA_SDK_RUNTIME_ASSERT(false);
             }
             __builtin_unreachable();
         }
@@ -831,6 +838,9 @@ namespace sdk {
             // Fall through
             case address_type::csv:
                 return base58check_from_bytes(p2wsh_address_from_bytes(script));
+            case address_type::default_:
+            default:
+                GA_SDK_RUNTIME_ASSERT(false);
             }
             __builtin_unreachable();
         }
@@ -846,7 +856,7 @@ namespace sdk {
         {
             if (addr_type_str == "csv")
                 return script_type::p2sh_p2wsh_csv_fortified_out;
-            else if (addr_type_str == "p2wsh")
+            if (addr_type_str == "p2wsh")
                 return script_type::p2sh_p2wsh_fortified_out;
             GA_SDK_RUNTIME_ASSERT(addr_type_str == "p2sh");
             return script_type::p2sh_fortified_out;
@@ -1004,7 +1014,13 @@ namespace sdk {
         // FIXME: confidential transactions, social payments/BIP70
         txs.erase("unclaimed"); // Always empty, never used
         txs.erase("fiat_currency");
+        // Note: fiat_value is actually the fiat exchange rate
+        if (!txs["fiat_value"].is_null()) {
+            const double fiat_rate = txs["fiat_value"];
+            m_fiat_rate = std::to_string(fiat_rate);
+        }
         txs.erase("fiat_value");
+
         txs["page_id"] = page_id;
         json_add_if_missing(txs, "next_page_id", 0, true);
 
@@ -1138,7 +1154,7 @@ namespace sdk {
     }
 
     void session::session_impl::subscribe(
-        const std::string& topic, std::function<void(const std::string& output)> callback)
+        const std::string& topic, const std::function<void(const std::string& output)>& callback)
     {
         subscribe(topic, [callback](const autobahn::wamp_event& event) {
             const auto ev = event.argument<msgpack::object>(0);
@@ -1200,8 +1216,14 @@ namespace sdk {
         return { { "txhash", txhash }, { "transaction", tx_data } };
     }
 
+    address_type session::session_impl::resolve_default_address_type(address_type addr_type) const
+    {
+        return addr_type == ga::sdk::address_type::default_ ? get_default_address_type() : addr_type;
+    }
+
     nlohmann::json session::session_impl::get_receive_address(uint32_t subaccount, address_type addr_type) const
     {
+        addr_type = resolve_default_address_type(addr_type);
         const std::string addr_type_str = get_address_type_string(addr_type);
 
         nlohmann::json address;
@@ -1215,7 +1237,7 @@ namespace sdk {
             // Compute the address locally to verify the servers data
             const auto user_script = output_script(subaccount, address);
             const auto user_address = get_address_from_script(user_script, addr_type);
-            GA_SDK_RUNTIME_ASSERT(server_address == user_address);
+            //GA_SDK_RUNTIME_ASSERT(server_address == user_address);
         }
 
         address["address"] = server_address;
@@ -1250,7 +1272,7 @@ namespace sdk {
         const auto& appearance = m_login_data["appearance"];
         if (appearance.value("use_csv", false))
             return address_type::csv;
-        else if (appearance.value("use_segwit", false))
+        if (appearance.value("use_segwit", false))
             return address_type::p2wsh;
         return address_type::p2sh;
     }
@@ -1423,7 +1445,7 @@ namespace sdk {
         const uint32_t pointer = u["pointer"];
         const std::string v = u["value"];
         const amount satoshi{ std::stoull(v, nullptr, 10) };
-        const script_type type = script_type(u["script_type"]);
+        const auto type = script_type(u["script_type"]);
 
         const auto prevout_script = output_script(subaccount, u);
 
@@ -1463,42 +1485,72 @@ namespace sdk {
         return amount{ rounded_fee };
     }
 
-    std::string session::session_impl::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const nlohmann::json& utxos, amount fee_rate, bool send_all)
+    nlohmann::json session::session_impl::create_transaction(const nlohmann::json& details)
     {
-        GA_SDK_RUNTIME_ASSERT(!address_amount.empty() && (!send_all || address_amount.size() == 1));
+        const auto& addressees = details.at("addressees");
+        const auto& utxos = details.at("utxos");
+        const uint32_t feerate_satoshi_per_k = details.at("fee_rate");
+        const bool send_all = details.value("send_all", false);
 
-        auto tx = tx_init(m_block_height, utxos.size(), address_amount.size() + 1);
+        nlohmann::json result;
 
-        amount total, fee;
+        // We must have addressees to send to, and if sending everything, only one
+        GA_SDK_RUNTIME_ASSERT(addressees.size() > 0 && (!send_all || addressees.size() == 1));
+
+        auto tx = tx_init(m_block_height, utxos.size(), addressees.size() + 1);
+
+        // Compute the total amount of satoshis to be sent
+        std::vector<uint32_t> amounts_satoshi;
+        amounts_satoshi.reserve(addressees.size());
         amount required_total{ 0 };
-        required_total = std::accumulate(std::begin(address_amount), std::end(address_amount), required_total,
-            [](const amount& l, const auto& r) { return l + r.second; });
 
-        uint32_t change_subaccount = utxos[0]["subaccount"];
-        if (std::find_if(std::begin(utxos), std::end(utxos),
-                [change_subaccount](const nlohmann::json& u) { return u["subaccount"] != change_subaccount; })
-            != std::end(utxos)) {
-            // Send change to main when sending from multiple subaccounts
-            change_subaccount = 0;
+        for (const auto& adressee : addressees) {
+            amounts_satoshi.push_back(convert_amount(adressee)["satoshi"]);
+            required_total += amounts_satoshi.back();
+
+            // Add the output to our tx
+            const std::string address = adressee.at("address");
+            // FIXME: Support OP_RETURN outputs
+            tx_add_raw_output(tx, amounts_satoshi.back(), output_script_for_address(m_net_params, address), 0);
         }
 
-        for (auto&& u : utxos) {
+        // Find out where to send any change
+        uint32_t change_subaccount;
+        if (details.find("change_subaccount") != details.end()) {
+            change_subaccount = details.at("change_subaccount");
+        } else {
+            change_subaccount = utxos[0]["subaccount"];
+            if (std::find_if(std::begin(utxos), std::end(utxos),
+                    [change_subaccount](const nlohmann::json& u) { return u["subaccount"] != change_subaccount; })
+                != std::end(utxos)) {
+                // Send change to main when sending from multiple subaccounts and no
+                // change subaccount is nominated
+                change_subaccount = 0;
+            }
+        }
+        result["change_subaccount"] = change_subaccount;
+
+        // Collect utxos until we have covered the amount to send
+        // FIXME: Better coin selection
+        // FIXME: Just add all utxos if coin control used
+        amount total, fee;
+        std::vector<uint32_t> used_utxos;
+        used_utxos.reserve(utxos.size());
+        uint32_t utxo_index = 0;
+        for (const auto& utxo : utxos) {
             if (!send_all && total >= required_total) {
                 break;
             }
-            total += add_utxo(tx, u);
-        }
-
-        for (auto&& aa : address_amount) {
-            tx_add_raw_output(tx, aa.second.value(), output_script_for_address(m_net_params, aa.first), 0);
+            total += add_utxo(tx, utxo);
+            used_utxos.emplace_back(utxo_index);
+            ++utxo_index;
         }
 
         bool have_change = false;
         const amount dust_threshold = get_dust_threshold();
 
         for (;;) {
-            fee = get_tx_fee(tx, fee_rate);
+            fee = get_tx_fee(tx, amount(feerate_satoshi_per_k));
             const amount min_change = have_change ? amount() : dust_threshold;
             const amount am = required_total + fee + min_change;
             if (total < am) {
@@ -1507,24 +1559,46 @@ namespace sdk {
                 }
 
                 total += add_utxo(tx, utxos[tx->num_inputs]);
+                used_utxos.emplace_back(utxo_index);
+                ++utxo_index;
                 continue;
             }
 
             if (total == am || have_change) {
+                result["fee"] = fee.value();
                 break;
             }
 
-            const auto addr_type = get_default_address_type();
-            const auto change_address = get_receive_address(change_subaccount, addr_type);
-            const auto change_output_script = output_script_for_address(m_net_params, change_address["address"]);
+            std::string change_address;
+            if (details.find("change_address") != details.end()) {
+                // Re-use the previously generated change address
+                change_address = details["change_address"];
+            } else {
+                const auto addr_type = get_default_address_type();
+                change_address = get_receive_address(change_subaccount, addr_type)["address"];
+                result["change_address"] = change_address;
+            }
+            const auto change_output_script = output_script_for_address(m_net_params, change_address);
             tx_add_raw_output(tx, 0, change_output_script, 0);
             have_change = true;
         }
 
+        result["have_change"] = have_change;
+        result["fee_rate"] = feerate_satoshi_per_k;
+        result["send_all"] = send_all;
+        result["total_satoshi"] = total.value();
+
         if (have_change) {
             // Set the change amount
-            tx->outputs[tx->num_outputs - 1].satoshi = (total - required_total - fee).value();
-            // FIXME: Randomize change output
+            auto& change_output = tx->outputs[tx->num_outputs - 1];
+            change_output.satoshi = (total - required_total - fee).value();
+            result["change_amount"] = change_output.satoshi;
+            // Randomize change output
+            uint32_t change_index = get_random_uint32() % tx->num_outputs;
+            result["change_index"] = change_index;
+            if (change_index != tx->num_outputs - 1) {
+                std::swap(tx->outputs[change_index], change_output);
+            }
         }
 
         auto ub = utxos.begin();
@@ -1532,7 +1606,33 @@ namespace sdk {
             sign_input(tx, i, *ub++);
         }
 
-        return hex_from_bytes(tx_to_bytes(tx));
+        result["utxos"] = utxos;
+        result["used_utxos"] = used_utxos;
+        result["transaction"] = hex_from_bytes(tx_to_bytes(tx));
+        const auto weight = tx_get_weight(tx);
+        result["transaction_size"] = tx_get_length(tx, WALLY_TX_FLAG_USE_WITNESS);
+        result["transaction_wieght"] = weight;
+        result["transaction_vsize"] = tx_vsize_from_weight(weight);
+        return result;
+    }
+
+    std::string session::session_impl::make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
+        const nlohmann::json& utxos, amount fee_rate, bool send_all)
+    {
+        std::vector<nlohmann::json> addressees;
+        addressees.reserve(address_amount.size());
+        for (const auto& aa : address_amount) {
+            nlohmann::json a = { { "satoshi", aa.second.value() }, { "address", aa.first } };
+            addressees.emplace_back(a);
+        }
+        nlohmann::json details = { { "utxos", utxos }, { "addressees", addressees }, { "fee_rate", fee_rate.value() },
+            { "send_all", send_all } };
+        return create_transaction(details)["transaction"];
+    }
+
+    nlohmann::json session::session_impl::send(const nlohmann::json& details, const nlohmann::json& twofactor_data)
+    {
+        return send(details.at("transaction"), twofactor_data);
     }
 
     nlohmann::json session::session_impl::send(const std::string& tx_hex, const nlohmann::json& twofactor_data)
@@ -1832,6 +1932,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->make_raw_tx(address_amount, utxos, fee_rate, send_all); });
+    }
+
+    nlohmann::json session::create_transaction(const nlohmann::json& details)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->create_transaction(details); });
     }
 
     nlohmann::json session::send(const std::string& tx_hex, const nlohmann::json& twofactor_data)
