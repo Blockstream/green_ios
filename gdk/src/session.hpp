@@ -119,13 +119,7 @@ namespace sdk {
         std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const nlohmann::json& utxos, amount fee_rate, bool send_all);
 
-        nlohmann::json send(const std::string& tx_hex, const nlohmann::json& twofactor_data);
-        nlohmann::json send(const std::vector<std::pair<std::string, amount>>& address_amount,
-            const nlohmann::json& utxos, amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
-        nlohmann::json send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate,
-            bool send_all, const nlohmann::json& twofactor_data);
-        nlohmann::json send(uint32_t subaccount, const std::vector<std::pair<std::string, amount>>& address_amount,
-            amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
+        nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
 
         void send_nlocktimes();
 

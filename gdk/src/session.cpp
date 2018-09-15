@@ -224,13 +224,6 @@ namespace sdk {
         std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
             const nlohmann::json& utxos, amount fee_rate, bool send_all);
         nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
-        nlohmann::json send(const std::string& tx_hex, const nlohmann::json& twofactor_data);
-        nlohmann::json send(const std::vector<std::pair<std::string, amount>>& address_amount,
-            const nlohmann::json& utxos, amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
-
-        template <typename T>
-        nlohmann::json send(T subaccount, const std::vector<std::pair<std::string, amount>>& address_amount,
-            amount fee_rate, bool send_all, const nlohmann::json& twofactor_data);
 
         void send_nlocktimes();
 
@@ -868,7 +861,7 @@ namespace sdk {
         std::vector<nlohmann::json> subaccounts;
         subaccounts.reserve(m_subaccounts.size());
         for (auto s : m_subaccounts)
-            subaccounts.push_back(s.second);
+            subaccounts.emplace_back(s.second);
         return nlohmann::json(subaccounts);
     }
 
@@ -1099,7 +1092,7 @@ namespace sdk {
                         addressee = ep.value("social_source", ep["address"]);
                         if (std::find(std::begin(addressees), std::end(addressees), addressee)
                             == std::end(addressees)) {
-                            addressees.push_back(addressee);
+                            addressees.emplace_back(addressee);
                         }
                         ep["addressee"] = addressee;
                     }
@@ -1125,7 +1118,7 @@ namespace sdk {
 
                         if (std::find(std::begin(addressees), std::end(addressees), addressee)
                             == std::end(addressees)) {
-                            addressees.push_back(addressee);
+                            addressees.emplace_back(addressee);
                         }
                         ep["addressee"] = addressee;
                     }
@@ -1237,7 +1230,7 @@ namespace sdk {
             // Compute the address locally to verify the servers data
             const auto user_script = output_script(subaccount, address);
             const auto user_address = get_address_from_script(user_script, addr_type);
-            //GA_SDK_RUNTIME_ASSERT(server_address == user_address);
+            GA_SDK_RUNTIME_ASSERT(server_address == user_address);
         }
 
         address["address"] = server_address;
@@ -1488,7 +1481,15 @@ namespace sdk {
     nlohmann::json session::session_impl::create_transaction(const nlohmann::json& details)
     {
         const auto& addressees = details.at("addressees");
-        const auto& utxos = details.at("utxos");
+        nlohmann::json fetched_utxos;
+        const bool have_utxos = details.find("utxos") != details.end();
+        if (!have_utxos) {
+            // Fetch the users utxos (they must have nominated a subaccount
+            const uint32_t subaccount = details["subaccount"];
+            const uint32_t num_confs = m_net_params.main_net() ? 1 : 0; // Alow 0 conf testnet spends
+            fetched_utxos = get_unspent_outputs(subaccount, num_confs);
+        }
+        const auto& utxos = have_utxos ? details["utxos"] : fetched_utxos;
         const uint32_t feerate_satoshi_per_k = details.at("fee_rate");
         const bool send_all = details.value("send_all", false);
 
@@ -1504,12 +1505,12 @@ namespace sdk {
         amounts_satoshi.reserve(addressees.size());
         amount required_total{ 0 };
 
-        for (const auto& adressee : addressees) {
-            amounts_satoshi.push_back(convert_amount(adressee)["satoshi"]);
+        for (const auto& addressee : addressees) {
+            amounts_satoshi.emplace_back(convert_amount(addressee)["satoshi"]);
             required_total += amounts_satoshi.back();
 
             // Add the output to our tx
-            const std::string address = adressee.at("address");
+            const std::string address = addressee.at("address");
             // FIXME: Support OP_RETURN outputs
             tx_add_raw_output(tx, amounts_satoshi.back(), output_script_for_address(m_net_params, address), 0);
         }
@@ -1594,7 +1595,9 @@ namespace sdk {
             change_output.satoshi = (total - required_total - fee).value();
             result["change_amount"] = change_output.satoshi;
             // Randomize change output
-            uint32_t change_index = get_random_uint32() % tx->num_outputs;
+            uint32_t change_index;
+            get_random_bytes(sizeof(change_index), &change_index, sizeof(change_index));
+            change_index %= tx->num_outputs;
             result["change_index"] = change_index;
             if (change_index != tx->num_outputs - 1) {
                 std::swap(tx->outputs[change_index], change_output);
@@ -1632,11 +1635,12 @@ namespace sdk {
 
     nlohmann::json session::session_impl::send(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
-        return send(details.at("transaction"), twofactor_data);
-    }
-
-    nlohmann::json session::session_impl::send(const std::string& tx_hex, const nlohmann::json& twofactor_data)
-    {
+        const bool have_tx = details.find("transaction") != details.end();
+        nlohmann::json created_tx;
+        if (!have_tx) {
+            created_tx = create_transaction(details);
+        }
+        const std::string tx_hex = (have_tx ? details : created_tx).at("transaction");
         const size_t MAX_TX_WEIGHT = 400000;
         const auto tx = tx_from_hex(tx_hex, WALLY_TX_FLAG_USE_WITNESS);
         GA_SDK_RUNTIME_ASSERT(tx_get_weight(tx) < MAX_TX_WEIGHT);
@@ -1648,23 +1652,6 @@ namespace sdk {
         // FIXME: update cached limits and augment returned data to match get_transaction_details
         tx_details.erase("new_limit");
         return tx_details;
-    }
-
-    nlohmann::json session::session_impl::send(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const nlohmann::json& utxos, amount fee_rate, bool send_all, const nlohmann::json& twofactor_data)
-    {
-        return send(make_raw_tx(address_amount, utxos, fee_rate, send_all), twofactor_data);
-    }
-
-    template <typename T>
-    nlohmann::json session::session_impl::send(T subaccount,
-        const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate, bool send_all,
-        const nlohmann::json& twofactor_data)
-    {
-        const uint32_t required_confs = 1; // FIXME: 0 for testnet?
-        const auto utxos = get_unspent_outputs(subaccount, required_confs);
-
-        return send(address_amount, utxos, fee_rate, send_all, twofactor_data);
     }
 
     void session::session_impl::send_nlocktimes()
@@ -1940,34 +1927,10 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->create_transaction(details); });
     }
 
-    nlohmann::json session::send(const std::string& tx_hex, const nlohmann::json& twofactor_data)
+    nlohmann::json session::send(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->send(tx_hex, twofactor_data); });
-    }
-
-    nlohmann::json session::send(const std::vector<std::pair<std::string, amount>>& address_amount,
-        const nlohmann::json& utxos, amount fee_rate, bool send_all, const nlohmann::json& twofactor_data)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper(
-            [&] { return m_impl->send(address_amount, utxos, fee_rate, send_all, twofactor_data); });
-    }
-
-    nlohmann::json session::send(uint32_t subaccount, const std::vector<std::pair<std::string, amount>>& address_amount,
-        amount fee_rate, bool send_all, const nlohmann::json& twofactor_data)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper(
-            [&] { return m_impl->send(subaccount, address_amount, fee_rate, send_all, twofactor_data); });
-    }
-
-    nlohmann::json session::send(const std::vector<std::pair<std::string, amount>>& address_amount, amount fee_rate,
-        bool send_all, const nlohmann::json& twofactor_data)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper(
-            [&] { return m_impl->send("all", address_amount, fee_rate, send_all, twofactor_data); });
+        return exception_wrapper([&] { return m_impl->send(details, twofactor_data); });
     }
 
     void session::send_nlocktimes()

@@ -26,7 +26,9 @@ int main(int argc, char* argv[])
 
     ret = ret == GA_OK ? GA_change_settings_privacy_send_me(session, GA_ADDRBOOK) : ret;
     ret = ret == GA_OK ? GA_change_settings_privacy_show_as_sender(session, GA_MUTUAL_ADDRBOOK) : ret;
-    ret = ret == GA_OK ? GA_change_settings_tx_limits(session, 1, 2, 3, NULL) : ret;
+    GA_json* twofactor;
+    ret = ret == GA_OK ? GA_convert_string_to_json("{}", &twofactor) : ret;
+    ret = ret == GA_OK ? GA_change_settings_tx_limits(session, 1, 2, 3, twofactor) : ret;
 
     GA_destroy_session(session);
 

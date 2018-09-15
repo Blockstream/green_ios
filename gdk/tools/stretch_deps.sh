@@ -6,7 +6,7 @@ sed -i 's/deb.debian.org/httpredir.debian.org/g' /etc/apt/sources.list
 apt update -qq
 apt upgrade -yqq
 
-apt install wget unzip autoconf pkg-config build-essential libtool python3-pip ninja-build clang llvm-dev git swig openjdk-8-jdk g++-mingw-w64-x86-64 -yqq
+apt install wget unzip autoconf pkg-config build-essential libtool virtualenv python3-pip ninja-build clang clang-tidy llvm-dev git swig openjdk-8-jdk g++-mingw-w64-x86-64 -yqq
 update-java-alternatives -s java-1.8.0-openjdk-amd64
 pip3 install --require-hashes -r /requirements.txt
 rm /requirements.txt

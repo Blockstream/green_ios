@@ -17,64 +17,64 @@ bool is_twofactor_required_error(const autobahn::call_error& e)
 }
 } // namespace
 
-std::vector<GA_twofactor_factor> GA_twofactor_call::get_all_twofactor_factors() const
+std::vector<GA_twofactor_method> GA_twofactor_call::get_all_twofactor_methods() const
 {
     const auto twofactor_config = m_session.get_twofactor_config();
-    std::vector<GA_twofactor_factor> methods;
-    for (auto factor : { "email", "sms", "phone", "gauth" }) {
-        const bool enabled = twofactor_config[factor];
+    std::vector<GA_twofactor_method> methods;
+    for (auto method : { "email", "sms", "phone", "gauth" }) {
+        const bool enabled = twofactor_config[method];
         if (enabled) {
-            methods.emplace_back(GA_twofactor_factor(factor));
+            methods.emplace_back(GA_twofactor_method(method));
         }
     }
     return methods;
 }
 
-const std::vector<GA_twofactor_factor>& GA_twofactor_call::get_twofactor_factors() const { return m_twofactor_factors; }
+const std::vector<GA_twofactor_method>& GA_twofactor_call::get_twofactor_methods() const { return m_twofactor_methods; }
 
 GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session)
     : m_session(session)
-    , m_twofactor_factors(get_all_twofactor_factors())
+    , m_twofactor_methods(get_all_twofactor_methods())
 {
 }
 
-GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, std::vector<GA_twofactor_factor> twofactor_factors)
+GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, std::vector<GA_twofactor_method> twofactor_methods)
     : m_session(session)
-    , m_twofactor_factors(std::move(twofactor_factors))
+    , m_twofactor_methods(std::move(twofactor_methods))
 {
 }
 
 nlohmann::json GA_twofactor_call::get_twofactor_data() const
 {
-    if (m_twofactor_factor_selected != nullptr) {
+    if (m_twofactor_method_selected != nullptr) {
         // If this assert fires check that the call has been resolved
         // by calling GA_twofactor_resolve_code
         GA_SDK_RUNTIME_ASSERT(!m_twofactor_code.empty());
 
-        return { { "method", m_twofactor_factor_selected->get_type() }, { "code", m_twofactor_code } };
+        return { { "method", m_twofactor_method_selected->get_type() }, { "code", m_twofactor_code } };
     }
 
     return nlohmann::json();
 }
 
 void GA_twofactor_call::request_code_(
-    const GA_twofactor_factor& factor, const std::string& action, const nlohmann::json& twofactor_data)
+    const GA_twofactor_method& method, const std::string& action, const nlohmann::json& twofactor_data)
 {
     // For gauth request code is a no-op
-    if (factor.get_type() != "gauth") {
-        m_session.twofactor_request_code(factor.get_type(), action, twofactor_data);
+    if (method.get_type() != "gauth") {
+        m_session.twofactor_request_code(method.get_type(), action, twofactor_data);
     }
 
-    m_twofactor_factor_selected = &factor;
+    m_twofactor_method_selected = &method;
 }
 
-void GA_twofactor_call::request_code(const GA_twofactor_factor& factor) { m_twofactor_factor_selected = &factor; }
+void GA_twofactor_call::request_code(const GA_twofactor_method& method) { m_twofactor_method_selected = &method; }
 
 void GA_twofactor_call::resolve_code(const std::string& code)
 {
-    GA_SDK_RUNTIME_ASSERT(m_twofactor_factor_selected);
+    GA_SDK_RUNTIME_ASSERT(m_twofactor_method_selected);
     m_twofactor_code = code;
-    m_twofactor_factors.clear();
+    m_twofactor_methods.clear();
 }
 
 GA_twofactor_call_with_next::GA_twofactor_call_with_next(ga::sdk::session& session, next_ptr&& next)
@@ -98,9 +98,9 @@ GA_set_email_call::GA_set_email_call(ga::sdk::session& session, std::string emai
 {
 }
 
-void GA_set_email_call::request_code(const GA_twofactor_factor& factor)
+void GA_set_email_call::request_code(const GA_twofactor_method& method)
 {
-    request_code_(factor, "set_email", { { "address", m_email } });
+    request_code_(method, "set_email", { { "address", m_email } });
 }
 
 void GA_set_email_call::operator()()
@@ -111,9 +111,9 @@ void GA_set_email_call::operator()()
 
 // enable...
 
-GA_enable_twofactor::GA_enable_twofactor(ga::sdk::session& session, const std::string& factor)
-    : GA_twofactor_call(session, { { factor } })
-    , m_factor(factor)
+GA_enable_twofactor::GA_enable_twofactor(ga::sdk::session& session, const std::string& method)
+    : GA_twofactor_call(session, { { method } })
+    , m_factor(method)
 {
 }
 
@@ -131,16 +131,16 @@ void GA_enable_gauth_call::operator()() { m_session.enable_gauth(m_twofactor_cod
 // init_enable
 
 GA_init_enable_twofactor::GA_init_enable_twofactor(
-    ga::sdk::session& session, const std::string& factor, std::string data)
-    : GA_twofactor_call_with_next(session, std::make_unique<GA_enable_twofactor>(session, factor))
-    , m_factor(factor)
+    ga::sdk::session& session, const std::string& method, std::string data)
+    : GA_twofactor_call_with_next(session, std::make_unique<GA_enable_twofactor>(session, method))
+    , m_factor(method)
     , m_data(std::move(data))
 {
 }
 
-void GA_init_enable_twofactor::request_code(const GA_twofactor_factor& factor)
+void GA_init_enable_twofactor::request_code(const GA_twofactor_method& method)
 {
-    request_code_(factor, "enable_2fa", { { "method", m_factor } });
+    request_code_(method, "enable_2fa", { { "method", m_factor } });
 }
 
 void GA_init_enable_twofactor::operator()()
@@ -154,9 +154,9 @@ GA_init_enable_gauth_call::GA_init_enable_gauth_call(ga::sdk::session& session)
 {
 }
 
-void GA_init_enable_gauth_call::request_code(const GA_twofactor_factor& factor)
+void GA_init_enable_gauth_call::request_code(const GA_twofactor_method& method)
 {
-    request_code_(factor, "enable_2fa", { { "method", "gauth" } });
+    request_code_(method, "enable_2fa", { { "method", "gauth" } });
 }
 
 void GA_init_enable_gauth_call::operator()()
@@ -170,15 +170,15 @@ void GA_init_enable_gauth_call::operator()()
 
 // disable
 
-GA_disable_twofactor::GA_disable_twofactor(ga::sdk::session& session, std::string factor)
+GA_disable_twofactor::GA_disable_twofactor(ga::sdk::session& session, std::string method)
     : GA_twofactor_call(session)
-    , m_factor(std::move(factor))
+    , m_factor(std::move(method))
 {
 }
 
-void GA_disable_twofactor::request_code(const GA_twofactor_factor& factor)
+void GA_disable_twofactor::request_code(const GA_twofactor_method& method)
 {
-    request_code_(factor, "disable_2fa", { { "method", m_factor } });
+    request_code_(method, "disable_2fa", { { "method", m_factor } });
 }
 
 void GA_disable_twofactor::operator()()
@@ -202,7 +202,7 @@ void GA_attempt_twofactor_call::operator()()
     } catch (const autobahn::call_error& e) {
         if (is_twofactor_required_error(e) && !m_retry) {
             // Enable 2fa and try again
-            m_twofactor_factors = get_all_twofactor_factors();
+            m_twofactor_methods = get_all_twofactor_methods();
             m_retry = true;
         } else {
             throw;
@@ -216,30 +216,14 @@ GA_change_tx_limits_call::GA_change_tx_limits_call(ga::sdk::session& session, st
 {
 }
 
-void GA_change_tx_limits_call::request_code(const GA_twofactor_factor& factor)
+void GA_change_tx_limits_call::request_code(const GA_twofactor_method& method)
 {
     // TODO: need to support fiat limits and per_tx
-    request_code_(factor, "change_tx_limits", { { "is_fiat", 0 }, { "total", m_total }, { "per_tx", 0 } });
+    request_code_(method, "change_tx_limits", { { "is_fiat", 0 }, { "total", m_total }, { "per_tx", 0 } });
 }
 
 void GA_change_tx_limits_call::call()
 {
     const auto twofactor_data = get_twofactor_data();
     m_session.change_settings_tx_limits(false, 0, std::stoi(m_total), twofactor_data);
-}
-
-GA_send_call::GA_send_call(ga::sdk::session& session, outputs_t addr_amount, const fee_rate_t& fee_rate, bool send_all)
-    : GA_attempt_twofactor_call(session)
-    , m_outputs(std::move(addr_amount))
-    , m_fee_rate(fee_rate)
-    , m_send_all(send_all)
-{
-}
-
-void GA_send_call::request_code(const GA_twofactor_factor& factor) { request_code_(factor, "send_tx", {}); }
-
-void GA_send_call::call()
-{
-    const auto twofactor_data = get_twofactor_data();
-    m_session.send(m_outputs, m_fee_rate, m_send_all, twofactor_data);
 }

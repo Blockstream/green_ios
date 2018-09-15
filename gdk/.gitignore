@@ -16,3 +16,5 @@
 *.tar
 Package.resolved
 .idea/
+docs/source/session.rst
+docs/build

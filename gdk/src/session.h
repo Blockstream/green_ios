@@ -27,9 +27,6 @@ extern "C" {
 #define GA_NO_TOR 0
 #define GA_USE_TOR 1
 
-/** Value representing all subaccounts including the main account */
-#define GA_ALL_ACCOUNTS 0xffffffff
-
 /** Values for transaction memo type */
 #define GA_MEMO_USER 0
 #define GA_MEMO_BIP70 1
@@ -261,7 +258,7 @@ GASDK_API int GA_get_unspent_outputs(
 GASDK_API int GA_get_transaction_details(struct GA_session* session, const char* txhash_hex, GA_json** transaction);
 
 /**
- * The sum of unspent outputs destined to user’s wallet.
+ * The sum of unspent outputs destined to user's wallet.
  *
  * @session The server session to use.
  * @subaccount The subaccount to get the balance for.
@@ -332,28 +329,8 @@ GASDK_API int GA_create_transaction(
 GASDK_API int GA_send_transaction(struct GA_session* session, const GA_json* transaction_details,
     const GA_json* twofactor_data, GA_json** transaction);
 
-/*
- * Send a transaction for the specified address/amount pairs.
- *
- * @session The server session to use.
- * @subaccount The subaccount to send from, or GA_ALL_ACCOUNTS.
- * @addr The addresses to send.
- * @addr_siz The count of items in @addr.
- * @amt The amounts to send.
- * @amt_siz The count of items in @amt.
- * @fee_rate The fee rate.
- * @send_all One of @GA_TRUE or @GA_FALSE.
- * @twofactor_data Two factor authentication details for the action.
- * @transaction destination for the resulting transaction's details.
- *
- * GA_ERROR if raw transaction could not be created.
- */
-GASDK_API int GA_send(struct GA_session* session, uint32_t subaccount, const char** addr, size_t addr_siz,
-    const uint64_t* amt, size_t amt_siz, uint64_t fee_rate, uint32_t send_all, const GA_json* twofactor_data,
-    GA_json** transaction);
-
 /**
- * Request an email containing the user’s nLockTime transactions.
+ * Request an email containing the user's nLockTime transactions.
  *
  * @session The server session to use.
  *

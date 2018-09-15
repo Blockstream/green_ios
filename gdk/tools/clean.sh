@@ -12,3 +12,6 @@ else
   clean_meson
   find subprojects/ -maxdepth 1 -mindepth 1 -not -name '*meson*' -not -name '*wrap*' | xargs rm -rf --
 fi
+
+rm -rf docs/build docs/source/session.rst
+rm -rf .venv

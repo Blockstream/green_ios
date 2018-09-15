@@ -29,7 +29,7 @@ extern "C" {
  *
  * void resolve_2fa(struct GA_twofactor_call* call)
  * {
- *     GA_twofactor_factor* selected_factor = _user_select_factor(call);
+ *     GA_twofactor_method* selected_factor = _user_select_factor(call);
  *     if (selected_factor) {
  *         GA_twofactor_request_code(selected_factor, call);
  *         const char* code = _user_get_code();
@@ -49,70 +49,70 @@ extern "C" {
  */
 struct GA_twofactor_call;
 
-/** A specific 2fa factor
+/** A specific 2fa method
  *
  * For example:
  * - the email address "foo@bar.com"
  * - an sms sent to +44123456
  */
-struct GA_twofactor_factor;
+struct GA_twofactor_method;
 
 /**
- * A list of 2fa factors
+ * A list of 2fa methods
  */
-struct GA_twofactor_factor_list;
+struct GA_twofactor_method_list;
 
 /**
- * Return the size of a list of 2fa factors
+ * Return the size of a list of 2fa methods
  */
-GASDK_API int GA_twofactor_factor_list_get_size(struct GA_twofactor_factor_list* factors, uint32_t* output);
+GASDK_API int GA_twofactor_method_list_get_size(struct GA_twofactor_method_list* methods, uint32_t* output);
 
 /**
- * Return a factor from a list of 2fa factors
+ * Return a method from a list of 2fa methods
  */
-GASDK_API int GA_twofactor_factor_list_get_factor(
-    struct GA_twofactor_factor_list* factors, uint32_t i, struct GA_twofactor_factor** output);
+GASDK_API int GA_twofactor_method_list_get_factor(
+    struct GA_twofactor_method_list* methods, uint32_t i, struct GA_twofactor_method** output);
 
 /**
- * Return all 2fa factors available for a call
+ * Return all 2fa methods available for a call
  *
  * If two factor authentication is not enabled or not required for the call the list will be empty.
  *
- * The set of factors will generally be one of:
- * - the set of all factors enabled for the wallet
- * - a single factor if the call is confirming that factor (e.g. activate_email)
+ * The set of methods will generally be one of:
+ * - the set of all methods enabled for the wallet
+ * - a single method if the call is confirming that method (e.g. activate_email)
  * - an empty list if 2fa is not enabled, or the call does not require 2fa
  *
  * Clients should:
  * - Do nothing and proceed to call GA_twofactor_call if the list is empty
- * - Offer the user a choice if the list contains more than one factor
- * - If either the user selected a factor or the list contains only a single factor proceed to resolve
+ * - Offer the user a choice if the list contains more than one method
+ * - If either the user selected a method or the list contains only a single method proceed to resolve
  *   2fa by calling GA_twofactor_request_code and GA_twofactor_resolve_code and then GA_twofactor_call.
  */
-GASDK_API int GA_twofactor_get_factors(struct GA_twofactor_call* call, struct GA_twofactor_factor_list** output);
+GASDK_API int GA_twofactor_get_methods(struct GA_twofactor_call* call, struct GA_twofactor_method_list** output);
 
 /**
- * Free a list of 2fa factors returned by GA_twofactor_get_factors
+ * Free a list of 2fa methods returned by GA_twofactor_get_methods
  */
-int GA_destroy_twofactor_factor_list(struct GA_twofactor_factor_list* factors);
+int GA_destroy_twofactor_method_list(struct GA_twofactor_method_list* methods);
 
 /**
- * Return the type of a 2fa factor as a utf-8 encoded string
- * @method The 2fa factor
+ * Return the type of a 2fa method as a utf-8 encoded string
+ * @method The 2fa method
  * @type The type as a null-terminated utf-8 encoded string
  *
  * Possible types: 'email', 'sms', 'phone', 'gauth'
  */
-GASDK_API int GA_twofactor_factor_type(const struct GA_twofactor_factor* factor, char** type);
+GASDK_API int GA_twofactor_method_type(const struct GA_twofactor_method* method, char** type);
 
 /**
- * Request a two factor authentication code be sent from the server
- * @factor The selected two factor factor to use
+ * Request a two method authentication code be sent from the server
+ * @method The selected two factor method to use
  * @call The call requiring two factor authentication
  *
- * For some 2fa factor, e.g. gauth, this is a no-op
+ * For some 2fa method, e.g. gauth, this is a no-op
  */
-GASDK_API int GA_twofactor_request_code(const struct GA_twofactor_factor* factor, struct GA_twofactor_call* call);
+GASDK_API int GA_twofactor_request_code(const struct GA_twofactor_method* method, struct GA_twofactor_call* call);
 
 /**
  * Resolve a required 2fa code for the call
@@ -139,7 +139,7 @@ GASDK_API int GA_twofactor_call(struct GA_twofactor_call* call);
  * @next The returned next call in the chain
  *
  * Two factor authentication calls can be chained together such that multiple calls need to be
- * resolved and called to complete the operation. For example to enable sms as a 2fa factor
+ * resolved and called to complete the operation. For example to enable sms as a 2fa method
  * requires calling twofactor.init_enable_sms and then twofactor.enable_sms, but both of those
  * underlying calls are implemented by the GA_twofactor_call returned by GA_twofactor_enable("sms").
  *
@@ -169,28 +169,22 @@ GASDK_API int GA_destroy_twofactor_call(struct GA_twofactor_call* call);
 GASDK_API int GA_twofactor_set_email(struct GA_session* session, const char* email, struct GA_twofactor_call** call);
 
 /**
- * Enable a two factor authentication factor
+ * Enable a two factor authentication method
  * @session The server session to use
- * @factor The factor to enable, e.g. "email"
+ * @method The method to enable, e.g. "email"
  * @data Method specific data, for example for email is an email address
  */
 GASDK_API int GA_twofactor_enable(
-    struct GA_session* session, const char* factor, const char* data, struct GA_twofactor_call** call);
+    struct GA_session* session, const char* method, const char* data, struct GA_twofactor_call** call);
 
 /**
- * Disable a two factor authentication factor
+ * Disable a two factor authentication method
  */
-GASDK_API int GA_twofactor_disable(struct GA_session* session, const char* factor, struct GA_twofactor_call** call);
+GASDK_API int GA_twofactor_disable(struct GA_session* session, const char* method, struct GA_twofactor_call** call);
 
 /** Change the transaction limit (total, BTC) */
 GASDK_API int GA_twofactor_change_tx_limits(
     struct GA_session* session, const char* total, struct GA_twofactor_call** call);
-
-/**
- * 2fa wrapper around send
- */
-GASDK_API int GA_twofactor_send(struct GA_session* session, const char** addr, uint32_t addr_siz, const uint64_t* amt,
-    uint32_t amt_siz, uint64_t fee_rate, uint32_t send_all, struct GA_twofactor_call** call);
 
 #ifdef __cplusplus
 }

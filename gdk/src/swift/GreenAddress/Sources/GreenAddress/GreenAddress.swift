@@ -85,7 +85,7 @@ fileprivate func convertOpaqueJsonToString(o: OpaquePointer) throws -> String? {
     return String(cString: buff!)
 }
 
-// An authentication factor for 2fa, e.g. email, sms, phone, gauth
+// An authentication method for 2fa, e.g. email, sms, phone, gauth
 public class AuthenticationFactor {
     private var optr: OpaquePointer? = nil
 
@@ -119,33 +119,33 @@ public class TwoFactorCall {
         }
     }
 
-    // Return the list of authentication factors applicable to the operation
+    // Return the list of authentication methods applicable to the operation
     // If the list is empty, call call() directly
     // If there are multiple items, ask the user to select one
-    // Once the user has selected a factor, or if there is only one factor, call
+    // Once the user has selected a method, or if there is only one method, call
     // requestCode, resolveCode and then call
     public func getAuthenticationFactors() throws -> [AuthenticationFactor] {
         var methods: OpaquePointer? = nil
-        try callWrapper(fun: GA_twofactor_get_factors(self.optr, &methods))
+        try callWrapper(fun: GA_twofactor_get_methods(self.optr, &methods))
 
         var count: UInt32 = 0
-        try callWrapper(fun: GA_twofactor_factor_list_get_size(methods, &count))
+        try callWrapper(fun: GA_twofactor_method_list_get_size(methods, &count))
 
-        var factors: [AuthenticationFactor] = []
+        var method_list: [AuthenticationFactor] = []
         for i in 0..<count {
             var method: OpaquePointer? = nil
-            try callWrapper(fun: GA_twofactor_factor_list_get_factor(methods, i, &method))
-            factors.append(AuthenticationFactor(optr: method!))
+            try callWrapper(fun: GA_twofactor_method_list_get_factor(methods, i, &method))
+            method_list.append(AuthenticationFactor(optr: method!))
         }
-        return factors
+        return method_list
     }
 
     // Request that the backend sends a 2fa code
-    public func requestCode(factor: AuthenticationFactor?) throws -> Promise<AuthenticationFactor?> {
-        if (factor != nil) {
-            try factor!.requestCode(op: self.optr!)
+    public func requestCode(method: AuthenticationFactor?) throws -> Promise<AuthenticationFactor?> {
+        if (method != nil) {
+            try method!.requestCode(op: self.optr!)
         }
-        return Promise<AuthenticationFactor?> { seal in seal.fulfill(factor) }
+        return Promise<AuthenticationFactor?> { seal in seal.fulfill(method) }
     }
 
     // Provide the 2fa code sent by the server
@@ -384,19 +384,6 @@ public class Session {
         return try convertOpaqueJsonToDict(o: result!)
     }
 
-    public func send(subaccount: UInt32, addrAmt: [(String, UInt64)], feeRate: UInt64, sendAll: Bool, twofactor_data: [String: Any]) throws -> [String: Any]? {
-        var result: OpaquePointer? = nil
-        var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)
-        let addresses = toCStr(strings: addrAmt.map { $0.0 })
-        defer {
-            clearCStr(copies: addresses, count: addrAmt.count)
-            GA_destroy_json(twofactor_json)
-            GA_destroy_json(result)
-        }
-        try callWrapper(fun: GA_send(session, subaccount, addresses, addrAmt.count, addrAmt.map { $0.1 }, addrAmt.count, feeRate, UInt32(sendAll ? GA_TRUE : GA_FALSE), twofactor_json, &result))
-        return try convertOpaqueJsonToDict(o: result!)
-    }
-
     public func sendNlocktimes() throws -> Void {
         try callWrapper(fun: GA_send_nlocktimes(session))
     }
@@ -429,15 +416,15 @@ public class Session {
         return TwoFactorCall(optr: optr!);
     }
 
-    public func enableTwoFactor(factor: String, data: String) throws -> TwoFactorCall {
+    public func enableTwoFactor(method: String, data: String) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
-        try callWrapper(fun: GA_twofactor_enable(session, factor, data, &optr));
+        try callWrapper(fun: GA_twofactor_enable(session, method, data, &optr));
         return TwoFactorCall(optr: optr!);
     }
 
-    public func disableTwoFactor(factor: String) throws -> TwoFactorCall {
+    public func disableTwoFactor(method: String) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
-        try callWrapper(fun: GA_twofactor_disable(session, factor, &optr));
+        try callWrapper(fun: GA_twofactor_disable(session, method, &optr));
         return TwoFactorCall(optr: optr!);
     }
 

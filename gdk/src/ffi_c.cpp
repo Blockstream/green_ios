@@ -1,3 +1,5 @@
+#include <type_traits>
+
 #include "amount.hpp"
 #include "assertion.hpp"
 #include "common.h"
@@ -9,11 +11,23 @@
 
 namespace {
 
-template <typename... Args> auto assert_invoke_args(__attribute__((unused)) Args&&... args) {}
+void assert_invoke_args() {}
 
-template <typename Obj, typename... Args> auto assert_invoke_args(Obj* obj, __attribute__((unused)) Args&&... args)
+template <typename Arg, typename... Args>
+typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args);
+
+template <typename Arg, typename... Args>
+typename std::enable_if_t<!std::is_pointer<Arg>::value> assert_invoke_args(
+    Arg __attribute__((unused)) arg, Args&&... args)
 {
-    GA_SDK_RUNTIME_ASSERT(obj);
+    assert_invoke_args(std::forward<Args>(args)...);
+}
+
+template <typename Arg, typename... Args>
+typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args)
+{
+    GA_SDK_RUNTIME_ASSERT(arg);
+    assert_invoke_args(std::forward<Args>(args)...);
 }
 
 template <typename F, typename... Args> auto c_invoke(F&& f, Args&&... args)
@@ -154,102 +168,46 @@ GA_SDK_DEFINE_C_FUNCTION_5(GA_connect_with_proxy, struct GA_session*, session, u
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_disconnect, struct GA_session*, session, { session->disconnect(); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_register_user, struct GA_session*, session, const char*, mnemonic, {
-    GA_SDK_RUNTIME_ASSERT(mnemonic);
-    session->register_user(mnemonic);
-})
+GA_SDK_DEFINE_C_FUNCTION_2(
+    GA_register_user, struct GA_session*, session, const char*, mnemonic, { session->register_user(mnemonic); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_login, struct GA_session*, session, const char*, mnemonic, {
-    GA_SDK_RUNTIME_ASSERT(mnemonic);
-    session->login(mnemonic);
-})
+GA_SDK_DEFINE_C_FUNCTION_2(GA_login, struct GA_session*, session, const char*, mnemonic, { session->login(mnemonic); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, struct GA_session*, session, const char*, pin, const GA_json*, pin_data, {
-    GA_SDK_RUNTIME_ASSERT(pin);
-    GA_SDK_RUNTIME_ASSERT(pin_data);
-    session->login(pin, *json_cast(pin_data));
-})
+GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, struct GA_session*, session, const char*, pin, const GA_json*, pin_data,
+    { session->login(pin, *json_cast(pin_data)); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_login_watch_only, struct GA_session*, session, const char*, username, const char*, password, {
-        GA_SDK_RUNTIME_ASSERT(username);
-        GA_SDK_RUNTIME_ASSERT(password);
-        session->login_watch_only(username, password);
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_login_watch_only, struct GA_session*, session, const char*, username, const char*,
+    password, { session->login_watch_only(username, password); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_get_fee_estimates, struct GA_session*, session, GA_json**, estimates, {
-    GA_SDK_RUNTIME_ASSERT(estimates);
-    *json_cast(estimates) = new nlohmann::json(session->get_fee_estimates());
-})
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_fee_estimates, struct GA_session*, session, GA_json**, estimates,
+    { *json_cast(estimates) = new nlohmann::json(session->get_fee_estimates()); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_get_mnemonic_passphrase, struct GA_session*, session, const char*, password, char**, mnemonic, {
-        GA_SDK_RUNTIME_ASSERT(mnemonic);
-        *mnemonic = to_c_string(session->get_mnemonic_passphrase(password ? password : std::string()));
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_get_mnemonic_passphrase, struct GA_session*, session, const char*, password, char**,
+    mnemonic, { *mnemonic = to_c_string(session->get_mnemonic_passphrase(password ? password : std::string())); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_get_system_message, struct GA_session*, session, char**, message_text, {
-    GA_SDK_RUNTIME_ASSERT(message_text);
-    *message_text = to_c_string(session->get_system_message());
-})
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_system_message, struct GA_session*, session, char**, message_text,
+    { *message_text = to_c_string(session->get_system_message()); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_ack_system_message, struct GA_session*, session, const char*, message_text, {
-    GA_SDK_RUNTIME_ASSERT(message_text);
-    session->ack_system_message(message_text);
-})
+GA_SDK_DEFINE_C_FUNCTION_2(GA_ack_system_message, struct GA_session*, session, const char*, message_text,
+    { session->ack_system_message(message_text); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_get_twofactor_config, struct GA_session*, session, GA_json**, config, {
-    GA_SDK_RUNTIME_ASSERT(config);
-    *json_cast(config) = new nlohmann::json(session->get_twofactor_config());
-})
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_twofactor_config, struct GA_session*, session, GA_json**, config,
+    { *json_cast(config) = new nlohmann::json(session->get_twofactor_config()); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_create_transaction, struct GA_session*, session, const GA_json*, transaction_details, GA_json**, transaction, {
-        GA_SDK_RUNTIME_ASSERT(transaction_details);
-        GA_SDK_RUNTIME_ASSERT(transaction);
-        *json_cast(transaction) = new nlohmann::json(session->create_transaction(*json_cast(transaction_details)));
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_create_transaction, struct GA_session*, session, const GA_json*, transaction_details,
+    GA_json**, transaction,
+    { *json_cast(transaction) = new nlohmann::json(session->create_transaction(*json_cast(transaction_details))); })
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_send_transaction, struct GA_session*, session, const GA_json*, transaction_details,
     const GA_json*, twofactor_data, GA_json**, transaction, {
-        GA_SDK_RUNTIME_ASSERT(transaction_details);
-        GA_SDK_RUNTIME_ASSERT(transaction);
-        const nlohmann::json empty;
-        *json_cast(transaction) = new nlohmann::json(
-            session->send(*json_cast(transaction_details), twofactor_data ? *json_cast(twofactor_data) : empty));
-    })
-
-GA_SDK_DEFINE_C_FUNCTION_10(GA_send, struct GA_session*, session, uint32_t, subaccount, const char**, addr, size_t,
-    addr_siz, const uint64_t*, amt, size_t, amt_siz, uint64_t, fee_rate, uint32_t, send_all, const GA_json*,
-    twofactor_data, GA_json**, transaction, {
-        GA_SDK_RUNTIME_ASSERT(addr);
-        GA_SDK_RUNTIME_ASSERT(amt);
-        GA_SDK_RUNTIME_ASSERT(addr_siz == amt_siz);
-        GA_SDK_RUNTIME_ASSERT(send_all == GA_TRUE || send_all == GA_FALSE);
-        std::vector<ga::sdk::session::address_amount_pair> addr_amt;
-        addr_amt.reserve(addr_siz);
-        for (size_t i = 0; i < addr_siz; ++i) {
-            GA_SDK_RUNTIME_ASSERT(addr[i]);
-            addr_amt.emplace_back(std::make_pair(addr[i], ga::sdk::amount{ amt[i] }));
-        }
-        const nlohmann::json empty;
-        nlohmann::json tx_details;
-        if (subaccount == GA_ALL_ACCOUNTS) {
-            tx_details = session->send(addr_amt, ga::sdk::amount{ fee_rate }, send_all == GA_TRUE,
-                twofactor_data ? *json_cast(twofactor_data) : empty);
-        } else {
-            tx_details = session->send(subaccount, addr_amt, ga::sdk::amount{ fee_rate }, send_all == GA_TRUE,
-                twofactor_data ? *json_cast(twofactor_data) : empty);
-        }
-        *json_cast(transaction) = new nlohmann::json(tx_details);
+        *json_cast(transaction)
+            = new nlohmann::json(session->send(*json_cast(transaction_details), *json_cast(twofactor_data)));
     })
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_send_nlocktimes, struct GA_session*, session, { session->send_nlocktimes(); })
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_set_transaction_memo, struct GA_session*, session, const char*, txhash_hex, const char*,
     memo, uint32_t, memo_type, {
-        GA_SDK_RUNTIME_ASSERT(txhash_hex);
-        GA_SDK_RUNTIME_ASSERT(memo);
         GA_SDK_RUNTIME_ASSERT(memo_type == GA_MEMO_USER || memo_type == GA_MEMO_BIP70);
         const std::string memo_type_str = memo_type == GA_MEMO_USER ? "user" : "payreq";
         session->set_transaction_memo(txhash_hex, memo, memo_type_str);
@@ -259,27 +217,19 @@ using callback_t = void (*)(void*, char* output);
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_subscribe_to_topic_as_json, struct GA_session*, session, const char*, topic, callback_t,
     callback, void*, context, {
-        GA_SDK_RUNTIME_ASSERT(topic);
         GA_SDK_RUNTIME_ASSERT(callback);
-        GA_SDK_RUNTIME_ASSERT(context);
         session->subscribe(
             topic, [callback, context](const std::string& event) { callback(context, to_c_string(event)); });
     })
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_remove_account, struct GA_session*, session, const GA_json*, twofactor_data,
-    { session->remove_account(twofactor_data ? *json_cast(twofactor_data) : nlohmann::json()); })
+    { session->remove_account(*json_cast(twofactor_data)); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_create_subaccount, struct GA_session*, session, const GA_json*, details, GA_json**, subaccount, {
-        GA_SDK_RUNTIME_ASSERT(details);
-        GA_SDK_RUNTIME_ASSERT(subaccount);
-        *json_cast(subaccount) = new nlohmann::json(session->create_subaccount(*json_cast(details)));
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_create_subaccount, struct GA_session*, session, const GA_json*, details, GA_json**,
+    subaccount, { *json_cast(subaccount) = new nlohmann::json(session->create_subaccount(*json_cast(details))); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_get_subaccounts, struct GA_session*, session, GA_json**, subaccounts, {
-    GA_SDK_RUNTIME_ASSERT(subaccounts);
-    *json_cast(subaccounts) = new nlohmann::json(session->get_subaccounts());
-})
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_subaccounts, struct GA_session*, session, GA_json**, subaccounts,
+    { *json_cast(subaccounts) = new nlohmann::json(session->get_subaccounts()); })
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_change_settings_privacy_send_me, struct GA_session*, session, uint32_t, value, {
     namespace sdk = ga::sdk;
@@ -297,180 +247,98 @@ GA_SDK_DEFINE_C_FUNCTION_5(GA_change_settings_tx_limits, struct GA_session*, ses
     per_tx, uint32_t, total, const GA_json*, twofactor_data, {
         namespace sdk = ga::sdk;
         GA_SDK_RUNTIME_ASSERT(is_fiat == GA_FALSE || is_fiat == GA_TRUE);
-        session->change_settings_tx_limits(
-            is_fiat == GA_TRUE, per_tx, total, twofactor_data ? *json_cast(twofactor_data) : nlohmann::json());
+        session->change_settings_tx_limits(is_fiat == GA_TRUE, per_tx, total, *json_cast(twofactor_data));
     })
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_change_settings_pricing_source, struct GA_session*, session, const char*, currency, const char*, exchange, {
-        GA_SDK_RUNTIME_ASSERT(currency);
-        GA_SDK_RUNTIME_ASSERT(exchange);
-        session->change_settings_pricing_source(currency, exchange);
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_pricing_source, struct GA_session*, session, const char*, currency,
+    const char*, exchange, { session->change_settings_pricing_source(currency, exchange); })
 
-GA_SDK_DEFINE_C_FUNCTION_4(
-    GA_get_transactions, struct GA_session*, session, uint32_t, subaccount, uint32_t, page_id, GA_json**, txs, {
-        GA_SDK_RUNTIME_ASSERT(subaccount != GA_ALL_ACCOUNTS);
-        *json_cast(txs) = new nlohmann::json(session->get_transactions(subaccount, page_id));
-    })
+GA_SDK_DEFINE_C_FUNCTION_4(GA_get_transactions, struct GA_session*, session, uint32_t, subaccount, uint32_t, page_id,
+    GA_json**, txs, { *json_cast(txs) = new nlohmann::json(session->get_transactions(subaccount, page_id)); })
 
 GA_SDK_DEFINE_C_FUNCTION_4(
     GA_get_receive_address, struct GA_session*, session, uint32_t, subaccount, uint32_t, addr_type, char**, output, {
-        GA_SDK_RUNTIME_ASSERT(output);
         const auto r = session->get_receive_address(subaccount, static_cast<ga::sdk::address_type>(addr_type));
         *output = to_c_string(r["address"]);
     })
 
-GA_SDK_DEFINE_C_FUNCTION_4(
-    GA_get_balance, struct GA_session*, session, uint32_t, subaccount, uint32_t, num_confs, GA_json**, balance, {
-        GA_SDK_RUNTIME_ASSERT(subaccount != GA_ALL_ACCOUNTS);
-        GA_SDK_RUNTIME_ASSERT(balance);
-        *json_cast(balance) = new nlohmann::json(session->get_balance(subaccount, num_confs));
-    })
+GA_SDK_DEFINE_C_FUNCTION_4(GA_get_balance, struct GA_session*, session, uint32_t, subaccount, uint32_t, num_confs,
+    GA_json**, balance, { *json_cast(balance) = new nlohmann::json(session->get_balance(subaccount, num_confs)); })
 
-GA_SDK_DEFINE_C_FUNCTION_4(
-    GA_get_unspent_outputs, struct GA_session*, session, uint32_t, subaccount, uint32_t, num_confs, GA_json**, utxos, {
-        GA_SDK_RUNTIME_ASSERT(subaccount != GA_ALL_ACCOUNTS); // FIXME: Not yet supported
-        GA_SDK_RUNTIME_ASSERT(utxos);
-        *json_cast(utxos) = new nlohmann::json(session->get_unspent_outputs(subaccount, num_confs));
-    })
+GA_SDK_DEFINE_C_FUNCTION_4(GA_get_unspent_outputs, struct GA_session*, session, uint32_t, subaccount, uint32_t,
+    num_confs, GA_json**, utxos,
+    { *json_cast(utxos) = new nlohmann::json(session->get_unspent_outputs(subaccount, num_confs)); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_get_transaction_details, struct GA_session*, session, const char*, txhash_hex, GA_json**, transaction, {
-        GA_SDK_RUNTIME_ASSERT(txhash_hex);
-        GA_SDK_RUNTIME_ASSERT(transaction);
-        *json_cast(transaction) = new nlohmann::json(session->get_transaction_details(txhash_hex));
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_get_transaction_details, struct GA_session*, session, const char*, txhash_hex, GA_json**,
+    transaction, { *json_cast(transaction) = new nlohmann::json(session->get_transaction_details(txhash_hex)); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_get_available_currencies, struct GA_session*, session, GA_json**, available_currencies, {
-    GA_SDK_RUNTIME_ASSERT(available_currencies);
-    *json_cast(available_currencies) = new nlohmann::json(session->get_available_currencies());
-})
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_available_currencies, struct GA_session*, session, GA_json**, available_currencies,
+    { *json_cast(available_currencies) = new nlohmann::json(session->get_available_currencies()); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_amount, struct GA_session*, session, const GA_json*, json, GA_json**, output, {
-    GA_SDK_RUNTIME_ASSERT(json);
-    GA_SDK_RUNTIME_ASSERT(output);
-    *json_cast(output) = new nlohmann::json(session->convert_amount(*json_cast(json)));
-})
+GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_amount, struct GA_session*, session, const GA_json*, json, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(session->convert_amount(*json_cast(json))); })
 
 GA_SDK_DEFINE_C_FUNCTION_5(GA_set_pin, struct GA_session*, session, const char*, mnemonic, const char*, pin,
-    const char*, device, GA_json**, pin_data, {
-        GA_SDK_RUNTIME_ASSERT(mnemonic);
-        GA_SDK_RUNTIME_ASSERT(pin);
-        GA_SDK_RUNTIME_ASSERT(device);
-        GA_SDK_RUNTIME_ASSERT(pin_data);
-        *json_cast(pin_data) = new nlohmann::json(session->set_pin(mnemonic, pin, device));
-    })
+    const char*, device, GA_json**, pin_data,
+    { *json_cast(pin_data) = new nlohmann::json(session->set_pin(mnemonic, pin, device)); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_string_to_json, const char*, input, GA_json**, output, {
-    GA_SDK_RUNTIME_ASSERT(output);
-    *json_cast(output) = new nlohmann::json(nlohmann::json::parse(input));
-});
+GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_string_to_json, const char*, input, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(nlohmann::json::parse(input)); });
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_json_to_string, const GA_json*, json, char**, output, {
-    GA_SDK_RUNTIME_ASSERT(output);
-    *output = to_c_string(json_cast(json)->dump());
-});
+GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_json_to_string, const GA_json*, json, char**, output,
+    { *output = to_c_string(json_cast(json)->dump()); });
 
 // twofactor.h
 //
 
-GA_SDK_DEFINE_C_FUNCTION_2(
-    GA_twofactor_factor_list_get_size, struct GA_twofactor_factor_list*, factors, uint32_t*, output, {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = factors->size();
-    });
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_method_list_get_size, struct GA_twofactor_method_list*, methods, uint32_t*,
+    output, { *output = methods->size(); });
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_factor_list_get_factor, struct GA_twofactor_factor_list*, factors, uint32_t, i,
-    struct GA_twofactor_factor**, output, {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = new GA_twofactor_factor((*factors)[i]);
-    });
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_method_list_get_factor, struct GA_twofactor_method_list*, methods, uint32_t, i,
+    struct GA_twofactor_method**, output, { *output = new GA_twofactor_method((*methods)[i]); });
 
-GA_SDK_DEFINE_C_FUNCTION_2(
-    GA_twofactor_get_factors, struct GA_twofactor_call*, call, struct GA_twofactor_factor_list**, output, {
-        GA_SDK_RUNTIME_ASSERT(output);
-        *output = new GA_twofactor_factor_list(call->get_twofactor_factors());
-    });
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_methods, struct GA_twofactor_call*, call, struct GA_twofactor_method_list**,
+    output, { *output = new GA_twofactor_method_list(call->get_twofactor_methods()); });
 
 GA_SDK_DEFINE_C_FUNCTION_1(
-    GA_destroy_twofactor_factor_list, struct GA_twofactor_factor_list*, factors, { delete factors; });
+    GA_destroy_twofactor_method_list, struct GA_twofactor_method_list*, methods, { delete methods; });
 
 //
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_factor_type, const struct GA_twofactor_factor*, factor, char**, type, {
-    GA_SDK_RUNTIME_ASSERT(type);
-    *type = to_c_string(factor->get_type());
-});
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_method_type, const struct GA_twofactor_method*, method, char**, type,
+    { *type = to_c_string(method->get_type()); });
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_request_code, const struct GA_twofactor_method*, method,
+    struct GA_twofactor_call*, call, { call->request_code(*method); });
 
 GA_SDK_DEFINE_C_FUNCTION_2(
-    GA_twofactor_request_code, const struct GA_twofactor_factor*, factor, struct GA_twofactor_call*, call, {
-        GA_SDK_RUNTIME_ASSERT(call);
-        call->request_code(*factor);
-    });
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_resolve_code, struct GA_twofactor_call*, call, const char*, code, {
-    GA_SDK_RUNTIME_ASSERT(code);
-    call->resolve_code(code);
-});
+    GA_twofactor_resolve_code, struct GA_twofactor_call*, call, const char*, code, { call->resolve_code(code); });
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_twofactor_call, struct GA_twofactor_call*, call, { (*call)(); });
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_next_call, struct GA_twofactor_call*, call, struct GA_twofactor_call**, next, {
-    GA_SDK_RUNTIME_ASSERT(next);
-    *next = call->get_next_call();
-});
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_next_call, struct GA_twofactor_call*, call, struct GA_twofactor_call**, next,
+    { *next = call->get_next_call(); });
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_twofactor_set_email, struct GA_session*, session, const char*, email, struct GA_twofactor_call**, call, {
-        GA_SDK_RUNTIME_ASSERT(email);
-        GA_SDK_RUNTIME_ASSERT(call);
-        *call = new GA_set_email_call(*session, email);
-    });
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_set_email, struct GA_session*, session, const char*, email,
+    struct GA_twofactor_call**, call, { *call = new GA_set_email_call(*session, email); });
 
-GA_SDK_DEFINE_C_FUNCTION_4(GA_twofactor_enable, struct GA_session*, session, const char*, factor, const char*, data,
+GA_SDK_DEFINE_C_FUNCTION_4(GA_twofactor_enable, struct GA_session*, session, const char*, method, const char*, data,
     struct GA_twofactor_call**, call, {
-        GA_SDK_RUNTIME_ASSERT(factor);
-        GA_SDK_RUNTIME_ASSERT(call);
-        if (strcmp(factor, "gauth") == 0) {
-            // gauth is slightly different to the other factors and has its own
+        if (strcmp(method, "gauth") == 0) {
+            // gauth is slightly different to the other methods and has its own
             // implementation
             *call = new GA_init_enable_gauth_call(*session);
         } else {
             GA_SDK_RUNTIME_ASSERT(data);
-            *call = new GA_init_enable_twofactor(*session, factor, data);
+            *call = new GA_init_enable_twofactor(*session, method, data);
         }
     })
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_twofactor_disable, struct GA_session*, session, const char*, factor, struct GA_twofactor_call**, call, {
-        GA_SDK_RUNTIME_ASSERT(factor);
-        GA_SDK_RUNTIME_ASSERT(call);
-        *call = new GA_disable_twofactor(*session, factor);
-    });
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_disable, struct GA_session*, session, const char*, method,
+    struct GA_twofactor_call**, call, { *call = new GA_disable_twofactor(*session, method); });
 
-GA_SDK_DEFINE_C_FUNCTION_3(
-    GA_twofactor_change_tx_limits, struct GA_session*, session, const char*, total, struct GA_twofactor_call**, call, {
-        GA_SDK_RUNTIME_ASSERT(session);
-        GA_SDK_RUNTIME_ASSERT(total);
-        GA_SDK_RUNTIME_ASSERT(call);
-        *call = new GA_change_tx_limits_call(*session, total);
-    });
-
-GA_SDK_DEFINE_C_FUNCTION_8(GA_twofactor_send, struct GA_session*, session, const char**, addr, uint32_t, addr_siz,
-    const uint64_t*, amt, uint32_t, amt_siz, uint64_t, fee_rate, uint32_t, send_all, struct GA_twofactor_call**, call, {
-        GA_SDK_RUNTIME_ASSERT(session);
-        GA_SDK_RUNTIME_ASSERT(addr);
-        GA_SDK_RUNTIME_ASSERT(amt);
-        GA_SDK_RUNTIME_ASSERT(addr_siz == amt_siz);
-        std::vector<ga::sdk::session::address_amount_pair> addr_amt;
-        addr_amt.reserve(addr_siz);
-        for (uint32_t i = 0; i < addr_siz; ++i) {
-            GA_SDK_RUNTIME_ASSERT(addr[i]);
-            addr_amt.emplace_back(std::make_pair(addr[i], ga::sdk::amount{ amt[i] }));
-        }
-        *call = new GA_send_call(*session, addr_amt, ga::sdk::amount{ fee_rate }, send_all);
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_change_tx_limits, struct GA_session*, session, const char*, total,
+    struct GA_twofactor_call**, call, { *call = new GA_change_tx_limits_call(*session, total); });
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_destroy_twofactor_call, struct GA_twofactor_call*, call, { delete call; });
 

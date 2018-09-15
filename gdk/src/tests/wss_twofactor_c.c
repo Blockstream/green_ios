@@ -38,26 +38,26 @@ const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lum
 
 /* In test mode there is no interaction, all 2fa codes are fixed as 555555 */
 static const char* test_twofactor_code = "555555";
-static int test_twofactor_factor_index = 0;
+static int test_twofactor_method_index = 0;
 
 /* Prompt user at console to select 2fa factor */
-static const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* call)
+static const struct GA_twofactor_method* _user_select_factor(struct GA_twofactor_call* call)
 {
     uint32_t factor_count;
-    struct GA_twofactor_factor* selected = NULL;
-    struct GA_twofactor_factor_list* factors = NULL;
-    CALL(GA_twofactor_get_factors(call, &factors));
-    CALL(GA_twofactor_factor_list_get_size(factors, &factor_count));
+    struct GA_twofactor_method* selected = NULL;
+    struct GA_twofactor_method_list* factors = NULL;
+    CALL(GA_twofactor_get_methods(call, &factors));
+    CALL(GA_twofactor_method_list_get_size(factors, &factor_count));
     if (factor_count == 1) {
-        CALL(GA_twofactor_factor_list_get_factor(factors, 0, &selected))
+        CALL(GA_twofactor_method_list_get_factor(factors, 0, &selected))
     } else if (factor_count > 1) {
-        CALL(GA_twofactor_factor_list_get_factor(factors, test_twofactor_factor_index, &selected));
+        CALL(GA_twofactor_method_list_get_factor(factors, test_twofactor_method_index, &selected));
     }
     return selected;
 }
 
 /* Prompt user at console for 2fa code */
-static const char* _user_get_code(__attribute__((unused)) const struct GA_twofactor_factor* factor)
+static const char* _user_get_code(__attribute__((unused)) const struct GA_twofactor_method* factor)
 {
     return test_twofactor_code;
 }
@@ -74,7 +74,7 @@ static void resolve_2fa(struct GA_twofactor_call* call)
      * If the call requires 2fa get the user to select the factor, request the
      * code and get the code from the user
      */
-    const struct GA_twofactor_factor* factor = _user_select_factor(call);
+    const struct GA_twofactor_method* factor = _user_select_factor(call);
     if (factor) {
         CALL(GA_twofactor_request_code(factor, call))
         CALL(GA_twofactor_resolve_code(call, _user_get_code(factor)))

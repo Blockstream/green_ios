@@ -52,7 +52,7 @@ while true; do
         --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
         --compiler-version) COMPILER_VERSION="-$2"; shift 2 ;;
         --lto) MESON_OPTIONS="$MESON_OPTIONS -Dlto=$2"; shift 2 ;;
-        --clang-tidy-version) MESON_OPTIONS="$MESON_OPTIONS -Dclang-tidy-version=-$2"; shift 2 ;;
+        --clang-tidy-version) MESON_OPTIONS="$MESON_OPTIONS -Dclang-tidy-version=-$2"; NINJA_TARGET="src/clang-tidy"; shift 2 ;;
         -- ) shift; break ;;
         *) break ;;
     esac
@@ -118,9 +118,7 @@ function build() {
         CXXFLAGS=$EXTRA_CXXFLAGS $SCAN_BUILD meson build-$C_COMPILER --default-library=${LIBTYPE} --werror ${MESON_OPTIONS}
     fi
 
-    cd build-$C_COMPILER
-    $NINJA -j$NUM_JOBS $NINJA_TARGET
-    cd ..
+    $NINJA -C build-$C_COMPILER -j$NUM_JOBS $NINJA_TARGET
 }
 
 function set_cross_build_env() {
@@ -195,9 +193,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
             compress_patch
             meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt --default-library=${LIBTYPE} ${MESON_OPTIONS}
         fi
-        cd $bld_root
-        $NINJA -j$NUM_JOBS -v $NINJA_TARGET
-        cd ..
+        $NINJA -C $bld_root -j$NUM_JOBS -v $NINJA_TARGET
     }
 
     if [ -n "$2" ]; then
@@ -248,9 +244,7 @@ if [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
             compress_patch
             meson $bld_root --cross-file $bld_root/$1_$2_ios.txt --default-library=${LIBTYPE} ${MESON_OPTIONS}
         fi
-        cd $bld_root
-        $NINJA -j$NUM_JOBS -v $NINJA_TARGET
-        cd ..
+        $NINJA -C $bld_root -j$NUM_JOBS -v $NINJA_TARGET
     }
 
     if test "x$1" == "x--iphone"; then
@@ -280,9 +274,7 @@ if [ \( $# -eq 0 \) -o \( "$1" = "--mingw-w64" \) ]; then
             compress_patch
             meson $bld_root --cross-file $bld_root/$1.txt --default-library=${LIBTYPE} ${MESON_OPTIONS}
         fi
-        cd $bld_root
-        $NINJA -j$NUM_JOBS -v $NINJA_TARGET
-        cd ..
+        $NINJA -C $bld_root -j$NUM_JOBS -v $NINJA_TARGET
     }
 
     set_cross_build_env windows mingw-w64

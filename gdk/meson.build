@@ -127,6 +127,15 @@ build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_
 clang_format = find_program('clang-format', required : false)
 clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)
 
+sphinx_build = find_program('sphinx-build', required : false)
+if sphinx_build.found()
+    source_docs = join_paths(meson.source_root(), 'docs', 'source')
+    custom_target('apidocs', output : 'apidocs', command : [sphinx_build, '-b', 'html', '-a',
+                  '-c', source_docs, source_docs, join_paths(meson.source_root(), 'docs', 'build', 'html')])
+else
+    message('apidocs generation is not available')
+endif
+
 # dependencies
 threads_dep = dependency('threads')
 m_dep = compiler.find_library('m', required : false)

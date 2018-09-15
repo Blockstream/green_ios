@@ -79,38 +79,38 @@ void get_2fa_config(struct GA_session* session)
     GA_destroy_string(json);
 }
 
-/* Prompt user at console to select 2fa factor */
-const struct GA_twofactor_factor* _user_select_factor(struct GA_twofactor_call* call)
+/* Prompt user at console to select 2fa method */
+const struct GA_twofactor_method* _user_select_factor(struct GA_twofactor_call* call)
 {
     uint32_t factor_count;
-    struct GA_twofactor_factor* selected = NULL;
-    struct GA_twofactor_factor_list* factors = NULL;
-    CALL(GA_twofactor_get_factors(call, &factors));
-    CALL(GA_twofactor_factor_list_get_size(factors, &factor_count));
+    struct GA_twofactor_method* selected = NULL;
+    struct GA_twofactor_method_list* methods = NULL;
+    CALL(GA_twofactor_get_methods(call, &methods));
+    CALL(GA_twofactor_method_list_get_size(methods, &factor_count));
     if (factor_count == 1) {
-        CALL(GA_twofactor_factor_list_get_factor(factors, 0, &selected))
+        CALL(GA_twofactor_method_list_get_factor(methods, 0, &selected))
     } else if (factor_count > 1) {
-        printf("Please select 2fa factor\n");
-        struct GA_twofactor_factor* option;
+        printf("Please select 2fa method\n");
+        struct GA_twofactor_method* option;
         for (uint32_t i = 0; i < factor_count; ++i) {
             char* type;
-            CALL(GA_twofactor_factor_list_get_factor(factors, i, &option))
-            CALL(GA_twofactor_factor_type(option, &type))
+            CALL(GA_twofactor_method_list_get_factor(methods, i, &option))
+            CALL(GA_twofactor_method_type(option, &type))
             printf("%u) %s\n", i, type);
             GA_destroy_string(type);
         }
         printf("? ");
         int selection = strtoul(rawinput(), NULL, 10);
-        CALL(GA_twofactor_factor_list_get_factor(factors, selection, &selected))
+        CALL(GA_twofactor_method_list_get_factor(methods, selection, &selected))
     }
     return selected;
 }
 
 /* Prompt user at console for 2fa code */
-const char* _user_get_code(const struct GA_twofactor_factor* factor)
+const char* _user_get_code(const struct GA_twofactor_method* method)
 {
     char* type;
-    CALL(GA_twofactor_factor_type(factor, &type))
+    CALL(GA_twofactor_method_type(method, &type))
     printf("Please enter 2fa code sent via %s: ", type);
     GA_destroy_string(type);
     return rawinput();
@@ -125,13 +125,13 @@ const char* _user_get_code(const struct GA_twofactor_factor* factor)
 void resolve_2fa(struct GA_twofactor_call* call)
 {
     /**
-     * If the call requires 2fa get the user to select the factor, request the
+     * If the call requires 2fa get the user to select the method, request the
      * code and get the code from the user
      */
-    const struct GA_twofactor_factor* factor = _user_select_factor(call);
-    if (factor) {
-        CALL(GA_twofactor_request_code(factor, call))
-        CALL(GA_twofactor_resolve_code(call, _user_get_code(factor)))
+    const struct GA_twofactor_method* method = _user_select_factor(call);
+    if (method) {
+        CALL(GA_twofactor_request_code(method, call))
+        CALL(GA_twofactor_resolve_code(call, _user_get_code(method)))
     }
 
     /* Make the call */
@@ -151,16 +151,16 @@ void set_email(struct GA_session* session, const char* email)
     CALL_2FA(GA_twofactor_set_email(session, email, &call));
 }
 
-void twofactor_enable(struct GA_session* session, const char* factor, const char* data)
+void twofactor_enable(struct GA_session* session, const char* method, const char* data)
 {
-    printf("Enabling two factor authentication factor %s:%s\n", factor, data);
-    CALL_2FA(GA_twofactor_enable(session, factor, data, &call));
+    printf("Enabling two factor authentication method %s:%s\n", method, data);
+    CALL_2FA(GA_twofactor_enable(session, method, data, &call));
 }
 
-void twofactor_disable(struct GA_session* session, const char* factor)
+void twofactor_disable(struct GA_session* session, const char* method)
 {
-    printf("Disabling two factor authentication factor %s\n", factor);
-    CALL_2FA(GA_twofactor_disable(session, factor, &call));
+    printf("Disabling two factor authentication method %s\n", method);
+    CALL_2FA(GA_twofactor_disable(session, method, &call));
 }
 
 void change_tx_limits(struct GA_session* session, const char* total)
@@ -184,14 +184,6 @@ void getbalance(struct GA_session* session)
     CALL(GA_convert_json_to_string(balance, &json));
     printf("%s\n", json);
     CALL(GA_destroy_json(balance));
-}
-
-void send_to_address(struct GA_session* session, const char* address, const char* amount)
-{
-    const char* addresses[] = { address };
-    uint64_t amount_ = strtoul(amount, NULL, 10);
-    uint64_t amounts[] = { amount_ };
-    CALL_2FA(GA_twofactor_send(session, addresses, 1, amounts, 1, 200, 0, &call));
 }
 
 int main(int argc, char* argv[])
@@ -228,8 +220,6 @@ int main(int argc, char* argv[])
         getreceiveaddress(session);
     } else if (strcmp(action, "get-balance") == 0) {
         getbalance(session);
-    } else if (strcmp(action, "send") == 0) {
-        send_to_address(session, argv[2], argv[3]);
     } else {
         printf("Unknown action: %s\n", action);
     }

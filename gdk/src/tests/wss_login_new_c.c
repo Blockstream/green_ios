@@ -32,7 +32,9 @@ int main(int argc, char* argv[])
         ret = ret == GA_OK ? GA_create_session(&session) : ret;
         ret = ret == GA_OK ? GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 1) : ret;
         ret = ret == GA_OK ? GA_login_with_pin(session, "0000", pin_data) : ret;
-        ret = ret == GA_OK ? GA_remove_account(session, NULL) : ret;
+        GA_json* twofactor;
+        ret = ret == GA_OK ? GA_convert_string_to_json("{}", &twofactor) : ret;
+        ret = ret == GA_OK ? GA_remove_account(session, twofactor) : ret;
         GA_destroy_session(session);
     }
 
