@@ -79,19 +79,20 @@ class ViewController: UIViewController, WalletViewDelegate{
         self.tabBarController?.tabBar.isHidden = false
         DispatchQueue.global(qos: .background).async {
             // Background Thread
-            AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
-                DispatchQueue.main.async {
-                    if(accs.count == 0) {
-                        return
+            if(self.wallets.count == 0) {
+                AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
+                    DispatchQueue.main.async {
+                        if(accs.count == 0) {
+                            return
+                        }
+                        // Run UI Updates or call completion block
+                        self.walletView.remove(cardViews: self.walletView.insertedCardViews)
+                        self.wallets = accs.reversed()
+                        self.reloadWallets()
                     }
-                    // Run UI Updates or call completion block
-                    self.walletView.remove(cardViews: self.walletView.insertedCardViews)
-                    self.wallets = accs.reversed()
-                    self.reloadWallets()
                 }
             }
         }
-
     }
 
     override func viewWillDisappear(_ animated: Bool) {
