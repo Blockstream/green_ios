@@ -46,6 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     let service = GreenAddressService()
+    var startTime = DispatchTime.now()
+    var endTime = DispatchTime.now()
 
     var mnemonicWords: [String]? = nil
 
@@ -125,6 +127,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
+        print("start timer")
+        startTime = DispatchTime.now()
+
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
     }
@@ -137,6 +142,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
         connect()
+        endTime = DispatchTime.now()
+        let timeElapsed = (endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1000000000 //in seconds
+        if (timeElapsed < 600) {
+            print("time elapsed is less than 5 minutes")
+        } else {
+            //logout here
+            print("time elapsed is larger than 5 minutes")
+            let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
+            if(pinData != nil) {
+                let password = KeychainHelper.loadPassword(service: "password", account: "user")
+                if(password != nil) {
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
+                    firstVC.password = password!
+                    firstVC.pinData = pinData!
+                    self.window?.rootViewController = firstVC
+                    self.window?.makeKeyAndVisible()
+                    return
+                }
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+                firstVC.pinData = pinData!
+                self.window?.rootViewController = firstVC
+                self.window?.makeKeyAndVisible()
+            } else {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
+                self.window?.rootViewController = firstVC
+                self.window?.makeKeyAndVisible()
+            }
+        }
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
