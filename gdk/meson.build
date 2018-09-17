@@ -40,6 +40,7 @@ common_compile_options = [
     '-fasynchronous-unwind-tables',
     '-fexceptions',
     '-fstack-protector-strong',
+    '-fvisibility=hidden',
     '-DGASDK_BUILD',
 ]
 

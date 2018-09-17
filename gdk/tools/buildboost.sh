@@ -22,6 +22,7 @@ ${SDK_PLATFORM}-clang++
 <compileflags>-std=c++14
 <compileflags>"${SDK_CPPFLAGS}"
 <compileflags>"--sysroot=${SYSROOT}"
+<compileflags>"-fvisibility=hidden"
 <archiver>$AR
 <linkflags>"--sysroot=${SYSROOT}"
 <architecture>${SDK_ARCH}
@@ -48,6 +49,7 @@ ${XCODE_DEFAULT_PATH}/clang++
 <compileflags>"${SDK_CFLAGS}"
 <compileflags>"-miphoneos-version-min=9.0"
 <compileflags>"-isysroot ${IOS_SDK_PATH}"
+<compileflags>"-fvisibility=hidden"
 <linkflags>"-miphoneos-version-min=9.0"
 <linkflags>"-isysroot ${IOS_SDK_PATH}"
 <target-os>iphone
@@ -64,6 +66,7 @@ x86_64-w64-mingw32-g++-posix
 :
 <compileflags>-std=c++14
 <compileflags>"${SDK_CFLAGS}"
+<compileflags>"-fvisibility=hidden"
 <target-os>windows
 ;
 EOF
@@ -79,5 +82,5 @@ else
     fi
     ./bootstrap.sh --prefix="$boost_bld_home" --with-libraries=chrono,system,thread --with-toolset=${TOOLSET}
     ./b2 --clean
-    ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system cxxflags="-DPIC -fPIC" link=static install
+    ./b2 -j$NUM_JOBS --with-chrono --with-thread --with-system cxxflags="-DPIC -fPIC -fvisibility=hidden" link=static install
 fi

@@ -14,8 +14,10 @@
 #endif
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wattributes"
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
+#pragma GCC diagnostic ignored "-Wparentheses"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #if __GNUC__ > 7
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
 #endif

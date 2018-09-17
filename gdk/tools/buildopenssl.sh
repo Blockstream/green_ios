@@ -2,7 +2,7 @@
 set -e
 
 OPENSSL_NAME="openssl-OpenSSL_1_0_2o"
-OPENSSL_OPTIONS="no-krb5 no-shared no-dso no-ssl2 no-ssl3 no-idea no-dtls no-dtls1 no-weak-ssl-ciphers no-comp"
+OPENSSL_OPTIONS="no-krb5 no-shared no-dso no-ssl2 no-ssl3 no-idea no-dtls no-dtls1 no-weak-ssl-ciphers no-comp -fvisibility=hidden"
 OPENSSL_MOBILE="no-hw no-engine"
 
 cp -r "${MESON_SOURCE_ROOT}/subprojects/${OPENSSL_NAME}" "${MESON_BUILD_ROOT}/openssl"

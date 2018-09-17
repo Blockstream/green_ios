@@ -1,5 +1,7 @@
 #include <gsl/span>
 
+#include "boost_wrapper.hpp"
+
 #include "assertion.hpp"
 #include "network_parameters.hpp"
 #include "transaction_utils.hpp"

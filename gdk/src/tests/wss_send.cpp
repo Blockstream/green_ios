@@ -58,14 +58,17 @@ int main(int argc, char** argv)
         nlohmann::json utxos = session_1.get_unspent_outputs(0, 0);
         (void)utxos;
 
+        const bool send_all = false;
+        const bool manual_selection = false;
         std::vector<nlohmann::json> addressees{ { { "address", addr }, { "satoshi", 100000 } } };
-        nlohmann::json details
-            = { { "addressees", addressees }, { "subaccount", 0 }, { "fee_rate", 1000 }, { "send_all", false } };
+        nlohmann::json details = { { "addressees", addressees }, { "utxos", utxos }, { "subaccount", 0 },
+            { "fee_rate", 1000 }, { "send_all", send_all }, { "manual_selection", manual_selection } };
 
         nlohmann::json transaction = session_1.send(details, nlohmann::json());
 
         nlohmann::json tx_details = session_1.get_transaction_details(transaction["txhash"]);
         (void)tx_details;
+        // std::cerr << tx_details.dump() << std::endl;
 
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;

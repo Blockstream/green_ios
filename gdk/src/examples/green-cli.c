@@ -80,7 +80,7 @@ void get_2fa_config(struct GA_session* session)
 }
 
 /* Prompt user at console to select 2fa method */
-const struct GA_twofactor_method* _user_select_factor(struct GA_twofactor_call* call)
+static const struct GA_twofactor_method* user_select_factor(struct GA_twofactor_call* call)
 {
     uint32_t factor_count;
     struct GA_twofactor_method* selected = NULL;
@@ -128,7 +128,7 @@ void resolve_2fa(struct GA_twofactor_call* call)
      * If the call requires 2fa get the user to select the method, request the
      * code and get the code from the user
      */
-    const struct GA_twofactor_method* method = _user_select_factor(call);
+    const struct GA_twofactor_method* method = user_select_factor(call);
     if (method) {
         CALL(GA_twofactor_request_code(method, call))
         CALL(GA_twofactor_resolve_code(call, _user_get_code(method)))

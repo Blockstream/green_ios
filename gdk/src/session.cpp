@@ -1197,6 +1197,13 @@ namespace sdk {
                 }
             },
             "com.greenaddress.txs.get_all_unspent_outputs", num_confs, subaccount, "any");
+
+        for (auto& utxo : utxos) {
+            // Clean up the type of returned values
+            const std::string value_str = utxo["value"];
+            const auto value = boost::lexical_cast<uint64_t>(value_str);
+            utxo["value"] = value;
+        }
         return utxos;
     }
 
@@ -1427,8 +1434,8 @@ namespace sdk {
         tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
             wit ? DUMMY_WITNESS_SCRIPT : dummy_input_script(prevout_script), wit, 0);
 
-        const std::string v = u["value"]; // FIXME: Allow amount conversions directly
-        return amount{ std::stoull(v, nullptr, 10) };
+        const amount::value_type v = u["value"]; // FIXME: Allow amount conversions directly
+        return amount{ v };
     }
 
     void session::session_impl::sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const
@@ -1436,8 +1443,8 @@ namespace sdk {
         const auto txhash = u["txhash"];
         const uint32_t subaccount = u.value("subaccount", 0);
         const uint32_t pointer = u["pointer"];
-        const std::string v = u["value"];
-        const amount satoshi{ std::stoull(v, nullptr, 10) };
+        const amount::value_type v = u["value"]; // FIXME: Allow amount conversions directly
+        const amount satoshi{ v };
         const auto type = script_type(u["script_type"]);
 
         const auto prevout_script = output_script(subaccount, u);
@@ -1484,19 +1491,25 @@ namespace sdk {
         nlohmann::json fetched_utxos;
         const bool have_utxos = details.find("utxos") != details.end();
         if (!have_utxos) {
-            // Fetch the users utxos (they must have nominated a subaccount
+            // Fetch the users utxos (they must have nominated a subaccount)
             const uint32_t subaccount = details["subaccount"];
-            const uint32_t num_confs = m_net_params.main_net() ? 1 : 0; // Alow 0 conf testnet spends
+            const uint32_t num_confs = m_net_params.main_net() ? 1 : 0; // Allow 0 conf testnet spends
             fetched_utxos = get_unspent_outputs(subaccount, num_confs);
         }
         const auto& utxos = have_utxos ? details["utxos"] : fetched_utxos;
         const uint32_t feerate_satoshi_per_k = details.at("fee_rate");
         const bool send_all = details.value("send_all", false);
+        const bool manual_selection = details.value("manual_selection", false);
 
         nlohmann::json result;
 
         // We must have addressees to send to, and if sending everything, only one
-        GA_SDK_RUNTIME_ASSERT(addressees.size() > 0 && (!send_all || addressees.size() == 1));
+        if (addressees.empty()) {
+            return { { "error", "No outputs" } };
+        }
+        if (send_all && addressees.size() > 1) {
+            return { { "error", "Send all requires a single output" } };
+        }
 
         auto tx = tx_init(m_block_height, utxos.size(), addressees.size() + 1);
 
@@ -1531,15 +1544,22 @@ namespace sdk {
         }
         result["change_subaccount"] = change_subaccount;
 
+        // return the available total for client insufficient fund handling
+        amount available_total;
+        for (const auto& utxo : utxos) {
+            const amount::value_type v = utxo["value"];
+            available_total += v;
+        }
+        result["available_total"] = available_total.value();
+
         // Collect utxos until we have covered the amount to send
         // FIXME: Better coin selection
-        // FIXME: Just add all utxos if coin control used
         amount total, fee;
         std::vector<uint32_t> used_utxos;
         used_utxos.reserve(utxos.size());
         uint32_t utxo_index = 0;
         for (const auto& utxo : utxos) {
-            if (!send_all && total >= required_total) {
+            if (!send_all && !manual_selection && total >= required_total) {
                 break;
             }
             total += add_utxo(tx, utxo);
@@ -1553,10 +1573,16 @@ namespace sdk {
         for (;;) {
             fee = get_tx_fee(tx, amount(feerate_satoshi_per_k));
             const amount min_change = have_change ? amount() : dust_threshold;
+
+            if (send_all) {
+                required_total = total - fee - min_change;
+                tx->outputs[0].satoshi = required_total.value();
+            }
+
             const amount am = required_total + fee + min_change;
             if (total < am) {
                 if (tx->num_inputs == utxos.size()) {
-                    throw std::runtime_error("insufficient funds");
+                    return { { "error", "Insufficient funds" } };
                 }
 
                 total += add_utxo(tx, utxos[tx->num_inputs]);
@@ -1584,10 +1610,11 @@ namespace sdk {
             have_change = true;
         }
 
+        result["error"] = std::string();
         result["have_change"] = have_change;
         result["fee_rate"] = feerate_satoshi_per_k;
         result["send_all"] = send_all;
-        result["total_satoshi"] = total.value();
+        result["satoshi"] = total.value();
 
         if (have_change) {
             // Set the change amount
