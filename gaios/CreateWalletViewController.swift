@@ -26,7 +26,7 @@ class CreateWalletViewController: UIViewController {
 
     @IBOutlet weak var indicatorView: UIView!
     var indicatorBoxes: Array<UIView> = []
-    var indicatorLayers: Array<CAGradientLayer> = []
+    var indicatorLayers: [CAGradientLayer?] = [CAGradientLayer?](repeatElement(nil, count: 24))
     var widths: Array<Int>  = []
 
     override func viewDidLoad() {
@@ -106,8 +106,9 @@ class CreateWalletViewController: UIViewController {
         let start = row * 6
         var column = 0
             for index in start..<start+6 {
+                createGradiendLayers(index: index)
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(column * 500)) {
-                    self.animateColorChange(abc: self.indicatorBoxes[index])
+                    self.animateColorChange(index: index)
                 }
                 column += 1
             }
@@ -115,21 +116,22 @@ class CreateWalletViewController: UIViewController {
 
     func animateBackwardsRow(row: Int) {
         var column = 0
-        let count = indicatorLayers.count
-        let start = count - 6 > 0 ? count - 6 : 0
-        for index in start..<count {
-            indicatorLayers[index].removeFromSuperlayer()
+        let start = row * 6
+        let end = (row * 6) + 6
+
+        for index in start..<end {
+            if ( indicatorLayers[index] != nil) {
+                indicatorLayers[index]!.removeFromSuperlayer()
+                indicatorLayers[index] = nil
+            }
             column += 1
-        }
-        for _ in start..<count {
-            indicatorLayers.removeLast()
         }
     }
 
-    func animateColorChange(abc: UIView) {
-
+    func createGradiendLayers(index: Int) {
         let startLocations = [0, 0]
         let endLocations = [1, 2]
+        let abc = self.indicatorBoxes[index]
 
         let layer = CAGradientLayer()
         layer.colors = [UIColor.customMatrixGreen().cgColor, UIColor.clear.cgColor]
@@ -137,15 +139,24 @@ class CreateWalletViewController: UIViewController {
         layer.locations = startLocations as [NSNumber]
         layer.startPoint = CGPoint(x: 0.0, y: 1.0)
         layer.endPoint = CGPoint(x: 1.0, y: 1.0)
-        abc.layer.addSublayer(layer)
-        indicatorLayers.append(layer)
+        indicatorLayers[index] = layer
+    }
 
+    func animateColorChange(index: Int) {
+        let layer = indicatorLayers[index]
+        let abc = self.indicatorBoxes[index]
+        if (layer == nil) {
+            return
+        }
+        abc.layer.addSublayer(layer!)
+        let startLocations = [0, 0]
+        let endLocations = [1, 2]
         let anim = CABasicAnimation(keyPath: "locations")
         anim.fromValue = startLocations
         anim.toValue = endLocations
         anim.duration = 0.5
-        layer.add(anim, forKey: "loc")
-        layer.locations = endLocations as [NSNumber]
+        layer?.add(anim, forKey: "loc")
+        layer?.locations = endLocations as [NSNumber]
     }
 
     override func viewWillAppear(_ animated: Bool) {
