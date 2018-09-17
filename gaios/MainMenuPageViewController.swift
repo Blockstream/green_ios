@@ -70,46 +70,44 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         }
         button.addTarget(self, action:#selector(self.settingsButtonClicked), for: .touchUpInside)
 
+        /////////
         button1 = UIButton(frame: CGRect(x: 0 , y: 0, width: 60, height: 30))
         button1.backgroundColor = UIColor.clear
         button1.setTitle("", for: UIControlState.normal)
-        button1.setImage(UIImage(named: "notification"), for: UIControlState.normal)
+        button1.setImage(UIImage(named: "iconMenu"), for: UIControlState.normal)
         self.view.addSubview(button1)
-       // button1.contentEdgeInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
         button1.titleLabel?.adjustsFontSizeToFitWidth = true
         button1.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 27).isActive = true
         NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 22).isActive = true
         
-        NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: -22).isActive = true
+        NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
         
         if #available(iOS 11, *) {
             NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.view.safeAreaLayoutGuide, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -16).isActive = true
         } else {
             NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -16).isActive = true
         }
-        button1.addTarget(self, action:#selector(self.notificationButtonClicked), for: .touchUpInside)
+        button1.addTarget(self, action:#selector(self.walletButtonClicked), for: .touchUpInside)
 
         button2 = UIButton(frame: CGRect(x: 0 , y: 0, width: 60, height: 30))
         button2.backgroundColor = UIColor.clear
         button2.setTitle("", for: UIControlState.normal)
-        button2.setImage(UIImage(named: "iconMenu"), for: UIControlState.normal)
+        button2.setImage(UIImage(named: "notification"), for: UIControlState.normal)
         self.view.addSubview(button2)
-       // button2.contentEdgeInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
         button2.titleLabel?.adjustsFontSizeToFitWidth = true
         button2.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 27).isActive = true
         NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 22).isActive = true
         
-        NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: -22).isActive = true
         
         if #available(iOS 11, *) {
             NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.view.safeAreaLayoutGuide, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -16).isActive = true
         } else {
             NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -16).isActive = true
         }
-        button2.addTarget(self, action:#selector(self.walletButtonClicked), for: .touchUpInside)
-
+        button2.addTarget(self, action:#selector(self.notificationButtonClicked), for: .touchUpInside)
     }
 
     @objc func settingsButtonClicked(_ sender: UIButton) {
@@ -164,6 +162,24 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         let pageContentViewController = pageViewController.viewControllers![0]
         viewControllerIndex = pages.index(of: pageContentViewController)!
+        updateButtonIcons(page: viewControllerIndex)
+    }
+
+    func updateButtonIcons(page: Int) {
+        let buttons = [button, button1, button2]
+        let notSelected = [#imageLiteral(resourceName: "settings"), #imageLiteral(resourceName: "iconMenu"), #imageLiteral(resourceName: "notification")]
+        let selected = [#imageLiteral(resourceName: "settingsSelected"),#imageLiteral(resourceName: "iconMenu"),#imageLiteral(resourceName: "newNotification")]
+        for index in 0..<buttons.count {
+            if (page == index) {
+                UIView.transition(with: buttons[index] as! UIView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                    buttons[index].setImage(selected[index], for: UIControlState.normal)
+                }, completion: nil)
+            } else {
+                UIView.transition(with: buttons[index] as! UIView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                    buttons[index].setImage(notSelected[index], for: UIControlState.normal)
+                }, completion: nil)
+            }
+        }
     }
 
     func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
@@ -175,11 +191,11 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
     }
 
     func newNotification() {
-        button1.setImage(UIImage(named: "newNotification"), for: UIControlState.normal)
+        button2.setImage(UIImage(named: "newNotification"), for: UIControlState.normal)
     }
 
     func dismissNotification() {
-        button1.setImage(UIImage(named: "notification"), for: UIControlState.normal)
+        button2.setImage(UIImage(named: "notification"), for: UIControlState.normal)
     }
 
     func notificationChanged() {
