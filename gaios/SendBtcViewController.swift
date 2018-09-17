@@ -78,6 +78,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.isUserInteractionEnabled = true
         tableView.allowsSelection = true
         navigationController?.navigationBar.tintColor = UIColor.white
+        hideKeyboardWhenTappedAround()
     }
     
     override func viewWillAppear(_ animated: Bool) {
