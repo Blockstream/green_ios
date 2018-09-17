@@ -148,28 +148,6 @@ class CreateWalletViewController: UIViewController {
         layer.locations = endLocations as [NSNumber]
     }
 
-    func animateColorChangeBackwards(abc: UIView) {
-
-        let endLocations = [0, 0]
-        let startLocations = [1, 2]
-
-        let layer = CAGradientLayer()
-        layer.colors = [UIColor.customTitaniumDark().cgColor, UIColor.customTitaniumDark().cgColor]
-        layer.frame = abc.bounds
-        layer.locations = startLocations as [NSNumber]
-        layer.endPoint = CGPoint(x: 0.0, y: 1.0)
-        layer.startPoint = CGPoint(x: 1.0, y: 1.0)
-        abc.layer.addSublayer(layer)
-        indicatorLayers.append(layer)
-
-        let anim = CABasicAnimation(keyPath: "locations")
-        anim.fromValue = endLocations
-        anim.toValue = startLocations
-        anim.duration = 0.5
-        layer.add(anim, forKey: "loc")
-        layer.locations = endLocations as [NSNumber]
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
 
