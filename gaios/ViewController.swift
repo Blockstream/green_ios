@@ -80,17 +80,21 @@ class ViewController: UIViewController, WalletViewDelegate{
         DispatchQueue.global(qos: .background).async {
             // Background Thread
             if(self.wallets.count == 0) {
-                AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
-                    DispatchQueue.main.async {
-                        if(accs.count == 0) {
-                            return
-                        }
-                        // Run UI Updates or call completion block
-                        self.walletView.remove(cardViews: self.walletView.insertedCardViews)
-                        self.wallets = accs.reversed()
-                        self.reloadWallets()
-                    }
+                self.refreshWallets()
+            }
+        }
+    }
+
+    func refreshWallets() {
+        AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
+            DispatchQueue.main.async {
+                if(accs.count == 0) {
+                    return
                 }
+                // Run UI Updates or call completion block
+                self.walletView.remove(cardViews: self.walletView.insertedCardViews)
+                self.wallets = accs.reversed()
+                self.reloadWallets()
             }
         }
     }
@@ -168,12 +172,13 @@ class ViewController: UIViewController, WalletViewDelegate{
 extension ViewController: CustomAlertViewInputDelegate {
 
     func okButtonTapped(selectedOption: String, textFieldValue: String) {
-
-     /* do {
-            try getSession().createSubaccount(type: SubaccountType._2of2, name: textFieldValue)
+        let dict = ["type": "2of2", "name": textFieldValue]
+        do {
+            try getSession().createSubaccount(details: dict)
+            refreshWallets()
         } catch {
             print("something went worng with creating subAccount")
-        }*/
+        }
         showButtons()
     }
 
