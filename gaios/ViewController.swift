@@ -81,6 +81,8 @@ class ViewController: UIViewController, WalletViewDelegate{
             // Background Thread
             if(self.wallets.count == 0) {
                 self.refreshWallets()
+            } else {
+                self.refreshBalance()
             }
         }
     }
@@ -95,6 +97,21 @@ class ViewController: UIViewController, WalletViewDelegate{
                 self.walletView.remove(cardViews: self.walletView.insertedCardViews)
                 self.wallets = accs.reversed()
                 self.reloadWallets()
+            }
+        }
+    }
+
+    func refreshBalance() {
+        for wallet in self.wallets {
+            do {
+                let balance = try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
+                DispatchQueue.main.async {
+                    let satoshi = balance!["satoshi"] as! String
+                    wallet.balance = satoshi
+                    self.reloadWallets()
+                }
+            } catch {
+                print("error updating balance")
             }
         }
     }

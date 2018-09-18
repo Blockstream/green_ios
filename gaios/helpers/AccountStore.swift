@@ -31,7 +31,7 @@ class AccountStore {
                 let account = (element as? [String: Any])!
                 let pointer = account["pointer"] as! UInt32
                 let address = try getSession().getReceiveAddress(subaccount: pointer)
-                let balance = try getSession().getBalance(subaccount: pointer, numConfs: 1)
+                let balance = try getSession().getBalance(subaccount: pointer, numConfs: 0)
                 let satoshi = balance!["satoshi"] as! String
                 let name = pointer == 0 ? "Main Wallet" : account["name"] as! String
                 let currency = balance!["fiat_currency"] as! String
