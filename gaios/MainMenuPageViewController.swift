@@ -155,7 +155,6 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         guard nextIndex < pages.count else { return pages.first }
 
         guard pages.count > nextIndex else { return nil         }
-
         return pages[nextIndex]
     }
 
@@ -167,17 +166,13 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
 
     func updateButtonIcons(page: Int) {
         let buttons = [button, button1, button2]
-        let notSelected = [#imageLiteral(resourceName: "settings"), #imageLiteral(resourceName: "iconMenu"), #imageLiteral(resourceName: "notification")]
-        let selected = [#imageLiteral(resourceName: "settingsSelected"),#imageLiteral(resourceName: "iconMenu"),#imageLiteral(resourceName: "newNotification")]
+        let notSelected = [UIImage(named: "settings"), UIImage(named: "iconMenu"), UIImage(named: "notification")]
+        let selected = [UIImage(named: "settingsSelected"), UIImage(named: "iconMenu"), UIImage(named: "iconMenu")]
         for index in 0..<buttons.count {
             if (page == index) {
-                UIView.transition(with: buttons[index] as! UIView, duration: 0.3, options: .transitionCrossDissolve, animations: {
-                    buttons[index].setImage(selected[index], for: UIControlState.normal)
-                }, completion: nil)
+                buttons[index].setImage(selected[index], for: UIControlState.normal)
             } else {
-                UIView.transition(with: buttons[index] as! UIView, duration: 0.3, options: .transitionCrossDissolve, animations: {
-                    buttons[index].setImage(notSelected[index], for: UIControlState.normal)
-                }, completion: nil)
+                buttons[index].setImage(notSelected[index], for: UIControlState.normal)
             }
         }
     }
