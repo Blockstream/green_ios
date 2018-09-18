@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "src/boost_wrapper.hpp"
+#include "include/boost_wrapper.hpp"
 
 #include "http_jsonrpc_interface.hpp"
-#include "src/assertion.hpp"
+#include "include/assertion.hpp"
 
 namespace ga {
 namespace sdk {

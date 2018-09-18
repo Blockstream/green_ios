@@ -6,4 +6,4 @@ if [ -d build-clang ]; then
 else
     BUILD_DIR=build-gcc
 fi
-(cd $BUILD_DIR && ninja src/clang-format && ninja src/tests/clang-format)
+(cd $BUILD_DIR && ninja src/clang-format && ninja tests/clang-format)

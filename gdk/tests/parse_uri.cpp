@@ -1,8 +1,8 @@
 #include <iostream>
 
 #include "argparser.h"
-#include "src/assertion.hpp"
-#include "src/utils.hpp"
+#include "include/assertion.hpp"
+#include "include/utils.hpp"
 
 using namespace ga;
 

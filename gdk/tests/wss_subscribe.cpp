@@ -6,7 +6,7 @@
 using namespace std::chrono_literals;
 
 #include "argparser.h"
-#include "src/session.hpp"
+#include "include/session.hpp"
 
 const std::string DEFAULT_TOPIC("com.greenaddress.blocks");
 

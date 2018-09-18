@@ -34,6 +34,9 @@ namespace sdk {
         static nlohmann::json convert(
             const nlohmann::json& amount_json, const std::string& fiat_currency, const std::string& fiat_rate);
 
+        static nlohmann::json convert_fiat_cents(
+            value_type cents, const std::string& fiat_currency, const std::string& fiat_rate);
+
         amount& operator=(value_type v)
         {
             m_value = v;

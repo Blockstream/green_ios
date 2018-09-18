@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "src/amount.hpp"
-#include "src/assertion.hpp"
+#include "include/amount.hpp"
+#include "include/assertion.hpp"
 
 using namespace ga;
 

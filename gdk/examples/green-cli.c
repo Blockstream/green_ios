@@ -16,11 +16,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "src/common.h"
-#include "src/session.h"
-#include "src/utils.h"
+#include "include/session.h"
+#include "include/utils.h"
 
-#include "src/twofactor.h"
+#include "include/twofactor.h"
 
 /* TODO: allow mnemonic to be specified */
 const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lumber never capital animal era "
@@ -163,12 +162,6 @@ void twofactor_disable(struct GA_session* session, const char* method)
     CALL_2FA(GA_twofactor_disable(session, method, &call));
 }
 
-void change_tx_limits(struct GA_session* session, const char* total)
-{
-    printf("Setting tx limit (total, BTC) to %s\n", total);
-    CALL_2FA(GA_twofactor_change_tx_limits(session, total, &call));
-}
-
 void getreceiveaddress(struct GA_session* session)
 {
     char* address;
@@ -214,8 +207,6 @@ int main(int argc, char* argv[])
         } else {
             printf("Unknown 2fa subaction: %s\n", subaction);
         }
-    } else if (strcmp(action, "change-limits") == 0) {
-        change_tx_limits(session, argv[2]);
     } else if (strcmp(action, "get-address") == 0) {
         getreceiveaddress(session);
     } else if (strcmp(action, "get-balance") == 0) {

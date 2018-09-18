@@ -29,7 +29,7 @@ extern "C" {
  *
  * void resolve_2fa(struct GA_twofactor_call* call)
  * {
- *     GA_twofactor_method* selected_factor = _user_select_factor(call);
+ *     const char* selected_factor = _user_select_factor(call);
  *     if (selected_factor) {
  *         GA_twofactor_request_code(selected_factor, call);
  *         const char* code = _user_get_code();
@@ -49,30 +49,6 @@ extern "C" {
  */
 struct GA_twofactor_call;
 
-/** A specific 2fa method
- *
- * For example:
- * - the email address "foo@bar.com"
- * - an sms sent to +44123456
- */
-struct GA_twofactor_method;
-
-/**
- * A list of 2fa methods
- */
-struct GA_twofactor_method_list;
-
-/**
- * Return the size of a list of 2fa methods
- */
-GASDK_API int GA_twofactor_method_list_get_size(struct GA_twofactor_method_list* methods, uint32_t* output);
-
-/**
- * Return a method from a list of 2fa methods
- */
-GASDK_API int GA_twofactor_method_list_get_factor(
-    struct GA_twofactor_method_list* methods, uint32_t i, struct GA_twofactor_method** output);
-
 /**
  * Return all 2fa methods available for a call
  *
@@ -89,21 +65,7 @@ GASDK_API int GA_twofactor_method_list_get_factor(
  * - If either the user selected a method or the list contains only a single method proceed to resolve
  *   2fa by calling GA_twofactor_request_code and GA_twofactor_resolve_code and then GA_twofactor_call.
  */
-GASDK_API int GA_twofactor_get_methods(struct GA_twofactor_call* call, struct GA_twofactor_method_list** output);
-
-/**
- * Free a list of 2fa methods returned by GA_twofactor_get_methods
- */
-int GA_destroy_twofactor_method_list(struct GA_twofactor_method_list* methods);
-
-/**
- * Return the type of a 2fa method as a utf-8 encoded string
- * @method The 2fa method
- * @type The type as a null-terminated utf-8 encoded string
- *
- * Possible types: 'email', 'sms', 'phone', 'gauth'
- */
-GASDK_API int GA_twofactor_method_type(const struct GA_twofactor_method* method, char** type);
+GASDK_API int GA_twofactor_get_methods(struct GA_twofactor_call* call, struct GA_json** output);
 
 /**
  * Request a two method authentication code be sent from the server
@@ -112,7 +74,7 @@ GASDK_API int GA_twofactor_method_type(const struct GA_twofactor_method* method,
  *
  * For some 2fa method, e.g. gauth, this is a no-op
  */
-GASDK_API int GA_twofactor_request_code(const struct GA_twofactor_method* method, struct GA_twofactor_call* call);
+GASDK_API int GA_twofactor_request_code(const char* method, struct GA_twofactor_call* call);
 
 /**
  * Resolve a required 2fa code for the call
@@ -147,6 +109,14 @@ GASDK_API int GA_twofactor_call(struct GA_twofactor_call* call);
  * determine if there is a further call to be resolved and called to complete the operation.
  */
 GASDK_API int GA_twofactor_next_call(struct GA_twofactor_call* call, struct GA_twofactor_call** next);
+
+/**
+ * Get the result of a two factor call.
+ *
+ * @call Call to get the result from
+ * @output Destination for the result
+ */
+GASDK_API int GA_twofactor_get_result(struct GA_twofactor_call* call, struct GA_json** output);
 
 /**
  * Free a GA_twofactor_call

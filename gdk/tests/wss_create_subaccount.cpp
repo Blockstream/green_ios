@@ -2,9 +2,9 @@
 
 #include "argparser.h"
 
-#include "src/assertion.hpp"
-#include "src/session.hpp"
-#include "src/utils.hpp"
+#include "include/assertion.hpp"
+#include "include/session.hpp"
+#include "include/utils.hpp"
 
 namespace {
 const std::string DEFAULT_MNEMONIC(

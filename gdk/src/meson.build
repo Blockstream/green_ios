@@ -1,31 +1,29 @@
-add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
-
-sources = ['amount.hpp',
+sources = ['../include/amount.hpp',
            'amount.cpp',
-           'autobahn_wrapper.hpp',
-           'assertion.hpp',
+           '../include/autobahn_wrapper.hpp',
+           '../include/assertion.hpp',
            'assertion.cpp',
-           'boost_wrapper.hpp',
-           'containers.hpp',
+           '../include/boost_wrapper.hpp',
+           '../include/containers.hpp',
            'containers.cpp',
            'ffi_c.cpp',
-           'ga_wally.hpp',
-           'memory.hpp',
-           'network_parameters.hpp',
-           'session.hpp',
+           '../include/ga_wally.hpp',
+           '../include/memory.hpp',
+           '../include/network_parameters.hpp',
+           '../include/session.hpp',
            'session.cpp',
-           'transaction_utils.hpp',
+           '../include/transaction_utils.hpp',
            'transaction_utils.cpp',
-           'twofactor.hpp',
+           '../include/twofactor.hpp',
            'twofactor.cpp',
-           'utils.hpp',
+           '../include/utils.hpp',
            'utils.cpp']
 
-headers = ['common.h',
-           'containers.h',
-           'session.h',
-           'twofactor.h',
-           'utils.h'
+headers = ['../include/common.h',
+           '../include/containers.h',
+           '../include/session.h',
+           '../include/twofactor.h',
+           '../include/utils.h'
 ]
 
 sources += headers
@@ -83,15 +81,13 @@ if host_machine.cpu_family().contains('iphone')
     archiver = custom_target('archiver',
                              output : output,
                              command : [join_paths(meson.source_root(), 'tools', 'archiver.sh'), meson.build_root()],
-                             build_always : true,
+                             build_always_stale : true,
                              build_by_default : true,
                              depends : libga)
 endif
 
 # tests
-subdirs = ['swift',
-           'tests',
-           'examples']
+subdirs = ['swift']
 foreach n : subdirs
     subdir(n)
 endforeach

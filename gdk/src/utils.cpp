@@ -15,13 +15,12 @@
 
 #include <openssl/rand.h>
 
-#include "boost_wrapper.hpp"
+#include "include/boost_wrapper.hpp"
 
-#include "assertion.hpp"
-#include "common.h"
-#include "utils.hpp"
+#include "include/assertion.hpp"
+#include "include/utils.hpp"
 
-#include "utils.h"
+#include "include/utils.h"
 
 #if defined _WIN32 || defined WIN32 || defined __CYGWIN__
 #include "bcrypt.h"

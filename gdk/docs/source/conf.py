@@ -56,7 +56,7 @@ def extract_docs(infile, outfile):
 for m in [
     'session'
     ]:
-    extract_docs('../../src/%s.h' % m, '%s.rst' % m)
+    extract_docs('../../include/%s.h' % m, '%s.rst' % m)
 
 # -- General configuration ------------------------------------------------
 

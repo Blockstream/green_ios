@@ -30,8 +30,6 @@ namespace sdk {
 
     enum class privacy_show_as_sender : uint32_t { private_, mutual_addrbook, public_ };
 
-    enum class tx_limits : uint32_t { is_fiat, per_tx, total };
-
     enum class twofactor_type : uint32_t {
         email,
         gauth,
@@ -71,8 +69,7 @@ namespace sdk {
 
         void change_settings_privacy_send_me(privacy_send_me value);
         void change_settings_privacy_show_as_sender(privacy_show_as_sender value);
-        void change_settings_tx_limits(
-            bool is_fiat, uint32_t per_tx, uint32_t total, const nlohmann::json& twofactor_data);
+        void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
         void change_settings_pricing_source(const std::string& currency, const std::string& exchange);
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);

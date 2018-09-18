@@ -21,7 +21,9 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/asio.hpp>
+#include <boost/beast/core/detail/base64.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/variant.hpp>
 

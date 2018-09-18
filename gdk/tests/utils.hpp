@@ -2,7 +2,7 @@
 #define GA_SDK_TEST_ASSERT_THROWS_HPP
 #pragma once
 
-#include "src/assertion.hpp"
+#include "include/assertion.hpp"
 
 template <typename Exception, typename T>
 void assert_throws(T&& fn)

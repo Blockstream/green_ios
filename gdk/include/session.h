@@ -187,14 +187,13 @@ GASDK_API int GA_change_settings_privacy_show_as_sender(struct GA_session* sessi
  *
  * @session The server session to use.
  * @is_fiat One of @GA_TRUE or @GA_FALSE.
- * @per_tx Amount per transaction in satoshis.
  * @total Amount in total per transaction in satoshis.
  * @twofactor_data Two factor authentication details for the action.
  *
  * GA_ERROR if transaction limits could not be changed.
  */
 GASDK_API int GA_change_settings_tx_limits(
-    struct GA_session* session, uint32_t is_fiat, uint32_t per_tx, uint32_t total, const GA_json* twofactor_data);
+    struct GA_session* session, uint32_t is_fiat, uint32_t total, const GA_json* twofactor_data);
 
 /**
  * Set the pricing source for a user's GreenAddress wallet.

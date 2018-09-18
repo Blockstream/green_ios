@@ -5,8 +5,8 @@
 #include "argparser.h"
 
 #include "http_jsonrpc_interface.hpp"
-#include "src/assertion.hpp"
-#include "src/session.hpp"
+#include "include/assertion.hpp"
+#include "include/session.hpp"
 
 using namespace ga;
 

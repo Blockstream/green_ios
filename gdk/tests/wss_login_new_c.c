@@ -2,9 +2,8 @@
 
 #include "argparser.h"
 
-#include "src/common.h"
-#include "src/session.h"
-#include "src/utils.h"
+#include "include/session.h"
+#include "include/utils.h"
 
 int main(int argc, char* argv[])
 {

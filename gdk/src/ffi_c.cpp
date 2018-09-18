@@ -1,13 +1,12 @@
 #include <type_traits>
 
-#include "amount.hpp"
-#include "assertion.hpp"
-#include "common.h"
-#include "exception.hpp"
-#include "session.h"
-#include "session.hpp"
-#include "twofactor.h"
-#include "twofactor.hpp"
+#include "include/amount.hpp"
+#include "include/assertion.hpp"
+#include "include/exception.hpp"
+#include "include/session.h"
+#include "include/session.hpp"
+#include "include/twofactor.h"
+#include "include/twofactor.hpp"
 
 namespace {
 
@@ -243,11 +242,11 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_change_settings_privacy_show_as_sender, struct GA_
     session->change_settings_privacy_show_as_sender(sdk::privacy_show_as_sender(value));
 })
 
-GA_SDK_DEFINE_C_FUNCTION_5(GA_change_settings_tx_limits, struct GA_session*, session, uint32_t, is_fiat, uint32_t,
-    per_tx, uint32_t, total, const GA_json*, twofactor_data, {
+GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_tx_limits, struct GA_session*, session, uint32_t, is_fiat, uint32_t,
+    total, const GA_json*, twofactor_data, {
         namespace sdk = ga::sdk;
         GA_SDK_RUNTIME_ASSERT(is_fiat == GA_FALSE || is_fiat == GA_TRUE);
-        session->change_settings_tx_limits(is_fiat == GA_TRUE, per_tx, total, *json_cast(twofactor_data));
+        session->change_settings_tx_limits(is_fiat == GA_TRUE, total, *json_cast(twofactor_data));
     })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_pricing_source, struct GA_session*, session, const char*, currency,
@@ -291,25 +290,11 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_json_to_string, const GA_json*, json, char
 // twofactor.h
 //
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_method_list_get_size, struct GA_twofactor_method_list*, methods, uint32_t*,
-    output, { *output = methods->size(); });
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_methods, struct GA_twofactor_call*, call, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(call->get_twofactor_methods()); });
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_method_list_get_factor, struct GA_twofactor_method_list*, methods, uint32_t, i,
-    struct GA_twofactor_method**, output, { *output = new GA_twofactor_method((*methods)[i]); });
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_methods, struct GA_twofactor_call*, call, struct GA_twofactor_method_list**,
-    output, { *output = new GA_twofactor_method_list(call->get_twofactor_methods()); });
-
-GA_SDK_DEFINE_C_FUNCTION_1(
-    GA_destroy_twofactor_method_list, struct GA_twofactor_method_list*, methods, { delete methods; });
-
-//
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_method_type, const struct GA_twofactor_method*, method, char**, type,
-    { *type = to_c_string(method->get_type()); });
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_request_code, const struct GA_twofactor_method*, method,
-    struct GA_twofactor_call*, call, { call->request_code(*method); });
+GA_SDK_DEFINE_C_FUNCTION_2(
+    GA_twofactor_request_code, const char*, method, struct GA_twofactor_call*, call, { call->request_code(method); });
 
 GA_SDK_DEFINE_C_FUNCTION_2(
     GA_twofactor_resolve_code, struct GA_twofactor_call*, call, const char*, code, { call->resolve_code(code); });
@@ -318,6 +303,11 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_twofactor_call, struct GA_twofactor_call*, call, {
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_next_call, struct GA_twofactor_call*, call, struct GA_twofactor_call**, next,
     { *next = call->get_next_call(); });
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_result, struct GA_twofactor_call*, call, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(call->get_result()); });
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_destroy_twofactor_call, struct GA_twofactor_call*, call, { delete call; });
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_set_email, struct GA_session*, session, const char*, email,
     struct GA_twofactor_call**, call, { *call = new GA_set_email_call(*session, email); });
@@ -336,11 +326,6 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_twofactor_enable, struct GA_session*, session, con
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_disable, struct GA_session*, session, const char*, method,
     struct GA_twofactor_call**, call, { *call = new GA_disable_twofactor(*session, method); });
-
-GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_change_tx_limits, struct GA_session*, session, const char*, total,
-    struct GA_twofactor_call**, call, { *call = new GA_change_tx_limits_call(*session, total); });
-
-GA_SDK_DEFINE_C_FUNCTION_1(GA_destroy_twofactor_call, struct GA_twofactor_call*, call, { delete call; });
 
 namespace {
 template <typename T> void json_convert(const nlohmann::json& json, const char* path, T* value)

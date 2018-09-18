@@ -1,9 +1,9 @@
 #include <queue>
 #include <thread>
 
-#include "boost_wrapper.hpp"
+#include "include/boost_wrapper.hpp"
 
-#include "containers.hpp"
+#include "include/containers.hpp"
 
 namespace ga {
 namespace sdk {

@@ -17,7 +17,7 @@ c_cpp_sources = [
     'wss_subscribe.cpp',
     'wss_system_messages.cpp',
     'wss_system_messages_c.c',
-    'wss_twofactor_c.c'
+#    'wss_twofactor_c.c'
 ]
 
 common_c_cpp_sources = ['argparser.h',
@@ -62,15 +62,15 @@ if build_jni
                     'WSSWatchOnlyLogin']
     foreach source : java_sources
         target_name = source + '_java_test'
-        custom_target(target_name,
-                      command : ['javac', '-implicit:none', '-bootclasspath', join_paths(java_home, 'jre', 'lib', 'rt.jar'), '-source', '1.7',
-                                 '-target', '1.7', '-classpath', '@OUTDIR@/../swig_java/GASDK.jar', '-d', '@OUTDIR@', '@INPUT@'],
-                      input : source + '.java',
-                      output : source + '.class',
-                      depends : swig_target,
-                      build_always : true)
+        test_target = custom_target(target_name,
+                          command : ['javac', '-implicit:none', '-bootclasspath', join_paths(java_home, 'jre', 'lib', 'rt.jar'), '-source', '1.7',
+                                     '-target', '1.7', '-classpath', '@OUTDIR@/../src/swig_java/GASDK.jar', '-d', '@OUTDIR@', '@INPUT@'],
+                                     input : source + '.java',
+                                     output : source + '.class',
+                                     depends : swig_target)
         test(target_name, java,
-             args : ['-classpath', '.:../swig_java/GASDK.jar', '-Djava.library.path=.:..', source],
-             workdir : meson.current_build_dir())
+             args : ['-classpath', '.:../src/swig_java/GASDK.jar', '-Djava.library.path=.:../src', source],
+             workdir : meson.current_build_dir(),
+             depends : test_target)
     endforeach
 endif

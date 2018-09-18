@@ -85,19 +85,6 @@ fileprivate func convertOpaqueJsonToString(o: OpaquePointer) throws -> String? {
     return String(cString: buff!)
 }
 
-// An authentication method for 2fa, e.g. email, sms, phone, gauth
-public class AuthenticationFactor {
-    private var optr: OpaquePointer? = nil
-
-    public init(optr: OpaquePointer) {
-        self.optr = optr
-    }
-
-    public func requestCode(op: OpaquePointer) throws {
-        try callWrapper(fun: GA_twofactor_request_code(self.optr!, op))
-    }
-}
-
 // An operation that potentially requires two factor authentication and multiple
 // iterations to complete, e.g. twofactor.set_email/activate_email
 public class TwoFactorCall {
@@ -124,28 +111,21 @@ public class TwoFactorCall {
     // If there are multiple items, ask the user to select one
     // Once the user has selected a method, or if there is only one method, call
     // requestCode, resolveCode and then call
-    public func getAuthenticationFactors() throws -> [AuthenticationFactor] {
+    public func getMethods() throws -> [String: Any]? {
         var methods: OpaquePointer? = nil
-        try callWrapper(fun: GA_twofactor_get_methods(self.optr, &methods))
-
-        var count: UInt32 = 0
-        try callWrapper(fun: GA_twofactor_method_list_get_size(methods, &count))
-
-        var method_list: [AuthenticationFactor] = []
-        for i in 0..<count {
-            var method: OpaquePointer? = nil
-            try callWrapper(fun: GA_twofactor_method_list_get_factor(methods, i, &method))
-            method_list.append(AuthenticationFactor(optr: method!))
+        defer {
+            GA_destroy_json(methods)
         }
-        return method_list
+        try callWrapper(fun: GA_twofactor_get_methods(self.optr, &methods))
+        return try convertOpaqueJsonToDict(o: methods!)
     }
 
     // Request that the backend sends a 2fa code
-    public func requestCode(method: AuthenticationFactor?) throws -> Promise<AuthenticationFactor?> {
+    public func requestCode(method: String?) throws -> Promise<String?> {
         if (method != nil) {
-            try method!.requestCode(op: self.optr!)
+           // try method!.requestCode(op: self.optr!)
         }
-        return Promise<AuthenticationFactor?> { seal in seal.fulfill(method) }
+        return Promise<String?> { seal in seal.fulfill(method) }
     }
 
     // Provide the 2fa code sent by the server

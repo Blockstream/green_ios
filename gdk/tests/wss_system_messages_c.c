@@ -4,9 +4,8 @@
 
 #include "argparser.h"
 
-#include "src/common.h"
-#include "src/session.h"
-#include "src/utils.h"
+#include "include/session.h"
+#include "include/utils.h"
 
 const char* DEFAULT_MNEMONIC = "tragic transfer mesh camera fish model bleak lumber never capital animal era "
                                "coffee shift flame across pitch pipe shiver castle crawl noble obtain response";

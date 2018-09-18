@@ -3,8 +3,8 @@
 #include "argparser.h"
 #include "utils.hpp"
 
-#include "src/assertion.hpp"
-#include "src/session.hpp"
+#include "include/assertion.hpp"
+#include "include/session.hpp"
 
 void assert_register_user_fails(ga::sdk::session& session, const std::string& mnemonic)
 {

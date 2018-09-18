@@ -3,9 +3,9 @@
 #include <iostream>
 
 #include "argparser.h"
-#include "src/assertion.hpp"
+#include "include/assertion.hpp"
 
-#include "src/session.hpp"
+#include "include/session.hpp"
 
 const std::string DEFAULT_MNEMONIC("tragic transfer mesh camera fish model bleak lumber never capital animal era "
                                    "coffee shift flame across pitch pipe shiver castle crawl noble obtain response");

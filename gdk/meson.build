@@ -18,6 +18,8 @@ foreach h : check_headers
     compiler.has_header(h)
 endforeach
 
+add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
+
 static_libstdc = compiler.has_link_argument('-static-libstdc++')
 
 cross_win_build = meson.is_cross_build() and meson.get_cross_property('target_os') == 'windows'
@@ -43,6 +45,10 @@ common_compile_options = [
     '-fvisibility=hidden',
     '-DGASDK_BUILD',
 ]
+
+if get_option('time-report') and compiler.has_argument('-ftime-report')
+      common_compile_options += ['-ftime-report']
+endif
 
 add_project_arguments(common_compile_options, language : ['c', 'cpp'])
 
@@ -164,7 +170,8 @@ sdk_inc_dir = '.'
 incdir = include_directories([sdk_inc_dir])
 
 # builds
-subdirs = ['src']
+subdirs = ['src',
+           'tests']
 foreach n : subdirs
     subdir(n)
 endforeach

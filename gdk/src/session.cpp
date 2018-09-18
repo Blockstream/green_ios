@@ -10,15 +10,14 @@
 
 #include <gsl/span>
 
-#include "boost_wrapper.hpp"
-#include <boost/beast/core/detail/base64.hpp>
+#include "include/boost_wrapper.hpp"
 
-#include "assertion.hpp"
-#include "autobahn_wrapper.hpp"
-#include "exception.hpp"
-#include "memory.hpp"
-#include "session.hpp"
-#include "transaction_utils.hpp"
+#include "include/assertion.hpp"
+#include "include/autobahn_wrapper.hpp"
+#include "include/exception.hpp"
+#include "include/memory.hpp"
+#include "include/session.hpp"
+#include "include/transaction_utils.hpp"
 
 namespace ga {
 namespace sdk {
@@ -181,8 +180,7 @@ namespace sdk {
 
         template <typename T>
         void change_settings(const std::string& key, const T& value, const nlohmann::json& twofactor_data);
-        void change_settings_tx_limits(
-            bool is_fiat, uint32_t per_tx, uint32_t total, const nlohmann::json& twofactor_data);
+        void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
         void subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
@@ -217,7 +215,7 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name);
         void delete_address_book_entry(const std::string& address);
 
-        template <typename T> nlohmann::json get_unspent_outputs(T subaccount, uint32_t num_confs);
+        nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_transaction_details(const std::string& txhash) const;
 
         nlohmann::json create_transaction(const nlohmann::json& details);
@@ -239,9 +237,11 @@ namespace sdk {
         void ack_system_message(const std::string& message);
 
         nlohmann::json convert_amount(const nlohmann::json& amount_json);
+        nlohmann::json convert_fiat_cents(amount::value_type fiat_cents);
 
     private:
-        void set_login_data(nlohmann::json&& login_data, bool watch_only);
+        void update_login_data(nlohmann::json&& login_data, bool watch_only);
+        void update_spending_limits(const nlohmann::json& limits_parent);
         void on_new_transaction(const nlohmann::json& details);
 
         nlohmann::json insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
@@ -411,6 +411,7 @@ namespace sdk {
         network_parameters m_net_params;
 
         nlohmann::json m_login_data;
+        nlohmann::json m_limits_data;
         std::string m_mnemonic;
         amount::value_type m_min_fee_rate;
         std::string m_fiat_source;
@@ -540,7 +541,7 @@ namespace sdk {
             "com.greenaddress.login.register", pub_key, chain_code, ua, hex_path);
     }
 
-    void session::session_impl::set_login_data(nlohmann::json&& login_data, bool watch_only)
+    void session::session_impl::update_login_data(nlohmann::json&& login_data, bool watch_only)
     {
         m_login_data = login_data;
 
@@ -583,6 +584,31 @@ namespace sdk {
         m_watch_only = watch_only;
 
         set_fee_estimates(m_login_data["fee_estimates"]);
+        update_spending_limits(m_login_data);
+    }
+
+    void session::session_impl::update_spending_limits(const nlohmann::json& limits_parent)
+    {
+        nlohmann::json new_limits_data;
+        bool is_fiat;
+
+        const auto p = limits_parent.find("limits");
+        if (p == limits_parent.end() || p->is_null()) {
+            new_limits_data = convert_amount({ { "satoshi", 0 } });
+            is_fiat = false;
+        } else {
+            is_fiat = (*p)["is_fiat"];
+            amount::value_type total = (*p)["total"];
+            if (is_fiat) {
+                new_limits_data = convert_fiat_cents(total);
+            } else {
+                new_limits_data = convert_amount({ { "satoshi", total } });
+            }
+        }
+        new_limits_data["is_fiat"] = is_fiat;
+
+        // FIXME: locking
+        m_limits_data = new_limits_data;
     }
 
     void session::session_impl::on_new_transaction(const nlohmann::json& details)
@@ -615,7 +641,7 @@ namespace sdk {
             "com.greenaddress.login.get_challenge", base58check_from_bytes(vpkh));
 
         const auto hexder_path = sign_challenge(m_master_key, challenge);
-        wamp_call([this](wamp_call_result result) { set_login_data(get_json_result(result.get()), false); },
+        wamp_call([this](wamp_call_result result) { update_login_data(get_json_result(result.get()), false); },
             "com.greenaddress.login.authenticate", hexder_path.first, false, hexder_path.second,
             std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
 
@@ -679,7 +705,7 @@ namespace sdk {
         const std::string& username, const std::string& password, const std::string& user_agent)
     {
         const std::map<std::string, std::string> args = { { "username", username }, { "password", password } };
-        wamp_call([this](wamp_call_result result) { set_login_data(get_json_result(result.get()), true); },
+        wamp_call([this](wamp_call_result result) { update_login_data(get_json_result(result.get()), true); },
             "com.greenaddress.login.watch_only_v2", "custom", args, DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
     }
 
@@ -745,6 +771,11 @@ namespace sdk {
     nlohmann::json session::session_impl::convert_amount(const nlohmann::json& amount_json)
     {
         return amount::convert(amount_json, m_fiat_currency, m_fiat_rate);
+    }
+
+    nlohmann::json session::session_impl::convert_fiat_cents(amount::value_type fiat_cents)
+    {
+        return amount::convert_fiat_cents(fiat_cents, m_fiat_currency, m_fiat_rate);
     }
 
     bool session::session_impl::set_watch_only(const std::string& username, const std::string& password)
@@ -969,9 +1000,9 @@ namespace sdk {
     }
 
     void session::session_impl::change_settings_tx_limits(
-        bool is_fiat, uint32_t per_tx, uint32_t total, const nlohmann::json& twofactor_data)
+        bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data)
     {
-        const nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", per_tx }, { "total", total } };
+        const nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", 0 }, { "total", total } };
         change_settings("tx_limits", as_messagepack(args).get(), twofactor_data);
     }
 
@@ -1186,7 +1217,7 @@ namespace sdk {
             m_login_data["gait_path"], type, subtype, subaccount, pointer);
     }
 
-    template <typename T> nlohmann::json session::session_impl::get_unspent_outputs(T subaccount, uint32_t num_confs)
+    nlohmann::json session::session_impl::get_unspent_outputs(uint32_t subaccount, uint32_t num_confs)
     {
         nlohmann::json utxos;
         wamp_call(
@@ -1629,6 +1660,8 @@ namespace sdk {
             if (change_index != tx->num_outputs - 1) {
                 std::swap(tx->outputs[change_index], change_output);
             }
+        } else {
+            result["change_amount"] = 0;
         }
 
         auto ub = utxos.begin();
@@ -1676,8 +1709,12 @@ namespace sdk {
         nlohmann::json tx_details;
         wamp_call([&tx_details](wamp_call_result result) { tx_details = get_json_result(result.get()); },
             "com.greenaddress.vault.send_raw_tx", tx_hex, as_messagepack(twofactor_data).get());
-        // FIXME: update cached limits and augment returned data to match get_transaction_details
+
+        update_spending_limits(tx_details);
         tx_details.erase("new_limit");
+        tx_details.erase("limits");
+
+        // FIXME: Augment returned data to match get_transaction_details
         return tx_details;
     }
 
@@ -1794,11 +1831,10 @@ namespace sdk {
             [&] { m_impl->change_settings("privacy.show_as_sender", int(value), nlohmann::json()); });
     }
 
-    void session::change_settings_tx_limits(
-        bool is_fiat, uint32_t per_tx, uint32_t total, const nlohmann::json& twofactor_data)
+    void session::change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->change_settings_tx_limits(is_fiat, per_tx, total, twofactor_data); });
+        return exception_wrapper([&] { m_impl->change_settings_tx_limits(is_fiat, total, twofactor_data); });
     }
 
     void session::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
@@ -1927,12 +1963,6 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         exception_wrapper([&] { m_impl->delete_address_book_entry(address); });
-    }
-
-    nlohmann::json session::get_unspent_outputs(uint32_t num_confs)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_unspent_outputs("all", num_confs); });
     }
 
     nlohmann::json session::get_unspent_outputs(uint32_t subaccount, uint32_t num_confs)

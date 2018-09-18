@@ -2,7 +2,7 @@
 
 #include "argparser.h"
 
-#include "src/session.hpp"
+#include "include/session.hpp"
 
 int main(int argc, char** argv)
 {

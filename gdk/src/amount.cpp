@@ -2,12 +2,12 @@
 #include <cstring>
 #include <stdexcept>
 
-#include "boost_wrapper.hpp"
-#include <boost/multiprecision/cpp_dec_float.hpp>
 #include <json.hpp>
 
-#include "amount.hpp"
-#include "assertion.hpp"
+#include "include/boost_wrapper.hpp"
+
+#include "include/amount.hpp"
+#include "include/assertion.hpp"
 
 namespace ga {
 namespace sdk {
@@ -19,6 +19,7 @@ namespace sdk {
     using conversion_type = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<15>>;
 
     namespace {
+        const conversion_type COIN_VALUE_100("100");
         const conversion_type COIN_VALUE_DECIMAL("100000000");
         const conversion_type COIN_VALUE_DECIMAL_MBTC("100000");
         const conversion_type COIN_VALUE_DECIMAL_UBTC("100");
@@ -78,6 +79,13 @@ namespace sdk {
         // country code and return it so the caller can do locale aware formatting
         return { { "satoshi", satoshi }, { "btc", btc }, { "mbtc", mbtc }, { "ubtc", ubtc }, { "bits", ubtc },
             { "fiat", fiat }, { "fiat_currency", fiat_currency }, { "fiat_rate", fr.str() } };
+    }
+
+    nlohmann::json amount::convert_fiat_cents(
+        value_type cents, const std::string& fiat_currency, const std::string& fiat_rate)
+    {
+        const conversion_type fiat_decimal = conversion_type(cents) / COIN_VALUE_100;
+        return convert({ { "fiat", fiat_decimal.str() } }, fiat_currency, fiat_rate);
     }
 
 } // namespace sdk

@@ -1,9 +1,9 @@
 %module GASDK
 %{
-#include "../common.h"
-#include "../containers.h"
-#include "../session.h"
-#include "../utils.h"
+#include "../../include/common.h"
+#include "../../include/containers.h"
+#include "../../include/session.h"
+#include "../../include/utils.h"
 #include <stdint.h>
 #include <limits.h>
 
@@ -347,7 +347,7 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %returns_struct(GA_set_pin, GA_json)
 %returns_void__(GA_set_transaction_memo)
 
-%include "../common.h"
-%include "../containers.h"
-%include "../session.h"
-%include "../utils.h"
+%include "../include/common.h"
+%include "../include/containers.h"
+%include "../include/session.h"
+%include "../include/utils.h"

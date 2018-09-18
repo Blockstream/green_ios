@@ -13,16 +13,15 @@ foreach target : ['build', 'test']
                        '-Xswiftc', '-L' + join_paths(meson.build_root(), 'src')]]
 endforeach
 
-custom_target('GreenAddress',
+ga_swift = custom_target('GreenAddress',
               command : target_cmd_line[0],
               input : swift_sources,
               output : ['GreenAddress.swiftmodule'],
               depends : libga,
-              build_always : true)
+              build_by_default : true)
 
-custom_target('GreenAddressTests',
+ga_swift_tests = custom_target('GreenAddressTests',
               command : target_cmd_line[1],
               input : swift_sources,
               output : ['GreenAddressTests.swiftmodule'],
-              depends : libga,
-              build_always : false)
+              depends : libga)
