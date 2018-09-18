@@ -27,8 +27,7 @@ class ReceiveBtcViewController: UIViewController {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
         walletAddressLabel.text = receiveAddress
-        let uri = bip21Helper.btcURIforAddress(address: receiveAddress!)
-        walletQRCode.image = QRImageGenerator.imageForTextDark(text: uri, frame: walletQRCode.frame)
+        updateQRCode(amount: 0)
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
 
@@ -84,15 +83,27 @@ class ReceiveBtcViewController: UIViewController {
             } else {
                 estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings()
             }
+            updateQRCode(amount: 0)
             return
         }
 
         if (selectedType == TransactionType.BTC) {
             let converted = AccountStore.shared.btcToFiat(amount: amount_double)
             estimateLabel.text = String(format: "~%.2f %@", converted, SettingsStore.shared.getCurrencyString())
+            updateQRCode(amount: amount_double)
         } else {
             let converted = AccountStore.shared.fiatToBtc(amount: amount_double)
+            updateQRCode(amount: converted)
             estimateLabel.text = String(format: "~%f %@", converted, SettingsStore.shared.getDenominationSettings())
+        }
+    }
+
+    func updateQRCode(amount: Double) {
+        if (amount == 0) {
+            let uri = bip21Helper.btcURIforAddress(address: receiveAddress!)
+            walletQRCode.image = QRImageGenerator.imageForTextDark(text: uri, frame: walletQRCode.frame)
+        } else {
+            walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: amount), frame: walletQRCode.frame)
         }
     }
 
@@ -112,9 +123,6 @@ class ReceiveBtcViewController: UIViewController {
             }
             return
         }
-
-        walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: btc_amount_double), frame: walletQRCode.frame)
-
         updateEstimate()
     }
 
