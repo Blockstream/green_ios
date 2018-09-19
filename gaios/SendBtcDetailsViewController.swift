@@ -152,6 +152,12 @@ class SendBtcDetailsViewController: UIViewController {
             details["utxos"] = unspent?["array"]
             print(details)
             let payload = try getSession().createTransaction(details: details)
+            let error = payload!["error"] as! String
+            if (error != "") {
+                g_payload = nil
+                updateButton()
+                return
+            }
             g_payload = payload
             updateButton()
             let fee = payload!["fee"] as! UInt64

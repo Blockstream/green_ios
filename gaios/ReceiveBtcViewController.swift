@@ -88,9 +88,18 @@ class ReceiveBtcViewController: UIViewController {
         }
 
         if (selectedType == TransactionType.BTC) {
-            let converted = AccountStore.shared.btcToFiat(amount: amount_double)
+            let denomination = SettingsStore.shared.getDenominationSettings()
+            var amount_denominated: Double = 0
+            if(denomination == SettingsStore.shared.denominationPrimary) {
+                amount_denominated = amount_double
+            } else if (denomination == SettingsStore.shared.denominationMilli) {
+                amount_denominated = amount_double / 1000
+            } else if (denomination == SettingsStore.shared.denominationMicro){
+                amount_denominated = amount_double / 1000000
+            }
+            let converted = AccountStore.shared.btcToFiat(amount: amount_denominated)
             estimateLabel.text = String(format: "~%.2f %@", converted, SettingsStore.shared.getCurrencyString())
-            updateQRCode(amount: amount_double)
+            updateQRCode(amount: amount_denominated)
         } else {
             let converted = AccountStore.shared.fiatToBtc(amount: amount_double)
             updateQRCode(amount: converted)
