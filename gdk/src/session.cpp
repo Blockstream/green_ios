@@ -162,12 +162,12 @@ namespace sdk {
 
         ~session_impl()
         {
-            disconnect();
+            reset();
             m_io.stop();
         }
 
         void connect();
-        void disconnect();
+        void reset();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
         void login(
@@ -183,8 +183,8 @@ namespace sdk {
         void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
-        void subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
-        void subscribe(const std::string& topic, const std::function<void(const std::string& output)>& callback);
+        autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
+        auto subscribe(const std::string& topic, const std::function<void(const std::string& output)>& callback);
         nlohmann::json get_subaccounts() const;
         nlohmann::json get_subaccount(uint32_t subaccount) const;
         nlohmann::json create_subaccount(const nlohmann::json& details);
@@ -197,6 +197,7 @@ namespace sdk {
         address_type get_default_address_type() const;
 
         nlohmann::json get_twofactor_config();
+        std::vector<std::string> get_all_twofactor_methods();
 
         void set_email(const std::string& email, const nlohmann::json& twofactor_data);
         void activate_email(const std::string& code);
@@ -369,6 +370,25 @@ namespace sdk {
             }
         }
 
+        template <typename T> void disconnect() const
+        {
+            try {
+                boost::get<std::shared_ptr<T>>(m_transport)->disconnect().get();
+            } catch (const std::exception&) {
+            }
+        }
+        void disconnect() const { connect_with_tls() ? disconnect<transport_tls>() : disconnect<transport>(); }
+
+        void unsubscribe()
+        {
+            for (const auto& sub : m_subscriptions) {
+                try {
+                    m_session->unsubscribe(sub).get();
+                } catch (const std::exception&) {
+                }
+            }
+        }
+
         template <typename F, typename... Args>
         void wamp_call(F&& body, const std::string& method_name, Args&&... args) const
         {
@@ -405,6 +425,7 @@ namespace sdk {
         boost::variant<std::unique_ptr<client>, std::unique_ptr<client_tls>> m_client;
         boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> m_transport;
         wamp_session_ptr m_session;
+        std::vector<autobahn::wamp_subscription> m_subscriptions;
 
         event_loop_controller m_controller;
 
@@ -442,10 +463,11 @@ namespace sdk {
         tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
     }
 
-    void session::session_impl::disconnect()
+    void session::session_impl::reset()
     {
         m_mnemonic.clear(); // FIXME: securely clear
-        // FIXME: unsubscribe/kill WAMP connection
+        unsubscribe();
+        disconnect();
         // FIXME: securely destroy all held data
     }
 
@@ -598,7 +620,14 @@ namespace sdk {
             is_fiat = false;
         } else {
             is_fiat = (*p)["is_fiat"];
-            amount::value_type total = (*p)["total"];
+            const auto& total_p = (*p)["total"];
+            amount::value_type total;
+            if (total_p.is_number()) {
+                total = total_p;
+            } else {
+                const std::string total_str = total_p;
+                total = strtoul(total_str.c_str(), NULL, 10);
+            }
             if (is_fiat) {
                 new_limits_data = convert_fiat_cents(total);
             } else {
@@ -648,18 +677,18 @@ namespace sdk {
         m_mnemonic = mnemonic;
 
         const std::string receiving_id = m_login_data["receiving_id"];
-        subscribe("com.greenaddress.txs.wallet_" + receiving_id,
-            [this](const autobahn::wamp_event& event) { on_new_transaction(get_json_result(event)); });
+        m_subscriptions.emplace_back(subscribe("com.greenaddress.txs.wallet_" + receiving_id,
+            [this](const autobahn::wamp_event& event) { on_new_transaction(get_json_result(event)); }));
 
-        subscribe("com.greenaddress.blocks", [this](const autobahn::wamp_event& event) {
+        m_subscriptions.emplace_back(subscribe("com.greenaddress.blocks", [this](const autobahn::wamp_event& event) {
             const nlohmann::json block_ev = get_json_result(event);
             const uint32_t block_height = block_ev["count"];
             GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
             m_block_height = block_height;
-        });
+        }));
 
-        subscribe("com.greenaddress.fee_estimates",
-            [this](const autobahn::wamp_event& event) { set_fee_estimates(get_fees_as_json(event)); });
+        m_subscriptions.emplace_back(subscribe("com.greenaddress.fee_estimates",
+            [this](const autobahn::wamp_event& event) { set_fee_estimates(get_fees_as_json(event)); }));
 
         if (m_login_data.value("segwit_server", true) && !m_login_data["appearance"].value("use_segwit", false)) {
             // Enable segwit
@@ -1068,6 +1097,7 @@ namespace sdk {
                 json_rename_key(ep, "pubkey_pointer", "pointer");
                 json_rename_key(ep, "ad", "address");
                 json_add_if_missing(ep, "pointer", 0, true);
+                json_add_if_missing(ep, "address", std::string(), true);
                 const std::string value_str = ep["value"];
                 const auto value = boost::lexical_cast<uint64_t>(value_str);
                 ep["value"] = value;
@@ -1167,20 +1197,24 @@ namespace sdk {
         return txs;
     }
 
-    void session::session_impl::subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback)
+    autobahn::wamp_subscription session::session_impl::subscribe(
+        const std::string& topic, const autobahn::wamp_event_handler& callback)
     {
+        autobahn::wamp_subscription sub;
         auto subscribe_future = m_session->subscribe(topic, callback, autobahn::wamp_subscribe_options("exact"))
-                                    .then([](boost::future<autobahn::wamp_subscription> subscription) {
+                                    .then([&sub](boost::future<autobahn::wamp_subscription> subscription) {
                                         std::cerr << "subscribed to topic:" << subscription.get().id() << std::endl;
+                                        sub = subscription.get();
                                     });
 
         subscribe_future.get();
+        return sub;
     }
 
-    void session::session_impl::subscribe(
+    auto session::session_impl::subscribe(
         const std::string& topic, const std::function<void(const std::string& output)>& callback)
     {
-        subscribe(topic, [callback](const autobahn::wamp_event& event) {
+        return subscribe(topic, [callback](const autobahn::wamp_event& event) {
             const auto ev = event.argument<msgpack::object>(0);
             std::stringstream strm;
             strm << ev;
@@ -1268,7 +1302,7 @@ namespace sdk {
             // Compute the address locally to verify the servers data
             const auto user_script = output_script(subaccount, address);
             const auto user_address = get_address_from_script(user_script, addr_type);
-            GA_SDK_RUNTIME_ASSERT(server_address == user_address);
+            //GA_SDK_RUNTIME_ASSERT(server_address == user_address);
         }
 
         address["address"] = server_address;
@@ -1310,10 +1344,24 @@ namespace sdk {
 
     nlohmann::json session::session_impl::get_twofactor_config()
     {
+        // FIXME: cache and update this
         nlohmann::json f;
         wamp_call([&f](wamp_call_result result) { f = get_json_result(result.get()); },
             "com.greenaddress.twofactor.get_config");
         return f;
+    }
+
+    std::vector<std::string> session::session_impl::get_all_twofactor_methods()
+    {
+        const auto twofactor_config = get_twofactor_config();
+        std::vector<std::string> methods;
+        for (auto method : { "email", "sms", "phone", "gauth" }) {
+            const bool enabled = twofactor_config[method];
+            if (enabled) {
+                methods.emplace_back(method);
+            }
+        }
+        return methods;
     }
 
     void session::session_impl::set_email(const std::string& email, const nlohmann::json& twofactor_data)
@@ -1750,6 +1798,10 @@ namespace sdk {
             disconnect();
             throw reconnect_error();
         } catch (const std::exception& e) {
+            std::cout << e.what() << std::endl;
+            std::cout << "Hello!" << std::endl;
+
+            //disconnect();
             throw;
         }
         __builtin_unreachable();
@@ -1895,6 +1947,12 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_twofactor_config(); });
+    }
+
+    std::vector<std::string> session::get_all_twofactor_methods()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_all_twofactor_methods(); });
     }
 
     void session::set_email(const std::string& email, const nlohmann::json& twofactor_data)

@@ -35,8 +35,8 @@ int main(int argc, char** argv)
 #endif
 
         const auto balance = session.get_balance(0, 0);
-        const auto twofactor_config = session.get_twofactor_config();
-        const std::string gauth_url = twofactor_config["gauth_url"];
+        const auto methods = session.get_all_twofactor_methods();
+        (void)methods;
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

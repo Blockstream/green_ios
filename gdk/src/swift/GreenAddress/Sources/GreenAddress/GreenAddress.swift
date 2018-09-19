@@ -89,43 +89,30 @@ fileprivate func convertOpaqueJsonToString(o: OpaquePointer) throws -> String? {
 // iterations to complete, e.g. twofactor.set_email/activate_email
 public class TwoFactorCall {
     private var optr: OpaquePointer? = nil
-    private var parent: TwoFactorCall? = nil
 
     public init(optr: OpaquePointer) {
         self.optr = optr
     }
 
-    public init(optr: OpaquePointer, parent: TwoFactorCall) {
-        self.optr = optr
-        self.parent = parent
-    }
-
     deinit {
-        if (parent == nil) {
-            GA_destroy_twofactor_call(optr);
-        }
+        GA_destroy_twofactor_call(optr);
     }
 
-    // Return the list of authentication methods applicable to the operation
-    // If the list is empty, call call() directly
-    // If there are multiple items, ask the user to select one
-    // Once the user has selected a method, or if there is only one method, call
-    // requestCode, resolveCode and then call
-    public func getMethods() throws -> [String: Any]? {
-        var methods: OpaquePointer? = nil
+    public func getStatus() throws -> [String: Any]? {
+        var status: OpaquePointer? = nil
         defer {
-            GA_destroy_json(methods)
+            GA_destroy_json(status)
         }
-        try callWrapper(fun: GA_twofactor_get_methods(self.optr, &methods))
-        return try convertOpaqueJsonToDict(o: methods!)
+        try callWrapper(fun: GA_twofactor_get_status(self.optr, &status))
+        return try convertOpaqueJsonToDict(o: status!)
     }
 
     // Request that the backend sends a 2fa code
-    public func requestCode(method: String?) throws -> Promise<String?> {
+    public func requestCode(method: String?) throws -> Promise<Void> {
         if (method != nil) {
-           // try method!.requestCode(op: self.optr!)
+            try callWrapper(fun: GA_twofactor_request_code(self.optr, method))
         }
-        return Promise<String?> { seal in seal.fulfill(method) }
+        return Promise<Void> { seal in seal.fulfill(()) }
     }
 
     // Provide the 2fa code sent by the server
@@ -138,13 +125,9 @@ public class TwoFactorCall {
 
     // Call the 2fa operation
     // Returns the next 2fa operation in the chain
-    public func call() throws -> Promise<TwoFactorCall?> {
+   /* public func call() throws -> Promise<TwoFactorCall?> {
         try callWrapper(fun: GA_twofactor_call(self.optr))
-        var next: OpaquePointer? = nil
-        try callWrapper(fun: GA_twofactor_next_call(self.optr, &next))
-        let next_: TwoFactorCall? = next == nil ? nil : TwoFactorCall(optr: next!, parent: self)
-        return Promise<TwoFactorCall?> { seal in seal.fulfill(next_) }
-    }
+    }*/
 }
 
 fileprivate class FFIContext {
@@ -166,7 +149,7 @@ public class Session {
 
     private func subscribeToTopic(topic: String, context: FFIContext) throws -> Void {
         let opaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(context).toOpaque())
-        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, topic, eventHandler, opaqueContext))
+        //try callWrapper(fun: GA_subscribe_to_topic_as_json(session, topic, eventHandler, opaqueContext))
     }
 
     private var session: OpaquePointer? = nil
@@ -392,19 +375,19 @@ public class Session {
 
     public func setEmail(email: String) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
-        try callWrapper(fun: GA_twofactor_set_email(session, email, &optr));
+        //try callWrapper(fun: GA_twofactor_set_email(session, email, &optr));
         return TwoFactorCall(optr: optr!);
     }
 
     public func enableTwoFactor(method: String, data: String) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
-        try callWrapper(fun: GA_twofactor_enable(session, method, data, &optr));
+        //try callWrapper(fun: GA_twofactor_enable(session, method, data, &optr));
         return TwoFactorCall(optr: optr!);
     }
 
     public func disableTwoFactor(method: String) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
-        try callWrapper(fun: GA_twofactor_disable(session, method, &optr));
+        //try callWrapper(fun: GA_twofactor_disable(session, method, &optr));
         return TwoFactorCall(optr: optr!);
     }
 

@@ -27,54 +27,37 @@ extern "C" {
  * where the function resolve_2fa is implemented by the client to handle interaction with the user
  * to resolve the two factor authentication as necessary. It will generally take the form:
  *
- * void resolve_2fa(struct GA_twofactor_call* call)
- * {
- *     const char* selected_factor = _user_select_factor(call);
- *     if (selected_factor) {
- *         GA_twofactor_request_code(selected_factor, call);
- *         const char* code = _user_get_code();
- *         GA_twofactor_resolve_code(call, code);
+ * function resolve_2fa(call) -> JSON result
+ *     while (status = GA_twofactor_get_status(call))["status"] not in ["done", "error"]:
+ *         if status["status"] == "code":
+ *             method = USER_SELECT_FACTOR(call, status["twofactor_methods"]);
+ *             GA_twofactor_request_code(call, method);
+ *             status = GA_twofactor_get_status(call)
+ *         if status["status"] == "auth":
+ *             const char* code = USER_GET_CODE(status["twofactor_method"]);
+ *             GA_twofactor_authorize(call, code);
+ *             status = GA_twofactor_get_status(call)
+ *         if status["status"] == "call":
+ *             GA_twofactor_call(call);
  *     }
- *     GA_twofactor_call(call);
- *
- *     const GA_twofactor_call* next;
- *     GA_twofactor_next_call(call, &next);
- *     if (next) {
- *         resolve_2fa(next);
- *     }
+ *     if status["status"] == "error":
+ *         throw
+ *     return status["result"]
  * }
  *
- * The functions _user_select_factor and _user_get_code implement the required user interaction and will
+ * The functions USER_SELECT_FACTOR and USER_GET_CODE implement the required user interaction and will
  * be specific to the client (e.g. a GUI app will probably show some kind of modal dialog)
  */
 struct GA_twofactor_call;
 
 /**
- * Return all 2fa methods available for a call
- *
- * If two factor authentication is not enabled or not required for the call the list will be empty.
- *
- * The set of methods will generally be one of:
- * - the set of all methods enabled for the wallet
- * - a single method if the call is confirming that method (e.g. activate_email)
- * - an empty list if 2fa is not enabled, or the call does not require 2fa
- *
- * Clients should:
- * - Do nothing and proceed to call GA_twofactor_call if the list is empty
- * - Offer the user a choice if the list contains more than one method
- * - If either the user selected a method or the list contains only a single method proceed to resolve
- *   2fa by calling GA_twofactor_request_code and GA_twofactor_resolve_code and then GA_twofactor_call.
- */
-GASDK_API int GA_twofactor_get_methods(struct GA_twofactor_call* call, struct GA_json** output);
-
-/**
  * Request a two method authentication code be sent from the server
- * @method The selected two factor method to use
  * @call The call requiring two factor authentication
+ * @method The selected two factor method to use
  *
  * For some 2fa method, e.g. gauth, this is a no-op
  */
-GASDK_API int GA_twofactor_request_code(const char* method, struct GA_twofactor_call* call);
+GASDK_API int GA_twofactor_request_code(struct GA_twofactor_call* call, const char* method);
 
 /**
  * Resolve a required 2fa code for the call
@@ -86,46 +69,26 @@ GASDK_API int GA_twofactor_request_code(const char* method, struct GA_twofactor_
 GASDK_API int GA_twofactor_resolve_code(struct GA_twofactor_call* call, const char* code);
 
 /**
- * Call a 2fa function
- * @call The call with any two factor authentication already resolved
- *
- * Requires that 2fa has already been resolved. After a successful call to GA_twofactor_call
- * the caller should pass the call to GA_twofactor_next_call and proceed to handle the next call
- * (if any) in the same way.
- */
-GASDK_API int GA_twofactor_call(struct GA_twofactor_call* call);
-
-/**
- * Return the next call in the chain
- * @call The parent call, already resolved and called via GA_twofactor_call
- * @next The returned next call in the chain
- *
- * Two factor authentication calls can be chained together such that multiple calls need to be
- * resolved and called to complete the operation. For example to enable sms as a 2fa method
- * requires calling twofactor.init_enable_sms and then twofactor.enable_sms, but both of those
- * underlying calls are implemented by the GA_twofactor_call returned by GA_twofactor_enable("sms").
- *
- * After calling GA_twofactor_call successfully the caller should call GA_twofactor_next_call to
- * determine if there is a further call to be resolved and called to complete the operation.
- */
-GASDK_API int GA_twofactor_next_call(struct GA_twofactor_call* call, struct GA_twofactor_call** next);
-
-/**
- * Get the result of a two factor call.
+ * Get the status/result of a two factor call.
  *
  * @call Call to get the result from
  * @output Destination for the result
  */
-GASDK_API int GA_twofactor_get_result(struct GA_twofactor_call* call, struct GA_json** output);
+GASDK_API int GA_twofactor_get_status(struct GA_twofactor_call* call, struct GA_json** output);
+
+/**
+ * Call a 2fa function
+ * @call The call with any two factor authentication already resolved
+ *
+ * Requires that 2fa has already been resolved. After a successful call to GA_twofactor_call
+ * the caller should check the status with GA_twofactor_get_status to determine if authorization
+ * was successful or whether further calls need to be made.
+ */
+GASDK_API int GA_twofactor_call(struct GA_twofactor_call* call);
 
 /**
  * Free a GA_twofactor_call
  * @call Call to free
- *
- * GA_twofactor_call pointers returned by GA_twofactor_xxx functions need to be freed by
- * calling GA_destroy_twofactor_call. Note that calls returned by calling GA_twofactor_next_call
- * are automatically freed when the parent call is freed and so MUST NOT be passed to
- * GA_destroy_twofactor_call.
  */
 GASDK_API int GA_destroy_twofactor_call(struct GA_twofactor_call* call);
 

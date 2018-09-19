@@ -290,25 +290,20 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_json_to_string, const GA_json*, json, char
 // twofactor.h
 //
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_methods, struct GA_twofactor_call*, call, GA_json**, output,
-    { *json_cast(output) = new nlohmann::json(call->get_twofactor_methods()); });
-
 GA_SDK_DEFINE_C_FUNCTION_2(
-    GA_twofactor_request_code, const char*, method, struct GA_twofactor_call*, call, { call->request_code(method); });
+    GA_twofactor_request_code, struct GA_twofactor_call*, call, const char*, method, { call->request_code(method); });
 
 GA_SDK_DEFINE_C_FUNCTION_2(
     GA_twofactor_resolve_code, struct GA_twofactor_call*, call, const char*, code, { call->resolve_code(code); });
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_twofactor_call, struct GA_twofactor_call*, call, { (*call)(); });
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_next_call, struct GA_twofactor_call*, call, struct GA_twofactor_call**, next,
-    { *next = call->get_next_call(); });
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_result, struct GA_twofactor_call*, call, GA_json**, output,
-    { *json_cast(output) = new nlohmann::json(call->get_result()); });
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_status, struct GA_twofactor_call*, call, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(call->get_status()); });
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_destroy_twofactor_call, struct GA_twofactor_call*, call, { delete call; });
 
+#if 0
 GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_set_email, struct GA_session*, session, const char*, email,
     struct GA_twofactor_call**, call, { *call = new GA_set_email_call(*session, email); });
 
@@ -326,6 +321,7 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_twofactor_enable, struct GA_session*, session, con
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_disable, struct GA_session*, session, const char*, method,
     struct GA_twofactor_call**, call, { *call = new GA_disable_twofactor(*session, method); });
+#endif
 
 namespace {
 template <typename T> void json_convert(const nlohmann::json& json, const char* path, T* value)

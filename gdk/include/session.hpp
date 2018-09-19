@@ -89,6 +89,7 @@ namespace sdk {
         address_type get_default_address_type();
 
         nlohmann::json get_twofactor_config();
+        std::vector<std::string> get_all_twofactor_methods();
 
         void set_email(const std::string& email, const nlohmann::json& twofactor_data);
         void activate_email(const std::string& code);

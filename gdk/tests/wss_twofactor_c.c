@@ -75,7 +75,7 @@ static void resolve_2fa(struct GA_twofactor_call* call)
      */
     const struct GA_twofactor_method* factor = _user_select_factor(call);
     if (factor) {
-        CALL(GA_twofactor_request_code(factor, call))
+        CALL(GA_twofactor_request_code(call, factor))
         CALL(GA_twofactor_resolve_code(call, _user_get_code(factor)))
     }
 
