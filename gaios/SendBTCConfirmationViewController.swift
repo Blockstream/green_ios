@@ -53,32 +53,18 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         let size = CGSize(width: 30, height: 30)
         startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
         DispatchQueue.global(qos: .background).async {
-            wrap {try getSession().sendTransaction(details: self.payload!, twofactor_data: [String: Any]())
-                }.done { (result: [String: Any]?) in
-                    print(result)
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                        NVActivityIndicatorPresenter.sharedInstance.setMessage("Sent!")
-                        self.stopAnimating()
-                        self.navigationController?.popToRootViewController(animated: true)
+            wrap {try getSession().sendTransaction(details: self.payload!)
+                }.done { (result: TwoFactorCall?) in
+                    do {
+                        try result?.call()
+                        let json = try result?.getStatus()
+                        print(json)
+                    } catch {
+                        print("couldn't call")
                     }
                 } .catch { error in
-                   /* DispatchQueue.main.async {
-                        NVActivityIndicatorPresenter.sharedInstance.setMessage("Failed!")
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.8) {
-                        self.stopAnimating()
-                        self.navigationController?.popViewController(animated: true)
-                    }*/
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                        NVActivityIndicatorPresenter.sharedInstance.setMessage("Sent!")
-                        self.stopAnimating()
-                        self.navigationController?.popToRootViewController(animated: true)
-                    }
-                    print("something went wrong")
             }
         }
-
-
     }
 
 }
