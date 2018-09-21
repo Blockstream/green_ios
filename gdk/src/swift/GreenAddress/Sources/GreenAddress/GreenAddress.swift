@@ -384,7 +384,7 @@ public class Session {
         try callWrapper(fun: GA_ack_system_message(session, message))
     }
 
-    public func rmail(email: String) throws -> TwoFactorCall {
+    public func setEmail(email: String) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
         //try callWrapper(fun: GA_twofactor_set_email(session, email, &optr));
         return TwoFactorCall(optr: optr!);
