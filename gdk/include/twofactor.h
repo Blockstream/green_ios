@@ -28,22 +28,20 @@ extern "C" {
  * to resolve the two factor authentication as necessary. It will generally take the form:
  *
  * function resolve_2fa(call) -> JSON result
- *     while (status = GA_twofactor_get_status(call))["status"] not in ["done", "error"]:
- *         if status["status"] == "code":
- *             method = USER_SELECT_FACTOR(call, status["twofactor_methods"]);
+ *     while true:
+ *         status = GA_twofactor_get_status(call)
+ *         if status["status"] == "error":
+ *             throw status["status"]
+ *         if status["status"] == "done":
+ *             return status["result"]
+ *         if status["status"] == "request_code":
+ *             method = USER_SELECT_FACTOR(call, status["methods"]);
  *             GA_twofactor_request_code(call, method);
- *             status = GA_twofactor_get_status(call)
- *         if status["status"] == "auth":
- *             const char* code = USER_GET_CODE(status["twofactor_method"]);
+ *         else if status["status"] == "resolve_code":
+ *             const char* code = USER_GET_CODE(status["method"]);
  *             GA_twofactor_authorize(call, code);
- *             status = GA_twofactor_get_status(call)
- *         if status["status"] == "call":
+ *         else if status["status"] == "call":
  *             GA_twofactor_call(call);
- *     }
- *     if status["status"] == "error":
- *         throw
- *     return status["result"]
- * }
  *
  * The functions USER_SELECT_FACTOR and USER_GET_CODE implement the required user interaction and will
  * be specific to the client (e.g. a GUI app will probably show some kind of modal dialog)
@@ -118,6 +116,9 @@ GASDK_API int GA_twofactor_disable(struct GA_session* session, const char* metho
 /** Change the transaction limit (total, BTC) */
 GASDK_API int GA_twofactor_change_tx_limits(
     struct GA_session* session, const char* total, struct GA_twofactor_call** call);
+
+GASDK_API int GA_twofactor_send_transaction(
+    struct GA_session* session, const struct GA_json* transaction_details, struct GA_twofactor_call** call);
 
 #ifdef __cplusplus
 }

@@ -1798,10 +1798,7 @@ namespace sdk {
             disconnect();
             throw reconnect_error();
         } catch (const std::exception& e) {
-            std::cout << e.what() << std::endl;
-            std::cout << "Hello!" << std::endl;
-
-            //disconnect();
+            disconnect();
             throw;
         }
         __builtin_unreachable();

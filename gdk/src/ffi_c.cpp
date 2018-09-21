@@ -7,6 +7,7 @@
 #include "include/session.hpp"
 #include "include/twofactor.h"
 #include "include/twofactor.hpp"
+#include "src/twofactor_calls.hpp"
 
 namespace {
 
@@ -321,7 +322,12 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_twofactor_enable, struct GA_session*, session, con
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_disable, struct GA_session*, session, const char*, method,
     struct GA_twofactor_call**, call, { *call = new GA_disable_twofactor(*session, method); });
+
 #endif
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_send_transaction, struct GA_session*, session, const struct GA_json*,
+    transaction_details, struct GA_twofactor_call**, call,
+    { *call = new GA_send_call(*session, *json_cast(transaction_details)); });
 
 namespace {
 template <typename T> void json_convert(const nlohmann::json& json, const char* path, T* value)

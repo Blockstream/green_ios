@@ -125,9 +125,10 @@ public class TwoFactorCall {
 
     // Call the 2fa operation
     // Returns the next 2fa operation in the chain
-   /* public func call() throws -> Promise<TwoFactorCall?> {
+    public func call() throws -> Promise<Void> {
         try callWrapper(fun: GA_twofactor_call(self.optr))
-    }*/
+        return Promise<Void> { seal in seal.fulfill(()) }
+    }
 }
 
 fileprivate class FFIContext {
@@ -149,7 +150,7 @@ public class Session {
 
     private func subscribeToTopic(topic: String, context: FFIContext) throws -> Void {
         let opaqueContext = UnsafeMutableRawPointer(Unmanaged.passRetained(context).toOpaque())
-        //try callWrapper(fun: GA_subscribe_to_topic_as_json(session, topic, eventHandler, opaqueContext))
+        try callWrapper(fun: GA_subscribe_to_topic_as_json(session, topic, eventHandler, opaqueContext))
     }
 
     private var session: OpaquePointer? = nil
@@ -347,6 +348,16 @@ public class Session {
         return try convertOpaqueJsonToDict(o: result!)
     }
 
+    public func sendTransaction(details: [String: Any]) throws -> TwoFactorCall {
+        var optr: OpaquePointer? = nil;
+        var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+        defer {
+            GA_destroy_json(details_json)
+        }
+        try callWrapper(fun: GA_twofactor_send_transaction(session, details_json, &optr));
+        return TwoFactorCall(optr: optr!);
+    }
+
     public func sendNlocktimes() throws -> Void {
         try callWrapper(fun: GA_send_nlocktimes(session))
     }
@@ -373,7 +384,7 @@ public class Session {
         try callWrapper(fun: GA_ack_system_message(session, message))
     }
 
-    public func setEmail(email: String) throws -> TwoFactorCall {
+    public func rmail(email: String) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
         //try callWrapper(fun: GA_twofactor_set_email(session, email, &optr));
         return TwoFactorCall(optr: optr!);

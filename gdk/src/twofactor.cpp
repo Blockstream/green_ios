@@ -2,7 +2,6 @@
 #include "include/autobahn_wrapper.hpp"
 
 namespace {
-#if 0
 // Return true if the error represents 'two factor authentication required'
 bool is_twofactor_required_error(const autobahn::call_error& e)
 {
@@ -16,8 +15,8 @@ bool is_twofactor_required_error(const autobahn::call_error& e)
     }
     return false;
 }
-#endif
 
+#if 0
 struct GA_activate_email_call : public GA_twofactor_call {
     explicit GA_activate_email_call(ga::sdk::session& session)
         : GA_twofactor_call(session, { { "email" } })
@@ -30,14 +29,14 @@ struct GA_activate_email_call : public GA_twofactor_call {
 struct GA_set_email_call : public GA_twofactor_call {
     GA_set_email_call(ga::sdk::session& session, std::string email)
         // FIXME: GA_twofactor_call_with_next(session, std::make_unique<GA_activate_email_call>(session))
-        : GA_twofactor_call(session)
+        : GA_twofactor_call(session, "set_email")
         , m_email(std::move(email))
     {
     }
 
     void request_code(const std::string& method) override
     {
-        request_code_impl(method, "set_email", { { "address", m_email } });
+        request_code_impl(method, { { "address", m_email } });
     }
 
     void operator()() override
@@ -66,7 +65,7 @@ private:
 struct GA_init_enable_twofactor : public GA_twofactor_call {
     GA_init_enable_twofactor(ga::sdk::session& session, const std::string& method, std::string data)
         // FIXME: GA_twofactor_call_with_next(session, std::make_unique<GA_enable_twofactor>(session, method))
-        : GA_twofactor_call(session)
+        : GA_twofactor_call(session, "enable_2fa")
         , m_factor(method)
         , m_data(std::move(data))
     {
@@ -74,7 +73,7 @@ struct GA_init_enable_twofactor : public GA_twofactor_call {
 
     void request_code(const std::string& method) override
     {
-        request_code_impl(method, "enable_2fa", { { "method", m_factor } });
+        request_code_impl(method, { { "method", m_factor } });
     }
 
     void operator()() override
@@ -103,13 +102,13 @@ private:
 
 struct GA_init_enable_gauth_call : public GA_twofactor_call {
     GA_init_enable_gauth_call(ga::sdk::session& session)
-        : GA_twofactor_call(session)
+        : GA_twofactor_call(session, "enable_2fa")
     {
     }
 
     void request_code(const std::string& method) override
     {
-        request_code_impl(method, "enable_2fa", { { "method", "gauth" } });
+        request_code_impl(method, { { "method", "gauth" } });
     }
 
     void operator()() override
@@ -124,14 +123,14 @@ struct GA_init_enable_gauth_call : public GA_twofactor_call {
 
 struct GA_disable_twofactor : public GA_twofactor_call {
     GA_disable_twofactor(ga::sdk::session& session, std::string method)
-        : GA_twofactor_call(session)
+        : GA_twofactor_call(session, "disable_2fa")
         , m_factor(std::move(method))
     {
     }
 
     void request_code(const std::string& method) override
     {
-        request_code_impl(method, "disable_2fa", { { "method", m_factor } });
+        request_code_impl(method, { { "method", m_factor } });
     }
 
     void operator()() override
@@ -143,20 +142,90 @@ struct GA_disable_twofactor : public GA_twofactor_call {
 private:
     std::string m_factor;
 };
-
+#endif
 } // namespace
 
-GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session)
-    : m_session(session)
-    , m_methods(session.get_all_twofactor_methods())
+GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, const std::string& action)
+    : GA_twofactor_call(session, action, session.get_all_twofactor_methods())
 {
 }
 
-GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, std::vector<std::string> twofactor_methods)
+GA_twofactor_call::GA_twofactor_call(
+    ga::sdk::session& session, const std::string& action, std::vector<std::string> twofactor_methods)
     : m_session(session)
     , m_methods(std::move(twofactor_methods))
+    , m_action(action)
     , m_state(m_methods.empty() ? state_type::make_call : state_type::request_code)
 {
+}
+
+void GA_twofactor_call::request_code_impl(const std::string& method, const nlohmann::json& twofactor_data)
+{
+    GA_SDK_RUNTIME_ASSERT(m_state == state_type::request_code);
+
+    // For gauth request code is a no-op
+    if (method != "gauth") {
+        m_session.twofactor_request_code(method, m_action, twofactor_data);
+    }
+
+    m_method = method;
+    m_state = state_type::resolve_code;
+}
+
+void GA_twofactor_call::resolve_code(const std::string& code)
+{
+    GA_SDK_RUNTIME_ASSERT(m_state == state_type::resolve_code);
+    m_code = code;
+    m_state = state_type::make_call;
+}
+
+void GA_twofactor_call::operator()()
+{
+    try {
+        GA_SDK_RUNTIME_ASSERT(m_state == state_type::make_call);
+        call_impl();
+        m_state = state_type::done;
+    } catch (const autobahn::call_error& e) {
+        if (is_twofactor_required_error(e)) {
+            // Make the user request another code
+            // FIXME: If the exception is wrong code and we are within the time limit,
+            // move to state resolve_code instead
+            // If we are rate limited, move to error and give a message
+            m_state = state_type::request_code;
+        } else {
+            m_state = state_type::error;
+        }
+    }
+}
+
+nlohmann::json GA_twofactor_call::get_status() const
+{
+    GA_SDK_RUNTIME_ASSERT(m_state == state_type::error || m_error.is_null());
+
+    switch (m_state) {
+    case state_type::request_code:
+        // Caller should ask the user to pick 2fa and request a code
+        return { { "status", "request_code" }, { "methods", m_methods } };
+        break;
+    case state_type::resolve_code:
+        // Caller should resolve the code the user has entered
+        return { { "status", "resolve_code" }, { "method", m_method } };
+        break;
+    case state_type::make_call:
+        // Caller should make the call
+        return { { "status", "call" } };
+        break;
+    case state_type::done:
+        // Caller should destry the call and continue
+        return { { "status", "done" }, { "result", m_result } };
+        break;
+    case state_type::error:
+        // User should handle the error
+        return { { "status", "error" }, { "error", m_error } };
+        break;
+    }
+    GA_SDK_RUNTIME_ASSERT(false);
+    __builtin_unreachable();
 }
 
 nlohmann::json GA_twofactor_call::get_twofactor_data() const
@@ -171,54 +240,3 @@ nlohmann::json GA_twofactor_call::get_twofactor_data() const
 
     return nlohmann::json();
 }
-
-void GA_twofactor_call::request_code_impl(
-    const std::string& method, const std::string& action, const nlohmann::json& twofactor_data)
-{
-    // For gauth request code is a no-op
-    if (method != "gauth") {
-        m_session.twofactor_request_code(method, action, twofactor_data);
-    }
-
-    m_method = method;
-}
-
-void GA_twofactor_call::request_code(const std::string& method) { m_method = method; }
-
-void GA_twofactor_call::resolve_code(const std::string& code)
-{
-    GA_SDK_RUNTIME_ASSERT(!m_method.empty());
-    m_code = code;
-    m_methods.clear();
-}
-
-nlohmann::json GA_twofactor_call::get_status() const
-{
-    // FIXME
-    return nlohmann::json();
-}
-
-#if 0
-GA_attempt_twofactor_call::GA_attempt_twofactor_call(ga::sdk::session& session)
-    : GA_twofactor_call(session, {}) // start as a vanilla call with no 2fa
-{
-}
-
-struct GA_twofactor_call* GA_attempt_twofactor_call::get_next_call() { return m_retry ? this : nullptr; }
-
-void GA_attempt_twofactor_call::operator()()
-{
-    try {
-        call();
-        m_retry = false;
-    } catch (const autobahn::call_error& e) {
-        if (is_twofactor_required_error(e) && !m_retry) {
-            // Enable 2fa and try again
-            m_methods = get_all_twofactor_methods();
-            m_retry = true;
-        } else {
-            throw;
-        }
-    }
-}
-#endif
