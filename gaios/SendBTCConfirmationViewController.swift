@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable{
+class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate{
 
     var toAddress: String = ""
     var fiat_amount: Double = 0
@@ -22,6 +22,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     var wallet: WalletItem? = nil
     var payload: [String : Any]? = nil
     var selectedType: TransactionType? = nil
+    @IBOutlet weak var textView: UITextView!
 
     @IBOutlet weak var slidingButton: SlidingButton!
     @IBOutlet weak var fiatAmountLabel: UILabel!
@@ -38,6 +39,15 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         hideKeyboardWhenTappedAround()
         slidingButton.delegate = self
         updateAmountLabel()
+        textView.delegate = self
+        textView.text = "Add a note..."
+        textView.textColor = UIColor.customTitaniumLight()
+
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        textView.textColor = UIColor.customTitaniumLight()
     }
 
     func updateAmountLabel() {
@@ -45,6 +55,20 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
             fiatAmountLabel.text = String(format: "%f BTC (%f USD)", btc_amount, fiat_amount)
         } else if (selectedType == TransactionType.FIAT) {
             fiatAmountLabel.text = String(format: "%f USD (%f BTC)", fiat_amount, btc_amount)
+        }
+    }
+
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.customTitaniumLight() {
+            textView.text = nil
+            textView.textColor = UIColor.white
+        }
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "Add a note..."
+            textView.textColor = UIColor.customTitaniumLight()
         }
     }
 

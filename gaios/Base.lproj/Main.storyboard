@@ -1633,7 +1633,7 @@
                                 <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Optional" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="7ck-ZY-Ceh">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="7ck-ZY-Ceh">
                                 <rect key="frame" x="16" y="368" width="288" height="88"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -1715,6 +1715,7 @@
                         <outlet property="fiatAmountLabel" destination="Wfq-KU-8DT" id="qt9-0m-Ayx"/>
                         <outlet property="recepientAddressLabel" destination="Itr-BV-GH4" id="08u-KW-ASV"/>
                         <outlet property="slidingButton" destination="KX5-r6-KkB" id="hEb-lF-IEM"/>
+                        <outlet property="textView" destination="7ck-ZY-Ceh" id="k71-1J-3XL"/>
                         <outlet property="walletNameLabel" destination="J9b-kK-iA4" id="UyT-SG-rR6"/>
                     </connections>
                 </viewController>
