@@ -202,6 +202,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
             nextController.wallet = wallet
             nextController.toAddress = textfield.text
             nextController.btcAmount = prefillAmount
+            nextController.selectedType = TransactionType.BTC
         }
     }
 }
