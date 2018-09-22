@@ -303,8 +303,19 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             calculateLayoutValues(shouldLayoutWalletView: false)
         }
     }
-    
-    
+
+    func updateBalance(forCardview: Int, sat: String) {
+        for index in 0..<insertedCardViews.count {
+            let wallet = insertedCardViews[index] as! ColoredCardView
+            if(wallet.wallet?.pointer == UInt32(forCardview)) {
+                let denomination = SettingsStore.shared.getDenominationSettings()
+                let balance = String.satoshiToBTC(satoshi: sat)
+                wallet.balanceLabel.text = String(format: "%@ %@", balance, denomination)
+                return
+            }
+        }
+    }
+
     /** The distance that the wallet view is inset from the enclosing scroll view. */
     public var contentInset: UIEdgeInsets {
         set {

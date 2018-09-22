@@ -108,8 +108,7 @@ class ViewController: UIViewController, WalletViewDelegate{
                 DispatchQueue.main.async {
                     let satoshi = balance!["satoshi"] as! String
                     wallet.balance = satoshi
-                    self.walletView.remove(cardViews: self.walletView.insertedCardViews)
-                    self.reloadWallets()
+                    self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: satoshi)
                 }
             } catch {
                 print("error updating balance")
