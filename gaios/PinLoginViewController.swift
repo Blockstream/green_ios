@@ -14,54 +14,78 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
 
     @IBOutlet weak var topLabel: UILabel!
-    @IBOutlet weak var circle1: UIImageView!
-    @IBOutlet weak var circle2: UIImageView!
-    @IBOutlet weak var circle3: UIImageView!
-    @IBOutlet weak var circle4: UIImageView!
-    var circles: [UIImageView] = []
-    var pinCode: String = ""
-    var counter: Int = 0
-    var setPinMode: Bool = false
-    var pinData: String = ""
+    @IBOutlet weak var label0: UILabel!
+    @IBOutlet weak var label1: UILabel!
+    @IBOutlet weak var label2: UILabel!
+    @IBOutlet weak var label3: UILabel!
+    @IBOutlet weak var label4: UILabel!
+    @IBOutlet weak var label5: UILabel!
+    @IBOutlet weak var attempts: UILabel!
 
-    var firstPin: String = ""
+    var pinCode: String = ""
+    var pinData: String = ""
     var pinConfirm: String = ""
-    var firstStep: Bool = true
+
+    var setPinMode: Bool = false
+    var confirmPin: Bool = false
+
+    var views: Array<UIView> = Array<UIView>()
+    var labels: Array<UILabel> = Array<UILabel>()
+    var indicator: UIView? = nil
+    var attemptsCount = 3
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        circle1.tintColor = UIColor.customTitaniumLight()
-        circle2.tintColor = UIColor.customTitaniumLight()
-        circle3.tintColor = UIColor.customTitaniumLight()
-        circle4.tintColor = UIColor.customTitaniumLight()
-        circles = [circle1, circle2, circle3, circle4]
         if (setPinMode == true) {
-            topLabel.text = "Choose Pin"
+            topLabel.text = "Set a new PIN"
         }
-        //KeychainHelper.removePassword(service: "pinData", account: "user")
+        labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
+        for label in labels {
+            label.isHidden = true
+        }
+        attempts.isHidden = true
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateView()
+    }
+
+    func updateAttemptsLabel() {
+        attempts.text = String(format: "%d attempts remaining", attemptsCount)
+        attempts.isHidden = false
+    }
+
+    func updatePinMissmatch() {
+        attempts.text = "PINs must match"
+        attempts.isHidden = false
     }
 
     @IBAction func numberClicked(_ sender: UIButton) {
-        if(counter < 4) {
-            counter += 1
-            pinCode += (sender.titleLabel?.text)!
-            print(pinCode)
-            updateColor()
+        pinCode += (sender.titleLabel?.text)!
+        updateView()
+        if (pinCode.count < 6) {
+            return
         }
-        if (counter == 4) {
-            if (setPinMode == false) {
-                //login
-                let size = CGSize(width: 30, height: 30)
-                startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-                DispatchQueue.global(qos: .background).async {
-                    wrap { return try getSession().loginWithPin(pin: self.pinCode, pin_data: self.pinData) }.done { _ in
-                        DispatchQueue.main.async {
-                            self.stopAnimating()
-                            AccountStore.shared.initializeAccountStore()
-                            self.performSegue(withIdentifier: "mainMenu", sender: self)
-                        }
+
+        if (setPinMode == false) {
+            let size = CGSize(width: 30, height: 30)
+            startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            DispatchQueue.global(qos: .background).async {
+                wrap { return try getSession().loginWithPin(pin: self.pinCode, pin_data: self.pinData) }.done { _ in
+                    DispatchQueue.main.async {
+                        self.stopAnimating()
+                        AccountStore.shared.initializeAccountStore()
+                        self.performSegue(withIdentifier: "mainMenu", sender: self)
+                    }
                     }.catch { error in
                         print("incorrect PIN ", error)
+                        self.attemptsCount -= 1
+                        if(self.attemptsCount == 0) {
+                            AppDelegate.removeKeychainData()
+                            self.performSegue(withIdentifier: "entrance", sender: nil)
+                        }
+                        self.updateAttemptsLabel()
                         DispatchQueue.main.async {
                             NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
                         }
@@ -70,20 +94,20 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             self.resetEverything()
                         }
 
-                    }
                 }
-                return
             }
-            if (firstStep) {
-                firstStep = false
-                firstPin = pinCode
-                topLabel.text = "Confirm PIN"
-                counter = 0
-                pinCode = ""
-                updateColor()
-                return
-            }
-            if(firstPin == pinCode) {
+        } else {
+            if (confirmPin == true) {
+                //set pin
+                print("olla1")
+
+                if(pinCode != pinConfirm) {
+                    topLabel.text = "Set a new PIN"
+                    resetEverything()
+                    updatePinMissmatch()
+                    print("olla2")
+                    return
+                }
                 let mnemonics = getAppDelegate().getMnemonicWordsString()
                 let size = CGSize(width: 30, height: 30)
                 startAnimating(size, message: "Setting pin...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
@@ -105,57 +129,78 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             DispatchQueue.main.async {
                                 NVActivityIndicatorPresenter.sharedInstance.setMessage("Setting pin failed")
                             }
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
                                 self.stopAnimating()
                             }
                     }
                 }
-                return
             }
-            firstStep = true
-            topLabel.text = "Choose PIN"
-            resetEverything()
-            //reset notify pins are different
+            confirmPin = true
+            pinConfirm = pinCode
+            pinCode = ""
+            updateView()
+            print("olla")
+            //show confirm pin
+            topLabel.text = "Confirm PIN"
         }
     }
-    
+
     func resetEverything() {
-        if (setPinMode) {
-            topLabel.text = "Choose PIN"
-            firstStep = true
-            counter = 0
-            updateColor()
-            pinCode = ""
-            firstPin = ""
-            pinConfirm = ""
-        } else {
-            counter = 0
-            pinCode = ""
-            updateColor()
+        pinCode = ""
+        updateView()
+    }
+
+    func updateView() {
+        var index = 0
+        for char in pinCode {
+            labels[index].text = String(char)
+            labels[index].isHidden = false
+            index += 1
+        }
+        createIndicator(position: pinCode.count)
+        for i in index..<labels.count {
+            labels[i].isHidden = true
         }
     }
+
+    func createIndicator(position: Int) {
+        if (position >= 6) {
+            indicator?.isHidden = true
+            return
+        }
+        indicator?.layer.removeAllAnimations()
+        indicator?.removeFromSuperview()
+        let labelP = labels[position]
+        indicator = UIView()
+        indicator?.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+        indicator?.backgroundColor = UIColor.customMatrixGreen()
+        indicator?.translatesAutoresizingMaskIntoConstraints = false
+        indicator?.alpha = 1.0;
+        self.view.addSubview(indicator!)
+        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 0, constant: 2).isActive = true
+        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 0, constant: 21).isActive = true
+        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: labelP, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: labelP, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
+        UIView.animate(withDuration: 0.5, delay: 0, options: [.repeat, .autoreverse], animations: {
+
+            self.indicator?.alpha = 0.0
+
+        }, completion: nil)
+    }
+
     @IBAction func deleteClicked(_ sender: UIButton) {
-        if(counter > 0) {
+        if(pinCode.count > 0) {
             pinCode.removeLast()
+            updateView()
             print(pinCode)
-            counter -= 1
-            updateColor()
         }
     }
-    
+
     @IBAction func backButtonClicked(_ sender: Any) {
         if(setPinMode) {
             self.navigationController?.popViewController(animated: true)
         } else {
             self.performSegue(withIdentifier: "entrance", sender: nil)
-        }
-    }
-    func updateColor() {
-        for i in 0..<counter {
-            circles[i].tintColor = UIColor.customMatrixGreen()
-        }
-        for i in 0..<4-counter {
-            circles[3-i].tintColor = UIColor.customTitaniumLight()
         }
     }
 }
