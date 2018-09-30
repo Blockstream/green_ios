@@ -7,6 +7,7 @@ extern "C" {
 #endif
 
 struct options {
+    int quiet;
     int testnet;
 };
 

@@ -17,9 +17,17 @@ int main(int argc, char** argv)
     parse_cmd_line_arguments(argc, argv, &options);
     try {
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network("socks5://localhost")
-                                         : sdk::make_localtest_network("socks5://localhost"),
-            true);
+        try {
+            session.connect(options->testnet ? sdk::make_testnet_network("socks5://localhost")
+                                             : sdk::make_localtest_network("socks5://localhost"),
+                true);
+        } catch (const std::exception&) {
+            if (options->testnet == 0) {
+                std::cerr << "Skipping test (requires testnet or local environment w/proxy)" << std::endl;
+                return 0;
+            }
+            throw;
+        }
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
     } catch (const std::exception& e) {

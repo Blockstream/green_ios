@@ -36,6 +36,8 @@ template <typename F, typename... Args> auto c_invoke(F&& f, Args&&... args)
         assert_invoke_args(std::forward<Args>(args)...);
         f(std::forward<Args>(args)...);
         return GA_OK;
+    } catch (const ga::sdk::login_error& e) {
+        return GA_ERROR;
     } catch (const autobahn::no_session_error& e) {
         return GA_SESSION_LOST;
     } catch (const ga::sdk::reconnect_error& ex) {
@@ -198,12 +200,6 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_create_transaction, struct GA_session*, session, c
     GA_json**, transaction,
     { *json_cast(transaction) = new nlohmann::json(session->create_transaction(*json_cast(transaction_details))); })
 
-GA_SDK_DEFINE_C_FUNCTION_4(GA_send_transaction, struct GA_session*, session, const GA_json*, transaction_details,
-    const GA_json*, twofactor_data, GA_json**, transaction, {
-        *json_cast(transaction)
-            = new nlohmann::json(session->send(*json_cast(transaction_details), *json_cast(twofactor_data)));
-    })
-
 GA_SDK_DEFINE_C_FUNCTION_1(GA_send_nlocktimes, struct GA_session*, session, { session->send_nlocktimes(); })
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_set_transaction_memo, struct GA_session*, session, const char*, txhash_hex, const char*,
@@ -222,8 +218,8 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_subscribe_to_topic_as_json, struct GA_session*, se
             topic, [callback, context](const std::string& event) { callback(context, to_c_string(event)); });
     })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_remove_account, struct GA_session*, session, const GA_json*, twofactor_data,
-    { session->remove_account(*json_cast(twofactor_data)); })
+GA_SDK_DEFINE_C_FUNCTION_2(GA_remove_account, struct GA_session*, session, struct GA_twofactor_call**, call,
+    { *call = new GA_remove_account_call(*session); });
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_create_subaccount, struct GA_session*, session, const GA_json*, details, GA_json**,
     subaccount, { *json_cast(subaccount) = new nlohmann::json(session->create_subaccount(*json_cast(details))); })
@@ -304,30 +300,12 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_status, struct GA_twofactor_call*, c
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_destroy_twofactor_call, struct GA_twofactor_call*, call, { delete call; });
 
-#if 0
-GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_set_email, struct GA_session*, session, const char*, email,
-    struct GA_twofactor_call**, call, { *call = new GA_set_email_call(*session, email); });
+GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_twofactor, struct GA_session*, session, const char*, method,
+    const GA_json*, details, struct GA_twofactor_call**, call,
+    { *call = new GA_change_settings_twofactor_call(*session, method, *json_cast(details)); })
 
-GA_SDK_DEFINE_C_FUNCTION_4(GA_twofactor_enable, struct GA_session*, session, const char*, method, const char*, data,
-    struct GA_twofactor_call**, call, {
-        if (strcmp(method, "gauth") == 0) {
-            // gauth is slightly different to the other methods and has its own
-            // implementation
-            *call = new GA_init_enable_gauth_call(*session);
-        } else {
-            GA_SDK_RUNTIME_ASSERT(data);
-            *call = new GA_init_enable_twofactor(*session, method, data);
-        }
-    })
-
-GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_disable, struct GA_session*, session, const char*, method,
-    struct GA_twofactor_call**, call, { *call = new GA_disable_twofactor(*session, method); });
-
-#endif
-
-GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_send_transaction, struct GA_session*, session, const struct GA_json*,
-    transaction_details, struct GA_twofactor_call**, call,
-    { *call = new GA_send_call(*session, *json_cast(transaction_details)); });
+GA_SDK_DEFINE_C_FUNCTION_3(GA_send_transaction, struct GA_session*, session, const GA_json*, transaction_details,
+    struct GA_twofactor_call**, call, { *call = new GA_send_call(*session, *json_cast(transaction_details)); });
 
 namespace {
 template <typename T> void json_convert(const nlohmann::json& json, const char* path, T* value)

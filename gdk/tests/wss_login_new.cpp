@@ -3,8 +3,11 @@
 #include "argparser.h"
 
 #include "include/assertion.hpp"
+#include "include/exception.hpp"
 #include "include/session.hpp"
 #include "include/utils.hpp"
+
+#include "utils.hpp"
 
 int main(int argc, char** argv)
 {
@@ -41,6 +44,7 @@ int main(int argc, char** argv)
         {
             sdk::session session;
             session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+            assert_throws<ga::sdk::login_error>([&] { session.login("0001", pin_info); });
             session.login("0000", pin_info);
             // TODO GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login") == false);
             GA_SDK_RUNTIME_ASSERT(session.remove_account(nlohmann::json()));

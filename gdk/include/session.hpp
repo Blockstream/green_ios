@@ -90,6 +90,7 @@ namespace sdk {
 
         nlohmann::json get_twofactor_config();
         std::vector<std::string> get_all_twofactor_methods();
+        std::vector<std::string> get_enabled_twofactor_methods();
 
         void set_email(const std::string& email, const nlohmann::json& twofactor_data);
         void activate_email(const std::string& code);
@@ -113,9 +114,6 @@ namespace sdk {
         nlohmann::json get_transaction_details(const std::string& txhash_hex);
 
         nlohmann::json create_transaction(const nlohmann::json& details);
-
-        std::string make_raw_tx(const std::vector<std::pair<std::string, amount>>& address_amount,
-            const nlohmann::json& utxos, amount fee_rate, bool send_all);
 
         nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
 

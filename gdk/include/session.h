@@ -31,13 +31,16 @@ extern "C" {
 #define GA_MEMO_USER 0
 #define GA_MEMO_BIP70 1
 
-/** An server session */
+/** A server session */
 struct GA_session;
+
+/** An api method call that potentially requires two factor authentication to complete */
+struct GA_twofactor_call;
 
 /**
  * Create a new server session.
  *
- * This creates a new server session, i.e. initialises internal data structures to allow RPC calls.
+ * This creates a new server session, i.e. initializes internal data structures to allow RPC calls.
  * @session Destination for the resulting session.
  *
  * GA_ERROR if memory allocation fails.
@@ -127,11 +130,11 @@ GASDK_API int GA_login_watch_only(struct GA_session* session, const char* userna
  * Remove an account.
  *
  * @session The server session to use.
- * @twofactor_data Two factor authentication details for the action.
+ * @call Destination for the resulting GA_twofactor_call to perform the removal.
  *
  * GA_ERROR if removal is unsuccessful.
  */
-GASDK_API int GA_remove_account(struct GA_session* session, const GA_json* twofactor_data);
+GASDK_API int GA_remove_account(struct GA_session* session, struct GA_twofactor_call** call);
 
 /**
  * Create a subaccount.
@@ -308,7 +311,7 @@ GASDK_API int GA_set_pin(
  *
  * @session The server session to use.
  * @transaction_details The transaction details for constructing.
- * @transaction destination for the resulting transaction's details.
+ * @transaction Destination for the resulting transaction's details.
  *
  * GA_ERROR if the transaction could not be created.
  */
@@ -320,13 +323,12 @@ GASDK_API int GA_create_transaction(
  *
  * @session The server session to use.
  * @transaction_details The transaction details for sending.
- * @twofactor_data Two factor authentication details for the action.
- * @transaction destination for the resulting transaction's details.
+ * @call Destination for the resulting GA_twofactor_call to perform the send.
  *
  * GA_ERROR if the raw transaction could not be sent.
  */
-GASDK_API int GA_send_transaction(struct GA_session* session, const GA_json* transaction_details,
-    const GA_json* twofactor_data, GA_json** transaction);
+GASDK_API int GA_send_transaction(
+    struct GA_session* session, const GA_json* transaction_details, struct GA_twofactor_call** call);
 
 /**
  * Request an email containing the user's nLockTime transactions.
@@ -356,6 +358,12 @@ GASDK_API int GA_set_transaction_memo(
  *
  * @session The server session to use.
  * @estimates Destination for the returned estimates.
+ *
+ * The estimates are returned as an array of 25 elements. Each element is
+ * an integer representing the fee estimate expressed as satoshi per 1000
+ * bytes. The first element is the minimum relay fee as returned by the
+ * network, while the remaining elements are the current estimates to use
+ * for a transaction to confirm from 1 to 24 blocks.
  *
  * GA_ERROR if the user is not logged in or logged in in watch-only mode.
  */

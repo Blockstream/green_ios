@@ -35,8 +35,7 @@ int main(int argc, char** argv)
 #endif
 
         const auto balance = session.get_balance(0, 0);
-        const auto methods = session.get_all_twofactor_methods();
-        (void)methods;
+        session.get_enabled_twofactor_methods();
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

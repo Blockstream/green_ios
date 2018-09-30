@@ -6,7 +6,7 @@ before_script:
   - ./tools/clean.sh meson
 
 test_gcc:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   script:
@@ -14,7 +14,7 @@ test_gcc:
     - ./tools/build.sh --gcc
 
 test_fedora_gcc:
-  image: greenaddress/fedora_ci@sha256:218c33fdb27c78fbfee52e720c0eac690a3bd41d6becf2d5e90bec3f7244fbb3
+  image: greenaddress/fedora_ci@sha256:1b504d941e5d9953ed2fa40798c9c9e071cc3dbe1868115c25eee9f979f3c3ae
   tags:
     - ga
   script:
@@ -22,7 +22,7 @@ test_fedora_gcc:
     - ./tools/build.sh --gcc
 
 test_fedora_clang:
-  image: greenaddress/fedora_ci@sha256:218c33fdb27c78fbfee52e720c0eac690a3bd41d6becf2d5e90bec3f7244fbb3
+  image: greenaddress/fedora_ci@sha256:1b504d941e5d9953ed2fa40798c9c9e071cc3dbe1868115c25eee9f979f3c3ae
   tags:
     - ga
   script:
@@ -30,7 +30,7 @@ test_fedora_clang:
     - ./tools/build.sh --clang
 
 test_clang:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   script:
@@ -47,7 +47,7 @@ test_clang_tidy:
     - ./tools/build.sh --clang-tidy-version=3.8 --clang
 
 test_clang_ndk_armeabi-v7a:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   artifacts:
@@ -59,10 +59,10 @@ test_clang_ndk_armeabi-v7a:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir $CI_JOB_NAME
-    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk armeabi-v7a
+    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk armeabi-v7a
 
 test_clang_ndk_arm64-v8a:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   artifacts:
@@ -74,10 +74,10 @@ test_clang_ndk_arm64-v8a:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir $CI_JOB_NAME
-    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk arm64-v8a
+    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk arm64-v8a
 
 test_clang_ndk_x86:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   artifacts:
@@ -89,10 +89,10 @@ test_clang_ndk_x86:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir $CI_JOB_NAME
-    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk x86
+    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk x86
 
 test_clang_ndk_x86_64:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   artifacts:
@@ -104,7 +104,7 @@ test_clang_ndk_x86_64:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir $CI_JOB_NAME
-    - ANDROID_NDK=/android-ndk-r17b ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk x86_64
+    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $CI_PROJECT_DIR/$CI_JOB_NAME --ndk x86_64
 
 test_osx_clang:
   tags:
@@ -187,7 +187,7 @@ test_freebsd_clang:
     - ./tools/build.sh --lto=false --clang
 
 test_windows_mingw_w64_cross:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   artifacts:
@@ -195,13 +195,12 @@ test_windows_mingw_w64_cross:
     when: on_success
     paths:
     - build-windows-mingw-w64/src/libgreenaddress*
-    - build-windows-mingw-w64/src/examples/green-cli*
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --lto=false --mingw-w64
 
 apidocs:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
   tags:
     - ga
   artifacts:

@@ -13,6 +13,14 @@ namespace sdk {
     using no_transport_error = autobahn::no_transport_error;
     using protocol_error = autobahn::protocol_error;
 
+    class login_error : public std::runtime_error {
+    public:
+        login_error(const std::string& what)
+            : std::runtime_error("login failed:" + what)
+        {
+        }
+    };
+
     class reconnect_error : public std::runtime_error {
     public:
         reconnect_error()
@@ -28,8 +36,7 @@ namespace sdk {
         {
         }
     };
-
-}
-}
+} // namespace sdk
+} // namespace ga
 
 #endif

@@ -22,9 +22,11 @@ const std::string DEFAULT_MNEMONIC_2(
 const std::string GENERATE_SINGLE_BLOCK_REQUEST(
     R"rawlit({"jsonrpc": "1.0", "id":"generate", "method": "generate", "params": [1] })rawlit");
 
-nlohmann::json login_and_get_receive_address(sdk::session& session, const std::string& mnemonic, bool testnet)
+nlohmann::json login_and_get_receive_address(
+    sdk::session& session, const std::string& mnemonic, struct options* options)
 {
-    session.connect(testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+    const bool debug = options->quiet == 0;
+    session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
     session.register_user(mnemonic);
     session.login(mnemonic);
     return session.get_receive_address(0, sdk::address_type::p2sh);
@@ -38,8 +40,8 @@ int main(int argc, char** argv)
     try {
         sdk::session session_1;
         sdk::session session_2;
-        const auto address_1 = login_and_get_receive_address(session_1, DEFAULT_MNEMONIC_1, options->testnet != 0);
-        const auto address_2 = login_and_get_receive_address(session_2, DEFAULT_MNEMONIC_2, options->testnet != 0);
+        const auto address_1 = login_and_get_receive_address(session_1, DEFAULT_MNEMONIC_1, options);
+        const auto address_2 = login_and_get_receive_address(session_2, DEFAULT_MNEMONIC_2, options);
 
         sdk::http_jsonrpc_client rpc;
         const auto send_request = rpc.make_send_to_address(address_1["address"], "2");
@@ -61,13 +63,15 @@ int main(int argc, char** argv)
         const bool send_all = false;
         const bool manual_selection = false;
         std::vector<nlohmann::json> addressees{ { { "address", addr }, { "satoshi", 100000 } } };
-        nlohmann::json details = { { "addressees", addressees }, { "utxos", utxos }, { "subaccount", 0 },
-            { "fee_rate", 1000 }, { "send_all", send_all }, { "manual_selection", manual_selection } };
+        nlohmann::json details
+            = { { "addressees", addressees }, { "utxos", utxos }, { "subaccount", 0 }, { "fee_rate", 1000 },
+                  { "send_all", send_all }, { "manual_selection", manual_selection }, { "memo", "test memo" } };
 
         nlohmann::json transaction = session_1.send(details, nlohmann::json());
 
         nlohmann::json tx_details = session_1.get_transaction_details(transaction["txhash"]);
-        (void)tx_details;
+        GA_SDK_RUNTIME_ASSERT(tx_details.find("transaction") != tx_details.end());
+        GA_SDK_RUNTIME_ASSERT(tx_details.find("txhash") != tx_details.end());
         // std::cerr << tx_details.dump() << std::endl;
 
     } catch (const std::exception& e) {

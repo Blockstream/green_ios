@@ -70,6 +70,8 @@ endif
 
 if get_option('buildtype') == 'debug'
     add_project_arguments(['-g', '-fno-omit-frame-pointer', '-D_GLIBCXX_ASSERTIONS'], language : ['c', 'cpp'])
+else
+    add_project_arguments(['-DNDEBUG'], language : ['c', 'cpp'])
 endif
 
 if meson.is_cross_build()

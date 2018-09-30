@@ -3,6 +3,7 @@
 #include "argparser.h"
 
 #include "include/session.h"
+#include "include/twofactor.h"
 #include "include/utils.h"
 
 int main(int argc, char* argv[])
@@ -30,10 +31,15 @@ int main(int argc, char* argv[])
         struct GA_session* session = NULL;
         ret = ret == GA_OK ? GA_create_session(&session) : ret;
         ret = ret == GA_OK ? GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 1) : ret;
-        ret = ret == GA_OK ? GA_login_with_pin(session, "0000", pin_data) : ret;
-        GA_json* twofactor;
-        ret = ret == GA_OK ? GA_convert_string_to_json("{}", &twofactor) : ret;
-        ret = ret == GA_OK ? GA_remove_account(session, twofactor) : ret;
+        ret = ret == GA_OK ? GA_login_with_pin(session, "0001", pin_data) : ret;
+        ret = ret != GA_OK ? GA_login_with_pin(session, "0000", pin_data) : ret;
+        struct GA_twofactor_call* call = NULL;
+        ret = ret == GA_OK ? GA_remove_account(session, &call) : ret;
+        if (ret == GA_OK) {
+            /* Just call directly since we know this account has no 2FA */
+            ret = GA_twofactor_call(call);
+        }
+        GA_destroy_twofactor_call(call);
         GA_destroy_session(session);
     }
 

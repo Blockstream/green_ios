@@ -8,45 +8,63 @@
 extern "C" {
 #endif
 
-/** Represents an api method call that requires (potentially) two factor authentication to complete.
+/*
+ * Methods in the api that may require two factor authentication to complete
+ * return a GA_twofactor_call object. This object encapsulates the process of
+ * determining whether two factor authentication is required and handling
+ * conditions such as re-prompting and re-trying after an incorrect two
+ * factor code is entered.
  *
- * Methods in the api that require two factor authentication to complete are called by first obtaining
- * a GA_twofactor_call, then introspecting it to determine if 2fa is required and resolving the 2fa
- * if necessary before finally making the actual call. Calls are also chained together so that where
- * multiple calls are required it is transparent to the client.
+ * The object acts as a state machine which is stepped through by the caller
+ * until the desired action is completed. At each step, the current state can
+ * be determined and used to perform the next action required.
  *
- * For example, to set the email address on a wallet requires two api calls: twofactor.set_email (which
- * requires 2fa if enabled) and then twofactor.activate_email (which requires 2fa of the address being
- * enabled). This is exposed via GA_twofactor_call so that clients can call:
+ * Some actions require a sequence of codes and decisions; these are hidden
+ * behind the state machine interface so that callers do not need to handle
+ * special cases or program their own logic to handle any lower level API
+ * differences.
  *
- * struct GA_twofactor_call* call;
- * GA_twofactor_set_email(session, email_address, &call);
- * resolve_2fa(call);
- * GA_destroy_twofactor_call(call);
- *
- * where the function resolve_2fa is implemented by the client to handle interaction with the user
- * to resolve the two factor authentication as necessary. It will generally take the form:
+ * Example psuedo code to iterate through the state machine is:
  *
  * function resolve_2fa(call) -> JSON result
  *     while true:
  *         status = GA_twofactor_get_status(call)
- *         if status["status"] == "error":
- *             throw status["status"]
- *         if status["status"] == "done":
+ *         status_text = status["status"]
+ *         if status_text == "error":
+ *             GA_destroy_twofactor_call(call);
+ *             throw status["error"]
+ *         else if status_text == "done":
+ *             GA_destroy_twofactor_call(call);
  *             return status["result"]
- *         if status["status"] == "request_code":
- *             method = USER_SELECT_FACTOR(call, status["methods"]);
+ *         else if status_text == "request_code":
+ *             method = USER_SELECT_METHOD(call, status["methods"]);
  *             GA_twofactor_request_code(call, method);
- *         else if status["status"] == "resolve_code":
+ *         else if status_text == "resolve_code":
  *             const char* code = USER_GET_CODE(status["method"]);
  *             GA_twofactor_authorize(call, code);
- *         else if status["status"] == "call":
+ *         else if status_text == "call":
  *             GA_twofactor_call(call);
  *
- * The functions USER_SELECT_FACTOR and USER_GET_CODE implement the required user interaction and will
- * be specific to the client (e.g. a GUI app will probably show some kind of modal dialog)
+ * The functions USER_SELECT_METHOD and USER_GET_CODE must be implemented by
+ * the caller as follows:
+ * - USER_SELECT_METHOD: Given a list of two factor authentication methods,
+ *   allow the user to select one and return it. In the event that only one
+ *   method is present in the list, this call can return it directly without
+ *   showing anything to the user.
+ * - USER_GET_CODE: Given a single two factor method name, allow the user
+ *   to enter the code received and return it.
+ *
+ * Generally in interactive applications these functions would display some
+ * kind of dialog to implement the required user interaction.
  */
-struct GA_twofactor_call;
+
+/**
+ * Get the status/result of a two factor call.
+ *
+ * @call Call to get the result from
+ * @output Destination for the result
+ */
+GASDK_API int GA_twofactor_get_status(struct GA_twofactor_call* call, GA_json** output);
 
 /**
  * Request a two method authentication code be sent from the server
@@ -67,14 +85,6 @@ GASDK_API int GA_twofactor_request_code(struct GA_twofactor_call* call, const ch
 GASDK_API int GA_twofactor_resolve_code(struct GA_twofactor_call* call, const char* code);
 
 /**
- * Get the status/result of a two factor call.
- *
- * @call Call to get the result from
- * @output Destination for the result
- */
-GASDK_API int GA_twofactor_get_status(struct GA_twofactor_call* call, struct GA_json** output);
-
-/**
  * Call a 2fa function
  * @call The call with any two factor authentication already resolved
  *
@@ -91,34 +101,20 @@ GASDK_API int GA_twofactor_call(struct GA_twofactor_call* call);
 GASDK_API int GA_destroy_twofactor_call(struct GA_twofactor_call* call);
 
 /**
- * Set the email address for a wallet.
+ * Enable or disable a two factor authentication method
  * @session The server session to use
- *
- * When resolved and passed to GA_twofactor_call will call api methods twofactor.set_email
- * and twofactor.activate_email to complete the operation.
+ * @method The two factor method to enable/disable, i.e. "email", "sms", "phone", "gauth"
+ * @twofactor_details The two factor method and associated data such as an email address
+ * @call Destination for the resulting GA_twofactor_call to perform the action
  */
-GASDK_API int GA_twofactor_set_email(struct GA_session* session, const char* email, struct GA_twofactor_call** call);
-
-/**
- * Enable a two factor authentication method
- * @session The server session to use
- * @method The method to enable, e.g. "email"
- * @data Method specific data, for example for email is an email address
- */
-GASDK_API int GA_twofactor_enable(
-    struct GA_session* session, const char* method, const char* data, struct GA_twofactor_call** call);
-
-/**
- * Disable a two factor authentication method
- */
-GASDK_API int GA_twofactor_disable(struct GA_session* session, const char* method, struct GA_twofactor_call** call);
+GASDK_API int GA_change_settings_twofactor(
+    struct GA_session* session, const char* method, const GA_json* twofactor_details, struct GA_twofactor_call** call);
 
 /** Change the transaction limit (total, BTC) */
+#if 0
 GASDK_API int GA_twofactor_change_tx_limits(
     struct GA_session* session, const char* total, struct GA_twofactor_call** call);
-
-GASDK_API int GA_twofactor_send_transaction(
-    struct GA_session* session, const struct GA_json* transaction_details, struct GA_twofactor_call** call);
+#endif
 
 #ifdef __cplusplus
 }

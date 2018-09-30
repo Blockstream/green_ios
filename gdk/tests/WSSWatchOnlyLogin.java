@@ -15,8 +15,16 @@ public class WSSWatchOnlyLogin {
         }
 
         final Object session = GASDK.create_session();
+        try {
         GASDK.connect(session, network, GASDK.GA_TRUE);
         GASDK.login_watch_only(session, USERNAME, PASSWORD);
+        } catch (final Exception ex) {
+            if (network == GASDK.GA_NETWORK_LOCALTEST) {
+                System.out.println("Skipping test (requires testnet or local environment w/proxy)");
+                return;
+            }
+            throw ex;
+        }
         final String txs = (String) GASDK.get_transactions(session, 0, 0);
     }
 }

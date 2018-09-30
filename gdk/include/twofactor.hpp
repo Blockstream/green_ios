@@ -6,27 +6,20 @@
 #include "session.hpp"
 
 struct GA_twofactor_call {
-public:
-    explicit GA_twofactor_call(ga::sdk::session& session, const std::string& action);
-    GA_twofactor_call(ga::sdk::session& session, const std::string& action, std::vector<std::string> twofactor_methods);
+    GA_twofactor_call(ga::sdk::session& session, const std::string& action);
     GA_twofactor_call(const GA_twofactor_call&) = delete;
     GA_twofactor_call& operator=(const GA_twofactor_call&) = delete;
     GA_twofactor_call(GA_twofactor_call&&) = delete;
     GA_twofactor_call& operator=(GA_twofactor_call&&) = delete;
     virtual ~GA_twofactor_call() = default;
 
-    virtual void request_code(const std::string& method) = 0;
+    virtual void request_code(const std::string& method);
     void resolve_code(const std::string& code);
 
     virtual nlohmann::json get_status() const;
     virtual void operator()();
 
 protected:
-    nlohmann::json get_twofactor_data() const;
-
-    void request_code_impl(const std::string& method, const nlohmann::json& twofactor_data);
-    virtual void call_impl() = 0;
-
     enum class state_type : uint32_t {
         request_code, // Caller should ask the user to pick 2fa and request a code
         resolve_code, // Caller should resolve the code the user has entered
@@ -35,6 +28,11 @@ protected:
         error // User should handle the error
     };
 
+    void set_error(const std::string& error_message);
+
+    void request_code_impl(const std::string& method);
+    virtual state_type call_impl() = 0;
+
     ga::sdk::session& m_session;
     std::vector<std::string> m_methods; // Al available methods
     std::string m_method; // Selected 2fa method
@@ -42,6 +40,7 @@ protected:
     std::string m_code; // The 2fa code - from the user
     nlohmann::json m_error; // Error details if any
     nlohmann::json m_result; // Result of any successful action
+    nlohmann::json m_twofactor_data; // Actual data to send along with any call
     state_type m_state; // Current state
 };
 

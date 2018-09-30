@@ -86,7 +86,7 @@ fileprivate func convertOpaqueJsonToString(o: OpaquePointer) throws -> String? {
 }
 
 // An operation that potentially requires two factor authentication and multiple
-// iterations to complete, e.g. twofactor.set_email/activate_email
+// iterations to complete, e.g. setting and then activating email notifications
 public class TwoFactorCall {
     private var optr: OpaquePointer? = nil
 
@@ -197,12 +197,10 @@ public class Session {
         try callWrapper(fun: GA_login_watch_only(session, username, password))
     }
 
-    public func removeAccount(twofactor_data: [String: Any]) throws {
-        var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)
-        try callWrapper(fun: GA_remove_account(session, twofactor_json))
-        defer {
-            GA_destroy_json(twofactor_json)
-        }
+    public func removeAccount() throws -> TwoFactorCall {
+        var optr: OpaquePointer? = nil;
+        try callWrapper(fun: GA_remove_account(session, &optr));
+        return TwoFactorCall(optr: optr!);
     }
 
     public func createSubaccount(details: [String: Any]) throws -> [String: Any]? {
@@ -335,26 +333,13 @@ public class Session {
         return try convertOpaqueJsonToDict(o: result!)
     }
 
-    public func sendTransaction(details: [String: Any], twofactor_data: [String: Any]) throws -> [String: Any]? {
-        var result: OpaquePointer? = nil
-        var details_json: OpaquePointer = try convertDictToJSON(dict: details)
-        var twofactor_json: OpaquePointer = try convertDictToJSON(dict: twofactor_data)
-        defer {
-            GA_destroy_json(details_json)
-            GA_destroy_json(twofactor_json)
-            GA_destroy_json(result)
-        }
-        try callWrapper(fun: GA_send_transaction(session, details_json, twofactor_json, &result));
-        return try convertOpaqueJsonToDict(o: result!)
-    }
-
     public func sendTransaction(details: [String: Any]) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
         var details_json: OpaquePointer = try convertDictToJSON(dict: details)
         defer {
             GA_destroy_json(details_json)
         }
-        try callWrapper(fun: GA_twofactor_send_transaction(session, details_json, &optr));
+        try callWrapper(fun: GA_send_transaction(session, details_json, &optr));
         return TwoFactorCall(optr: optr!);
     }
 
@@ -384,21 +369,13 @@ public class Session {
         try callWrapper(fun: GA_ack_system_message(session, message))
     }
 
-    public func setEmail(email: String) throws -> TwoFactorCall {
+    public func changeSettingsTwoFactor(method: String, details: [String: Any]) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
-        //try callWrapper(fun: GA_twofactor_set_email(session, email, &optr));
-        return TwoFactorCall(optr: optr!);
-    }
-
-    public func enableTwoFactor(method: String, data: String) throws -> TwoFactorCall {
-        var optr: OpaquePointer? = nil;
-        //try callWrapper(fun: GA_twofactor_enable(session, method, data, &optr));
-        return TwoFactorCall(optr: optr!);
-    }
-
-    public func disableTwoFactor(method: String) throws -> TwoFactorCall {
-        var optr: OpaquePointer? = nil;
-        //try callWrapper(fun: GA_twofactor_disable(session, method, &optr));
+        var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+        defer {
+            GA_destroy_json(details_json)
+        }
+        try callWrapper(fun: GA_change_settings_twofactor(session, method, details_json, &optr));
         return TwoFactorCall(optr: optr!);
     }
 

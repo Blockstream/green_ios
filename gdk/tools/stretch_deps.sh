@@ -11,8 +11,8 @@ update-java-alternatives -s java-1.8.0-openjdk-amd64
 pip3 install --require-hashes -r /requirements.txt
 rm /requirements.txt
 
-wget -O ndk.zip https://dl.google.com/android/repository/android-ndk-r17b-linux-x86_64.zip
-echo "5dfbbdc2d3ba859fed90d0e978af87c71a91a5be1f6e1c40ba697503d48ccecd ndk.zip" | sha256sum --check
+wget -O ndk.zip https://dl.google.com/android/repository/android-ndk-r18-linux-x86_64.zip
+echo "c413dd014edc37f822d0dc88fabc05b64232d07d5c6e9345224e47073fdf140b ndk.zip" | sha256sum --check
 unzip ndk.zip
 rm ndk.zip
 

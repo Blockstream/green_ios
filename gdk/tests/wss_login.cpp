@@ -17,7 +17,8 @@ int main(int argc, char** argv)
     parse_cmd_line_arguments(argc, argv, &options);
     try {
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+        session.connect(
+            options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), options->quiet == 0);
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
         // TODO GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);
