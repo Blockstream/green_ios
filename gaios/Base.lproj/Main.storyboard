@@ -1598,10 +1598,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b4a-oP-ynd">
-                                <rect key="frame" x="0.0" y="508" width="320" height="60"/>
+                                <rect key="frame" x="0.0" y="498" width="320" height="70"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KX5-r6-KkB" customClass="SlidingButton" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="16" y="18" width="288" height="42"/>
+                                        <rect key="frame" x="16" y="12" width="288" height="42"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="42" id="rRl-cL-gur"/>
@@ -1628,14 +1628,13 @@
                                 <color key="backgroundColor" red="0.23529411759999999" green="0.27058823529999998" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="KX5-r6-KkB" secondAttribute="trailing" constant="16" id="0Sw-q9-R9i"/>
-                                    <constraint firstAttribute="bottom" secondItem="KX5-r6-KkB" secondAttribute="bottom" id="DE9-H1-YKb"/>
-                                    <constraint firstAttribute="height" constant="60" id="dXn-56-drm"/>
+                                    <constraint firstAttribute="bottom" secondItem="KX5-r6-KkB" secondAttribute="bottom" constant="16" id="DE9-H1-YKb"/>
+                                    <constraint firstAttribute="height" constant="70" id="dXn-56-drm"/>
                                     <constraint firstItem="KX5-r6-KkB" firstAttribute="leading" secondItem="b4a-oP-ynd" secondAttribute="leading" constant="16" id="dtb-Nz-pGx"/>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="80" id="vei-Ul-hci"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kYa-TB-Sez">
-                                <rect key="frame" x="0.0" y="64" width="320" height="444"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="434"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SENDING" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kqu-cj-tFb">
@@ -3386,10 +3385,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owv-rr-Wjs">
-                                <rect key="frame" x="0.0" y="508" width="320" height="60"/>
+                                <rect key="frame" x="0.0" y="498" width="320" height="70"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yKw-zw-wMj">
-                                        <rect key="frame" x="17" y="18" width="300" height="42"/>
+                                        <rect key="frame" x="10" y="14" width="300" height="42"/>
                                         <color key="backgroundColor" red="0.0" green="0.70588235294117641" blue="0.3529411764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="42" id="t1M-hD-WHf"/>
@@ -3405,14 +3404,14 @@
                                 </subviews>
                                 <color key="backgroundColor" name="customTitaniumMedium"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="IJv-vh-tUZ"/>
-                                    <constraint firstAttribute="bottom" secondItem="yKw-zw-wMj" secondAttribute="bottom" id="MBo-Kj-vkM"/>
+                                    <constraint firstAttribute="height" constant="70" id="IJv-vh-tUZ"/>
+                                    <constraint firstAttribute="bottom" secondItem="yKw-zw-wMj" secondAttribute="bottom" constant="16" id="MBo-Kj-vkM"/>
                                     <constraint firstAttribute="trailing" secondItem="yKw-zw-wMj" secondAttribute="trailing" constant="16" id="p1D-YR-BMx"/>
                                     <constraint firstItem="yKw-zw-wMj" firstAttribute="leading" secondItem="owv-rr-Wjs" secondAttribute="leading" constant="16" id="tzc-Bq-bIt"/>
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0zh-xv-K5C">
-                                <rect key="frame" x="0.0" y="419" width="320" height="89"/>
+                                <rect key="frame" x="0.0" y="419" width="320" height="79"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Tj-sc-2Uk">
@@ -3478,14 +3477,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vUj-gj-dgv">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="508"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="498"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DJq-8p-LLO">
-                                <rect key="frame" x="0.0" y="508" width="320" height="60"/>
+                                <rect key="frame" x="0.0" y="498" width="320" height="70"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GsR-Wi-UP6">
-                                        <rect key="frame" x="17" y="18" width="300" height="42"/>
+                                        <rect key="frame" x="12" y="14" width="300" height="42"/>
                                         <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="42" id="dVw-vA-YLn"/>
@@ -3501,10 +3500,10 @@
                                 </subviews>
                                 <color key="backgroundColor" name="customTitaniumMedium"/>
                                 <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="GsR-Wi-UP6" secondAttribute="bottom" id="HzF-Z5-u5n"/>
+                                    <constraint firstAttribute="bottom" secondItem="GsR-Wi-UP6" secondAttribute="bottom" constant="16" id="HzF-Z5-u5n"/>
                                     <constraint firstAttribute="trailing" secondItem="GsR-Wi-UP6" secondAttribute="trailing" constant="16" id="bwz-Oc-ndu"/>
                                     <constraint firstItem="GsR-Wi-UP6" firstAttribute="leading" secondItem="DJq-8p-LLO" secondAttribute="leading" constant="16" id="iWI-Z0-qBx"/>
-                                    <constraint firstAttribute="height" constant="60" id="zYd-hn-7KW"/>
+                                    <constraint firstAttribute="height" constant="70" id="zYd-hn-7KW"/>
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RECIPIENT" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gHm-CC-0OT">
@@ -4500,7 +4499,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Xyh-IG-SIs"/>
+        <segue reference="rpv-sH-2b4"/>
         <segue reference="Bxl-Iw-aPv"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="t6L-Yh-lPv"/>

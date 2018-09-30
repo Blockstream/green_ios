@@ -150,6 +150,11 @@ class SendBtcDetailsViewController: UIViewController {
         do {
             let unspent = try getSession().getUnspentOutputs(subaccount: (wallet?.pointer)!, num_confs: 1)
             details["utxos"] = unspent?["array"]
+            if (details.count == 0 || (details["utxos"] as! [Any]).count == 0) {
+                g_payload = nil
+                updateButton()
+                return
+            }
             print(details)
             let payload = try getSession().createTransaction(details: details)
             let error = payload!["error"] as! String
