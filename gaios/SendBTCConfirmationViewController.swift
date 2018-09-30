@@ -80,14 +80,49 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
             wrap {try getSession().sendTransaction(details: self.payload!)
                 }.done { (result: TwoFactorCall?) in
                     do {
-                        try result?.call()
-                        let json = try result?.getStatus()
-                        print(json)
+                        let status = try result?.getStatus()
+                        let parsed = status!["status"] as! String
+                        if(parsed == "request_code") {
+                            //request code
+                            let methods = status!["methods"] as! NSArray
+                            if(methods.count > 1) {
+                                self.stopAnimating()
+                                self.performSegue(withIdentifier: "twoFactorSelector", sender: result)
+                            } else {
+                                let method = methods[0] as! String
+                                let req = try result?.requestCode(method: "email")
+                                let status1 = try result?.getStatus()
+                                let parsed1 = status1!["status"] as! String
+                                if(parsed1 == "resolve_code") {
+                                    self.stopAnimating()
+                                    self.performSegue(withIdentifier: "twoFactor", sender: result)
+                                }
+                            }
+
+                        } else if (parsed == "call") {
+                            let json = try result?.call()
+                            self.stopAnimating()
+                            print("No 2 factor")
+                        }
+                        print(status)
                     } catch {
+                        self.stopAnimating()
                         print("couldn't call")
                     }
                 } .catch { error in
+                    self.stopAnimating()
+                    print(error)
+                    print("wtf")
             }
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.twoFactor = sender as? TwoFactorCall
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
+            nextController.twoFactor = sender as? TwoFactorCall
         }
     }
 

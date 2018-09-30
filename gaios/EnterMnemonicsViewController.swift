@@ -56,7 +56,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
                 getAppDelegate().setMnemonicWords(array!)
                 AppDelegate.removeKeychainData()
                 AccountStore.shared.initializeAccountStore()
-                self.performSegue(withIdentifier: "security", sender: self)
+                self.performSegue(withIdentifier: "mainMenu", sender: self)
             }.catch { error in
                 print("Login failed")
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)

@@ -122,7 +122,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                                 self.stopAnimating()
                                 SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
                                 KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
-                                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                                self.performSegue(withIdentifier: "improveSecurity", sender: self)
                             }
                         }.catch { error in
                             print("setPin failed")
@@ -134,6 +134,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             }
                     }
                 }
+                return
             }
             confirmPin = true
             pinConfirm = pinCode

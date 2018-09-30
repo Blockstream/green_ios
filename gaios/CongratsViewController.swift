@@ -68,7 +68,7 @@ class CongratsViewController: UIViewController {
                         }
                         KeychainHelper.savePassword(service: "password", account: "user", data: password)
                         KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
-                        self.performSegue(withIdentifier: "mainMenu", sender: self)
+                        self.performSegue(withIdentifier: "improveSecurity", sender: self)
                     }.catch { error in
                         print("setPin failed")
                 }

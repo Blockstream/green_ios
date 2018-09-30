@@ -153,6 +153,39 @@ class AccountStore {
         return result
     }
 
+    func enableEmailTwoFactor(email: String) -> TwoFactorCall? {
+        //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
+        let dict = ["enabled": true, "confirmed": true, "data": email] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "email", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
+    func enableSMSTwoFactor(phoneNumber: String) -> TwoFactorCall? {
+        //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
+        let dict = ["enabled": true, "confirmed": true, "data": phoneNumber] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "sms", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
+    func enablePhoneCallTwoFactor(phoneNumber: String) -> TwoFactorCall? {
+        //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
+        let dict = ["enabled": true, "confirmed": true, "data": phoneNumber] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
     func initializeAccountStore() {
         SettingsStore.shared.initSettingsStore()
         exchangeRate = 1 //get exchange rate

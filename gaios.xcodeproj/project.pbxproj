@@ -54,8 +54,10 @@
 		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
 		0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */; };
+		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
+		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
 		0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85920DD859200F6AAAB /* SendBtcViewController.swift */; };
@@ -155,8 +157,10 @@
 		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
 		0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetViewController.swift; sourceTree = "<group>"; };
+		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
+		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
 		0992F85920DD859200F6AAAB /* SendBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcViewController.swift; sourceTree = "<group>"; };
@@ -340,45 +344,47 @@
 				092C7BD320D23F0800F90DF2 /* Controllers */,
 				092C7BC620D2381700F90DF2 /* Views */,
 				092E1EAE20CF98AF00362253 /* helpers */,
-				092C7BC820D238BD00F90DF2 /* ViewController.swift */,
-				676FCF2D1F9D0CF800354E93 /* Info.plist */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
-				676FCF531F9D0E7100354E93 /* CreateViewController.swift */,
-				092D5C6320C04D130077048C /* CreateWalletViewController.swift */,
-				09342FDB21004309009DCDEA /* CustomAlertInputView.swift */,
-				09358BD52106A57D00D1066F /* CustomAletView.swift */,
-				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
-				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
+				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
+				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
+				0926C14B211912AE0008F94A /* InstructionViewController.swift */,
+				092D5C6320C04D130077048C /* CreateWalletViewController.swift */,
 				092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */,
-				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
-				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
-				676FCF251F9D0CF800354E93 /* Main.storyboard */,
+				092A84CE211BFE120062F0B2 /* CongratsViewController.swift */,
+				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
+				09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */,
+				0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */,
+				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
+				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
+				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
+				092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */,
+				09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */,
+				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
+				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */,
-				676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */,
+				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
+				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
+				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
+				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
+				092C7BC820D238BD00F90DF2 /* ViewController.swift */,
+				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
 				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
 				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
 				0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */,
 				092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */,
-				092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */,
-				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
-				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
-				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
-				092A84CE211BFE120062F0B2 /* CongratsViewController.swift */,
-				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
-				0926C14B211912AE0008F94A /* InstructionViewController.swift */,
-				0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */,
-				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
+				676FCF2D1F9D0CF800354E93 /* Info.plist */,
+				676FCF531F9D0E7100354E93 /* CreateViewController.swift */,
+				09342FDB21004309009DCDEA /* CustomAlertInputView.swift */,
+				09358BD52106A57D00D1066F /* CustomAletView.swift */,
+				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
+				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
+				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
+				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
+				676FCF251F9D0CF800354E93 /* Main.storyboard */,
+				676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */,
 				09A8991520FADFE000E105EC /* IntroPageViewController.swift */,
-				09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */,
-				09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */,
-				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
-				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
-				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
-				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
-				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
-				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
 				0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */,
 			);
 			path = gaios;
@@ -706,6 +712,7 @@
 				09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */,
 				09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */,
 				0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */,
+				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* TransactionViewController.swift in Sources */,
 				092D05AF2123E27A00B9B7CD /* NotificationStore.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
@@ -733,6 +740,7 @@
 				09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */,
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
+				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,

@@ -1,48 +1,49 @@
 //
-//  SetEmailViewController.swift
+//  SetPhoneViewController.swift
 //  gaios
 //
-//  Created by Strahinja Markovic on 8/8/18.
+//  Created by Strahinja Markovic on 9/28/18.
 //  Copyright © 2018 Goncalo Carvalho. All rights reserved.
 //
 
 import Foundation
 import UIKit
-import NVActivityIndicatorView
 
-class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
-
-
-    @IBOutlet weak var textField: UITextField!
-    @IBOutlet weak var getCodeButton: UIButton!
+class SetPhoneViewController: UIViewController {
+   
+    @IBOutlet weak var textField: SearchTextField!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
-    var emailFactor: TwoFactorCall? = nil
+    @IBOutlet weak var getCodeButton: UIButton!
+    var sms = false
+    var phoneCall = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        textField.attributedPlaceholder = NSAttributedString(string: "email@domainm.com",
+        textField.attributedPlaceholder = NSAttributedString(string: "+1 123456789",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        getCodeButton.backgroundColor = UIColor.customTitaniumLight()
         textField.becomeFirstResponder()
     }
 
-    @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
-    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         getCodeButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
     @IBAction func getCodeClicked(_ sender: Any) {
-        let twoFactor = AccountStore.shared.enableEmailTwoFactor(email: self.textField.text!)
+        var twoFactor: TwoFactorCall? = nil
+        if (sms == true) {
+            twoFactor = AccountStore.shared.enableSMSTwoFactor(phoneNumber: self.textField.text!)
+        } else {
+            twoFactor = AccountStore.shared.enablePhoneCallTwoFactor(phoneNumber: self.textField.text!)
+        }
+
         if (twoFactor != nil) {
             wrap { try twoFactor?.getStatus()}.done{ (json: [String: Any]?) in
                 let status = json!["status"] as! String
@@ -53,18 +54,9 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
                             print("could't call two factor")
                     }
                 }
-            }.catch { error in
-                print("could get two factor status")
+                }.catch { error in
+                    print("could get two factor status")
             }
-        }
-    }
-
-    func failureMessage() {
-        DispatchQueue.main.async {
-            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
-        }
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-            self.stopAnimating()
         }
     }
 
@@ -81,13 +73,6 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.onboarding = true
-            nextController.twoFactor = sender as! TwoFactorCall
-        }
-    }
-
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y != 0{
@@ -100,4 +85,16 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
             }
         }
     }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.onboarding = true
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+    }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+
 }
