@@ -30,7 +30,7 @@ class NotificationStore {
                         for tx in list {
                             print(tx)
                             let transaction = tx as! [String : Any]
-                            let satoshi:Int = transaction["value"] as! Int
+                            let satoshi:Int = transaction["satoshi"] as! Int
                             let hash = transaction["txhash"] as! String
                             let dateString = transaction["created_at"] as! String
                             let date = Date.dateFromString(dateString: dateString)

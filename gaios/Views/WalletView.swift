@@ -83,7 +83,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             for tx in list.reversed() {
                 print(tx)
                 let transaction = tx as! [String : Any]
-                let satoshi:Int = transaction["value"] as! Int
+                let satoshi:Int = transaction["satoshi"] as! Int
                 let hash = transaction["txhash"] as! String
                 let dateString = transaction["created_at"] as! String
                 let type = transaction["type"] as! String

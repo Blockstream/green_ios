@@ -31,7 +31,7 @@ class CreateWalletViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        getAppDelegate().setMnemonicWords(try! generateMnemonic(lang: "en").components(separatedBy: " "))
+        getAppDelegate().setMnemonicWords(try! generateMnemonic().components(separatedBy: " "))
         mnemonics = getAppDelegate().getMnemonicWords()!
         let maxWidth = self.view.frame.width - 50 - 60
         let width = maxWidth / 6

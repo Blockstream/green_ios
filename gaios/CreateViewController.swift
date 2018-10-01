@@ -13,7 +13,7 @@ class CreateViewController: UITableViewController {
         super.viewDidLoad()
 
         if getAppDelegate().getMnemonicWords() == nil {
-            getAppDelegate().setMnemonicWords(try! generateMnemonic(lang: "en").components(separatedBy: " "))
+            getAppDelegate().setMnemonicWords(try! generateMnemonic().components(separatedBy: " "))
         }
     }
 
