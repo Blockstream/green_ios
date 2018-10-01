@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     {
         struct GA_session* session = NULL;
         char* mnemonic = NULL;
-        ret = ret == GA_OK ? GA_generate_mnemonic("en", &mnemonic) : ret;
+        ret = ret == GA_OK ? GA_generate_mnemonic(&mnemonic) : ret;
         ret = GA_create_session(&session);
         ret = ret == GA_OK ? GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, 1) : ret;
         ret = ret == GA_OK ? GA_register_user(session, mnemonic) : ret;

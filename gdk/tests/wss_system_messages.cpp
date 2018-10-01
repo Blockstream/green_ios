@@ -6,9 +6,8 @@
 #include "include/assertion.hpp"
 #include "include/session.hpp"
 
-const std::string DEFAULT_MNEMONIC(
-    "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive "
-    "spike pond industry time hero trim verb mammal asthma");
+const std::string DEFAULT_MNEMONIC("reopen danger sadness twenty move hire milk rally wing nature group correct tissue "
+                                   "prefer scale scatter love resource around parade citizen topic consider exchange");
 
 void assert_ack_throws(ga::sdk::session& session, const std::string& message)
 {

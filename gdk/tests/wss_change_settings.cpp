@@ -4,9 +4,8 @@
 
 #include "include/session.hpp"
 
-const std::string DEFAULT_MNEMONIC(
-    "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive "
-    "spike pond industry time hero trim verb mammal asthma");
+const std::string DEFAULT_MNEMONIC("scrub fabric reason comic sketch aerobic feel dress quick frog air capable october "
+                                   "avoid rail tent arctic gym cliff piece bitter cigar mutual cage");
 
 int main(int argc, char** argv)
 {

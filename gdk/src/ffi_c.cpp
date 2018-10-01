@@ -40,11 +40,11 @@ template <typename F, typename... Args> auto c_invoke(F&& f, Args&&... args)
         return GA_ERROR;
     } catch (const autobahn::no_session_error& e) {
         return GA_SESSION_LOST;
-    } catch (const ga::sdk::reconnect_error& ex) {
+    } catch (const ga::sdk::reconnect_error& e) {
         return GA_RECONNECT;
-    } catch (const ga::sdk::timeout_error& ex) {
+    } catch (const ga::sdk::timeout_error& e) {
         return GA_TIMEOUT;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_ERROR;
     }
 }
@@ -126,7 +126,7 @@ int GA_create_session(struct GA_session** session)
         GA_SDK_RUNTIME_ASSERT(session);
         *session = new GA_session();
         return GA_OK;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_ERROR;
     }
 }
@@ -200,6 +200,10 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_create_transaction, struct GA_session*, session, c
     GA_json**, transaction,
     { *json_cast(transaction) = new nlohmann::json(session->create_transaction(*json_cast(transaction_details))); })
 
+GA_SDK_DEFINE_C_FUNCTION_3(GA_sign_transaction, struct GA_session*, session, const GA_json*, transaction_details,
+    GA_json**, transaction,
+    { *json_cast(transaction) = new nlohmann::json(session->sign_transaction(*json_cast(transaction_details))); })
+
 GA_SDK_DEFINE_C_FUNCTION_1(GA_send_nlocktimes, struct GA_session*, session, { session->send_nlocktimes(); })
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_set_transaction_memo, struct GA_session*, session, const char*, txhash_hex, const char*,
@@ -265,6 +269,12 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_get_unspent_outputs, struct GA_session*, session, 
     num_confs, GA_json**, utxos,
     { *json_cast(utxos) = new nlohmann::json(session->get_unspent_outputs(subaccount, num_confs)); })
 
+GA_SDK_DEFINE_C_FUNCTION_5(GA_get_unspent_outputs_for_private_key, struct GA_session*, session, const char*,
+    private_key, const char*, password, uint32_t, unused, GA_json**, utxos, {
+        *json_cast(utxos)
+            = new nlohmann::json(session->get_unspent_outputs_for_private_key(private_key, password, unused));
+    })
+
 GA_SDK_DEFINE_C_FUNCTION_3(GA_get_transaction_details, struct GA_session*, session, const char*, txhash_hex, GA_json**,
     transaction, { *json_cast(transaction) = new nlohmann::json(session->get_transaction_details(txhash_hex)); })
 
@@ -273,6 +283,9 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_get_available_currencies, struct GA_session*, sess
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_amount, struct GA_session*, session, const GA_json*, json, GA_json**, output,
     { *json_cast(output) = new nlohmann::json(session->convert_amount(*json_cast(json))); })
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_encrypt_decrypt, struct GA_session*, session, const GA_json*, input, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(session->encrypt_decrypt(*json_cast(input))); })
 
 GA_SDK_DEFINE_C_FUNCTION_5(GA_set_pin, struct GA_session*, session, const char*, mnemonic, const char*, pin,
     const char*, device, GA_json**, pin_data,

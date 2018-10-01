@@ -2,8 +2,7 @@ import com.blockstream.libgreenaddress.GASDK;
 
 public class WSSLogin {
     private final static String DEFAULT_MNEMONIC =
-          "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive " +
-          "spike pond industry time hero trim verb mammal asthma";
+          "pony void civil theme thank acoustic insect also cruel arrive reform normal edit awesome deputy ugly wasp eager stumble rule time mask apart critic";
     public static void main(final String args[]) throws Exception {
         int network = GASDK.GA_NETWORK_TESTNET;
         for (final String arg : args) {

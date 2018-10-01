@@ -34,7 +34,7 @@ protected:
     virtual state_type call_impl() = 0;
 
     ga::sdk::session& m_session;
-    std::vector<std::string> m_methods; // Al available methods
+    std::vector<std::string> m_methods; // All available methods
     std::string m_method; // Selected 2fa method
     std::string m_action; // Selected 2fa action name (send_raw_tx, set_csvtime etc)
     std::string m_code; // The 2fa code - from the user
@@ -42,6 +42,7 @@ protected:
     nlohmann::json m_result; // Result of any successful action
     nlohmann::json m_twofactor_data; // Actual data to send along with any call
     state_type m_state; // Current state
+    uint32_t m_attempts_remaining;
 };
 
 #endif

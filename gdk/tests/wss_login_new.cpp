@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
-        const auto mnemonic = sdk::mnemonic_from_bytes(sdk::get_random_bytes<32>().data(), 32, "en");
+        const auto mnemonic = sdk::mnemonic_from_bytes(sdk::get_random_bytes<32>().data(), 32);
 
         nlohmann::json pin_info;
         std::string username = sdk::hex_from_bytes(sdk::get_random_bytes<8>());

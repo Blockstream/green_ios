@@ -249,6 +249,22 @@ GASDK_API int GA_get_unspent_outputs(
     struct GA_session* session, uint32_t subaccount, uint32_t num_confs, GA_json** utxos);
 
 /**
+ * Get the unspent transaction outputs associated with a non-wallet private key.
+ *
+ * @session The server session to use.
+ * @key The private key in WIF or BIP 38 format.
+ * @password The password the key is encrypted with, if any.
+ * @unused unused, must be 0
+ * @utxos Destination for the returned utxos.
+ *
+ * Note that the private key or its derived public key are never transmitted.
+ *
+ * GA_ERROR if utxos could not be retrieved.
+ */
+GASDK_API int GA_get_unspent_outputs_for_private_key(
+    struct GA_session* session, const char* private_key, const char* password, uint32_t unused, GA_json** utxos);
+
+/**
  * Get a transaction's details.
  *
  * @session The server session to use.
@@ -319,13 +335,25 @@ GASDK_API int GA_create_transaction(
     struct GA_session* session, const GA_json* transaction_details, GA_json** transaction);
 
 /*
- * Send a transaction created by GA_create_transaction.
+ * Sign the users inputs to a transaction.
  *
  * @session The server session to use.
- * @transaction_details The transaction details for sending.
+ * @transaction_details The transaction details for signing, previously returned from GA_create_transaction.
+ * @transaction Destination for the resulting partially signed transaction's details.
+ *
+ * GA_ERROR if the transaction could not be signed.
+ */
+GASDK_API int GA_sign_transaction(
+    struct GA_session* session, const GA_json* transaction_details, GA_json** transaction);
+
+/*
+ * Send a transaction created by GA_create_transaction and signed by GA_sign_transaction.
+ *
+ * @session The server session to use.
+ * @transaction_details The signed transaction details for sending.
  * @call Destination for the resulting GA_twofactor_call to perform the send.
  *
- * GA_ERROR if the raw transaction could not be sent.
+ * GA_ERROR if the transaction could not be sent.
  */
 GASDK_API int GA_send_transaction(
     struct GA_session* session, const GA_json* transaction_details, struct GA_twofactor_call** call);
@@ -406,7 +434,30 @@ GASDK_API int GA_get_system_message(struct GA_session* session, char** message_t
  */
 GASDK_API int GA_ack_system_message(struct GA_session* session, const char* message_text);
 
+/*
+ * Get the two factor configuration for the current user.
+ *
+ * @session The server session to use.
+ * @estimates Destination for the returned configuration.
+ *
+ * GA_ERROR if the configuration cannot be fetched.
+ */
 GASDK_API int GA_get_twofactor_config(struct GA_session* session, GA_json** config);
+
+/*
+ * Encrypt or decrypt data.
+ *
+ * @session The server session to use.
+ * @input The data to encrypt or decrypt.
+ * @output Destination for the encrypted/decrypted data.
+ *
+ * If no key is given, the data is encrypted using a key derived from the users mnemonics.
+ * This will fail to decrypt the data correctly if the user is logged in in watch-only
+ * mode. For watch only users a key must be provided by the caller.
+ *
+ * GA_ERROR if the data cannot be encrypted/decrypted.
+ */
+GASDK_API int GA_encrypt_decrypt(struct GA_session* session, const GA_json* input, GA_json** output);
 
 #ifndef SWIG
 /*

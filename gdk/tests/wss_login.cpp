@@ -5,9 +5,8 @@
 #include "include/assertion.hpp"
 #include "include/session.hpp"
 
-const std::string DEFAULT_MNEMONIC(
-    "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive "
-    "spike pond industry time hero trim verb mammal asthma");
+const std::string DEFAULT_MNEMONIC("dismiss chaos result march slow sock hybrid foster chest analyst blue decline "
+                                   "alarm advance polar squeeze shy actress target satoshi sleep wage cruel tell");
 
 int main(int argc, char** argv)
 {

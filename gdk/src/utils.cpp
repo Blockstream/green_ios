@@ -104,6 +104,19 @@ namespace sdk {
         wally::clear(hashed);
     }
 
+    uint32_t get_uniform_uint32_t(uint32_t upper_bound)
+    {
+        // Algorithm from the PCG family of random generators
+        const uint32_t lower_threshold = -upper_bound % upper_bound;
+        while (true) {
+            uint32_t v;
+            get_random_bytes(sizeof(v), &v, sizeof(v));
+            if (v >= lower_threshold) {
+                return v % upper_bound;
+            }
+        }
+    }
+
     static std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz, bool rev)
     {
         std::vector<unsigned char> buff(siz / 2);
@@ -121,35 +134,24 @@ namespace sdk {
     }
 
     // FIXME: secure_array
-    std::array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
-        const std::string& mnemonic, const std::string& lang)
+    std::vector<unsigned char> mnemonic_to_bytes(const std::string& mnemonic)
     {
-        struct words* w;
-        bip39_get_wordlist(lang, &w);
-
         // FIXME: secure_array
-        std::array<unsigned char, BIP39_ENTROPY_LEN_256> entropy;
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_bytes(w, mnemonic, entropy) == entropy.size());
+        std::vector<unsigned char> entropy(BIP39_ENTROPY_LEN_288);
+        size_t written = bip39_mnemonic_to_bytes(nullptr, mnemonic, entropy);
+        GA_SDK_RUNTIME_ASSERT(written == BIP39_ENTROPY_LEN_256 || written == BIP39_ENTROPY_LEN_288);
+        entropy.resize(written);
         return entropy;
     }
 
-    std::string mnemonic_from_bytes(const unsigned char* entropy, size_t siz, const char* lang)
+    std::string mnemonic_from_bytes(const unsigned char* entropy, size_t siz)
     {
-        struct words* w;
-        bip39_get_wordlist(lang, &w);
         char* s;
-        bip39_mnemonic_from_bytes(w, entropy, siz, &s);
+        bip39_mnemonic_from_bytes(nullptr, gsl::make_span(entropy, siz), &s);
         return detail::make_string(s);
     }
 
-    void mnemonic_validate(const std::string& lang, const std::string& mnemonic)
-    {
-        struct words* w;
-        ga::sdk::bip39_get_wordlist(lang, &w);
-        ga::sdk::bip39_mnemonic_validate(w, mnemonic);
-    }
-
-    std::string generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32, "en"); }
+    std::string generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32); }
 
     nlohmann::json parse_bitcoin_uri(const std::string& s)
     {
@@ -187,30 +189,28 @@ int GA_get_random_bytes(size_t num_bytes, unsigned char* output_bytes, size_t le
     try {
         ga::sdk::get_random_bytes(num_bytes, output_bytes, len);
         return GA_OK;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_ERROR;
     }
 }
 
-int GA_generate_mnemonic(const char* lang, char** output)
+int GA_generate_mnemonic(char** output)
 {
     try {
         const auto entropy = ga::sdk::get_random_bytes<32>();
-        struct words* w;
-        ga::sdk::bip39_get_wordlist(lang, &w);
-        ga::sdk::bip39_mnemonic_from_bytes(w, entropy, output);
+        ga::sdk::bip39_mnemonic_from_bytes(nullptr, entropy, output);
         return GA_OK;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_ERROR;
     }
 }
 
-int GA_validate_mnemonic(const char* lang, const char* mnemonic)
+int GA_validate_mnemonic(const char* mnemonic)
 {
     try {
-        ga::sdk::mnemonic_validate(lang, mnemonic);
+        bip39_mnemonic_validate(nullptr, mnemonic);
         return GA_TRUE;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_FALSE;
     }
 }
@@ -222,7 +222,7 @@ int GA_parse_bitcoin_uri(const char* uri, GA_json** output)
         GA_SDK_RUNTIME_ASSERT(output);
         *reinterpret_cast<nlohmann::json**>(output) = new nlohmann::json(ga::sdk::parse_bitcoin_uri(uri));
         return GA_OK;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_ERROR;
     }
 }

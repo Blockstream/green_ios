@@ -10,14 +10,22 @@ namespace sdk {
 
     std::string http_jsonrpc_client::make_send_to_address(const std::string& address, const std::string& amount)
     {
-        std::ostringstream strm;
-        strm << R"rawlit({"jsonrpc": "1.0", "id":"sendtoaddress", "method": "sendtoaddress", "params": [)rawlit";
-        strm << "\"" << address << "\"";
-        strm << ",";
-        strm << amount;
-        strm << "]}";
+        const std::vector<std::pair<std::string, std::string>> addressees = { { std::make_pair(address, amount) } };
+        return make_send_to_addressees(addressees);
+    }
 
-        return strm.str();
+    std::string http_jsonrpc_client::make_send_to_addressees(
+        const std::vector<std::pair<std::string, std::string>>& addressees)
+    {
+        std::string sep;
+        std::ostringstream os;
+        os << R"rawlit({"jsonrpc": "1.0", "id":"sendmany", "method": "sendmany", "params": ["", {)rawlit";
+        for (const auto& a : addressees) {
+            os << sep << '"' << a.first << "\":" << a.second;
+            sep = ",";
+        }
+        os << "}]}";
+        return os.str();
     }
 
     std::string http_jsonrpc_client::sync_post(

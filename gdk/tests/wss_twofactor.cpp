@@ -5,7 +5,8 @@
 #include "utils.hpp"
 
 namespace {
-const char* DUMMY_CODE = "555555";
+const std::string DUMMY_CODE = "555555";
+const std::string INVALID_CODE = "666666";
 
 std::string generate_random_email() { return "@@" + ga::sdk::hex_from_bytes(ga::sdk::get_random_bytes<8>()); }
 
@@ -45,12 +46,13 @@ struct GA_twofactor_call* assert_twofactor_change_settings(
 }
 
 void assert_call_status(struct GA_twofactor_call* call, const std::string& status_str, bool step = true,
-    const std::string& explicit_method = std::string())
+    const std::string& code = DUMMY_CODE, const std::string& explicit_method = std::string())
 {
     GA_json* status_c = nullptr;
     GA_SDK_RUNTIME_ASSERT(GA_twofactor_get_status(call, &status_c) == GA_OK);
     const nlohmann::json& status = *reinterpret_cast<nlohmann::json*>(status_c);
-    GA_SDK_RUNTIME_ASSERT(status["status"] == status_str);
+    const std::string fetched_status = status["status"];
+    GA_SDK_RUNTIME_ASSERT(fetched_status == status_str);
 
     if (step) {
         // Take the next step in the state machine
@@ -60,7 +62,7 @@ void assert_call_status(struct GA_twofactor_call* call, const std::string& statu
             const std::string method = explicit_method.empty() ? methods.front() : explicit_method;
             GA_SDK_RUNTIME_ASSERT(GA_twofactor_request_code(call, method.c_str()) == GA_OK);
         } else if (status_str == "resolve_code") {
-            GA_SDK_RUNTIME_ASSERT(GA_twofactor_resolve_code(call, DUMMY_CODE) == GA_OK);
+            GA_SDK_RUNTIME_ASSERT(GA_twofactor_resolve_code(call, code.c_str()) == GA_OK);
         } else if (status_str == "call") {
             GA_SDK_RUNTIME_ASSERT(GA_twofactor_call(call) == GA_OK);
         } else if (status_str == "done") {
@@ -70,7 +72,8 @@ void assert_call_status(struct GA_twofactor_call* call, const std::string& statu
     destroy_json(status);
 }
 
-static void test_twofactor(struct GA_session* session, const std::string& method)
+static struct GA_session* test_twofactor(
+    struct GA_session* session, const std::string& method, bool disable = true, bool existing_2fa = false)
 {
     const nlohmann::json& config = *get_twofactor_config(session);
     const nlohmann::json& current_subconfig = assert_twofactor_status(config, method, false, false, std::string());
@@ -91,11 +94,28 @@ static void test_twofactor(struct GA_session* session, const std::string& method
 
     struct GA_twofactor_call* call = assert_twofactor_change_settings(session, method, subconfig);
 
-    // Assert and step through the enable state machine
-    assert_call_status(call, "call");
-    // Note no request code since we have no 2fa set up at this point
+    // Step through the enable state machine:
+    if (!existing_2fa) {
+        // We have no 2fa enabled, so our state is 'call' to call init_enable_xxx
+        assert_call_status(call, "call");
+    } else {
+        // We must request a code on our existing 2fa method
+        assert_call_status(call, "request_code");
+    }
+    // After calling, we now need to enter the code of the method we are enabling:
+    if (disable) {
+        // Try an invalid code
+        assert_call_status(call, "resolve_code", true, INVALID_CODE);
+        // We can now make the call, which will fail as our code is wrong
+        assert_call_status(call, "call");
+        // Our state after the failed call goes back to request a code since we
+        // still have attempts remaining.
+    }
+    // Now try a valid code
     assert_call_status(call, "resolve_code");
+    // Make the call, which succeeds since the code is correct
     assert_call_status(call, "call");
+    // Our status moves to done completing the enable action
     assert_call_status(call, "done");
 
     // method should now be enabled
@@ -104,6 +124,10 @@ static void test_twofactor(struct GA_session* session, const std::string& method
 
     destroy_json(new_config);
     destroy_json(config);
+
+    if (!disable) {
+        return session;
+    }
 
     // We can now disable the method
     subconfig["enabled"] = false;
@@ -124,7 +148,7 @@ static void test_twofactor(struct GA_session* session, const std::string& method
     assert_twofactor_status(disabled_config, method, false, confirmed, std::string());
     destroy_json(disabled_config);
 
-    GA_destroy_session(session);
+    return session;
 }
 
 void test_set_email_only(struct GA_session* session)
@@ -139,6 +163,8 @@ void test_set_email_only(struct GA_session* session)
     assert_call_status(call, "resolve_code");
     assert_call_status(call, "call");
     assert_call_status(call, "done");
+
+    GA_destroy_session(session);
 }
 
 } // namespace
@@ -153,12 +179,22 @@ int main(int argc, char* argv[])
         return GA_OK;
     }
 
+    // Happy path, test enable/disable of a single method
     const std::vector<std::string> all_methods = { "gauth", "sms", "phone", "email" };
     for (const auto& method : all_methods) {
-        test_twofactor(create_new_wallet(options), method);
+        GA_destroy_session(test_twofactor(create_new_wallet(options), method));
     }
 
     test_set_email_only(create_new_wallet(options));
+
+    // Enable gauth on a session, then
+    // Test enable/disable of a single method with gauth enabled
+    struct GA_session* with_gauth = test_twofactor(create_new_wallet(options), "gauth", false);
+    const std::vector<std::string> other_methods = { "sms", "phone", "email" };
+    for (const auto& method : other_methods) {
+        test_twofactor(with_gauth, method, true, true);
+    }
+    GA_destroy_session(with_gauth);
 
     return GA_OK;
 }

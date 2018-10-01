@@ -109,11 +109,13 @@ namespace sdk {
         bool edit_address_book_entry(const std::string& address, const std::string& name);
         void delete_address_book_entry(const std::string& address);
 
-        nlohmann::json get_unspent_outputs(uint32_t num_confs);
         nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
+        nlohmann::json get_unspent_outputs_for_private_key(
+            const std::string& private_key, const std::string& password, uint32_t unused);
         nlohmann::json get_transaction_details(const std::string& txhash_hex);
 
         nlohmann::json create_transaction(const nlohmann::json& details);
+        nlohmann::json sign_transaction(const nlohmann::json& details);
 
         nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
 
@@ -129,6 +131,7 @@ namespace sdk {
         void ack_system_message(const std::string& system_message);
 
         nlohmann::json convert_amount(const nlohmann::json& amount_json);
+        nlohmann::json encrypt_decrypt(const nlohmann::json& input_json);
 
     private:
         template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);

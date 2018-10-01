@@ -6,14 +6,17 @@
 
 #include "http_jsonrpc_interface.hpp"
 #include "include/assertion.hpp"
+#include "include/session.h"
 #include "include/session.hpp"
+#include "include/twofactor.h"
 
 using namespace ga;
 
 namespace {
-const std::string DEFAULT_MNEMONIC_1(
-    "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive "
-    "spike pond industry time hero trim verb mammal asthma");
+const std::string DUMMY_CODE = "555555";
+
+const std::string DEFAULT_MNEMONIC_1("infant earth modify pyramid hunt reopen write asthma middle during mechanic "
+                                     "carry health chat plate wear cycle market knock number blur near permit core");
 
 const std::string DEFAULT_MNEMONIC_2(
     "sustain pumpkin scrub about voyage laptop script engine upset spoil nerve chicken tackle analyst "
@@ -22,14 +25,12 @@ const std::string DEFAULT_MNEMONIC_2(
 const std::string GENERATE_SINGLE_BLOCK_REQUEST(
     R"rawlit({"jsonrpc": "1.0", "id":"generate", "method": "generate", "params": [1] })rawlit");
 
-nlohmann::json login_and_get_receive_address(
-    sdk::session& session, const std::string& mnemonic, struct options* options)
+void login(sdk::session& session, const std::string& mnemonic, struct options* options)
 {
     const bool debug = options->quiet == 0;
     session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
     session.register_user(mnemonic);
     session.login(mnemonic);
-    return session.get_receive_address(0, sdk::address_type::p2sh);
 }
 } // namespace
 
@@ -38,42 +39,117 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
-        sdk::session session_1;
-        sdk::session session_2;
-        const auto address_1 = login_and_get_receive_address(session_1, DEFAULT_MNEMONIC_1, options);
-        const auto address_2 = login_and_get_receive_address(session_2, DEFAULT_MNEMONIC_2, options);
+        sdk::session sender;
+        sdk::session receiver;
 
-        sdk::http_jsonrpc_client rpc;
-        const auto send_request = rpc.make_send_to_address(address_1["address"], "2");
-        std::cerr << "p2sh " << send_request << std::endl;
-        rpc.sync_post("127.0.0.1", "19001", send_request);
-        rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
+        login(sender, DEFAULT_MNEMONIC_1, options);
+        login(receiver, DEFAULT_MNEMONIC_2, options);
 
-        std::cerr << address_2["address"] << std::endl;
-        const std::string addr = address_2["address"];
+        if (!options->testnet) {
+            // On localtest, enable 2fa to test sending with 2fa enabled
+            sender.get_twofactor_config();
+            sender.enable_gauth(DUMMY_CODE, nlohmann::json());
+        }
+
+        const uint32_t num_confs = 1;
+        nlohmann::json sender_utxos = sender.get_unspent_outputs(0, num_confs);
+
+        if (sender_utxos.size() < 10u) {
+            std::cerr << "Generating utxos for sending" << std::endl;
+
+            // Give the sender some confirmed UTXOs to spend
+            std::vector<std::pair<std::string, std::string>> addressees;
+            for (size_t i = 0; i < 20u; ++i) {
+                const std::string addr = sender.get_receive_address(0, sdk::address_type::default_)["address"];
+                addressees.emplace_back(std::make_pair(addr, "0.5"));
+            }
+            sdk::http_jsonrpc_client rpc;
+            const auto send_request = rpc.make_send_to_addressees(addressees);
+            rpc.sync_post("127.0.0.1", "19001", send_request);
+
+            rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
+
+            // FIXME: should really wait for the block notification here
+            sender_utxos = sender.get_unspent_outputs(0, num_confs);
+        }
+        const size_t num_sender_utxos = sender_utxos.size();
+
+        const std::string recv_addr = receiver.get_receive_address(0, sdk::address_type::default_)["address"];
 #if 0
         // Sample regtest addresses for debugging
-        const std::string addr{"mnvL3wwo8sPCkHbkdq3Lzc2Y4NhguNKnyk"}; // P2PKH
-        const std::string addr{"bcrt1q0wamd2z3yxrwa3c96knlfdjntj6hhngweuj4vv"}; // P2WPKH
-        const std::string addr{ "bcrt1qkk3vjcjsvy3kd6389lavdkt5f2h5k3d2ekt25l8uhyc7uw64sfvsk5excw" }; // P2WSH
+        const std::string recv_addr{ "mnvL3wwo8sPCkHbkdq3Lzc2Y4NhguNKnyk" }; // P2PKH
+        const std::string recv_addr{ "bcrt1q0wamd2z3yxrwa3c96knlfdjntj6hhngweuj4vv" }; // P2WPKH
+        const std::string recv_addr{ "bcrt1qkk3vjcjsvy3kd6389lavdkt5f2h5k3d2ekt25l8uhyc7uw64sfvsk5excw" }; // P2WSH
 #endif
-        nlohmann::json utxos = session_1.get_unspent_outputs(0, 0);
-        (void)utxos;
+        const std::vector<nlohmann::json> addressees{ {
+            { "address", recv_addr },
+            { "satoshi", 100000 },
+        } };
 
-        const bool send_all = false;
-        const bool manual_selection = false;
-        std::vector<nlohmann::json> addressees{ { { "address", addr }, { "satoshi", 100000 } } };
-        nlohmann::json details
-            = { { "addressees", addressees }, { "utxos", utxos }, { "subaccount", 0 }, { "fee_rate", 1000 },
-                  { "send_all", send_all }, { "manual_selection", manual_selection }, { "memo", "test memo" } };
+        // Create a tx to send. In a wallet this would be an iterative processes
+        // as the user adjusts amounts etc.
+        // Here we allow the create_transaction defaulting to add utxos for us
+        nlohmann::json details = sender.create_transaction({ { "addressees", addressees }, { "fee_rate", 1000 } });
+        // std::cerr << "initial: " << std::endl << details.dump() << std::endl << std::endl;
 
-        nlohmann::json transaction = session_1.send(details, nlohmann::json());
+        // Make a note of our change address
+        GA_SDK_RUNTIME_ASSERT(details.value("have_change", true));
+        const std::string change_address = details["change_address"];
 
-        nlohmann::json tx_details = session_1.get_transaction_details(transaction["txhash"]);
-        GA_SDK_RUNTIME_ASSERT(tx_details.find("transaction") != tx_details.end());
-        GA_SDK_RUNTIME_ASSERT(tx_details.find("txhash") != tx_details.end());
-        // std::cerr << tx_details.dump() << std::endl;
+        // Simulate a user choosing another fee rate, adding a memo and using
+        // coin control to select all utxos: the tx details are dynamically updated
+        details["fee_rate"] = 1500;
+        details["memo"] = "test memo";
+        details["utxo_strategy"] = "manual";
+        std::vector<size_t> used_utxos;
+        for (size_t i = 0; i < num_sender_utxos; ++i) {
+            used_utxos.emplace_back(i);
+        }
+        details["used_utxos"] = used_utxos;
+        details = sender.create_transaction(details);
+        GA_SDK_RUNTIME_ASSERT(details["used_utxos"].size() == used_utxos.size());
+        // std::cerr << "manual: " << std::endl << details.dump() << std::endl << std::endl;
 
+        // User reverts back to GDK's utxo selection algorithm
+        details["utxo_strategy"] = "default";
+        details = sender.create_transaction(details);
+        GA_SDK_RUNTIME_ASSERT(details["used_utxos"].size() < used_utxos.size());
+        // std::cerr << "default: " << std::endl << details.dump() << std::endl << std::endl;
+
+        // Verify that the old change address was re-used
+        GA_SDK_RUNTIME_ASSERT(change_address == details["change_address"]);
+
+        // Send the transaction, signing it automatically
+        nlohmann::json transaction;
+        if (options->testnet) {
+            transaction = sender.send(details, nlohmann::json());
+        } else {
+            // Test sending with 2fa enabled through the call interface
+            struct GA_twofactor_call* call = nullptr;
+            struct GA_session* sender_c = reinterpret_cast<struct GA_session*>(&sender);
+            struct GA_json* details_c = reinterpret_cast<struct GA_json*>(&details);
+            GA_SDK_RUNTIME_ASSERT(GA_send_transaction(sender_c, details_c, &call) == GA_OK);
+            GA_SDK_RUNTIME_ASSERT(GA_twofactor_request_code(call, "gauth") == GA_OK);
+            GA_SDK_RUNTIME_ASSERT(GA_twofactor_resolve_code(call, DUMMY_CODE.c_str()) == GA_OK);
+            GA_SDK_RUNTIME_ASSERT(GA_twofactor_call(call) == GA_OK);
+            GA_json* transaction_c = nullptr;
+            GA_SDK_RUNTIME_ASSERT(GA_twofactor_get_status(call, &transaction_c) == GA_OK);
+            transaction = (*(reinterpret_cast<nlohmann::json*>(transaction_c)))["result"];
+
+            sender.disable_twofactor("gauth", { { "method", "gauth" }, { "code", DUMMY_CODE } });
+        }
+        // std::cerr << "sent: " << std::endl << transaction.dump() << std::endl << std::endl;
+
+        // Get the transaction details from the server to compare
+        nlohmann::json tx_details = sender.get_transaction_details(transaction["txhash"]);
+        GA_SDK_RUNTIME_ASSERT(tx_details["transaction"] == transaction["transaction"]);
+        GA_SDK_RUNTIME_ASSERT(tx_details["txhash"] == transaction["txhash"]);
+        // std::cerr << "tx_details: " << std::endl << tx_details.dump() << std::endl;
+
+        // nlohmann::json txs = sender.get_transactions(0, 0);
+        // std::cerr << "txs: " << std::endl << txs.dump() << std::endl;
+
+        // FIXME: Bump and re-send
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

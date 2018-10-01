@@ -7,9 +7,8 @@
 #include "include/utils.hpp"
 
 namespace {
-const std::string DEFAULT_MNEMONIC(
-    "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive "
-    "spike pond industry time hero trim verb mammal asthma");
+const std::string DEFAULT_MNEMONIC("dilemma into virus stadium barrel undo shift echo nice flag toss little warm "
+                                   "rubber carpet prize fitness debate february raise sample identify rail steak");
 }
 
 int main(int argc, char** argv)

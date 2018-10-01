@@ -1,19 +1,28 @@
 #include "include/twofactor.hpp"
 #include "include/autobahn_wrapper.hpp"
+#include "include/containers.hpp"
 
 namespace {
+// Server gives 3 attempts to get the twofactor code right before it's invalidated
+const uint32_t TWO_FACTOR_ATTEMPTS = 3;
+
 // Return true if the error represents 'two factor authentication required'
-bool is_twofactor_required_error(const autobahn::call_error& e)
+std::string get_twofactor_error_message(const autobahn::call_error& e)
 {
-    const autobahn::call_error::args_type& args = e.get_args();
-    if (!args.empty()) {
+    std::string message;
+    const auto& args = e.get_args();
+    if (args.size() >= 2) {
         std::string uri;
         args[0].convert(uri);
-        if (uri == "http://greenaddressit.com/error#auth") {
-            return true;
+        if (boost::algorithm::ends_with(uri, "#auth")) {
+            args[1].convert(message);
         }
     }
-    return false;
+    return message;
+}
+bool is_twofactor_invalid_code_error(const autobahn::call_error& e)
+{
+    return get_twofactor_error_message(e) == "Invalid Two Factor Authentication Code";
 }
 } // namespace
 
@@ -22,6 +31,7 @@ GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, const std::strin
     , m_methods(session.get_enabled_twofactor_methods())
     , m_action(action)
     , m_state(m_methods.empty() ? state_type::make_call : state_type::request_code)
+    , m_attempts_remaining(TWO_FACTOR_ATTEMPTS)
 {
 }
 
@@ -31,7 +41,11 @@ void GA_twofactor_call::set_error(const std::string& error_message)
     m_error = { { "error", error_message } };
 }
 
-void GA_twofactor_call::request_code(const std::string& method) { request_code_impl(method); }
+void GA_twofactor_call::request_code(const std::string& method)
+{
+    request_code_impl(method);
+    m_attempts_remaining = TWO_FACTOR_ATTEMPTS;
+}
 
 void GA_twofactor_call::request_code_impl(const std::string& method)
 {
@@ -69,12 +83,18 @@ void GA_twofactor_call::operator()()
         }
         m_state = call_impl();
     } catch (const autobahn::call_error& e) {
-        if (is_twofactor_required_error(e)) {
-            // Make the user request another code
-            // FIXME: If the exception is wrong code and we are within the time limit,
-            // move to state resolve_code instead
-            // If we are rate limited, move to error and give a message
-            m_state = state_type::request_code;
+        if (is_twofactor_invalid_code_error(e)) {
+            // The caller entered the wrong code
+            // FIXME: Go back to resolve code if the methods time limit is up
+            // FIXME: If we are rate limited, move to error with a message
+            if (m_method != "gauth" && --m_attempts_remaining == 0) {
+                // No more attempts left.
+                // Caller should request another code/choose another method
+                m_state = state_type::request_code;
+            } else {
+                // Caller should try entering the code again
+                m_state = state_type::resolve_code;
+            }
         } else {
             m_state = state_type::error;
         }
@@ -98,6 +118,9 @@ nlohmann::json GA_twofactor_call::get_status() const
         // Caller should resolve the code the user has entered
         status_str = "resolve_code";
         status["method"] = m_method;
+        if (m_method != "gauth") {
+            status["attempts_remaining"] = m_attempts_remaining;
+        }
         break;
     case state_type::make_call:
         // Caller should make the call
@@ -142,14 +165,14 @@ GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
     }
 
     // The data associated with method_to_update e.g. email, phone etc
-    const std::string data = m_details.value("data", std::string());
+    const std::string data = ga::sdk::json_get_value(m_details, "data");
 
     if (m_enabling) {
         if (method_to_update == "gauth") {
             // For gauth the user must pass in the current seed returned by the
             // server.
-            // FIXME: Allow the user to specifiy their own seed in the future.
-            if (data != current_subconfig.value("data", std::string())) {
+            // FIXME: Allow the user to specify their own seed in the future.
+            if (data != ga::sdk::json_get_value(current_subconfig, "data")) {
                 set_error("Inconsistent data provided for enabling gauth");
                 return;
             }
@@ -179,7 +202,7 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::on_init_done(co
     // So, we now request the user enters the code for the method they are enabling
     // (which means restricting their 2fa choice for entering the code to this method)
     m_method = m_method_to_update;
-    m_action = new_action;
+    m_action = new_action + m_method;
     m_methods = { { m_method_to_update } };
     // Move to prompt the user for the code for the method they are enabling
     m_twofactor_data = nlohmann::json();
@@ -189,12 +212,12 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::on_init_done(co
 GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
 {
     if (m_action == "set_email") {
-        const std::string data = m_details.value("data", std::string());
+        const std::string data = ga::sdk::json_get_value(m_details, "data");
         m_session.set_email(data, m_twofactor_data);
         // Move to activate email
-        return on_init_done("activate_email");
+        return on_init_done("activate_");
     } else if (m_action == "activate_email") {
-        const std::string data = m_details.value("data", std::string());
+        const std::string data = ga::sdk::json_get_value(m_details, "data");
         m_session.activate_email(m_code);
         return state_type::done;
     } else if (boost::starts_with(m_action, "init_enable_")) {
@@ -205,13 +228,13 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
             std::swap(m_init_twofactor_data, m_twofactor_data);
         } else {
             // Otherwise call the init_enable method with the provided data
-            const std::string data = m_details.value("data", std::string());
+            const std::string data = ga::sdk::json_get_value(m_details, "data");
             m_session.init_enable_twofactor(m_method_to_update, data, m_twofactor_data);
         }
         // Move to enable the 2fa method
-        return on_init_done("enable_" + m_method);
+        return on_init_done("enable_");
     } else if (boost::starts_with(m_action, "enable_")) {
-        // The user has authorised enabling 2fa (if required), so enable the
+        // The user has authorized enabling 2fa (if required), so enable the
         // method using its code (which proves the user got a code from the
         // method being enabled)
         if (m_method_to_update == "gauth") {
@@ -247,7 +270,10 @@ GA_send_call::GA_send_call(ga::sdk::session& session, const nlohmann::json& tx_d
     , m_tx_details(tx_details)
 {
     // FIXME: bumping, bumping under limits
-    m_limit_details = { { "asset", "BTC" }, { "amount", m_tx_details["satoshi"] }, { "fee", m_tx_details["fee"] },
+    uint32_t satoshi = m_tx_details["satoshi"];
+    uint32_t fee = m_tx_details["fee"];
+
+    m_limit_details = { { "asset", "BTC" }, { "amount", satoshi + fee }, { "fee", m_tx_details["fee"] },
         { "change_idx", m_tx_details["change_index"] } };
 
     if (!m_tx_details.value("twofactor_required", false)) {

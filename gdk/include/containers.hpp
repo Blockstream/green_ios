@@ -34,7 +34,7 @@ namespace sdk {
     }
 
     // Get a value if present and not null, otherwise return a default value
-    template <typename T>
+    template <typename T = std::string>
     T json_get_value(const nlohmann::json& data, const std::string& key, const T& default_value = T())
     {
         const auto p = data.find(key);

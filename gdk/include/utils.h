@@ -43,23 +43,21 @@ GASDK_API int GA_get_random_bytes(size_t num_bytes, unsigned char* output_bytes,
  * Generate mnemonic.
  *
  * Generates a BIP39 mnemonic.
- * @lang language for the default word list
  * @output the generated mnemonic phrase
  *
  * GA_ERROR if mnemonic generation fails
  */
-GASDK_API int GA_generate_mnemonic(const char* lang, char** output);
+GASDK_API int GA_generate_mnemonic(char** output);
 
 /**
  * Validate mnemonic.
  *
  * Validates a BIP39 mnemonic.
- * @lang language for the default word list
  * @mnemonic the mnemonic phrase
  *
  * GA_FALSE if mnemonic validation fails
  */
-GASDK_API int GA_validate_mnemonic(const char* lang, const char* mnemonic);
+GASDK_API int GA_validate_mnemonic(const char* mnemonic);
 
 #ifndef SWIG
 /**

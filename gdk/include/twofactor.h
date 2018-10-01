@@ -24,7 +24,7 @@ extern "C" {
  * special cases or program their own logic to handle any lower level API
  * differences.
  *
- * Example psuedo code to iterate through the state machine is:
+ * Example pseudo code to iterate through the state machine is:
  *
  * function resolve_2fa(call) -> JSON result
  *     while true:
