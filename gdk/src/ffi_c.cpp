@@ -1,7 +1,6 @@
 #include <type_traits>
 
 #include "include/amount.hpp"
-#include "include/assertion.hpp"
 #include "include/exception.hpp"
 #include "include/session.h"
 #include "include/session.hpp"
@@ -11,26 +10,26 @@
 
 namespace {
 
-void assert_invoke_args() {}
+static void assert_invoke_args() {}
 
 template <typename Arg, typename... Args>
-typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args);
+static typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args);
 
 template <typename Arg, typename... Args>
-typename std::enable_if_t<!std::is_pointer<Arg>::value> assert_invoke_args(
+static typename std::enable_if_t<!std::is_pointer<Arg>::value> assert_invoke_args(
     Arg __attribute__((unused)) arg, Args&&... args)
 {
     assert_invoke_args(std::forward<Args>(args)...);
 }
 
 template <typename Arg, typename... Args>
-typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args)
+static typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args)
 {
     GA_SDK_RUNTIME_ASSERT(arg);
     assert_invoke_args(std::forward<Args>(args)...);
 }
 
-template <typename F, typename... Args> auto c_invoke(F&& f, Args&&... args)
+template <typename F, typename... Args> static auto c_invoke(F&& f, Args&&... args)
 {
     try {
         assert_invoke_args(std::forward<Args>(args)...);
@@ -49,7 +48,7 @@ template <typename F, typename... Args> auto c_invoke(F&& f, Args&&... args)
     }
 }
 
-char* to_c_string(const std::string& s)
+static char* to_c_string(const std::string& s)
 {
     auto* str = new char[s.size() + 1];
     std::copy(s.begin(), s.end(), str);
@@ -57,12 +56,23 @@ char* to_c_string(const std::string& s)
     return str;
 }
 
-nlohmann::json* json_cast(GA_json* json) { return reinterpret_cast<nlohmann::json*>(json); }
+static nlohmann::json* json_cast(GA_json* json) { return reinterpret_cast<nlohmann::json*>(json); }
 
-const nlohmann::json* json_cast(const GA_json* json) { return reinterpret_cast<const nlohmann::json*>(json); }
+static const nlohmann::json* json_cast(const GA_json* json) { return reinterpret_cast<const nlohmann::json*>(json); }
 
-nlohmann::json** json_cast(GA_json** json) { return reinterpret_cast<nlohmann::json**>(json); }
+static nlohmann::json** json_cast(GA_json** json) { return reinterpret_cast<nlohmann::json**>(json); }
 
+template <typename T> static void json_convert(const nlohmann::json& json, const char* path, T* value)
+{
+    GA_SDK_RUNTIME_ASSERT(path);
+    GA_SDK_RUNTIME_ASSERT(value);
+    const auto v = json[path];
+    if (v.is_null()) {
+        *value = T();
+    } else {
+        *value = v;
+    }
+}
 } // namespace
 
 struct GA_session final : public ga::sdk::session {
@@ -284,8 +294,11 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_get_available_currencies, struct GA_session*, sess
 GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_amount, struct GA_session*, session, const GA_json*, json, GA_json**, output,
     { *json_cast(output) = new nlohmann::json(session->convert_amount(*json_cast(json))); })
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_encrypt_decrypt, struct GA_session*, session, const GA_json*, input, GA_json**, output,
-    { *json_cast(output) = new nlohmann::json(session->encrypt_decrypt(*json_cast(input))); })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_encrypt, struct GA_session*, session, const GA_json*, input, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(session->encrypt(*json_cast(input))); })
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_decrypt, struct GA_session*, session, const GA_json*, input, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(session->decrypt(*json_cast(input))); })
 
 GA_SDK_DEFINE_C_FUNCTION_5(GA_set_pin, struct GA_session*, session, const char*, mnemonic, const char*, pin,
     const char*, device, GA_json**, pin_data,
@@ -319,21 +332,6 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_twofactor, struct GA_session*, ses
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_send_transaction, struct GA_session*, session, const GA_json*, transaction_details,
     struct GA_twofactor_call**, call, { *call = new GA_send_call(*session, *json_cast(transaction_details)); });
-
-namespace {
-template <typename T> void json_convert(const nlohmann::json& json, const char* path, T* value)
-{
-    GA_SDK_RUNTIME_ASSERT(path);
-    GA_SDK_RUNTIME_ASSERT(value);
-    const auto v = json[path];
-    if (v.is_null()) {
-        *value = T();
-    } else {
-        *value = v;
-    }
-}
-
-} // namespace
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_json_value_to_bool, const GA_json*, json, const char*, path, uint32_t*, output, {
     bool v;

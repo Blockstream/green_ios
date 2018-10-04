@@ -1,10 +1,7 @@
 #include <chrono>
-#include <ctime>
 #include <iostream>
 
 #include "argparser.h"
-#include "include/assertion.hpp"
-
 #include "include/session.hpp"
 
 const std::string DEFAULT_MNEMONIC("tragic transfer mesh camera fish model bleak lumber never capital animal era "
@@ -18,21 +15,15 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
+        const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
 
         const auto txs = session.get_transactions(0, 0);
         const uint32_t next_page_id = txs["next_page_id"];
         (void)next_page_id;
-
-#if 0
-        for (auto&& tx : txs) {
-            sdk::tx t;
-            t = tx;
-        }
-#endif
 
         const auto balance = session.get_balance(0, 0);
         session.get_enabled_twofactor_methods();

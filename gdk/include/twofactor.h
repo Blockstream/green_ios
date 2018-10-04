@@ -2,11 +2,14 @@
 #define GA_SDK_TWOFACTOR_H
 
 #include "common.h"
-#include "session.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct GA_session;
+struct GA_twofactor_call;
+typedef struct GA_json GA_json;
 
 /*
  * Methods in the api that may require two factor authentication to complete

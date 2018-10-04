@@ -26,4 +26,5 @@ void assert_throws(T&& fn)
 
 struct GA_session* create_new_wallet(struct options* options);
 
+std::string get_random_string();
 #endif

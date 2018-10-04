@@ -21,8 +21,9 @@ int main(int argc, char** argv)
     std::condition_variable cv;
 
     try {
+        const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network());
+        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
         session.subscribe(DEFAULT_TOPIC, [&](const std::string& event) {
             std::cerr << event << std::endl;
             cv.notify_one();

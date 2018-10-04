@@ -3,7 +3,6 @@
 #include "argparser.h"
 #include "utils.hpp"
 
-#include "include/assertion.hpp"
 #include "include/session.hpp"
 
 void assert_register_user_fails(ga::sdk::session& session, const std::string& mnemonic)
@@ -18,8 +17,9 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
+        const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
         assert_register_user_fails(session, "Invalid");
 
         // Valid checksum but too short (<12 words)

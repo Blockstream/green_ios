@@ -36,7 +36,7 @@ endif
 local_dependencies = subproject_deps + [libga_dep, threads_dep, libtests_common_dep]
 link_depends = []
 link_whole = [libtests_common]
-if host_machine.cpu_family().contains('iphone')
+if cross_iphone_build
     link_depends += [archiver]
 else
     link_whole += [libga.get_static_lib()]

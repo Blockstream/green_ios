@@ -1,29 +1,29 @@
-#include "include/boost_wrapper.hpp"
-#include "include/containers.hpp"
+#include "include/ga_wally.hpp"
+#include "include/session.hpp"
 #include "include/twofactor.h"
-#include "include/utils.hpp"
+#include "src/boost_wrapper.hpp"
 #include "utils.hpp"
 
 namespace {
-const std::string DUMMY_CODE = "555555";
-const std::string INVALID_CODE = "666666";
+static const std::string DUMMY_CODE = "555555";
+static const std::string INVALID_CODE = "666666";
 
-std::string generate_random_email() { return "@@" + ga::sdk::hex_from_bytes(ga::sdk::get_random_bytes<8>()); }
+static std::string generate_random_email() { return "@@" + get_random_string(); }
 
-void destroy_json(const nlohmann::json& json)
+static void destroy_json(const nlohmann::json& json)
 {
     nlohmann::json* non_const = const_cast<nlohmann::json*>(&json);
     GA_destroy_json(reinterpret_cast<GA_json*>(non_const));
 }
 
-nlohmann::json* get_twofactor_config(struct GA_session* session)
+static nlohmann::json* get_twofactor_config(struct GA_session* session)
 {
     GA_json* config_c = nullptr;
     GA_SDK_RUNTIME_ASSERT(GA_get_twofactor_config(session, &config_c) == GA_OK);
     return reinterpret_cast<nlohmann::json*>(config_c);
 }
 
-const nlohmann::json& assert_twofactor_status(
+static const nlohmann::json& assert_twofactor_status(
     const nlohmann::json& config, const std::string& method, bool enabled, bool confirmed, const std::string& data)
 {
     const auto& subconfig = config[method];
@@ -36,7 +36,7 @@ const nlohmann::json& assert_twofactor_status(
     return subconfig;
 }
 
-struct GA_twofactor_call* assert_twofactor_change_settings(
+static struct GA_twofactor_call* assert_twofactor_change_settings(
     struct GA_session* session, const std::string& method, const nlohmann::json& subconfig)
 {
     const GA_json* enable_config_c = reinterpret_cast<const GA_json*>(&subconfig);
@@ -45,7 +45,7 @@ struct GA_twofactor_call* assert_twofactor_change_settings(
     return call;
 }
 
-void assert_call_status(struct GA_twofactor_call* call, const std::string& status_str, bool step = true,
+static void assert_call_status(struct GA_twofactor_call* call, const std::string& status_str, bool step = true,
     const std::string& code = DUMMY_CODE, const std::string& explicit_method = std::string())
 {
     GA_json* status_c = nullptr;
@@ -151,7 +151,7 @@ static struct GA_session* test_twofactor(
     return session;
 }
 
-void test_set_email_only(struct GA_session* session)
+static void test_set_email_only(struct GA_session* session)
 {
     // Set email without enabling it for two factor
     const std::string email = generate_random_email();

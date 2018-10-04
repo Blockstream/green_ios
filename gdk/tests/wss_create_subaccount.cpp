@@ -2,20 +2,19 @@
 
 #include "argparser.h"
 
-#include "include/assertion.hpp"
 #include "include/session.hpp"
-#include "include/utils.hpp"
+#include "utils.hpp"
 
 namespace {
-const std::string DEFAULT_MNEMONIC("dilemma into virus stadium barrel undo shift echo nice flag toss little warm "
-                                   "rubber carpet prize fitness debate february raise sample identify rail steak");
+static const std::string DEFAULT_MNEMONIC(
+    "dilemma into virus stadium barrel undo shift echo nice flag toss little warm "
+    "rubber carpet prize fitness debate february raise sample identify rail steak");
 }
 
 int main(int argc, char** argv)
 {
     using namespace ga;
 
-    auto&& generate_name = [] { return sdk::hex_from_bytes(sdk::get_random_bytes<8>()); };
     auto&& assert_account_exists = [](const std::string& name, const auto& subaccounts) {
         GA_SDK_RUNTIME_ASSERT(std::any_of(
             std::begin(subaccounts), std::end(subaccounts), [name](const auto& acc) { return acc["name"] == name; }));
@@ -24,11 +23,13 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
-        const std::string name_1{ generate_name() };
-        const std::string name_2{ generate_name() };
+        const bool debug = options->quiet == 0;
+
+        const std::string name_1{ get_random_string() };
+        const std::string name_2{ get_random_string() };
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
             session.register_user(DEFAULT_MNEMONIC);
             session.login(DEFAULT_MNEMONIC);
 
@@ -48,17 +49,17 @@ int main(int argc, char** argv)
 
             // Make sure we can generate valid addresses for both subaccount types
             const uint32_t sa1_pointer = sa1["pointer"];
-            const auto address1 = session.get_receive_address(sa1_pointer, sdk::address_type::default_);
+            const auto address1 = session.get_receive_address(sa1_pointer);
             GA_SDK_RUNTIME_ASSERT(address1["address"] != "");
 
             const uint32_t sa2_pointer = sa2["pointer"];
-            const auto address2 = session.get_receive_address(sa2_pointer, sdk::address_type::default_);
+            const auto address2 = session.get_receive_address(sa2_pointer);
             GA_SDK_RUNTIME_ASSERT(address2["address"] != "");
         }
 
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
             session.login(DEFAULT_MNEMONIC);
             const auto subaccounts = session.get_subaccounts();
             assert_account_exists(name_1, subaccounts);

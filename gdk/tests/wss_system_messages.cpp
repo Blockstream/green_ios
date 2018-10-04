@@ -3,7 +3,6 @@
 #include "argparser.h"
 #include "utils.hpp"
 
-#include "include/assertion.hpp"
 #include "include/session.hpp"
 
 const std::string DEFAULT_MNEMONIC("reopen danger sadness twenty move hire milk rally wing nature group correct tissue "
@@ -21,8 +20,9 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
+        const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
 

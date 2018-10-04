@@ -28,6 +28,7 @@ namespace sdk {
         amount& operator=(const amount&) = default;
         amount(amount&&) = default;
         amount& operator=(amount&&) = default;
+        amount(const nlohmann::json& json_value);
         ~amount() = default;
 
         // General purpose conversion to/from fiat

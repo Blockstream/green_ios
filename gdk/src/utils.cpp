@@ -15,10 +15,10 @@
 
 #include <openssl/rand.h>
 
-#include "include/boost_wrapper.hpp"
+#include "boost_wrapper.hpp"
 
 #include "include/assertion.hpp"
-#include "include/utils.hpp"
+#include "utils.hpp"
 
 #include "include/utils.h"
 

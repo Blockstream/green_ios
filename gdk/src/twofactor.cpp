@@ -1,13 +1,13 @@
 #include "include/twofactor.hpp"
-#include "include/autobahn_wrapper.hpp"
-#include "include/containers.hpp"
+
+#include "containers.hpp"
 
 namespace {
 // Server gives 3 attempts to get the twofactor code right before it's invalidated
-const uint32_t TWO_FACTOR_ATTEMPTS = 3;
+static const uint32_t TWO_FACTOR_ATTEMPTS = 3;
 
 // Return true if the error represents 'two factor authentication required'
-std::string get_twofactor_error_message(const autobahn::call_error& e)
+static std::string get_twofactor_error_message(const autobahn::call_error& e)
 {
     std::string message;
     const auto& args = e.get_args();
@@ -20,7 +20,7 @@ std::string get_twofactor_error_message(const autobahn::call_error& e)
     }
     return message;
 }
-bool is_twofactor_invalid_code_error(const autobahn::call_error& e)
+static bool is_twofactor_invalid_code_error(const autobahn::call_error& e)
 {
     return get_twofactor_error_message(e) == "Invalid Two Factor Authentication Code";
 }
@@ -53,6 +53,9 @@ void GA_twofactor_call::request_code_impl(const std::string& method)
 
     // For gauth request code is a no-op
     if (method != "gauth") {
+        std::stringstream os;
+        os << "\n\n" << m_action << "request_code_impl:" << (int)m_state << ":" << m_twofactor_data.dump() << std::endl;
+        m_debug += "\n" + os.str();
         m_session.twofactor_request_code(method, m_action, m_twofactor_data);
     }
 
@@ -81,8 +84,14 @@ void GA_twofactor_call::operator()()
             m_twofactor_data["method"] = m_method;
             m_twofactor_data["code"] = m_code;
         }
+        std::stringstream os;
+        os << "\n\n" << m_action << "call_impl:" << (int)m_state << ":" << m_twofactor_data.dump() << std::endl;
+        m_debug += "\n" + os.str();
         m_state = call_impl();
     } catch (const autobahn::call_error& e) {
+        std::stringstream os;
+        os << "\n\n" << m_action << "error:" << (int)m_state << ":" << e.what() << std::endl;
+        m_debug += "\n" + os.str();
         if (is_twofactor_invalid_code_error(e)) {
             // The caller entered the wrong code
             // FIXME: Go back to resolve code if the methods time limit is up
@@ -140,6 +149,7 @@ nlohmann::json GA_twofactor_call::get_status() const
     GA_SDK_RUNTIME_ASSERT(!status_str.empty());
     status["status"] = status_str;
     status["action"] = m_action;
+    status["debug"] = m_debug;
     return status;
 }
 
@@ -270,8 +280,8 @@ GA_send_call::GA_send_call(ga::sdk::session& session, const nlohmann::json& tx_d
     , m_tx_details(tx_details)
 {
     // FIXME: bumping, bumping under limits
-    uint32_t satoshi = m_tx_details["satoshi"];
-    uint32_t fee = m_tx_details["fee"];
+    const uint32_t satoshi = m_tx_details["satoshi"];
+    const uint32_t fee = m_tx_details["fee"];
 
     m_limit_details = { { "asset", "BTC" }, { "amount", satoshi + fee }, { "fee", m_tx_details["fee"] },
         { "change_idx", m_tx_details["change_index"] } };
@@ -285,6 +295,9 @@ GA_send_call::GA_send_call(ga::sdk::session& session, const nlohmann::json& tx_d
         // We are ready to call, so make the required twofactor data
         create_twofactor_data();
     }
+    std::stringstream os;
+    os << "\n\n" << m_action << "ctor:" << (int)m_state << ":" << m_twofactor_data.dump() << std::endl;
+    m_debug = os.str();
 }
 
 void GA_send_call::request_code(const std::string& method)
@@ -297,8 +310,10 @@ void GA_send_call::request_code(const std::string& method)
     m_tx_details["twofactor_required"] = true;
 
     create_twofactor_data();
-
-    request_code_impl(method);
+    std::stringstream os;
+    os << "\n\n" << m_action << "request_code:" << (int)m_state << ":" << m_twofactor_data.dump() << std::endl;
+    m_debug += "\n" + os.str();
+    GA_twofactor_call::request_code(method);
 }
 
 void GA_send_call::create_twofactor_data()
@@ -317,10 +332,17 @@ void GA_send_call::create_twofactor_data()
             m_twofactor_data["send_raw_tx_change_idx"] = m_limit_details["change_idx"];
         }
     }
+    std::stringstream os;
+    os << "\n\n" << m_action << "create_twofactor_data:" << (int)m_state << ":" << m_twofactor_data.dump() << std::endl;
+    m_debug += "\n" + os.str();
 }
 
 GA_twofactor_call::state_type GA_send_call::call_impl()
 {
-    m_result = m_session.send(m_tx_details, m_twofactor_data);
+    std::stringstream os;
+    os << "\n\n" << m_action << "call:" << (int)m_state << ":" << m_twofactor_data.dump() << std::endl;
+    m_debug += "\n" + os.str();
+    m_result = m_session.send_transaction(m_tx_details, m_twofactor_data);
+    m_debug += "\n\ndone\n";
     return state_type::done;
 }

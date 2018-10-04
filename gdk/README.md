@@ -86,7 +86,7 @@ if you want to change it for example to ndk armeabi-v7a:
 
 #### Disable LTO
 
-By default builds use link time optimisation (except for AARCH64). It can be disabled when invoking build.sh. For example
+By default builds use link time optimisation. It can be disabled when invoking build.sh. For example
 
 * tools/build.sh --lto=false --clang
 

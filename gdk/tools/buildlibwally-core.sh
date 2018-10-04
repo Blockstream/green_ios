@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -e
 
-WALLYCORE_NAME="libwally-core-51709a91b228240e6c26207a382ba972ac701c22"
+WALLYCORE_NAME="libwally-core-9157583037d986b8c1f8f6fbf4a4b73b25410fc0"
 
 cp -r "${MESON_SOURCE_ROOT}/subprojects/${WALLYCORE_NAME}" "${MESON_BUILD_ROOT}/libwally-core"
 
@@ -34,9 +34,11 @@ if [ \( "$1" = "--ndk" \) ]; then
     . tools/android_helpers.sh
 
     export CFLAGS="$SDK_CFLAGS -DPIC -fPIC"
+    export LDFLAGS="$SDK_LDFLAGS"
 
-    android_build_wally $HOST_ARCH "${MESON_BUILD_ROOT}/toolchain" $ANDROID_VERSION --host=$SDK_PLATFORM --build=$HOST_OS \
+    android_build_wally $HOST_ARCH "${MESON_BUILD_ROOT}/toolchain" $ANDROID_VERSION --build=$HOST_OS \
           --enable-static --disable-shared --$ENABLE_SWIG_JAVA --disable-swig-python --target=$SDK_PLATFORM $ENABLE_DEBUG --prefix="${MESON_BUILD_ROOT}/libwally-core/build"
+
 
     make -o configure install
 elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then

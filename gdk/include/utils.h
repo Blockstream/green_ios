@@ -2,12 +2,13 @@
 #define GA_SDK_UTILS_H
 #pragma once
 
-#include "containers.h"
-#include <stddef.h>
+#include "common.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct GA_json GA_json;
 
 #ifndef SWIG
 /**

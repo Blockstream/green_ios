@@ -2,7 +2,6 @@
 
 #include "argparser.h"
 
-#include "include/assertion.hpp"
 #include "include/session.hpp"
 
 const std::string DEFAULT_MNEMONIC(
@@ -16,11 +15,12 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
+        const bool debug = options->quiet == 0;
         sdk::session session;
         try {
             session.connect(options->testnet ? sdk::make_testnet_network("socks5://localhost")
                                              : sdk::make_localtest_network("socks5://localhost"),
-                true);
+                debug);
         } catch (const std::exception&) {
             if (options->testnet == 0) {
                 std::cerr << "Skipping test (requires testnet or local environment w/proxy)" << std::endl;

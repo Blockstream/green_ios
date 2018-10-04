@@ -2,8 +2,13 @@
 #define GA_SDK_CORE_WALLY_HPP
 #pragma once
 
-#include "assertion.hpp"
+#include <array>
+#include <memory>
+#include <string>
+#include <vector>
 #include <wally.hpp>
+
+#include "assertion.hpp"
 
 /* These wrappers allow passing containers such as std::vector, std::array,
  * std::string and custom classes as input/output buffers to wally functions.
@@ -543,7 +548,7 @@ namespace sdk {
         return wally_tx_ptr(p);
     }
 
-    inline wally_tx_ptr tx_from_hex(const std::string& tx_hex, uint32_t flags)
+    inline wally_tx_ptr tx_from_hex(const std::string& tx_hex, uint32_t flags = WALLY_TX_FLAG_USE_WITNESS)
     {
         struct wally_tx* p;
         tx_from_hex(tx_hex, flags, &p);

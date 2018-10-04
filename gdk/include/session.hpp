@@ -2,18 +2,17 @@
 #define GA_SDK_SESSION_HPP
 #pragma once
 
-#include <ctime>
-#include <memory>
+#include <json.hpp>
 
 #include "common.h"
 
 #include "amount.hpp"
-#include "containers.hpp"
+#include "ga_wally.hpp"
 #include "network_parameters.hpp"
-#include "utils.hpp"
 
 namespace ga {
 namespace sdk {
+    class ga_session;
 
     enum class address_type : uint32_t {
         p2sh = GA_ADDRESS_TYPE_P2SH,
@@ -29,14 +28,6 @@ namespace sdk {
     };
 
     enum class privacy_show_as_sender : uint32_t { private_, mutual_addrbook, public_ };
-
-    enum class twofactor_type : uint32_t {
-        email,
-        gauth,
-        phone,
-    };
-
-    enum class subaccount_type : uint32_t { _2of2, _2of3 };
 
     class GASDK_API session {
     public:
@@ -77,6 +68,7 @@ namespace sdk {
         void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
 
         nlohmann::json get_receive_address(uint32_t subaccount, address_type addr_type);
+        nlohmann::json get_receive_address(uint32_t subaccount);
 
         nlohmann::json get_subaccounts();
 
@@ -105,10 +97,6 @@ namespace sdk {
 
         nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 
-        bool add_address_book_entry(const std::string& address, const std::string& name);
-        bool edit_address_book_entry(const std::string& address, const std::string& name);
-        void delete_address_book_entry(const std::string& address);
-
         nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_unspent_outputs_for_private_key(
             const std::string& private_key, const std::string& password, uint32_t unused);
@@ -116,8 +104,7 @@ namespace sdk {
 
         nlohmann::json create_transaction(const nlohmann::json& details);
         nlohmann::json sign_transaction(const nlohmann::json& details);
-
-        nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
+        nlohmann::json send_transaction(const nlohmann::json& details, const nlohmann::json& twofactor_data);
 
         void send_nlocktimes();
 
@@ -131,14 +118,23 @@ namespace sdk {
         void ack_system_message(const std::string& system_message);
 
         nlohmann::json convert_amount(const nlohmann::json& amount_json);
-        nlohmann::json encrypt_decrypt(const nlohmann::json& input_json);
+        nlohmann::json encrypt(const nlohmann::json& input_json);
+        nlohmann::json decrypt(const nlohmann::json& input_json);
+
+        // FIXME: make this an internal function
+        std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
+        amount get_min_fee_rate() const;
+        bool have_subaccounts() const;
+        uint32_t get_block_height() const;
+        amount get_dust_threshold() const;
+        nlohmann::json get_spending_limits() const;
+        void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
+        nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
 
     private:
         template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);
 
-    private:
-        class session_impl;
-        std::unique_ptr<session_impl> m_impl;
+        std::unique_ptr<ga_session> m_impl;
     };
 } // namespace sdk
 } // namespace ga

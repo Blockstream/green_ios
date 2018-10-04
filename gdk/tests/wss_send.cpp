@@ -5,7 +5,6 @@
 #include "argparser.h"
 
 #include "http_jsonrpc_interface.hpp"
-#include "include/assertion.hpp"
 #include "include/session.h"
 #include "include/session.hpp"
 #include "include/twofactor.h"
@@ -13,24 +12,33 @@
 using namespace ga;
 
 namespace {
-const std::string DUMMY_CODE = "555555";
+static const std::string DUMMY_CODE = "555555";
 
-const std::string DEFAULT_MNEMONIC_1("infant earth modify pyramid hunt reopen write asthma middle during mechanic "
-                                     "carry health chat plate wear cycle market knock number blur near permit core");
+static const std::string DEFAULT_MNEMONIC_1(
+    "infant earth modify pyramid hunt reopen write asthma middle during mechanic "
+    "carry health chat plate wear cycle market knock number blur near permit core");
 
-const std::string DEFAULT_MNEMONIC_2(
+static const std::string DEFAULT_MNEMONIC_2(
     "sustain pumpkin scrub about voyage laptop script engine upset spoil nerve chicken tackle analyst "
     "actress gauge second pink hero rack warm detail sleep dawn");
 
-const std::string GENERATE_SINGLE_BLOCK_REQUEST(
-    R"rawlit({"jsonrpc": "1.0", "id":"generate", "method": "generate", "params": [1] })rawlit");
-
-void login(sdk::session& session, const std::string& mnemonic, struct options* options)
+static void login(sdk::session& session, const std::string& mnemonic, struct options* options)
 {
     const bool debug = options->quiet == 0;
     session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
     session.register_user(mnemonic);
     session.login(mnemonic);
+}
+
+static nlohmann::json get_tx_list_tx(sdk::session& session, const std::string& txhash)
+{
+    const nlohmann::json txs = session.get_transactions(0, 0);
+    // std::cerr << "txs: " << std::endl << txs.dump() << std::endl;
+    const auto& tx_list = txs["list"];
+    const auto tx_p = std::find_if(
+        std::begin(tx_list), std::end(tx_list), [&txhash](const nlohmann::json& tx) { return tx["txhash"] == txhash; });
+    GA_SDK_RUNTIME_ASSERT(tx_p != std::end(tx_list));
+    return *tx_p;
 }
 } // namespace
 
@@ -46,9 +54,11 @@ int main(int argc, char** argv)
         login(receiver, DEFAULT_MNEMONIC_2, options);
 
         if (!options->testnet) {
-            // On localtest, enable 2fa to test sending with 2fa enabled
-            sender.get_twofactor_config();
-            sender.enable_gauth(DUMMY_CODE, nlohmann::json());
+            // On localtest, enable 2fa to test sending with 2fa enabled (but
+            // only if not already enabled from a previous failed test run)
+            if (!sender.get_twofactor_config()["gauth"].value("enabled", false)) {
+                sender.enable_gauth(DUMMY_CODE, nlohmann::json());
+            }
         }
 
         const uint32_t num_confs = 1;
@@ -58,23 +68,23 @@ int main(int argc, char** argv)
             std::cerr << "Generating utxos for sending" << std::endl;
 
             // Give the sender some confirmed UTXOs to spend
-            std::vector<std::pair<std::string, std::string>> addressees;
-            for (size_t i = 0; i < 20u; ++i) {
-                const std::string addr = sender.get_receive_address(0, sdk::address_type::default_)["address"];
-                addressees.emplace_back(std::make_pair(addr, "0.5"));
+            std::vector<std::pair<std::string, double>> address_amounts;
+            for (size_t i = 0; i < 15u; ++i) {
+                const std::string addr = sender.get_receive_address(0)["address"];
+                address_amounts.emplace_back(std::make_pair(addr, 0.5));
             }
             sdk::http_jsonrpc_client rpc;
-            const auto send_request = rpc.make_send_to_addressees(addressees);
+            const auto send_request = rpc.make_sendmany_request(address_amounts);
             rpc.sync_post("127.0.0.1", "19001", send_request);
 
-            rpc.sync_post("127.0.0.1", "19001", GENERATE_SINGLE_BLOCK_REQUEST);
+            rpc.sync_post("127.0.0.1", "19001", rpc.make_generate_request(1));
 
             // FIXME: should really wait for the block notification here
             sender_utxos = sender.get_unspent_outputs(0, num_confs);
         }
         const size_t num_sender_utxos = sender_utxos.size();
 
-        const std::string recv_addr = receiver.get_receive_address(0, sdk::address_type::default_)["address"];
+        const std::string recv_addr = receiver.get_receive_address(0)["address"];
 #if 0
         // Sample regtest addresses for debugging
         const std::string recv_addr{ "mnvL3wwo8sPCkHbkdq3Lzc2Y4NhguNKnyk" }; // P2PKH
@@ -93,7 +103,7 @@ int main(int argc, char** argv)
         // std::cerr << "initial: " << std::endl << details.dump() << std::endl << std::endl;
 
         // Make a note of our change address
-        GA_SDK_RUNTIME_ASSERT(details.value("have_change", true));
+        GA_SDK_RUNTIME_ASSERT(details.value("have_change", false));
         const std::string change_address = details["change_address"];
 
         // Simulate a user choosing another fee rate, adding a memo and using
@@ -119,10 +129,10 @@ int main(int argc, char** argv)
         // Verify that the old change address was re-used
         GA_SDK_RUNTIME_ASSERT(change_address == details["change_address"]);
 
-        // Send the transaction, signing it automatically
-        nlohmann::json transaction;
+        nlohmann::json orig_tx;
         if (options->testnet) {
-            transaction = sender.send(details, nlohmann::json());
+            // Send the transaction, signing it automatically
+            orig_tx = sender.send_transaction(details, nlohmann::json());
         } else {
             // Test sending with 2fa enabled through the call interface
             struct GA_twofactor_call* call = nullptr;
@@ -134,22 +144,48 @@ int main(int argc, char** argv)
             GA_SDK_RUNTIME_ASSERT(GA_twofactor_call(call) == GA_OK);
             GA_json* transaction_c = nullptr;
             GA_SDK_RUNTIME_ASSERT(GA_twofactor_get_status(call, &transaction_c) == GA_OK);
-            transaction = (*(reinterpret_cast<nlohmann::json*>(transaction_c)))["result"];
+            orig_tx = (*(reinterpret_cast<nlohmann::json*>(transaction_c)))["result"];
 
             sender.disable_twofactor("gauth", { { "method", "gauth" }, { "code", DUMMY_CODE } });
         }
-        // std::cerr << "sent: " << std::endl << transaction.dump() << std::endl << std::endl;
+        // std::cerr << "sent: " << std::endl << orig_tx.dump() << std::endl << std::endl;
 
         // Get the transaction details from the server to compare
-        nlohmann::json tx_details = sender.get_transaction_details(transaction["txhash"]);
-        GA_SDK_RUNTIME_ASSERT(tx_details["transaction"] == transaction["transaction"]);
-        GA_SDK_RUNTIME_ASSERT(tx_details["txhash"] == transaction["txhash"]);
+        nlohmann::json tx_details = sender.get_transaction_details(orig_tx["txhash"]);
+        GA_SDK_RUNTIME_ASSERT(tx_details["transaction"] == orig_tx["transaction"]);
+        std::string txhash = tx_details["txhash"];
+        GA_SDK_RUNTIME_ASSERT(txhash == orig_tx["txhash"]);
         // std::cerr << "tx_details: " << std::endl << tx_details.dump() << std::endl;
 
-        // nlohmann::json txs = sender.get_transactions(0, 0);
-        // std::cerr << "txs: " << std::endl << txs.dump() << std::endl;
+        // Make sure the tx is in our tx list and is bumpable
+        const auto rbf_tx = get_tx_list_tx(sender, txhash);
+        GA_SDK_RUNTIME_ASSERT(rbf_tx.value("can_rbf", false) == true);
+        GA_SDK_RUNTIME_ASSERT(rbf_tx.value("can_cpfp", true) == false);
 
-        // FIXME: Bump and re-send
+        // RBF it
+        details = sender.create_transaction({ { "previous_transaction", rbf_tx }, { "fee_rate", 2000 } });
+        // std::cerr << "bumped: " << std::endl << details.dump() << std::endl << std::endl;
+
+        // Sign/Send it
+        nlohmann::json sent_rbf_tx = sender.send_transaction(details, nlohmann::json());
+        // std::cerr << "sent bumped: " << std::endl << sent_rbf_tx.dump() << std::endl << std::endl;
+
+        // Receiver CPFP's it
+        txhash = sent_rbf_tx["txhash"];
+        const auto cpfp_tx = get_tx_list_tx(receiver, txhash);
+        // std::cerr << "received tx: " << std::endl << cpfp_tx.dump() << std::endl << std::endl;
+        GA_SDK_RUNTIME_ASSERT(cpfp_tx.value("can_rbf", true) == false);
+        GA_SDK_RUNTIME_ASSERT(cpfp_tx.value("can_cpfp", false) == true);
+
+        details = receiver.create_transaction({ { "previous_transaction", cpfp_tx }, { "fee_rate", 3000 } });
+        // std::cerr << "received CPFP: " << std::endl << details.dump() << std::endl << std::endl;
+
+        // FIXME: CPFP requires a backend fix which is not yet merged
+#if 0
+        // Sign/Send it
+        nlohmann::json sent_cpfp_tx = receiver.send_transaction(details, nlohmann::json());
+        // std::cerr << "sent cpfp: " << std::endl << sent_cpfp_tx.dump() << std::endl << std::endl;
+#endif
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

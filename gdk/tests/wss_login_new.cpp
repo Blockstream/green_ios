@@ -2,11 +2,8 @@
 
 #include "argparser.h"
 
-#include "include/assertion.hpp"
 #include "include/exception.hpp"
 #include "include/session.hpp"
-#include "include/utils.hpp"
-
 #include "utils.hpp"
 
 int main(int argc, char** argv)
@@ -16,34 +13,31 @@ int main(int argc, char** argv)
     struct options* options;
     parse_cmd_line_arguments(argc, argv, &options);
     try {
-        const auto mnemonic = sdk::mnemonic_from_bytes(sdk::get_random_bytes<32>().data(), 32);
-
+        const bool debug = options->quiet == 0;
         nlohmann::json pin_info;
-        std::string username = sdk::hex_from_bytes(sdk::get_random_bytes<8>());
+        std::string username = get_random_string();
 
         {
-            sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
-            session.register_user(mnemonic);
-            session.login(mnemonic);
+            sdk::session* session = reinterpret_cast<sdk::session*>(create_new_wallet(options));
             // TODO GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login"));
-            pin_info = session.set_pin(mnemonic, "0000", "default");
-            GA_SDK_RUNTIME_ASSERT(session.set_watch_only(username, "password"));
-            const auto address = session.get_receive_address(0, sdk::address_type::p2sh);
+            pin_info = session->set_pin(session->get_mnemonic_passphrase(std::string()), "0000", "default");
+            GA_SDK_RUNTIME_ASSERT(session->set_watch_only(username, "password"));
+            const auto address = session->get_receive_address(0);
             GA_SDK_RUNTIME_ASSERT(address["address"] != "");
+            delete session;
         }
 
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
             session.login_watch_only(username, "password");
-            const auto address = session.get_receive_address(0, sdk::address_type::p2sh);
+            const auto address = session.get_receive_address(0);
             std::cerr << "address: " << address["address"] << std::endl;
         }
 
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), true);
+            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
             assert_throws<ga::sdk::login_error>([&] { session.login("0001", pin_info); });
             session.login("0000", pin_info);
             // TODO GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login") == false);

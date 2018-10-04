@@ -1,11 +1,12 @@
 #include <gsl/span>
 
-#include "include/boost_wrapper.hpp"
+#include "boost_wrapper.hpp"
 
 #include "include/assertion.hpp"
 #include "include/network_parameters.hpp"
-#include "include/transaction_utils.hpp"
-#include "include/utils.hpp"
+#include "memory.hpp"
+#include "transaction_utils.hpp"
+#include "utils.hpp"
 
 namespace ga {
 namespace sdk {
@@ -22,7 +23,7 @@ namespace sdk {
     static const std::array<unsigned char, 3> OP_0_PREFIX = { { 0x00, 0x01, 0x00 } };
 
     namespace {
-        wally_ext_key_ptr ga_pub_key(
+        static wally_ext_key_ptr ga_pub_key(
             const network_parameters& net_params, const std::string& gait_path, uint32_t subaccount, uint32_t pointer)
         {
             using bytes = std::vector<unsigned char>;
@@ -55,21 +56,23 @@ namespace sdk {
         }
     } // namespace
 
-    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(const std::vector<unsigned char>& script)
+    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(
+        const network_parameters& net_params, const std::vector<unsigned char>& script)
     {
         std::array<unsigned char, HASH160_LEN> hash;
         std::array<unsigned char, HASH160_LEN + 1> addr;
         hash160(script, hash);
-        addr[0] = 196;
+        addr[0] = net_params.btc_p2sh_version();
         std::copy(hash.begin(), hash.end(), addr.begin() + 1);
         return addr;
     }
 
-    std::array<unsigned char, HASH160_LEN + 1> p2wsh_address_from_bytes(const std::vector<unsigned char>& script)
+    std::array<unsigned char, HASH160_LEN + 1> p2sh_p2wsh_address_from_bytes(
+        const network_parameters& net_params, const std::vector<unsigned char>& script)
     {
         std::vector<unsigned char> witness(SHA256_LEN + 2);
         GA_SDK_RUNTIME_ASSERT(witness_program_from_bytes(script, WALLY_SCRIPT_SHA256, witness) == witness.size());
-        return p2sh_address_from_bytes(witness);
+        return p2sh_address_from_bytes(net_params, witness);
     }
 
     std::vector<unsigned char> output_script_for_address(
@@ -196,5 +199,41 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(tx_to_bytes(tx, flags, buff) == buff.size());
         return buff;
     }
+
+    amount get_tx_fee(const wally_tx_ptr& tx, amount min_fee_rate, amount fee_rate)
+    {
+        const amount rate = fee_rate < min_fee_rate ? min_fee_rate : fee_rate;
+
+        const size_t vsize = tx_get_vsize(tx);
+        const auto fee = static_cast<double>(vsize) * rate.value() / 1000.0;
+        const auto rounded_fee = static_cast<amount::value_type>(std::ceil(fee));
+        return amount(rounded_fee);
+    }
+
+    void add_tx_output(
+        const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi)
+    {
+        const auto output_script = output_script_for_address(net_params, address);
+        tx_add_raw_output(tx, satoshi, output_script, 0);
+    }
+
+    void update_tx_info(const wally_tx_ptr& tx, nlohmann::json& result)
+    {
+        result["transaction"] = hex_from_bytes(tx_to_bytes(tx));
+        const auto weight = tx_get_weight(tx);
+        result["transaction_size"] = tx_get_length(tx, WALLY_TX_FLAG_USE_WITNESS);
+        result["transaction_weight"] = weight;
+        result["transaction_vsize"] = tx_vsize_from_weight(weight);
+    }
+
+    void set_anti_snipe_locktime(const wally_tx_ptr& tx, uint32_t current_block_height)
+    {
+        // We use cores algorithm to randomly use an older locktime for delayed tx privacy
+        tx->locktime = current_block_height;
+        if (get_uniform_uint32_t(10) == 0) {
+            tx->locktime -= get_uniform_uint32_t(100);
+        }
+    }
+
 } // namespace sdk
 } // namespace ga

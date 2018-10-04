@@ -2,7 +2,7 @@
 #define GA_SDK_LOGGING_HPP
 #pragma once
 
-#include "include/boost_wrapper.hpp"
+#include "boost_wrapper.hpp"
 
 namespace ga {
 namespace sdk {

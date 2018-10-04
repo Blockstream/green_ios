@@ -233,12 +233,6 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
     $1 = (uint64_t)($input);
 }
 
-/* time_t are treated as uint32_t */
-/* FIXME: take Dates or remove these from the API */
-%typemap(in) time_t {
-    $1 = uint32_cast(jenv, $input);
-}
-
 /* JSON */
 %typemap(in, numinputs=0) GA_json** (GA_json* w) {
     w = 0; $1 = ($1_ltype)&w;
@@ -340,11 +334,12 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %returns_struct(GA_create_session, GA_session)
 %returns_struct(GA_create_transaction, GA_json)
 %returns_struct(GA_create_subaccount, GA_json)
+%returns_struct(GA_decrypt, GA_json)
 %returns_void__(GA_destroy_session)
 %returns_void__(GA_destroy_twofactor_call)
 %returns_void__(GA_destroy_json)
 %returns_void__(GA_disconnect)
-%returns_struct(GA_encrypt_decrypt, GA_json)
+%returns_struct(GA_encrypt, GA_json)
 %returns_string(GA_generate_mnemonic)
 %returns_struct(GA_get_available_currencies, GA_json)
 %returns_struct(GA_get_balance, GA_json)

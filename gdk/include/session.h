@@ -190,7 +190,7 @@ GASDK_API int GA_change_settings_privacy_show_as_sender(struct GA_session* sessi
  *
  * @session The server session to use.
  * @is_fiat One of @GA_TRUE or @GA_FALSE.
- * @total Amount in total per transaction in satoshis.
+ * @total Amount in total per transaction in satoshi.
  * @twofactor_data Two factor authentication details for the action.
  *
  * GA_ERROR if transaction limits could not be changed.
@@ -438,26 +438,39 @@ GASDK_API int GA_ack_system_message(struct GA_session* session, const char* mess
  * Get the two factor configuration for the current user.
  *
  * @session The server session to use.
- * @estimates Destination for the returned configuration.
+ * @config Destination for the returned configuration.
  *
  * GA_ERROR if the configuration cannot be fetched.
  */
 GASDK_API int GA_get_twofactor_config(struct GA_session* session, GA_json** config);
 
 /*
- * Encrypt or decrypt data.
+ * Encrypt data.
  *
  * @session The server session to use.
- * @input The data to encrypt or decrypt.
- * @output Destination for the encrypted/decrypted data.
+ * @input The data to encrypt.
+ * @output Destination for the encrypted data.
  *
  * If no key is given, the data is encrypted using a key derived from the users mnemonics.
  * This will fail to decrypt the data correctly if the user is logged in in watch-only
  * mode. For watch only users a key must be provided by the caller.
  *
- * GA_ERROR if the data cannot be encrypted/decrypted.
+ * GA_ERROR if the data cannot be encrypted.
  */
-GASDK_API int GA_encrypt_decrypt(struct GA_session* session, const GA_json* input, GA_json** output);
+GASDK_API int GA_encrypt(struct GA_session* session, const GA_json* input, GA_json** output);
+
+/*
+ * Decrypt data.
+ *
+ * @session The server session to use.
+ * @input The data to decrypt.
+ * @output Destination for the decrypted data.
+ *
+ * See GA_encrypt.
+ *
+ * GA_ERROR if the data cannot be decrypted.
+ */
+GASDK_API int GA_decrypt(struct GA_session* session, const GA_json* input, GA_json** output);
 
 #ifndef SWIG
 /*

@@ -2,8 +2,6 @@
 #define GA_SDK_ASSERTION_HPP
 #pragma once
 
-#include <wally_core.h>
-
 #include <string>
 
 #include "common.h"

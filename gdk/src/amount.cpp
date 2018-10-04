@@ -4,7 +4,7 @@
 
 #include <json.hpp>
 
-#include "include/boost_wrapper.hpp"
+#include "boost_wrapper.hpp"
 
 #include "include/amount.hpp"
 #include "include/assertion.hpp"
@@ -19,15 +19,20 @@ namespace sdk {
     using conversion_type = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<15>>;
 
     namespace {
-        const conversion_type COIN_VALUE_100("100");
-        const conversion_type COIN_VALUE_DECIMAL("100000000");
-        const conversion_type COIN_VALUE_DECIMAL_MBTC("100000");
-        const conversion_type COIN_VALUE_DECIMAL_UBTC("100");
+        static const conversion_type COIN_VALUE_100("100");
+        static const conversion_type COIN_VALUE_DECIMAL("100000000");
+        static const conversion_type COIN_VALUE_DECIMAL_MBTC("100000");
+        static const conversion_type COIN_VALUE_DECIMAL_UBTC("100");
     } // namespace
 
     // convert to internal representation (from Bitcoin Core)
     amount::amount(const std::string& str_value)
         : m_value(btc_type(conversion_type(str_value) * COIN_VALUE_DECIMAL).convert_to<value_type>())
+    {
+    }
+
+    amount::amount(const nlohmann::json& json_value)
+        : amount(json_value.get<amount::value_type>())
     {
     }
 

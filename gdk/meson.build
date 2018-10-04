@@ -1,4 +1,4 @@
-project('sdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.46', default_options : ['cpp_std=c++14'])
+project('gdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.47', default_options : ['cpp_std=c++14'])
 
 # header checks (must be architecture independent)
 compiler = meson.get_compiler('cpp')
@@ -23,17 +23,20 @@ add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-decla
 static_libstdc = compiler.has_link_argument('-static-libstdc++')
 
 cross_win_build = meson.is_cross_build() and meson.get_cross_property('target_os') == 'windows'
-use_gold = (build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')) and not cross_win_build
+cross_iphone_build = meson.is_cross_build() and meson.get_cross_property('target_os').contains('iphone')
+cross_android_build = host_machine.system() == 'android'
+is_freebsd = host_machine.system().startswith('freebsd')
+is_clang = compiler.get_id() == 'clang'
+freebsd_requires_gold = is_freebsd and is_clang
+use_gold = (build_machine.system() == 'linux' or cross_android_build or freebsd_requires_gold) and not cross_win_build
 
 # language related arguments
-if not host_machine.cpu_family().contains('arm64')
-    if get_option('lto')
-        add_project_arguments(['-flto'], language : 'cpp')
-        add_project_link_arguments(['-flto'], language : 'cpp')
-    endif
-    if use_gold
-        add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
-    endif
+if get_option('lto')
+    add_project_arguments(['-flto'], language : 'cpp')
+    add_project_link_arguments(['-flto'], language : 'cpp')
+endif
+if use_gold
+    add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
 endif
 
 common_compile_options = [
@@ -63,7 +66,7 @@ if use_gold
     add_project_link_arguments(common_link_args, language : ['c', 'cpp'])
 endif
 
-if get_option('b_sanitize') == 'address' and compiler.get_id() == 'clang'
+if get_option('b_sanitize') == 'address' and is_clang
     add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
     add_project_link_arguments(['-shared-libasan'], language : ['c', 'cpp'])
 endif
@@ -79,7 +82,7 @@ if meson.is_cross_build()
     if archs != []
         add_project_arguments(meson.get_cross_property('archs'), language : ['c', 'cpp'])
     endif
-    if host_machine.cpu_family().contains('iphone')
+    if cross_iphone_build
         add_project_arguments(['-fembed-bitcode'], language : ['c', 'cpp'])
     endif
 endif
@@ -131,7 +134,9 @@ if swig.found()
     endif
 endif
 
-build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_family().contains('iphone') and not cross_win_build
+jni_deps  = swig.found() and javac and java_home != ''
+jni_disabled = cross_win_build or cross_iphone_build
+build_jni = (jni_deps or cross_android_build) and not jni_disabled
 
 clang_format = find_program('clang-format', required : false)
 clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)

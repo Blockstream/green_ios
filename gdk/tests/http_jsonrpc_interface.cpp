@@ -1,31 +1,45 @@
 #include <iostream>
-
-#include "include/boost_wrapper.hpp"
+#include <json.hpp>
 
 #include "http_jsonrpc_interface.hpp"
 #include "include/assertion.hpp"
 
+#include "src/boost_wrapper.hpp"
+
 namespace ga {
 namespace sdk {
+    namespace {
+        static nlohmann::json get_rpc_request(const std::string& name)
+        {
+            return { { "jsonrpc", "1.0" }, { "id", name }, { "method", name } };
+        }
 
-    std::string http_jsonrpc_client::make_send_to_address(const std::string& address, const std::string& amount)
+    } // namespace
+
+    std::string http_jsonrpc_client::make_sendtoaddress_request(const std::string& address, double amount)
     {
-        const std::vector<std::pair<std::string, std::string>> addressees = { { std::make_pair(address, amount) } };
-        return make_send_to_addressees(addressees);
+        return make_sendmany_request(std::vector<std::pair<std::string, double>>{ std::make_pair(address, amount) });
     }
 
-    std::string http_jsonrpc_client::make_send_to_addressees(
-        const std::vector<std::pair<std::string, std::string>>& addressees)
+    std::string http_jsonrpc_client::make_sendmany_request(
+        const std::vector<std::pair<std::string, double>>& address_amounts)
     {
-        std::string sep;
-        std::ostringstream os;
-        os << R"rawlit({"jsonrpc": "1.0", "id":"sendmany", "method": "sendmany", "params": ["", {)rawlit";
-        for (const auto& a : addressees) {
-            os << sep << '"' << a.first << "\":" << a.second;
-            sep = ",";
+        nlohmann::json request = get_rpc_request("sendmany");
+        auto& params = request["params"];
+        params = std::vector<std::string>{ std::string() }; // Account
+        nlohmann::json addressees;
+        for (const auto& aa : address_amounts) {
+            addressees[aa.first] = aa.second;
         }
-        os << "}]}";
-        return os.str();
+        params.emplace_back(addressees);
+        return request.dump();
+    }
+
+    std::string http_jsonrpc_client::make_generate_request(uint32_t num_blocks)
+    {
+        nlohmann::json request = get_rpc_request("generate");
+        request["params"] = std::vector<uint32_t>{ num_blocks };
+        return request.dump();
     }
 
     std::string http_jsonrpc_client::sync_post(

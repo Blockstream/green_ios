@@ -133,16 +133,23 @@ function set_cross_build_env() {
             export SDK_LDFLAGS="-Wl,--fix-cortex-a8"
             ;;
         arm64-v8a)
-            export SDK_ARCH=arm64
+            export SDK_ARCH=aarch64
+            export SDK_CPU=arm64-v8a
             export SDK_CFLAGS="-march=armv8-a -flax-vector-conversions"
             ;;
         iphone)
-            export SDK_ARCH=arm
+            export SDK_ARCH=aarch64
+            export SDK_CPU=arm64
             export SDK_CFLAGS="-miphoneos-version-min=9"
             ;;
         iphonesim)
-            export SDK_ARCH=x86
+            export SDK_ARCH=x86_64
+            export SDK_CPU=x86_64
             export SDK_CFLAGS="-miphoneos-version-min=9"
+            ;;
+        x86_64)
+            export SDK_ARCH=$HOST_ARCH
+            export SDK_CPU=$HOST_ARCH
             ;;
         *)
             export SDK_ARCH=$2
@@ -185,12 +192,16 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
         if [ ! -f "build-clang-$1-$2/build.ninja" ]; then
             rm -rf build-clang-$1-$2/meson-private
             if [ ! -f "build-clang-$1-$2/toolchain" ]; then
-                $ANDROID_NDK/build/tools/make_standalone_toolchain.py --stl libc++ --arch $SDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
+                NDK_ARCH=$SDK_ARCH
+                if [[ $SDK_ARCH == "aarch64" ]]; then
+                    NDK_ARCH="arm64"
+                fi
+                $ANDROID_NDK/build/tools/make_standalone_toolchain.py --stl libc++ --arch $NDK_ARCH --api $ANDROID_VERSION --install-dir="$bld_root/toolchain" &>/dev/null
             fi
             export SDK_PLATFORM=$(basename $(find $bld_root/toolchain/ -maxdepth 1 -type d -name "*linux-android*"))
             export AR="$bld_root/toolchain/bin/$SDK_PLATFORM-ar"
             export RANLIB="$bld_root/toolchain/bin/$SDK_PLATFORM-ranlib"
-            ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $1 ndk
+            ./tools/make_txt.sh $bld_root $bld_root/$1_$2_ndk.txt $1 ndk $2
             compress_patch
             meson $bld_root --cross-file $bld_root/$1_$2_ndk.txt --default-library=${LIBTYPE} ${MESON_OPTIONS}
         fi

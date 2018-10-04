@@ -1,25 +1,29 @@
 sources = ['../include/amount.hpp',
            'amount.cpp',
-           '../include/autobahn_wrapper.hpp',
            '../include/assertion.hpp',
            'assertion.cpp',
-           '../include/boost_wrapper.hpp',
-           '../include/containers.hpp',
+           'autobahn_wrapper.hpp',
+           'boost_wrapper.hpp',
            '../include/exception.hpp',
+           'containers.hpp',
            'containers.cpp',
            'ffi_c.cpp',
            '../include/ga_wally.hpp',
-           '../include/memory.hpp',
            '../include/network_parameters.hpp',
            '../include/session.hpp',
+           'ga_session.cpp',
+           'ga_session.hpp',
+           'ga_tx.cpp',
+           'ga_tx.hpp',
            'logging.hpp',
+           'memory.hpp',
            'session.cpp',
-           '../include/transaction_utils.hpp',
            'transaction_utils.cpp',
+           'transaction_utils.hpp',
            '../include/twofactor.hpp',
            'twofactor.cpp',
            'twofactor_calls.hpp',
-           '../include/utils.hpp',
+           'utils.hpp',
            'utils.cpp']
 
 headers = ['../include/common.h',
@@ -55,7 +59,7 @@ else
 endif
 
 wallycore_libdir = wallycore.get_variable('libdir')
-if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
+if host_machine.system() == 'linux' or cross_android_build
     local_link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, 'libwallycore.a'), '-Wl,--no-whole-archive']
     if build_jni and build_machine.system() == 'darwin'
         local_link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, '..', '..', 'src', '.libs', 'libswig_java.a'), '-Wl,--no-whole-archive']
@@ -69,17 +73,24 @@ install_headers(
     subdir : 'gdk'
 )
 
+if cross_android_build
+    libga_installdir = join_paths('lib', meson.get_cross_property('ndk_lib_dir'))
+else
+    libga_installdir = join_paths('lib', host_machine.cpu() + '_' + host_machine.system())
+endif
+
 libga = both_libraries('greenaddress',
                         sources,
                         include_directories : incdir,
                         link_whole : link_whole,
                         link_args : local_link_args,
                         dependencies : dependencies,
-                        install : true)
+                        install : true,
+                        install_dir : libga_installdir)
 
 libga_dep = declare_dependency(include_directories : incdir, link_with : libga.get_static_lib())
 
-if host_machine.cpu_family().contains('iphone')
+if cross_iphone_build
     output = 'allsym_libgreenaddress.a'
     archiver = custom_target('archiver',
                              output : output,
