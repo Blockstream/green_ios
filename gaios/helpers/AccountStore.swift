@@ -32,10 +32,10 @@ class AccountStore {
                 let pointer = account["pointer"] as! UInt32
                 let address = try getSession().getReceiveAddress(subaccount: pointer)
                 let balance = try getSession().getBalance(subaccount: pointer, numConfs: 0)
-                let satoshi = balance!["satoshi"] as! String
+                let satoshi = balance!["satoshi"] as! UInt32
                 let name = pointer == 0 ? "Main Wallet" : account["name"] as! String
                 let currency = balance!["fiat_currency"] as! String
-                let wallet: WalletItem = WalletItem(name: name, address: address, balance: satoshi, currency: currency, pointer: pointer)
+                let wallet: WalletItem = WalletItem(name: name, address: address, balance: String(satoshi), currency: currency, pointer: pointer)
                 result.append(wallet)
             }
         } catch {
@@ -176,12 +176,48 @@ class AccountStore {
     }
 
     func enablePhoneCallTwoFactor(phoneNumber: String) -> TwoFactorCall? {
-        //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
         let dict = ["enabled": true, "confirmed": true, "data": phoneNumber] as [String : Any]
         do {
             return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
         } catch {
             print("couldn't change settings")
+        }
+        return nil
+    }
+
+    func enableGauthTwoFactor() -> TwoFactorCall? {
+        let config = getTwoFactorConfig()
+        if (config == nil) {
+            return nil
+        }
+        let gauth = config!["gauth"] as! [String: Any]
+        let gauthdata = gauth["data"] as! String
+        let dict = ["enabled": true, "confirmed": true, "data": gauthdata] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
+    func getGauthSecret() -> String? {
+        let config = getTwoFactorConfig()
+        if (config == nil) {
+            return nil
+        }
+        let gauth = config!["gauth"] as! [String: Any]
+        let gauthdata = gauth["data"] as! String
+        let url = URL(string: gauthdata)
+        let secret = url?.queryItems["secret"]
+        return secret
+    }
+
+    func getTwoFactorConfig() -> [String: Any]? {
+        do {
+            return try getSession().getTwoFactorConfig()
+        } catch {
+            print("something went wrong")
         }
         return nil
     }
