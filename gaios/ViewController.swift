@@ -106,9 +106,9 @@ class ViewController: UIViewController, WalletViewDelegate{
             do {
                 let balance = try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
                 DispatchQueue.main.async {
-                    let satoshi = balance!["satoshi"] as! String
-                    wallet.balance = satoshi
-                    self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: satoshi)
+                    let satoshi = balance!["satoshi"] as! UInt32
+                    wallet.balance = String(satoshi)
+                    self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: String(satoshi))
                 }
             } catch {
                 print("error updating balance")

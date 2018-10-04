@@ -28,6 +28,13 @@ class EnableTwoFactorViewController : UIViewController {
         self.performSegue(withIdentifier: "phone", sender: "sms")
     }
 
+    @IBAction func gauthClicked(_ sender: Any) {
+        self.performSegue(withIdentifier: "gauth", sender: nil)
+    }
+
+    @IBAction func emailClicked(_ sender: Any) {
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SetPhoneViewController {
             if (sender as! String == "sms") {

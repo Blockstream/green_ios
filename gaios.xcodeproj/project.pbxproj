@@ -54,6 +54,7 @@
 		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
 		0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */; };
+		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
@@ -157,6 +158,7 @@
 		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
 		0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetViewController.swift; sourceTree = "<group>"; };
+		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
 				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
 				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
+				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
 				092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */,
 				09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
@@ -721,6 +724,7 @@
 				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
 				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
 				092A84CF211BFE120062F0B2 /* CongratsViewController.swift in Sources */,
+				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */,
 				676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
