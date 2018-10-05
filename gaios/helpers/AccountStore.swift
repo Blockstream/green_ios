@@ -222,6 +222,42 @@ class AccountStore {
         return nil
     }
 
+    func isEmailEnabled() -> Bool {
+        let config = getTwoFactorConfig()
+        let email = config!["email"] as! [String: Any]
+        if(email["enabled"] as! Int == 1 && email["confirmed"] as! Int == 1) {
+            return true
+        }
+        return false
+    }
+
+    func isSMSEnabled() -> Bool {
+        let config = getTwoFactorConfig()
+        let sms = config!["sms"] as! [String: Any]
+        if(sms["enabled"] as! Int == 1 && sms["confirmed"] as! Int == 1) {
+            return true
+        }
+        return false
+    }
+
+    func isPhoneEnabled() -> Bool {
+        let config = getTwoFactorConfig()
+        let phone = config!["phone"] as! [String: Any]
+        if(phone["enabled"] as! Int == 1 && phone["confirmed"] as! Int == 1) {
+            return true
+        }
+        return false
+    }
+
+    func isGauthEnabled() -> Bool {
+        let config = getTwoFactorConfig()
+        let gauth = config!["gauth"] as! [String: Any]
+        if(gauth["enabled"] as! Int == 1 && gauth["confirmed"] as! Int == 1) {
+            return true
+        }
+        return false
+    }
+
     func initializeAccountStore() {
         SettingsStore.shared.initSettingsStore()
         exchangeRate = 1 //get exchange rate

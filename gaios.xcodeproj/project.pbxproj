@@ -55,6 +55,7 @@
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
 		0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
+		09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B342166F499009BABFE /* EditTwoFactorViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
@@ -159,6 +160,7 @@
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
 		0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
+		09546B342166F499009BABFE /* EditTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTwoFactorViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
@@ -364,6 +366,7 @@
 				092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */,
 				09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
+				09546B342166F499009BABFE /* EditTwoFactorViewController.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */,
 				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
@@ -741,6 +744,7 @@
 				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
 				676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */,
 				09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */,
+				09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */,
 				09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */,
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
