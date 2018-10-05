@@ -226,27 +226,21 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
             
             if metadataObj.stringValue != nil {
                 let uri = metadataObj.stringValue
-                wrap{try parseBitcoinUri(uri: uri!)}.done { (uriData: [String: Any]?) in
-                    var dic: [String: Any]? = uriData
-                    guard let recipient = dic!["recipient"] as? String else {
-                        return
-                    }
-                    self.textfield.text = recipient
-                    guard let amount = dic!["amount"] as? String else {
-                        self.captureSession.stopRunning()
-                        self.videoPreviewLayer?.removeFromSuperlayer()
-                        self.qrCodeFrameView?.frame = CGRect.zero
-                        self.performSegue(withIdentifier: "next", sender: self)
-                        return
-                    }
-                    self.prefillAmount = Double(amount)!
+                print(uri)
+                do {
+                    var details = [String: Any]()
+                    var toAddress = [String: Any]()
+                    toAddress["address"] = uri
+                    details["addressees"] = [toAddress]
+                    let payload = try getSession().createTransaction(details: details)
+                    //pass payload to next
                     self.captureSession.stopRunning()
                     self.videoPreviewLayer?.removeFromSuperlayer()
                     self.qrCodeFrameView?.frame = CGRect.zero
                     self.performSegue(withIdentifier: "next", sender: self)
-                    }.catch { error in
-                        print(error)
-                    }
+                } catch {
+                    print("something went wrong tryign to print payload")
+                }
             }
         }
         //captureSession.stopRunning()
