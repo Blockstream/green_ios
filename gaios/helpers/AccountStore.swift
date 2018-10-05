@@ -185,8 +185,28 @@ class AccountStore {
         return nil
     }
 
+    func disableSMSTwoFactor() -> TwoFactorCall? {
+        let dict = ["enabled": false] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "sms", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
     func enablePhoneCallTwoFactor(phoneNumber: String) -> TwoFactorCall? {
         let dict = ["enabled": true, "confirmed": true, "data": phoneNumber] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
+    func disablePhoneCallTwoFactor() -> TwoFactorCall? {
+        let dict = ["enabled": false] as [String : Any]
         do {
             return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
         } catch {
@@ -203,6 +223,16 @@ class AccountStore {
         let gauth = config!["gauth"] as! [String: Any]
         let gauthdata = gauth["data"] as! String
         let dict = ["enabled": true, "confirmed": true, "data": gauthdata] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
+    func disableEmailTwoFactor() -> TwoFactorCall? {
+        let dict = ["enabled": false] as [String : Any]
         do {
             return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
         } catch {
