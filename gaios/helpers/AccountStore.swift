@@ -231,7 +231,7 @@ class AccountStore {
         return nil
     }
 
-    func disableEmailTwoFactor() -> TwoFactorCall? {
+    func disableGauthTwoFactor() -> TwoFactorCall? {
         let dict = ["enabled": false] as [String : Any]
         do {
             return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
