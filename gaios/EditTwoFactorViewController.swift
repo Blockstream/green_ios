@@ -40,18 +40,29 @@ class EditTwoFactorViewController: UIViewController {
     @IBAction func emailSwitched(_ sender: Any) {
         let switcher = sender as! UISwitch
         if (switcher.isOn) {
-            //enable 2fa
+            //enable 2faa
         } else {
             let twoFactor = AccountStore.shared.disableEmailTwoFactor()
             do {
                 let json = try twoFactor?.getStatus()
                 let status = json!["status"] as! String
                 if(status == "request_code") {
-                    try twoFactor?.requestCode(method: "sms")
-                    let json_request = try twoFactor?.getStatus()
-                    let status_request = json!["status"] as! String
-                    if(status_request == "resolve_code") {
-                        self.performSegue(withIdentifier: "verifyCode", sender: twoFactor)
+                    let methods = json!["methods"] as! NSArray
+                    if(methods.count > 1) {
+                        try twoFactor?.requestCode(method: "sms")
+                        let json_request = try twoFactor?.getStatus()
+                        let status_request = json!["status"] as! String
+                        if(status_request == "resolve_code") {
+                            self.performSegue(withIdentifier: "selectFactor", sender: twoFactor)
+                        }
+                    } else {
+                        let method = methods[0] as! String
+                        let req = try twoFactor?.requestCode(method: method)
+                        let status1 = try twoFactor?.getStatus()
+                        let parsed1 = status1!["status"] as! String
+                        if(parsed1 == "resolve_code") {
+                            self.performSegue(withIdentifier: "verifyCode", sender: twoFactor)
+                        }
                     }
                 }
                 print(json)
