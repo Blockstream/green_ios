@@ -49,5 +49,8 @@ class EditTwoFactorViewController: UIViewController {
     @IBAction func gauthSwithed(_ sender: Any) {
     }
 
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
 
 }
