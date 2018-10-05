@@ -42,7 +42,6 @@ protected:
     nlohmann::json m_twofactor_data; // Actual data to send along with any call
     state_type m_state; // Current state
     uint32_t m_attempts_remaining;
-    std::string m_debug;
 };
 
 #endif

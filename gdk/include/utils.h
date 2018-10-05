@@ -60,18 +60,6 @@ GASDK_API int GA_generate_mnemonic(char** output);
  */
 GASDK_API int GA_validate_mnemonic(const char* mnemonic);
 
-#ifndef SWIG
-/**
- * Parse Bitcoin URI.
- *
- * @uri The URI to parse
- * @output The JSON representation of a dictionary containing the elements
- *
- * GA_FALSE if parsing fails
- */
-GASDK_API int GA_parse_bitcoin_uri(const char* uri, GA_json** output);
-#endif
-
 #ifdef __cplusplus
 }
 #endif

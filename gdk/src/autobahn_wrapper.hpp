@@ -9,6 +9,9 @@
 
 #if __clang__
 #pragma clang diagnostic push
+#if !defined __APPLE__ && __clang_major__ >= 6
+#pragma clang diagnostic ignored "-Wenum-compare"
+#endif
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wignored-qualifiers"
 #endif

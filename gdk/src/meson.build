@@ -58,6 +58,13 @@ else
     message('Disabled JNI bindings')
 endif
 
+if build_swig_python
+    subdir('swig_python')
+    link_whole += [libswig_python]
+else
+    message('Disabled Python bindings')
+endif
+
 wallycore_libdir = wallycore.get_variable('libdir')
 if host_machine.system() == 'linux' or cross_android_build
     local_link_args += ['-Wl,--whole-archive', join_paths(wallycore_libdir, 'libwallycore.a'), '-Wl,--no-whole-archive']
@@ -98,6 +105,15 @@ if cross_iphone_build
                              build_always_stale : true,
                              build_by_default : true,
                              depends : libga)
+endif
+
+if build_swig_python
+    output = join_paths(meson.build_root(), 'src', 'greenaddress.so')
+    custom_target('archiver',
+                  output : 'greenaddress.so',
+                  command : ['ln', '-sf', libga.full_path(), output],
+                  build_by_default : true,
+                  depends : libga)
 endif
 
 # tests

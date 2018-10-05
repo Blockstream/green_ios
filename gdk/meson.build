@@ -1,26 +1,7 @@
-project('gdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.47', default_options : ['cpp_std=c++14'])
+project('gdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.47')
 
-# header checks (must be architecture independent)
+# commonly used checks
 compiler = meson.get_compiler('cpp')
-
-check_headers = [
-    'fcntl.h',
-    'stddef.h',
-    'stdint.h',
-    'string.h',
-    'sys/epoll.h',
-    'sys/stat.h',
-    'time.h',
-    'unistd.h'
-]
-
-foreach h : check_headers
-    compiler.has_header(h)
-endforeach
-
-add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
-
-static_libstdc = compiler.has_link_argument('-static-libstdc++')
 
 cross_win_build = meson.is_cross_build() and meson.get_cross_property('target_os') == 'windows'
 cross_iphone_build = meson.is_cross_build() and meson.get_cross_property('target_os').contains('iphone')
@@ -29,6 +10,27 @@ is_freebsd = host_machine.system().startswith('freebsd')
 is_clang = compiler.get_id() == 'clang'
 freebsd_requires_gold = is_freebsd and is_clang
 use_gold = (build_machine.system() == 'linux' or cross_android_build or freebsd_requires_gold) and not cross_win_build
+
+# header checks (must be architecture independent)
+check_headers = [
+    'fcntl.h',
+    'stddef.h',
+    'stdint.h',
+    'string.h',
+    'sys/epoll.h',
+    'sys/stat.h',
+    'unistd.h'
+]
+
+foreach h : check_headers
+    compiler.has_header(h)
+endforeach
+
+# language options
+add_project_arguments(compiler.first_supported_argument(['-std=c++17', '-std=c++14']), language : 'cpp')
+add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
+
+static_libstdc = compiler.has_link_argument('-static-libstdc++')
 
 # language related arguments
 if get_option('lto')
@@ -115,10 +117,22 @@ if cross_win_build
     executable_link_args += ['-static', '-static-libgcc']
 endif
 
+sed = find_program('gsed', 'sed')
 swig = find_program('swig', required : false)
 if swig.found()
     pymodule = import('python3')
     python3 = pymodule.find_python()
+
+    res = run_command(python3, '-c', 'import os; print(os.environ["PYTHON_VERSION"], end = "")')
+    if res.returncode() == 0
+        python_version = res.stdout()
+        message('PYTHON_VERSION set to ' + python_version)
+        python_dep = compiler.find_library('python' + python_version)
+    else
+        python_version = ''
+        message('$PYTHON_VERSION not set. Python bindings are disabled.')
+    endif
+
     res = run_command(python3, '-c', 'import os; print(os.environ["JAVA_HOME"], end = "")')
     if res.returncode() == 0
         java_home = res.stdout()
@@ -137,6 +151,7 @@ endif
 jni_deps  = swig.found() and javac and java_home != ''
 jni_disabled = cross_win_build or cross_iphone_build
 build_jni = (jni_deps or cross_android_build) and not jni_disabled
+build_swig_python = swig.found() and python_version != ''
 
 clang_format = find_program('clang-format', required : false)
 clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)

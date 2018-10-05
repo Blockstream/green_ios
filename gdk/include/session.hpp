@@ -14,20 +14,11 @@ namespace ga {
 namespace sdk {
     class ga_session;
 
-    enum class address_type : uint32_t {
-        p2sh = GA_ADDRESS_TYPE_P2SH,
-        p2wsh = GA_ADDRESS_TYPE_P2WSH,
-        csv = GA_ADDRESS_TYPE_CSV,
-        default_ = GA_ADDRESS_TYPE_DEFAULT
-    };
-
-    enum class privacy_send_me : uint32_t {
-        private_,
-        addrbook,
-        public_,
-    };
-
-    enum class privacy_show_as_sender : uint32_t { private_, mutual_addrbook, public_ };
+    namespace address_type {
+        GASDK_API extern const std::string p2sh;
+        GASDK_API extern const std::string p2wsh; // Actually p2sh-p2wsh
+        GASDK_API extern const std::string csv;
+    }; // namespace address_type
 
     class GASDK_API session {
     public:
@@ -58,8 +49,6 @@ namespace sdk {
         nlohmann::json create_subaccount(const nlohmann::json& details);
         nlohmann::json get_subaccounts() const;
 
-        void change_settings_privacy_send_me(privacy_send_me value);
-        void change_settings_privacy_show_as_sender(privacy_show_as_sender value);
         void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
         void change_settings_pricing_source(const std::string& currency, const std::string& exchange);
 
@@ -67,8 +56,7 @@ namespace sdk {
 
         void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
 
-        nlohmann::json get_receive_address(uint32_t subaccount, address_type addr_type);
-        nlohmann::json get_receive_address(uint32_t subaccount);
+        nlohmann::json get_receive_address(uint32_t subaccount, const std::string& addr_type = std::string());
 
         nlohmann::json get_subaccounts();
 
@@ -78,7 +66,7 @@ namespace sdk {
 
         bool is_rbf_enabled();
         bool is_watch_only();
-        address_type get_default_address_type();
+        std::string get_default_address_type();
 
         nlohmann::json get_twofactor_config();
         std::vector<std::string> get_all_twofactor_methods();

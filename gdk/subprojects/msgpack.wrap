@@ -1,10 +1,10 @@
 [wrap-file]
-directory = msgpack-2.1.5
+directory = msgpack-3.1.1
 
-source_url = https://github.com/msgpack/msgpack-c/releases/download/cpp-2.1.5/msgpack-2.1.5.tar.gz
-source_filename = msgpack-2.1.5.tar.gz
-source_hash = 6126375af9b204611b9d9f154929f4f747e4599e6ae8443b337915dcf2899d2b
+source_url = https://github.com/msgpack/msgpack-c/releases/download/cpp-3.1.1/msgpack-3.1.1.tar.gz
+source_filename = msgpack-3.1.1.tar.gz
+source_hash = 8592d12e19ac3796889b8358bc8f78df9272e6aa7a9ea1834bafd68e4073549a
 
 patch_url = file:./subprojects/msgpack-meson/msgpack-meson.tar
 patch_filename = msgpack-meson.tar
-patch_hash = 20c33a5719076361ef9243553923ca915187717f9c42d5c1b3a56cbe736b0e82
+patch_hash = f3573eb5c84859db922ef20aec2990bd86bfac9b0dbdda4ea57b13ec1927328d

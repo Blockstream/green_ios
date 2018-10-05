@@ -108,13 +108,12 @@ namespace sdk {
         nlohmann::json get_subaccounts() const;
         nlohmann::json get_subaccount(uint32_t subaccount) const;
         nlohmann::json create_subaccount(const nlohmann::json& details);
-        address_type resolve_default_address_type(address_type addr_type) const;
-        nlohmann::json get_receive_address(uint32_t subaccount, address_type addr_type) const;
+        nlohmann::json get_receive_address(uint32_t subaccount, const std::string& addr_type) const;
         nlohmann::json get_balance(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_available_currencies() const;
         bool is_rbf_enabled() const;
         bool is_watch_only() const;
-        address_type get_default_address_type() const;
+        const std::string& get_default_address_type() const;
 
         nlohmann::json get_twofactor_config();
         std::vector<std::string> get_all_twofactor_methods();

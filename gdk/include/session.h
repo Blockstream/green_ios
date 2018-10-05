@@ -17,12 +17,6 @@ extern "C" {
 #define GA_NETWORK_LOCALTEST 100
 #define GA_NETWORK_REGTEST 101
 
-/** Values for privacy settings */
-#define GA_PRIVATE 0
-#define GA_ADDRBOOK 1
-#define GA_MUTUAL_ADDRBOOK 1
-#define GA_PUBLIC 2
-
 /** Values for onion uri flag */
 #define GA_NO_TOR 0
 #define GA_USE_TOR 1
@@ -166,26 +160,6 @@ GASDK_API int GA_create_subaccount(struct GA_session* session, const GA_json* de
 GASDK_API int GA_get_subaccounts(struct GA_session* session, GA_json** subaccounts);
 
 /**
- * Change privacy (send me) settings.
- *
- * @session The server session to use.
- * @param One of @GA_PRIVATE, @GA_ADDRBOOK, @GA_PUBLIC
- *
- * GA_ERROR if settings could not be changed.
- */
-GASDK_API int GA_change_settings_privacy_send_me(struct GA_session* session, uint32_t value);
-
-/**
- * Change privacy (show as sender) settings.
- *
- * @session The server session to use.
- * @param One of @GA_PRIVATE, @GA_MUTUAL_ADDRBOOK, @GA_PUBLIC
- *
- * GA_ERROR if settings could not be changed.
- */
-GASDK_API int GA_change_settings_privacy_show_as_sender(struct GA_session* session, uint32_t value);
-
-/**
  * Change transaction limits settings.
  *
  * @session The server session to use.
@@ -227,13 +201,11 @@ GASDK_API int GA_get_transactions(struct GA_session* session, uint32_t subaccoun
  *
  * @session The server session to use.
  * @subaccount The subaccount to generate an address for.
- * @addr_type The type of address: P2SH, P2WSH, CSV or DEFAULT.
  * @output The generated address.
  *
  * GA_ERROR if address could not be generated.
  */
-GASDK_API int GA_get_receive_address(
-    struct GA_session* session, uint32_t subaccount, uint32_t addr_type, char** output);
+GASDK_API int GA_get_receive_address(struct GA_session* session, uint32_t subaccount, char** output);
 
 /**
  * Get the user's unspent transaction outputs.

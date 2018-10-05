@@ -6,8 +6,12 @@
 #include <memory>
 #include <utility>
 
+#include "include/amount.hpp"
+
 namespace ga {
 namespace sdk {
+    class session;
+
     enum class script_type : int {
         p2sh_fortified_out = 10,
         p2sh_p2wsh_fortified_out = 14,
@@ -79,8 +83,12 @@ namespace sdk {
     amount get_tx_fee(const wally_tx_ptr& tx, amount min_fee_rate, amount fee_rate);
 
     // Add an output to a tx given its address
-    void add_tx_output(
+    amount add_tx_output(
         const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi = 0);
+
+    // Add an output from a JSON addressee
+    amount add_tx_addressee(
+        session& session, const network_parameters& net_params, wally_tx_ptr& tx, const nlohmann::json& addressee);
 
     // Update the json tx representation with info from tx
     void update_tx_info(const wally_tx_ptr& tx, nlohmann::json& result);

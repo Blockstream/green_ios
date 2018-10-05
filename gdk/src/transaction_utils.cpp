@@ -3,7 +3,7 @@
 #include "boost_wrapper.hpp"
 
 #include "include/assertion.hpp"
-#include "include/network_parameters.hpp"
+#include "include/session.hpp"
 #include "memory.hpp"
 #include "transaction_utils.hpp"
 #include "utils.hpp"
@@ -210,11 +210,45 @@ namespace sdk {
         return amount(rounded_fee);
     }
 
-    void add_tx_output(
+    amount add_tx_output(
         const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi)
     {
+        // FIXME: Support OP_RETURN outputs
         const auto output_script = output_script_for_address(net_params, address);
         tx_add_raw_output(tx, satoshi, output_script, 0);
+        return amount(satoshi);
+    }
+
+    amount add_tx_addressee(
+        session& session, const network_parameters& net_params, wally_tx_ptr& tx, const nlohmann::json& addressee)
+    {
+        // FIXME: Split this out into
+        // 1) Converting the addressee to an actual address + amount
+        // 2) Setting tx fields like label from any present in a uri
+        // 3) Adding the actual tx output
+        // Consider exposing (1) and or(2) for more flexibility for UX devs
+        const auto dest_p = addressee.find("address");
+        GA_SDK_RUNTIME_ASSERT(dest_p != addressee.end());
+
+        std::string address;
+        uint32_t satoshi;
+
+        const std::string dest = *dest_p;
+        const nlohmann::json uri_parts = parse_bitcoin_uri(dest);
+        if (!uri_parts.is_null()) {
+            // BIP21 or BIP70
+            // FIXME: memo from uri
+            // FIXME: BIP 70
+            address = uri_parts.at("address");
+            // FIXME: there might not be an amount in the URI
+            // FIXME: should parse_bitcoin_uri do the amount conversion?
+            satoshi = session.convert_amount(uri_parts)["satoshi"];
+        } else {
+            // P2SH/P2SH-P2WSH/bech32 + amount
+            address = *dest_p;
+            satoshi = session.convert_amount(addressee)["satoshi"];
+        }
+        return add_tx_output(net_params, tx, address, satoshi);
     }
 
     void update_tx_info(const wally_tx_ptr& tx, nlohmann::json& result)

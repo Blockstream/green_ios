@@ -259,10 +259,7 @@ namespace sdk {
         amount required_total{ 0 };
 
         for (const auto& addressee : addressees) {
-            const uint32_t satoshi = session.convert_amount(addressee)["satoshi"];
-            required_total += satoshi;
-            // FIXME: Support OP_RETURN outputs
-            add_tx_output(net_params, tx, addressee.at("address"), satoshi);
+            required_total += add_tx_addressee(session, net_params, tx, addressee);
         }
 
         std::vector<uint32_t> used_utxos;

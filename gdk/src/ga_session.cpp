@@ -149,46 +149,25 @@ namespace sdk {
             return get_recovery_key(wally_ext_key_ptr(p), xpub, subaccount);
         }
 
-        static std::string get_address_type_string(address_type addr_type)
+        static std::string get_address_from_script(const network_parameters& net_params,
+            const std::vector<unsigned char>& script, const std::string& addr_type)
         {
-            switch (addr_type) {
-            case address_type::p2sh:
-                return "p2sh";
-            case address_type::p2wsh:
-                return "p2wsh";
-            case address_type::csv:
-                return "csv";
-            case address_type::default_:
-            default:
-                GA_SDK_RUNTIME_ASSERT(false);
-            }
-            __builtin_unreachable();
-        }
-
-        static std::string get_address_from_script(
-            const network_parameters& net_params, const std::vector<unsigned char>& script, address_type addr_type)
-        {
-            switch (addr_type) {
-            case address_type::p2sh:
+            if (addr_type == address_type::p2sh) {
                 return base58check_from_bytes(p2sh_address_from_bytes(net_params, script));
-            case address_type::p2wsh:
-            // Fall through
-            case address_type::csv:
+            } else if (addr_type == address_type::p2wsh || addr_type == address_type::csv) {
                 return base58check_from_bytes(p2sh_p2wsh_address_from_bytes(net_params, script));
-            case address_type::default_:
-            default:
-                GA_SDK_RUNTIME_ASSERT(false);
             }
+            GA_SDK_RUNTIME_ASSERT(false);
             __builtin_unreachable();
         }
 
-        static script_type get_script_type_from_address_type_string(const std::string& addr_type_str)
+        static script_type get_script_type_from_address_type(const std::string& addr_type)
         {
-            if (addr_type_str == "csv")
+            if (addr_type == address_type::csv)
                 return script_type::p2sh_p2wsh_csv_fortified_out;
-            if (addr_type_str == "p2wsh")
+            if (addr_type == address_type::p2wsh)
                 return script_type::p2sh_p2wsh_fortified_out;
-            GA_SDK_RUNTIME_ASSERT(addr_type_str == "p2sh");
+            GA_SDK_RUNTIME_ASSERT(addr_type == address_type::p2sh);
             return script_type::p2sh_fortified_out;
         }
 
@@ -1091,8 +1070,8 @@ namespace sdk {
         auto addr_type = data.find("addr_type");
         if (addr_type != data.end()) {
             // Address
-            // FIXME: set script_type in addresses returned from the API
-            type = get_script_type_from_address_type_string(*addr_type);
+            // TODO: get script_type from returned address (requires server support)
+            type = get_script_type_from_address_type(*addr_type);
         } else {
             type = data["script_type"];
         }
@@ -1168,19 +1147,13 @@ namespace sdk {
         return result;
     }
 
-    address_type ga_session::resolve_default_address_type(address_type addr_type) const
+    nlohmann::json ga_session::get_receive_address(uint32_t subaccount, const std::string& addr_type_) const
     {
-        return addr_type == ga::sdk::address_type::default_ ? get_default_address_type() : addr_type;
-    }
-
-    nlohmann::json ga_session::get_receive_address(uint32_t subaccount, address_type addr_type) const
-    {
-        addr_type = resolve_default_address_type(addr_type);
-        const std::string addr_type_str = get_address_type_string(addr_type);
+        std::string addr_type = addr_type_.empty() ? get_default_address_type() : addr_type_;
 
         nlohmann::json address;
         wamp_call([&address](wamp_call_result result) { address = get_json_result(result.get()); },
-            "com.greenaddress.vault.fund", subaccount, true, addr_type_str);
+            "com.greenaddress.vault.fund", subaccount, true, addr_type);
 
         const auto server_script = bytes_from_hex(address["script"]);
         const auto server_address = get_address_from_script(m_net_params, server_script, addr_type);
@@ -1219,7 +1192,7 @@ namespace sdk {
 
     bool ga_session::is_watch_only() const { return m_watch_only; }
 
-    address_type ga_session::get_default_address_type() const
+    const std::string& ga_session::get_default_address_type() const
     {
         const auto& appearance = m_login_data["appearance"];
         if (appearance.value("use_csv", false))

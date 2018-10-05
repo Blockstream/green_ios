@@ -245,7 +245,7 @@ public class Session {
 
     public func getReceiveAddress(subaccount: UInt32) throws -> String {
         var buff: UnsafeMutablePointer<Int8>? = nil
-        try callWrapper(fun: GA_get_receive_address(session, subaccount, GA_ADDRESS_TYPE_DEFAULT, &buff))
+        try callWrapper(fun: GA_get_receive_address(session, subaccount, &buff))
         defer {
             GA_destroy_string(buff)
         }
@@ -432,15 +432,6 @@ public func generateMnemonic() throws -> String {
 
 public func validateMnemonic(mnemonic: String) -> Bool {
     return GA_validate_mnemonic(mnemonic) == GA_TRUE
-}
-
-public func parseBitcoinUri(uri: String) throws -> [String: Any]? {
-    var result: OpaquePointer? = nil
-    try callWrapper(fun: GA_parse_bitcoin_uri(uri, &result))
-    defer {
-        GA_destroy_json(result)
-    }
-    return try convertOpaqueJsonToDict(o: result!)
 }
 
 public func retry<T>(session: Session,

@@ -10,6 +10,12 @@
 
 namespace ga {
 namespace sdk {
+    namespace address_type {
+        const std::string p2sh("p2sh");
+        const std::string p2wsh("p2wsh");
+        const std::string csv("csv");
+    }; // namespace address_type
+
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
     {
         try {
@@ -110,19 +116,6 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_subaccounts(); });
     }
 
-    void session::change_settings_privacy_send_me(privacy_send_me value)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->change_settings("privacy.send_me", int(value), nlohmann::json()); });
-    }
-
-    void session::change_settings_privacy_show_as_sender(privacy_show_as_sender value)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper(
-            [&] { m_impl->change_settings("privacy.show_as_sender", int(value), nlohmann::json()); });
-    }
-
     void session::change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
@@ -147,19 +140,10 @@ namespace sdk {
         exception_wrapper([&] { m_impl->subscribe(topic, callback); });
     }
 
-    nlohmann::json session::get_receive_address(uint32_t subaccount, address_type addr_type)
+    nlohmann::json session::get_receive_address(uint32_t subaccount, const std::string& addr_type)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_receive_address(subaccount, addr_type); });
-    }
-
-    nlohmann::json session::get_receive_address(uint32_t subaccount)
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] {
-            const address_type addr_type = m_impl->get_default_address_type();
-            return m_impl->get_receive_address(subaccount, addr_type);
-        });
     }
 
     nlohmann::json session::get_balance(uint32_t subaccount, uint32_t num_confs)
@@ -186,7 +170,7 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->is_watch_only(); });
     }
 
-    address_type session::get_default_address_type()
+    std::string session::get_default_address_type()
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper([&] { return m_impl->get_default_address_type(); });

@@ -321,8 +321,6 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %java_opaque_struct(GA_twofactor_call, 2)
 
 %returns_void__(GA_ack_system_message)
-%returns_void__(GA_change_settings_privacy_send_me)
-%returns_void__(GA_change_settings_privacy_show_as_sender)
 %returns_void__(GA_change_settings_pricing_source)
 %returns_void__(GA_change_settings_tx_limits)
 %returns_void__(GA_connect)
@@ -377,7 +375,6 @@ GA_convert_json_value_to_string
 GA_convert_json_value_to_uint32
 GA_convert_json_value_to_uint64
 GA_destroy_string
-GA_parse_bitcoin_uri
 GA_subscribe_to_topic_as_json
 GA_validate_mnemonic
 */

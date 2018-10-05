@@ -153,33 +153,38 @@ namespace sdk {
 
     std::string generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32); }
 
-    nlohmann::json parse_bitcoin_uri(const std::string& s)
+    nlohmann::json parse_bitcoin_uri(const std::string& uri)
     {
-        auto&& split = [](const std::string& s, const std::string& c) {
+        auto&& split = [](const std::string& uri, const std::string& c) {
             std::vector<std::string> ss;
-            boost::algorithm::split(ss, s, boost::is_any_of(c));
+            boost::algorithm::split(ss, uri, boost::is_any_of(c));
             return ss;
         };
 
-        nlohmann::json u;
+        nlohmann::json parsed;
 
-        if (boost::algorithm::starts_with(s, "bitcoin:", boost::is_equal())) {
-            std::string v = s;
-            if (s.find('?') != std::string::npos) {
-                const auto recipient_amount = split(s, "?");
+        if (boost::algorithm::starts_with(uri, "bitcoin:")) {
+            std::string v = uri;
+            if (uri.find('?') != std::string::npos) {
+                // FIXME: Issue 68
+                // FIXME: BIP21 allows multiple args separated with '&'
+                // FIXME: If we encounter args prefixed "req-" and don't handle them, fail the parse
+                // FIXME: Take either the lablel or message and set the tx memo field with it if not set
+                // FIXME: URL unescape the arguments before returning
+                const auto recipient_amount = split(uri, "?");
                 const auto amount = split(recipient_amount[1], "=");
                 if (amount.size() == 2 && amount[0] == "amount") {
-                    u["amount"] = amount[1];
+                    parsed["btc"] = amount[1];
                 }
                 v = recipient_amount[0];
             }
             const auto recipient = split(v, ":");
             if (recipient.size() == 2) {
-                u["recipient"] = recipient[1];
+                parsed["address"] = recipient[1];
             }
         }
 
-        return u;
+        return parsed;
     }
 } // namespace sdk
 } // namespace ga
@@ -212,18 +217,6 @@ int GA_validate_mnemonic(const char* mnemonic)
         return GA_TRUE;
     } catch (const std::exception& e) {
         return GA_FALSE;
-    }
-}
-
-int GA_parse_bitcoin_uri(const char* uri, GA_json** output)
-{
-    try {
-        GA_SDK_RUNTIME_ASSERT(uri);
-        GA_SDK_RUNTIME_ASSERT(output);
-        *reinterpret_cast<nlohmann::json**>(output) = new nlohmann::json(ga::sdk::parse_bitcoin_uri(uri));
-        return GA_OK;
-    } catch (const std::exception& e) {
-        return GA_ERROR;
     }
 }
 

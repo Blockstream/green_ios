@@ -31,12 +31,6 @@ extern "C" {
 #define GA_TRUE 1
 #define GA_FALSE 0
 
-/** Values for address types */
-#define GA_ADDRESS_TYPE_P2SH 0
-#define GA_ADDRESS_TYPE_P2WSH 1
-#define GA_ADDRESS_TYPE_CSV 2
-#define GA_ADDRESS_TYPE_DEFAULT 0xffffffff
-
 #ifdef __cplusplus
 }
 #endif

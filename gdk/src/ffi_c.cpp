@@ -241,18 +241,6 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_create_subaccount, struct GA_session*, session, co
 GA_SDK_DEFINE_C_FUNCTION_2(GA_get_subaccounts, struct GA_session*, session, GA_json**, subaccounts,
     { *json_cast(subaccounts) = new nlohmann::json(session->get_subaccounts()); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_change_settings_privacy_send_me, struct GA_session*, session, uint32_t, value, {
-    namespace sdk = ga::sdk;
-    GA_SDK_RUNTIME_ASSERT(value == GA_PRIVATE || value == GA_ADDRBOOK || value == GA_PUBLIC);
-    session->change_settings_privacy_send_me(sdk::privacy_send_me(value));
-})
-
-GA_SDK_DEFINE_C_FUNCTION_2(GA_change_settings_privacy_show_as_sender, struct GA_session*, session, uint32_t, value, {
-    namespace sdk = ga::sdk;
-    GA_SDK_RUNTIME_ASSERT(value == GA_PRIVATE || value == GA_ADDRBOOK || value == GA_PUBLIC);
-    session->change_settings_privacy_show_as_sender(sdk::privacy_show_as_sender(value));
-})
-
 GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_tx_limits, struct GA_session*, session, uint32_t, is_fiat, uint32_t,
     total, const GA_json*, twofactor_data, {
         namespace sdk = ga::sdk;
@@ -266,11 +254,8 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_pricing_source, struct GA_session*
 GA_SDK_DEFINE_C_FUNCTION_4(GA_get_transactions, struct GA_session*, session, uint32_t, subaccount, uint32_t, page_id,
     GA_json**, txs, { *json_cast(txs) = new nlohmann::json(session->get_transactions(subaccount, page_id)); })
 
-GA_SDK_DEFINE_C_FUNCTION_4(
-    GA_get_receive_address, struct GA_session*, session, uint32_t, subaccount, uint32_t, addr_type, char**, output, {
-        const auto r = session->get_receive_address(subaccount, static_cast<ga::sdk::address_type>(addr_type));
-        *output = to_c_string(r["address"]);
-    })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_get_receive_address, struct GA_session*, session, uint32_t, subaccount, char**, output,
+    { *output = to_c_string(session->get_receive_address(subaccount)["address"]); })
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_get_balance, struct GA_session*, session, uint32_t, subaccount, uint32_t, num_confs,
     GA_json**, balance, { *json_cast(balance) = new nlohmann::json(session->get_balance(subaccount, num_confs)); })

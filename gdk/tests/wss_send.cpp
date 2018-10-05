@@ -8,11 +8,14 @@
 #include "include/session.h"
 #include "include/session.hpp"
 #include "include/twofactor.h"
+#include "tests/utils.hpp"
 
 using namespace ga;
 
 namespace {
 static const std::string DUMMY_CODE = "555555";
+static const std::string TWOFACTOR_GAUTH = "gauth";
+static const std::string TWOFACTOR_EMAIL = "email";
 
 static const std::string DEFAULT_MNEMONIC_1(
     "infant earth modify pyramid hunt reopen write asthma middle during mechanic "
@@ -53,11 +56,23 @@ int main(int argc, char** argv)
         login(sender, DEFAULT_MNEMONIC_1, options);
         login(receiver, DEFAULT_MNEMONIC_2, options);
 
+        // const std::string& TWOFACTOR_METHOD = TWOFACTOR_GAUTH;
+        const std::string& TWOFACTOR_METHOD = TWOFACTOR_EMAIL;
         if (!options->testnet) {
             // On localtest, enable 2fa to test sending with 2fa enabled (but
             // only if not already enabled from a previous failed test run)
-            if (!sender.get_twofactor_config()["gauth"].value("enabled", false)) {
-                sender.enable_gauth(DUMMY_CODE, nlohmann::json());
+            if (!sender.get_twofactor_config()[TWOFACTOR_METHOD].value("enabled", false)) {
+                if (TWOFACTOR_METHOD == TWOFACTOR_GAUTH) {
+                    sender.enable_gauth(DUMMY_CODE, nlohmann::json());
+                } else {
+                    const std::string email = "@@" + get_random_string();
+                    if (!sender.get_twofactor_config()[TWOFACTOR_METHOD].value("confirmed", false)) {
+                        sender.set_email(email, nlohmann::json());
+                        sender.activate_email(DUMMY_CODE);
+                    }
+                    sender.init_enable_twofactor(TWOFACTOR_METHOD, email, nlohmann::json());
+                    sender.enable_twofactor(TWOFACTOR_METHOD, DUMMY_CODE);
+                }
             }
         }
 
@@ -91,10 +106,8 @@ int main(int argc, char** argv)
         const std::string recv_addr{ "bcrt1q0wamd2z3yxrwa3c96knlfdjntj6hhngweuj4vv" }; // P2WPKH
         const std::string recv_addr{ "bcrt1qkk3vjcjsvy3kd6389lavdkt5f2h5k3d2ekt25l8uhyc7uw64sfvsk5excw" }; // P2WSH
 #endif
-        const std::vector<nlohmann::json> addressees{ {
-            { "address", recv_addr },
-            { "satoshi", 100000 },
-        } };
+        // Send using BIP21 URI
+        const std::vector<nlohmann::json> addressees{ { { "address", "bitcoin:" + recv_addr + "?amount=0.01" } } };
 
         // Create a tx to send. In a wallet this would be an iterative processes
         // as the user adjusts amounts etc.
@@ -139,14 +152,17 @@ int main(int argc, char** argv)
             struct GA_session* sender_c = reinterpret_cast<struct GA_session*>(&sender);
             struct GA_json* details_c = reinterpret_cast<struct GA_json*>(&details);
             GA_SDK_RUNTIME_ASSERT(GA_send_transaction(sender_c, details_c, &call) == GA_OK);
-            GA_SDK_RUNTIME_ASSERT(GA_twofactor_request_code(call, "gauth") == GA_OK);
+            GA_SDK_RUNTIME_ASSERT(GA_twofactor_request_code(call, TWOFACTOR_METHOD.c_str()) == GA_OK);
             GA_SDK_RUNTIME_ASSERT(GA_twofactor_resolve_code(call, DUMMY_CODE.c_str()) == GA_OK);
             GA_SDK_RUNTIME_ASSERT(GA_twofactor_call(call) == GA_OK);
             GA_json* transaction_c = nullptr;
             GA_SDK_RUNTIME_ASSERT(GA_twofactor_get_status(call, &transaction_c) == GA_OK);
             orig_tx = (*(reinterpret_cast<nlohmann::json*>(transaction_c)))["result"];
 
-            sender.disable_twofactor("gauth", { { "method", "gauth" }, { "code", DUMMY_CODE } });
+            if (TWOFACTOR_METHOD == TWOFACTOR_EMAIL) {
+                sender.twofactor_request_code(TWOFACTOR_EMAIL, "disable_2fa", { { "method", TWOFACTOR_METHOD } });
+            }
+            sender.disable_twofactor(TWOFACTOR_METHOD, { { "method", TWOFACTOR_METHOD }, { "code", DUMMY_CODE } });
         }
         // std::cerr << "sent: " << std::endl << orig_tx.dump() << std::endl << std::endl;
 

@@ -17,7 +17,9 @@ MESON_OPTIONS="--unity=on"
 NINJA_TARGET=""
 EXTRA_CXXFLAGS=""
 COMPILER_VERSION=""
+BUILD=""
 BUILDTYPE="release"
+NDK_ARCH=""
 
 GETOPT='getopt'
 if [ "$(uname)" == "Darwin" ]; then
@@ -48,8 +50,9 @@ while true; do
         -b | --buildtype ) BUILDTYPE=$2; shift 2 ;;
         --install ) MESON_OPTIONS="$MESON_OPTIONS --prefix=$2"; NINJA_TARGET="install"; shift 2 ;;
         --sanitizer ) MESON_OPTIONS="$MESON_OPTIONS -Db_sanitize=$2"; shift 2 ;;
-        --clang | --gcc | --ndk | --mingw-w64 ) break ;;
-        --iphone | --iphonesim ) LIBTYPE="$2"; break ;;
+        --clang | --gcc | --mingw-w64 ) BUILD="$1"; shift ;;
+        --iphone | --iphonesim ) BUILD="$1"; LIBTYPE="$2"; shift 2 ;;
+        --ndk ) BUILD="$1"; NDK_ARCH="$2"; shift 2 ;;
         --compiler-version) COMPILER_VERSION="-$2"; shift 2 ;;
         --lto) MESON_OPTIONS="$MESON_OPTIONS -Dlto=$2"; shift 2 ;;
         --clang-tidy-version) MESON_OPTIONS="$MESON_OPTIONS -Dclang-tidy-version=-$2"; NINJA_TARGET="src/clang-tidy"; shift 2 ;;
@@ -76,7 +79,7 @@ export BUILDTYPE
 MESON_OPTIONS="${MESON_OPTIONS} --buildtype=${BUILDTYPE}"
 
 if [ \( "$BUILDTYPE" = "release" \) ]; then
-    if ! [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
+    if ! [ \( "$BUILD" = "--iphone" \) -o \( "$BUILD" = "--iphonesim" \) ]; then
         MESON_OPTIONS="${MESON_OPTIONS} --strip"
     fi
 fi
@@ -158,11 +161,11 @@ function set_cross_build_env() {
     esac
 }
 
-if [ \( "$(uname)" != "Darwin" \) -a \( $# -eq 0 \) -o \( "$1" = "--gcc" \) ]; then
+if [ \( "$(uname)" != "Darwin" \) -a \( "$BUILD" = "--gcc" \) ]; then
     build gcc g++
 fi
 
-if [ \( $# -eq 0 \) -o \( "$1" = "--clang" \) ]; then
+if [ \( "$BUILD" = "--clang" \) ]; then
     build clang clang++
 fi
 
@@ -172,7 +175,7 @@ if [ -z "$ANDROID_NDK" ]; then
     fi
 fi
 
-if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
+if [ \( -d "$ANDROID_NDK" \) -a \( "$BUILD" = "--ndk" \) ]; then
 
     echo ${ANDROID_NDK:?}
     function build() {
@@ -208,8 +211,8 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
         $NINJA -C $bld_root -j$NUM_JOBS -v $NINJA_TARGET
     }
 
-    if [ -n "$2" ]; then
-        all_archs="$2"
+    if [ -n "$NDK_ARCH" ]; then
+        all_archs="$NDK_ARCH"
     else
         all_archs="armeabi-v7a arm64-v8a x86 x86_64"
     fi
@@ -219,7 +222,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( $# -eq 0 \) -o \( "$1" = "--ndk" \) ]; then
     done
 fi
 
-if [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
+if [ \( "$BUILD" = "--iphone" \) -o \( "$BUILD" = "--iphonesim" \) ]; then
 
     function build() {
         bld_root="$PWD/build-clang-$1-$2"
@@ -259,7 +262,7 @@ if [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
         $NINJA -C $bld_root -j$NUM_JOBS -v $NINJA_TARGET
     }
 
-    if test "x$1" == "x--iphone"; then
+    if test "$BUILD" == "--iphone"; then
         PLATFORM=iphone
     else
         PLATFORM=iphonesim
@@ -268,7 +271,7 @@ if [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     build ios $PLATFORM
 fi
 
-if [ \( $# -eq 0 \) -o \( "$1" = "--mingw-w64" \) ]; then
+if [ \( "$BUILD" = "--mingw-w64" \) ]; then
 
     function build() {
         bld_root="$PWD/build-$1-$2"
