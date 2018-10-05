@@ -164,6 +164,16 @@ class AccountStore {
         return nil
     }
 
+    func disableEmailTwoFactor() -> TwoFactorCall? {
+        let dict = ["enabled": false] as [String : Any]
+        do {
+            return try getSession().changeSettingsTwoFactor(method: "email", details: dict)
+        } catch {
+            print("couldn't change settings")
+        }
+        return nil
+    }
+
     func enableSMSTwoFactor(phoneNumber: String) -> TwoFactorCall? {
         //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
         let dict = ["enabled": true, "confirmed": true, "data": phoneNumber] as [String : Any]
