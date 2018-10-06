@@ -40,7 +40,7 @@ class EditTwoFactorViewController: UIViewController {
     @IBAction func emailSwitched(_ sender: Any) {
         let switcher = sender as! UISwitch
         if (switcher.isOn) {
-            //enable 2faa
+            self.performSegue(withIdentifier: "email", sender: nil)
         } else {
             let twoFactor = AccountStore.shared.disableEmailTwoFactor()
             do {
@@ -49,12 +49,7 @@ class EditTwoFactorViewController: UIViewController {
                 if(status == "request_code") {
                     let methods = json!["methods"] as! NSArray
                     if(methods.count > 1) {
-                        try twoFactor?.requestCode(method: "sms")
-                        let json_request = try twoFactor?.getStatus()
-                        let status_request = json!["status"] as! String
-                        if(status_request == "resolve_code") {
-                            self.performSegue(withIdentifier: "selectFactor", sender: twoFactor)
-                        }
+                        self.performSegue(withIdentifier: "selectFactor", sender: twoFactor)
                     } else {
                         let method = methods[0] as! String
                         let req = try twoFactor?.requestCode(method: method)
@@ -75,16 +70,46 @@ class EditTwoFactorViewController: UIViewController {
     }
 
     @IBAction func smsSwitched(_ sender: Any) {
+        let switcher = sender as! UISwitch
+        if (switcher.isOn) {
+            self.performSegue(withIdentifier: "phone", sender: "sms")
+        } else {
+
+        }
     }
 
     @IBAction func phoneSwitched(_ sender: Any) {
+        let switcher = sender as! UISwitch
+        if (switcher.isOn) {
+            self.performSegue(withIdentifier: "phone", sender: "phone")
+        } else {
+
+        }
     }
 
     @IBAction func gauthSwithed(_ sender: Any) {
+        let switcher = sender as! UISwitch
+        if (switcher.isOn) {
+            self.performSegue(withIdentifier: "gauth", sender: nil)
+        } else {
+
+        }
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
+            nextController.twoFactor = sender as! TwoFactorCall
+        } else if let nextController = segue.destination as? SetPhoneViewController {
+            if (sender as! String == "sms") {
+                nextController.sms = true
+            } else {
+                nextController.phoneCall = true
+            }
+        }
     }
 
 }

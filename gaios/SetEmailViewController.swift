@@ -16,7 +16,6 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var getCodeButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
-    var emailFactor: TwoFactorCall? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
