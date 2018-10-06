@@ -3199,8 +3199,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Two Factor Method" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V9x-yu-2yh">
-                                <rect key="frame" x="59.5" y="43" width="201" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Approve using:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V9x-yu-2yh">
+                                <rect key="frame" x="103" y="43" width="114.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -4554,8 +4554,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Two Factor Method" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V8Z-rM-hdF">
-                                <rect key="frame" x="59.5" y="43" width="201" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Two Factor" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V8Z-rM-hdF">
+                                <rect key="frame" x="90" y="43" width="140.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -4773,13 +4773,13 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="wnz-58-ghj"/>
+        <segue reference="Oir-Oa-Fhf"/>
         <segue reference="QaF-5U-DEq"/>
         <segue reference="yIW-Ly-oWL"/>
         <segue reference="Iy9-iC-rNo"/>
-        <segue reference="Urb-Nk-GEO"/>
-        <segue reference="dtp-RI-Fbe"/>
-        <segue reference="ONE-Lh-9HX"/>
+        <segue reference="pCj-2Y-T3h"/>
+        <segue reference="J3A-P7-WsW"/>
+        <segue reference="JAa-xy-EZp"/>
         <segue reference="OQJ-Pn-CpN"/>
         <segue reference="4hv-u2-zDY"/>
     </inferredMetricsTieBreakers>

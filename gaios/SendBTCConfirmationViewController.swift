@@ -90,7 +90,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
                                 self.performSegue(withIdentifier: "twoFactorSelector", sender: result)
                             } else {
                                 let method = methods[0] as! String
-                                let req = try result?.requestCode(method: "email")
+                                let req = try result?.requestCode(method: method)
                                 let status1 = try result?.getStatus()
                                 let parsed1 = status1!["status"] as! String
                                 if(parsed1 == "resolve_code") {

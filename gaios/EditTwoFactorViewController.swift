@@ -49,7 +49,7 @@ class EditTwoFactorViewController: UIViewController {
                 if(status == "request_code") {
                     let methods = json!["methods"] as! NSArray
                     if(methods.count > 1) {
-                        self.performSegue(withIdentifier: "selectFactor", sender: twoFactor)
+                        self.performSegue(withIdentifier: "selectTwoFactor", sender: twoFactor)
                     } else {
                         let method = methods[0] as! String
                         let req = try twoFactor?.requestCode(method: method)
