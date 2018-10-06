@@ -95,6 +95,8 @@ class SettingsStore {
             return "TouchID"
         } else if (screenLock == ScreenLock.Pin) {
             return "PIN"
+        } else if (screenLock == ScreenLock.all) {
+            return "Bio&PIN"
         }
         return ""
     }
@@ -318,5 +320,6 @@ public enum ScreenLock: UInt32 {
     case Pin = 1
     case TouchID = 2
     case FaceID = 3
+    case all = 4
 }
 
