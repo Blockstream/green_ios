@@ -7,15 +7,81 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0926C14821178FEE0008F94A /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14721178FEE0008F94A /* TextField.swift */; };
+		0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */; };
+		0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14B211912AE0008F94A /* InstructionViewController.swift */; };
+		092A84CF211BFE120062F0B2 /* CongratsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84CE211BFE120062F0B2 /* CongratsViewController.swift */; };
+		092A84D1211C082F0062F0B2 /* TwoFactorSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */; };
+		092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */; };
+		092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */; };
+		092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */; };
+		092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC820D238BD00F90DF2 /* ViewController.swift */; };
+		092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */; };
+		092C7BCE20D238BE00F90DF2 /* ColoredCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092C7BCA20D238BE00F90DF2 /* ColoredCardView.xib */; };
+		092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BCF20D23DBD00F90DF2 /* CardView.swift */; };
+		092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD020D23DBD00F90DF2 /* WalletView.swift */; };
+		092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD420D599D700F90DF2 /* UIView+helpers.swift */; };
+		092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */; };
+		092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */; };
+		092D05AF2123E27A00B9B7CD /* NotificationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05AE2123E27A00B9B7CD /* NotificationStore.swift */; };
+		092D05B12125623800B9B7CD /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05B02125623800B9B7CD /* Storage.swift */; };
+		092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05B221277E2E00B9B7CD /* Date+helpers.swift */; };
+		092D47F520EA2570005720F3 /* TransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D47F420EA2570005720F3 /* TransactionViewController.swift */; };
+		092D47F720EA28ED005720F3 /* TransactionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D47F620EA28ED005720F3 /* TransactionCell.xib */; };
+		092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D47F820EA2907005720F3 /* TransactionTableCell.swift */; };
+		092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */; };
+		092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D5C6320C04D130077048C /* CreateWalletViewController.swift */; };
+		092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092E1EAF20CF993700362253 /* UIColor+Hex.swift */; };
+		092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092F5DE920F1619D007356F2 /* cardFooter.swift */; };
+		092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092F5DEB20F16353007356F2 /* cardFooter.xib */; };
+		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
+		09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */; };
+		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
+		09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */; };
+		09309F2521365E6900DE093B /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1B212FB55000DE093B /* SettingsStore.swift */; };
+		09309F272136888C00DE093B /* DenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F262136888C00DE093B /* DenominationCell.swift */; };
+		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
+		0933A599210716EC00C43838 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0933A598210716EC00C43838 /* GreenAddress.swift */; };
+		09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */; };
+		09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD120FD671A009DCDEA /* AnnularLayer.swift */; };
+		09342FD420FD671F009DCDEA /* LineLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD320FD671E009DCDEA /* LineLayer.swift */; };
+		09342FD620FDD569009DCDEA /* MainMenuPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */; };
+		09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD721001A5E009DCDEA /* SettingsViewController.swift */; };
+		09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD921003961009DCDEA /* SettingsCell.swift */; };
+		09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FDB21004309009DCDEA /* CustomAlertInputView.swift */; };
+		093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D5212E844400134235 /* CurrencySelectorViewController.swift */; };
+		093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D7212E86DF00134235 /* CurrencyCell.swift */; };
+		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
+		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
+		0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */; };
+		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
+		09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B342166F499009BABFE /* EditTwoFactorViewController.swift */; };
+		09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* EditScreenLockSettings.swift */; };
+		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
+		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
+		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
+		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
+		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
+		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
+		0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85920DD859200F6AAAB /* SendBtcViewController.swift */; };
+		0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */; };
+		0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */; };
+		0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */; };
+		0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86920E56F4400F6AAAB /* TOSViewController.swift */; };
+		0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */; };
+		0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */; };
+		0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */; };
+		0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */; };
+		09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A8991520FADFE000E105EC /* IntroPageViewController.swift */; };
+		09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AA2122357700989B1D /* UIViewController+helpers.swift */; };
+		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
+		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
+		09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */; };
+		09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
-		672FA1301FB9E846008CDA17 /* SendTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */; };
-		674385B41FA799BF001311DE /* VerifyMnemonicTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */; };
-		674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674385B71FA8D03B001311DE /* SettingsTableViewController.swift */; };
-		6756E8C8204967BA00426EC8 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E8C7204967B900426EC8 /* QRCodeReaderViewController.swift */; };
 		676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */; };
 		676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */; };
-		676846041FACC1E4002D79ED /* PINViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676846031FACC1E4002D79ED /* PINViewController.swift */; };
 		676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */; };
 		676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF251F9D0CF800354E93 /* Main.storyboard */; };
 		676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF281F9D0CF800354E93 /* Assets.xcassets */; };
@@ -23,13 +89,8 @@
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */; };
-		676FCF551F9D0E7100354E93 /* TransactionsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF501F9D0E7100354E93 /* TransactionsTableViewController.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
-		676FCF571F9D0E7100354E93 /* CreatePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */; };
 		676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF531F9D0E7100354E93 /* CreateViewController.swift */; };
-		677442901FB202AC0082F74A /* ReceiveTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */; };
-		678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */; };
-		6798E1B420AA528300B22DCE /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6798E1B320AA528200B22DCE /* GreenAddress.swift */; };
 		67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 /* End PBXBuildFile section */
@@ -52,19 +113,85 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0926C14721178FEE0008F94A /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
+		0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionSettings.swift; sourceTree = "<group>"; };
+		0926C14B211912AE0008F94A /* InstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionViewController.swift; sourceTree = "<group>"; };
+		092A84CE211BFE120062F0B2 /* CongratsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongratsViewController.swift; sourceTree = "<group>"; };
+		092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSelectorViewController.swift; sourceTree = "<group>"; };
+		092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmailViewController.swift; sourceTree = "<group>"; };
+		092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyTwoFactorViewController.swift; sourceTree = "<group>"; };
+		092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColoredCardView.swift; sourceTree = "<group>"; };
+		092C7BC820D238BD00F90DF2 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
+		092C7BCA20D238BE00F90DF2 /* ColoredCardView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ColoredCardView.xib; sourceTree = "<group>"; };
+		092C7BCF20D23DBD00F90DF2 /* CardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		092C7BD020D23DBD00F90DF2 /* WalletView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
+		092C7BD420D599D700F90DF2 /* UIView+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+helpers.swift"; sourceTree = "<group>"; };
+		092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableCell.swift; sourceTree = "<group>"; };
+		092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotificationTableCell.xib; sourceTree = "<group>"; };
+		092D05AE2123E27A00B9B7CD /* NotificationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationStore.swift; sourceTree = "<group>"; };
+		092D05B02125623800B9B7CD /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		092D05B221277E2E00B9B7CD /* Date+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+helpers.swift"; sourceTree = "<group>"; };
+		092D47F420EA2570005720F3 /* TransactionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewController.swift; sourceTree = "<group>"; };
+		092D47F620EA28ED005720F3 /* TransactionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionCell.xib; sourceTree = "<group>"; };
+		092D47F820EA2907005720F3 /* TransactionTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTableCell.swift; sourceTree = "<group>"; };
+		092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyMnemonicsViewController.swift; sourceTree = "<group>"; };
+		092D5C6320C04D130077048C /* CreateWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateWalletViewController.swift; sourceTree = "<group>"; };
+		092E1EAF20CF993700362253 /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
+		092F5DE920F1619D007356F2 /* cardFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cardFooter.swift; sourceTree = "<group>"; };
+		092F5DEB20F16353007356F2 /* cardFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = cardFooter.xib; sourceTree = "<group>"; };
+		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
+		09309F1B212FB55000DE093B /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleSettingsViewController.swift; sourceTree = "<group>"; };
+		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
+		09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationSelectorViewController.swift; sourceTree = "<group>"; };
+		09309F262136888C00DE093B /* DenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationCell.swift; sourceTree = "<group>"; };
+		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
+		0933A598210716EC00C43838 /* GreenAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = gdk/src/swift/GreenAddress/Sources/GreenAddress/GreenAddress.swift; sourceTree = "<group>"; };
+		09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepIndicatorView.swift; sourceTree = "<group>"; };
+		09342FD120FD671A009DCDEA /* AnnularLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnnularLayer.swift; sourceTree = "<group>"; };
+		09342FD320FD671E009DCDEA /* LineLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineLayer.swift; sourceTree = "<group>"; };
+		09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuPageViewController.swift; sourceTree = "<group>"; };
+		09342FD721001A5E009DCDEA /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		09342FD921003961009DCDEA /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
+		09342FDB21004309009DCDEA /* CustomAlertInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertInputView.swift; sourceTree = "<group>"; };
+		093544D5212E844400134235 /* CurrencySelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectorViewController.swift; sourceTree = "<group>"; };
+		093544D7212E86DF00134235 /* CurrencyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCell.swift; sourceTree = "<group>"; };
+		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
+		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
+		0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetViewController.swift; sourceTree = "<group>"; };
+		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
+		09546B342166F499009BABFE /* EditTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTwoFactorViewController.swift; sourceTree = "<group>"; };
+		09546B3621686053009BABFE /* EditScreenLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScreenLockSettings.swift; sourceTree = "<group>"; };
+		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
+		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
+		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
+		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
+		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
+		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
+		0992F85920DD859200F6AAAB /* SendBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcViewController.swift; sourceTree = "<group>"; };
+		0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveBtcViewController.swift; sourceTree = "<group>"; };
+		0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetailsViewController.swift; sourceTree = "<group>"; };
+		0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBTCConfirmationViewController.swift; sourceTree = "<group>"; };
+		0992F86920E56F4400F6AAAB /* TOSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOSViewController.swift; sourceTree = "<group>"; };
+		0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpoveSecurityViewController.swift; sourceTree = "<group>"; };
+		0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+padding.swift"; sourceTree = "<group>"; };
+		0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLoginViewController.swift; sourceTree = "<group>"; };
+		0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		09A8991520FADFE000E105EC /* IntroPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroPageViewController.swift; sourceTree = "<group>"; };
+		09B761AA2122357700989B1D /* UIViewController+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+helpers.swift"; sourceTree = "<group>"; };
+		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
+		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
+		09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricIDAuth.swift; sourceTree = "<group>"; };
+		09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDViewController.swift; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
-		672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendTableViewControllerScene.swift; sourceTree = "<group>"; };
-		674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyMnemonicTableViewController.swift; sourceTree = "<group>"; };
-		674385B71FA8D03B001311DE /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
-		6756E8C7204967B900426EC8 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
 		676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTCUnitsTableViewController.swift; sourceTree = "<group>"; };
 		676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceViewController.swift; sourceTree = "<group>"; };
-		676846031FACC1E4002D79ED /* PINViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PINViewController.swift; sourceTree = "<group>"; };
 		676FCF1C1F9D0CF800354E93 /* gaios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gaios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		676FCF261F9D0CF800354E93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -78,13 +205,8 @@
 		676FCF411F9D0CF800354E93 /* gaiosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gaiosUITests.swift; sourceTree = "<group>"; };
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarControllerScene.swift; sourceTree = "<group>"; };
-		676FCF501F9D0E7100354E93 /* TransactionsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsTableViewController.swift; sourceTree = "<group>"; };
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
-		676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreatePageViewController.swift; sourceTree = "<group>"; };
 		676FCF531F9D0E7100354E93 /* CreateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
-		6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveTableViewControllerScene.swift; sourceTree = "<group>"; };
-		678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicTableViewController.swift; sourceTree = "<group>"; };
-		6798E1B320AA528200B22DCE /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = gdk/src/swift/GreenAddress/Sources/GreenAddress.swift; sourceTree = SOURCE_ROOT; };
 		67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBookTableViewControllerScene.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,6 +241,63 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		092C7BC620D2381700F90DF2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */,
+				09342FD120FD671A009DCDEA /* AnnularLayer.swift */,
+				09342FD320FD671E009DCDEA /* LineLayer.swift */,
+				092C7BCF20D23DBD00F90DF2 /* CardView.swift */,
+				092C7BD020D23DBD00F90DF2 /* WalletView.swift */,
+				092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */,
+				092C7BCA20D238BE00F90DF2 /* ColoredCardView.xib */,
+				092F5DE920F1619D007356F2 /* cardFooter.swift */,
+				092F5DEB20F16353007356F2 /* cardFooter.xib */,
+				0967BF5B20DB59560062A653 /* WalletTableCell.swift */,
+				0967BF5920DB58ED0062A653 /* WalletCard.xib */,
+				092D47F820EA2907005720F3 /* TransactionTableCell.swift */,
+				092D47F620EA28ED005720F3 /* TransactionCell.xib */,
+				092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */,
+				092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */,
+				09342FD921003961009DCDEA /* SettingsCell.swift */,
+				09309F262136888C00DE093B /* DenominationCell.swift */,
+				092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */,
+				093544D7212E86DF00134235 /* CurrencyCell.swift */,
+				0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		092C7BD320D23F0800F90DF2 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		092E1EAE20CF98AF00362253 /* helpers */ = {
+			isa = PBXGroup;
+			children = (
+				092E1EAF20CF993700362253 /* UIColor+Hex.swift */,
+				0926C14721178FEE0008F94A /* TextField.swift */,
+				09309F19212F8D8700DE093B /* SearchTextField.swift */,
+				092C7BD420D599D700F90DF2 /* UIView+helpers.swift */,
+				09B761AA2122357700989B1D /* UIViewController+helpers.swift */,
+				0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */,
+				09DA612520E73A2300C3EA03 /* String+random.swift */,
+				0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */,
+				09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */,
+				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
+				092D05AE2123E27A00B9B7CD /* NotificationStore.swift */,
+				09309F1B212FB55000DE093B /* SettingsStore.swift */,
+				092D05B221277E2E00B9B7CD /* Date+helpers.swift */,
+				09B761AC212280C800989B1D /* bip21Helper.swift */,
+				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
+				092D05B02125623800B9B7CD /* Storage.swift */,
+			);
+			path = helpers;
+			sourceTree = "<group>";
+		};
 		0EB695B7782BE521E459216A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,6 +324,7 @@
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
+				0933A598210716EC00C43838 /* GreenAddress.swift */,
 				676FCF1E1F9D0CF800354E93 /* gaios */,
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
 				676FCF401F9D0CF800354E93 /* gaiosUITests */,
@@ -167,27 +347,54 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
-				6798E1B320AA528200B22DCE /* GreenAddress.swift */,
-				6756E8C7204967B900426EC8 /* QRCodeReaderViewController.swift */,
-				676FCF2D1F9D0CF800354E93 /* Info.plist */,
+				092C7BD320D23F0800F90DF2 /* Controllers */,
+				092C7BC620D2381700F90DF2 /* Views */,
+				092E1EAE20CF98AF00362253 /* helpers */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
-				676FCF521F9D0E7100354E93 /* CreatePageViewController.swift */,
-				676FCF531F9D0E7100354E93 /* CreateViewController.swift */,
-				6774428F1FB202AC0082F74A /* ReceiveTableViewControllerScene.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
-				674385B71FA8D03B001311DE /* SettingsTableViewController.swift */,
+				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
+				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
+				0926C14B211912AE0008F94A /* InstructionViewController.swift */,
+				092D5C6320C04D130077048C /* CreateWalletViewController.swift */,
+				092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */,
+				092A84CE211BFE120062F0B2 /* CongratsViewController.swift */,
+				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
+				09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */,
+				0992F86B20E5741D00F6AAAB /* ImpoveSecurityViewController.swift */,
+				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
+				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
+				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
+				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
+				092A84D4211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift */,
+				09342FD520FDD569009DCDEA /* MainMenuPageViewController.swift */,
+				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
+				09546B342166F499009BABFE /* EditTwoFactorViewController.swift */,
+				09546B3621686053009BABFE /* EditScreenLockSettings.swift */,
+				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
+				676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */,
+				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
+				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
+				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
+				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
+				092C7BC820D238BD00F90DF2 /* ViewController.swift */,
+				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
+				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
+				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
+				0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */,
+				092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */,
+				676FCF2D1F9D0CF800354E93 /* Info.plist */,
+				676FCF531F9D0E7100354E93 /* CreateViewController.swift */,
+				09342FDB21004309009DCDEA /* CustomAlertInputView.swift */,
+				09358BD52106A57D00D1066F /* CustomAletView.swift */,
+				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
-				676FCF501F9D0E7100354E93 /* TransactionsTableViewController.swift */,
-				674385B31FA799BF001311DE /* VerifyMnemonicTableViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
-				676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */,
 				676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */,
-				676846031FACC1E4002D79ED /* PINViewController.swift */,
-				672FA12F1FB9E846008CDA17 /* SendTableViewControllerScene.swift */,
+				09A8991520FADFE000E105EC /* IntroPageViewController.swift */,
 				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
-				678015FA20599C69006E3CE1 /* EnterMnemonicTableViewController.swift */,
+				0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */,
 			);
 			path = gaios;
 			sourceTree = "<group>";
@@ -222,6 +429,7 @@
 				676FCF191F9D0CF800354E93 /* Frameworks */,
 				676FCF1A1F9D0CF800354E93 /* Resources */,
 				D23CE903E100C9C13584F174 /* [CP] Embed Pods Frameworks */,
+				27DDE49E8F2DEB4CF0B047CA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -240,6 +448,8 @@
 				676FCF2E1F9D0CF800354E93 /* Sources */,
 				676FCF2F1F9D0CF800354E93 /* Frameworks */,
 				676FCF301F9D0CF800354E93 /* Resources */,
+				2135C1015316F90ADD6C5C98 /* [CP] Embed Pods Frameworks */,
+				B918B72174CAFC57AA7CEB35 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -259,6 +469,8 @@
 				676FCF391F9D0CF800354E93 /* Sources */,
 				676FCF3A1F9D0CF800354E93 /* Frameworks */,
 				676FCF3B1F9D0CF800354E93 /* Resources */,
+				8ECD83853B708AA9DB37C591 /* [CP] Embed Pods Frameworks */,
+				4CE278A53C89387F04A793D2 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -322,8 +534,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
+				092C7BCE20D238BE00F90DF2 /* ColoredCardView.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
+				0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */,
+				092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */,
+				092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
+				092D47F720EA28ED005720F3 /* TransactionCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -380,6 +597,66 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		2135C1015316F90ADD6C5C98 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		27DDE49E8F2DEB4CF0B047CA /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4CE278A53C89387F04A793D2 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8ECD83853B708AA9DB37C591 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		99CCE11601CC4F788E5063AE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -398,6 +675,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		B918B72174CAFC57AA7CEB35 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		D23CE903E100C9C13584F174 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -405,10 +697,12 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -423,23 +717,79 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				677442901FB202AC0082F74A /* ReceiveTableViewControllerScene.swift in Sources */,
-				676846041FACC1E4002D79ED /* PINViewController.swift in Sources */,
+				0933A599210716EC00C43838 /* GreenAddress.swift in Sources */,
+				09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */,
+				09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */,
+				0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */,
+				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
+				092D47F520EA2570005720F3 /* TransactionViewController.swift in Sources */,
+				092D05AF2123E27A00B9B7CD /* NotificationStore.swift in Sources */,
+				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
+				09309F2521365E6900DE093B /* SettingsStore.swift in Sources */,
+				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
+				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
+				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
+				092A84CF211BFE120062F0B2 /* CongratsViewController.swift in Sources */,
+				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
+				0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */,
 				676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */,
+				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
+				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
+				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
+				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
+				09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */,
+				0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */,
+				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
+				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
+				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,
+				092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */,
+				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
 				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
 				676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */,
-				676FCF551F9D0E7100354E93 /* TransactionsTableViewController.swift in Sources */,
-				678015FB20599C69006E3CE1 /* EnterMnemonicTableViewController.swift in Sources */,
-				6756E8C8204967BA00426EC8 /* QRCodeReaderViewController.swift in Sources */,
+				09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */,
+				09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */,
+				09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */,
+				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
+				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
+				09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */,
+				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
+				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
+				092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */,
+				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
+				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
+				09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */,
+				092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */,
+				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
+				092A84D1211C082F0062F0B2 /* TwoFactorSelectorViewController.swift in Sources */,
+				09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */,
+				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
+				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
+				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
+				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
+				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */,
-				674385B81FA8D03C001311DE /* SettingsTableViewController.swift in Sources */,
-				674385B41FA799BF001311DE /* VerifyMnemonicTableViewController.swift in Sources */,
+				09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */,
+				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
+				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
+				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
+				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
+				09342FD620FDD569009DCDEA /* MainMenuPageViewController.swift in Sources */,
+				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
+				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
+				092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */,
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
-				672FA1301FB9E846008CDA17 /* SendTableViewControllerScene.swift in Sources */,
-				676FCF571F9D0E7100354E93 /* CreatePageViewController.swift in Sources */,
+				09342FD420FD671F009DCDEA /* LineLayer.swift in Sources */,
+				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
+				092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */,
+				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
+				092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */,
 				67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */,
-				6798E1B420AA528300B22DCE /* GreenAddress.swift in Sources */,
+				092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */,
+				09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */,
+				092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */,
+				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
+				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,17 +957,26 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LDYC3R2G89;
+				DEVELOPMENT_TEAM = D9W37S9468;
 				INFOPLIST_FILE = gaios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.gaios;
+				"OTHER_LDFLAGS[arch=*]" = (
+					"$(inherited)",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
+					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
 				SWIFT_VERSION = 4.0;
@@ -631,17 +990,26 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LDYC3R2G89;
+				DEVELOPMENT_TEAM = D9W37S9468;
 				INFOPLIST_FILE = gaios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
 					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.gaios;
+				"OTHER_LDFLAGS[arch=*]" = (
+					"$(inherited)",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
+					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
+					"-lc++",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
 				SWIFT_VERSION = 4.0;

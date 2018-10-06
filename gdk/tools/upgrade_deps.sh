@@ -23,10 +23,6 @@ while true; do
     esac
 done
 
-if [ "x${DEP_NAME}" == "xwallycore-meson" ]; then
-    UNTAR_NAME="libwally-core"
-fi
-
 TOOLS_DIR=${PWD}/tools
 WRAP_DIR=${PWD}/subprojects
 DEP_DIR=${WRAP_DIR}/${DEP_NAME}
@@ -36,30 +32,33 @@ pushd . >& /dev/null
 
 cd ${TMP}
 
-echo "Extracting old meson build..."
-tar zxvf ${DEP_DIR}/${DEP_NAME}.tar.gz >& /dev/null
-echo "Recreating meson build..."
-mv ${UNTAR_NAME}* ${UNTAR_NAME}-${SHA_SUM}
-echo "Generating meson build patch..."
-tar zcvf ${DEP_DIR}/${DEP_NAME}.tar.gz ${UNTAR_NAME}-${SHA_SUM} >& /dev/null
-
 echo "Updating wrap definitions..."
-PATCH_SHA256=$(sha256sum ${DEP_DIR}/${DEP_NAME}.tar.gz | cut -f 1 -d ' ')
-if [ "x${URL}" != "x" ]; then
-    wget -O tmp.tar.gz ${URL}
-    SOURCE_SHA256=$(sha256sum tmp.tar.gz | cut -f 1 -d ' ')
-    sed -i -e "s!\(source_url.*=\).*!\1 ${URL}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
-    sed -i -e "s!\(source_hash.*=\).*!\1 ${SOURCE_SHA256}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
-fi
+echo "  Downloading dependency..."
+curl -Lo tmp.tar.gz ${URL} >& /dev/null
+SOURCE_SHA256=$(sha256sum tmp.tar.gz | cut -f 1 -d ' ')
+UNTAR_DIR=$(tar ztf tmp.tar.gz | head -1 | cut -f 1 -d '/')
 
-if [ "x${DEP_NAME}" == "xwallycore-meson" ]; then
-    sed -i -e "s!\(${UNTAR_NAME}-\).*!\1${SHA_SUM}\"!" ${TOOLS_DIR}/build${WRAP_NAME}.sh
-fi
+echo "  Generating meson build patch..."
+mkdir -p ${UNTAR_DIR}
+cp ${DEP_DIR}/meson.build ${UNTAR_DIR}
+tar --mode=go=rX,u+rw,a-s --sort=name --owner=0 --group=0 --numeric-owner --mtime="2018-08-01 00:00Z" -cf ${DEP_NAME}.tar ${UNTAR_DIR}
+PATCH_SHA256=$(sha256sum ${DEP_NAME}.tar | cut -f 1 -d ' ')
 
-sed -i -e "s!\(directory.*=\).*!\1 ${UNTAR_NAME}-${SHA_SUM}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
+sed -i -e "s!\(source_url.*=\).*!\1 ${URL}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
+sed -i -e "s!\(source_hash.*=\).*!\1 ${SOURCE_SHA256}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
+sed -i -e "s!\(directory.*=\).*!\1 ${UNTAR_DIR}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(source_filename.*=\).*!\1 ${UNTAR_NAME}-${SHA_SUM}.tar.gz!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(source_url.*archive/\).*!\1${SHA_SUM}.tar.gz!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(patch_hash.*=\).*!\1 ${PATCH_SHA256}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 
+if [ "${UNTAR_NAME}" == "libwally-core" -o "${UNTAR_NAME}" == "boost" ]; then
+    sed -i -e "s!\(.*_NAME=\"\).*!\1${UNTAR_DIR}\"!" ${TOOLS_DIR}/build${WRAP_NAME}.sh
+fi
+
 popd >& /dev/null
 rm -rf ${TMP}
+
+echo "Finished updating wrap definitions..."
+
+echo "Cleaning old dependencies..."
+. ./tools/clean.sh

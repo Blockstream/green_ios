@@ -1,8 +1,17 @@
-project('sdk', ['c', 'cpp'], meson_version : '>= 0.41.1', default_options : ['cpp_std=c++14'])
+project('gdk', ['c', 'cpp'], version: '0.0.1', meson_version : '>= 0.47')
 
-# header checks (must be architecture independent)
+# commonly used checks
 compiler = meson.get_compiler('cpp')
 
+cross_win_build = meson.is_cross_build() and meson.get_cross_property('target_os') == 'windows'
+cross_iphone_build = meson.is_cross_build() and meson.get_cross_property('target_os').contains('iphone')
+cross_android_build = host_machine.system() == 'android'
+is_freebsd = host_machine.system().startswith('freebsd')
+is_clang = compiler.get_id() == 'clang'
+freebsd_requires_gold = is_freebsd and is_clang
+use_gold = (build_machine.system() == 'linux' or cross_android_build or freebsd_requires_gold) and not cross_win_build
+
+# header checks (must be architecture independent)
 check_headers = [
     'fcntl.h',
     'stddef.h',
@@ -10,7 +19,6 @@ check_headers = [
     'string.h',
     'sys/epoll.h',
     'sys/stat.h',
-    'time.h',
     'unistd.h'
 ]
 
@@ -18,15 +26,19 @@ foreach h : check_headers
     compiler.has_header(h)
 endforeach
 
+# language options
+add_project_arguments(compiler.first_supported_argument(['-std=c++17', '-std=c++14']), language : 'cpp')
+add_project_arguments(['-DMSGPACK_DEFAULT_API_VERSION=1', '-Wno-deprecated-declarations', '-funsigned-char'], language : 'cpp')
+
+static_libstdc = compiler.has_link_argument('-static-libstdc++')
+
 # language related arguments
-if not host_machine.cpu_family().contains('arm64')
-    if get_option('lto')
-        add_project_arguments(['-flto'], language : 'cpp')
-        add_project_link_arguments(['-flto'], language : 'cpp')
-    endif
-    if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
-        add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
-    endif
+if get_option('lto')
+    add_project_arguments(['-flto'], language : 'cpp')
+    add_project_link_arguments(['-flto'], language : 'cpp')
+endif
+if use_gold
+    add_project_link_arguments(['-fuse-ld=gold', '-ldl'], language : 'cpp')
 endif
 
 common_compile_options = [
@@ -35,34 +47,44 @@ common_compile_options = [
     '-fasynchronous-unwind-tables',
     '-fexceptions',
     '-fstack-protector-strong',
-]
-add_project_arguments(common_compile_options, language : ['c', 'cpp'])
-
-common_linker_options = [
-    '-Wl,-z,defs',
-    '-Wl,-z,now',
-    '-Wl,-z,relro'
+    '-fvisibility=hidden',
+    '-DGASDK_BUILD',
 ]
 
-if build_machine.system() == 'linux' or host_machine.cpu_family().contains('android')
-    add_project_link_arguments(common_linker_options, language : ['c', 'cpp'])
+if get_option('time-report') and compiler.has_argument('-ftime-report')
+      common_compile_options += ['-ftime-report']
 endif
 
-if meson.version().version_compare('>= 0.44.0') and get_option('b_sanitize') == 'address' and compiler.get_id() == 'clang'
+add_project_arguments(common_compile_options, language : ['c', 'cpp'])
+
+common_link_args = [
+    '-Wl,-z,defs',
+    '-Wl,-z,now',
+    '-Wl,-z,relro',
+    '-Wl,-z,noexecstack'
+]
+
+if use_gold
+    add_project_link_arguments(common_link_args, language : ['c', 'cpp'])
+endif
+
+if get_option('b_sanitize') == 'address' and is_clang
     add_project_arguments(['-shared-libasan'], language : ['c', 'cpp'])
     add_project_link_arguments(['-shared-libasan'], language : ['c', 'cpp'])
 endif
 
 if get_option('buildtype') == 'debug'
-    add_project_arguments(['-Og', '-g', '-fno-omit-frame-pointer', '-D_GLIBCXX_ASSERTIONS'], language : ['c', 'cpp'])
+    add_project_arguments(['-g', '-fno-omit-frame-pointer', '-D_GLIBCXX_ASSERTIONS'], language : ['c', 'cpp'])
+else
+    add_project_arguments(['-DNDEBUG'], language : ['c', 'cpp'])
 endif
 
 if meson.is_cross_build()
     archs = meson.get_cross_property('archs')
-    if archs != ''
+    if archs != []
         add_project_arguments(meson.get_cross_property('archs'), language : ['c', 'cpp'])
     endif
-    if host_machine.cpu_family().contains('iphone')
+    if cross_iphone_build
         add_project_arguments(['-fembed-bitcode'], language : ['c', 'cpp'])
     endif
 endif
@@ -78,10 +100,39 @@ if swift
     add_project_link_arguments(['-lPromiseKit'], language : 'swift')
 endif
 
+executable_c_cpp_args = ['-fPIE']
+executable_link_args = []
+if static_libstdc
+    executable_link_args += ['-static-libstdc++']
+endif
+
+executable_link_args = []
+if compiler.get_id() == 'gcc'
+    executable_c_cpp_args += ['-pie']
+else
+    executable_link_args += ['-pie']
+endif
+
+if cross_win_build
+    executable_link_args += ['-static', '-static-libgcc']
+endif
+
+sed = find_program('gsed', 'sed')
 swig = find_program('swig', required : false)
 if swig.found()
     pymodule = import('python3')
     python3 = pymodule.find_python()
+
+    res = run_command(python3, '-c', 'import os; print(os.environ["PYTHON_VERSION"], end = "")')
+    if res.returncode() == 0
+        python_version = res.stdout()
+        message('PYTHON_VERSION set to ' + python_version)
+        python_dep = compiler.find_library('python' + python_version)
+    else
+        python_version = ''
+        message('$PYTHON_VERSION not set. Python bindings are disabled.')
+    endif
+
     res = run_command(python3, '-c', 'import os; print(os.environ["JAVA_HOME"], end = "")')
     if res.returncode() == 0
         java_home = res.stdout()
@@ -97,42 +148,52 @@ if swig.found()
     endif
 endif
 
-build_jni = swig.found() and javac and java_home != '' and not host_machine.cpu_family().contains('iphone')
+jni_deps  = swig.found() and javac and java_home != ''
+jni_disabled = cross_win_build or cross_iphone_build
+build_jni = (jni_deps or cross_android_build) and not jni_disabled
+build_swig_python = swig.found() and python_version != ''
 
 clang_format = find_program('clang-format', required : false)
 clang_tidy = find_program('run-clang-tidy' + get_option('clang-tidy-version') + '.py', required : false)
+
+sphinx_build = find_program('sphinx-build', required : false)
+if sphinx_build.found()
+    source_docs = join_paths(meson.source_root(), 'docs', 'source')
+    custom_target('apidocs', output : 'apidocs', command : [sphinx_build, '-b', 'html', '-a',
+                  '-c', source_docs, source_docs, join_paths(meson.source_root(), 'docs', 'build', 'html')])
+else
+    message('apidocs generation is not available')
+endif
 
 # dependencies
 threads_dep = dependency('threads')
 m_dep = compiler.find_library('m', required : false)
 atomic_dep = compiler.find_library('atomic', required : false)
 dl_dep = compiler.find_library('dl', required : false)
+ws2_dep = compiler.find_library('ws2_32', required : cross_win_build)
+bcrypt_dep = compiler.find_library('bcrypt', required : cross_win_build)
+ssp_dep = compiler.find_library('ssp', required : cross_win_build)
 
 subproject_deps = []
 
-wallycore = subproject('wallycore')
-autobahn_cpp = subproject('autobahn-cpp')
-boost = subproject('boost')
-GSL = subproject('GSL')
-msgpack = subproject('msgpack')
-openssl = subproject('openssl')
-websocketpp = subproject('websocketpp')
-
-subproject_deps += autobahn_cpp.get_variable('autobahn_dep')
-subproject_deps += boost.get_variable('boost_dep')
-subproject_deps += GSL.get_variable('GSL_dep')
-subproject_deps += msgpack.get_variable('msgpack_dep')
-subproject_deps += openssl.get_variable('openssl_dep')
+wallycore = subproject('libwally-core')
 subproject_deps += wallycore.get_variable('wallycore_dep')
-subproject_deps += websocketpp.get_variable('websocketpp_dep')
+subproject_deps += dependency('external_autobahn-cpp', fallback : ['autobahn-cpp', 'autobahn_dep'])
+subproject_deps += dependency('external_boost', fallback : ['boost', 'boost_dep'])
+subproject_deps += dependency('external_GSL', fallback : ['GSL', 'GSL_dep'])
+subproject_deps += dependency('external_json', fallback : ['json', 'nlohmann_json_dep'])
+subproject_deps += dependency('external_msgpack', fallback : ['msgpack', 'msgpack_dep'])
+subproject_deps += dependency('external_openssl', fallback : ['openssl', 'openssl_dep'])
+subproject_deps += dependency('external_websocketpp', fallback : ['websocketpp', 'websocketpp_dep'])
 
 # includes
-sdk_inc_dir = 'src'
+sdk_inc_dir = '.'
 
 incdir = include_directories([sdk_inc_dir])
 
 # builds
-subdirs = ['src']
+subdirs = ['src',
+           'tests']
 foreach n : subdirs
     subdir(n)
 endforeach

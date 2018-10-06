@@ -9,18 +9,24 @@
 
 #if __clang__
 #pragma clang diagnostic push
+#if !defined __APPLE__ && __clang_major__ >= 6
+#pragma clang diagnostic ignored "-Wenum-compare"
+#endif
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wignored-qualifiers"
 #endif
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wattributes"
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
+#pragma GCC diagnostic ignored "-Wparentheses"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #if __GNUC__ > 7
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
 #endif
 
 #include <autobahn/autobahn.hpp>
+#include <autobahn/wamp_session.hpp>
 #include <autobahn/wamp_websocketpp_websocket_transport.hpp>
 
 #pragma GCC diagnostic pop
@@ -29,6 +35,7 @@
 #pragma clang diagnostic pop
 #endif
 
+#include <websocketpp/base64/base64.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/config/asio_client.hpp>
 

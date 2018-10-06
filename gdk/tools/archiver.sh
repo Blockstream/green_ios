@@ -1,36 +1,15 @@
 #! /usr/bin/env bash
 set -e
 
-if test "x$1" == "x--iphone" || test "x$1" == "x--iphonesim"; then
+boost_chrono_lib=$1/boost/build/lib/libboost_chrono.a
+boost_log_lib=$1/boost/build/lib/libboost_log.a
+boost_system_lib=$1/boost/build/lib/libboost_system.a
+boost_thread_lib=$1/boost/build/lib/libboost_thread.a
+greenaddress_lib=$1/src/libgreenaddress.a
+openssl_crypto_lib=$1/openssl/build/lib/libcrypto.a
+openssl_ssl_lib=$1/openssl/build/lib/libssl.a
+secp256k1_lib=$1/libwally-core/build/lib/libsecp256k1.a
+wally_lib=$1/libwally-core/build/lib/libwallycore.a
 
-    boost_chrono_lib=$2/boost/build/lib/libboost_chrono
-    boost_system_lib=$2/boost/build/lib/libboost_system
-    boost_thread_lib=$2/boost/build/lib/libboost_thread
-    greenaddress_lib=$2/src/libgreenaddress
-    openssl_crypto_lib=$2/openssl/build/lib/libcrypto
-    openssl_ssl_lib=$2/openssl/build/lib/libssl
-    secp256k1_lib=$2/libwally-core/build/lib/libsecp256k1
-    wally_lib=$2/libwally-core/build/lib/libwallycore
-
-    if test "x$1" == "x--iphonesim"; then
-        all_archs="i386 x86_64"
-    else
-        all_archs="armv7 armv7s arm64"
-    fi
-
-    libgreenaddress_for_arch=""
-    libraries="$boost_chrono_lib $boost_system_lib $boost_thread_lib $greenaddress_lib $openssl_crypto_lib $openssl_ssl_lib $secp256k1_lib $wally_lib"
-    for arch in $all_archs; do
-        libraries_for_arch=""
-        for lib in $libraries; do
-            basename=`basename $lib`
-            lipo -extract $arch ${lib}.a -o $2/src/${basename}_${arch}.a
-            libraries_for_arch="$libraries_for_arch $2/src/${basename}_${arch}.a"
-        done
-
-        libtool -static $libraries_for_arch -o $2/src/single_arch_libgreenaddress_$arch.a
-        libgreenaddress_for_arch="$libgreenaddress_for_arch $2/src/single_arch_libgreenaddress_$arch.a"
-    done
-
-    lipo -create $libgreenaddress_for_arch -o $2/src/libgreenaddress.a
-fi
+libraries="$boost_chrono_lib $boost_log_lib $boost_system_lib $boost_thread_lib $openssl_crypto_lib $openssl_ssl_lib $secp256k1_lib $wally_lib"
+libtool -static -o ${greenaddress_lib} $libraries $1/src/src@@greenaddress@sha/*.o

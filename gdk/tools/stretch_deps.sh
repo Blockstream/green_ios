@@ -3,17 +3,30 @@ set -e
 
 sed -i 's/deb.debian.org/httpredir.debian.org/g' /etc/apt/sources.list
 
-apt-get update -qq
-apt-get upgrade -yqq
+apt update -qq
+apt upgrade -yqq
 
-apt-get install wget unzip autoconf pkg-config build-essential libtool python3-pip ninja-build clang llvm-dev git -yqq
+apt install wget unzip autoconf pkg-config build-essential libtool virtualenv python3-pip ninja-build clang clang-tidy llvm-dev git swig openjdk-8-jdk g++-mingw-w64-x86-64 -yqq
+update-java-alternatives -s java-1.8.0-openjdk-amd64
 pip3 install --require-hashes -r /requirements.txt
 rm /requirements.txt
-wget -O ndk.zip https://dl.google.com/android/repository/android-ndk-r14b-linux-x86_64.zip
-echo "0ecc2017802924cf81fffc0f51d342e3e69de6343da892ac9fa1cd79bc106024 ndk.zip" | sha256sum --check
+
+wget -O ndk.zip https://dl.google.com/android/repository/android-ndk-r18-linux-x86_64.zip
+echo "c413dd014edc37f822d0dc88fabc05b64232d07d5c6e9345224e47073fdf140b ndk.zip" | sha256sum --check
 unzip ndk.zip
 rm ndk.zip
-apt-get remove --purge unzip -yqq
-apt-get -yqq autoremove
-apt-get -yqq clean
-rm -rf /var/lib/apt/lists/* /var/cache/* /tmp/* /usr/share/locale/* /usr/share/man /usr/share/doc /lib/xtables/libip6* /root/.cache
+
+CLANG_FORMAT_VERSION=6.0.0
+CLANG_PACKAGE_NAME=clang+llvm-${CLANG_FORMAT_VERSION}-x86_64-linux-gnu-debian8
+wget -O clang.tar.xz http://releases.llvm.org/${CLANG_FORMAT_VERSION}/${CLANG_PACKAGE_NAME}.tar.xz
+echo "ff55cd0bdd0b67e22d1feee2e4c84dedc3bb053401330b64c7f6ac18e88a71f1 clang.tar.xz" | sha256sum --check
+tar -xf clang.tar.xz
+rm clang.tar.xz
+cp ${CLANG_PACKAGE_NAME}/bin/clang-{tidy,format} /usr/local/bin
+
+if [ -f /.dockerenv ]; then
+    apt remove --purge unzip -yqq
+    apt -yqq autoremove
+    apt -yqq clean
+    rm -rf /var/lib/apt/lists/* /var/cache/* /tmp/* /usr/share/locale/* /usr/share/man /usr/share/doc /lib/xtables/libip6* /root/.cache
+fi

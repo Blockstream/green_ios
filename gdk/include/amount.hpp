@@ -1,0 +1,209 @@
+#ifndef GA_SDK_AMOUNT_HPP
+#define GA_SDK_AMOUNT_HPP
+#pragma once
+
+#include <json.hpp>
+#include <ostream>
+#include <string>
+
+namespace ga {
+namespace sdk {
+
+    class amount final {
+    public:
+        // Internally, BTC amounts are held as sotoshi
+        using value_type = uint64_t;
+
+        static constexpr value_type coin_value = 100000000;
+        static constexpr value_type cent = 1000000;
+
+        explicit amount(value_type v = 0)
+            : m_value(v)
+        {
+        }
+
+        explicit amount(const std::string& str_value);
+
+        amount(const amount&) = default;
+        amount& operator=(const amount&) = default;
+        amount(amount&&) = default;
+        amount& operator=(amount&&) = default;
+        amount(const nlohmann::json& json_value);
+        ~amount() = default;
+
+        // General purpose conversion to/from fiat
+        static nlohmann::json convert(
+            const nlohmann::json& amount_json, const std::string& fiat_currency, const std::string& fiat_rate);
+
+        static nlohmann::json convert_fiat_cents(
+            value_type cents, const std::string& fiat_currency, const std::string& fiat_rate);
+
+        amount& operator=(value_type v)
+        {
+            m_value = v;
+            return *this;
+        }
+
+        amount& operator+=(value_type v)
+        {
+            m_value += v;
+            return *this;
+        }
+
+        amount& operator-=(value_type v)
+        {
+            m_value -= v;
+            return *this;
+        }
+
+        amount& operator*=(value_type v)
+        {
+            m_value *= v;
+            return *this;
+        }
+
+        amount& operator/=(value_type v)
+        {
+            m_value /= v;
+            return *this;
+        }
+
+        amount& operator+=(const amount& x)
+        {
+            m_value += x.m_value;
+            return *this;
+        }
+
+        amount& operator-=(const amount& y)
+        {
+            m_value -= y.m_value;
+            return *this;
+        }
+
+        value_type value() const { return m_value; }
+
+    private:
+        value_type m_value;
+    };
+
+    inline amount operator+(const amount& x, const amount& y)
+    {
+        amount r = x;
+        r += y;
+        return r;
+    }
+
+    inline amount operator+(const amount& x, amount::value_type y)
+    {
+        amount r = x;
+        r += y;
+        return r;
+    }
+
+    inline amount operator+(amount::value_type x, const amount& y)
+    {
+        amount r = y;
+        r += x;
+        return r;
+    }
+
+    inline amount operator-(const amount& x, const amount& y)
+    {
+        amount r = x;
+        r -= y;
+        return r;
+    }
+
+    inline amount operator-(const amount& x, amount::value_type y)
+    {
+        amount r = x;
+        r -= y;
+        return r;
+    }
+
+    inline amount operator-(amount::value_type x, const amount& y)
+    {
+        amount r{ x };
+        r -= y;
+        return r;
+    }
+
+    inline amount operator*(const amount& x, amount::value_type y)
+    {
+        amount r = x;
+        r *= y;
+        return r;
+    }
+
+    inline amount operator*(amount::value_type x, const amount& y)
+    {
+        amount r = y;
+        r *= x;
+        return r;
+    }
+
+    inline amount operator/(const amount& x, amount::value_type y)
+    {
+        amount r = x;
+        r /= y;
+        return r;
+    }
+
+    inline amount operator/(amount::value_type x, const amount& y)
+    {
+        amount r = y;
+        r /= x;
+        return r;
+    }
+
+    inline amount operator+(const amount& x) { return x; }
+
+    inline amount operator-(const amount& x) { return amount{ -x.value() }; }
+
+    inline bool operator==(const amount& x, const amount& y) { return x.value() == y.value(); }
+
+    inline bool operator==(const amount& x, const amount::value_type& y) { return x.value() == y; }
+
+    inline bool operator==(amount::value_type x, const amount& y) { return x == y.value(); }
+
+    inline bool operator!=(const amount& x, const amount& y) { return x.value() != y.value(); }
+
+    inline bool operator!=(const amount& x, const amount::value_type& y) { return x.value() != y; }
+
+    inline bool operator!=(amount::value_type x, const amount& y) { return x != y.value(); }
+
+    inline bool operator>(const amount& x, const amount& y) { return x.value() > y.value(); }
+
+    inline bool operator>(const amount& x, const amount::value_type& y) { return x.value() > y; }
+
+    inline bool operator>(amount::value_type x, const amount& y) { return x > y.value(); }
+
+    inline bool operator>=(const amount& x, const amount& y) { return x.value() >= y.value(); }
+
+    inline bool operator>=(const amount& x, const amount::value_type& y) { return x.value() >= y; }
+
+    inline bool operator>=(amount::value_type x, const amount& y) { return x >= y.value(); }
+
+    inline bool operator<(const amount& x, const amount& y) { return x.value() < y.value(); }
+
+    inline bool operator<(const amount& x, const amount::value_type& y) { return x.value() < y; }
+
+    inline bool operator<(amount::value_type x, const amount& y) { return x < y.value(); }
+
+    inline bool operator<=(const amount& x, const amount& y) { return x.value() <= y.value(); }
+
+    inline bool operator<=(const amount& x, const amount::value_type& y) { return x.value() <= y; }
+
+    inline bool operator<=(amount::value_type x, const amount& y) { return x <= y.value(); }
+
+    inline std::ostream& operator<<(std::ostream& os, const amount& x)
+    {
+        os << x.value();
+        return os;
+    }
+
+    inline std::string to_string(const amount& x) { return std::to_string(x.value()); }
+} // namespace sdk
+} // namespace ga
+
+#endif

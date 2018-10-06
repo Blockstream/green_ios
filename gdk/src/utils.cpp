@@ -17,17 +17,20 @@
 
 #include "boost_wrapper.hpp"
 
-#include "assertion.hpp"
-#include "common.h"
+#include "include/assertion.hpp"
 #include "utils.hpp"
 
-#include "utils.h"
+#include "include/utils.h"
+
+#if defined _WIN32 || defined WIN32 || defined __CYGWIN__
+#include "bcrypt.h"
+#endif
 
 namespace ga {
 namespace sdk {
 
     // use the same strategy as bitcoin core
-    void get_random_bytes(std::size_t num_bytes, void* bytes, std::size_t siz)
+    void get_random_bytes(std::size_t num_bytes, void* output_bytes, std::size_t siz)
     {
         static std::mutex curr_state_mutex;
         static std::array<unsigned char, 32> curr_state = { { 0 } };
@@ -66,17 +69,21 @@ namespace sdk {
         RAND_add(&tsc, sizeof tsc, 1.5);
         wally::clear(&tsc, sizeof tsc);
 
-        // 32 bytes from openssl, 32 from /dev/urandom, 32 from state, 8 from nonce
+        // 32 bytes from openssl, 32 from os random source, 32 from state, 8 from nonce
         std::array<unsigned char, 32 + 32 + 32 + 8> buf;
         GA_SDK_RUNTIME_ASSERT(RAND_bytes(buf.data(), 32) == 1);
 
         {
+#if !defined _WIN32 && !defined WIN32 && !defined __CYGWIN__
             int random_device = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
             GA_SDK_RUNTIME_ASSERT(random_device != -1);
             const auto random_device_ptr = std::unique_ptr<int, std::function<void(int*)>>(
                 &random_device, [](const int* device) { ::close(*device); });
 
             GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(read(random_device, buf.data() + 32, 32)) == 32);
+#else
+            GA_SDK_RUNTIME_ASSERT(BCryptGenRandom(NULL, buf.data() + 32, 32, BCRYPT_USE_SYSTEM_PREFERRED_RNG) == 0x0);
+#endif
         }
 
         std::array<unsigned char, SHA512_LEN> hashed;
@@ -92,18 +99,31 @@ namespace sdk {
             std::copy(hashed.begin() + 32, hashed.end(), curr_state.data());
         }
 
-        std::copy(hashed.begin(), hashed.begin() + siz, static_cast<unsigned char*>(bytes));
+        std::copy(hashed.begin(), hashed.begin() + siz, static_cast<unsigned char*>(output_bytes));
 
         wally::clear(hashed);
     }
 
+    uint32_t get_uniform_uint32_t(uint32_t upper_bound)
+    {
+        // Algorithm from the PCG family of random generators
+        const uint32_t lower_threshold = -upper_bound % upper_bound;
+        while (true) {
+            uint32_t v;
+            get_random_bytes(sizeof(v), &v, sizeof(v));
+            if (v >= lower_threshold) {
+                return v % upper_bound;
+            }
+        }
+    }
+
     static std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz, bool rev)
     {
-        std::vector<unsigned char> bytes(siz / 2);
-        hex_to_bytes(hex, bytes);
+        std::vector<unsigned char> buff(siz / 2);
+        GA_SDK_RUNTIME_ASSERT(hex_to_bytes(hex, buff) == buff.size());
         if (rev)
-            std::reverse(bytes.begin(), bytes.end());
-        return bytes;
+            std::reverse(buff.begin(), buff.end());
+        return buff;
     }
 
     std::vector<unsigned char> bytes_from_hex(const char* hex, size_t siz) { return bytes_from_hex(hex, siz, false); }
@@ -113,106 +133,94 @@ namespace sdk {
         return bytes_from_hex(hex, siz, true);
     }
 
-    secure_array<unsigned char, BIP39_ENTROPY_LEN_256> mnemonic_to_bytes(
-        const std::string& mnemonic, const std::string& lang)
+    // FIXME: secure_array
+    std::vector<unsigned char> mnemonic_to_bytes(const std::string& mnemonic)
     {
-        struct words* w;
-        bip39_get_wordlist(lang, &w);
-
-        secure_array<unsigned char, BIP39_ENTROPY_LEN_256> bytes;
-        bip39_mnemonic_to_bytes(w, mnemonic, bytes);
-        return bytes;
+        // FIXME: secure_array
+        std::vector<unsigned char> entropy(BIP39_ENTROPY_LEN_288);
+        size_t written = bip39_mnemonic_to_bytes(nullptr, mnemonic, entropy);
+        GA_SDK_RUNTIME_ASSERT(written == BIP39_ENTROPY_LEN_256 || written == BIP39_ENTROPY_LEN_288);
+        entropy.resize(written);
+        return entropy;
     }
 
-    std::string mnemonic_from_bytes(const unsigned char* bytes, size_t siz, const char* lang)
+    std::string mnemonic_from_bytes(const unsigned char* entropy, size_t siz)
     {
-        struct words* w;
-        bip39_get_wordlist(lang, &w);
         char* s;
-        bip39_mnemonic_from_bytes(w, bytes, siz, &s);
+        bip39_mnemonic_from_bytes(nullptr, gsl::make_span(entropy, siz), &s);
         return detail::make_string(s);
     }
 
-    std::string generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32, "en"); }
+    std::string generate_mnemonic() { return mnemonic_from_bytes(get_random_bytes<32>().data(), 32); }
 
-    bitcoin_uri parse_bitcoin_uri(const std::string& s)
+    nlohmann::json parse_bitcoin_uri(const std::string& uri)
     {
-        auto&& split = [](const std::string& s, const std::string& c) {
+        auto&& split = [](const std::string& uri, const std::string& c) {
             std::vector<std::string> ss;
-            boost::algorithm::split(ss, s, boost::is_any_of(c));
+            boost::algorithm::split(ss, uri, boost::is_any_of(c));
             return ss;
         };
 
-        bitcoin_uri u;
-        if (boost::algorithm::starts_with(s, "bitcoin:", boost::is_equal())) {
-            std::string v = s;
-            if (s.find('?') != std::string::npos) {
-                const auto recipient_amount = split(s, "?");
+        nlohmann::json parsed;
+
+        if (boost::algorithm::starts_with(uri, "bitcoin:")) {
+            std::string v = uri;
+            if (uri.find('?') != std::string::npos) {
+                // FIXME: Issue 68
+                // FIXME: BIP21 allows multiple args separated with '&'
+                // FIXME: If we encounter args prefixed "req-" and don't handle them, fail the parse
+                // FIXME: Take either the lablel or message and set the tx memo field with it if not set
+                // FIXME: URL unescape the arguments before returning
+                const auto recipient_amount = split(uri, "?");
                 const auto amount = split(recipient_amount[1], "=");
                 if (amount.size() == 2 && amount[0] == "amount") {
-                    u.set("amount", amount[1]);
+                    parsed["btc"] = amount[1];
                 }
                 v = recipient_amount[0];
             }
             const auto recipient = split(v, ":");
             if (recipient.size() == 2) {
-                u.set("recipient", recipient[1]);
+                parsed["address"] = recipient[1];
             }
         }
 
-        return u;
+        return parsed;
     }
-}
-}
+} // namespace sdk
+} // namespace ga
 
-int GA_get_random_bytes(size_t num_bytes, unsigned char* bytes, size_t len)
+int GA_get_random_bytes(size_t num_bytes, unsigned char* output_bytes, size_t len)
 {
     try {
-        ga::sdk::get_random_bytes(num_bytes, bytes, len);
+        ga::sdk::get_random_bytes(num_bytes, output_bytes, len);
         return GA_OK;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_ERROR;
     }
 }
 
-int GA_generate_mnemonic(const char* lang, char** output)
+int GA_generate_mnemonic(char** output)
 {
     try {
         const auto entropy = ga::sdk::get_random_bytes<32>();
-        struct words* w;
-        ga::sdk::bip39_get_wordlist(lang, &w);
-        ga::sdk::bip39_mnemonic_from_bytes(w, entropy, output);
+        ga::sdk::bip39_mnemonic_from_bytes(nullptr, entropy, output);
         return GA_OK;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_ERROR;
     }
 }
 
-int GA_validate_mnemonic(const char* lang, const char* mnemonic)
+int GA_validate_mnemonic(const char* mnemonic)
 {
     try {
-        struct words* w;
-        ga::sdk::bip39_get_wordlist(lang, &w);
-        ga::sdk::bip39_mnemonic_validate(w, mnemonic);
+        bip39_mnemonic_validate(nullptr, mnemonic);
         return GA_TRUE;
-    } catch (const std::exception& ex) {
+    } catch (const std::exception& e) {
         return GA_FALSE;
     }
 }
 
-int GA_parse_bitcoin_uri_to_json(const char* uri, char** output)
-{
-    try {
-        GA_SDK_RUNTIME_ASSERT(output);
-        const auto elements = ga::sdk::parse_bitcoin_uri(uri);
-        const auto s = elements.get_json();
-        GA_copy_string(s.c_str(), output);
-        return GA_OK;
-    } catch (const std::exception& ex) {
-        return GA_ERROR;
-    }
-}
-
+// FIXME: Get rid of this
 void GA_copy_string(const char* src, char** dst)
 {
     GA_SDK_RUNTIME_ASSERT(src);

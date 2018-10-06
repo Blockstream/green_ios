@@ -1,5 +1,3 @@
-sed = find_program('gsed', 'sed')
-
 swig_target = custom_target('swig',
                      command : [join_paths(meson.source_root(), 'tools', 'swig.sh'),
                                 sed, '@BUILD_DIR@/../gasdk_wrap.c', '@BUILD_DIR@/..', '@INPUT0@', '@INPUT1@',
@@ -14,3 +12,5 @@ libswig_java = static_library('swig_java', swig_target,
                               include_directories : java_inc_dir,
                               c_args : ['-fno-strict-aliasing'],
                               dependencies : dependencies)
+
+meson.add_install_script(join_paths(meson.source_root(), 'tools', 'install.sh'))

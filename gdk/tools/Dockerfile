@@ -1,7 +1,7 @@
-FROM debian:stretch@sha256:c908a4fcb2b2a1953bd40ebc12d9a4116868d72540efc27502ee6c2395b8a1e9
+FROM debian:stretch@sha256:07fe888a6090482fc6e930c1282d1edf67998a39a09a0b339242fbfa2b602fff
 COPY stretch_deps.sh /deps.sh
 COPY requirements.txt /requirements.txt
 RUN /deps.sh && rm /deps.sh
-VOLUME /sdk
-ENV ANDROID_NDK=/android-ndk-r14b
+ENV ANDROID_NDK=/android-ndk-r18
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 CMD cd /sdk && ./tools/build.sh --clang

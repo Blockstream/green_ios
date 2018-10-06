@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include "assertion.hpp"
+#include "include/assertion.hpp"
 
 namespace ga {
 namespace sdk {
@@ -12,5 +12,5 @@ namespace sdk {
                 std::string("assertion failure: ") + file + ":" + func + ":" + line + ":" + error_message);
         }
     }
-}
-}
+} // namespace sdk
+} // namespace ga

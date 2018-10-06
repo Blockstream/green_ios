@@ -1,0 +1,100 @@
+//
+//  SetPhoneViewController.swift
+//  gaios
+//
+//  Created by Strahinja Markovic on 9/28/18.
+//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
+//
+
+import Foundation
+import UIKit
+
+class SetPhoneViewController: UIViewController {
+   
+    @IBOutlet weak var textField: SearchTextField!
+    @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
+    @IBOutlet weak var getCodeButton: UIButton!
+    var sms = false
+    var phoneCall = false
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
+        NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        textField.attributedPlaceholder = NSAttributedString(string: "+1 123456789",
+                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        textField.becomeFirstResponder()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        getCodeButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
+
+    @IBAction func getCodeClicked(_ sender: Any) {
+        var twoFactor: TwoFactorCall? = nil
+        if (sms == true) {
+            twoFactor = AccountStore.shared.enableSMSTwoFactor(phoneNumber: self.textField.text!)
+        } else {
+            twoFactor = AccountStore.shared.enablePhoneCallTwoFactor(phoneNumber: self.textField.text!)
+        }
+
+        if (twoFactor != nil) {
+            wrap { try twoFactor?.getStatus()}.done{ (json: [String: Any]?) in
+                let status = json!["status"] as! String
+                if (status == "call") {
+                    wrap { try twoFactor?.call()}.done{ _ in
+                        self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                        }.catch { error in
+                            print("could't call two factor")
+                    }
+                }
+                }.catch { error in
+                    print("could get two factor status")
+            }
+        }
+    }
+
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0{
+                var keyboardHeight = keyboardSize.height
+                if #available(iOS 11.0, *) {
+                    let bottomInset = view.safeAreaInsets.bottom
+                    keyboardHeight -= bottomInset
+                }
+                buttonConstraint.constant += keyboardHeight
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0{
+                var keyboardHeight = keyboardSize.height
+                if #available(iOS 11.0, *) {
+                    let bottomInset = view.safeAreaInsets.bottom
+                    keyboardHeight -= bottomInset
+                }
+                buttonConstraint.constant -= keyboardHeight
+            }
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.onboarding = true
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+    }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+
+}

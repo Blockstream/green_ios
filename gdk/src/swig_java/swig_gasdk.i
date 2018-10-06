@@ -1,10 +1,12 @@
 %module GASDK
 %{
-#include "../common.h"
-#include "../containers.h"
-#include "../session.h"
-#include "../utils.h"
+#include "../../include/common.h"
+#include "../../include/containers.h"
+#include "../../include/twofactor.h"
+#include "../../include/session.h"
+#include "../../include/utils.h"
 #include <stdint.h>
+#include <limits.h>
 
 static int check_result(JNIEnv *jenv, int result)
 {
@@ -18,7 +20,67 @@ static int check_result(JNIEnv *jenv, int result)
     return result;
 }
 
-/* Use a static class to hold our opaque pointers */
+static uint32_t uint32_cast(JNIEnv *jenv, jlong value) {
+    if (value < 0 || value > UINT_MAX)
+        SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Invalid uint32_t");
+    return (uint32_t)value;
+}
+
+#define SDK_CLASS "com/blockstream/libgreenaddress/GASDK"
+
+/* Create and return a native json object from GA_json */
+static jobject create_json(JNIEnv *jenv, void *p) {
+    char* json_cstring = NULL;
+    jstring json_string;
+    jobject json_obj;
+    jclass clazz;
+    jmethodID convert_fn;
+
+    if (GA_convert_json_to_string((GA_json *)p, &json_cstring) != GA_OK) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "GA_json");
+        return NULL;
+    }
+
+    json_string = (*jenv)->NewStringUTF(jenv, json_cstring);
+    GA_destroy_string(json_cstring);
+
+    // FIXME: Cache FindClass/GetStaticMethodID in global references for efficiency
+    // See https://www.fer.unizg.hr/_download/repository/jni.pdf page 63 for details
+    if (!json_string)
+        return NULL;
+    if (!(clazz = (*jenv)->FindClass(jenv, SDK_CLASS)))
+        return NULL;
+    if (!(convert_fn = (*jenv)->GetStaticMethodID(jenv, clazz, "toJSONObject", "(Ljava/lang/String;)Ljava/lang/Object;")))
+        return NULL;
+    if (!(json_obj = (*jenv)->CallStaticObjectMethod(jenv, clazz, convert_fn, json_string)))
+        return NULL;
+    GA_destroy_json((GA_json *)p);
+    return json_obj;
+}
+
+/* Create and return a GA_json from a native json object */
+static void* get_json_or_throw(JNIEnv *jenv, jobject json_obj) {
+    const char* json_cstring;
+    GA_json* json = NULL;
+    jstring json_string;
+    jclass clazz;
+    jmethodID convert_fn;
+
+    if (!(clazz = (*jenv)->FindClass(jenv, SDK_CLASS)))
+        return NULL;
+    if (!(convert_fn = (*jenv)->GetStaticMethodID(jenv, clazz, "toJSONString", "(Ljava/lang/Object;)Ljava/lang/String;")))
+        return NULL;
+    if (!(json_string = (*jenv)->CallStaticObjectMethod(jenv, clazz, convert_fn, json_obj)))
+        return NULL;
+    if (!(json_cstring = (*jenv)->GetStringUTFChars(jenv, json_string, NULL)))
+        return NULL;
+    GA_convert_string_to_json(json_cstring, &json);
+    (*jenv)->ReleaseStringUTFChars(jenv, json_string, json_cstring);
+    if (!json)
+        SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "GA_json");
+    return json;
+}
+
 #define OBJ_CLASS "com/blockstream/libgreenaddress/GASDK$Obj"
 
 /* Create and return a java object to hold an opaque pointer */
@@ -78,7 +140,6 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %}
 
 %javaconst(1);
-%ignore GA_destroy_dict;
 %ignore GA_destroy_string;
 
 %pragma(java) jniclasscode=%{
@@ -95,6 +156,27 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
     private static final boolean enabled = loadLibrary();
     public static boolean isEnabled() {
         return enabled;
+    }
+
+   public interface JSONConverter {
+       Object toJSONObject(final String jsonString);
+       String toJSONString(final Object jsonObject);
+   }
+    private static JSONConverter mJSONConverter = null;
+
+    public static void setJSONConverter(final JSONConverter jsonConverter) {
+        mJSONConverter = jsonConverter;
+    }
+
+    private static Object toJSONObject(final String jsonString) {
+        if (mJSONConverter == null)
+            return (Object) jsonString;
+        return mJSONConverter.toJSONObject(jsonString);
+    }
+    private static String toJSONString(final Object jsonObject) {
+        if (mJSONConverter == null)
+            return (String) jsonObject;
+        return mJSONConverter.toJSONString(jsonObject);
     }
 
     static final class Obj {
@@ -129,23 +211,68 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
         $result = NULL;
     }
 }
-%define %java_opaque_struct(NAME, ID)
-%typemap(in, numinputs=0) struct NAME** (struct NAME* w) {
+/* Output strings are converted to native Java strings and returned */
+%typemap(in,noblock=1,numinputs=0) char **(char *temp = 0) {
+    $1 = &temp;
+}
+%typemap(argout,noblock=1) (char **) {
+    if ($1) {
+        $result = (*jenv)->NewStringUTF(jenv, *$1);
+        GA_destroy_string(*$1);
+    } else
+        $result = NULL;
+}
+/* uint32_t input arguments are taken as longs and cast with range checking */
+%typemap(in) uint32_t {
+    $1 = uint32_cast(jenv, $input);
+}
+
+/* uint64_t input arguments are taken as longs and cast unchecked. This means
+ * callers need to take care with treating negative values correctly */
+%typemap(in) uint64_t {
+    $1 = (uint64_t)($input);
+}
+
+/* JSON */
+%typemap(in, numinputs=0) GA_json** (GA_json* w) {
     w = 0; $1 = ($1_ltype)&w;
 }
-%typemap(argout) struct NAME** {
+%typemap(argout) GA_json** {
     if (*$1) {
-        $result = create_obj(jenv, *$1, ID);
+        $result = create_json(jenv, *$1);
     }
 }
-%typemap(in) struct NAME* {
-    $1 = (struct NAME*) get_obj_or_throw(jenv, $input, ID, "NAME");
+%typemap(in) GA_json* {
+    $1 = (GA_json*) get_json_or_throw(jenv, $input);
     if (!$1) {
         return $null;
     }
 }
-%typemap(jtype) struct NAME* "Object"
-%typemap(jni) struct NAME* "jobject"
+%typemap(jtype) GA_json* "Object"
+%typemap(jni) GA_json* "jobject"
+
+/* Opaque structures */
+%define %java_struct(NAME, ID)
+%typemap(in, numinputs=0) NAME** (NAME* w) {
+    w = 0; $1 = ($1_ltype)&w;
+}
+%typemap(argout) NAME** {
+    if (*$1) {
+        $result = create_obj(jenv, *$1, ID);
+    }
+}
+%typemap(in) NAME* {
+    $1 = (NAME*) get_obj_or_throw(jenv, $input, ID, "NAME");
+    if (!$1) {
+        return $null;
+    }
+}
+%typemap(jtype) NAME* "Object"
+%typemap(jni) NAME* "jobject"
+%enddef
+
+%define %java_opaque_struct(NAME, ID)
+%java_struct(struct NAME, ID)
 %enddef
 
 /* Change a functions return type to match its output type mapping */
@@ -191,35 +318,69 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %enddef
 
 %java_opaque_struct(GA_session, 1)
-%java_opaque_struct(GA_tx_list, 2)
-%java_opaque_struct(GA_dict, 3)
-%java_opaque_struct(GA_login_data, 4)
+%java_opaque_struct(GA_twofactor_call, 2)
 
-%returns_struct(GA_create_session, GA_session)
-%returns_void__(GA_destroy_session)
+%returns_void__(GA_ack_system_message)
+%returns_void__(GA_change_settings_pricing_source)
+%returns_void__(GA_change_settings_tx_limits)
 %returns_void__(GA_connect)
-%returns_void__(GA_register_user)
-%returns_struct(GA_login, GA_login_data)
-%returns_struct(GA_login_with_pin, GA_login_data)
-%returns_struct(GA_login_watch_only, GA_login_data)
-%returns_struct(GA_get_tx_list, GA_tx_list)
-%returns_void__(GA_destroy_tx_list)
-%returns_string(GA_convert_tx_list_to_json)
-%returns_struct(GA_convert_tx_list_path_to_dict, GA_dict)
-%returns_string(GA_convert_tx_list_path_to_string)
-%returns_string(GA_get_receive_addresss)
-%returns_string(GA_set_pin)
-%returns_string(GA_transaction_to_json)
-%returns_string(GA_convert_balance_to_json)
-%returns_void__(GA_destroy_balance)
-%returns_string(GA_convert_available_currencies_to_json)
-%returns_void__(GA_destroy_available_currencies)
-%returns_string(GA_convert_login_data_to_json)
-%returns_void__(GA_destroy_login_data)
-%returns_array_(GA_get_random_bytes, 2, 3, jarg1)
+%returns_void__(GA_connect_with_proxy)
+%returns_struct(GA_convert_amount, GA_json)
+%returns_string(GA_convert_json_to_string)
+%returns_string(GA_convert_json_value_to_string)
+%returns_struct(GA_convert_string_to_json, GA_json)
+%returns_struct(GA_create_session, GA_session)
+%returns_struct(GA_create_transaction, GA_json)
+%returns_struct(GA_create_subaccount, GA_json)
+%returns_struct(GA_decrypt, GA_json)
+%returns_void__(GA_destroy_session)
+%returns_void__(GA_destroy_twofactor_call)
+%returns_void__(GA_destroy_json)
+%returns_void__(GA_disconnect)
+%returns_struct(GA_encrypt, GA_json)
 %returns_string(GA_generate_mnemonic)
+%returns_struct(GA_get_available_currencies, GA_json)
+%returns_struct(GA_get_balance, GA_json)
+%returns_struct(GA_get_fee_estimates, GA_json)
+%returns_string(GA_get_mnemonic_passphrase)
+%returns_array_(GA_get_random_bytes, 2, 3, jarg1)
+%returns_struct(GA_get_transaction_details, GA_json)
+%returns_struct(GA_get_subaccounts, GA_json)
+%returns_string(GA_get_system_message)
+%returns_struct(GA_get_transactions, GA_json)
+%returns_struct(GA_get_twofactor_config, GA_json)
+%returns_struct(GA_get_unspent_outputs, GA_json)
+%returns_struct(GA_get_unspent_outputs_for_private_key, GA_json)
+%returns_string(GA_get_receive_address)
+%returns_void__(GA_login)
+%returns_void__(GA_login_watch_only)
+%returns_void__(GA_login_with_pin)
+%returns_void__(GA_register_user)
+%returns_struct(GA_remove_account, GA_twofactor_call)
+%returns_void__(GA_send_nlocktimes)
+%returns_struct(GA_send_transaction, GA_twofactor_call)
+%returns_struct(GA_set_pin, GA_json)
+%returns_void__(GA_set_transaction_memo)
+%returns_struct(GA_sign_transaction, GA_json)
+%returns_void__(GA_twofactor_call)
+/*%returns_struct(GA_twofactor_change_tx_limits, GA_twofactor_call)*/
+%returns_struct(GA_change_settings_twofactor, GA_twofactor_call)
+%returns_struct(GA_twofactor_get_status, GA_json)
+%returns_void__(GA_twofactor_request_code)
+%returns_void__(GA_twofactor_resolve_code)
 
-%include "../common.h"
-%include "../containers.h"
-%include "../session.h"
-%include "../utils.h"
+/* TODO
+GA_convert_json_value_to_bool
+GA_convert_json_value_to_string
+GA_convert_json_value_to_uint32
+GA_convert_json_value_to_uint64
+GA_destroy_string
+GA_subscribe_to_topic_as_json
+GA_validate_mnemonic
+*/
+
+%include "../include/common.h"
+%include "../include/containers.h"
+%include "../include/session.h"
+%include "../include/utils.h"
+%include "../include/twofactor.h"

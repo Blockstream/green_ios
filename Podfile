@@ -7,7 +7,7 @@ target 'gaios' do
 
   # Pods for GreenBitsIOS
   pod 'PromiseKit', '6.2.3'
-
+  pod 'NVActivityIndicatorView'
   target 'gaiosTests' do
     inherit! :search_paths
     # Pods for testing

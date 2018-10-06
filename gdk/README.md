@@ -2,18 +2,18 @@
 
 ## Meson/Ninja build:
 
-### Deps:
+### Build dependencies:
 
 For Debian Stretch:
 
-* sudo apt-get update && sudo apt-get install build-essential python3-pip ninja-build clang wget autoconf pkg-config libtool swig (optional)
+* sudo apt update && sudo apt install build-essential python3-pip ninja-build clang wget autoconf pkg-config libtool swig (optional)
 * sudo pip3 install -r tools/requirements.txt or pip3 install --user -r tools/requirements.txt
 
 For Mac OSX:
 
 Install Xcode and brew if not installed, then
 
-* brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config swig (optional) gnu-getopt (if on osx)
+* brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config swig (optional) gnu-getopt gnu-tar
 * pip3 install --user meson
 * xcode-select --install
 
@@ -29,11 +29,9 @@ JAVA bindings can be built by installing swig as explained above and setting JAV
 
 ### To build:
 
-* tools/build.sh
+* tools/build.sh <options>
 
-With no options it will attempt to build all configurations buildable (i.e. for iphone you can only build on osx).
-
-Options exist if you want to build a different configuration (flags in squared brackets are optional):
+Options exist to build for a particular configuration/platform (flags in squared brackets are optional):
 
 --clang
 --gcc
@@ -88,7 +86,7 @@ if you want to change it for example to ndk armeabi-v7a:
 
 #### Disable LTO
 
-By default builds use link time optimisation (except for AARCH64). It can be disabled when invoking build.sh. For example
+By default builds use link time optimisation. It can be disabled when invoking build.sh. For example
 
 * tools/build.sh --lto=false --clang
 
@@ -143,10 +141,10 @@ Use address sanitizer with gcc-7, no LTO, enable clang-tidy and debug build
 
 Use clang-analyzer (it'll analyze GDK and its direct dependencies)
 
-./tools/build.sh -analyze --clang
+./tools/build.sh --analyze --clang
 
 ### Upgrading dependencies
 
 Use tools/upgrade_deps.sh, for example to upgrade wally
 
-* ./tools/upgrade_deps.sh -l wallycore -s 987575025520d18bac31e6e2d27c8c936d812c64 -u https://github.com/ElementsProject/libwally-core/archive/987575025520d18bac31e6e2d27c8c936d812c64.tar.gz
+* ./tools/upgrade_deps.sh -l libwally-core -s 987575025520d18bac31e6e2d27c8c936d812c64 -u https://github.com/ElementsProject/libwally-core/archive/987575025520d18bac31e6e2d27c8c936d812c64.tar.gz

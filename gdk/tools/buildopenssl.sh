@@ -1,7 +1,9 @@
 #! /usr/bin/env bash
 set -e
 
-OPENSSL_NAME="openssl-OpenSSL_1_0_2o"
+OPENSSL_NAME="openssl-OpenSSL_1_0_2p"
+OPENSSL_OPTIONS="no-krb5 no-shared no-dso no-ssl2 no-ssl3 no-idea no-dtls no-dtls1 no-weak-ssl-ciphers no-comp -fvisibility=hidden"
+OPENSSL_MOBILE="no-hw no-engine"
 
 cp -r "${MESON_SOURCE_ROOT}/subprojects/${OPENSSL_NAME}" "${MESON_BUILD_ROOT}/openssl"
 cd "${MESON_BUILD_ROOT}/openssl"
@@ -13,10 +15,10 @@ if [ \( "$1" = "--ndk" \) ]; then
         sed -i 's/-mandroid//g' ${MESON_BUILD_ROOT}/openssl/Configure
     fi
     . ${MESON_SOURCE_ROOT}/tools/env.sh
-    ./Configure android --prefix="$openssl_prefix" no-krb5 no-shared no-dso
+    ./Configure android --prefix="$openssl_prefix" $OPENSSL_OPTIONS $OPENSSL_MOBILE
     sed -ie "s!-ldl!!" "Makefile"
     make depend
-    make 2> /dev/null
+    make -j$NUM_JOBS 2> /dev/null
     make install_sw
 elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     export CC=${XCODE_DEFAULT_PATH}/clang
@@ -24,29 +26,30 @@ elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
     export CROSS_SDK="${IOS_PLATFORM}.sdk"
     export PATH="${XCODE_DEFAULT_PATH}:$PATH"
     if test "x$1" == "x--iphonesim"; then
-        all_archs="i386 x86_64" 
+        all_archs="x86_64"
     else
-        all_archs="armv7 armv7s arm64"
+        all_archs="arm64"
     fi
     for arch in $all_archs; do
-	export CURRENT_ARCH=$arch
-	ARCH_BITS=32
+        export CURRENT_ARCH=$arch
+        ARCH_BITS=32
         NOASM=
-	if test "x$arch" == "arm64" || test "x$arch" == "xx86_64"; then
-	    ARCH_BITS=64
+        if test "x$arch" == "arm64" || test "x$arch" == "xx86_64"; then
+            ARCH_BITS=64
         fi
 
         if test "x$arch" == "i386" || test "x$arch" == "xx86_64"; then
             NOASM=no-asm
-	fi
-        KERNEL_BITS=$ARCH_BITS ./Configure iphoneos-cross no-krb5 no-shared no-dso no-hw no-engine $NOASM --prefix=$openssl_prefix
+        fi
+        KERNEL_BITS=$ARCH_BITS ./Configure iphoneos-cross $NOASM --prefix=$openssl_prefix $OPENSSL_OPTIONS $OPENSSL_MOBILE
         sed -ie "s!-fomit-frame-pointer!!" "Makefile"
         sed -ie "s!^CFLAG=!CFLAG=-fembed-bitcode -isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch ${CURRENT_ARCH} -miphoneos-version-min=9.0 !" "Makefile"
         make clean
         make depend
-        make 2> /dev/null
+        make -j$NUM_JOBS 2> /dev/null
+        wait
         make install_sw
-	mkdir -p build-$arch/tmp/$arch
+        mkdir -p build-$arch/tmp/$arch
         mv $openssl_prefix/* build-$arch/tmp/$arch
     done
     mkdir -p $openssl_prefix
@@ -79,12 +82,8 @@ EOF
 #endif
 #endif
 EOF
-        lipo -create build-i386/tmp/i386/lib/libcrypto.a \
-	             build-x86_64/tmp/x86_64/lib/libcrypto.a \
-             -output $openssl_prefix/lib/libcrypto.a
-        lipo -create build-i386/tmp/i386/lib/libssl.a \
-	             build-x86_64/tmp/x86_64/lib/libssl.a \
-         -output $openssl_prefix/lib/libssl.a
+	cp build-x86_64/tmp/x86_64/lib/libcrypto.a $openssl_prefix/lib/libcrypto.a
+	cp build-x86_64/tmp/x86_64/lib/libssl.a $openssl_prefix/lib/libssl.a
     else
         cat > $openssl_prefix/include/openssl/opensslconf.h << EOF
 #if __ARM_ARCH_7A__
@@ -112,24 +111,22 @@ EOF
 #endif
 #endif
 EOF
-        lipo -create build-armv7/tmp/armv7/lib/libcrypto.a \
-	             build-armv7s/tmp/armv7s/lib/libcrypto.a \
-		     build-arm64/tmp/arm64/lib/libcrypto.a \
-             -output $openssl_prefix/lib/libcrypto.a
-        lipo -create build-armv7/tmp/armv7/lib/libssl.a \
-	             build-armv7s/tmp/armv7s/lib/libssl.a \
-		     build-arm64/tmp/arm64/lib/libssl.a \
-             -output $openssl_prefix/lib/libssl.a
+	cp build-arm64/tmp/arm64/lib/libcrypto.a $openssl_prefix/lib/libcrypto.a
+	cp build-arm64/tmp/arm64/lib/libssl.a $openssl_prefix/lib/libssl.a
     fi
+elif [ \( "$1" = "--windows" \) ]; then
+    ./Configure mingw64 --cross-compile-prefix=x86_64-w64-mingw32- --prefix="$openssl_prefix" $OPENSSL_OPTIONS
+    make depend
+    make -j$NUM_JOBS 2> /dev/null
+    make install_sw
 else
     if [ "$(uname)" == "Darwin" ]; then
-        ./Configure darwin64-x86_64-cc --prefix="$openssl_prefix" no-shared
+        ./Configure darwin64-x86_64-cc --prefix="$openssl_prefix" $OPENSSL_OPTIONS
     else
-        ./config --prefix="$openssl_prefix" no-shared
+        ./config --prefix="$openssl_prefix" $OPENSSL_OPTIONS
         sed -ie "s!^CFLAG=!CFLAG=-fPIC -DPIC !" "Makefile"
     fi
     make depend
     make -j$NUM_JOBS 2> /dev/null
     make install_sw
 fi
-
