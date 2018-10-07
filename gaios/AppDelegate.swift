@@ -100,9 +100,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        connect()
         //AppDelegate.removeKeychainData()
-
+        DispatchQueue.global(qos: .background).async {
+            self.connect()
+        }
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
         if(pinData != nil) {
             let password = KeychainHelper.loadPassword(service: "password", account: "user")
