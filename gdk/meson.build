@@ -56,6 +56,7 @@ if get_option('time-report') and compiler.has_argument('-ftime-report')
 endif
 
 add_project_arguments(common_compile_options, language : ['c', 'cpp'])
+add_project_arguments('-fvisibility-inlines-hidden', language : ['cpp'])
 
 common_link_args = [
     '-Wl,-z,defs',
@@ -74,7 +75,7 @@ if get_option('b_sanitize') == 'address' and is_clang
 endif
 
 if get_option('buildtype') == 'debug'
-    add_project_arguments(['-g', '-fno-omit-frame-pointer', '-D_GLIBCXX_ASSERTIONS'], language : ['c', 'cpp'])
+    add_project_arguments(['-g', '-fno-omit-frame-pointer', '-D_GLIBCXX_ASSERTIONS', '-D_GLIBCXX_DEBUG', '-D_GLIBCXX_DEBUG_PEDANTIC'], language : ['c', 'cpp'])
 else
     add_project_arguments(['-DNDEBUG'], language : ['c', 'cpp'])
 endif
@@ -83,9 +84,6 @@ if meson.is_cross_build()
     archs = meson.get_cross_property('archs')
     if archs != []
         add_project_arguments(meson.get_cross_property('archs'), language : ['c', 'cpp'])
-    endif
-    if cross_iphone_build
-        add_project_arguments(['-fembed-bitcode'], language : ['c', 'cpp'])
     endif
 endif
 
@@ -149,7 +147,7 @@ if swig.found()
 endif
 
 jni_deps  = swig.found() and javac and java_home != ''
-jni_disabled = cross_win_build or cross_iphone_build
+jni_disabled = cross_win_build or cross_iphone_build or not jni_deps
 build_jni = (jni_deps or cross_android_build) and not jni_disabled
 build_swig_python = swig.found() and python_version != ''
 

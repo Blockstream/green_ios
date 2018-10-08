@@ -42,7 +42,7 @@ if [ \( "$1" = "--ndk" \) ]; then
 
     make -o configure install
 elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
-    export CFLAGS="$SDK_CFLAGS -fembed-bitcode -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0 -O3"
+    export CFLAGS="$SDK_CFLAGS -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0 -O3"
     export LDFLAGS="$SDK_LDFLAGS -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0"
     export CC=${XCODE_DEFAULT_PATH}/clang
     export CXX=${XCODE_DEFAULT_PATH}/clang++

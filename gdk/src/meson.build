@@ -4,9 +4,10 @@ sources = ['../include/amount.hpp',
            'assertion.cpp',
            'autobahn_wrapper.hpp',
            'boost_wrapper.hpp',
-           '../include/exception.hpp',
            'containers.hpp',
            'containers.cpp',
+           'exception.cpp',
+           'exception.hpp',
            'ffi_c.cpp',
            '../include/ga_wally.hpp',
            '../include/network_parameters.hpp',
@@ -17,6 +18,7 @@ sources = ['../include/amount.hpp',
            'ga_tx.hpp',
            'logging.hpp',
            'memory.hpp',
+           'network_parameters.cpp',
            'session.cpp',
            'transaction_utils.cpp',
            'transaction_utils.hpp',
@@ -105,15 +107,6 @@ if cross_iphone_build
                              build_always_stale : true,
                              build_by_default : true,
                              depends : libga)
-endif
-
-if build_swig_python
-    output = join_paths(meson.build_root(), 'src', 'greenaddress.so')
-    custom_target('archiver',
-                  output : 'greenaddress.so',
-                  command : ['ln', '-sf', libga.full_path(), output],
-                  build_by_default : true,
-                  depends : libga)
 endif
 
 # tests

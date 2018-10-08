@@ -7,10 +7,10 @@
 #include <gsl/span>
 
 #include "boost_wrapper.hpp"
-#include "include/exception.hpp"
 #include "include/session.hpp"
 
 #include "autobahn_wrapper.hpp"
+#include "exception.hpp"
 #include "ga_session.hpp"
 #include "logging.hpp"
 #include "memory.hpp"
@@ -19,6 +19,49 @@
 
 namespace ga {
 namespace sdk {
+    struct websocket_rng_type {
+        uint32_t operator()() const;
+    };
+
+    struct websocketpp_gdk_config : public websocketpp::config::asio_client {
+        using alog_type = websocket_boost_logger;
+        using elog_type = websocket_boost_logger;
+
+#ifdef NDEBUG
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
+#else
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
+#endif
+        using rng_type = websocket_rng_type;
+
+        struct transport_config : public websocketpp::config::asio_client::transport_config {
+            using alog_type = websocket_boost_logger;
+            using elog_type = websocket_boost_logger;
+        };
+        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_config::transport_config>;
+    };
+
+    struct websocketpp_gdk_tls_config : public websocketpp::config::asio_tls_client {
+        using alog_type = websocket_boost_logger;
+        using elog_type = websocket_boost_logger;
+#ifdef NDEBUG
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
+#else
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
+#endif
+        using rng_type = websocket_rng_type;
+
+        struct transport_config : public websocketpp::config::asio_tls_client::transport_config {
+            using alog_type = websocket_boost_logger;
+            using elog_type = websocket_boost_logger;
+        };
+        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_tls_config::transport_config>;
+    };
+
     boost::log::sources::logger_mt& websocket_boost_logger::m_log = gdk_logger::get();
 
     namespace {
@@ -149,13 +192,13 @@ namespace sdk {
             return get_recovery_key(wally_ext_key_ptr(p), xpub, subaccount);
         }
 
-        static std::string get_address_from_script(const network_parameters& net_params,
+        static std::string get_address_from_script(std::shared_ptr<network_parameters> net_params,
             const std::vector<unsigned char>& script, const std::string& addr_type)
         {
             if (addr_type == address_type::p2sh) {
-                return base58check_from_bytes(p2sh_address_from_bytes(net_params, script));
+                return base58check_from_bytes(p2sh_address_from_bytes(*net_params, script));
             } else if (addr_type == address_type::p2wsh || addr_type == address_type::csv) {
-                return base58check_from_bytes(p2sh_p2wsh_address_from_bytes(net_params, script));
+                return base58check_from_bytes(p2sh_p2wsh_address_from_bytes(*net_params, script));
             }
             GA_SDK_RUNTIME_ASSERT(false);
             __builtin_unreachable();
@@ -194,6 +237,22 @@ namespace sdk {
             return hex_from_bytes(ec_sig_to_der(sig));
         }
 
+        template <typename T>
+        void connect_to_endpoint(const wamp_session_ptr& session, const ga_session::transport_t& transport)
+        {
+            std::array<boost::future<void>, 3> futures;
+            futures[0] = boost::get<std::shared_ptr<T>>(transport)->connect().then([&](boost::future<void> connected) {
+                connected.get();
+                futures[1] = session->start().then([&](boost::future<void> started) {
+                    started.get();
+                    futures[2] = session->join("realm1").then([&](boost::future<uint64_t> joined) { joined.get(); });
+                });
+            });
+
+            for (auto&& f : futures) {
+                f.get();
+            }
+        }
     } // namespace
 
     uint32_t websocket_rng_type::operator()() const
@@ -215,8 +274,10 @@ namespace sdk {
         m_run_thread.join();
     }
 
-    ga_session::ga_session(network_parameters net_params, bool debug)
+    ga_session::ga_session(std::shared_ptr<network_parameters> net_params, bool debug)
         : m_controller(m_io)
+        , m_notification_handler(nullptr)
+        , m_notification_context(nullptr)
         , m_net_params(std::move(net_params))
         , m_min_fee_rate(DEFAULT_MIN_FEE)
         , m_next_subaccount(0)
@@ -225,7 +286,7 @@ namespace sdk {
         , m_system_message_id(0)
         , m_system_message_ack_id(0)
         , m_watch_only(true)
-        , m_rfc2818_verifier(websocketpp::uri(m_net_params.gait_wamp_url()).get_host())
+        , m_rfc2818_verifier(websocketpp::uri(m_net_params->gait_wamp_url()).get_host())
         , m_cert_pin_validated(false)
         , m_debug(debug)
     {
@@ -250,8 +311,7 @@ namespace sdk {
 
     bool ga_session::connect_with_tls() const
     {
-        return boost::algorithm::starts_with(
-            !m_net_params.get_use_tor() ? m_net_params.gait_wamp_url() : m_net_params.gait_onion(), "wss://");
+        return boost::algorithm::starts_with(m_net_params->get_connection_string(), "wss://");
     }
 
     void ga_session::connect()
@@ -260,17 +320,34 @@ namespace sdk {
 
         const bool tls = connect_with_tls();
         tls ? make_transport<transport_tls>() : make_transport<transport>();
-        tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
+        tls ? connect_to_endpoint<transport_tls>(m_session, m_transport)
+            : connect_to_endpoint<transport>(m_session, m_transport);
     }
 
-    void ga_session::connect_to_endpoint_impl(
-        std::array<boost::future<void>, 3>& futures, boost::future<void>& connected) const
+    template <typename T> std::enable_if_t<std::is_same<T, client>::value> ga_session::set_tls_init_handler() {}
+    template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> ga_session::set_tls_init_handler()
     {
-        connected.get();
-        futures[1] = m_session->start().then([&](boost::future<void> started) {
-            started.get();
-            futures[2] = m_session->join("realm1").then([&](boost::future<uint64_t> joined) { joined.get(); });
-        });
+        m_cert_pin_validated = false;
+        boost::get<std::unique_ptr<T>>(m_client)->set_tls_init_handler(
+            [this](const websocketpp::connection_hdl) { return tls_init_handler_impl(); });
+    }
+
+    template <typename T> void ga_session::make_client()
+    {
+        m_client = std::make_unique<T>();
+        boost::get<std::unique_ptr<T>>(m_client)->init_asio(&m_io);
+        set_tls_init_handler<T>();
+    }
+
+    template <typename T> void ga_session::make_transport()
+    {
+        using client_type
+            = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
+
+        m_transport = std::make_shared<T>(*boost::get<client_type>(m_client), m_net_params->get_connection_string(),
+            m_net_params->get_proxy(), m_debug);
+        boost::get<std::shared_ptr<T>>(m_transport)
+            ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
     }
 
     context_ptr ga_session::tls_init_handler_impl()
@@ -283,7 +360,7 @@ namespace sdk {
             boost::asio::ssl::context::verify_peer | boost::asio::ssl::context::verify_fail_if_no_peer_cert);
         // attempt to load system roots
         ctx->set_default_verify_paths();
-        const auto& roots = m_net_params.gait_wamp_cert_roots();
+        const auto& roots = m_net_params->gait_wamp_cert_roots();
         for (const auto& root : roots) {
             if (root.empty()) {
                 // FIXME: at the moment looks like the roots/pins are empty string when absent
@@ -293,7 +370,7 @@ namespace sdk {
             const boost::asio::const_buffer root_const_buff(root.c_str(), root.size());
             ctx->add_certificate_authority(root_const_buff);
         }
-        const auto& pins = m_net_params.gait_wamp_cert_pins();
+        const auto& pins = m_net_params->gait_wamp_cert_pins();
         if (pins.empty() || pins[0].empty()) {
             // no pins for this network, just do rfc2818 validation
             ctx->set_verify_callback(m_rfc2818_verifier);
@@ -313,7 +390,7 @@ namespace sdk {
             if (!X509_digest(cert, EVP_sha256(), buf.data(), &written) || written != buf.size()) {
                 return false;
             }
-            const auto& pins = m_net_params.gait_wamp_cert_pins();
+            const auto& pins = m_net_params->gait_wamp_cert_pins();
             const auto hex_digest = hex_from_bytes(buf);
             if (std::find(pins.begin(), pins.end(), hex_digest) != pins.end()) {
                 m_cert_pin_validated = true;
@@ -326,8 +403,10 @@ namespace sdk {
         return ctx;
     }
 
-    void ga_session::disconnect() const
+    void ga_session::disconnect()
     {
+        call_notification_handler(nlohmann::json());
+
         no_std_exception_escape([this] { m_session->leave().get(); });
         no_std_exception_escape([this] { m_session->stop().get(); });
         connect_with_tls() ? disconnect_transport<transport_tls>() : disconnect_transport<transport>();
@@ -343,7 +422,7 @@ namespace sdk {
 
     uint32_t ga_session::get_bip32_version() const
     {
-        return m_net_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
+        return m_net_params->main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
     }
 
     std::pair<std::string, std::string> ga_session::sign_challenge(
@@ -360,19 +439,19 @@ namespace sdk {
         return { sign_hash(master_key, path, challenge_hash), hex_from_bytes(path_bytes) };
     }
 
-    void ga_session::set_fee_estimates(const nlohmann::json& fee_estimates)
+    nlohmann::json ga_session::set_fee_estimates(const nlohmann::json& fee_estimates)
     {
         // Convert server estimates into an array of NUM_FEE_ESTIMATES estimates
         // ordered by block, with the minimum allowable fee at position 0
         std::map<uint32_t, uint32_t> ordered_estimates;
         for (const auto& e : fee_estimates) {
-            const auto& feerate = e["feerate"];
+            const auto& fee_rate = e["feerate"];
             double btc_per_k;
-            if (feerate.is_string()) {
-                const std::string feerate_str = feerate;
-                btc_per_k = boost::lexical_cast<double>(feerate_str);
+            if (fee_rate.is_string()) {
+                const std::string fee_rate_str = fee_rate;
+                btc_per_k = boost::lexical_cast<double>(fee_rate_str);
             } else {
-                btc_per_k = feerate;
+                btc_per_k = fee_rate;
             }
             if (btc_per_k > 0) {
                 const uint32_t actual_block = e["blocks"];
@@ -398,7 +477,7 @@ namespace sdk {
 
         if (i == 1u) {
             // No usable estimates, use existing ones until new ones arrive
-            return;
+            return nlohmann::json();
         }
 
         while (i < NUM_FEE_ESTIMATES) {
@@ -408,6 +487,7 @@ namespace sdk {
 
         // FIXME locking for m_fee_estimates
         std::swap(m_fee_estimates, new_estimates);
+        return m_fee_estimates;
     }
 
     void ga_session::register_user(const std::string& mnemonic, const std::string& user_agent)
@@ -485,7 +565,12 @@ namespace sdk {
 
         set_fee_estimates(m_login_data["fee_estimates"]);
         const auto p = m_login_data.find("limits");
+
         update_spending_limits(p == m_login_data.end() ? nlohmann::json() : *p);
+
+        // Notify the caller of their current block
+        on_new_block(
+            nlohmann::json({ { "block_height", block_height }, { "block_hash", m_login_data["block_hash"] } }));
     }
 
     void ga_session::update_spending_limits(const nlohmann::json& limits)
@@ -521,11 +606,40 @@ namespace sdk {
         return converted_limits;
     }
 
-    void ga_session::on_new_transaction(const nlohmann::json& details)
+    void ga_session::on_new_transaction(nlohmann::json&& details)
     {
         // FIXME: Update have_transactions in each affected subaccount,
-        // mark cached tx lists (when implemented) as dirty, and notify the user
-        (void)details;
+        // and mark cached tx lists (when implemented) as dirty
+        const std::string value_str = details["value"];
+        int64_t satoshi = strtol(value_str.c_str(), NULL, 10);
+        details["satoshi"] = abs(satoshi);
+        // FIXME: We can't determine if this is a re-deposit based on the
+        // information the server give us. We should fetch the tx details
+        // in tx_list format, cache them, and notify that data instead.
+        details["type"] = satoshi < 0 ? "outgoing" : "incoming";
+        details.erase("value");
+        details.erase("wallet_id");
+        call_notification_handler({ { "event", "transaction" }, { "transaction", std::move(details) } });
+    }
+
+    void ga_session::on_new_block(nlohmann::json&& details)
+    {
+        json_rename_key(details, "count", "block_height");
+        details.erase("diverged_count");
+
+        const uint32_t block_height = details["block_height"];
+        GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
+        m_block_height = block_height;
+        call_notification_handler({ { "event", "block" }, { "block", std::move(details) } });
+    }
+
+    void ga_session::on_new_fees(nlohmann::json&& details)
+    {
+        const nlohmann::json fees({ { "event", "fees" }, { "fees", set_fee_estimates(details) } });
+        if (!fees["fees"].is_null()) {
+            // Only notify if fees have actually changed
+            call_notification_handler(fees);
+        }
     }
 
     void ga_session::login(const std::string& mnemonic, const std::string& user_agent)
@@ -546,7 +660,7 @@ namespace sdk {
 
         m_master_key = wally_ext_key_ptr(p);
 
-        unsigned char btc_ver[1] = { m_net_params.btc_version() };
+        unsigned char btc_ver[1] = { m_net_params->btc_version() };
         std::array<unsigned char, sizeof(btc_ver) + sizeof(m_master_key->hash160)> vpkh;
         init_container(vpkh, gsl::make_span(btc_ver), gsl::make_span(m_master_key->hash160));
 
@@ -565,27 +679,20 @@ namespace sdk {
         m_subscriptions.emplace_back(subscribe("com.greenaddress.txs.wallet_" + receiving_id,
             [this](const autobahn::wamp_event& event) { on_new_transaction(get_json_result(event)); }));
 
-        m_subscriptions.emplace_back(subscribe("com.greenaddress.blocks", [this](const autobahn::wamp_event& event) {
-            const nlohmann::json block_ev = get_json_result(event);
-            const uint32_t block_height = block_ev["count"];
-            GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
-            m_block_height = block_height;
-        }));
+        m_subscriptions.emplace_back(subscribe("com.greenaddress.blocks",
+            [this](const autobahn::wamp_event& event) { on_new_block(get_json_result(event)); }));
 
         m_subscriptions.emplace_back(subscribe("com.greenaddress.fee_estimates",
-            [this](const autobahn::wamp_event& event) { set_fee_estimates(get_fees_as_json(event)); }));
+            [this](const autobahn::wamp_event& event) { on_new_fees(get_fees_as_json(event)); }));
 
         if (m_login_data.value("segwit_server", true) && !m_login_data["appearance"].value("use_segwit", false)) {
             // Enable segwit
             m_login_data["appearance"]["use_segwit"] = true;
 
-            /* FIXME: Server doesn't return a value in all envs yet
             bool r;
             wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
-            */
-            wamp_call([](wamp_call_result result) { result.get(); }, "com.greenaddress.login.set_appearance",
-                as_messagepack(m_login_data["appearance"]).get());
-            // FIXME GA_SDK_RUNTIME_ASSERT(r);
+                "com.greenaddress.login.set_appearance", as_messagepack(m_login_data["appearance"]).get());
+            GA_SDK_RUNTIME_ASSERT(r);
         }
     }
 
@@ -625,7 +732,7 @@ namespace sdk {
     nlohmann::json ga_session::get_fee_estimates()
     {
         // FIXME: locking, augment with last_updated, user preference for display?
-        return { { "estimates", m_fee_estimates } };
+        return { { "fees", m_fee_estimates } };
     }
 
     std::string ga_session::get_mnemonic_passphrase(const std::string& password)
@@ -826,7 +933,7 @@ namespace sdk {
             return wally_ext_key_ptr();
 
         ext_key* p;
-        uint32_t version = m_net_params.main_net() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
+        uint32_t version = m_net_params->main_net() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
         bip32_key_init_alloc(
             version, 0, 0, bytes_from_hex(chain_code), bytes_from_hex(pub_key), bytes{}, bytes{}, bytes{}, &p);
 
@@ -1044,15 +1151,21 @@ namespace sdk {
         return sub;
     }
 
-    autobahn::wamp_subscription ga_session::subscribe(
-        const std::string& topic, const std::function<void(const std::string& output)>& callback)
+    void ga_session::set_notification_handler(GA_notification_handler handler, void* context)
     {
-        return subscribe(topic, [callback](const autobahn::wamp_event& event) {
-            const auto ev = event.argument<msgpack::object>(0);
-            std::stringstream strm;
-            strm << ev;
-            callback(strm.str());
-        });
+        m_notification_handler = handler;
+        m_notification_context = context;
+    }
+
+    void ga_session::call_notification_handler(const nlohmann::json& details)
+    {
+        if (m_notification_handler) {
+            const GA_json* details_c = details.is_null() ? nullptr : reinterpret_cast<const GA_json*>(&details);
+            m_notification_handler(m_notification_context, details_c);
+            if (!details_c) {
+                set_notification_handler(nullptr, nullptr);
+            }
+        }
     }
 
     amount ga_session::get_dust_threshold() const
@@ -1080,11 +1193,11 @@ namespace sdk {
             subtype = data["subtype"];
 
         if (subaccount == 0) {
-            return ga::sdk::output_script(m_net_params, m_master_key, wally_ext_key_ptr(), m_login_data["gait_path"],
+            return ga::sdk::output_script(*m_net_params, m_master_key, wally_ext_key_ptr(), m_login_data["gait_path"],
                 type, subtype, subaccount, pointer);
         } else {
             const auto subaccount_master_key = get_subaccount_master_key(m_master_key, subaccount);
-            return ga::sdk::output_script(m_net_params, subaccount_master_key, get_recovery_extkey(subaccount),
+            return ga::sdk::output_script(*m_net_params, subaccount_master_key, get_recovery_extkey(subaccount),
                 m_login_data["gait_path"], type, subtype, subaccount, pointer);
         }
     }
@@ -1188,7 +1301,16 @@ namespace sdk {
         return a;
     }
 
+    // Note: Current design is to always enable RBF if the server supports
+    // it, perhaps allowing disabling for individual txs or only for BIP 70
+#if 1
     bool ga_session::is_rbf_enabled() const { return m_login_data["rbf"]; }
+#else
+    bool ga_session::is_rbf_enabled() const
+    {
+        return m_login_data["rbf"] && m_login_data["appearance"].value("replace_by_fee", false);
+    }
+#endif
 
     bool ga_session::is_watch_only() const { return m_watch_only; }
 

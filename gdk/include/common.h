@@ -31,6 +31,18 @@ extern "C" {
 #define GA_TRUE 1
 #define GA_FALSE 0
 
+/** A server session */
+struct GA_session;
+
+/** A Parsed JSON object */
+typedef struct GA_json GA_json;
+
+/** An api method call that potentially requires two factor authentication to complete */
+struct GA_twofactor_call;
+
+/** A notification handler */
+typedef void (*GA_notification_handler)(void* context, const GA_json* details);
+
 #ifdef __cplusplus
 }
 #endif

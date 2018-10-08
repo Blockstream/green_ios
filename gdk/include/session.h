@@ -11,12 +11,6 @@
 extern "C" {
 #endif
 
-/** Network parameters to use */
-#define GA_NETWORK_MAINNET 0
-#define GA_NETWORK_TESTNET 1
-#define GA_NETWORK_LOCALTEST 100
-#define GA_NETWORK_REGTEST 101
-
 /** Values for onion uri flag */
 #define GA_NO_TOR 0
 #define GA_USE_TOR 1
@@ -24,12 +18,6 @@ extern "C" {
 /** Values for transaction memo type */
 #define GA_MEMO_USER 0
 #define GA_MEMO_BIP70 1
-
-/** A server session */
-struct GA_session;
-
-/** An api method call that potentially requires two factor authentication to complete */
-struct GA_twofactor_call;
 
 /**
  * Create a new server session.
@@ -52,18 +40,18 @@ GASDK_API int GA_destroy_session(struct GA_session* session);
  * Connect to a remote server using the specified network.
  *
  * @session The server session to use.
- * @network The network parameters to use.
+ * @network The name of the network to connect to.
  * @debug Output transport debug information to stderr.
  *
  * GA_ERROR if connection is unsuccessful.
  */
-GASDK_API int GA_connect(struct GA_session* session, uint32_t network, uint32_t debug);
+GASDK_API int GA_connect(struct GA_session* session, const char* network, uint32_t debug);
 
 /**
  * Connect to a remote server using the specified network and proxy.
  *
  * @session The server session to use.
- * @network The network parameters to use.
+ * @network The name of the network to connect to.
  * @proxy The proxy server to use.
  * @use_tor Use the onion address for the @network.
  * @debug Output transport debug information to stderr.
@@ -71,7 +59,7 @@ GASDK_API int GA_connect(struct GA_session* session, uint32_t network, uint32_t 
  * GA_ERROR if connection is unsuccessful.
  */
 GASDK_API int GA_connect_with_proxy(
-    struct GA_session* session, uint32_t network, const char* proxy_uri, uint32_t use_tor, uint32_t debug);
+    struct GA_session* session, const char* network, const char* proxy_uri, uint32_t use_tor, uint32_t debug);
 
 /**
  * UNUSED
@@ -446,16 +434,23 @@ GASDK_API int GA_decrypt(struct GA_session* session, const GA_json* input, GA_js
 
 #ifndef SWIG
 /*
- * Subscribe to a notification topic.
+ * Set a handler to be called when notifications arrive.
  *
- * @session The server session to use.
- * @topic The topic to subscribe to.
- * @callback The callback for the topic value as JSON.
+ * @session The server session to receive notifications for.
+ * @handler The handler to receive notifications.
+ * @context A context pointer to be passed to the handler.
  *
- * GA_ERROR if topic cannot be subscribed to.
+ * This must be called after before GA_connect/GA_connect_with_proxy.
+ * Notifications may arrive on different threads so the caller must ensure
+ * that shared data is correctly locked within the handler.
+ * The GA_json object passed to the caller should not be modified and is
+ * freed internally when the callback handler returns.
+ * When the session is disconnected/destroyed, a final call will be made to
+ * the handler with a NULL notification.
+ *
+ * GA_ERROR if the session has already been connected.
  */
-GASDK_API int GA_subscribe_to_topic_as_json(
-    struct GA_session* session, const char* topic, void (*callback)(void*, char* output), void* context);
+GASDK_API int GA_set_notification_handler(struct GA_session* session, GA_notification_handler handler, void* context);
 #endif
 
 #ifdef __cplusplus

@@ -56,8 +56,7 @@ foreach source : c_cpp_sources
 endforeach
 
 if build_jni
-    java_sources = ['WSSConnect',
-                    'WSSLogin',
+    java_sources = ['WSSLogin',
                     'WSSWatchOnlyLogin']
     foreach source : java_sources
         target_name = source + '_java_test'

@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     try {
         const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
+        session.connect(sdk::network_parameters::get(options->network), debug);
     } catch (const std::exception& e) {
         std::cerr << "exception: " << e.what() << std::endl;
         return -1;

@@ -29,7 +29,7 @@ int main(int argc, char** argv)
         const std::string name_2{ get_random_string() };
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
+            session.connect(sdk::network_parameters::get(options->network), debug);
             session.register_user(DEFAULT_MNEMONIC);
             session.login(DEFAULT_MNEMONIC);
 
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
+            session.connect(sdk::network_parameters::get(options->network), debug);
             session.login(DEFAULT_MNEMONIC);
             const auto subaccounts = session.get_subaccounts();
             assert_account_exists(name_1, subaccounts);

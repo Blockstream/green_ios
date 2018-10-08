@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     ret = GA_create_session(&session);
 
     const bool debug = options->quiet == 0;
-    ret = ret == GA_OK ? GA_connect(session, options->testnet ? GA_NETWORK_TESTNET : GA_NETWORK_LOCALTEST, debug) : ret;
+    ret = ret == GA_OK ? GA_connect(session, options->network, debug) : ret;
     ret = ret == GA_OK ? GA_register_user(session, DEFAULT_MNEMONIC) : ret;
     ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC) : ret;
 

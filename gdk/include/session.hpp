@@ -3,6 +3,7 @@
 #pragma once
 
 #include <json.hpp>
+#include <memory>
 
 #include "common.h"
 
@@ -33,7 +34,7 @@ namespace sdk {
         session& operator=(const session&) = delete;
         session& operator=(session&&) = delete;
 
-        void connect(network_parameters params, bool debug = false);
+        void connect(std::shared_ptr<network_parameters> params, bool debug = false);
         void disconnect();
 
         void register_user(const std::string& mnemonic, const std::string& user_agent = std::string());
@@ -55,6 +56,7 @@ namespace sdk {
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
 
         void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
+        void set_notification_handler(GA_notification_handler handler, void* context);
 
         nlohmann::json get_receive_address(uint32_t subaccount, const std::string& addr_type = std::string());
 
@@ -121,6 +123,9 @@ namespace sdk {
 
     private:
         template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);
+
+        GA_notification_handler m_notification_handler;
+        void* m_notification_context;
 
         std::unique_ptr<ga_session> m_impl;
     };

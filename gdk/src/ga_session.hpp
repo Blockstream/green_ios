@@ -15,48 +15,8 @@
 
 namespace ga {
 namespace sdk {
-    struct websocket_rng_type {
-        uint32_t operator()() const;
-    };
-
-    struct websocketpp_gdk_config : public websocketpp::config::asio_client {
-        using alog_type = websocket_boost_logger;
-        using elog_type = websocket_boost_logger;
-
-#ifdef NDEBUG
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
-#else
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
-#endif
-        using rng_type = websocket_rng_type;
-
-        struct transport_config : public websocketpp::config::asio_client::transport_config {
-            using alog_type = websocket_boost_logger;
-            using elog_type = websocket_boost_logger;
-        };
-        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_config::transport_config>;
-    };
-
-    struct websocketpp_gdk_tls_config : public websocketpp::config::asio_tls_client {
-        using alog_type = websocket_boost_logger;
-        using elog_type = websocket_boost_logger;
-#ifdef NDEBUG
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
-#else
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
-#endif
-        using rng_type = websocket_rng_type;
-
-        struct transport_config : public websocketpp::config::asio_tls_client::transport_config {
-            using alog_type = websocket_boost_logger;
-            using elog_type = websocket_boost_logger;
-        };
-        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_tls_config::transport_config>;
-    };
+    struct websocketpp_gdk_config;
+    struct websocketpp_gdk_tls_config;
 
     using client = websocketpp::client<websocketpp_gdk_config>;
     using client_tls = websocketpp::client<websocketpp_gdk_tls_config>;
@@ -77,7 +37,9 @@ namespace sdk {
 
     class ga_session final {
     public:
-        ga_session(network_parameters net_params, bool debug);
+        using transport_t = boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>>;
+
+        ga_session(std::shared_ptr<network_parameters> net_params, bool debug);
         ga_session(const ga_session& other) = delete;
         ga_session(ga_session&& other) noexcept = delete;
         ga_session& operator=(const ga_session& other) = delete;
@@ -102,9 +64,9 @@ namespace sdk {
         void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
-        autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
-        autobahn::wamp_subscription subscribe(
-            const std::string& topic, const std::function<void(const std::string& output)>& callback);
+
+        void set_notification_handler(GA_notification_handler handler, void* context);
+
         nlohmann::json get_subaccounts() const;
         nlohmann::json get_subaccount(uint32_t subaccount) const;
         nlohmann::json create_subaccount(const nlohmann::json& details);
@@ -163,7 +125,7 @@ namespace sdk {
         bool have_subaccounts() const { return m_subaccounts.size() != 1u; }
         amount get_dust_threshold() const;
         nlohmann::json get_spending_limits() const;
-        const network_parameters& get_network_parameters() const { return m_net_params; }
+        const std::shared_ptr<network_parameters> get_network_parameters() const { return m_net_params; }
         void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
         std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
 
@@ -171,7 +133,13 @@ namespace sdk {
         void set_enabled_twofactor_methods(nlohmann::json& config);
         void update_login_data(nlohmann::json&& login_data, bool watch_only);
         void update_spending_limits(const nlohmann::json& limits_parent);
-        void on_new_transaction(const nlohmann::json& details);
+
+        autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
+        void call_notification_handler(const nlohmann::json& details);
+
+        void on_new_transaction(nlohmann::json&& details);
+        void on_new_block(nlohmann::json&& details);
+        void on_new_fees(nlohmann::json&& details);
 
         nlohmann::json insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
             const std::string& recovery_pub_key, const std::string& recovery_chain_code, const std::string& type,
@@ -180,60 +148,23 @@ namespace sdk {
         static std::pair<std::string, std::string> sign_challenge(
             const wally_ext_key_ptr& master_key, const std::string& challenge);
 
-        void set_fee_estimates(const nlohmann::json& fee_estimates);
+        nlohmann::json set_fee_estimates(const nlohmann::json& fee_estimates);
 
         bool connect_with_tls() const;
 
         context_ptr tls_init_handler_impl();
 
-        template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
-        template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
-        {
-            m_cert_pin_validated = false;
-            boost::get<std::unique_ptr<T>>(m_client)->set_tls_init_handler(
-                [this](const websocketpp::connection_hdl) { return tls_init_handler_impl(); });
-        }
-
-        template <typename T> void make_client()
-        {
-            m_client = std::make_unique<T>();
-            boost::get<std::unique_ptr<T>>(m_client)->init_asio(&m_io);
-            set_tls_init_handler<T>();
-        }
-
-        template <typename T> void make_transport()
-        {
-            using client_type
-                = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
-
-            m_transport = std::make_shared<T>(*boost::get<client_type>(m_client),
-                !m_net_params.get_use_tor() ? m_net_params.gait_wamp_url() : m_net_params.gait_onion(),
-                m_net_params.get_proxy(), m_debug);
-            boost::get<std::shared_ptr<T>>(m_transport)
-                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
-        }
-        template <typename T> void connect_to_endpoint() const
-        {
-            std::array<boost::future<void>, 3> futures;
-            futures[0]
-                = boost::get<std::shared_ptr<T>>(m_transport)->connect().then([&](boost::future<void> connected) {
-                      connect_to_endpoint_impl(futures, connected);
-                  });
-
-            for (auto&& f : futures) {
-                f.get();
-            }
-        }
-
-        void connect_to_endpoint_impl(
-            std::array<boost::future<void>, 3>& futures, boost::future<void>& connected) const;
+        template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler();
+        template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler();
+        template <typename T> void make_client();
+        template <typename T> void make_transport();
 
         template <typename T> void disconnect_transport() const
         {
             no_std_exception_escape([this] { boost::get<std::shared_ptr<T>>(m_transport)->disconnect().get(); });
         }
 
-        void disconnect() const;
+        void disconnect();
         void unsubscribe();
 
         template <typename F, typename... Args>
@@ -272,13 +203,16 @@ namespace sdk {
 
         boost::asio::io_service m_io;
         boost::variant<std::unique_ptr<client>, std::unique_ptr<client_tls>> m_client;
-        boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> m_transport;
+        transport_t m_transport;
         wamp_session_ptr m_session;
         std::vector<autobahn::wamp_subscription> m_subscriptions;
 
         event_loop_controller m_controller;
 
-        network_parameters m_net_params;
+        GA_notification_handler m_notification_handler;
+        void* m_notification_context;
+
+        std::shared_ptr<network_parameters> m_net_params;
 
         nlohmann::json m_login_data;
         nlohmann::json m_limits_data;

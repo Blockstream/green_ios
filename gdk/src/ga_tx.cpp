@@ -413,12 +413,17 @@ namespace sdk {
         result["twofactor_required"] = twofactor_required;
         result["twofactor_under_limit"] = twofactor_under_limit;
 
+        if (user_fee_rate < min_fee_rate) {
+            result["error"] = "Fee rate is below minimum accepted fee rate";
+        }
         update_tx_info(tx, result);
         return result;
     }
 
     nlohmann::json sign_ga_transaction(session& session, const nlohmann::json& details)
     {
+        GA_SDK_RUNTIME_ASSERT(json_get_value(details, "error").empty());
+
         nlohmann::json result(details); // FIXME: support in place for calling from send
 
         const auto& utxos = result.at("utxos");
@@ -448,6 +453,8 @@ namespace sdk {
     nlohmann::json send_ga_transaction(
         session& session, const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
+        GA_SDK_RUNTIME_ASSERT(json_get_value(details, "error").empty());
+
         if (details.find("transaction") == details.end()) {
             return session.send(session.sign_transaction(session.create_transaction(details)), twofactor_data);
         } else if (!details.value("user_signed", false)) {

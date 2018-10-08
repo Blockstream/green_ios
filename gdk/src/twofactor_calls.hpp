@@ -19,7 +19,6 @@ private:
     nlohmann::json m_current_config;
     std::string m_method_to_update;
     nlohmann::json m_details;
-    nlohmann::json m_init_twofactor_data;
     bool m_enabling;
 };
 

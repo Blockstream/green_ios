@@ -11,9 +11,6 @@
 extern "C" {
 #endif
 
-/** A Parsed JSON object */
-typedef struct GA_json GA_json;
-
 #ifndef SWIG
 
 GASDK_API int GA_convert_json_to_string(const GA_json* json, char** output);

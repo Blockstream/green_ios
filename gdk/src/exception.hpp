@@ -2,7 +2,9 @@
 #define GA_SDK_EXCEPTION_HPP
 #pragma once
 
+#include "autobahn_wrapper.hpp"
 #include <autobahn/exceptions.hpp>
+#include <utility>
 
 namespace ga {
 namespace sdk {
@@ -36,6 +38,8 @@ namespace sdk {
         {
         }
     };
+
+    std::pair<std::string, std::string> get_error_details(const autobahn::call_error& e);
 } // namespace sdk
 } // namespace ga
 

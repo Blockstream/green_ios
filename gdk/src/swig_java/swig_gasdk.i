@@ -8,6 +8,29 @@
 #include <stdint.h>
 #include <limits.h>
 
+
+static JavaVM* gdk_jvm;
+
+static const jint JNI_VERSIONS[5] = {
+    JNI_VERSION_1_8, JNI_VERSION_1_6, JNI_VERSION_1_4, JNI_VERSION_1_2, JNI_VERSION_1_1
+};
+
+static const char* NOTIFY_METHOD_NAME = "callNotificationHandler";
+static const char* NOTIFY_METHOD_ARGS = "(Ljava/lang/Object;Ljava/lang/Object;)V";
+static const char* OBJ_CLASS  = "com/blockstream/libgreenaddress/GASDK$Obj";
+static const char* SDK_CLASS  = "com/blockstream/libgreenaddress/GASDK";
+
+#define GA_SDK_SWIG_SESSION_ID 1
+#define GA_SDK_SWIG_TWOFACTOR_CALL_ID 2
+
+static unsigned char* malloc_or_throw(JNIEnv *jenv, size_t len) {
+    unsigned char *p = (unsigned char *)malloc(len);
+    if (!p) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "Out of memory");
+    }
+    return p;
+}
+
 static int check_result(JNIEnv *jenv, int result)
 {
     switch (result) {
@@ -26,10 +49,8 @@ static uint32_t uint32_cast(JNIEnv *jenv, jlong value) {
     return (uint32_t)value;
 }
 
-#define SDK_CLASS "com/blockstream/libgreenaddress/GASDK"
-
 /* Create and return a native json object from GA_json */
-static jobject create_json(JNIEnv *jenv, void *p) {
+static jobject create_json(JNIEnv *jenv, void *p, int destroy) {
     char* json_cstring = NULL;
     jstring json_string;
     jobject json_obj;
@@ -54,7 +75,8 @@ static jobject create_json(JNIEnv *jenv, void *p) {
         return NULL;
     if (!(json_obj = (*jenv)->CallStaticObjectMethod(jenv, clazz, convert_fn, json_string)))
         return NULL;
-    GA_destroy_json((GA_json *)p);
+    if (destroy)
+        GA_destroy_json((GA_json *)p);
     return json_obj;
 }
 
@@ -81,18 +103,94 @@ static void* get_json_or_throw(JNIEnv *jenv, jobject json_obj) {
     return json;
 }
 
-#define OBJ_CLASS "com/blockstream/libgreenaddress/GASDK$Obj"
+typedef struct notification_context
+{
+    struct GA_session* m_session;
+    jobject m_session_obj;
+} notify_t;
+
+// Call any registered notification handler
+static void notification_handler(void* context_p, const GA_json* details)
+{
+    JNIEnv *jenv;
+    notify_t* n = (notify_t*) context_p;
+    jobject json_obj;
+    jclass clazz;
+    jmethodID handler_fn;
+    int status;
+    size_t i;
+
+    if (!gdk_jvm || !context_p || !n->m_session)
+        return; // Called after un-registering
+
+    for (i = 0; i < sizeof(JNI_VERSIONS)/sizeof(JNI_VERSIONS[0]); ++i) {
+        status = (*gdk_jvm)->GetEnv(gdk_jvm, (void**) &jenv, JNI_VERSIONS[i]);
+        if (status != JNI_EVERSION)
+            break;
+    }
+
+    if (status == JNI_EDETACHED) {
+        if ((*gdk_jvm)->AttachCurrentThread(gdk_jvm, (void**) &jenv, NULL))
+            return;
+    } else if (status != JNI_OK)
+        return;
+
+    if (!details) {
+        // Un-registering
+        (*jenv)->DeleteGlobalRef(jenv, n->m_session_obj);
+        memset(n, 0, sizeof(*n));
+        free(n);
+        goto end;
+    }
+
+    if (!(json_obj = create_json(jenv, (void *)details, 0)))
+        goto end;
+    if (!(clazz = (*jenv)->FindClass(jenv, SDK_CLASS)))
+        goto end;
+    if (!(handler_fn = (*jenv)->GetStaticMethodID(jenv, clazz, NOTIFY_METHOD_NAME, NOTIFY_METHOD_ARGS)))
+        goto end;
+    (*jenv)->CallStaticVoidMethod(jenv, clazz, handler_fn, n->m_session_obj, json_obj);
+
+end:
+    if (status == JNI_EDETACHED)
+        (*gdk_jvm)->DetachCurrentThread(gdk_jvm);
+}
 
 /* Create and return a java object to hold an opaque pointer */
 static jobject create_obj(JNIEnv *jenv, void *p, int id) {
     jclass clazz;
     jmethodID ctor;
+    jobject obj = 0;
+
+    if (!gdk_jvm) {
+        // Cache our JVM instance for callbacks before we create our
+        // first object, and therefore before any callback can fire
+        if ((*jenv)->GetJavaVM(jenv, &gdk_jvm))
+            return NULL;
+    }
 
     if (!(clazz = (*jenv)->FindClass(jenv, OBJ_CLASS)))
         return NULL;
     if (!(ctor = (*jenv)->GetMethodID(jenv, clazz, "<init>", "(JI)V")))
         return NULL;
-    return (*jenv)->NewObject(jenv, clazz, ctor, (jlong)(uintptr_t)p, id);
+    if (!(obj = (*jenv)->NewObject(jenv, clazz, ctor, (jlong)(uintptr_t)p, id)))
+        return NULL;
+
+    if (id == GA_SDK_SWIG_SESSION_ID) {
+        // Set the notification handler for the session after creating it
+        notify_t* n = (notify_t*)malloc_or_throw(jenv, sizeof(notify_t));
+        if (!n)
+            return NULL;
+        n->m_session = (struct GA_session*) p;
+        n->m_session_obj = (*jenv)->NewGlobalRef(jenv, obj);
+        if (!n->m_session_obj) {
+            free(n);
+            return NULL;
+        }
+        // FIXME: Error handling if this call fails
+        GA_set_notification_handler(n->m_session, notification_handler, n);
+    }
+    return obj;
 }
 
 /* Fetch an opaque pointer from a java object */
@@ -119,14 +217,6 @@ static void* get_obj_or_throw(JNIEnv *jenv, jobject obj, int id, const char *nam
     if (!ret)
         SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, name);
     return ret;
-}
-
-static unsigned char* malloc_or_throw(JNIEnv *jenv, size_t len) {
-    unsigned char *p = (unsigned char *)malloc(len);
-    if (!p) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "Out of memory");
-    }
-    return p;
 }
 
 static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len) {
@@ -158,10 +248,12 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
         return enabled;
     }
 
-   public interface JSONConverter {
+    // JSON conversion
+    public interface JSONConverter {
        Object toJSONObject(final String jsonString);
        String toJSONString(final Object jsonObject);
-   }
+    }
+
     private static JSONConverter mJSONConverter = null;
 
     public static void setJSONConverter(final JSONConverter jsonConverter) {
@@ -173,10 +265,27 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
             return (Object) jsonString;
         return mJSONConverter.toJSONObject(jsonString);
     }
+
     private static String toJSONString(final Object jsonObject) {
         if (mJSONConverter == null)
             return (String) jsonObject;
         return mJSONConverter.toJSONString(jsonObject);
+    }
+
+    // Notifications
+    public interface NotificationHandler {
+       void onNewNofification(final Object session, final Object jsonObject);
+    }
+
+    private static NotificationHandler mNotificationHandler = null;
+
+    public static void setNotificationHandler(final NotificationHandler notificationHandler) {
+        mNotificationHandler = notificationHandler;
+    }
+
+    private static void callNotificationHandler(final Object session, final Object jsonObject) {
+        if (mNotificationHandler != null)
+            mNotificationHandler.onNewNofification(session, jsonObject);
     }
 
     static final class Obj {
@@ -239,7 +348,7 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 }
 %typemap(argout) GA_json** {
     if (*$1) {
-        $result = create_json(jenv, *$1);
+        $result = create_json(jenv, *$1, 1);
     }
 }
 %typemap(in) GA_json* {
@@ -317,8 +426,8 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 }
 %enddef
 
-%java_opaque_struct(GA_session, 1)
-%java_opaque_struct(GA_twofactor_call, 2)
+%java_opaque_struct(GA_session, GA_SDK_SWIG_SESSION_ID)
+%java_opaque_struct(GA_twofactor_call, GA_SDK_SWIG_TWOFACTOR_CALL_ID)
 
 %returns_void__(GA_ack_system_message)
 %returns_void__(GA_change_settings_pricing_source)

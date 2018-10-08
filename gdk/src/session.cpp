@@ -1,10 +1,10 @@
 #include <string>
 #include <vector>
 
-#include "include/exception.hpp"
 #include "include/session.hpp"
 
 #include "autobahn_wrapper.hpp"
+#include "exception.hpp"
 #include "ga_session.hpp"
 #include "logging.hpp"
 
@@ -36,8 +36,8 @@ namespace sdk {
             throw reconnect_error();
         } catch (const autobahn::call_error& e) {
             try {
-                const auto what = e.what();
-                GDK_LOG_SEV(log_level::debug) << "server exception:" << what;
+                std::pair<std::string, std::string> details = get_error_details(e);
+                GDK_LOG_SEV(log_level::debug) << "server exception (" << details.first << "):" << details.second;
             } catch (const std::exception&) {
             }
             throw;
@@ -53,15 +53,21 @@ namespace sdk {
         __builtin_unreachable();
     }
 
-    void session::connect(network_parameters params, bool debug)
+    void session::connect(std::shared_ptr<network_parameters> params, bool debug)
     {
         exception_wrapper([&] {
-            m_impl = std::make_unique<ga_session>(std::move(params), debug);
+            m_impl = std::make_unique<ga_session>(params, debug);
             m_impl->connect();
+            m_impl->set_notification_handler(m_notification_handler, m_notification_context);
         });
     }
 
-    session::session() = default;
+    session::session()
+        : m_notification_handler(nullptr)
+        , m_notification_context(nullptr)
+        , m_impl()
+    {
+    }
     session::~session() = default;
 
     void session::disconnect() { m_impl.reset(); }
@@ -134,10 +140,11 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_transactions(subaccount, page_id); });
     }
 
-    void session::subscribe(const std::string& topic, std::function<void(const std::string& output)> callback)
+    void session::set_notification_handler(GA_notification_handler handler, void* context)
     {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        exception_wrapper([&] { m_impl->subscribe(topic, callback); });
+        GA_SDK_RUNTIME_ASSERT(m_impl == nullptr);
+        m_notification_handler = handler;
+        m_notification_context = context;
     }
 
     nlohmann::json session::get_receive_address(uint32_t subaccount, const std::string& addr_type)
@@ -262,7 +269,7 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper(
-            [&] { return create_ga_transaction(*this, m_impl->get_network_parameters(), details); });
+            [&] { return create_ga_transaction(*this, *m_impl->get_network_parameters(), details); });
     }
 
     nlohmann::json session::sign_transaction(const nlohmann::json& details)

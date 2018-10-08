@@ -1,28 +1,16 @@
 #include "include/twofactor.hpp"
 
 #include "containers.hpp"
+#include "exception.hpp"
 
 namespace {
 // Server gives 3 attempts to get the twofactor code right before it's invalidated
 static const uint32_t TWO_FACTOR_ATTEMPTS = 3;
 
 // Return true if the error represents 'two factor authentication required'
-static std::string get_twofactor_error_message(const autobahn::call_error& e)
-{
-    std::string message;
-    const auto& args = e.get_args();
-    if (args.size() >= 2) {
-        std::string uri;
-        args[0].convert(uri);
-        if (boost::algorithm::ends_with(uri, "#auth")) {
-            args[1].convert(message);
-        }
-    }
-    return message;
-}
 static bool is_twofactor_invalid_code_error(const autobahn::call_error& e)
 {
-    return get_twofactor_error_message(e) == "Invalid Two Factor Authentication Code";
+    return ga::sdk::get_error_details(e).second == "Invalid Two Factor Authentication Code";
 }
 } // namespace
 
@@ -146,7 +134,7 @@ nlohmann::json GA_twofactor_call::get_status() const
 // Enable 2FA
 GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
     ga::sdk::session& session, const std::string& method_to_update, const nlohmann::json& details)
-    : GA_twofactor_call(session, "init_enable_" + method_to_update)
+    : GA_twofactor_call(session, "enable_2fa")
     , m_current_config(session.get_twofactor_config())
     , m_method_to_update(method_to_update)
     , m_details(details)
@@ -177,6 +165,7 @@ GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
                 return;
             }
         }
+        m_twofactor_data = { { "method", m_method_to_update } };
     } else {
         if (set_email) {
             // The caller set confirmed=true but enabled=false: they only want
@@ -220,14 +209,9 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
         const std::string data = ga::sdk::json_get_value(m_details, "data");
         m_session.activate_email(m_code);
         return state_type::done;
-    } else if (boost::starts_with(m_action, "init_enable_")) {
-        if (m_method_to_update == "gauth") {
-            // gauth doesn't have an init_enable step, as its combined into the
-            // enable call. So just store any current 2fa data to pass to the
-            // enable call along with the gauth code that we will request next
-            std::swap(m_init_twofactor_data, m_twofactor_data);
-        } else {
-            // Otherwise call the init_enable method with the provided data
+    } else if (m_action == "enable_2fa") {
+        if (m_method_to_update != "gauth") {
+            // gauth doesn't have an init_enable step
             const std::string data = ga::sdk::json_get_value(m_details, "data");
             m_session.init_enable_twofactor(m_method_to_update, data, m_twofactor_data);
         }
@@ -238,7 +222,7 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
         // method using its code (which proves the user got a code from the
         // method being enabled)
         if (m_method_to_update == "gauth") {
-            m_session.enable_gauth(m_code, m_init_twofactor_data);
+            m_session.enable_gauth(m_code, m_twofactor_data);
         } else {
             m_session.enable_twofactor(m_method_to_update, m_code);
         }
