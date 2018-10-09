@@ -99,8 +99,7 @@ class EditScreenLockSettings: UIViewController {
                                 }
                             }
                             KeychainHelper.savePassword(service: "bioPassword", account: "user", data: password)
-                            KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
-                            self.performSegue(withIdentifier: "improveSecurity", sender: self)
+                            KeychainHelper.savePassword(service: "bioData", account: "user", data: result!)
                         }.catch { error in
                             print("setPin failed")
                     }
