@@ -30,6 +30,7 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
     var labels: Array<UILabel> = Array<UILabel>()
     var indicator: UIView? = nil
     var hideButton = false
+    var topTitle = TitleText.email
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +39,11 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
             label.isHidden = true
         }
         backButton.isHidden = hideButton
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        topLabel.text = topTitle.rawValue
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -139,4 +145,11 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
         self.navigationController?.popViewController(animated: true)
     }
 
+}
+
+public enum TitleText: String {
+    case email = "Enter code sent to your email"
+    case sms = "Enter code received via SMS"
+    case phone = "Enter code received via phone call"
+    case gauth = "Enter your Google Authenticator code"
 }

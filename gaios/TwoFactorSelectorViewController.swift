@@ -67,7 +67,18 @@ class TwoFactorSlectorViewController: UIViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
+            let pair = sender as! (TwoFactorCall, String)
+            let method = pair.1
+            if(method == "sms") {
+                nextController.topTitle = TitleText.sms
+            } else if (method == "phone") {
+                nextController.topTitle = TitleText.phone
+            } else if (method == "email") {
+                nextController.topTitle = TitleText.email
+            } else if (method == "gauth") {
+                nextController.topTitle = TitleText.gauth
+            }
+            nextController.twoFactor = pair.0
             nextController.hideButton = true
         }
     }
@@ -76,19 +87,24 @@ class TwoFactorSlectorViewController: UIViewController {
         let button = sender as! UIButton
         print("button " + String(button.tag) + " clicked")
         do {
+        var method = ""
         if(button.title(for: .normal) == "Email") {
             try twoFactor?.requestCode(method: "email")
+            method = "email"
         } else if (button.title(for: .normal) == "SMS") {
             try twoFactor?.requestCode(method: "sms")
+            method = "sms"
         } else if (button.title(for: .normal) == "Google Authenticator") {
             try twoFactor?.requestCode(method: "gauth")
+            method = "gauth"
         } else if (button.title(for: .normal) == "Phone Call") {
             try twoFactor?.requestCode(method: "phone")
+            method = "phone"
         }
             let status = try twoFactor?.getStatus()
             let parsed = status!["status"] as! String
             if(parsed == "resolve_code") {
-                self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                self.performSegue(withIdentifier: "twoFactor", sender: (twoFactor, method))
             }
         } catch {
             print("couldn't get status")
