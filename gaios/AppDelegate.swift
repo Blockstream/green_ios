@@ -82,8 +82,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     static func removeKeychainData() {
+        removeBioKeychainData()
+        removePinKeychainData()
+    }
+
+    static func removeBioKeychainData() {
+        KeychainHelper.removePassword(service: "bioData", account: "user")
+        KeychainHelper.removePassword(service: "bioPassword", account: "user")
+    }
+
+    static func removePinKeychainData() {
         KeychainHelper.removePassword(service: "pinData", account: "user")
-        KeychainHelper.removePassword(service: "password", account: "user")
+        KeychainHelper.removePassword(service: "pinPassword", account: "user")
     }
 
     func connect() {
@@ -106,7 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
         if(pinData != nil) {
-            let password = KeychainHelper.loadPassword(service: "password", account: "user")
+            let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
             if(password != nil) {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
