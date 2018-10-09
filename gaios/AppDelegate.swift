@@ -114,8 +114,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DispatchQueue.global(qos: .background).async {
             self.connect()
         }
+        let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
-        if(pinData != nil) {
+        if(bioData != nil) {
             let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
             if(password != nil) {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -125,16 +126,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self.window?.rootViewController = firstVC
                 return true
             }
+        } else if(pinData != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
             firstVC.pinData = pinData!
             firstVC.loginMode = true
             self.window?.rootViewController = firstVC
-        } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
-            self.window?.rootViewController = firstVC
+            return true
         }
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
+        self.window?.rootViewController = firstVC
+
         return true
     }
 

@@ -173,6 +173,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func resetEverything() {
+        confirmPin = false
         pinCode = ""
         updateView()
     }
