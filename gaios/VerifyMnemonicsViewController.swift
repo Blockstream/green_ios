@@ -182,7 +182,12 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                 updateLabels()
             }
         } else {
-            //ALERT
+            let size = CGSize(width: 30, height: 30)
+            startAnimating(size, message: "Wrong answer, try again!", messageFont: nil, type: NVActivityIndicatorType.blank)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
+                self.stopAnimating()
+                self.navigationController?.popViewController(animated: true)
+            }
         }
     }
 
