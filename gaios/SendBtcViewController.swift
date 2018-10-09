@@ -79,13 +79,34 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.allowsSelection = true
         navigationController?.navigationBar.tintColor = UIColor.white
         hideKeyboardWhenTappedAround()
+        textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+    }
+
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        updateButton()
     }
     
+    func updateButton() {
+        if(textfield.text != nil && textfield.text != "") {
+            //bottomButton.layer.sublayers?.removeFirst()
+            if ((bottomButton.layer.sublayers?.count)! == 1) {
+                bottomButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+            }
+            bottomButton.isUserInteractionEnabled = true
+        } else {
+            if ((bottomButton.layer.sublayers?.count)! > 1) {
+               bottomButton.layer.sublayers?.removeFirst()
+            }
+            bottomButton.backgroundColor = UIColor.customTitaniumLight()
+            bottomButton.isUserInteractionEnabled = false
+        }
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = true
         bottomButton.layoutIfNeeded()
-        bottomButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        updateButton()
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         scan()
     }
@@ -102,6 +123,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let wallet = wallets[indexPath.row]
         textfield.text = wallet.address
+        updateButton()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
