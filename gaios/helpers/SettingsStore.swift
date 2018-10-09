@@ -194,7 +194,14 @@ class SettingsStore {
         var securitySettings = Array<SettingsItem>()
         let recovery = allSettings[settingsRecovery] == nil ? defaultRecoverySeed() : allSettings[settingsRecovery]
         let screenLock = allSettings[settingsScreenLock] == nil ? defaultScreenLock() : allSettings[settingsScreenLock]
-        let twoFactor = allSettings[settingsTwoFactor] == nil ? defaultTwoFactor() : allSettings[settingsTwoFactor]
+
+        var twoFactor: SettingsItem? = nil
+        if(AccountStore.shared.isTwoFactorEnabled()) {
+            twoFactor = SettingsItem(settingsName: settingsTwoFactor, property:[String : String](), text: securityTwoFactor, secondaryText: "Enabled")
+        } else {
+            twoFactor = defaultTwoFactor()
+        }
+
         let support = allSettings[settingsSupport] == nil ? defaultSupport() : allSettings[settingsSupport]
         securitySettings.append(recovery!)
         securitySettings.append(screenLock!)

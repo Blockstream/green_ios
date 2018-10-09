@@ -264,6 +264,9 @@ class AccountStore {
 
     func isEmailEnabled() -> Bool {
         let config = getTwoFactorConfig()
+        if(config == nil) {
+            return false
+        }
         let email = config!["email"] as! [String: Any]
         if(email["enabled"] as! Int == 1 && email["confirmed"] as! Int == 1) {
             return true
@@ -273,6 +276,9 @@ class AccountStore {
 
     func isSMSEnabled() -> Bool {
         let config = getTwoFactorConfig()
+        if(config == nil) {
+            return false
+        }
         let sms = config!["sms"] as! [String: Any]
         if(sms["enabled"] as! Int == 1 && sms["confirmed"] as! Int == 1) {
             return true
@@ -282,6 +288,9 @@ class AccountStore {
 
     func isPhoneEnabled() -> Bool {
         let config = getTwoFactorConfig()
+        if(config == nil) {
+            return false
+        }
         let phone = config!["phone"] as! [String: Any]
         if(phone["enabled"] as! Int == 1 && phone["confirmed"] as! Int == 1) {
             return true
@@ -291,11 +300,23 @@ class AccountStore {
 
     func isGauthEnabled() -> Bool {
         let config = getTwoFactorConfig()
+        if(config == nil) {
+            return false
+        }
         let gauth = config!["gauth"] as! [String: Any]
         if(gauth["enabled"] as! Int == 1 && gauth["confirmed"] as! Int == 1) {
             return true
         }
         return false
+    }
+
+    func isTwoFactorEnabled() -> Bool {
+        let config = getTwoFactorConfig()
+        if(config == nil) {
+            return false
+        }
+        let enabled = config!["any_enabled"] as! Bool
+        return enabled
     }
 
     func initializeAccountStore() {
