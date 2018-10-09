@@ -28,6 +28,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     var setPinMode: Bool = false
     var editPinMode: Bool = false
+    var loginMode: Bool = false
     var removePinMode: Bool = false
     var confirmPin: Bool = false
 
@@ -70,7 +71,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             return
         }
 
-        if (setPinMode == false) {
+        if (loginMode == true) {
             let size = CGSize(width: 30, height: 30)
             startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
             DispatchQueue.global(qos: .background).async {
@@ -143,15 +144,31 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                     }
                 }
                 return
-            } else if (removePinMode == true) {
             }
             confirmPin = true
             pinConfirm = pinCode
             pinCode = ""
             updateView()
-            print("olla")
             //show confirm pin
             topLabel.text = "Confirm PIN"
+        } else if (removePinMode == true) {
+            let pass = KeychainHelper.loadPassword(service: "pinPassword", account: "user")
+            if (pass == pinCode) {
+                AppDelegate.removePinKeychainData()
+                let settings = SettingsStore.shared.getScreenLockSetting()
+                if (settings == ScreenLock.Pin) {
+                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.None)
+                } else if (settings == ScreenLock.all) {
+                    let bioID = BiometricIDAuth()
+                    if (bioID.biometricType() == BiometricType.faceID) {
+                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.FaceID)
+                    } else if (bioID.biometricType() == BiometricType.touchID) {
+                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
+                    }
+                }
+            }
+            self.navigationController?.popViewController(animated: true)
+            return
         }
     }
 
@@ -207,7 +224,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
-        if(setPinMode) {
+        if(setPinMode || editPinMode) {
             self.navigationController?.popViewController(animated: true)
         } else {
             self.performSegue(withIdentifier: "entrance", sender: nil)

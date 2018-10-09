@@ -53,7 +53,7 @@ class EditScreenLockSettings: UIViewController {
     }
 
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
-        if (sender.isOn) {
+        if (!sender.isOn) {
             bioID.authenticateUser { (message) in
                 if(message == nil) {
                     let settings = SettingsStore.shared.getScreenLockSetting()
@@ -113,9 +113,9 @@ class EditScreenLockSettings: UIViewController {
 
     @IBAction func pinSwitched(_ sender: UISwitch) {
         if (sender.isOn) {
-            self.performSegue(withIdentifier: "pinConfirm", sender: "remove")
-        } else {
             self.performSegue(withIdentifier: "pinConfirm", sender: "set")
+        } else {
+            self.performSegue(withIdentifier: "pinConfirm", sender: "remove")
         }
     }
 

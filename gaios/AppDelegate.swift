@@ -128,6 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
             firstVC.pinData = pinData!
+            firstVC.loginMode = true
             self.window?.rootViewController = firstVC
         } else {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
