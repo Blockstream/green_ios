@@ -54,7 +54,7 @@ class AccountStore {
     func getFeeRateHigh() -> UInt64 {
         do {
             let json = try getSession().getFeeEstimates()
-            let estimates = json!["estimates"] as! NSArray
+            let estimates = json!["fees"] as! NSArray
             let result = estimates[2] as! UInt64
             return result
         } catch {
@@ -66,7 +66,7 @@ class AccountStore {
     func getFeeRateMedium() -> UInt64 {
         do {
             let json = try getSession().getFeeEstimates()
-            let estimates = json!["estimates"] as! NSArray
+            let estimates = json!["fees"] as! NSArray
             let result = estimates[6] as! UInt64
             return result
         } catch {
@@ -78,7 +78,7 @@ class AccountStore {
     func getFeeRateLow() -> UInt64 {
         do {
             let json = try getSession().getFeeEstimates()
-            let estimates = json!["estimates"] as! NSArray
+            let estimates = json!["fees"] as! NSArray
             let result = estimates[12] as! UInt64
             return result
         } catch {
