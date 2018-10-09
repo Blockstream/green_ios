@@ -25,12 +25,17 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var pinCode: String = ""
     var pinData: String = ""
     var pinConfirm: String = ""
+    var bioData: String = ""
+    var password: String = ""
 
     var setPinMode: Bool = false
     var editPinMode: Bool = false
     var loginMode: Bool = false
     var removePinMode: Bool = false
     var confirmPin: Bool = false
+    var bioAuth: Bool = false
+    let bioID = BiometricIDAuth()
+
 
     var views: Array<UIView> = Array<UIView>()
     var labels: Array<UILabel> = Array<UILabel>()
@@ -52,6 +57,33 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateView()
+        if (bioAuth) {
+            bioID.authenticateUser { (message) in
+                if(message == nil) {
+                    let size = CGSize(width: 30, height: 30)
+                    self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+                    DispatchQueue.global(qos: .background).async {
+                        wrap { return try getSession().loginWithPin(pin: self.password, pin_data: self.bioData) }.done { _ in
+                            DispatchQueue.main.async {
+                                self.stopAnimating()
+                                AccountStore.shared.initializeAccountStore()
+                                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                            }
+                            }.catch { error in
+                                print("incorrect PIN ", error)
+                                DispatchQueue.main.async {
+                                    NVActivityIndicatorPresenter.sharedInstance.setMessage("Bio Login Failed")
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                    self.stopAnimating()
+                                }
+                        }
+                    }
+                } else {
+                    //error
+                }
+            }
+        }
     }
 
     func updateAttemptsLabel() {

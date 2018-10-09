@@ -116,16 +116,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
-        if(bioData != nil) {
-            let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
-            if(password != nil) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
-                firstVC.password = password!
-                firstVC.pinData = bioData!
-                self.window?.rootViewController = firstVC
-                return true
-            }
+        let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
+        if (bioData != nil && pinData != nil && password != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+            firstVC.pinData = pinData!
+            firstVC.loginMode = true
+            firstVC.bioData = bioData!
+            firstVC.password = password!
+            firstVC.bioAuth = true
+            self.window?.rootViewController = firstVC
+            return true
+        } else if(bioData != nil && password != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
+            firstVC.password = password!
+            firstVC.pinData = bioData!
+            self.window?.rootViewController = firstVC
+            return true
         } else if(pinData != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
