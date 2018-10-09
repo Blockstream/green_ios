@@ -123,7 +123,12 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             }
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
+                                let settings = SettingsStore.shared.getScreenLockSetting()
+                                if (settings == ScreenLock.None) {
+                                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
+                                } else if (settings == ScreenLock.FaceID || settings == ScreenLock.TouchID) {
+                                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
+                                }
                                 KeychainHelper.savePassword(service: "pinPassword", account: "user", data: self.pinCode)
                                 KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
                                 if(self.editPinMode == true) {

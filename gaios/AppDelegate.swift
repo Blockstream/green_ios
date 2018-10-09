@@ -122,7 +122,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
                 firstVC.password = password!
-                firstVC.pinData = pinData!
+                firstVC.pinData = bioData!
                 self.window?.rootViewController = firstVC
                 return true
             }
