@@ -4821,6 +4821,7 @@
                         <outlet property="bioAuthLabel" destination="Y7S-LK-Jbq" id="x9X-h2-Jcu"/>
                         <outlet property="bioSwitch" destination="Iml-sS-CpW" id="tAT-I7-hNs"/>
                         <outlet property="pinSwitch" destination="IPB-IC-lO0" id="AIg-Vt-3bc"/>
+                        <segue destination="kWT-Yh-qgi" kind="show" identifier="pinConfirm" id="Ssh-xP-Hwg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="asr-4L-aPd" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -4865,9 +4866,6 @@
         <namedColor name="customTitaniumDark">
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -4880,13 +4878,13 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="wnz-58-ghj"/>
-        <segue reference="QaF-5U-DEq"/>
-        <segue reference="yIW-Ly-oWL"/>
+        <segue reference="Bxl-Iw-aPv"/>
+        <segue reference="ho6-WN-AfT"/>
         <segue reference="Iy9-iC-rNo"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>
-        <segue reference="ZM7-6x-yYR"/>
-        <segue reference="4hv-u2-zDY"/>
+        <segue reference="t6L-Yh-lPv"/>
+        <segue reference="Ssh-xP-Hwg"/>
     </inferredMetricsTieBreakers>
 </document>

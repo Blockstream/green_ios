@@ -32,6 +32,10 @@ class EditScreenLockSettings: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        updateValues()
+    }
+
+    func updateValues() {
         let settings = SettingsStore.shared.getScreenLockSetting()
         if(settings == ScreenLock.None) {
             bioSwitch.isOn = false
@@ -49,9 +53,83 @@ class EditScreenLockSettings: UIViewController {
     }
 
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
+        if (sender.isOn) {
+            bioID.authenticateUser { (message) in
+                if(message == nil) {
+                    let settings = SettingsStore.shared.getScreenLockSetting()
+                    if(settings == ScreenLock.FaceID || settings == ScreenLock.TouchID) {
+                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.None)
+                    } else if (settings == ScreenLock.all) {
+                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
+                    }
+                    //remove keychaindata
+                    AppDelegate.removeBioKeychainData()
+                    self.updateValues()
+                } else {
+                    print("error authenticating")
+                }
+            }
+        } else {
+            bioID.authenticateUser { (message) in
+                if(message == nil) {
+                    let password = String.random(length: 14)
+                    let deviceid = String.random(length: 14)
+                    let mnemonics = getAppDelegate().getMnemonicWordsString()
+                    wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: password, device: deviceid) }
+                        .done { (result: String?) in
+                            guard result != nil else {
+                                return
+                            }
+                            if(self.bioID.canEvaluatePolicy()) {
+                                if(self.bioID.biometricType() == BiometricType.faceID) {
+                                    let settings = SettingsStore.shared.getScreenLockSetting()
+                                    if(settings == ScreenLock.None) {
+                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.FaceID)
+                                    } else if (settings == ScreenLock.Pin) {
+                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
+
+                                    }
+                                } else if (self.bioID.biometricType() == BiometricType.touchID) {
+                                    let settings = SettingsStore.shared.getScreenLockSetting()
+                                    if(settings == ScreenLock.None) {
+                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
+                                    } else if (settings == ScreenLock.Pin) {
+                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
+                                    }
+                                }
+                            }
+                            KeychainHelper.savePassword(service: "bioPassword", account: "user", data: password)
+                            KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
+                            self.performSegue(withIdentifier: "improveSecurity", sender: self)
+                        }.catch { error in
+                            print("setPin failed")
+                    }
+                } else {
+                    //here?
+                }
+            }
+        }
     }
 
     @IBAction func pinSwitched(_ sender: UISwitch) {
+        if (sender.isOn) {
+            self.performSegue(withIdentifier: "pinConfirm", sender: "remove")
+        } else {
+            self.performSegue(withIdentifier: "pinConfirm", sender: "set")
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? PinLoginViewController {
+            let todo = sender as! String
+            if (todo == "remove") {
+                nextController.removePinMode = true
+                nextController.editPinMode = true
+            } else if (todo == "set") {
+                nextController.editPinMode = true
+                nextController.setPinMode = true
+            }
+        }
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

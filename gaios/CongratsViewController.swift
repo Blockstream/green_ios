@@ -66,8 +66,8 @@ class CongratsViewController: UIViewController {
                                 SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
                             }
                         }
-                        KeychainHelper.savePassword(service: "password", account: "user", data: password)
-                        KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
+                        KeychainHelper.savePassword(service: "bioPassword", account: "user", data: password)
+                        KeychainHelper.savePassword(service: "bioData", account: "user", data: result!)
                         self.performSegue(withIdentifier: "improveSecurity", sender: self)
                     }.catch { error in
                         print("setPin failed")

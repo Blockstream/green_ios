@@ -27,6 +27,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var pinConfirm: String = ""
 
     var setPinMode: Bool = false
+    var editPinMode: Bool = false
+    var removePinMode: Bool = false
     var confirmPin: Bool = false
 
     var views: Array<UIView> = Array<UIView>()
@@ -96,7 +98,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
                 }
             }
-        } else {
+        } else if (setPinMode == true) {
             if (confirmPin == true) {
                 //set pin
                 print("olla1")
@@ -121,8 +123,14 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             DispatchQueue.main.async {
                                 self.stopAnimating()
                                 SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
+                                KeychainHelper.savePassword(service: "pinPassword", account: "user", data: self.pinCode)
                                 KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
-                                self.performSegue(withIdentifier: "improveSecurity", sender: self)
+                                if(self.editPinMode == true) {
+                                    self.navigationController?.popViewController(animated: true)
+                                } else {
+                                    self.performSegue(withIdentifier: "improveSecurity", sender: self)
+
+                                }
                             }
                         }.catch { error in
                             print("setPin failed")
@@ -135,6 +143,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                     }
                 }
                 return
+            } else if (removePinMode == true) {
             }
             confirmPin = true
             pinConfirm = pinCode
