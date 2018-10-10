@@ -123,15 +123,6 @@ class ReceiveBtcViewController: UIViewController {
 
     @objc func textFieldDidChange(_ textField: UITextField) {
         let btc_amount: String = textField.text!
-
-        guard let btc_amount_double = Double(btc_amount) else {
-            if (selectedType == TransactionType.BTC) {
-                estimateLabel.text = "~0.00 " + SettingsStore.shared.getCurrencyString()
-            } else {
-                estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings()
-            }
-            return
-        }
         updateEstimate()
     }
 
