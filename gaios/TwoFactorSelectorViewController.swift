@@ -45,7 +45,7 @@ class TwoFactorSlectorViewController: UIViewController {
                 } else if (method == "gauth") {
                     buttons[index].setTitle("Google Authenticator", for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "gauth")
-                } else if (method == "call") {
+                } else if (method == "phone") {
                     buttons[index].setTitle("Phone Call", for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "phoneCall")
                 }
