@@ -53,7 +53,6 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
 
         tableView.tableFooterView = UIView()
         tableView.register(nib, forCellReuseIdentifier: "walletCard")
-        tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.tableHeaderView = UIView(frame: CGRect(origin: tableView.frame.origin, size: CGSize(width: 0.0, height: 18)))
         let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)

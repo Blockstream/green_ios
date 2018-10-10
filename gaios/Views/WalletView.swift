@@ -29,9 +29,15 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             cell.address.text = item.address
             cell.amount.textColor = UIColor.white
         }
+        cell.selectionStyle = .none
         cell.date.text = item.date
         cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0)
         return cell;
+    }
+
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item: TransactionItem = items.reversed()[indexPath.row]
+        delegate?.showTransaction(tx: item)
     }
 
     
@@ -85,6 +91,11 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 let transaction = tx as! [String : Any]
                 let satoshi:Int = transaction["satoshi"] as! Int
                 let hash = transaction["txhash"] as! String
+                let fee = transaction["fee"] as! UInt32
+                let size = transaction["size"] as! UInt32
+                let blockheight = transaction["block_height"] as! UInt32
+                let memo = transaction["memo"] as! String
+
                 let dateString = transaction["created_at"] as! String
                 let type = transaction["type"] as! String
                 let dateFormatter = DateFormatter()
@@ -99,7 +110,9 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                     counterparty = adressees[0]
                 }
                 let formatedTransactionDate = Date.dayMonthYear(date: date)
-                self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type))
+                //self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, ))
+                let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date)
+                self.items.append(item)
             }
             print("success")
         }.ensure {
@@ -413,7 +426,8 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         transactionTableView.dataSource = self
         transactionTableView.tableFooterView = UIView()
         transactionTableView.register(nib, forCellReuseIdentifier: "transactionCell")
-        transactionTableView.allowsSelection = false
+        transactionTableView.allowsSelection = true
+        transactionTableView.isUserInteractionEnabled = true
         transactionTableView.separatorColor = UIColor.customTitaniumLight()
         //prepareWalletHeaderView()
         
@@ -1015,5 +1029,6 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
 protocol WalletViewDelegate: class {
     func cardViewPresented(cardView: CardView)
     func cardViewDismissed(cardView: CardView)
+    func showTransaction(tx :TransactionItem)
 }
 

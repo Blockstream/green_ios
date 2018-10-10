@@ -80,8 +80,14 @@ class TransactionItem: Codable {
     var date: String
     var btc_amount: Double
     var type: String
+    var hash: String
+    var blockheight: UInt32
+    var fee: UInt32
+    var size: UInt32
+    var memo: String
+    var dateRaw: Date
 
-    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double, type: String) {
+    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double, type: String, hash: String, blockheight: UInt32, fee: UInt32, size: UInt32, memo: String, dateRaw: Date) {
         self.timestamp = timestamp
         self.address = address
         self.amount = amount
@@ -89,5 +95,11 @@ class TransactionItem: Codable {
         self.date = date
         self.btc_amount = btc
         self.type = type
+        self.hash = hash
+        self.blockheight = blockheight
+        self.fee = fee
+        self.size = size
+        self.memo = memo
+        self.dateRaw = dateRaw
     }
 }

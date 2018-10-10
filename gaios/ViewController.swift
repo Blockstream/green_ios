@@ -2,7 +2,7 @@
 import UIKit
 import PromiseKit
 
-class ViewController: UIViewController, WalletViewDelegate{
+class ViewController: UIViewController, WalletViewDelegate {
 
     @IBOutlet weak var walletHeaderView: UIView!
     @IBOutlet weak var walletView: WalletView!
@@ -36,6 +36,9 @@ class ViewController: UIViewController, WalletViewDelegate{
         super.viewDidAppear(animated)
     }
 
+    func showTransaction(tx: TransactionItem) {
+        self.performSegue(withIdentifier: "txDetails", sender: tx)
+    }
 
     func reloadWallets() {
 
@@ -130,6 +133,10 @@ class ViewController: UIViewController, WalletViewDelegate{
         if let nextController = segue.destination as? ReceiveBtcViewController {
             nextController.receiveAddress = (walletView.presentedCardView as! ColoredCardView).addressLabel.text
         }
+        if let nextController = segue.destination as? TransactionDetailViewController {
+            nextController.transaction = sender as? TransactionItem
+        }
+
         hideButtons()
     }
 

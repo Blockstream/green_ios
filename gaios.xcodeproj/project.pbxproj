@@ -57,6 +57,7 @@
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
 		09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B342166F499009BABFE /* EditTwoFactorViewController.swift */; };
 		09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* EditScreenLockSettings.swift */; };
+		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
@@ -163,6 +164,7 @@
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
 		09546B342166F499009BABFE /* EditTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTwoFactorViewController.swift; sourceTree = "<group>"; };
 		09546B3621686053009BABFE /* EditScreenLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScreenLockSettings.swift; sourceTree = "<group>"; };
+		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
@@ -377,6 +379,7 @@
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
 				092C7BC820D238BD00F90DF2 /* ViewController.swift */,
+				09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */,
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
 				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
 				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
@@ -733,6 +736,7 @@
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */,
 				676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */,
+				09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
