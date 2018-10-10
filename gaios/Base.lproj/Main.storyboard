@@ -2803,7 +2803,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sZk-ql-Cwp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2329" y="-850"/>
+            <point key="canvasLocation" x="2361" y="-825"/>
         </scene>
         <!--Improve Security View Controller-->
         <scene sceneID="TZe-Ek-gbT">
@@ -3440,7 +3440,7 @@
                     <connections>
                         <outlet property="doneButton" destination="6Ka-HY-djy" id="tPz-pP-59Y"/>
                         <outlet property="topLabel" destination="WZL-Fg-xk4" id="t9y-F2-vWH"/>
-                        <segue destination="iqZ-ST-Be8" kind="presentation" identifier="mainMenu" id="M6f-wC-TXW"/>
+                        <segue destination="mQJ-kl-M0B" kind="show" identifier="next" id="z3Q-3P-P3d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="peA-Kf-YoL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -4973,6 +4973,71 @@
             </objects>
             <point key="canvasLocation" x="11874.375" y="-1880.2816901408451"/>
         </scene>
+        <!--Welcome Back View Controller-->
+        <scene sceneID="2VX-q4-ks6">
+            <objects>
+                <viewController id="mQJ-kl-M0B" customClass="WelcomeBackViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qjB-BT-M7K">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FxU-28-C3U">
+                                <rect key="frame" x="16" y="414" width="288" height="42"/>
+                                <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="8oa-50-cXt"/>
+                                </constraints>
+                                <state key="normal" title="Enable Face ID">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="keb-Y3-E1o">
+                                <rect key="frame" x="16" y="476" width="288" height="42"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="k8b-bG-AuP"/>
+                                </constraints>
+                                <state key="normal" title="Set PIN">
+                                    <color key="titleColor" name="customMatrixGreen"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome back to your bitcoin wallet! " lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rdl-rz-FFn">
+                                <rect key="frame" x="30" y="60" width="260" height="158"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="44"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="72c-Oz-4s2" firstAttribute="trailing" secondItem="keb-Y3-E1o" secondAttribute="trailing" constant="16" id="7IX-Rj-K7m"/>
+                            <constraint firstItem="72c-Oz-4s2" firstAttribute="trailing" secondItem="FxU-28-C3U" secondAttribute="trailing" constant="16" id="EK3-zc-Ahc"/>
+                            <constraint firstItem="FxU-28-C3U" firstAttribute="leading" secondItem="72c-Oz-4s2" secondAttribute="leading" constant="16" id="Mtt-wZ-97f"/>
+                            <constraint firstItem="keb-Y3-E1o" firstAttribute="leading" secondItem="72c-Oz-4s2" secondAttribute="leading" constant="16" id="Vgo-5m-GLW"/>
+                            <constraint firstItem="rdl-rz-FFn" firstAttribute="top" secondItem="72c-Oz-4s2" secondAttribute="top" constant="40" id="aEn-9A-dKd"/>
+                            <constraint firstItem="rdl-rz-FFn" firstAttribute="leading" secondItem="72c-Oz-4s2" secondAttribute="leading" constant="30" id="akA-I6-XlV"/>
+                            <constraint firstItem="72c-Oz-4s2" firstAttribute="trailing" secondItem="rdl-rz-FFn" secondAttribute="trailing" constant="30" id="oUX-2g-Ejq"/>
+                            <constraint firstItem="keb-Y3-E1o" firstAttribute="top" secondItem="FxU-28-C3U" secondAttribute="bottom" constant="20" id="tWE-Bz-99i"/>
+                            <constraint firstItem="72c-Oz-4s2" firstAttribute="bottom" secondItem="keb-Y3-E1o" secondAttribute="bottom" constant="50" id="wbd-Dp-hKV"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="72c-Oz-4s2"/>
+                    </view>
+                    <connections>
+                        <segue destination="kWT-Yh-qgi" kind="show" identifier="pin" id="wGg-ef-t0T"/>
+                        <segue destination="iqZ-ST-Be8" kind="show" identifier="mainMenu" id="Pqg-Zu-9Zd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="O9x-P2-kr0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-418" y="69"/>
+        </scene>
     </scenes>
     <resources>
         <image name="backarrow" width="60" height="96"/>
@@ -5008,12 +5073,18 @@
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -5021,16 +5092,16 @@
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
+            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumLight">
+            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumLight">
+            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -5041,13 +5112,13 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="wnz-58-ghj"/>
-        <segue reference="Bxl-Iw-aPv"/>
+        <segue reference="Pqg-Zu-9Zd"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="Iy9-iC-rNo"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>
-        <segue reference="t6L-Yh-lPv"/>
-        <segue reference="Ssh-xP-Hwg"/>
+        <segue reference="ZM7-6x-yYR"/>
+        <segue reference="wGg-ef-t0T"/>
     </inferredMetricsTieBreakers>
 </document>
