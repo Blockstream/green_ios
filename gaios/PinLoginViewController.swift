@@ -32,6 +32,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var editPinMode: Bool = false
     var loginMode: Bool = false
     var removePinMode: Bool = false
+    var restoreMode: Bool = false
+
     var confirmPin: Bool = false
     var bioAuth: Bool = false
     let bioID = BiometricIDAuth()
@@ -165,9 +167,10 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                                 KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
                                 if(self.editPinMode == true) {
                                     self.navigationController?.popViewController(animated: true)
+                                } else if (self.restoreMode == true) {
+                                    self.performSegue(withIdentifier: "mainMenu", sender: nil)
                                 } else {
                                     self.performSegue(withIdentifier: "improveSecurity", sender: self)
-
                                 }
                             }
                         }.catch { error in

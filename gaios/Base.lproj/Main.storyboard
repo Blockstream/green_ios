@@ -4990,6 +4990,9 @@
                                 <state key="normal" title="Enable Face ID">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="bioAuthenticateClicked:" destination="mQJ-kl-M0B" eventType="touchUpInside" id="7eb-Wd-S2k"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="keb-Y3-E1o">
                                 <rect key="frame" x="16" y="476" width="288" height="42"/>
@@ -5007,6 +5010,9 @@
                                         <real key="value" value="1"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="setPinClicked:" destination="mQJ-kl-M0B" eventType="touchUpInside" id="UPR-Ky-j2x"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome back to your bitcoin wallet! " lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rdl-rz-FFn">
                                 <rect key="frame" x="30" y="60" width="260" height="158"/>
@@ -5030,13 +5036,14 @@
                         <viewLayoutGuide key="safeArea" id="72c-Oz-4s2"/>
                     </view>
                     <connections>
+                        <outlet property="topButton" destination="FxU-28-C3U" id="Ngc-hz-MSw"/>
                         <segue destination="kWT-Yh-qgi" kind="show" identifier="pin" id="wGg-ef-t0T"/>
                         <segue destination="iqZ-ST-Be8" kind="show" identifier="mainMenu" id="Pqg-Zu-9Zd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="O9x-P2-kr0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-418" y="69"/>
+            <point key="canvasLocation" x="-493" y="69"/>
         </scene>
     </scenes>
     <resources>
@@ -5073,35 +5080,11 @@
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
