@@ -53,10 +53,20 @@ namespace sdk {
         __builtin_unreachable();
     }
 
-    void session::connect(std::shared_ptr<network_parameters> params, bool debug)
+    void session::connect(const std::string& name, const std::string& proxy, bool use_tor, bool debug)
     {
         exception_wrapper([&] {
-            m_impl = std::make_unique<ga_session>(params, debug);
+            network_parameters net_params{ *network_parameters::get(name) };
+            m_impl = std::make_unique<ga_session>(net_params, proxy, use_tor, debug);
+            m_impl->connect();
+            m_impl->set_notification_handler(m_notification_handler, m_notification_context);
+        });
+    }
+
+    void session::connect(const network_parameters& net_params, const std::string& proxy, bool use_tor, bool debug)
+    {
+        exception_wrapper([&] {
+            m_impl = std::make_unique<ga_session>(net_params, proxy, use_tor, debug);
             m_impl->connect();
             m_impl->set_notification_handler(m_notification_handler, m_notification_context);
         });
@@ -79,16 +89,16 @@ namespace sdk {
         exception_wrapper([&] { m_impl->register_user(mnemonic, user_agent); });
     }
 
-    void session::login(const std::string& mnemonic, const std::string& user_agent)
+    void session::login(const std::string& mnemonic, const std::string& password, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->login(mnemonic, user_agent); });
+        return exception_wrapper([&] { m_impl->login(mnemonic, password, user_agent); });
     }
 
-    void session::login(const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
+    void session::login_with_pin(const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->login(pin, pin_data, user_agent); });
+        return exception_wrapper([&] { m_impl->login_with_pin(pin, pin_data, user_agent); });
     }
 
     void session::login_watch_only(
@@ -245,6 +255,25 @@ namespace sdk {
         exception_wrapper([&] { m_impl->twofactor_request_code(method, action, twofactor_data); });
     }
 
+    nlohmann::json session::reset_twofactor(const std::string& email)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->reset_twofactor(email); });
+    }
+
+    nlohmann::json session::confirm_twofactor_reset(
+        const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->confirm_twofactor_reset(email, is_dispute, twofactor_data); });
+    }
+
+    nlohmann::json session::cancel_twofactor_reset(const nlohmann::json& twofactor_data)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->cancel_twofactor_reset(twofactor_data); });
+    }
+
     nlohmann::json session::set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
@@ -269,7 +298,7 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return exception_wrapper(
-            [&] { return create_ga_transaction(*this, *m_impl->get_network_parameters(), details); });
+            [&] { return create_ga_transaction(*this, m_impl->get_network_parameters(), details); });
     }
 
     nlohmann::json session::sign_transaction(const nlohmann::json& details)

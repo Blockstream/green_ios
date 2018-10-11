@@ -115,7 +115,7 @@ test_osx_clang:
       - subprojects/packagecache/
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --clang
+    - ./tools/build.sh --lto=false --clang
 
 test_osx_ios:
   tags:
@@ -126,7 +126,7 @@ test_osx_ios:
       - subprojects/packagecache/
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --iphone static
+    - ./tools/build.sh --lto=false --iphone static
 
 test_osx_ios_sim:
   tags:
@@ -137,7 +137,7 @@ test_osx_ios_sim:
       - subprojects/packagecache/
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --iphonesim static
+    - ./tools/build.sh --lto=false --iphonesim static
 
 test_osx_clang_ndk_armeabi-v7a:
   tags:

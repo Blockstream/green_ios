@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     try {
         const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(sdk::network_parameters::get(options->network), debug);
+        session.connect(options->network, std::string(), false, debug);
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
         // TODO GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);

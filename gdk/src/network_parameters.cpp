@@ -1,5 +1,7 @@
-#include "include/network_parameters.hpp"
+#include <mutex>
+
 #include "include/assertion.hpp"
+#include "include/network_parameters.hpp"
 
 // TODO: Use std::string_view when its fully supported
 
@@ -63,61 +65,68 @@ mRGunUHBcnWEvgJBQl9nJEiU0Zsnvgc/ubhPgXRR4Xq37Z0j4r7g1SgEEzwxA57d
 emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
 -----END CERTIFICATE-----)";
 
-static const nlohmann::json mainnet_json = { { "name", "Bitcoin" }, { "network", "mainnet" },
-    { "wamp_url", "wss://prodwss.greenaddress.it/v2/ws" }, { "wamp_onion_url", "ws://s7a4rvc6425y72d2.onion/v2/ws/" },
-    { "wamp_cert_pins",
-        std::vector<std::string>{ "25847d668eb4f04fdd40b12b6b0740c567da7d024308eb6c2c96fe41d9de218d",
-            "a74b0c32b65b95fe2c4f8f098947a68b695033bed0b51dd8b984ecae89571bb6" } },
-    { "wamp_cert_roots", std::vector<std::string>{ IDENTX3, LEX1 } },
-    { "address_explorer_url", "https://www.smartbit.com.au/address/" },
-    { "tx_explorer_url", "https://www.smartbit.com.au/tx/" },
-    { "service_pubkey", "0322c5f5c9c4b9d1c3e22ca995e200d724c2d7d8b6953f7b38fddf9296053c961f" },
-    { "service_chain_code", "e9a563d68686999af372a33157209c6860fe79197a4dafd9ec1dbaa49523351d" },
-    { "default_peers", nlohmann::json::array() }, { "p2pkh_version", 0u }, { "p2sh_version", 5u },
-    { "bech32_prefix", "bc" }, { "mainnet", true }, { "liquid", false } };
+static std::map<std::string, std::shared_ptr<nlohmann::json>> registered_networks = {
+    { "localtest",
+        std::make_shared<nlohmann::json>(nlohmann::json({ { "name", "Local regtest" }, { "network", "localtest" },
+            { "wamp_url", "ws://localhost:8080/v2/ws" }, { "wamp_onion_url", std::string() },
+            { "wamp_cert_pins", nlohmann::json::array() }, { "wamp_cert_roots", nlohmann::json::array() },
+            { "address_explorer_url", std::string() }, { "tx_explorer_url", std::string() },
+            { "service_pubkey", "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3" },
+            { "service_chain_code", "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04" },
+            { "default_peers", nlohmann::json::array() }, { "p2pkh_version", 111u }, { "p2sh_version", 196u },
+            { "bech32_prefix", "bcrt" }, { "mainnet", false }, { "liquid", false } })) },
 
-static const nlohmann::json testnet_json = { { "name", "Testnet" }, { "network", "testnet" },
-    { "wamp_url", "wss://testwss.greenaddress.it/v2/ws" }, { "wamp_onion_url", "ws://gu5ke7a2aguwfqhz.onion/v2/ws" },
-    { "wamp_cert_pins",
-        std::vector<std::string>{ "25847d668eb4f04fdd40b12b6b0740c567da7d024308eb6c2c96fe41d9de218d",
-            "a74b0c32b65b95fe2c4f8f098947a68b695033bed0b51dd8b984ecae89571bb6" } },
-    { "wamp_cert_roots", std::vector<std::string>{ IDENTX3, LEX1 } },
-    { "address_explorer_url", "https://sandbox.smartbit.com.au/address/" },
-    { "tx_explorer_url", "https://sandbox.smartbit.com.au/tx/" },
-    { "service_pubkey", "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3" },
-    { "service_chain_code", "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04" },
-    { "default_peers", nlohmann::json::array() }, { "p2pkh_version", 111u }, { "p2sh_version", 196u },
-    { "bech32_prefix", "tb" }, { "mainnet", false }, { "liquid", false } };
+    { "mainnet",
+        std::make_shared<nlohmann::json>(nlohmann::json(
+            { { "name", "Bitcoin" }, { "network", "mainnet" }, { "wamp_url", "wss://prodwss.greenaddress.it/v2/ws" },
+                { "wamp_onion_url", "ws://s7a4rvc6425y72d2.onion/v2/ws/" },
+                { "wamp_cert_pins",
+                    std::vector<std::string>{ "25847d668eb4f04fdd40b12b6b0740c567da7d024308eb6c2c96fe41d9de218d",
+                        "a74b0c32b65b95fe2c4f8f098947a68b695033bed0b51dd8b984ecae89571bb6" } },
+                { "wamp_cert_roots", std::vector<std::string>{ IDENTX3, LEX1 } },
+                { "address_explorer_url", "https://www.smartbit.com.au/address/" },
+                { "tx_explorer_url", "https://www.smartbit.com.au/tx/" },
+                { "service_pubkey", "0322c5f5c9c4b9d1c3e22ca995e200d724c2d7d8b6953f7b38fddf9296053c961f" },
+                { "service_chain_code", "e9a563d68686999af372a33157209c6860fe79197a4dafd9ec1dbaa49523351d" },
+                { "default_peers", nlohmann::json::array() }, { "p2pkh_version", 0u }, { "p2sh_version", 5u },
+                { "bech32_prefix", "bc" }, { "mainnet", true }, { "liquid", false } })) },
 
-static const nlohmann::json regtest_json = { { "name", "Regtest" }, { "network", "regtest" },
-    { "wamp_url", "ws://10.0.2.2:8080/v2/ws" }, { "wamp_onion_url", std::string() },
-    { "wamp_cert_pins", nlohmann::json::array() }, { "wamp_cert_roots", nlohmann::json::array() },
-    { "address_explorer_url", "http://192.168.56.1:8080/address/" },
-    { "tx_explorer_url", "http://192.168.56.1:8080/tx/" },
-    { "service_pubkey", "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3" },
-    { "service_chain_code", "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04" },
-    { "default_peers", std::vector<std::string>{ { "192.168.56.1:19000" } } }, { "p2pkh_version", 111u },
-    { "p2sh_version", 196u }, { "bech32_prefix", "bcrt" }, { "mainnet", false }, { "liquid", false } };
+    { "testnet",
+        std::make_shared<nlohmann::json>(nlohmann::json(
+            { { "name", "Testnet" }, { "network", "testnet" }, { "wamp_url", "wss://testwss.greenaddress.it/v2/ws" },
+                { "wamp_onion_url", "ws://gu5ke7a2aguwfqhz.onion/v2/ws" },
+                { "wamp_cert_pins",
+                    std::vector<std::string>{ "25847d668eb4f04fdd40b12b6b0740c567da7d024308eb6c2c96fe41d9de218d",
+                        "a74b0c32b65b95fe2c4f8f098947a68b695033bed0b51dd8b984ecae89571bb6" } },
+                { "wamp_cert_roots", std::vector<std::string>{ IDENTX3, LEX1 } },
+                { "address_explorer_url", "https://sandbox.smartbit.com.au/address/" },
+                { "tx_explorer_url", "https://sandbox.smartbit.com.au/tx/" },
+                { "service_pubkey", "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3" },
+                { "service_chain_code", "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04" },
+                { "default_peers", nlohmann::json::array() }, { "p2pkh_version", 111u }, { "p2sh_version", 196u },
+                { "bech32_prefix", "tb" }, { "mainnet", false }, { "liquid", false } })) },
 
-static const nlohmann::json localtest_json = { { "name", "Local regtest" }, { "network", "localtest" },
-    { "wamp_url", "ws://localhost:8080/v2/ws" }, { "wamp_onion_url", std::string() },
-    { "wamp_cert_pins", nlohmann::json::array() }, { "wamp_cert_roots", nlohmann::json::array() },
-    { "address_explorer_url", std::string() }, { "tx_explorer_url", std::string() },
-    { "service_pubkey", "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3" },
-    { "service_chain_code", "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04" },
-    { "default_peers", nlohmann::json::array() }, { "p2pkh_version", 111u }, { "p2sh_version", 196u },
-    { "bech32_prefix", "bcrt" }, { "mainnet", false }, { "liquid", false } };
+    { "regtest",
+        std::make_shared<nlohmann::json>(nlohmann::json({ { "name", "Regtest" }, { "network", "regtest" },
+            { "wamp_url", "ws://10.0.2.2:8080/v2/ws" }, { "wamp_onion_url", std::string() },
+            { "wamp_cert_pins", nlohmann::json::array() }, { "wamp_cert_roots", nlohmann::json::array() },
+            { "address_explorer_url", "http://192.168.56.1:8080/address/" },
+            { "tx_explorer_url", "http://192.168.56.1:8080/tx/" },
+            { "service_pubkey", "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3" },
+            { "service_chain_code", "b60befcc619bb1c212732770fe181f2f1aa824ab89f8aab49f2e13e3a56f0f04" },
+            { "default_peers", std::vector<std::string>{ { "192.168.56.1:19000" } } }, { "p2pkh_version", 111u },
+            { "p2sh_version", 196u }, { "bech32_prefix", "bcrt" }, { "mainnet", false }, { "liquid", false } })) }
+};
 
-static std::map<std::string, nlohmann::json> registered_networks = { { "localtest", localtest_json },
-    { "mainnet", mainnet_json }, { "regtest", regtest_json }, { "testnet", testnet_json } };
-
+static std::mutex registered_networks_mutex;
 } // namespace
 
 namespace ga {
 namespace sdk {
 
-    network_parameters::network_parameters(const nlohmann::json& details, std::string proxy, bool use_tor)
-        : m_gait_wamp_url{ details.at("wamp_url").get<std::string>() }
+    network_parameters::network_parameters(const nlohmann::json& details)
+        : m_details(details)
+        , m_gait_wamp_url{ details.at("wamp_url").get<std::string>() }
         , m_gait_wamp_cert_pins{ details.at("wamp_cert_pins").get<std::vector<std::string>>() }
         , m_gait_wamp_cert_roots{ details.at("wamp_cert_roots").get<std::vector<std::string>>() }
         , m_block_explorer_address{ details.at("address_explorer_url").get<std::string>() }
@@ -126,30 +135,55 @@ namespace sdk {
         , m_pub_key{ details.at("service_pubkey").get<std::string>() }
         , m_gait_onion{ details.at("wamp_onion_url").get<std::string>() }
         , m_default_peers{ details.at("default_peers").get<std::vector<std::string>>() }
-        , m_proxy{ std::move(proxy) }
         , m_bech32_prefix{ details.at("bech32_prefix").get<std::string>() }
         , m_btc_version{ details.at("p2pkh_version") }
         , m_btc_p2sh_version{ details.at("p2sh_version") }
         , m_main_net{ details.value("mainnet", false) }
-        , m_use_tor{ use_tor }
     {
     }
 
     network_parameters::~network_parameters() {}
 
-    void network_parameters::add(const std::string& name, const nlohmann::json& params)
+    void network_parameters::add(const std::string& name, const nlohmann::json& details)
     {
+        std::unique_lock<std::mutex> l{ registered_networks_mutex };
+
         const auto p = registered_networks.find(name);
-        GA_SDK_RUNTIME_ASSERT_MSG(p == registered_networks.end(), "Duplicate network");
-        registered_networks.insert(std::make_pair(name, params));
+        const bool found = p != registered_networks.end();
+        if (details.is_null() || details.empty()) {
+            // Remove
+            if (found) {
+                registered_networks.erase(p);
+            }
+        } else {
+            // Validate and add, overwriting any existing entry
+            auto np = std::make_shared<nlohmann::json>(network_parameters(details).get_json());
+            registered_networks[name] = np;
+        }
     }
 
-    std::shared_ptr<network_parameters> network_parameters::get(
-        const std::string& name, const std::string& proxy, bool use_tor)
+    nlohmann::json network_parameters::get_all()
     {
+        std::vector<std::string> all_networks;
+        nlohmann::json ret;
+
+        std::unique_lock<std::mutex> l{ registered_networks_mutex };
+        all_networks.reserve(registered_networks.size());
+        for (const auto p : registered_networks) {
+            ret[p.first] = *p.second;
+            all_networks.emplace_back(p.first);
+        }
+        ret["all_networks"] = all_networks;
+        return ret;
+    }
+
+    std::shared_ptr<nlohmann::json> network_parameters::get(const std::string& name)
+    {
+        std::unique_lock<std::mutex> l{ registered_networks_mutex };
+
         const auto p = registered_networks.find(name);
         GA_SDK_RUNTIME_ASSERT_MSG(p != registered_networks.end(), "Unknown network");
-        return std::make_shared<network_parameters>(p->second, proxy, use_tor);
+        return p->second;
     }
 } // namespace sdk
 } // namespace ga

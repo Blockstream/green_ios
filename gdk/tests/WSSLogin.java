@@ -36,7 +36,7 @@ public class WSSLogin {
         GASDK.connect(session, network, debug);
 
         GASDK.register_user(session, DEFAULT_MNEMONIC);
-        GASDK.login(session, DEFAULT_MNEMONIC);
+        GASDK.login(session, DEFAULT_MNEMONIC, "");
 
         final byte[] random_bytes = GASDK.get_random_bytes(32);
         final String mnemonic = GASDK.generate_mnemonic();

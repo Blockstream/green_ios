@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
         ret = GA_create_session(&session);
         ret = ret == GA_OK ? GA_connect(session, options->network, debug) : ret;
         ret = ret == GA_OK ? GA_register_user(session, mnemonic) : ret;
-        ret = ret == GA_OK ? GA_login(session, mnemonic) : ret;
+        ret = ret == GA_OK ? GA_login(session, mnemonic, "") : ret;
         ret = ret == GA_OK ? GA_set_pin(session, mnemonic, "0000", "default", &pin_data) : ret;
         GA_destroy_string(mnemonic);
         GA_destroy_session(session);

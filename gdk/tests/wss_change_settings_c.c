@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     ret = ret == GA_OK ? GA_connect(session, options->network, debug) : ret;
     ret = ret == GA_OK ? GA_register_user(session, DEFAULT_MNEMONIC) : ret;
 
-    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC) : ret;
+    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC, "") : ret;
 
     GA_json* twofactor;
     ret = ret == GA_OK ? GA_convert_string_to_json("{}", &twofactor) : ret;

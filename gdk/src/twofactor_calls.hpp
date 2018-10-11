@@ -45,4 +45,24 @@ private:
     nlohmann::json m_limit_details;
 };
 
+class GA_twofactor_reset_call : public GA_twofactor_call {
+public:
+    GA_twofactor_reset_call(ga::sdk::session& session, const std::string& email, bool is_dispute);
+
+private:
+    state_type call_impl() override;
+
+    std::string m_reset_email;
+    bool m_is_dispute;
+    bool m_confirming;
+};
+
+class GA_twofactor_cancel_reset_call final : public GA_twofactor_call {
+public:
+    GA_twofactor_cancel_reset_call(ga::sdk::session& session);
+
+private:
+    state_type call_impl() override;
+};
+
 #endif

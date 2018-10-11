@@ -91,7 +91,7 @@ namespace sdk {
         {
             constexpr size_t base = 256;
 
-            std::array<unsigned char, 32> repr;
+            std::array<unsigned char, 32> repr{};
             size_t i = repr.size() - 1;
             for (boost::multiprecision::checked_uint256_t num(input); num; num = num / base, --i) {
                 repr[i] = static_cast<unsigned char>(num % base);
@@ -192,13 +192,13 @@ namespace sdk {
             return get_recovery_key(wally_ext_key_ptr(p), xpub, subaccount);
         }
 
-        static std::string get_address_from_script(std::shared_ptr<network_parameters> net_params,
+        static std::string get_address_from_script(const network_parameters& net_params,
             const std::vector<unsigned char>& script, const std::string& addr_type)
         {
             if (addr_type == address_type::p2sh) {
-                return base58check_from_bytes(p2sh_address_from_bytes(*net_params, script));
+                return base58check_from_bytes(p2sh_address_from_bytes(net_params, script));
             } else if (addr_type == address_type::p2wsh || addr_type == address_type::csv) {
-                return base58check_from_bytes(p2sh_p2wsh_address_from_bytes(*net_params, script));
+                return base58check_from_bytes(p2sh_p2wsh_address_from_bytes(net_params, script));
             }
             GA_SDK_RUNTIME_ASSERT(false);
             __builtin_unreachable();
@@ -253,6 +253,61 @@ namespace sdk {
                 f.get();
             }
         }
+
+        std::string decrypt_mnemonic(const std::string& encrypted_mnemonic, const std::string& password)
+        {
+            const auto entropy = mnemonic_to_bytes(encrypted_mnemonic);
+            GA_SDK_RUNTIME_ASSERT_MSG(entropy.size() == 36, "Invalid encrypted mnemonic");
+            const auto ciphertext = gsl::make_span(entropy.data(), 32);
+            const auto salt = gsl::make_span(entropy.data() + 32, 4);
+
+            std::array<unsigned char, 64> derived;
+            const auto password_bytes
+                = gsl::make_span(reinterpret_cast<const unsigned char*>(password.data()), password.size());
+            scrypt(password_bytes, salt, 16384, 8, 8, derived);
+
+            const auto key = gsl::make_span(derived.data() + 32, 32);
+            std::array<unsigned char, 32> plaintext;
+            aes(key, ciphertext, AES_FLAG_DECRYPT, plaintext);
+            for (int i = 0; i < 32; ++i) {
+                plaintext[i] ^= derived[i];
+            }
+
+            std::array<unsigned char, SHA256_LEN> sha_buffer;
+            sha256d(plaintext, sha_buffer);
+            const auto salt_ = gsl::make_span(static_cast<const unsigned char*>(sha_buffer.data()), 4);
+            GA_SDK_RUNTIME_ASSERT_MSG(salt_ == salt, "Invalid checksum");
+
+            return mnemonic_from_bytes(plaintext.begin(), plaintext.size());
+        }
+
+        std::string encrypt_mnemonic(const std::string& plaintext_mnemonic, const std::string& password)
+        {
+            const auto plaintext = mnemonic_to_bytes(plaintext_mnemonic);
+            std::array<unsigned char, SHA256_LEN> sha_buffer;
+            sha256d(plaintext, sha_buffer);
+            const auto salt = gsl::make_span(sha_buffer.data(), 4);
+
+            const auto password_bytes
+                = gsl::make_span(reinterpret_cast<const unsigned char*>(password.data()), password.size());
+            std::array<unsigned char, 64> derived;
+            scrypt(password_bytes, salt, 16384, 8, 8, derived);
+            const auto derivedhalf1 = gsl::make_span(derived.data(), 32);
+            const auto derivedhalf2 = gsl::make_span(derived.data() + 32, 32);
+
+            std::array<unsigned char, 32> decrypted;
+            for (int i = 0; i < 32; ++i) {
+                decrypted[i] = plaintext[i] ^ derivedhalf1[i];
+            }
+
+            std::vector<unsigned char> ciphertext;
+            ciphertext.reserve(36);
+            ciphertext.resize(32);
+            aes(derivedhalf2, decrypted, AES_FLAG_ENCRYPT, ciphertext);
+            ciphertext.insert(ciphertext.end(), salt.begin(), salt.end());
+
+            return mnemonic_from_bytes(ciphertext.data(), ciphertext.size());
+        }
     } // namespace
 
     uint32_t websocket_rng_type::operator()() const
@@ -274,11 +329,13 @@ namespace sdk {
         m_run_thread.join();
     }
 
-    ga_session::ga_session(std::shared_ptr<network_parameters> net_params, bool debug)
-        : m_controller(m_io)
+    ga_session::ga_session(const network_parameters& net_params, const std::string& proxy, bool use_tor, bool debug)
+        : m_net_params(net_params)
+        , m_proxy(proxy)
+        , m_use_tor(use_tor)
+        , m_controller(m_io)
         , m_notification_handler(nullptr)
         , m_notification_context(nullptr)
-        , m_net_params(std::move(net_params))
         , m_min_fee_rate(DEFAULT_MIN_FEE)
         , m_next_subaccount(0)
         , m_block_height(0)
@@ -286,7 +343,7 @@ namespace sdk {
         , m_system_message_id(0)
         , m_system_message_ack_id(0)
         , m_watch_only(true)
-        , m_rfc2818_verifier(websocketpp::uri(m_net_params->gait_wamp_url()).get_host())
+        , m_rfc2818_verifier(websocketpp::uri(m_net_params.gait_wamp_url()).get_host())
         , m_cert_pin_validated(false)
         , m_debug(debug)
     {
@@ -311,7 +368,7 @@ namespace sdk {
 
     bool ga_session::connect_with_tls() const
     {
-        return boost::algorithm::starts_with(m_net_params->get_connection_string(), "wss://");
+        return boost::algorithm::starts_with(m_net_params.get_connection_string(m_use_tor), "wss://");
     }
 
     void ga_session::connect()
@@ -344,8 +401,8 @@ namespace sdk {
         using client_type
             = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
 
-        m_transport = std::make_shared<T>(*boost::get<client_type>(m_client), m_net_params->get_connection_string(),
-            m_net_params->get_proxy(), m_debug);
+        m_transport = std::make_shared<T>(
+            *boost::get<client_type>(m_client), m_net_params.get_connection_string(m_use_tor), m_proxy, m_debug);
         boost::get<std::shared_ptr<T>>(m_transport)
             ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
     }
@@ -360,7 +417,7 @@ namespace sdk {
             boost::asio::ssl::context::verify_peer | boost::asio::ssl::context::verify_fail_if_no_peer_cert);
         // attempt to load system roots
         ctx->set_default_verify_paths();
-        const auto& roots = m_net_params->gait_wamp_cert_roots();
+        const auto& roots = m_net_params.gait_wamp_cert_roots();
         for (const auto& root : roots) {
             if (root.empty()) {
                 // FIXME: at the moment looks like the roots/pins are empty string when absent
@@ -370,7 +427,7 @@ namespace sdk {
             const boost::asio::const_buffer root_const_buff(root.c_str(), root.size());
             ctx->add_certificate_authority(root_const_buff);
         }
-        const auto& pins = m_net_params->gait_wamp_cert_pins();
+        const auto& pins = m_net_params.gait_wamp_cert_pins();
         if (pins.empty() || pins[0].empty()) {
             // no pins for this network, just do rfc2818 validation
             ctx->set_verify_callback(m_rfc2818_verifier);
@@ -390,7 +447,7 @@ namespace sdk {
             if (!X509_digest(cert, EVP_sha256(), buf.data(), &written) || written != buf.size()) {
                 return false;
             }
-            const auto& pins = m_net_params->gait_wamp_cert_pins();
+            const auto& pins = m_net_params.gait_wamp_cert_pins();
             const auto hex_digest = hex_from_bytes(buf);
             if (std::find(pins.begin(), pins.end(), hex_digest) != pins.end()) {
                 m_cert_pin_validated = true;
@@ -422,7 +479,7 @@ namespace sdk {
 
     uint32_t ga_session::get_bip32_version() const
     {
-        return m_net_params->main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
+        return m_net_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
     }
 
     std::pair<std::string, std::string> ga_session::sign_challenge(
@@ -475,18 +532,16 @@ namespace sdk {
             }
         }
 
-        if (i == 1u) {
-            // No usable estimates, use existing ones until new ones arrive
-            return nlohmann::json();
-        }
+        if (i != 1u) {
+            // We have updated estimates, use them
+            while (i < NUM_FEE_ESTIMATES) {
+                new_estimates[i] = new_estimates[i - 1];
+                ++i;
+            }
 
-        while (i < NUM_FEE_ESTIMATES) {
-            new_estimates[i] = new_estimates[i - 1];
-            ++i;
+            // FIXME locking for m_fee_estimates
+            std::swap(m_fee_estimates, new_estimates);
         }
-
-        // FIXME locking for m_fee_estimates
-        std::swap(m_fee_estimates, new_estimates);
         return m_fee_estimates;
     }
 
@@ -563,10 +618,11 @@ namespace sdk {
         m_system_message_ack = std::string();
         m_watch_only = watch_only;
 
-        set_fee_estimates(m_login_data["fee_estimates"]);
         const auto p = m_login_data.find("limits");
-
         update_spending_limits(p == m_login_data.end() ? nlohmann::json() : *p);
+
+        // Notify the caller of the current fees
+        on_new_fees(set_fee_estimates(m_login_data["fee_estimates"]));
 
         // Notify the caller of their current block
         on_new_block(
@@ -633,21 +689,25 @@ namespace sdk {
         call_notification_handler({ { "event", "block" }, { "block", std::move(details) } });
     }
 
-    void ga_session::on_new_fees(nlohmann::json&& details)
+    void ga_session::on_new_fees(nlohmann::json&& fee_estimates)
     {
-        const nlohmann::json fees({ { "event", "fees" }, { "fees", set_fee_estimates(details) } });
+        const nlohmann::json fees({ { "event", "fees" }, { "fees", fee_estimates } });
         if (!fees["fees"].is_null()) {
             // Only notify if fees have actually changed
             call_notification_handler(fees);
         }
     }
 
-    void ga_session::login(const std::string& mnemonic, const std::string& user_agent)
+    void ga_session::login(const std::string& mnemonic, const std::string& password, const std::string& user_agent)
     {
         GDK_LOG_NAMED_SCOPE("login");
 
         GA_SDK_RUNTIME_ASSERT_MSG(!m_master_key, "re-login on an existing session always fails");
+        login(password.empty() ? mnemonic : decrypt_mnemonic(mnemonic, password), user_agent);
+    }
 
+    void ga_session::login(const std::string& mnemonic, const std::string& user_agent)
+    {
         bip39_mnemonic_validate(nullptr, mnemonic);
 
         // FIXME: secure_array
@@ -660,7 +720,7 @@ namespace sdk {
 
         m_master_key = wally_ext_key_ptr(p);
 
-        unsigned char btc_ver[1] = { m_net_params->btc_version() };
+        unsigned char btc_ver[1] = { m_net_params.btc_version() };
         std::array<unsigned char, sizeof(btc_ver) + sizeof(m_master_key->hash160)> vpkh;
         init_container(vpkh, gsl::make_span(btc_ver), gsl::make_span(m_master_key->hash160));
 
@@ -683,7 +743,7 @@ namespace sdk {
             [this](const autobahn::wamp_event& event) { on_new_block(get_json_result(event)); }));
 
         m_subscriptions.emplace_back(subscribe("com.greenaddress.fee_estimates",
-            [this](const autobahn::wamp_event& event) { on_new_fees(get_fees_as_json(event)); }));
+            [this](const autobahn::wamp_event& event) { on_new_fees(set_fee_estimates(get_fees_as_json(event))); }));
 
         if (m_login_data.value("segwit_server", true) && !m_login_data["appearance"].value("use_segwit", false)) {
             // Enable segwit
@@ -696,7 +756,8 @@ namespace sdk {
         }
     }
 
-    void ga_session::login(const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
+    void ga_session::login_with_pin(
+        const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
     {
         // FIXME: clear password after use
         const auto password = get_pin_password(pin, pin_data["pin_identifier"]);
@@ -718,7 +779,7 @@ namespace sdk {
         m_mnemonic = data["mnemonic"];
 
         // FIXME: log in directly from the seed instead of the mnemonic
-        login(m_mnemonic, user_agent);
+        login(m_mnemonic, std::string(), user_agent);
     }
 
     void ga_session::login_watch_only(
@@ -738,9 +799,9 @@ namespace sdk {
     std::string ga_session::get_mnemonic_passphrase(const std::string& password)
     {
         GA_SDK_RUNTIME_ASSERT(!is_watch_only());
-        GA_SDK_RUNTIME_ASSERT(password.empty()); // FIXME: Implement encryption
         GA_SDK_RUNTIME_ASSERT(!m_mnemonic.empty());
-        return m_mnemonic;
+
+        return password.empty() ? m_mnemonic : encrypt_mnemonic(m_mnemonic, password);
     }
 
     std::string ga_session::get_system_message()
@@ -933,7 +994,7 @@ namespace sdk {
             return wally_ext_key_ptr();
 
         ext_key* p;
-        uint32_t version = m_net_params->main_net() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
+        uint32_t version = m_net_params.main_net() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
         bip32_key_init_alloc(
             version, 0, 0, bytes_from_hex(chain_code), bytes_from_hex(pub_key), bytes{}, bytes{}, bytes{}, &p);
 
@@ -1193,11 +1254,11 @@ namespace sdk {
             subtype = data["subtype"];
 
         if (subaccount == 0) {
-            return ga::sdk::output_script(*m_net_params, m_master_key, wally_ext_key_ptr(), m_login_data["gait_path"],
+            return ga::sdk::output_script(m_net_params, m_master_key, wally_ext_key_ptr(), m_login_data["gait_path"],
                 type, subtype, subaccount, pointer);
         } else {
             const auto subaccount_master_key = get_subaccount_master_key(m_master_key, subaccount);
-            return ga::sdk::output_script(*m_net_params, subaccount_master_key, get_recovery_extkey(subaccount),
+            return ga::sdk::output_script(m_net_params, subaccount_master_key, get_recovery_extkey(subaccount),
                 m_login_data["gait_path"], type, subtype, subaccount, pointer);
         }
     }
@@ -1467,6 +1528,33 @@ namespace sdk {
         const std::string api_method = "com.greenaddress.twofactor.request_" + method;
         wamp_call(
             [](wamp_call_result result) { result.get(); }, api_method, action, as_messagepack(twofactor_data).get());
+    }
+
+    nlohmann::json ga_session::reset_twofactor(const std::string& email)
+    {
+        const std::string api_method = "com.greenaddress.twofactor.request_reset";
+        nlohmann::json state;
+        wamp_call([&state](wamp_call_result result) { state = get_json_result(result.get()); }, api_method, email);
+        return state;
+    }
+
+    nlohmann::json ga_session::confirm_twofactor_reset(
+        const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data)
+    {
+        const std::string api_method = "com.greenaddress.twofactor.confirm_reset";
+        nlohmann::json state;
+        wamp_call([&state](wamp_call_result result) { state = get_json_result(result.get()); }, api_method, email,
+            is_dispute, as_messagepack(twofactor_data).get());
+        return state;
+    }
+
+    nlohmann::json ga_session::cancel_twofactor_reset(const nlohmann::json& twofactor_data)
+    {
+        const std::string api_method = "com.greenaddress.twofactor.cancel_reset";
+        nlohmann::json state;
+        wamp_call([&state](wamp_call_result result) { state = get_json_result(result.get()); }, api_method,
+            as_messagepack(twofactor_data).get());
+        return state;
     }
 
     nlohmann::json ga_session::set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device)

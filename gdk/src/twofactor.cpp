@@ -228,7 +228,7 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
         }
         return state_type::done;
     } else if (m_action == "disable_2fa") {
-        m_session.disable_twofactor(m_method, m_twofactor_data);
+        m_session.disable_twofactor(m_method_to_update, m_twofactor_data);
         return state_type::done;
     } else {
         GA_SDK_RUNTIME_ASSERT(false);
@@ -311,5 +311,42 @@ GA_twofactor_call::state_type GA_send_call::call_impl()
     ga::sdk::json_rename_key(m_twofactor_data, "change_idx", "send_raw_tx_change_idx");
     // FIXME: recipient
     m_result = m_session.send_transaction(m_tx_details, m_twofactor_data);
+    return state_type::done;
+}
+
+GA_twofactor_reset_call::GA_twofactor_reset_call(ga::sdk::session& session, const std::string& email, bool is_dispute)
+    : GA_twofactor_call(session, "request_reset")
+    , m_reset_email(email)
+    , m_is_dispute(is_dispute)
+    , m_confirming(false)
+{
+    m_state = state_type::make_call;
+}
+
+GA_twofactor_call::state_type GA_twofactor_reset_call::call_impl()
+{
+    if (!m_confirming) {
+        // Request the reset
+        m_result = m_session.reset_twofactor(m_reset_email);
+        // Move on to confirming the reset email address
+        m_confirming = true;
+        m_methods = { { "email" } };
+        m_method = "email";
+        return state_type::resolve_code;
+    } else {
+        // Confirm the reset
+        m_result = m_session.confirm_twofactor_reset(m_reset_email, m_is_dispute, m_twofactor_data);
+        return state_type::done;
+    }
+}
+
+GA_twofactor_cancel_reset_call::GA_twofactor_cancel_reset_call(ga::sdk::session& session)
+    : GA_twofactor_call(session, "cancel_reset")
+{
+}
+
+GA_twofactor_call::state_type GA_twofactor_cancel_reset_call::call_impl()
+{
+    m_result = m_session.cancel_twofactor_reset(m_twofactor_data);
     return state_type::done;
 }

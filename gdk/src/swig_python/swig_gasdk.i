@@ -105,6 +105,23 @@ capsule_dtor(GA_twofactor_call, GA_destroy_twofactor_call)
     $result = Py_None;
 %}
 
+%define %pybuffer_nullable_binary(TYPEMAP, SIZE)
+%typemap(in) (TYPEMAP, SIZE)
+  (int res, Py_ssize_t size = 0, const void *buf = 0) {
+  if ($input == Py_None)
+    $2 = 0;
+  else {
+    res = PyObject_AsReadBuffer($input, &buf, &size);
+    if (res<0) {
+      PyErr_Clear();
+      %argument_fail(res, "(TYPEMAP, SIZE)", $symname, $argnum);
+    }
+    $1 = ($1_ltype) buf;
+    $2 = ($2_ltype) (size / sizeof($*1_type));
+  }
+}
+%enddef
+
 /* Output strings are converted to native python strings and returned */
 %typemap(in, numinputs=0) char** (char* txt) {
    txt = NULL;
@@ -166,6 +183,8 @@ capsule_dtor(GA_twofactor_call, GA_destroy_twofactor_call)
 
 /* Tell swig about uin32_t */
 typedef unsigned int uint32_t;
+
+%pybuffer_mutable_binary(unsigned char *output_bytes, size_t len)
 
 %rename("%(regex:/^GA_(.+)/\\1/)s", %$isfunction) "";
 

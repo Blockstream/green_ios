@@ -2,44 +2,49 @@ from greenaddress import Session, generate_mnemonic
 import random
 import string
 
+random_email = lambda: '@@' + ''.join(random.choice(string.ascii_letters) for i in range(16))
 
-def get_data(session, method):
+def do_2fa(session, method, confirmed, enabled):
+    data = '+123456789'
     if method == 'gauth':
-        return session.get_twofactor_config()['gauth']['data']
+        data = session.get_twofactor_config()['gauth']['data']
     if method == 'email':
-        lc = string.ascii_lowercase
-        return '@@' + ''.join(random.choice(lc) for i in range(16))
-    return '+123456789'
+        data = random_email()
+
+    cfg = { 'confirmed': confirmed, 'enabled': enabled, 'data': data }
+    session.change_settings_twofactor(method, cfg).resolve()
+    return session
 
 
 def do_test(network, debug):
 
-    # Enable all 2fa methods as the initial method for a new session
+    all_methods = [ 'email', 'gauth', 'phone', 'sms']
     sessions = {}
-    for method in [ 'email', 'gauth', 'phone', 'sms']:
+
+    # Enable all 2fa methods as the initial method for a new session
+    for method in all_methods:
         words = generate_mnemonic()
         session = Session(network, '', False, debug).register_user(words).login(words)
-        cfg = { 'confirmed': True, 'enabled': True, 'data': get_data(session, method) }
-        session.change_settings_twofactor(method, cfg).resolve()
-        sessions[method] = session
+        sessions[method] = do_2fa(session, method, True, True)
 
-    # Enable email on the gauth session
-    session = sessions['gauth']
-    method = 'email'
-    cfg = { 'confirmed': True, 'enabled': True, 'data': get_data(session, method) }
-    session.change_settings_twofactor(method, cfg).resolve()
+    # Enable the remainder of the methods for each
+    for enabled_method, session in sessions.items():
+        for method in [m for m in all_methods if m != enabled_method]:
+            do_2fa(session, method, True, True)
 
-    # Enable sms on the email session
-    session = sessions['email']
-    method = 'sms'
-    cfg = { 'confirmed': True, 'enabled': True, 'data': get_data(session, method) }
-    session.change_settings_twofactor(method, cfg).resolve()
+    # Disable all methods for each session
+    for enabled_method, session in sessions.items():
+        #for method in all_methods: # FIXME: We get rate limited if we disable them all
+        for method in [enabled_method]:
+            # FIXME: Setting confirmed: True to just disable currently fails
+            do_2fa(session, method, False, False)
 
-    # Enable gauth on the phone session
-    session = sessions['phone']
-    method = 'gauth'
-    cfg = { 'confirmed': True, 'enabled': True, 'data': get_data(session, method) }
-    session.change_settings_twofactor(method, cfg).resolve()
+    # Enable email on a new session, request and then cancel a 2fa reset
+    words = generate_mnemonic()
+    session = Session(network, '', False, debug).register_user(words).login(words)
+    do_2fa(session, 'email', True, True)
+    session.twofactor_reset(random_email(), False).resolve()
+    session.twofactor_cancel_reset().resolve()
 
 
 if __name__ == "__main__":

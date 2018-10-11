@@ -1,5 +1,13 @@
 import json
-from queue import Queue
+try:
+    import queue
+except:
+    import Queue as queue
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 class Call(object):
@@ -54,7 +62,7 @@ class Session(object):
 
     """
     def __init__(self, network, proxy_uri='', use_tor=False, debug=False):
-        self.notifications = Queue()
+        self.notifications = queue.Queue()
         self.session_obj = create_session()
         _python_set_callback_handler(self.session_obj, self._callback_handler)
         if proxy_uri or use_tor:
@@ -95,8 +103,8 @@ class Session(object):
         register_user(self.session_obj, mnemonic)
         return self
 
-    def login(self, mnemonic):
-        login(self.session_obj, mnemonic)
+    def login(self, mnemonic, password=''):
+        login(self.session_obj, mnemonic, password)
         return self
 
     def login_with_pin(self, pin, pin_data):
@@ -180,7 +188,27 @@ class Session(object):
     def get_twofactor_config(self):
         return json.loads(get_twofactor_config(self.session_obj))
 
+    def twofactor_reset(self, email, is_dispute):
+        return Call(twofactor_reset(self.session_obj, email, is_dispute))
+
+    def twofactor_cancel_reset(self):
+        return Call(twofactor_cancel_reset(self.session_obj))
+
     def change_settings_twofactor(self, method, twofactor_details):
         return Call(
             change_settings_twofactor(self.session_obj, method, self._to_json(twofactor_details))
         )
+
+_old_get_networks = get_networks
+def get_networks():
+    return json.loads(_old_get_networks())
+
+_old_register_network = register_network
+def register_network(name, details):
+    return _old_register_network(name, Session._to_json(details))
+
+_old_get_random_bytes = get_random_bytes
+def get_random_bytes(n):
+    out = bytearray(n)
+    _old_get_random_bytes(n, out)
+    return bytes(out)

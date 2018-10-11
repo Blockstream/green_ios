@@ -150,7 +150,7 @@ public class Session {
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
-        // FIXME: GA_set_notification_handler
+        try callWrapper(GA_set_notification_handler())
     }
 
     deinit {
@@ -170,8 +170,8 @@ public class Session {
         try callWrapper(fun: GA_register_user(session, mnemonic))
     }
 
-    public func login(mnemonic: String) throws {
-        try callWrapper(fun: GA_login(session, mnemonic))
+    public func login(mnemonic: String, password: String = "") throws {
+        try callWrapper(fun: GA_login(session, mnemonic, password))
     }
 
     public func loginWithPin(pin: String, pin_data:String) throws {
@@ -257,30 +257,6 @@ public class Session {
         return try convertOpaqueJsonToDict(o: result!)
     }
 
-    func toCStr(strings: [String]) -> UnsafeMutablePointer<UnsafePointer<Int8>?> {
-        let copies = UnsafeMutablePointer<UnsafePointer<Int8>?>.allocate(capacity: strings.count)
-        copies.initialize(repeating: nil, count: strings.count)
-        let arr = strings.map { str -> UnsafePointer<Int8>? in
-            var buff: UnsafeMutablePointer<Int8>? = nil
-            GA_copy_string(str, &buff)
-            return UnsafePointer<Int8>(buff!)
-        }
-        for i in 0..<strings.count {
-            copies.advanced(by: i).pointee = arr[i]
-        }
-        return copies
-    }
-
-    func clearCStr(copies: UnsafeMutablePointer<UnsafePointer<Int8>?>, count: Int) -> Void {
-        for i in 0..<count {
-            if let p = copies[i] {
-                GA_destroy_string(p)
-            }
-        }
-        copies.deinitialize(count: count)
-        copies.deallocate()
-    }
-
     fileprivate func jsonFuncToJsonWrapper(input: [String: Any], fun call: (_: OpaquePointer, _: OpaquePointer, _: UnsafeMutablePointer<OpaquePointer?>) -> Int32) throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         var input_json: OpaquePointer = try convertDictToJSON(dict: input)
@@ -357,6 +333,18 @@ public class Session {
         return TwoFactorCall(optr: optr!);
     }
 
+    public func resetTwoFactor(email: String, isDispute: Bool) throws -> TwoFactorCall {
+        var optr: OpaquePointer? = nil;
+        try callWrapper(fun: GA_twofactor_reset(session, email, UInt32(isDispute ? GA_TRUE : GA_FALSE), &optr))
+        return TwoFactorCall(optr: optr!);
+    }
+
+    public func cancelTwoFactorReset() throws -> TwoFactorCall {
+        var optr: OpaquePointer? = nil;
+        try callWrapper(fun: GA_twofactor_cancel_reset(session, &optr));
+        return TwoFactorCall(optr: optr!);
+    }
+
     public func getTransactionDetails(txhash: String) throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         try callWrapper(fun: GA_get_transaction_details(session, txhash, &result))
@@ -393,6 +381,20 @@ public func generateMnemonic() throws -> String {
 
 public func validateMnemonic(mnemonic: String) -> Bool {
     return GA_validate_mnemonic(mnemonic) == GA_TRUE
+}
+
+public func registerNetwork(name: String, details: [String: Any]) throws -> Void {
+    var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+    defer {
+        GA_destroy_json(details_json)
+    }
+    try callWrapper(fun: GA_register_network(name, details_json));
+}
+
+public func getNetworks() throws -> [String: Any]? {
+    var result: OpaquePointer? = nil
+    try callWrapper(fun: GA_get_networks(&result))
+    return try convertOpaqueJsonToDict(o: result!)
 }
 
 public func retry<T>(session: Session,

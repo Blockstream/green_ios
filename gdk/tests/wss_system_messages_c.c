@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     const bool debug = options->quiet == 0;
     ret = ret == GA_OK ? GA_connect(session, options->network, debug) : ret;
     ret = ret == GA_OK ? GA_register_user(session, DEFAULT_MNEMONIC) : ret;
-    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC) : ret;
+    ret = ret == GA_OK ? GA_login(session, DEFAULT_MNEMONIC, "") : ret;
 
     char* message_text = NULL;
 

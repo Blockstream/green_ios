@@ -38,7 +38,7 @@ int main(int argc, char** argv)
         const bool debug = options->quiet == 0;
         sdk::session session;
         session.set_notification_handler(on_notification, nullptr);
-        session.connect(sdk::network_parameters::get(options->network), debug);
+        session.connect(options->network, std::string(), false, debug);
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
 

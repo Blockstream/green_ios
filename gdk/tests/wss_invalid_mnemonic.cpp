@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     try {
         const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(sdk::network_parameters::get(options->network), debug);
+        session.connect(options->network, std::string(), false, debug);
         assert_register_user_fails(session, "Invalid");
 
         // Valid checksum but too short (<12 words)

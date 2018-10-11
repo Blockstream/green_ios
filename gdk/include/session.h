@@ -81,10 +81,11 @@ GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic)
  *
  * @session The server session to use.
  * @mnemonic The user's mnemonic passphrase.
+ * @password The user's password to decrypt a 27 word mnemonic, or a blank string if none.
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-GASDK_API int GA_login(struct GA_session* session, const char* mnemonic);
+GASDK_API int GA_login(struct GA_session* session, const char* mnemonic, const char* password);
 
 /**
  * Authenticate an user.

@@ -39,7 +39,7 @@ namespace sdk {
     public:
         using transport_t = boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>>;
 
-        ga_session(std::shared_ptr<network_parameters> net_params, bool debug);
+        ga_session(const network_parameters& net_params, const std::string& proxy, bool use_tor, bool debug);
         ga_session(const ga_session& other) = delete;
         ga_session(ga_session&& other) noexcept = delete;
         ga_session& operator=(const ga_session& other) = delete;
@@ -51,7 +51,8 @@ namespace sdk {
         void reset();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& user_agent);
-        void login(
+        void login(const std::string& mnemonic, const std::string& password, const std::string& user_agent);
+        void login_with_pin(
             const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent = std::string());
         void login_watch_only(const std::string& username, const std::string& password, const std::string& user_agent);
         bool set_watch_only(const std::string& username, const std::string& password);
@@ -88,9 +89,12 @@ namespace sdk {
         void enable_twofactor(const std::string& method, const std::string& code);
         void enable_gauth(const std::string& code, const nlohmann::json& twofactor_data);
         void disable_twofactor(const std::string& method, const nlohmann::json& twofactor_data);
-
         void twofactor_request_code(
             const std::string& method, const std::string& action, const nlohmann::json& twofactor_data);
+        nlohmann::json reset_twofactor(const std::string& email);
+        nlohmann::json confirm_twofactor_reset(
+            const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data);
+        nlohmann::json cancel_twofactor_reset(const nlohmann::json& twofactor_data);
 
         nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 
@@ -125,7 +129,7 @@ namespace sdk {
         bool have_subaccounts() const { return m_subaccounts.size() != 1u; }
         amount get_dust_threshold() const;
         nlohmann::json get_spending_limits() const;
-        const std::shared_ptr<network_parameters> get_network_parameters() const { return m_net_params; }
+        const network_parameters& get_network_parameters() const { return m_net_params; }
         void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
         std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
 
@@ -201,6 +205,10 @@ namespace sdk {
 
         uint32_t get_bip32_version() const;
 
+        const network_parameters m_net_params;
+        const std::string m_proxy;
+        const bool m_use_tor;
+
         boost::asio::io_service m_io;
         boost::variant<std::unique_ptr<client>, std::unique_ptr<client_tls>> m_client;
         transport_t m_transport;
@@ -211,8 +219,6 @@ namespace sdk {
 
         GA_notification_handler m_notification_handler;
         void* m_notification_context;
-
-        std::shared_ptr<network_parameters> m_net_params;
 
         nlohmann::json m_login_data;
         nlohmann::json m_limits_data;

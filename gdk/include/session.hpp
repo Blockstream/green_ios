@@ -34,12 +34,16 @@ namespace sdk {
         session& operator=(const session&) = delete;
         session& operator=(session&&) = delete;
 
-        void connect(std::shared_ptr<network_parameters> params, bool debug = false);
+        void connect(const std::string& name, const std::string& proxy = std::string(), bool use_tor = false,
+            bool debug = false);
+        void connect(const network_parameters& net_params, const std::string& proxy = std::string(),
+            bool use_tor = false, bool debug = false);
         void disconnect();
 
         void register_user(const std::string& mnemonic, const std::string& user_agent = std::string());
-        void login(const std::string& mnemonic, const std::string& user_agent = std::string());
-        void login(
+        void login(const std::string& mnemonic, const std::string& password = std::string(),
+            const std::string& user_agent = std::string());
+        void login_with_pin(
             const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent = std::string());
         void login_watch_only(
             const std::string& username, const std::string& password, const std::string& user_agent = std::string());
@@ -81,9 +85,12 @@ namespace sdk {
         void enable_gauth(const std::string& code, const nlohmann::json& twofactor_data);
         void enable_twofactor(const std::string& method, const std::string& code);
         void disable_twofactor(const std::string& method, const nlohmann::json& twofactor_data);
-
         void twofactor_request_code(
             const std::string& method, const std::string& action, const nlohmann::json& twofactor_data);
+        nlohmann::json reset_twofactor(const std::string& email);
+        nlohmann::json confirm_twofactor_reset(
+            const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data);
+        nlohmann::json cancel_twofactor_reset(const nlohmann::json& twofactor_data);
 
         nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
 

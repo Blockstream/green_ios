@@ -1,5 +1,4 @@
-from greenaddress import Call, Session, Queue, json, generate_mnemonic
-import queue
+from greenaddress import Session, queue, generate_mnemonic, get_random_bytes
 import time
 
 MNEMONIC = 'front strategy cry chronic base table divide zero ' \
@@ -8,8 +7,10 @@ MNEMONIC = 'front strategy cry chronic base table divide zero ' \
 
 
 def do_test(network, debug):
-    # Generate_mnemonic returns a 24 word seed
+    # generate_mnemonic returns a 24 word seed
     assert(len(generate_mnemonic().split()) == 24)
+    # get_random_bytes returns the number requested
+    assert(len(get_random_bytes(32)) == 32)
 
     # Connect, register and login our test session
     session = Session(network, '', False, debug).register_user(MNEMONIC).login(MNEMONIC)
