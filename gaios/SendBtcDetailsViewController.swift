@@ -23,6 +23,7 @@ class SendBtcDetailsViewController: UIViewController {
     var wallet: WalletItem? = nil
     @IBOutlet weak var reviewButton: UIButton!
     @IBOutlet weak var currencySwitch: UIButton!
+    @IBOutlet weak var errorLabel: UILabel!
 
     var selectedType = TransactionType.FIAT
     var maxAmountBTC = 0
@@ -78,6 +79,7 @@ class SendBtcDetailsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reviewButton.layoutIfNeeded()
+        errorLabel.isHidden = true
         reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         updateButton()
     }
@@ -161,8 +163,12 @@ class SendBtcDetailsViewController: UIViewController {
             if (error != "") {
                 g_payload = nil
                 updateButton()
+                errorLabel.isHidden = false
+                errorLabel.text = error
+                //update error message
                 return
             }
+            errorLabel.isHidden = true
             g_payload = payload
             updateButton()
             let fee = payload!["fee"] as! UInt64
