@@ -150,7 +150,6 @@ public class Session {
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
-        try callWrapper(GA_set_notification_handler())
     }
 
     deinit {
