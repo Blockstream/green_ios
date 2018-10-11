@@ -70,7 +70,6 @@ class ReceiveBtcViewController: UIViewController {
     }
 
     @objc func hideQR(recognizer: UITapGestureRecognizer) {
-        print("hide QR Code")
         if(zoomView != nil) {
             zoomView?.removeFromSuperview()
             zoomView?.isHidden = true

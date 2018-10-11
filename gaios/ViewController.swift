@@ -12,6 +12,8 @@ class ViewController: UIViewController, WalletViewDelegate {
     @IBOutlet weak var addCardViewButton: UIButton!
     var wallets:Array<WalletItem> = Array<WalletItem>()
     var pager: MainMenuPageViewController? = nil
+    var zoomView: UIView? = nil
+    var presented: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,6 +67,10 @@ class ViewController: UIViewController, WalletViewDelegate {
             cardView.presentedDidUpdate()
             let uri = bip21Helper.btcURIforAddress(address: item.address)
             cardView.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: cardView.QRImageView.frame)
+            let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
+            cardView.QRImageView.isUserInteractionEnabled = true
+            cardView.QRImageView.addGestureRecognizer(tap)
+            cardView.QRImageView.tag = index
             coloredCardViews.append(cardView)
         }
 
@@ -87,6 +93,37 @@ class ViewController: UIViewController, WalletViewDelegate {
             } else {
                 self.refreshBalance()
             }
+        }
+    }
+
+    @objc func zoomQR(recognizer: UITapGestureRecognizer) {
+        if(!presented) {
+            return
+        }
+        if let tag = recognizer.view?.tag {
+            let item = wallets[tag]
+            zoomView = UIView()
+            zoomView!.frame = self.view.frame
+            zoomView!.backgroundColor = UIColor.customMatrixGreen()
+            let tap = UITapGestureRecognizer(target: self, action: #selector(hideQR))
+            zoomView!.isUserInteractionEnabled = true
+            zoomView!.addGestureRecognizer(tap)
+            let width = zoomView!.frame.width
+            let height = width
+            let yorigin = zoomView!.frame.height/2 - height/2
+            let qrimage = UIImageView()
+            qrimage.frame = CGRect(x: 0, y: yorigin, width: width, height: height)
+            let uri = bip21Helper.btcURIforAddress(address: item.address)
+            qrimage.image = QRImageGenerator.imageForTextDark(text: uri, frame: qrimage.frame)
+            zoomView?.addSubview(qrimage)
+            UIApplication.shared.keyWindow?.addSubview(zoomView!)
+        }
+    }
+
+    @objc func hideQR(recognizer: UITapGestureRecognizer) {
+        if(zoomView != nil) {
+            zoomView?.removeFromSuperview()
+            zoomView?.isHidden = true
         }
     }
 
@@ -156,6 +193,7 @@ class ViewController: UIViewController, WalletViewDelegate {
     }
 
     func cardViewPresented(cardView: CardView) {
+        presented = true
         hideButtons()
         let wallet = cardView as! ColoredCardView
         wallet.balanceLabel.textColor = UIColor.white
@@ -163,6 +201,7 @@ class ViewController: UIViewController, WalletViewDelegate {
     }
 
     func cardViewDismissed(cardView: CardView) {
+        presented = false
         if(self.navigationController?.viewControllers.count == 1) {
             showButtons()
         }
