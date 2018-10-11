@@ -20,8 +20,9 @@ class ReceiveBtcViewController: UIViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var fiatSwitchButton: UIButton!
     var selectedType = TransactionType.FIAT
-    var amount: Double = 0
+    var amount_g: Double = 0
     @IBOutlet weak var typeLabel: UILabel!
+    var zoomView: UIView? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +38,43 @@ class ReceiveBtcViewController: UIViewController {
         setButton()
         updateType()
         updateEstimate()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
+        walletQRCode.isUserInteractionEnabled = true
+        walletQRCode.addGestureRecognizer(tap)
+    }
+
+    @objc func zoomQR(recognizer: UITapGestureRecognizer) {
+        print("show QR Code")
+        zoomView = UIView()
+        zoomView!.frame = self.view.frame
+        zoomView!.backgroundColor = UIColor.customMatrixGreen()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(hideQR))
+        zoomView!.isUserInteractionEnabled = true
+        zoomView!.addGestureRecognizer(tap)
+        let width = zoomView!.frame.width
+        let height = width
+        let yorigin = zoomView!.frame.height/2 - height/2
+        let qrimage = UIImageView()
+        qrimage.frame = CGRect(x: 0, y: yorigin, width: width, height: height)
+
+        if (amount_g == 0) {
+            let uri = bip21Helper.btcURIforAddress(address: receiveAddress!)
+            qrimage.image = QRImageGenerator.imageForTextDark(text: uri, frame: qrimage.frame)
+        } else {
+            let uri = bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: amount_g)
+            qrimage.image = QRImageGenerator.imageForTextDark(text: uri, frame: qrimage.frame)
+        }
+
+        zoomView?.addSubview(qrimage)
+        UIApplication.shared.keyWindow?.addSubview(zoomView!)
+    }
+
+    @objc func hideQR(recognizer: UITapGestureRecognizer) {
+        print("hide QR Code")
+        if(zoomView != nil) {
+            zoomView?.removeFromSuperview()
+            zoomView?.isHidden = true
+        }
     }
 
     @IBAction func switchButtonClicked(_ sender: Any) {
@@ -83,6 +121,7 @@ class ReceiveBtcViewController: UIViewController {
             } else {
                 estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings()
             }
+            amount_g = 0
             updateQRCode(amount: 0)
             return
         }
@@ -99,9 +138,11 @@ class ReceiveBtcViewController: UIViewController {
             }
             let converted = AccountStore.shared.btcToFiat(amount: amount_denominated)
             estimateLabel.text = String(format: "~%.2f %@", converted, SettingsStore.shared.getCurrencyString())
+            amount_g = amount_denominated
             updateQRCode(amount: amount_denominated)
         } else {
             let converted = AccountStore.shared.fiatToBtc(amount: amount_double)
+            amount_g = converted
             updateQRCode(amount: converted)
             estimateLabel.text = String(format: "~%f %@", converted, SettingsStore.shared.getDenominationSettings())
         }
