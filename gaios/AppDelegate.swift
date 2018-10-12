@@ -34,6 +34,8 @@ func getSession() -> Session {
 }
 
 var network: Network = Network.TestNet
+var proxyIp: String = ""
+var proxyPort: String = ""
 
 func getNetwork() -> Network {
     return network
@@ -41,7 +43,95 @@ func getNetwork() -> Network {
 
 func setNetwork(net: Network) {
     network = net
+    saveNetworkSettingsToDisk()
 }
+
+func setProxyIp(ip: String) {
+    proxyIp = ip
+    saveNetworkSettingsToDisk()
+}
+
+func setProxyPort(port: String) {
+    proxyPort = port
+    saveNetworkSettingsToDisk()
+}
+
+class NetworkSettings: Codable {
+    var network: String
+    var ipAddress: String
+    var portNumber: String
+
+    init(network: String, ipAddress: String, portNumber: String) {
+        self.network = network
+        self.ipAddress = ipAddress
+        self.portNumber = portNumber
+    }
+}
+
+func getNetworkSettings() -> NetworkSettings{
+    return NetworkSettings(network: getNetwork().rawValue, ipAddress:proxyIp, portNumber: proxyPort)
+}
+
+func setDefaultNetworkSetings() {
+    setNetwork(net: Network.TestNet)
+    proxyPort = ""
+    proxyIp = ""
+}
+
+func stringForNetwork(net: Network) ->String {
+    if(net == Network.MainNet) {
+        return "MainNet"
+    } else if(net == Network.TestNet) {
+        return "TestNet"
+    } else if(net == Network.LocalTest) {
+        return "LocalTest"
+    } else {
+        return "RegTest"
+    }
+}
+
+func networkForString(net: String) -> Network {
+    if (net == "mainnet") {
+        return Network.MainNet
+    } else if (net == "testnet") {
+        return Network.TestNet
+    } else if (net == "localtest") {
+        return Network.LocalTest
+    } else {
+        return Network.RegTest
+    }
+}
+
+func loadNetworkSettings() {
+    guard let url = Storage.getDocumentsURL()?.appendingPathComponent("network.json") else {
+        setDefaultNetworkSetings()
+        return
+    }
+    let decoder = JSONDecoder()
+    do {
+        let data = try Data(contentsOf: url, options: [])
+        let network = try decoder.decode( NetworkSettings.self, from: data)
+        setNetwork(net: networkForString(net: network.network))
+        proxyPort = network.portNumber
+        proxyIp = network.ipAddress
+    } catch {
+        setDefaultNetworkSetings()
+    }
+}
+
+func saveNetworkSettingsToDisk() {
+    guard let url = Storage.getDocumentsURL()?.appendingPathComponent("network.json") else {
+        return
+    }
+    let encoder = JSONEncoder()
+    do {
+        let data = try encoder.encode(getNetworkSettings())
+        try data.write(to: url, options: [])
+    } catch {
+        print("error writing network settings to disk")
+    }
+}
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -113,6 +203,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         //AppDelegate.removeKeychainData()
+        loadNetworkSettings()
         DispatchQueue.global(qos: .background).async {
             self.connect()
         }

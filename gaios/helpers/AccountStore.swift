@@ -318,7 +318,7 @@ class AccountStore {
         let enabled = config!["any_enabled"] as! Bool
         return enabled
     }
-
+    
     func initializeAccountStore() {
         SettingsStore.shared.initSettingsStore()
         exchangeRate = 1 //get exchange rate

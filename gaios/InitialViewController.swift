@@ -8,7 +8,11 @@
 
 import UIKit
 
-class InitialViewController: UIViewController {
+protocol NetworkDelegate {
+    func networkDismissed()
+}
+
+class InitialViewController: UIViewController, NetworkDelegate {
 
     @IBOutlet weak var topButton: DesignableButton!
     @IBOutlet weak var networkButton: UIButton!
@@ -19,11 +23,17 @@ class InitialViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-         self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        networkButton.setTitle(stringForNetwork(net: getNetwork()), for: .normal)
+    }
+
+    func networkDismissed() {
+        networkButton.setTitle(stringForNetwork(net: getNetwork()), for: .normal)
     }
 
     @IBAction func networkButtonClicked(_ sender: Any) {
         let networkSelector = self.storyboard?.instantiateViewController(withIdentifier: "networkSelection") as! NetworkSelectionSettings
+        networkSelector.delegate = self
         networkSelector.providesPresentationContextTransitionStyle = true
         networkSelector.definesPresentationContext = true
         networkSelector.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext

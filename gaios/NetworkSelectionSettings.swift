@@ -24,8 +24,9 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var mainnetSelector: DesignableView!
     @IBOutlet weak var testnetSelector: DesignableView!
     @IBOutlet weak var liquidSelector: DesignableView!
-    
-    
+    var network: Network = Network.TestNet
+    var delegate: NetworkDelegate?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         ipTextField.delegate = self
@@ -45,37 +46,49 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         testnetSelector.addGestureRecognizer(gesture1)
         let gesture2 = UITapGestureRecognizer(target: self, action:  #selector (self.liquidSelected (_:)))
         liquidSelector.addGestureRecognizer(gesture2)
-        let network = getNetwork()
-        if (network == Network.TestNet) {
-            mainnetIndicator.isHidden = true
-            testnetIndicator.isHidden = false
-            liquidIndicator.isHidden = true
-        }
-        
+        network = getNetwork()
+        updatebuttons()
     }
-    
-    @objc func mainnetSelected(_ sender:UITapGestureRecognizer){
-        mainnetIndicator.isHidden = false
-        testnetIndicator.isHidden = true
-        liquidIndicator.isHidden = true
-    }
-    
-    @objc func testnetSelected(_ sender:UITapGestureRecognizer){
-        mainnetIndicator.isHidden = true
-        testnetIndicator.isHidden = false
-        liquidIndicator.isHidden = true
-    }
-    
-    @objc func liquidSelected(_ sender:UITapGestureRecognizer){
-        mainnetIndicator.isHidden = true
-        testnetIndicator.isHidden = true
-        liquidIndicator.isHidden = false
-    }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         topConstraint.constant = 200
         setupView()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        delegate?.networkDismissed()
+    }
+
+    @objc func mainnetSelected(_ sender:UITapGestureRecognizer) {
+        network = Network.MainNet
+        updatebuttons()
+    }
+    
+    @objc func testnetSelected(_ sender:UITapGestureRecognizer) {
+        network = Network.TestNet
+        updatebuttons()
+    }
+    
+    @objc func liquidSelected(_ sender:UITapGestureRecognizer) {
+        updatebuttons()
+    }
+    
+    func updatebuttons() {
+        if (network == Network.TestNet) {
+            mainnetIndicator.isHidden = true
+            testnetIndicator.isHidden = false
+            liquidIndicator.isHidden = true
+        } else if (network == Network.MainNet) {
+            mainnetIndicator.isHidden = false
+            testnetIndicator.isHidden = true
+            liquidIndicator.isHidden = true
+        } else if (network == Network.LocalTest) {
+            mainnetIndicator.isHidden = true
+            testnetIndicator.isHidden = true
+            liquidIndicator.isHidden = false
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -86,6 +99,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
 
     @IBAction func saveButtonClicked(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
+        setNetwork(net: network)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
