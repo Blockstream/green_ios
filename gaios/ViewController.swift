@@ -73,7 +73,7 @@ class ViewController: UIViewController, WalletViewDelegate {
             let uri = bip21Helper.btcURIforAddress(address: item.address)
             cardView.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: cardView.QRImageView.frame)
             let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
-            cardView.QRImageView.isUserInteractionEnabled = true
+            cardView.QRImageView.isUserInteractionEnabled = false
             cardView.QRImageView.addGestureRecognizer(tap)
             cardView.QRImageView.tag = index
             coloredCardViews.append(cardView)
@@ -202,6 +202,7 @@ class ViewController: UIViewController, WalletViewDelegate {
         let wallet = cardView as! ColoredCardView
         wallet.balanceLabel.textColor = UIColor.white
         wallet.nameLabel.textColor = UIColor.white
+        wallet.QRImageView.isUserInteractionEnabled = true
     }
 
     func cardViewDismissed(cardView: CardView) {
@@ -210,6 +211,7 @@ class ViewController: UIViewController, WalletViewDelegate {
             showButtons()
         }
         let wallet = cardView as! ColoredCardView
+        wallet.QRImageView.isUserInteractionEnabled = false
         if(wallet.index < wallets.count - 1) {
             wallet.balanceLabel.textColor = UIColor.customTitaniumLight()
             wallet.nameLabel.textColor = UIColor.customTitaniumLight()
