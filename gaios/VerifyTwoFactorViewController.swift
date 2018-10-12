@@ -73,7 +73,17 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                             if(onboarding) {
                                 self.performSegue(withIdentifier: "mainMenu", sender: nil)
                             } else {
-                                self.navigationController?.popToRootViewController(animated: true)
+                                let action = call_json!["action"] as! String
+                                if(action == "send_raw_tx") {
+                                    self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+                                        self.stopAnimating()
+                                        self.navigationController?.popToRootViewController(animated: true)
+
+                                    }
+                                } else {
+                                    self.navigationController?.popToRootViewController(animated: true)
+                                }
                             }
                         } else {
                             print("wrong pin")
