@@ -167,7 +167,6 @@ class ViewController: UIViewController, WalletViewDelegate {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        walletView.dismissPresentedCardView(animated: true)
         if let nextController = segue.destination as? SendBtcViewController {
             self.navigationController!.navigationBar.isHidden = false
             nextController.wallet = (walletView.presentedCardView as! ColoredCardView).wallet
