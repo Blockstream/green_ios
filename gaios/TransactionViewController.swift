@@ -2,8 +2,8 @@
 //  TransactionViewController.swift
 //  gaios
 //
-//  Created by Strahinja Markovic on 7/2/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
+//  Created by Strahinja Markovic on 7/15/18.
+//  Copyright © 2018 Blockstream inc. All rights reserved.
 //
 
 import Foundation

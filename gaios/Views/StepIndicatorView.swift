@@ -1,9 +1,9 @@
 //
 //  StepIndicatorView.swift
-//  StepIndicator
+//  gaios
 //
-//  Created by Yun Chen on 2017/7/14.
-//  Copyright © 2017 Yun CHEN. All rights reserved.
+//  Created by Strahinja Markovic on 7/15/18.
+//  Copyright © 2018 Blockstream inc. All rights reserved.
 //
 
 import UIKit

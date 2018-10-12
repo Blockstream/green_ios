@@ -1,7 +1,9 @@
 //
 //  InitialViewController.swift
-//  GreenBitsIOS
+//  gaios
 //
+//  Created by Strahinja Markovic on 7/15/18.
+//  Copyright © 2018 Blockstream inc. All rights reserved.
 //
 
 import UIKit

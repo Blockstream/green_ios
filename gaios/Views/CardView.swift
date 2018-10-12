@@ -1,3 +1,11 @@
+//
+// CardView.swift
+//  gaios
+//
+//  Created by Strahinja Markovic on 7/15/18.
+//  Copyright © 2018 Blockstream inc. All rights reserved.
+//
+
 import Foundation
 import UIKit
 /**  The CardView class defines the attributes and behavior of the cards that appear in WalletView objects. */

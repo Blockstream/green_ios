@@ -1,9 +1,9 @@
 //
 //  HorizontalLineLayer.swift
-//  StepIndicator
+//  gaios
 //
-//  Created by Yun CHEN on 2017/9/1.
-//  Copyright © 2017 Yun CHEN. All rights reserved.
+//  Created by Strahinja Markovic on 7/15/18.
+//  Copyright © 2018 Blockstream inc. All rights reserved.
 //
 
 import UIKit

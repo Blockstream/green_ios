@@ -3,7 +3,7 @@
 //  gaios
 //
 //  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
+//  Copyright © 2018 Blockstream inc. All rights reserved.
 //
 
 import Foundation
@@ -74,7 +74,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
                 getAppDelegate().setMnemonicWords(array!)
                 AppDelegate.removeKeychainData()
                 AccountStore.shared.initializeAccountStore()
-                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                self.performSegue(withIdentifier: "next", sender: self)
             }.catch { error in
                 print("Login failed")
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
