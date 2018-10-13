@@ -28,7 +28,14 @@ class TransactionDetailViewController: UIViewController {
         feeLabel.text = feeText(fee: (transaction?.fee)!, size: (transaction?.size)!)
         memoLabel.text = transaction?.memo
         dateLabel.text = transaction?.date
-        warniniglabel.isHidden = true
+        if(transaction?.blockheight == 0) {
+            warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
+        } else if (AccountStore.shared.getBlockheight() - (transaction?.blockheight)! < 6) {
+            let blocks = AccountStore.shared.getBlockheight() - (transaction?.blockheight)! + 1
+            warniniglabel.text = String(format: "(%d/6) blocks confirmed", blocks)
+        } else {
+            warniniglabel.isHidden = true
+        }
         //something
     }
 

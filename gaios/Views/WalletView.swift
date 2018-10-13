@@ -40,7 +40,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         if(item.blockheight == 0) {
             cell.status.text = "unconfirmed"
             cell.status.textColor = UIColor.red
-        } else if (AccountStore.shared.getBlockheight() - item.blockheight < 7) {
+        } else if (AccountStore.shared.getBlockheight() - item.blockheight < 6) {
             let confirmCount = AccountStore.shared.getBlockheight() - item.blockheight + 1
             cell.status.text = String(format: "(%d/6)", confirmCount)
             cell.status.textColor = UIColor.red
