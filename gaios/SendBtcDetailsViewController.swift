@@ -103,11 +103,11 @@ class SendBtcDetailsViewController: UIViewController {
             nextController.toAddress = toAddress!
             if ( selectedType == TransactionType.FIAT) {
                 let amount = amountTextField.text!
-                nextController.fiat_amount = Double(amount)!
+                nextController.fiat_amount = btcAmount
                 nextController.btc_amount = AccountStore.shared.fiatToBtc(amount: nextController.fiat_amount)
             } else {
                 let amount = amountTextField.text!
-                nextController.btc_amount = Double(amount)!
+                nextController.btc_amount = btcAmount
                 nextController.fiat_amount = AccountStore.shared.btcToFiat(amount: nextController.btc_amount)
             }
             nextController.wallet = wallet
@@ -124,9 +124,9 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
         if (selectedType == TransactionType.BTC) {
-            btcAmount = amount_d
+            btcAmount = getDenominatedAmount(amount: amount_d)
         } else if (selectedType == TransactionType.FIAT) {
-            btcAmount = AccountStore.shared.USDtoBTC(amount: amount_d)
+            btcAmount = AccountStore.shared.fiatToBtc(amount: amount_d)
         }
         updateEstimate()
     }
@@ -155,6 +155,7 @@ class SendBtcDetailsViewController: UIViewController {
             if (details.count == 0 || (details["utxos"] as! [Any]).count == 0) {
                 g_payload = nil
                 updateButton()
+                setLabel(button: selectedButton!, fee: 0)
                 return
             }
             print(details)
@@ -165,6 +166,7 @@ class SendBtcDetailsViewController: UIViewController {
                 updateButton()
                 errorLabel.isHidden = false
                 errorLabel.text = error
+                setLabel(button: selectedButton!, fee: 0)
                 //update error message
                 return
             }
@@ -198,6 +200,19 @@ class SendBtcDetailsViewController: UIViewController {
 
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
         amountTextField.resignFirstResponder()
+    }
+
+    func getDenominatedAmount(amount: Double) -> Double{
+        let denomination = SettingsStore.shared.getDenominationSettings()
+        var amount_denominated: Double = 0
+        if(denomination == SettingsStore.shared.denominationPrimary) {
+            amount_denominated = amount
+        } else if (denomination == SettingsStore.shared.denominationMilli) {
+            amount_denominated = amount / 1000
+        } else if (denomination == SettingsStore.shared.denominationMicro){
+            amount_denominated = amount / 1000000
+        }
+        return amount_denominated
     }
 
     func setLabel(button: UIButton, fee: UInt64) {
