@@ -187,6 +187,18 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->is_watch_only(); });
     }
 
+    uint32_t session::get_current_subaccount()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_current_subaccount(); });
+    }
+
+    void session::set_current_subaccount(uint32_t subaccount)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        exception_wrapper([&] { m_impl->set_current_subaccount(subaccount); });
+    }
+
     std::string session::get_default_address_type()
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);

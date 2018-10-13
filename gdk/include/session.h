@@ -283,6 +283,19 @@ GASDK_API int GA_convert_amount(struct GA_session* session, const GA_json* json,
 GASDK_API int GA_set_pin(
     struct GA_session* session, const char* mnemonic, const char* pin, const char* device, GA_json** pin_data);
 
+/**
+ * Set the sessions current subaccount.
+ *
+ * @session The server session to use.
+ * @subaccount The subaccount number to set as the current subaccount.
+ *
+ * This results in a notification of the subaccount change which includes the
+ * subaccounts current balance.
+ *
+ * GA_ERROR if balance could not be retrieved.
+ */
+GASDK_API int GA_set_current_subaccount(struct GA_session* session, uint32_t subaccount);
+
 /*
  * Construct a transaction.
  *
@@ -444,8 +457,8 @@ GASDK_API int GA_decrypt(struct GA_session* session, const GA_json* input, GA_js
  * This must be called after before GA_connect/GA_connect_with_proxy.
  * Notifications may arrive on different threads so the caller must ensure
  * that shared data is correctly locked within the handler.
- * The GA_json object passed to the caller should not be modified and is
- * freed internally when the callback handler returns.
+ * The GA_json object passed to the caller must be destroyed by the caller
+ * using GA_destroy_json. Failing to do so will result in memory leaks.
  * When the session is disconnected/destroyed, a final call will be made to
  * the handler with a NULL notification.
  *

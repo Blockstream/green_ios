@@ -72,10 +72,12 @@ namespace sdk {
         nlohmann::json get_subaccount(uint32_t subaccount) const;
         nlohmann::json create_subaccount(const nlohmann::json& details);
         nlohmann::json get_receive_address(uint32_t subaccount, const std::string& addr_type) const;
-        nlohmann::json get_balance(uint32_t subaccount, uint32_t num_confs);
+        nlohmann::json get_balance(uint32_t subaccount, uint32_t num_confs) const;
         nlohmann::json get_available_currencies() const;
         bool is_rbf_enabled() const;
         bool is_watch_only() const;
+        uint32_t get_current_subaccount();
+        void set_current_subaccount(uint32_t subaccount);
         const std::string& get_default_address_type() const;
 
         nlohmann::json get_twofactor_config();
@@ -139,15 +141,16 @@ namespace sdk {
         void update_spending_limits(const nlohmann::json& limits_parent);
 
         autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
-        void call_notification_handler(const nlohmann::json& details);
+        void call_notification_handler(nlohmann::json* details);
 
+        void on_subaccount_changed(uint32_t subaccount);
         void on_new_transaction(nlohmann::json&& details);
         void on_new_block(nlohmann::json&& details);
         void on_new_fees(nlohmann::json&& details);
 
         nlohmann::json insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
             const std::string& recovery_pub_key, const std::string& recovery_chain_code, const std::string& type,
-            bool has_txs);
+            amount satoshi, bool has_txs);
 
         static std::pair<std::string, std::string> sign_challenge(
             const wally_ext_key_ptr& master_key, const std::string& challenge);
@@ -226,10 +229,11 @@ namespace sdk {
         std::string m_mnemonic;
         amount::value_type m_min_fee_rate;
         std::string m_fiat_source;
-        std::string m_fiat_rate;
+        mutable std::string m_fiat_rate;
         std::string m_fiat_currency;
+        uint32_t m_current_subaccount;
 
-        std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
+        mutable std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
         uint32_t m_next_subaccount;
         std::vector<uint32_t> m_fee_estimates;
         std::atomic<uint32_t> m_block_height;

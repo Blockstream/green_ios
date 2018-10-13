@@ -28,7 +28,7 @@ namespace sdk {
             const std::string txhash = u["txhash"];
             const uint32_t index = u["pt_idx"];
             const uint32_t sequence = session.is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
-            const uint32_t subaccount = u.value("subaccount", 0);
+            const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
             const auto type = script_type(u["script_type"]);
 
             // TODO: Create correctly sized dummys instead of actual script (faster)
@@ -39,8 +39,8 @@ namespace sdk {
                 // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
                 wit = tx_witness_stack_init(4);
                 tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_NULL);
-                tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG);
-                tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG);
+                tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG_LOW_R);
+                tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG_LOW_R);
                 tx_witness_stack_add(wit, prevout_script);
             }
 
@@ -193,8 +193,7 @@ namespace sdk {
         bool is_rbf, is_cpfp;
         std::tie(is_rbf, is_cpfp) = check_bump_tx(session, result);
 
-        // FIXME: Get from the session if not present as "subaccount"
-        const uint32_t current_subaccount = result.value("subaccount", 0);
+        const uint32_t current_subaccount = result.value("subaccount", session.get_current_subaccount());
 
         const bool is_redeposit = result.value("is_redeposit", false);
 

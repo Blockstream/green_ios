@@ -491,6 +491,7 @@ namespace sdk {
 
     template <class I1> inline const std::vector<unsigned char> ec_sig_to_der(const I1& sig, bool sighash = false)
     {
+        // All signatures must be low-R
         std::vector<unsigned char> der(EC_SIGNATURE_DER_MAX_LEN + (sighash ? 1 : 0));
         const size_t written = ec_sig_to_der(sig, der);
         GA_SDK_RUNTIME_ASSERT(written <= der.size());

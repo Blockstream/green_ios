@@ -133,23 +133,35 @@ fileprivate class FFIContext {
     var data: [String: Any]?
 }
 
-public class Session {
-    private typealias EventHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<Int8>?) -> Void
+protocol SessionNotificationDelegate: class {
+    func newNotification(dict: [String: Any])
+}
 
-    private let eventHandler : EventHandler = { (o: UnsafeMutableRawPointer?, p: UnsafeMutablePointer<Int8>?) -> Void in
-        defer {
-            GA_destroy_string(p!)
+public class Session {
+
+    static var delegate: SessionNotificationDelegate? = nil
+
+    private typealias EventHandler = @convention(c) (UnsafeMutableRawPointer?, OpaquePointer?) -> Void
+
+    private let eventHandler : EventHandler = { (o: UnsafeMutableRawPointer?, p: OpaquePointer?) -> Void in
+        print("stuff notified here")
+        do {
+            if let dict = try convertOpaqueJsonToDict(o: p!) {
+                delegate?.newNotification(dict: dict)
+            }
+        } catch {
+            print("something went wrong in notification")
         }
-        let context : FFIContext = Unmanaged.fromOpaque(o!).takeRetainedValue()
-        context.data = convertJSONBytesToDict(p!)
     }
 
     private let blocksFFIContext = FFIContext()
 
     private var session: OpaquePointer? = nil
+    private var somePointer: UnsafeMutableRawPointer? = nil
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
+        try callWrapper(fun: GA_set_notification_handler(session, eventHandler,  UnsafeMutablePointer<Int>.allocate(capacity: 1)))
     }
 
     deinit {
@@ -248,6 +260,10 @@ public class Session {
             GA_destroy_json(result)
         }
         return try convertOpaqueJsonToString(o: result!)
+    }
+
+    public func setCurrentSubaccount(subaccount: UInt32) throws -> Void {
+        try callWrapper(fun: GA_set_current_subaccount(session, subaccount))
     }
 
     public func getTwoFactorConfig() throws -> [String: Any]? {

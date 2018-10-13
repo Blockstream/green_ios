@@ -269,6 +269,9 @@ GA_SDK_DEFINE_C_FUNCTION_5(GA_set_pin, struct GA_session*, session, const char*,
     const char*, device, GA_json**, pin_data,
     { *json_cast(pin_data) = new nlohmann::json(session->set_pin(mnemonic, pin, device)); })
 
+GA_SDK_DEFINE_C_FUNCTION_2(GA_set_current_subaccount, struct GA_session*, session, uint32_t, subaccount,
+    { session->set_current_subaccount(subaccount); });
+
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_string_to_json, const char*, input, GA_json**, output,
     { *json_cast(output) = new nlohmann::json(nlohmann::json::parse(input)); });
 

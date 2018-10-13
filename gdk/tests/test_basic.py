@@ -15,9 +15,20 @@ def do_test(network, debug):
     # Connect, register and login our test session
     session = Session(network, '', False, debug).register_user(MNEMONIC).login(MNEMONIC)
 
+    # On login, we should have been notified
+    for expected_notification in ['subaccount', 'fees', 'block']:
+        event = session.notifications.get_nowait()
+        assert event['event'] == expected_notification
+
     # Try some simple calls
     subaccounts = session.get_subaccounts()
     assert(subaccounts[0]['pointer'] == 0)
+    assert('satoshi' in subaccounts[0])
+
+    if len(subaccounts) == 1:
+        session.create_subaccount({'name': 'foo', 'type': '2of3'})
+        subaccounts = session.get_subaccounts()
+        assert subaccounts[1]['name'] == 'foo'
 
     estimates = session.get_fee_estimates()
     assert len(estimates['fees']) == 25
@@ -38,6 +49,8 @@ def do_test(network, debug):
         'fee_rate': estimates['fees'][0],
     }
 
+    old_balance = subaccounts[0]["satoshi"]
+
     tx = session.create_transaction(details)
     tx = session.sign_transaction(tx)
     tx = session.send_transaction(tx).resolve()
@@ -57,6 +70,12 @@ def do_test(network, debug):
 
     assert found, 'tx {} not found'.format(txhash)
 
+    # The subaccounts balance should have been updated
+    subaccounts = session.get_subaccounts()
+    assert not subaccounts[0]['is_dirty']
+    new_balance = subaccounts[0]["satoshi"]
+    assert new_balance < old_balance
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     do_test('localtest', False)

@@ -67,7 +67,7 @@ if build_jni
                                      output : source + '.class',
                                      depends : swig_target)
         test(target_name, java,
-             args : ['-classpath', '.:../src/swig_java/GASDK.jar', '-Djava.library.path=.:../src', source],
+             args : ['-Xcheck:jni', '-classpath', '.:../src/swig_java/GASDK.jar', '-Djava.library.path=.:../src', source],
              workdir : meson.current_build_dir(),
              depends : test_target)
     endforeach

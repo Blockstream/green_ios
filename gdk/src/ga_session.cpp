@@ -337,6 +337,7 @@ namespace sdk {
         , m_notification_handler(nullptr)
         , m_notification_context(nullptr)
         , m_min_fee_rate(DEFAULT_MIN_FEE)
+        , m_current_subaccount(0)
         , m_next_subaccount(0)
         , m_block_height(0)
         , m_master_key(nullptr)
@@ -462,8 +463,9 @@ namespace sdk {
 
     void ga_session::disconnect()
     {
-        call_notification_handler(nlohmann::json());
-
+        if (m_notification_handler) {
+            call_notification_handler(new nlohmann::json());
+        }
         no_std_exception_escape([this] { m_session->leave().get(); });
         no_std_exception_escape([this] { m_session->stop().get(); });
         connect_with_tls() ? disconnect_transport<transport_tls>() : disconnect_transport<transport>();
@@ -599,9 +601,12 @@ namespace sdk {
             std::string type = subaccount["type"];
             if (type == "simple")
                 type = "2of2";
+            const std::string satoshi_str = subaccount["satoshi"];
+            const amount satoshi{ strtoul(satoshi_str.c_str(), NULL, 10) };
+
             insert_subaccount(subaccount["name"], pointer, subaccount["receiving_id"],
                 json_get_value(subaccount, "2of3_backup_pubkey", std::string()),
-                json_get_value(subaccount, "2of3_backup_chaincode", std::string()), type,
+                json_get_value(subaccount, "2of3_backup_chaincode", std::string()), type, satoshi,
                 subaccount.value("has_txs", false));
             if (pointer > m_next_subaccount)
                 m_next_subaccount = pointer;
@@ -609,9 +614,11 @@ namespace sdk {
         ++m_next_subaccount;
 
         // Insert the main account so callers can treat all accounts equally
+        const std::string satoshi_str = login_data["satoshi"];
+        const amount satoshi{ strtoul(satoshi_str.c_str(), NULL, 10) };
         const bool has_txs = m_login_data.value("has_txs", false);
         insert_subaccount(
-            std::string(), 0, m_login_data["receiving_id"], std::string(), std::string(), "2of2", has_txs);
+            std::string(), 0, m_login_data["receiving_id"], std::string(), std::string(), "2of2", satoshi, has_txs);
 
         m_system_message_id = m_login_data.value("next_system_message_id", 0);
         m_system_message_ack_id = 0;
@@ -620,6 +627,12 @@ namespace sdk {
 
         const auto p = m_login_data.find("limits");
         update_spending_limits(p == m_login_data.end() ? nlohmann::json() : *p);
+
+        auto& appearance = login_data["appearance"];
+        m_current_subaccount = json_get_value(appearance, "current_subaccount", 0u);
+
+        // Notify the caller of the current subaccount
+        on_subaccount_changed(m_current_subaccount);
 
         // Notify the caller of the current fees
         on_new_fees(set_fee_estimates(m_login_data["fee_estimates"]));
@@ -664,37 +677,63 @@ namespace sdk {
 
     void ga_session::on_new_transaction(nlohmann::json&& details)
     {
-        // FIXME: Update have_transactions in each affected subaccount,
-        // and mark cached tx lists (when implemented) as dirty
+        // Mark the balances of each affected subaccount dirty
+        const auto& affected_subaccounts = details["subaccounts"];
+        for (uint32_t subaccount : affected_subaccounts) {
+            const auto p = m_subaccounts.find(subaccount);
+            // FIXME: Handle other logged in sessions creating subaccounts
+            GA_SDK_RUNTIME_ASSERT_MSG(p != m_subaccounts.end(), "Unknown subaccount");
+            p->second["has_transactions"] = true;
+            p->second["is_dirty"] = true;
+        }
+
+        // FIXME: Mark cached tx lists (when implemented) as dirty
+        if (!m_notification_handler) {
+            return;
+        }
+
         const std::string value_str = details["value"];
         int64_t satoshi = strtol(value_str.c_str(), NULL, 10);
         details["satoshi"] = abs(satoshi);
+
         // FIXME: We can't determine if this is a re-deposit based on the
         // information the server give us. We should fetch the tx details
         // in tx_list format, cache them, and notify that data instead.
-        details["type"] = satoshi < 0 ? "outgoing" : "incoming";
+        const bool is_deposit = satoshi >= 0;
+        details["type"] = is_deposit ? "incoming" : "outgoing";
         details.erase("value");
         details.erase("wallet_id");
-        call_notification_handler({ { "event", "transaction" }, { "transaction", std::move(details) } });
+        call_notification_handler(
+            new nlohmann::json({ { "event", "transaction" }, { "transaction", std::move(details) } }));
     }
 
     void ga_session::on_new_block(nlohmann::json&& details)
     {
         json_rename_key(details, "count", "block_height");
-        details.erase("diverged_count");
 
         const uint32_t block_height = details["block_height"];
         GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
         m_block_height = block_height;
-        call_notification_handler({ { "event", "block" }, { "block", std::move(details) } });
+        if (m_notification_handler) {
+            details.erase("diverged_count");
+            call_notification_handler(new nlohmann::json({ { "event", "block" }, { "block", std::move(details) } }));
+        }
+    }
+
+    void ga_session::on_subaccount_changed(uint32_t subaccount)
+    {
+        // Note: notification recipient must destroy the passed JSON
+        if (m_notification_handler) {
+            call_notification_handler(
+                new nlohmann::json({ { "event", "subaccount" }, { "subaccount", get_subaccount(subaccount) } }));
+        }
     }
 
     void ga_session::on_new_fees(nlohmann::json&& fee_estimates)
     {
-        const nlohmann::json fees({ { "event", "fees" }, { "fees", fee_estimates } });
-        if (!fees["fees"].is_null()) {
-            // Only notify if fees have actually changed
-            call_notification_handler(fees);
+        // Note: notification recipient must destroy the passed JSON
+        if (m_notification_handler) {
+            call_notification_handler(new nlohmann::json({ { "event", "fees" }, { "fees", fee_estimates } }));
         }
     }
 
@@ -868,7 +907,7 @@ namespace sdk {
         // FIXME: Issue 47
         // Implement AES encryption, using input_json["key"] if given,
         // otherwise a privately derived key.
-        return { { "plaintext", input_json.at("ciphertext") } };
+        return { { "ciphertext", input_json.at("plaintext") } };
     }
 
     nlohmann::json ga_session::decrypt(const nlohmann::json& input_json) const
@@ -880,7 +919,7 @@ namespace sdk {
         // FIXME: Issue 47
         // Implement AES decryption, using input_json["key"] if given,
         // otherwise a privately derived key.
-        return { { "ciphertext", input_json.at("plaintext") } };
+        return { { "plaintext", input_json.at("ciphertext") } };
     }
 
     bool ga_session::set_watch_only(const std::string& username, const std::string& password)
@@ -901,30 +940,46 @@ namespace sdk {
 
     nlohmann::json ga_session::get_subaccounts() const
     {
-        std::vector<nlohmann::json> subaccounts;
-        subaccounts.reserve(m_subaccounts.size());
-        for (auto s : m_subaccounts)
-            subaccounts.emplace_back(s.second);
-        return nlohmann::json(subaccounts);
+        std::vector<nlohmann::json> details;
+        details.reserve(m_subaccounts.size());
+
+        for (auto sa : m_subaccounts)
+            details.emplace_back(get_subaccount(sa.first));
+
+        return details;
     }
 
     nlohmann::json ga_session::get_subaccount(uint32_t subaccount) const
     {
         const auto p = m_subaccounts.find(subaccount);
         GA_SDK_RUNTIME_ASSERT(p != m_subaccounts.end());
-        return p->second;
+        nlohmann::json details;
+        nlohmann::json balance;
+
+        if (p->second.value("is_dirty", true)) {
+            balance = get_balance(subaccount, 0); // Update the details
+            details = m_subaccounts.at(subaccount);
+        } else {
+            details = p->second;
+            balance = amount::convert(p->second, m_fiat_currency, m_fiat_rate);
+        }
+
+        for (const auto kv : balance.items()) {
+            details[kv.key()] = kv.value();
+        }
+        return details;
     }
 
     nlohmann::json ga_session::insert_subaccount(const std::string& name, uint32_t pointer,
         const std::string& receiving_id, const std::string& recovery_pub_key, const std::string& recovery_chain_code,
-        const std::string& type, bool has_txs)
+        const std::string& type, amount satoshi, bool has_txs)
     {
         GA_SDK_RUNTIME_ASSERT(m_subaccounts.find(pointer) == m_subaccounts.end());
         GA_SDK_RUNTIME_ASSERT(type == "2of2" || type == "2of3");
 
         nlohmann::json subaccount = { { "name", name }, { "pointer", pointer }, { "receiving_id", receiving_id },
             { "type", type }, { "recovery_pub_key", recovery_pub_key }, { "recovery_chain_code", recovery_chain_code },
-            { "has_transactions", has_txs } };
+            { "satoshi", satoshi.value() }, { "has_transactions", has_txs }, { "is_dirty", false } };
         m_subaccounts[pointer] = subaccount;
         return subaccount;
     }
@@ -970,8 +1025,8 @@ namespace sdk {
         ++m_next_subaccount;
 
         const bool has_txs = false;
-        nlohmann::json subaccount_details
-            = insert_subaccount(name, subaccount, receiving_id, recovery_pub_key, recovery_chain_code, type, has_txs);
+        nlohmann::json subaccount_details = insert_subaccount(
+            name, subaccount, receiving_id, recovery_pub_key, recovery_chain_code, type, amount(), has_txs);
         if (type == "2of3") {
             subaccount_details["recovery_mnemonic"] = recovery_mnemonic;
             subaccount_details["recovery_xpub"] = recovery_xpub;
@@ -1218,14 +1273,14 @@ namespace sdk {
         m_notification_context = context;
     }
 
-    void ga_session::call_notification_handler(const nlohmann::json& details)
+    void ga_session::call_notification_handler(nlohmann::json* details)
     {
-        if (m_notification_handler) {
-            const GA_json* details_c = details.is_null() ? nullptr : reinterpret_cast<const GA_json*>(&details);
-            m_notification_handler(m_notification_context, details_c);
-            if (!details_c) {
-                set_notification_handler(nullptr, nullptr);
-            }
+        GA_SDK_RUNTIME_ASSERT(m_notification_handler != nullptr);
+        // Note: notification recipient must destroy the passed JSON
+        const GA_json* details_c = reinterpret_cast<const GA_json*>(details);
+        m_notification_handler(m_notification_context, details_c);
+        if (!details_c) {
+            set_notification_handler(nullptr, nullptr);
         }
     }
 
@@ -1343,15 +1398,41 @@ namespace sdk {
         return address;
     }
 
-    nlohmann::json ga_session::get_balance(uint32_t subaccount, uint32_t num_confs)
+    nlohmann::json ga_session::get_balance(uint32_t subaccount, uint32_t num_confs) const
     {
-        nlohmann::json balance;
-        wamp_call([&balance](wamp_call_result result) { balance = get_json_result(result.get()); },
-            "com.greenaddress.txs.get_balance", subaccount, num_confs);
-        // FIXME: Locking, Make sure another session didn't change fiat currency
-        m_fiat_rate = balance["fiat_exchange"]; // Note: key name is wrong from the server!
-        const std::string satoshi_str = json_get_value(balance, "satoshi");
-        return amount::convert({ { "satoshi", strtoul(satoshi_str.c_str(), NULL, 10) } }, m_fiat_currency, m_fiat_rate);
+        amount::value_type satoshi;
+        bool use_cached = false;
+
+        if (num_confs == 0) {
+            // See if we can return our cached value
+            const auto p = m_subaccounts.find(subaccount);
+            GA_SDK_RUNTIME_ASSERT_MSG(p != m_subaccounts.end(), "Unknown subaccount");
+            if (!p->second.value("is_dirty", true)) {
+                satoshi = p->second["satoshi"];
+                use_cached = true;
+            }
+        }
+
+        if (!use_cached) {
+            nlohmann::json balance;
+            wamp_call([&balance](wamp_call_result result) { balance = get_json_result(result.get()); },
+                "com.greenaddress.txs.get_balance", subaccount, num_confs);
+            // FIXME: Locking, Make sure another session didn't change fiat currency
+            m_fiat_rate = balance["fiat_exchange"]; // Note: key name is wrong from the server!
+            const std::string satoshi_str = json_get_value(balance, "satoshi");
+            satoshi = strtoul(satoshi_str.c_str(), NULL, 10);
+        }
+
+        if (num_confs == 0 && !use_cached) {
+            // Cache the balance
+            auto& sa = m_subaccounts[subaccount];
+            sa["satoshi"] = satoshi;
+            sa["is_dirty"] = false;
+        }
+
+        nlohmann::json details = amount::convert({ { "satoshi", satoshi } }, m_fiat_currency, m_fiat_rate);
+        details["subaccount"] = subaccount;
+        return details;
     }
 
     nlohmann::json ga_session::get_available_currencies() const
@@ -1374,6 +1455,19 @@ namespace sdk {
 #endif
 
     bool ga_session::is_watch_only() const { return m_watch_only; }
+
+    uint32_t ga_session::get_current_subaccount() { return m_current_subaccount; }
+
+    void ga_session::set_current_subaccount(uint32_t subaccount)
+    {
+        // Note we don't check if the subaccount is the same. This lets
+        // callers who choose to run their balance updating logic entirely
+        // from notifications simply set the current subaccount when they
+        // receive a tx notification that affects it, and get the updated
+        // balance notified automatically.
+        m_current_subaccount = subaccount;
+        on_subaccount_changed(subaccount);
+    }
 
     const std::string& ga_session::get_default_address_type() const
     {
@@ -1628,7 +1722,7 @@ namespace sdk {
     void ga_session::sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const
     {
         const auto txhash = u["txhash"];
-        const uint32_t subaccount = u.value("subaccount", 0);
+        const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
         const uint32_t pointer = u["pointer"];
         const amount::value_type v = u["satoshi"]; // FIXME: Allow amount conversions directly
         const amount satoshi{ v };

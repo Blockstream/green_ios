@@ -22,10 +22,12 @@ public class WSSLogin {
             }
         }
 
+        final boolean doPrint = debug == GASDK.GA_TRUE;
         GASDK.NotificationHandler handler = new GASDK.NotificationHandler(){
             public void onNewNofification(final Object session, final Object jsonObject)
             {
-                System.out.println(jsonObject.toString());
+                if (doPrint)
+                    System.out.println("notification: " + jsonObject.toString() + "\n");
                 WSSLogin.counter += 1;
             }
         };
@@ -37,14 +39,23 @@ public class WSSLogin {
 
         GASDK.register_user(session, DEFAULT_MNEMONIC);
         GASDK.login(session, DEFAULT_MNEMONIC, "");
+        // Wait for initial notifications (subaccount/fee/block)
+        while (WSSLogin.counter < 3) {
+            Thread.sleep(100);
+        }
+        WSSLogin.counter = 0;
+
+        // Verify that we can disconnect and reconnect without issues
+        GASDK.disconnect(session);
+        GASDK.connect(session, network, debug);
+        GASDK.login(session, DEFAULT_MNEMONIC, "");
 
         final byte[] random_bytes = GASDK.get_random_bytes(32);
         final String mnemonic = GASDK.generate_mnemonic();
 
-        if (false) { // Change to true to test notification delivery
-            while (WSSLogin.counter < 10) {
-                Thread.sleep(1000);
-            }
+        // Wait for initial notifications again
+        while (WSSLogin.counter < 3) {
+            Thread.sleep(100);
         }
      }
 }

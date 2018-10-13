@@ -156,7 +156,7 @@ namespace sdk {
         const std::array<uint32_t, 2> sighashes = { { WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL } };
         std::array<unsigned char, EC_SIGNATURE_LEN * 2> sigs;
         init_container(sigs, ga_sig, user_sig);
-        std::vector<unsigned char> script(1 + (EC_SIGNATURE_DER_MAX_LEN + 2) * 2 + 3 + prevout_script.size());
+        std::vector<unsigned char> script(1 + (EC_SIGNATURE_DER_MAX_LOW_R_LEN + 2) * 2 + 3 + prevout_script.size());
         const size_t written = scriptsig_multisig_from_bytes(prevout_script, sigs, sighashes, 0, script);
         GA_SDK_RUNTIME_ASSERT(written <= script.size());
         script.resize(written);

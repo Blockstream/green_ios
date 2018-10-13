@@ -49,6 +49,7 @@ sed -i -e "s!\(source_hash.*=\).*!\1 ${SOURCE_SHA256}!" ${WRAP_DIR}/${WRAP_NAME}
 sed -i -e "s!\(directory.*=\).*!\1 ${UNTAR_DIR}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(source_filename.*=\).*!\1 ${UNTAR_NAME}-${SHA_SUM}.tar.gz!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(source_url.*archive/\).*!\1${SHA_SUM}.tar.gz!" ${WRAP_DIR}/${WRAP_NAME}.wrap
+sed -i -e "s!\(patch_filename.*=\).*!\1 ${UNTAR_NAME}-meson-${SOURCE_SHA256}.tar!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 sed -i -e "s!\(patch_hash.*=\).*!\1 ${PATCH_SHA256}!" ${WRAP_DIR}/${WRAP_NAME}.wrap
 
 if [ "${UNTAR_NAME}" == "libwally-core" -o "${UNTAR_NAME}" == "boost" ]; then

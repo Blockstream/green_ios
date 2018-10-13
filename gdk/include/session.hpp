@@ -52,7 +52,6 @@ namespace sdk {
 
         // FIXME: recovery_mnemonic requires secure clear.
         nlohmann::json create_subaccount(const nlohmann::json& details);
-        nlohmann::json get_subaccounts() const;
 
         void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
         void change_settings_pricing_source(const std::string& currency, const std::string& exchange);
@@ -72,6 +71,8 @@ namespace sdk {
 
         bool is_rbf_enabled();
         bool is_watch_only();
+        uint32_t get_current_subaccount();
+        void set_current_subaccount(uint32_t subaccount);
         std::string get_default_address_type();
 
         nlohmann::json get_twofactor_config();

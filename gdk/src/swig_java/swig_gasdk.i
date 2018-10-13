@@ -15,16 +15,6 @@
 #define LOCALFUNC static
 #endif
 
-static const jint JNI_VERSIONS[] = {
-#ifndef __ANDROID__
-    JNI_VERSION_1_8,
-#endif
-    JNI_VERSION_1_6,
-    JNI_VERSION_1_4,
-    JNI_VERSION_1_2,
-    JNI_VERSION_1_1
-};
-
 static const char* SDK_CLASS  = "com/blockstream/libgreenaddress/GASDK";
 static const char* TO_OBJECT_METHOD_NAME = "toJSONObject";
 static const char* TO_OBJECT_METHOD_ARGS = "(Ljava/lang/String;)Ljava/lang/Object;";
@@ -57,29 +47,43 @@ LOCALFUNC jclass jni_get_class(JNIEnv *jenv, const char* name) {
     return (jclass) obj;
 }
 
-LOCALFUNC int jni_cache_objects(JNIEnv *jenv) {
+JNIEXPORT jint JNI_OnLoad(JavaVM* jvm, void* reserved)
+{
+    JNIEnv* jenv;
+    (void)reserved;
 
-    if (!g_jvm) {
-        /* Cache our JVM object for callbacks/calling */
-        if ((*jenv)->GetJavaVM(jenv, &g_jvm)) {
-            return 1;
-        } else if (!(g_gasdk = jni_get_class(jenv, SDK_CLASS))) {
-            g_jvm = NULL;
-        } else if (!(g_gasdk_obj = jni_get_class(jenv, OBJ_CLASS))) {
-            (*jenv)->DeleteGlobalRef(jenv, g_gasdk);
-            g_gasdk = NULL;
-            g_jvm = NULL;
-        } else {
-            g_gasdk_toJSONObject = (*jenv)->GetStaticMethodID(jenv, g_gasdk, TO_OBJECT_METHOD_NAME, TO_OBJECT_METHOD_ARGS);
-            g_gasdk_toJSONString = (*jenv)->GetStaticMethodID(jenv, g_gasdk, TO_STRING_METHOD_NAME, TO_STRING_METHOD_ARGS);
-            g_gasdk_callNotificationHandler = (*jenv)->GetStaticMethodID(jenv, g_gasdk, NOTIFY_METHOD_NAME, NOTIFY_METHOD_ARGS);
-            g_gasdk_obj_ctor = (*jenv)->GetMethodID(jenv, g_gasdk_obj, "<init>", "(JI)V");
-            g_gasdk_obj_get_id = (*jenv)->GetMethodID(jenv, g_gasdk_obj, "get_id", "()I");
-            g_gasdk_obj_get = (*jenv)->GetMethodID(jenv, g_gasdk_obj, "get", "()J");
-        }
-        return g_jvm != NULL;
-    }
-    return 1;
+    if ((*jvm)->GetEnv(jvm, (void**) &jenv, JNI_VERSION_1_6))
+        return -1;
+
+    /* Cache our objects/methods for callbacks/calling */
+    if (!(g_gasdk = jni_get_class(jenv, SDK_CLASS)))
+        return -1;
+
+    if (!(g_gasdk_obj = jni_get_class(jenv, OBJ_CLASS)))
+        return -1;
+
+    g_gasdk_toJSONObject = (*jenv)->GetStaticMethodID(jenv, g_gasdk, TO_OBJECT_METHOD_NAME, TO_OBJECT_METHOD_ARGS);
+    g_gasdk_toJSONString = (*jenv)->GetStaticMethodID(jenv, g_gasdk, TO_STRING_METHOD_NAME, TO_STRING_METHOD_ARGS);
+    g_gasdk_callNotificationHandler = (*jenv)->GetStaticMethodID(jenv, g_gasdk, NOTIFY_METHOD_NAME, NOTIFY_METHOD_ARGS);
+    g_gasdk_obj_ctor = (*jenv)->GetMethodID(jenv, g_gasdk_obj, "<init>", "(JI)V");
+    g_gasdk_obj_get_id = (*jenv)->GetMethodID(jenv, g_gasdk_obj, "get_id", "()I");
+    g_gasdk_obj_get = (*jenv)->GetMethodID(jenv, g_gasdk_obj, "get", "()J");
+
+    g_jvm = jvm;
+    return JNI_VERSION_1_6;
+}
+
+JNIEXPORT void JNI_OnUnload(JavaVM* jvm, void* reserved)
+{
+    JNIEnv* jenv;
+    (void)reserved;
+
+    if (!g_jvm || (*jvm)->GetEnv(jvm, (void**) &jenv, JNI_VERSION_1_6))
+        return;
+
+    (*jenv)->DeleteGlobalRef(jenv, g_gasdk);
+    (*jenv)->DeleteGlobalRef(jenv, g_gasdk_obj);
+    g_jvm = NULL;
 }
 
 #define GA_SDK_SWIG_SESSION_ID 1
@@ -112,12 +116,12 @@ LOCALFUNC uint32_t uint32_cast(JNIEnv *jenv, jlong value) {
 }
 
 /* Create and return a native json object from GA_json */
-LOCALFUNC jobject create_json(JNIEnv *jenv, void *p, int destroy) {
+LOCALFUNC jobject create_json(JNIEnv *jenv, void *p) {
     char* json_cstring = NULL;
     jstring json_string = NULL;
     jobject json_obj = NULL;
 
-    if (!jni_cache_objects(jenv) || (*jenv)->ExceptionOccurred(jenv))
+    if (!g_jvm)
         return NULL;
 
     if (GA_convert_json_to_string((GA_json *)p, &json_cstring) != GA_OK) {
@@ -129,10 +133,11 @@ LOCALFUNC jobject create_json(JNIEnv *jenv, void *p, int destroy) {
     GA_destroy_string(json_cstring);
     if (!(*jenv)->ExceptionOccurred(jenv) && json_string) {
         json_obj = (*jenv)->CallStaticObjectMethod(jenv, g_gasdk, g_gasdk_toJSONObject, json_string);
+        if ((*jenv)->ExceptionOccurred(jenv))
+            (*jenv)->ExceptionDescribe(jenv);
     }
 
-    if (destroy && p)
-        GA_destroy_json((GA_json *)p);
+    GA_destroy_json((GA_json *)p);
     return json_obj;
 }
 
@@ -142,12 +147,14 @@ LOCALFUNC void* get_json_or_throw(JNIEnv *jenv, jobject json_obj) {
     GA_json* json = NULL;
     jstring json_string;
 
-    if (!jni_cache_objects(jenv) || (*jenv)->ExceptionOccurred(jenv))
+    if (!g_jvm)
         return NULL;
 
     json_string = (*jenv)->CallStaticObjectMethod(jenv, g_gasdk, g_gasdk_toJSONString, json_obj);
-    if ((*jenv)->ExceptionOccurred(jenv) || !json_string)
+    if ((*jenv)->ExceptionOccurred(jenv)) {
+        (*jenv)->ExceptionDescribe(jenv);
         return NULL;
+    }
     if (!(json_cstring = (*jenv)->GetStringUTFChars(jenv, json_string, NULL)))
         return NULL;
     GA_convert_string_to_json(json_cstring, &json);
@@ -170,17 +177,11 @@ LOCALFUNC void notification_handler(void* context_p, const GA_json* details)
     notify_t* n = (notify_t*) context_p;
     jobject json_obj;
     int status;
-    size_t i;
 
     if (!g_jvm || !context_p || !n->m_session)
         return; /* Called after un-registering */
 
-    for (i = 0; i < sizeof(JNI_VERSIONS)/sizeof(JNI_VERSIONS[0]); ++i) {
-        status = (*g_jvm)->GetEnv(g_jvm, (void**) &jenv, JNI_VERSIONS[i]);
-        if (status != JNI_EVERSION)
-            break;
-    }
-
+    status = (*g_jvm)->GetEnv(g_jvm, (void**) &jenv, JNI_VERSION_1_6);
     if (status == JNI_EDETACHED) {
         if ((*g_jvm)->AttachCurrentThread(g_jvm, (void**) &jenv, NULL))
             return;
@@ -195,11 +196,15 @@ LOCALFUNC void notification_handler(void* context_p, const GA_json* details)
         goto end;
     }
 
-    json_obj = create_json(jenv, (void *)details, 0);
+    json_obj = create_json(jenv, (void *)details);
     if (!(*jenv)->ExceptionOccurred(jenv) && json_obj)
         (*jenv)->CallStaticVoidMethod(jenv, g_gasdk, g_gasdk_callNotificationHandler, n->m_session_obj, json_obj);
 
 end:
+    if ((*jenv)->ExceptionOccurred(jenv)) {
+        (*jenv)->ExceptionDescribe(jenv);
+        (*jenv)->ExceptionClear(jenv);
+    }
     if (status == JNI_EDETACHED)
         (*g_jvm)->DetachCurrentThread(g_jvm);
 }
@@ -208,7 +213,7 @@ end:
 LOCALFUNC jobject create_obj(JNIEnv *jenv, void *p, int id) {
     jobject obj = 0;
 
-    if (!jni_cache_objects(jenv) || (*jenv)->ExceptionOccurred(jenv))
+    if (!g_jvm)
         return NULL;
 
     if (!(obj = (*jenv)->NewObject(jenv, g_gasdk_obj, g_gasdk_obj_ctor, (jlong)(uintptr_t)p, id)))
@@ -236,7 +241,7 @@ LOCALFUNC jobject create_obj(JNIEnv *jenv, void *p, int id) {
 LOCALFUNC void *get_obj(JNIEnv *jenv, jobject obj, int id) {
     void *ret;
 
-    if (!obj || !jni_cache_objects(jenv) || (*jenv)->ExceptionOccurred(jenv))
+    if (!g_jvm || !obj)
         return NULL;
 
     if ((*jenv)->CallIntMethod(jenv, obj, g_gasdk_obj_get_id) != id ||
@@ -382,7 +387,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 }
 %typemap(argout) GA_json** {
     if (*$1) {
-        $result = create_json(jenv, *$1, 1);
+        $result = create_json(jenv, *$1);
     }
 }
 %typemap(in) GA_json* {
@@ -504,6 +509,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 %returns_struct(GA_remove_account, GA_twofactor_call)
 %returns_void__(GA_send_nlocktimes)
 %returns_struct(GA_send_transaction, GA_twofactor_call)
+%returns_void__(GA_set_current_subaccount)
 %returns_struct(GA_set_pin, GA_json)
 %returns_void__(GA_set_transaction_memo)
 %returns_struct(GA_sign_transaction, GA_json)
