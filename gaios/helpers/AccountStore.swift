@@ -17,6 +17,7 @@ class AccountStore {
     var feeEstimatelow: Int = 0
     var feeEstimateMedium: Int = 0
     var feeEstimateHigh: Int = 0
+    var blockHeight: UInt32 = 0
 
     let denominationBTC: Double = 100000000
     let denominationMilliBTC: Double = 100000
@@ -49,6 +50,14 @@ class AccountStore {
 
     func getWallets() -> Promise<Array<WalletItem>> {
         return wrap {self.fetchWallets()}
+    }
+
+    func getBlockheight() -> UInt32 {
+        return blockHeight
+    }
+
+    func setBlockHeight(height: UInt32) {
+        blockHeight = height
     }
 
     func getFeeRateHigh() -> UInt64 {

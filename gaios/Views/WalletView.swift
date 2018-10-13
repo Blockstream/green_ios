@@ -37,6 +37,17 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             cell.address.text = item.address
             cell.amount.textColor = UIColor.white
         }
+        if(item.blockheight == 0) {
+            cell.status.text = "unconfirmed"
+            cell.status.textColor = UIColor.red
+        } else if (AccountStore.shared.getBlockheight() - item.blockheight < 7) {
+            let confirmCount = AccountStore.shared.getBlockheight() - item.blockheight + 1
+            cell.status.text = String(format: "(%d/6)", confirmCount)
+            cell.status.textColor = UIColor.red
+        } else {
+            cell.status.text = "completed"
+            cell.status.textColor = UIColor.customTitaniumLight()
+        }
         cell.selectionStyle = .none
         cell.date.text = item.date
         cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0)

@@ -7,7 +7,24 @@
 //
 import UIKit
 
-class GreenAddressService {
+
+
+
+class GreenAddressService: SessionNotificationDelegate {
+
+    func newNotification(dict: [String : Any]) {
+        let event = dict["event"] as! String
+        if (event == "block") {
+            let block = dict["block"] as! [String: Any]
+            let blockHeight = block["block_height"] as! UInt32
+            AccountStore.shared.setBlockHeight(height: blockHeight)
+        }
+    }
+
+    public init() {
+       Session.delegate = self
+    }
+
     var session: Session = try! Session()
 
     var loginData: [String: Any]? = nil
