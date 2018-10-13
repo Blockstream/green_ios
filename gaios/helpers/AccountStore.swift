@@ -143,16 +143,6 @@ class AccountStore {
         return amount
     }
 
-    func USDtoSatoshi(amount: Double) -> Int {
-        let result = (amount / exchangeRate) * getDenomination()
-        return Int(result)
-    }
-
-    func USDtoBTC(amount: Double) -> Double{
-        let result: Double = amount / exchangeRate
-        return result
-    }
-
     func enableEmailTwoFactor(email: String) -> TwoFactorCall? {
         //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
         let dict = ["enabled": true, "confirmed": true, "data": email] as [String : Any]
