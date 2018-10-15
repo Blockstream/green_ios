@@ -254,7 +254,7 @@ namespace sdk {
             }
         }
 
-        std::string decrypt_mnemonic(const std::string& encrypted_mnemonic, const std::string& password)
+        static std::string decrypt_mnemonic(const std::string& encrypted_mnemonic, const std::string& password)
         {
             const auto entropy = mnemonic_to_bytes(encrypted_mnemonic);
             GA_SDK_RUNTIME_ASSERT_MSG(entropy.size() == 36, "Invalid encrypted mnemonic");
@@ -281,7 +281,7 @@ namespace sdk {
             return mnemonic_from_bytes(plaintext.begin(), plaintext.size());
         }
 
-        std::string encrypt_mnemonic(const std::string& plaintext_mnemonic, const std::string& password)
+        static std::string encrypt_mnemonic(const std::string& plaintext_mnemonic, const std::string& password)
         {
             const auto plaintext = mnemonic_to_bytes(plaintext_mnemonic);
             std::array<unsigned char, SHA256_LEN> sha_buffer;
@@ -1120,9 +1120,12 @@ namespace sdk {
             json_add_if_missing(tx_details, "has_payment_request", false);
             json_add_if_missing(tx_details, "memo", std::string());
             const std::string fee_str = tx_details["fee"];
-            tx_details["fee"] = boost::lexical_cast<amount::value_type>(fee_str);
+            const amount::value_type fee = strtoul(fee_str.c_str(), NULL, 10);
+            tx_details["fee"] = fee;
             const std::string tx_data = json_get_value(tx_details, "data");
             tx_details.erase("data");
+            const uint32_t tx_size = tx_details["size"];
+            tx_details.erase("size");
             if (!tx_data.empty()) {
                 // Only unconfirmed transactions are returned with the tx hex.
                 // In this case update the size, weight etc.
@@ -1133,7 +1136,16 @@ namespace sdk {
                 // front so callers can always expect it.
                 const auto tx = tx_from_hex(tx_data);
                 update_tx_info(tx, tx_details);
+            } else {
+                // FIXME: Until the server gives us the vsize back, these
+                // values are incorrect, however this isn't a regression.
+                tx_details["transaction_size"] = tx_size;
+                tx_details["transaction_vsize"] = tx_size;
+                tx_details["transaction_weight"] = tx_size * 4;
             }
+            // Compute fee in satoshi/kb, with the best integer accuracy we can
+            const uint32_t tx_vsize = tx_details["transaction_vsize"];
+            tx_details["fee_rate"] = fee * 1000 / tx_vsize;
 
             amount received, spent;
             bool is_from_me = false; // Are any inputs from our wallet?

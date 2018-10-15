@@ -129,8 +129,12 @@ public class TwoFactorCall {
     }
 }
 
-fileprivate class FFIContext {
-    var data: [String: Any]?
+fileprivate class NotificationContext {
+    private var session: OpaquePointer
+
+    init(session: OpaquePointer) {
+        self.session = session
+    }
 }
 
 protocol SessionNotificationDelegate: class {
@@ -138,30 +142,34 @@ protocol SessionNotificationDelegate: class {
 }
 
 public class Session {
-
+    private typealias NotificationHandler = @convention(c) (UnsafeMutableRawPointer?, OpaquePointer?) -> Void
     static var delegate: SessionNotificationDelegate? = nil
 
-    private typealias EventHandler = @convention(c) (UnsafeMutableRawPointer?, OpaquePointer?) -> Void
-
-    private let eventHandler : EventHandler = { (o: UnsafeMutableRawPointer?, p: OpaquePointer?) -> Void in
-        print("stuff notified here")
-        do {
-            if let dict = try convertOpaqueJsonToDict(o: p!) {
-                delegate?.newNotification(dict: dict)
+    private let notificationHandler : NotificationHandler = { (context: UnsafeMutableRawPointer?, details: OpaquePointer?) -> Void in
+        let context : NotificationContext = Unmanaged.fromOpaque(context!).takeUnretainedValue()
+        if let jsonDetails = details {
+            do {
+                if let dict = try! convertOpaqueJsonToDict(o: jsonDetails) {
+                    delegate?.newNotification(dict: dict)
+                }
+            } catch {
+                print("couldn't convert notification")
             }
-        } catch {
-            print("something went wrong in notification")
         }
     }
 
-    private let blocksFFIContext = FFIContext()
-
     private var session: OpaquePointer? = nil
-    private var somePointer: UnsafeMutableRawPointer? = nil
+    private var notificationContext: NotificationContext? = nil
+
+    private func setNotificationHandler() throws {
+        notificationContext = NotificationContext(session: session!)
+        let context = UnsafeMutableRawPointer(Unmanaged.passUnretained(self.notificationContext!).toOpaque())
+        try callWrapper(fun: GA_set_notification_handler(session, notificationHandler, context))
+    }
 
     public init() throws {
         try callWrapper(fun: GA_create_session(&session))
-        try callWrapper(fun: GA_set_notification_handler(session, eventHandler,  UnsafeMutablePointer<Int>.allocate(capacity: 1)))
+        try setNotificationHandler()
     }
 
     deinit {
@@ -275,6 +283,8 @@ public class Session {
     fileprivate func jsonFuncToJsonWrapper(input: [String: Any], fun call: (_: OpaquePointer, _: OpaquePointer, _: UnsafeMutablePointer<OpaquePointer?>) -> Int32) throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         var input_json: OpaquePointer = try convertDictToJSON(dict: input)
+        var string_json = try convertOpaqueJsonToString(o: input_json)
+        print(string_json)
         defer {
             GA_destroy_json(input_json)
         }
