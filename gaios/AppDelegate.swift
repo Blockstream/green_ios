@@ -23,6 +23,8 @@ class GreenAddressService: SessionNotificationDelegate {
             let type = transaction["type"] as! String
             if (type == "incoming") {
                 print("incoming transaction")
+                let subaccounts = transaction["subaccounts"] as! NSArray
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "incomingTX"), object: nil, userInfo: ["subaccounts" : subaccounts])
             } else if (type == "outgoing"){
                 print("outgoing transaction")
             }
