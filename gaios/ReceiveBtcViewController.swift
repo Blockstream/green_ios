@@ -15,6 +15,7 @@ class ReceiveBtcViewController: UIViewController {
     @IBOutlet weak var walletAddressLabel: UILabel!
     @IBOutlet weak var walletQRCode: UIImageView!
     var receiveAddress: String? = nil
+    var wallet: WalletItem? = nil
     @IBOutlet weak var amountTextfield: UITextField!
     @IBOutlet weak var estimateLabel: UILabel!
     @IBOutlet weak var shareButton: UIButton!
@@ -27,7 +28,9 @@ class ReceiveBtcViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
-        walletAddressLabel.text = receiveAddress
+        //walletAddressLabel.text = receiveAddress
+        walletAddressLabel.text = wallet?.address
+        receiveAddress = wallet?.address
         updateQRCode(amount: 0)
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
@@ -41,16 +44,20 @@ class ReceiveBtcViewController: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
         walletQRCode.isUserInteractionEnabled = true
         walletQRCode.addGestureRecognizer(tap)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
 
     }
 
     @objc func newAddress(_ notification: NSNotification) {
         print(notification.userInfo ?? "")
         if let dict = notification.userInfo as NSDictionary? {
-            if let accounts = dict["subaccounts"] as? NSArray {
-                print(accounts)
-                // if currently presenting subbacount from list get new address
+            if let pointer = dict["pointer"] as? Int {
+                if(pointer == Int(wallet!.pointer)) {
+                    receiveAddress = wallet?.address
+                    walletAddressLabel.text = wallet?.address
+                    updateQRCode(amount: amount_g)
+                    print("refresh address here")
+                }
             }
         }
     }

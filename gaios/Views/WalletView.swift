@@ -348,6 +348,17 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         }
     }
 
+    func updateWallet(forCardview: Int) {
+        for index in 0..<insertedCardViews.count {
+            let wallet = insertedCardViews[index] as! ColoredCardView
+            if(wallet.wallet?.pointer == UInt32(forCardview)) {
+                wallet.addressLabel.text = wallet.wallet?.address
+                let uri = bip21Helper.btcURIforAddress(address: (wallet.wallet?.address)!)
+                wallet.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: wallet.QRImageView.frame)
+            }
+        }
+    }
+
     /** The distance that the wallet view is inset from the enclosing scroll view. */
     public var contentInset: UIEdgeInsets {
         set {

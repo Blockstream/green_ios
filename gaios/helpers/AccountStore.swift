@@ -307,9 +307,38 @@ class AccountStore {
         return enabled
     }
     
+    func getWalletForSubAccount(pointer: Int) -> WalletItem {
+        return m_wallets[pointer]
+    }
+
+    @objc func incomingTransaction(_ notification: NSNotification) {
+        print(notification.userInfo ?? "")
+        if let dict = notification.userInfo as NSDictionary? {
+            if let accounts = dict["subaccounts"] as? NSArray {
+                print(accounts)
+                for acc in accounts {
+                    let pointer = acc as! Int
+                    DispatchQueue.main.async {
+                        print("before1")
+                        let p = UInt32(pointer)
+                        do {
+                            self.m_wallets[pointer].address = try getSession().getReceiveAddress(subaccount: p)
+                            print("before")
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "addressChanged"), object: nil, userInfo: ["pointer" : pointer])
+                        } catch {
+                            print("couldn't get new address")
+                        }
+                    }
+                    print("after")
+                }
+            }
+        }
+    }
+
     func initializeAccountStore() {
         SettingsStore.shared.initSettingsStore()
         NotificationStore.shared.initializeNotificationStore()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.incomingTransaction(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
     }
 }
 

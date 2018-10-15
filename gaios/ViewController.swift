@@ -29,6 +29,16 @@ class ViewController: UIViewController, WalletViewDelegate {
         walletView.presentedFooterView.receiveButton.addTarget(self, action: #selector(self.receiveToWallet(_:)), for: .touchUpInside)
         walletView.presentedFooterView.sendButton.addTarget(self, action: #selector(self.sendfromWallet(_:)), for: .touchUpInside)
         walletView.delegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
+    }
+
+    @objc func newAddress(_ notification: NSNotification) {
+        print(notification.userInfo ?? "")
+        if let dict = notification.userInfo as NSDictionary? {
+            if let pointer = dict["pointer"] as? Int {
+                walletView.updateWallet(forCardview: pointer)
+            }
+        }
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -173,6 +183,7 @@ class ViewController: UIViewController, WalletViewDelegate {
         }
         if let nextController = segue.destination as? ReceiveBtcViewController {
             nextController.receiveAddress = (walletView.presentedCardView as! ColoredCardView).addressLabel.text
+            nextController.wallet = (walletView.presentedCardView as! ColoredCardView).wallet
         }
         if let nextController = segue.destination as? TransactionDetailViewController {
             nextController.transaction = sender as? TransactionItem
