@@ -13,10 +13,6 @@ class AccountStore {
 
     static let shared = AccountStore()
     var m_wallets:Array<WalletItem> = Array()
-    var exchangeRate: Double = 0 //usd for 100000000
-    var feeEstimatelow: Int = 0
-    var feeEstimateMedium: Int = 0
-    var feeEstimateHigh: Int = 0
     var blockHeight: UInt32 = 0
 
     let denominationBTC: Double = 100000000
@@ -43,12 +39,17 @@ class AccountStore {
             print("something went wrong trying to get subbacounts")
         }
         m_wallets = result
-        return result
+        return m_wallets
     }
 
     private init() { }
 
-    func getWallets() -> Promise<Array<WalletItem>> {
+    func getWallets(cached: Bool) -> Promise<Array<WalletItem>> {
+        if(m_wallets.count > 0 && cached == false) {
+            return Promise<Array<WalletItem>> { seal in
+                seal.fulfill(m_wallets)
+            }
+        }
         return wrap {self.fetchWallets()}
     }
 
@@ -94,18 +95,6 @@ class AccountStore {
             print("something went wrong")
         }
         return 0
-    }
-
-    func getDenomination() -> Double  {
-        let denomination = SettingsStore.shared.getDenominationSettings()
-        if (denomination == SettingsStore.shared.denominationPrimary) {
-            return denominationBTC
-        } else if (denomination == SettingsStore.shared.denominationMilli) {
-            return denominationMilliBTC
-        } else if (denomination == SettingsStore.shared.denominationMicro) {
-            return denominationMicroBTC
-        }
-        return denominationBTC
     }
 
     func dateFromTimestamp(date: String) -> Date {
@@ -320,7 +309,6 @@ class AccountStore {
     
     func initializeAccountStore() {
         SettingsStore.shared.initSettingsStore()
-        exchangeRate = 1 //get exchange rate
         NotificationStore.shared.initializeNotificationStore()
     }
 }

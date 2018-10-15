@@ -68,7 +68,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
         self.QRCodeReader.addGestureRecognizer(gesture)
         QRCodeReader.isUserInteractionEnabled = true
-        AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
+        AccountStore.shared.getWallets(cached: true).done { (accs:Array<WalletItem>) in
             self.wallets = accs.reversed()
             self.tableView.reloadData()
         }

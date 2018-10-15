@@ -22,7 +22,7 @@ class NotificationStore {
     var newNotificationCount = 0
 
     func getTransactions() {
-        AccountStore.shared.getWallets().done { (wallets: Array<WalletItem>) in
+        AccountStore.shared.getWallets(cached: true).done { (wallets: Array<WalletItem>) in
             for wallet in wallets {
                 wrap{ try getSession().getTransactions(subaccount: wallet.pointer, page: 0)
                     }.done { (transactions: [String: Any]?) in

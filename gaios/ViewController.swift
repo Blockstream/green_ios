@@ -133,7 +133,7 @@ class ViewController: UIViewController, WalletViewDelegate {
     }
 
     func refreshWallets() {
-        AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
+        AccountStore.shared.getWallets(cached: true).done { (accs:Array<WalletItem>) in
             DispatchQueue.main.async {
                 if(accs.count == 0) {
                     return

@@ -41,6 +41,18 @@ class ReceiveBtcViewController: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
         walletQRCode.isUserInteractionEnabled = true
         walletQRCode.addGestureRecognizer(tap)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
+
+    }
+
+    @objc func newAddress(_ notification: NSNotification) {
+        print(notification.userInfo ?? "")
+        if let dict = notification.userInfo as NSDictionary? {
+            if let accounts = dict["subaccounts"] as? NSArray {
+                print(accounts)
+                // if currently presenting subbacount from list get new address
+            }
+        }
     }
 
     @objc func zoomQR(recognizer: UITapGestureRecognizer) {
