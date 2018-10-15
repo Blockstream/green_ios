@@ -283,8 +283,6 @@ public class Session {
     fileprivate func jsonFuncToJsonWrapper(input: [String: Any], fun call: (_: OpaquePointer, _: OpaquePointer, _: UnsafeMutablePointer<OpaquePointer?>) -> Int32) throws -> [String: Any]? {
         var result: OpaquePointer? = nil
         var input_json: OpaquePointer = try convertDictToJSON(dict: input)
-        var string_json = try convertOpaqueJsonToString(o: input_json)
-        print(string_json)
         defer {
             GA_destroy_json(input_json)
         }
