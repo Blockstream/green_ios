@@ -111,7 +111,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 let satoshi:Int = transaction["satoshi"] as! Int
                 let hash = transaction["txhash"] as! String
                 let fee = transaction["fee"] as! UInt32
-                let size = transaction["size"] as! UInt32
+                let size = transaction["transaction_vsize"] as! UInt32
                 let blockheight = transaction["block_height"] as! UInt32
                 let memo = transaction["memo"] as! String
 

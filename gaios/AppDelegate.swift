@@ -18,6 +18,14 @@ class GreenAddressService: SessionNotificationDelegate {
             let block = dict["block"] as! [String: Any]
             let blockHeight = block["block_height"] as! UInt32
             AccountStore.shared.setBlockHeight(height: blockHeight)
+        } else if (event == "transaction") {
+            let transaction = dict["transaction"] as! [String: Any]
+            let type = transaction["type"] as! String
+            if (type == "incoming") {
+                print("incoming transaction")
+            } else if (type == "outgoing"){
+                print("outgoing transaction")
+            }
         }
     }
 
