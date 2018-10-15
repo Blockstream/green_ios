@@ -62,6 +62,7 @@
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
+		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
@@ -170,6 +171,7 @@
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
+		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
@@ -328,6 +330,7 @@
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
+				0981927C217531E000D8434F /* Localizable.strings */,
 				0933A598210716EC00C43838 /* GreenAddress.swift */,
 				676FCF1E1F9D0CF800354E93 /* gaios */,
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
@@ -543,6 +546,7 @@
 				092C7BCE20D238BE00F90DF2 /* ColoredCardView.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */,
+				0981927D217531E000D8434F /* Localizable.strings in Resources */,
 				092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */,
 				092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
