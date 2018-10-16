@@ -470,7 +470,6 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 
 %returns_void__(GA_ack_system_message)
 %returns_void__(GA_change_settings_pricing_source)
-%returns_void__(GA_change_settings_tx_limits)
 %returns_void__(GA_connect)
 %returns_void__(GA_connect_with_proxy)
 %returns_struct(GA_convert_amount, GA_json)
@@ -516,7 +515,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 %returns_void__(GA_twofactor_call)
 %returns_struct(GA_twofactor_cancel_reset, GA_twofactor_call)
 %returns_struct(GA_twofactor_reset, GA_twofactor_call)
-/*%returns_struct(GA_twofactor_change_tx_limits, GA_twofactor_call)*/
+%returns_struct(GA_twofactor_change_limits, GA_twofactor_call)
 %returns_struct(GA_change_settings_twofactor, GA_twofactor_call)
 %returns_struct(GA_twofactor_get_status, GA_json)
 %returns_void__(GA_twofactor_request_code)

@@ -53,7 +53,7 @@ namespace sdk {
         // FIXME: recovery_mnemonic requires secure clear.
         nlohmann::json create_subaccount(const nlohmann::json& details);
 
-        void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
+        void change_settings_limits(const nlohmann::json& limit_details, const nlohmann::json& twofactor_data);
         void change_settings_pricing_source(const std::string& currency, const std::string& exchange);
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
@@ -75,7 +75,7 @@ namespace sdk {
         void set_current_subaccount(uint32_t subaccount);
         std::string get_default_address_type();
 
-        nlohmann::json get_twofactor_config();
+        nlohmann::json get_twofactor_config(bool reset_cached = false);
         std::vector<std::string> get_all_twofactor_methods();
         std::vector<std::string> get_enabled_twofactor_methods();
 
@@ -126,6 +126,8 @@ namespace sdk {
         uint32_t get_block_height() const;
         amount get_dust_threshold() const;
         nlohmann::json get_spending_limits() const;
+        bool is_spending_limits_decrease(const nlohmann::json& limit_details);
+
         void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
         nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
 

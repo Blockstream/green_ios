@@ -1,6 +1,5 @@
 c_cpp_sources = [
     'amount.cpp',
-    'wss_change_settings_c.c',
     'wss_connect.cpp',
     'wss_create_subaccount.cpp',
     'wss_get_tx_list.cpp',

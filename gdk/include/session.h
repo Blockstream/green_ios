@@ -149,19 +149,6 @@ GASDK_API int GA_create_subaccount(struct GA_session* session, const GA_json* de
 GASDK_API int GA_get_subaccounts(struct GA_session* session, GA_json** subaccounts);
 
 /**
- * Change transaction limits settings.
- *
- * @session The server session to use.
- * @is_fiat One of @GA_TRUE or @GA_FALSE.
- * @total Amount in total per transaction in satoshi.
- * @twofactor_data Two factor authentication details for the action.
- *
- * GA_ERROR if transaction limits could not be changed.
- */
-GASDK_API int GA_change_settings_tx_limits(
-    struct GA_session* session, uint32_t is_fiat, uint32_t total, const GA_json* twofactor_data);
-
-/**
  * Set the pricing source for a user's GreenAddress wallet.
  *
  * @session The server session to use.

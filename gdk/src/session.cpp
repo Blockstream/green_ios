@@ -132,10 +132,10 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_subaccounts(); });
     }
 
-    void session::change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data)
+    void session::change_settings_limits(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { m_impl->change_settings_tx_limits(is_fiat, total, twofactor_data); });
+        return exception_wrapper([&] { m_impl->change_settings_limits(details, twofactor_data); });
     }
 
     void session::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
@@ -205,10 +205,10 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_default_address_type(); });
     }
 
-    nlohmann::json session::get_twofactor_config()
+    nlohmann::json session::get_twofactor_config(bool reset_cached)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper([&] { return m_impl->get_twofactor_config(); });
+        return exception_wrapper([&] { return m_impl->get_twofactor_config(reset_cached); });
     }
 
     std::vector<std::string> session::get_all_twofactor_methods()
@@ -408,6 +408,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return m_impl->get_block_height(); // Note no exception_wrapper
     }
+
     amount session::get_dust_threshold() const
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
@@ -419,6 +420,13 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return m_impl->get_spending_limits(); // Note no exception_wrapper
     }
+
+    bool session::is_spending_limits_decrease(const nlohmann::json& details)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->is_spending_limits_decrease(details); // Note no exception_wrapper
+    }
+
     void session::sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);

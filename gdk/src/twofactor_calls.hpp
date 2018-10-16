@@ -9,8 +9,6 @@ public:
     GA_change_settings_twofactor_call(
         ga::sdk::session& session, const std::string& method_to_update, const nlohmann::json& details);
 
-    void request_code(const std::string& method_to_update) override;
-
 private:
     state_type call_impl() override;
 
@@ -19,7 +17,21 @@ private:
     nlohmann::json m_current_config;
     std::string m_method_to_update;
     nlohmann::json m_details;
+    nlohmann::json m_gauth_data;
     bool m_enabling;
+};
+
+class GA_change_limits_call : public GA_twofactor_call {
+public:
+    GA_change_limits_call(ga::sdk::session& session, const nlohmann::json& details);
+
+    void request_code(const std::string& method) override;
+
+private:
+    state_type call_impl() override;
+
+    nlohmann::json m_limit_details;
+    bool m_is_decrease;
 };
 
 class GA_remove_account_call : public GA_twofactor_call {
@@ -43,6 +55,8 @@ private:
 
     nlohmann::json m_tx_details;
     nlohmann::json m_limit_details;
+    bool m_twofactor_required;
+    bool m_under_limit;
 };
 
 class GA_twofactor_reset_call : public GA_twofactor_call {

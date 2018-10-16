@@ -396,22 +396,6 @@ namespace sdk {
         result["change_amount"] = change_amount;
         result["change_index"] = change_index;
 
-        bool twofactor_required = false;
-        bool twofactor_under_limit = false;
-        if (!session.get_enabled_twofactor_methods().empty()) {
-            // See if the tx is under our spending limit
-            // FIXME: locking
-            // FIXME: Do this in the 2fa send call rather than here
-            const uint32_t limit = session.get_spending_limits()["satoshi"];
-            if (required_total + fee > limit) {
-                twofactor_required = true;
-            } else {
-                twofactor_under_limit = true;
-            }
-        }
-        result["twofactor_required"] = twofactor_required;
-        result["twofactor_under_limit"] = twofactor_under_limit;
-
         if (user_fee_rate < min_fee_rate) {
             result["error"] = "Fee rate is below minimum accepted fee rate";
         }

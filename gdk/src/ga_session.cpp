@@ -308,6 +308,27 @@ namespace sdk {
 
             return mnemonic_from_bytes(ciphertext.data(), ciphertext.size());
         }
+
+        static amount::value_type get_limit_total(const nlohmann::json& details, bool is_fiat)
+        {
+            const auto& total_p = details.at("total");
+            amount::value_type total;
+            uint32_t mult = is_fiat ? 100 : 1;
+            if (total_p.is_number()) {
+                total = total_p;
+            } else {
+                const std::string total_str = total_p;
+                if (total_str.find('.') == std::string::npos) {
+                    total = strtoul(total_str.c_str(), nullptr, 10);
+                } else {
+                    GA_SDK_RUNTIME_ASSERT(is_fiat);
+                    const double total_d = strtod(total_str.c_str(), nullptr) * 100;
+                    total = total_d;
+                    mult = 1; // Already multipled
+                }
+            }
+            return total * mult;
+        }
     } // namespace
 
     uint32_t websocket_rng_type::operator()() const
@@ -655,17 +676,10 @@ namespace sdk {
     nlohmann::json ga_session::get_spending_limits() const
     {
         // FIXME: locking
-        const auto& total_p = m_limits_data["total"];
-        amount::value_type total;
-        if (total_p.is_number()) {
-            total = total_p;
-        } else {
-            const std::string total_str = total_p;
-            total = strtoul(total_str.c_str(), NULL, 10);
-        }
+        const bool is_fiat = m_limits_data["is_fiat"];
+        amount::value_type total = get_limit_total(m_limits_data, is_fiat);
 
         nlohmann::json converted_limits;
-        const bool is_fiat = m_limits_data["is_fiat"];
         if (is_fiat) {
             converted_limits = convert_fiat_cents(total);
         } else {
@@ -673,6 +687,16 @@ namespace sdk {
         }
         converted_limits["is_fiat"] = is_fiat;
         return converted_limits;
+    }
+
+    bool ga_session::is_spending_limits_decrease(const nlohmann::json& details)
+    {
+        // FIXME: Locking
+        const bool current_is_fiat = m_limits_data.at("is_fiat").get<bool>();
+        const bool new_is_fiat = details.at("is_fiat").get<bool>();
+        return current_is_fiat == new_is_fiat
+            && get_limit_total(details, new_is_fiat) < get_limit_total(m_limits_data, current_is_fiat);
+        ;
     }
 
     void ga_session::on_new_transaction(nlohmann::json&& details)
@@ -1065,11 +1089,13 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(r);
     }
 
-    void ga_session::change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data)
+    void ga_session::change_settings_limits(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
-        // FIXME: move to use update_spending_limits
-        const nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", 0 }, { "total", total } };
+        // FIXME: Allow fiat limits to be set directly as a fiat string in the users ccy
+        const nlohmann::json args
+            = { { "is_fiat", details.at("is_fiat") }, { "per_tx", 0 }, { "total", details.at("total") } };
         change_settings("tx_limits", as_messagepack(args).get(), twofactor_data);
+        update_spending_limits(args);
     }
 
     void ga_session::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
@@ -1491,10 +1517,10 @@ namespace sdk {
         return address_type::p2sh;
     }
 
-    nlohmann::json ga_session::get_twofactor_config()
+    nlohmann::json ga_session::get_twofactor_config(bool reset_cached)
     {
         // FIXME: Locking
-        if (m_twofactor_config.is_null()) {
+        if (m_twofactor_config.is_null() || reset_cached) {
             nlohmann::json f;
             wamp_call([&f](wamp_call_result result) { f = get_json_result(result.get()); },
                 "com.greenaddress.twofactor.get_config");
@@ -1519,13 +1545,9 @@ namespace sdk {
             nlohmann::json gauth_config
                 = { { "enabled", gauth_enabled }, { "confirmed", gauth_enabled }, { "data", gauth_data } };
 
-            nlohmann::json twofactor_config = {
-                { "all_methods", ALL_2FA_METHODS },
-                { "email", email_config },
-                { "sms", sms_config },
-                { "phone", phone_config },
-                { "gauth", gauth_config },
-            };
+            nlohmann::json twofactor_config
+                = { { "all_methods", ALL_2FA_METHODS }, { "email", email_config }, { "sms", sms_config },
+                      { "phone", phone_config }, { "gauth", gauth_config }, { "limits", get_spending_limits() } };
             set_enabled_twofactor_methods(twofactor_config);
             std::swap(m_twofactor_config, twofactor_config);
         }

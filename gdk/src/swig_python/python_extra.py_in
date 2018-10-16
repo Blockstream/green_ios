@@ -129,11 +129,6 @@ class Session(object):
     def get_subaccounts(self):
         return json.loads(get_subaccounts(self.session_obj))
 
-#   def change_settings_tx_limits(self, is_fiat, total, twofactor_data):
-#       return change_settings_tx_limits(
-#           self.session_obj, is_fiat, total, self._to_json(twofactor_data)
-#       )
-
     def change_settings_pricing_source(self, currency, exchange):
         return change_settings_pricing_source(self.session_obj, currency, exchange)
 
@@ -190,16 +185,18 @@ class Session(object):
     def get_twofactor_config(self):
         return json.loads(get_twofactor_config(self.session_obj))
 
+    def change_settings_twofactor(self, method, details):
+        return Call(change_settings_twofactor(self.session_obj, method, self._to_json(details)))
+
     def twofactor_reset(self, email, is_dispute):
         return Call(twofactor_reset(self.session_obj, email, is_dispute))
 
     def twofactor_cancel_reset(self):
         return Call(twofactor_cancel_reset(self.session_obj))
 
-    def change_settings_twofactor(self, method, twofactor_details):
-        return Call(
-            change_settings_twofactor(self.session_obj, method, self._to_json(twofactor_details))
-        )
+    def twofactor_change_limits(self, details):
+        return Call(twofactor_change_limits(self.session_obj, self._to_json(details)))
+
 
 _old_get_networks = get_networks
 def get_networks():

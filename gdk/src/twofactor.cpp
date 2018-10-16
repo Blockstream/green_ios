@@ -84,6 +84,8 @@ void GA_twofactor_call::operator()()
                 m_state = state_type::resolve_code;
             }
         } else {
+            const auto& error_message = ga::sdk::get_error_details(e).second;
+            m_error = { { "error", error_message.empty() ? std::string(e.what()) : error_message } };
             m_state = state_type::error;
         }
     }
@@ -181,8 +183,6 @@ GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
     }
 }
 
-void GA_change_settings_twofactor_call::request_code(const std::string& method) { request_code_impl(method); }
-
 GA_twofactor_call::state_type GA_change_settings_twofactor_call::on_init_done(const std::string& new_action)
 {
     // The user has either:
@@ -194,6 +194,7 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::on_init_done(co
     m_action = new_action + m_method;
     m_methods = { { m_method_to_update } };
     // Move to prompt the user for the code for the method they are enabling
+    m_gauth_data = m_twofactor_data;
     m_twofactor_data = nlohmann::json();
     return state_type::resolve_code;
 }
@@ -222,18 +223,51 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
         // method using its code (which proves the user got a code from the
         // method being enabled)
         if (m_method_to_update == "gauth") {
-            m_session.enable_gauth(m_code, m_twofactor_data);
+            m_session.enable_gauth(m_code, m_gauth_data);
         } else {
             m_session.enable_twofactor(m_method_to_update, m_code);
         }
         return state_type::done;
     } else if (m_action == "disable_2fa") {
         m_session.disable_twofactor(m_method_to_update, m_twofactor_data);
+        // For gauth, we must reset the sessions 2fa data since once it is
+        // disabled, the server must create a new secret (which it only
+        // does on fetching 2fa config). Without this a subsequent re-enable
+        // will fail.
+        // FIXME: The server should return the new secret/the user should be
+        // able to supply their own
+        const bool reset_cached = m_method_to_update == "gauth";
+        m_result = m_session.get_twofactor_config(reset_cached).at(m_method_to_update);
         return state_type::done;
     } else {
         GA_SDK_RUNTIME_ASSERT(false);
         __builtin_unreachable();
     }
+}
+
+// Change limits
+GA_change_limits_call::GA_change_limits_call(ga::sdk::session& session, const nlohmann::json& details)
+    : GA_twofactor_call(session, "change_tx_limits")
+    , m_limit_details(details)
+    , m_is_decrease(m_session.is_spending_limits_decrease(details))
+{
+    if (m_is_decrease) {
+        m_state = state_type::make_call; // Limit decreases do not require 2fa
+    }
+}
+
+void GA_change_limits_call::request_code(const std::string& method)
+{
+    // If we are requesting a code, then our limits changed elsewhere and
+    // this is not a limit decrease
+    m_is_decrease = false;
+    GA_twofactor_call::request_code(method);
+}
+
+GA_twofactor_call::state_type GA_change_limits_call::call_impl()
+{
+    m_session.change_settings_limits(m_limit_details, m_is_decrease ? m_twofactor_data : nlohmann::json());
+    return state_type::done;
 }
 
 // Remove account
@@ -252,16 +286,20 @@ GA_twofactor_call::state_type GA_remove_account_call::call_impl()
 GA_send_call::GA_send_call(ga::sdk::session& session, const nlohmann::json& tx_details)
     : GA_twofactor_call(session, "send_raw_tx")
     , m_tx_details(tx_details)
+    , m_twofactor_required(!m_methods.empty())
+    , m_under_limit(false)
 {
     // FIXME: bumping, bumping under limits
+    const uint32_t limit = m_twofactor_required ? session.get_spending_limits()["satoshi"].get<uint32_t>() : 0;
     const uint32_t satoshi = m_tx_details["satoshi"];
     const uint32_t fee = m_tx_details["fee"];
 
-    m_limit_details = { { "asset", "BTC" }, { "amount", satoshi + fee }, { "fee", m_tx_details["fee"] },
+    m_limit_details = { { "asset", "BTC" }, { "amount", satoshi + fee }, { "fee", fee },
         { "change_idx", m_tx_details["change_index"] } };
 
-    if (!m_tx_details.value("twofactor_required", false)) {
-        // No 2FA is required to send this tx
+    if (limit != 0 && satoshi + fee <= limit) {
+        // 2fa is enabled and we have a spending limit, but this tx is under it.
+        m_under_limit = true;
         m_state = state_type::make_call;
     }
 
@@ -277,19 +315,16 @@ void GA_send_call::request_code(const std::string& method)
     // 1) Caller has 2FA configured and the tx is not under limits, OR
     // 2) Tx was thought to be under limits but limits have now changed
     // Prevent the call from trying to send using the limit next time through the state machine
-    m_tx_details["twofactor_under_limit"] = false;
-    m_tx_details["twofactor_required"] = true;
-
+    m_under_limit = false;
     create_twofactor_data();
-
-    request_code_impl(method);
+    GA_twofactor_call::request_code(method);
 }
 
 void GA_send_call::create_twofactor_data()
 {
     m_twofactor_data = nlohmann::json();
-    if (m_tx_details.value("twofactor_required", false)) {
-        if (m_tx_details.value("twofactor_under_limit", false)) {
+    if (m_twofactor_required) {
+        if (m_under_limit) {
             // Tx is under the limit and a send hasn't previously failed causing
             // the user to enter a code. Try sending without 2fa as an under limits spend
             m_twofactor_data["try_under_limits_spend"] = m_limit_details;

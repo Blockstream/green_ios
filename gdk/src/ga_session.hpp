@@ -62,7 +62,7 @@ namespace sdk {
 
         template <typename T>
         void change_settings(const std::string& key, const T& value, const nlohmann::json& twofactor_data);
-        void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
+        void change_settings_limits(const nlohmann::json& limit_details, const nlohmann::json& twofactor_data);
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
 
@@ -80,7 +80,7 @@ namespace sdk {
         void set_current_subaccount(uint32_t subaccount);
         const std::string& get_default_address_type() const;
 
-        nlohmann::json get_twofactor_config();
+        nlohmann::json get_twofactor_config(bool reset_cached = false);
         std::vector<std::string> get_all_twofactor_methods();
         std::vector<std::string> get_enabled_twofactor_methods();
 
@@ -131,6 +131,7 @@ namespace sdk {
         bool have_subaccounts() const { return m_subaccounts.size() != 1u; }
         amount get_dust_threshold() const;
         nlohmann::json get_spending_limits() const;
+        bool is_spending_limits_decrease(const nlohmann::json& limit_details);
         const network_parameters& get_network_parameters() const { return m_net_params; }
         void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
         std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
@@ -138,7 +139,7 @@ namespace sdk {
     private:
         void set_enabled_twofactor_methods(nlohmann::json& config);
         void update_login_data(nlohmann::json&& login_data, bool watch_only);
-        void update_spending_limits(const nlohmann::json& limits_parent);
+        void update_spending_limits(const nlohmann::json& details);
 
         autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
         void call_notification_handler(nlohmann::json* details);

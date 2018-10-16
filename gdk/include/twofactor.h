@@ -136,11 +136,17 @@ GASDK_API int GA_twofactor_reset(
  */
 GASDK_API int GA_twofactor_cancel_reset(struct GA_session* session, struct GA_twofactor_call** call);
 
-/** Change the transaction limit (total, BTC) */
-#if 0
-GASDK_API int GA_twofactor_change_tx_limits(
-    struct GA_session* session, const char* total, struct GA_twofactor_call** call);
-#endif
+/**
+ * Change twofactor limits settings.
+ *
+ * @session The server session to use.
+ * @limit_details Details of the new transaction limits
+ * @call Destination for the resulting GA_twofactor_call to perform the change.
+ *
+ * GA_ERROR if transaction limits could not be changed.
+ */
+GASDK_API int GA_twofactor_change_limits(
+    struct GA_session* session, const GA_json* limit_details, struct GA_twofactor_call** call);
 
 #ifdef __cplusplus
 }

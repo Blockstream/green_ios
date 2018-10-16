@@ -222,12 +222,6 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_create_subaccount, struct GA_session*, session, co
 GA_SDK_DEFINE_C_FUNCTION_2(GA_get_subaccounts, struct GA_session*, session, GA_json**, subaccounts,
     { *json_cast(subaccounts) = new nlohmann::json(session->get_subaccounts()); })
 
-GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_tx_limits, struct GA_session*, session, uint32_t, is_fiat, uint32_t,
-    total, const GA_json*, twofactor_data, {
-        GA_SDK_RUNTIME_ASSERT(is_fiat == GA_FALSE || is_fiat == GA_TRUE);
-        session->change_settings_tx_limits(is_fiat == GA_TRUE, total, *json_cast(twofactor_data));
-    })
-
 GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_pricing_source, struct GA_session*, session, const char*, currency,
     const char*, exchange, { session->change_settings_pricing_source(currency, exchange); })
 
@@ -313,6 +307,9 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_cancel_reset, struct GA_session*, sessio
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_send_transaction, struct GA_session*, session, const GA_json*, transaction_details,
     struct GA_twofactor_call**, call, { *call = new GA_send_call(*session, *json_cast(transaction_details)); });
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_change_limits, struct GA_session*, session, const GA_json*, details,
+    struct GA_twofactor_call**, call, { *call = new GA_change_limits_call(*session, *json_cast(details)); })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_json_value_to_bool, const GA_json*, json, const char*, path, uint32_t*, output, {
     bool v;
