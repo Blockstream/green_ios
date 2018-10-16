@@ -24,10 +24,34 @@ class GreenAddressService: SessionNotificationDelegate {
             if (type == "incoming") {
                 print("incoming transaction")
                 let subaccounts = transaction["subaccounts"] as! NSArray
+                DispatchQueue.main.async {
+                    self.showIncomingNotification()
+                }
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "incomingTX"), object: nil, userInfo: ["subaccounts" : subaccounts])
             } else if (type == "outgoing"){
                 print("outgoing transaction")
             }
+        }
+    }
+
+    func showIncomingNotification() {
+        let window = UIApplication.shared.keyWindow!
+        let v = UIView(frame: window.bounds)
+        window.addSubview(v);
+        v.backgroundColor = UIColor.black
+        let label = UILabel()
+        label.frame = CGRect(x: 0, y: 0, width: 120, height: 30)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Transaction Received"
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        v.addSubview(label)
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 220).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 30).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.3) {
+            v.removeFromSuperview()
         }
     }
 
