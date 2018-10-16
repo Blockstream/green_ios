@@ -241,6 +241,16 @@ class AccountStore {
         return secret
     }
 
+    func getGauthOTP() -> String? {
+        let config = getTwoFactorConfig()
+        if (config == nil) {
+            return nil
+        }
+        let gauth = config!["gauth"] as! [String: Any]
+        let gauthdata = gauth["data"] as! String
+        return gauthdata
+    }
+
     func getTwoFactorConfig() -> [String: Any]? {
         do {
             return try getSession().getTwoFactorConfig()

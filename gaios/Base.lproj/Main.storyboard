@@ -3005,7 +3005,7 @@
                         <outlet property="nextButton" destination="dAA-KQ-ymm" id="fB9-lp-0e2"/>
                         <outlet property="qrCodeImageView" destination="YCg-kw-T2x" id="ZDj-7L-raS"/>
                         <outlet property="secretLabel" destination="kPj-p0-KMB" id="YdD-xM-XsH"/>
-                        <segue destination="U8O-Z4-13N" kind="show" identifier="towFactor" id="Oir-Oa-Fhf"/>
+                        <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="Oir-Oa-Fhf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0hh-lv-EsQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -5108,7 +5108,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="wnz-58-ghj"/>
+        <segue reference="Oir-Oa-Fhf"/>
         <segue reference="Pqg-Zu-9Zd"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="Iy9-iC-rNo"/>

@@ -15,15 +15,17 @@ class SetGauthViewController: UIViewController {
     @IBOutlet weak var secretLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
     var secret: String? = ""
+    var otp: String? = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         secret = AccountStore.shared.getGauthSecret()
+        otp = AccountStore.shared.getGauthOTP()
         if (secret == nil) {
             print("something went wrong gauth")
             return
         }
-        qrCodeImageView.image = QRImageGenerator.imageForText(text: secret!, frame: qrCodeImageView.frame)
+        qrCodeImageView.image = QRImageGenerator.imageForText(text: otp!, frame: qrCodeImageView.frame)
         secretLabel.text = secret
     }
 
@@ -43,17 +45,20 @@ class SetGauthViewController: UIViewController {
             if (status == "call") {
                 try factor?.call()
                 let json_call = try factor?.getStatus()
-                let status_call = json!["status"] as! String
-                try factor?.call()
-                let json_call1 = try factor?.getStatus()
-                let status_call1 = json!["status"] as! String
-                print(status_call)
-                print("status call")
-                self.performSegue(withIdentifier: "twoFactor", sender: factor)
+                let status_call = json_call!["status"] as! String
+                if(status_call == "resolve_code") {
+                    self.performSegue(withIdentifier: "twoFactor", sender: factor)
+                }
             }
         } catch {
             print("something went wrong")
         }
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.onboarding = true
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+    }
 }
