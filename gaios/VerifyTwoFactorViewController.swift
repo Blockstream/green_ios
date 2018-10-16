@@ -62,8 +62,6 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                     try twoFactor?.resolveCode(code: pinCode)
                     let resolve_json = try twoFactor?.getStatus()
                     let resolve_status = resolve_json!["status"] as! String
-                    print(resolve_json)
-                    print("hello1")
                     if(resolve_status == "call") {
                         try twoFactor?.call()
                         let call_json = try twoFactor?.getStatus()
