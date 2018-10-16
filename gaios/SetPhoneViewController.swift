@@ -16,6 +16,7 @@ class SetPhoneViewController: UIViewController {
     @IBOutlet weak var getCodeButton: UIButton!
     var sms = false
     var phoneCall = false
+    var onboarding = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,7 +89,7 @@ class SetPhoneViewController: UIViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.onboarding = true
+            nextController.onboarding = onboarding
             nextController.twoFactor = sender as! TwoFactorCall
         }
     }
