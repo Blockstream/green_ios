@@ -31,6 +31,7 @@ class SendBtcDetailsViewController: UIViewController {
     var fee: UInt64 = 1
     var selectedButton : UIButton? = nil
     var g_payload: [String: Any]? = nil
+    var priority: TransactionPriority? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +43,8 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        mediumFeeClicked(0)
+        priority = SettingsStore.shared.getFeeSettings().0
+        updatePriorityButtons()
         if (btcAmount != 0) {
             updateEstimate()
             let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
@@ -236,57 +238,73 @@ class SendBtcDetailsViewController: UIViewController {
         NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 10).isActive = true
     }
 
+    func updatePriorityButtons() {
+        if (priority == TransactionPriority.Low) {
+            lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            lowFeeButton.layer.borderWidth = 2
+            highFeeButton.layer.borderWidth = 1
+            customfeeButton.layer.borderWidth = 1
+            mediumFeeButton.layer.borderWidth = 1
+        } else if (priority == TransactionPriority.Medium) {
+            mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            lowFeeButton.layer.borderWidth = 1
+            highFeeButton.layer.borderWidth = 1
+            customfeeButton.layer.borderWidth = 1
+            mediumFeeButton.layer.borderWidth = 2
+        } else if (priority == TransactionPriority.High) {
+            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            lowFeeButton.layer.borderWidth = 1
+            highFeeButton.layer.borderWidth = 2
+            customfeeButton.layer.borderWidth = 1
+            mediumFeeButton.layer.borderWidth = 1
+        } else if (priority == TransactionPriority.Custom) {
+            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            customfeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            lowFeeButton.layer.borderWidth = 1
+            highFeeButton.layer.borderWidth = 1
+            customfeeButton.layer.borderWidth = 2
+            mediumFeeButton.layer.borderWidth = 1
+        }
+    }
+
     @IBAction func lowFeeClicked(_ sender: Any) {
         selectedButton = lowFeeButton
         fee = AccountStore.shared.getFeeRateLow()
         updateEstimate()
-        lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        lowFeeButton.layer.borderWidth = 2
-        highFeeButton.layer.borderWidth = 1
-        customfeeButton.layer.borderWidth = 1
-        mediumFeeButton.layer.borderWidth = 1
+        priority = TransactionPriority.Low
+        updatePriorityButtons()
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
         selectedButton = mediumFeeButton
         fee = AccountStore.shared.getFeeRateMedium()
         updateEstimate()
-        mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        lowFeeButton.layer.borderWidth = 1
-        highFeeButton.layer.borderWidth = 1
-        customfeeButton.layer.borderWidth = 1
-        mediumFeeButton.layer.borderWidth = 2
+        priority = TransactionPriority.Medium
+        updatePriorityButtons()
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
         selectedButton = highFeeButton
         fee = AccountStore.shared.getFeeRateHigh()
         updateEstimate()
-        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        lowFeeButton.layer.borderWidth = 1
-        highFeeButton.layer.borderWidth = 2
-        customfeeButton.layer.borderWidth = 1
-        mediumFeeButton.layer.borderWidth = 1
+        priority = TransactionPriority.High
+        updatePriorityButtons()
     }
 
     @IBAction func customFeeClicked(_ sender: Any) {
-        fee = 2
-        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        customfeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        lowFeeButton.layer.borderWidth = 1
-        highFeeButton.layer.borderWidth = 1
-        customfeeButton.layer.borderWidth = 2
-        mediumFeeButton.layer.borderWidth = 1
+        priority = TransactionPriority.Custom
+        updatePriorityButtons()
+        fee = 0
     }
 }

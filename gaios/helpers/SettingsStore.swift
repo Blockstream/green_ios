@@ -15,6 +15,7 @@ class SettingsStore {
         let accountImage = #imageLiteral(resourceName: "account")
         let accountCurrency = "Alternative Currency"
         let accountDenomination = "Show Bitcoin in"
+        let accountFee = "Transaction Priority"
         let accountWatchOnly = "Watch-only login"
     let sectionSecurity = "Security"
         let securityImage = #imageLiteral(resourceName: "security")
@@ -22,6 +23,7 @@ class SettingsStore {
         let securityScreenLock = "Screen Lock"
         let securityTwoFactor = "Two-factor Authentication"
         let securitySupport = "Support"
+        let securityLogout = "Automatically lock after"
     let sectionAdvanced = "Advanced"
         let advancedImage = #imageLiteral(resourceName: "advanced")
         let advancedSegwit = "Enable Segwit"
@@ -35,10 +37,12 @@ class SettingsStore {
     let settingsCurrency = "settingsCurrency"
     let settingsDenomination = "settingsDenomination"
     let settingsWatchOnly = "settingsWatchOnly"
+    let settingsFee = "settingsFee"
 
     let settingsRecovery = "settingsRecovery"
     let settingsScreenLock = "settingsScreenLock"
     let settingsTwoFactor = "settingsTwoFactor"
+    let settingsAutolock = "settingsAutolock"
     let settingsSupport = "settingsSupport"
 
     let settingsNLockTime = "settingsNLockTime"
@@ -54,6 +58,8 @@ class SettingsStore {
     let denominationPrimary = "BTC"
     let denominationMilli = "mBTC"
     let denominationMicro = "uBTC"
+
+    let feeMedium = "Medium"
 
     let screenLockSettingsValueDefault = "None"
     let screenLockSettingsValuePin = "Pin"
@@ -109,6 +115,27 @@ class SettingsStore {
         writeSettingsToDisk()
     }
 
+    func setFeeSettings(satoshi: Int, priority: TransactionPriority) {
+        if (priority == TransactionPriority.Low || priority == TransactionPriority.Medium || priority == TransactionPriority.High) {
+            let setting = SettingsItem(settingsName: settingsFee, property: ["priority" : priority.rawValue, "satoshi" : String(0)], text: accountFee, secondaryText: priority.rawValue)
+            allSettings[settingsFee] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        } else {
+            let setting = SettingsItem(settingsName: settingsFee, property: ["priority" : priority.rawValue, "satoshi" : String(satoshi)], text: accountFee, secondaryText: priority.rawValue)
+            allSettings[settingsFee] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        }
+    }
+
+    func getFeeSettings() -> (TransactionPriority, Int) {
+        let setting = allSettings[settingsFee]
+        let priority = setting!.settingsProperty["priority"]!
+        let satoshi = Int(setting!.settingsProperty["satoshi"]!)
+        return (TransactionPriority(rawValue: priority)!, satoshi!)
+    }
+
     func getScreenLockSetting() -> ScreenLock {
         let setting = allSettings[settingsScreenLock]
         let property = setting?.settingsProperty[settingsScreenLock]
@@ -126,6 +153,14 @@ class SettingsStore {
 
     func getCurrencyString() -> String {
         return (allSettings[settingsCurrency]?.settingsProperty["currency"])!
+    }
+
+    func defaultFeeSettings() -> SettingsItem {
+        return SettingsItem(settingsName: settingsFee, property: ["priority" : TransactionPriority.Medium.rawValue, "satoshi" : String(0)], text: accountFee, secondaryText: TransactionPriority.Medium.rawValue)
+    }
+
+    func defaultAutolockSettings() -> SettingsItem {
+        return SettingsItem(settingsName: settingsAutolock, property: ["time": String(600)], text: securityLogout, secondaryText: "5 minutes")
     }
 
     func defaultDenominationSettings() -> SettingsItem {
@@ -179,12 +214,15 @@ class SettingsStore {
         var accountSettings = Array<SettingsItem>()
         let currency = allSettings[settingsCurrency] == nil ? defaultCurrencySettings() : allSettings[settingsCurrency]
         let denomination = allSettings[settingsDenomination] == nil ? defaultDenominationSettings() : allSettings[settingsDenomination]
+        let fee = allSettings[settingsFee] == nil ? defaultFeeSettings() : allSettings[settingsFee]
         let watch = allSettings[settingsWatchOnly] == nil ? defaultWatchOnlySettings() : allSettings[settingsWatchOnly]
         accountSettings.append(currency!)
         accountSettings.append(denomination!)
+        accountSettings.append(fee!)
         accountSettings.append(watch!)
         allSettings[settingsCurrency] = currency
         allSettings[settingsDenomination] = denomination
+        allSettings[settingsFee] = fee
         allSettings[settingsWatchOnly] = watch
         let section = SettingsSection(sectionName: sectionAccount, settingsInSection: accountSettings)
         return section
@@ -201,16 +239,18 @@ class SettingsStore {
         } else {
             twoFactor = defaultTwoFactor()
         }
-
+        let autolock = allSettings[settingsAutolock] == nil ? defaultAutolockSettings() : allSettings[settingsAutolock]
         let support = allSettings[settingsSupport] == nil ? defaultSupport() : allSettings[settingsSupport]
         securitySettings.append(recovery!)
         securitySettings.append(screenLock!)
         securitySettings.append(twoFactor!)
+        securitySettings.append(autolock!)
         securitySettings.append(support!)
         allSettings[settingsRecovery] = recovery
         allSettings[settingsScreenLock] = screenLock
         allSettings[settingsTwoFactor] = twoFactor
         allSettings[settingsSupport] = support
+        allSettings[settingsAutolock] = autolock
         let section = SettingsSection(sectionName: sectionSecurity, settingsInSection: securitySettings)
         return section
     }
@@ -328,5 +368,12 @@ public enum ScreenLock: UInt32 {
     case TouchID = 2
     case FaceID = 3
     case all = 4
+}
+
+public enum TransactionPriority: String {
+    case Low = "Low"
+    case Medium = "Medium"
+    case High = "High"
+    case Custom = "Custom"
 }
 

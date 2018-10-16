@@ -156,6 +156,7 @@
                         <segue destination="B5O-7h-VGM" kind="presentation" identifier="logout" id="yIW-Ly-oWL"/>
                         <segue destination="Mod-4I-fsQ" kind="show" identifier="editTwoFactor" id="3d2-SH-cEy"/>
                         <segue destination="80V-46-g4d" kind="show" identifier="screenLock" id="xcl-Dg-JhF"/>
+                        <segue destination="npE-4D-Ee3" kind="show" identifier="transactionFee" id="yP2-yJ-Lxy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -5059,6 +5060,98 @@
             </objects>
             <point key="canvasLocation" x="-493" y="69"/>
         </scene>
+        <!--Transaction Fee View Controller-->
+        <scene sceneID="Cw0-YH-0iB">
+            <objects>
+                <viewController id="npE-4D-Ee3" customClass="TransactionFeeViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="clg-js-scc">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1TZ-yZ-Lst">
+                                <rect key="frame" x="16" y="36" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="KLA-SR-Gmi"/>
+                                    <constraint firstAttribute="width" secondItem="1TZ-yZ-Lst" secondAttribute="height" multiplier="27:27" id="Lwb-1n-0nU"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
+                                <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonClicked:" destination="npE-4D-Ee3" eventType="touchUpInside" id="hnJ-PE-KaD"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Transaction Fee" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7j3-fS-NEE">
+                                <rect key="frame" x="99" y="43" width="122" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="2tq-ka-cC6">
+                                <rect key="frame" x="0.0" y="338" width="320" height="230"/>
+                                <color key="backgroundColor" name="customTitaniumMedium"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="230" id="jWs-5o-xS2"/>
+                                </constraints>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="f8M-Pe-a5x" customClass="DenominationCell" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="f8M-Pe-a5x" id="A6w-sC-8Ci">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0WU-OB-0Aa">
+                                                    <rect key="frame" x="16" y="13" width="37.5" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="stepIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="37F-eF-Pae">
+                                                    <rect key="frame" x="292" y="16" width="12" height="12"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="12" id="VzG-L4-fqh"/>
+                                                        <constraint firstAttribute="width" constant="12" id="nqs-Px-7Yb"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" name="customTitaniumMedium"/>
+                                            <constraints>
+                                                <constraint firstItem="0WU-OB-0Aa" firstAttribute="centerY" secondItem="A6w-sC-8Ci" secondAttribute="centerY" id="W4H-yP-ec5"/>
+                                                <constraint firstItem="37F-eF-Pae" firstAttribute="centerY" secondItem="A6w-sC-8Ci" secondAttribute="centerY" id="gIK-bk-Imu"/>
+                                                <constraint firstItem="0WU-OB-0Aa" firstAttribute="leading" secondItem="A6w-sC-8Ci" secondAttribute="leading" constant="16" id="tX0-SH-Jgt"/>
+                                                <constraint firstAttribute="trailing" secondItem="37F-eF-Pae" secondAttribute="trailing" constant="16" id="tdA-Ga-9z5"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" name="customTitaniumMedium"/>
+                                        <connections>
+                                            <outlet property="leftLabel" destination="0WU-OB-0Aa" id="jUM-bn-PXT"/>
+                                            <outlet property="rightImageView" destination="37F-eF-Pae" id="MPz-Ka-VWH"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="2tq-ka-cC6" firstAttribute="leading" secondItem="qs9-H7-d8M" secondAttribute="leading" id="63j-lb-xLw"/>
+                            <constraint firstItem="1TZ-yZ-Lst" firstAttribute="width" secondItem="1TZ-yZ-Lst" secondAttribute="height" multiplier="27:27" id="7Jq-xR-A5g"/>
+                            <constraint firstItem="7j3-fS-NEE" firstAttribute="centerX" secondItem="clg-js-scc" secondAttribute="centerX" id="KYu-Kc-Kbe"/>
+                            <constraint firstAttribute="bottom" secondItem="2tq-ka-cC6" secondAttribute="bottom" id="jpz-p6-ReF"/>
+                            <constraint firstItem="1TZ-yZ-Lst" firstAttribute="top" secondItem="qs9-H7-d8M" secondAttribute="top" constant="16" id="sWh-8D-00e"/>
+                            <constraint firstItem="1TZ-yZ-Lst" firstAttribute="leading" secondItem="qs9-H7-d8M" secondAttribute="leading" constant="16" id="vlT-X4-WZU"/>
+                            <constraint firstItem="2tq-ka-cC6" firstAttribute="trailing" secondItem="qs9-H7-d8M" secondAttribute="trailing" id="yDv-xM-Y7c"/>
+                            <constraint firstItem="7j3-fS-NEE" firstAttribute="centerY" secondItem="1TZ-yZ-Lst" secondAttribute="centerY" id="zrv-gV-2dR"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="qs9-H7-d8M"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="2tq-ka-cC6" id="bLx-KN-B0G"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TAD-UO-zkg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8861" y="-3533"/>
+        </scene>
     </scenes>
     <resources>
         <image name="backarrow" width="60" height="96"/>
@@ -5097,8 +5190,14 @@
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumMedium">
+            <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -5110,7 +5209,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="Oir-Oa-Fhf"/>
         <segue reference="Pqg-Zu-9Zd"/>
-        <segue reference="ho6-WN-AfT"/>
+        <segue reference="yIW-Ly-oWL"/>
         <segue reference="Iy9-iC-rNo"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
