@@ -24,6 +24,8 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var reviewButton: UIButton!
     @IBOutlet weak var currencySwitch: UIButton!
     @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var customFeeTextField: UITextField!
+    @IBOutlet weak var customFeeLabel: UILabel!
 
     var selectedType = TransactionType.FIAT
     var maxAmountBTC = 0
@@ -52,6 +54,32 @@ class SendBtcDetailsViewController: UIViewController {
         }
         updateMaxAmountLabel()
         setButton()
+        customFeeTextField.attributedPlaceholder = NSAttributedString(string: "0 satoshi / byte",
+                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        hideKeyboardWhenTappedAround()
+        NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if (self.view.frame.origin.y == 0 && customFeeTextField.isFirstResponder) {
+                let textfieldPosition = customFeeTextField.frame.origin.y
+                let height = self.view.frame.height
+                let keyboardtop = height - keyboardSize.height // y point keyboard top
+                let target = keyboardtop - 130
+                let diff = textfieldPosition - target
+                self.view.frame.origin.y -= diff
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0 {
+                self.view.frame.origin.y = 0
+            }
+        }
     }
 
     func setButton() {
@@ -239,6 +267,8 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updatePriorityButtons() {
+        customFeeLabel.isHidden = true
+        customFeeTextField.isHidden = true
         if (priority == TransactionPriority.Low) {
             lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -267,6 +297,12 @@ class SendBtcDetailsViewController: UIViewController {
             customfeeButton.layer.borderWidth = 1
             mediumFeeButton.layer.borderWidth = 1
         } else if (priority == TransactionPriority.Custom) {
+            let def = SettingsStore.shared.getFeeSettings().0
+            if (def == TransactionPriority.Custom) {
+                customFeeTextField.text = String(SettingsStore.shared.getFeeSettings().1)
+            }
+            customFeeTextField.isHidden = false
+            customFeeLabel.isHidden = false
             lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -284,6 +320,7 @@ class SendBtcDetailsViewController: UIViewController {
         updateEstimate()
         priority = TransactionPriority.Low
         updatePriorityButtons()
+        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
@@ -292,6 +329,7 @@ class SendBtcDetailsViewController: UIViewController {
         updateEstimate()
         priority = TransactionPriority.Medium
         updatePriorityButtons()
+        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
@@ -300,6 +338,7 @@ class SendBtcDetailsViewController: UIViewController {
         updateEstimate()
         priority = TransactionPriority.High
         updatePriorityButtons()
+        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func customFeeClicked(_ sender: Any) {

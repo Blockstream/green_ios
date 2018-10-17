@@ -3794,7 +3794,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="407" width="288" height="21"/>
+                                <rect key="frame" x="16" y="407" width="288" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -3925,6 +3925,12 @@
                                     <action selector="customFeeClicked:" destination="cFP-IA-4E2" eventType="touchUpInside" id="Syd-E8-YAy"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="58s-b5-mtc">
+                                <rect key="frame" x="19" y="438" width="291" height="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jMM-OK-XgU">
                                 <rect key="frame" x="244" y="178" width="60" height="32"/>
                                 <constraints>
@@ -3946,11 +3952,18 @@
                                     <action selector="switchCurrency:" destination="cFP-IA-4E2" eventType="touchUpInside" id="S6O-fF-uLN"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Custom" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oo3-JD-y28">
+                                <rect key="frame" x="16" y="407" width="60" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" name="customTitaniumLight"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumMedium"/>
                         <constraints>
                             <constraint firstItem="pC8-6B-pnO" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="16" id="1NI-ae-7pB"/>
                             <constraint firstItem="Iyz-82-YFW" firstAttribute="height" secondItem="IaS-5u-88S" secondAttribute="height" id="2tG-qZ-pdg"/>
+                            <constraint firstItem="58s-b5-mtc" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="19" id="50D-Em-J2w"/>
                             <constraint firstItem="XjT-nc-Lyu" firstAttribute="top" secondItem="nGg-K9-ra6" secondAttribute="bottom" constant="10" id="5sz-dj-Lxz"/>
                             <constraint firstItem="GfR-el-e3B" firstAttribute="width" secondItem="IaS-5u-88S" secondAttribute="width" id="7o8-gw-SSz"/>
                             <constraint firstItem="DJq-8p-LLO" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" id="B5k-70-1Uu"/>
@@ -3975,14 +3988,18 @@
                             <constraint firstItem="jMM-OK-XgU" firstAttribute="centerY" secondItem="G2d-3m-rN6" secondAttribute="centerY" id="YIz-dI-wsh"/>
                             <constraint firstItem="GEh-rg-b8E" firstAttribute="top" secondItem="G2d-3m-rN6" secondAttribute="bottom" constant="30" id="a0A-Hx-lMp"/>
                             <constraint firstItem="pC8-6B-pnO" firstAttribute="top" secondItem="Iyz-82-YFW" secondAttribute="bottom" constant="30" id="b7R-Wb-zMk"/>
+                            <constraint firstItem="x2K-bM-Wig" firstAttribute="trailing" secondItem="58s-b5-mtc" secondAttribute="trailing" constant="10" id="ey3-78-Ulj"/>
                             <constraint firstItem="Iyz-82-YFW" firstAttribute="leading" secondItem="zHX-qb-iAe" secondAttribute="centerX" constant="5" id="fEx-xJ-lpV"/>
                             <constraint firstItem="zCl-qx-s75" firstAttribute="centerY" secondItem="GEh-rg-b8E" secondAttribute="centerY" id="frV-cb-pCN"/>
                             <constraint firstItem="rKw-yW-cT6" firstAttribute="leading" secondItem="nGg-K9-ra6" secondAttribute="trailing" constant="10" id="geB-jE-RT9"/>
                             <constraint firstItem="G2d-3m-rN6" firstAttribute="top" secondItem="nGg-K9-ra6" secondAttribute="bottom" constant="34" id="jmZ-eO-QVJ"/>
                             <constraint firstItem="eOW-xp-thT" firstAttribute="top" secondItem="zCl-qx-s75" secondAttribute="bottom" constant="20" id="jxb-si-PpN"/>
                             <constraint firstItem="IaS-5u-88S" firstAttribute="top" secondItem="Hyi-6X-1XR" secondAttribute="bottom" constant="15" id="kTf-wI-mto"/>
+                            <constraint firstItem="Oo3-JD-y28" firstAttribute="top" secondItem="IaS-5u-88S" secondAttribute="bottom" constant="30" id="lFR-RH-eHF"/>
                             <constraint firstAttribute="trailing" secondItem="vUj-gj-dgv" secondAttribute="trailing" id="lep-Ze-aky"/>
                             <constraint firstItem="x2K-bM-Wig" firstAttribute="trailing" secondItem="jMM-OK-XgU" secondAttribute="trailing" constant="16" id="mF2-rB-i9M"/>
+                            <constraint firstItem="Oo3-JD-y28" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="16" id="mfM-oo-rxP"/>
+                            <constraint firstItem="58s-b5-mtc" firstAttribute="top" secondItem="Oo3-JD-y28" secondAttribute="bottom" constant="10" id="muR-Ke-Oqp"/>
                             <constraint firstItem="XjT-nc-Lyu" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" id="nGd-0O-n6a"/>
                             <constraint firstItem="GEh-rg-b8E" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="16" id="oOT-00-WYa"/>
                             <constraint firstItem="Dhv-KP-hgk" firstAttribute="height" secondItem="IaS-5u-88S" secondAttribute="height" id="pff-4T-1W8"/>
@@ -4004,6 +4021,8 @@
                         <outlet property="addressLabel" destination="rKw-yW-cT6" id="TGp-aY-FkR"/>
                         <outlet property="amountTextField" destination="G2d-3m-rN6" id="ycI-vf-ZoX"/>
                         <outlet property="currencySwitch" destination="jMM-OK-XgU" id="nBu-MJ-cXk"/>
+                        <outlet property="customFeeLabel" destination="Oo3-JD-y28" id="Rqj-fz-Hj1"/>
+                        <outlet property="customFeeTextField" destination="58s-b5-mtc" id="zz3-hP-dNo"/>
                         <outlet property="customfeeButton" destination="Dhv-KP-hgk" id="cFn-SX-aXY"/>
                         <outlet property="errorLabel" destination="pC8-6B-pnO" id="laY-hw-vXe"/>
                         <outlet property="highFeeButton" destination="Iyz-82-YFW" id="oQR-2k-In0"/>
@@ -5338,26 +5357,8 @@
         <namedColor name="customTitaniumDark">
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumMedium">
-            <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumMedium">
-            <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
