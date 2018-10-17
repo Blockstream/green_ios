@@ -1,5 +1,6 @@
 #include <cctype>
 #include <cstring>
+#include <iostream>
 #include <stdexcept>
 
 #include <json.hpp>
@@ -23,6 +24,11 @@ namespace sdk {
         static const conversion_type COIN_VALUE_DECIMAL("100000000");
         static const conversion_type COIN_VALUE_DECIMAL_MBTC("100000");
         static const conversion_type COIN_VALUE_DECIMAL_UBTC("100");
+
+        template <typename T> static std::string fmt(const T& fiat, size_t dp = 2)
+        {
+            return fiat_type(fiat).str(dp, std::ios_base::fixed | std::ios_base::showpoint);
+        }
     } // namespace
 
     // convert to internal representation (from Bitcoin Core)
@@ -50,7 +56,8 @@ namespace sdk {
             + (bits_p != end_p) + (fiat_p != end_p);
         GA_SDK_RUNTIME_ASSERT(key_count == 1);
 
-        const conversion_type fr(fiat_rate);
+        const std::string fr_str = fiat_rate.empty() ? "0" : fiat_rate;
+        const conversion_type fr(fr_str);
         uint32_t satoshi;
 
         // Compute satoshi from our input
@@ -73,24 +80,34 @@ namespace sdk {
 
         // Then compute the other denominations and fiat amount
         const conversion_type satoshi_conv = conversion_type(satoshi);
-        const std::string btc = btc_type(satoshi_conv / COIN_VALUE_DECIMAL).str();
-        const std::string mbtc = btc_type(satoshi_conv / COIN_VALUE_DECIMAL_MBTC).str();
-        const std::string ubtc = btc_type(satoshi_conv / COIN_VALUE_DECIMAL_UBTC).str();
+        const std::string btc = fmt(btc_type(satoshi_conv / COIN_VALUE_DECIMAL), 8);
+        const std::string mbtc = fmt(btc_type(satoshi_conv / COIN_VALUE_DECIMAL_MBTC), 5);
+        const std::string ubtc = fmt(btc_type(satoshi_conv / COIN_VALUE_DECIMAL_UBTC), 2);
 
         const conversion_type fiat_decimal = fr * conversion_type(satoshi) / COIN_VALUE_DECIMAL;
-        const std::string fiat = fiat_type(fiat_decimal).str();
 
         // FIXME: add fixed precision decimal values with trailing 0's, have server return ISO
         // country code and return it so the caller can do locale aware formatting
         return { { "satoshi", satoshi }, { "btc", btc }, { "mbtc", mbtc }, { "ubtc", ubtc }, { "bits", ubtc },
-            { "fiat", fiat }, { "fiat_currency", fiat_currency }, { "fiat_rate", fr.str() } };
+            { "fiat", fmt(fiat_type(fiat_decimal)) }, { "fiat_currency", fiat_currency }, { "fiat_rate", fr_str } };
     }
 
     nlohmann::json amount::convert_fiat_cents(
         value_type cents, const std::string& fiat_currency, const std::string& fiat_rate)
     {
         const conversion_type fiat_decimal = conversion_type(cents) / COIN_VALUE_100;
-        return convert({ { "fiat", fiat_decimal.str() } }, fiat_currency, fiat_rate);
+        return convert({ { "fiat", fmt(fiat_type(fiat_decimal)) } }, fiat_currency, fiat_rate);
+    }
+
+    amount::value_type amount::get_fiat_cents(const std::string& fiat_str)
+    {
+        const conversion_type fiat_decimal = conversion_type(fiat_str) * COIN_VALUE_100;
+        return floor(fiat_type(fiat_decimal)).convert_to<value_type>();
+    }
+
+    std::string amount::format_amount(const std::string& value_str, size_t dp)
+    {
+        return fmt(conversion_type(value_str), dp);
     }
 
 } // namespace sdk

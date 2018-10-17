@@ -23,8 +23,8 @@ namespace sdk {
     static const std::array<unsigned char, 3> OP_0_PREFIX = { { 0x00, 0x01, 0x00 } };
 
     namespace {
-        static wally_ext_key_ptr ga_pub_key(
-            const network_parameters& net_params, const std::string& gait_path, uint32_t subaccount, uint32_t pointer)
+        static wally_ext_key_ptr ga_pub_key(const network_parameters& net_params,
+            const std::array<uint32_t, 32>& gait_path, uint32_t subaccount, uint32_t pointer)
         {
             using bytes = std::vector<unsigned char>;
 
@@ -34,7 +34,6 @@ namespace sdk {
             // FIXME: cache the top level keys
             const auto dcc_bytes = bytes_from_hex(net_params.chain_code());
             const auto dpk_bytes = bytes_from_hex(net_params.pub_key());
-            const auto gait_path_bytes = bytes_from_hex(gait_path);
 
             ext_key* p;
             uint32_t version = net_params.main_net() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
@@ -42,10 +41,9 @@ namespace sdk {
 
             wally_ext_key_ptr server_pub_key{ p };
 
-            std::vector<uint32_t> path(32 + 1);
-            path[0] = subaccount != 0 ? 3 : 1;
-            adjacent_transform(gait_path_bytes.begin(), gait_path_bytes.end(), path.begin() + 1,
-                [](auto first, auto second) { return uint32_t((first << 8) + second); });
+            const uint32_t path_prefix = subaccount != 0 ? 3 : 1;
+            std::vector<uint32_t> path(gait_path.size() + 1);
+            init_container(path, gsl::make_span(&path_prefix, 1), gait_path);
 
             if (subaccount != 0) {
                 path.push_back(subaccount);
@@ -108,8 +106,8 @@ namespace sdk {
     }
 
     std::vector<unsigned char> output_script(const network_parameters& net_params, const wally_ext_key_ptr& key,
-        const wally_ext_key_ptr& backup_key, const std::string& gait_path, script_type type, uint32_t subtype,
-        uint32_t subaccount, uint32_t pointer)
+        const wally_ext_key_ptr& backup_key, const std::array<uint32_t, 32>& gait_path, script_type type,
+        uint32_t subtype, uint32_t subaccount, uint32_t pointer)
     {
         const bool is_2of3 = !!backup_key;
         const auto server_child_key = ga_pub_key(net_params, gait_path, subaccount, pointer);

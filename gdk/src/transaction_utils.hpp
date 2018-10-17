@@ -59,8 +59,8 @@ namespace sdk {
         const std::array<unsigned char, HASH160_LEN + 1>& script_hash);
 
     std::vector<unsigned char> output_script(const network_parameters& net_params, const wally_ext_key_ptr& key,
-        const wally_ext_key_ptr& backup_key, const std::string& gait_path, script_type type, uint32_t subtype,
-        uint32_t subaccount, uint32_t pointer);
+        const wally_ext_key_ptr& backup_key, const std::array<uint32_t, 32>& gait_path, script_type type,
+        uint32_t subtype, uint32_t subaccount, uint32_t pointer);
 
     // Make a multisig scriptSig
     std::vector<unsigned char> input_script(const std::vector<unsigned char>& prevout_script,

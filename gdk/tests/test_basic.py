@@ -16,7 +16,7 @@ def do_test(network, debug):
     session = Session(network, '', False, debug).register_user(MNEMONIC).login(MNEMONIC)
 
     # On login, we should have been notified
-    for expected_notification in ['subaccount', 'fees', 'block']:
+    for expected_notification in ['twofactor_reset', 'subaccount', 'fees', 'block']:
         event = session.notifications.get_nowait()
         assert event['event'] == expected_notification
 
@@ -33,48 +33,50 @@ def do_test(network, debug):
     estimates = session.get_fee_estimates()
     assert len(estimates['fees']) == 25
 
-    address = session.get_receive_address()
-    assert len(address) > 0
+    for subaccount in [0, 1]:
+        address = session.get_receive_address(subaccount)
+        assert len(address) > 0
 
-    # FIXME: fund address automatically using core or faucet
-    unspent_outputs = session.get_unspent_outputs()
-    transactions = session.get_transactions()
+        # FIXME: fund address automatically using core or faucet
+        unspent_outputs = session.get_unspent_outputs(subaccount)
+        transactions = session.get_transactions(subaccount)
 
-    if len(unspent_outputs) == 0:
-        print('no utxos, skipping test. send and confirm coins to {} to enable'.format(address))
-        return
+        if len(unspent_outputs) == 0:
+            type_ = subaccounts[subaccount]['type']
+            print('no utxos, skipping {} test. send and confirm coins to {} to enable'.format(type_, address))
+            continue
 
-    details = {
-        'addressees': [{'address': address, 'satoshi': 6666}],
-        'fee_rate': estimates['fees'][0],
-    }
+        details = {
+            'addressees': [{'address': address, 'satoshi': 6666}],
+            'fee_rate': estimates['fees'][0],
+        }
 
-    old_balance = subaccounts[0]["satoshi"]
+        old_balance = subaccounts[subaccount]["satoshi"]
+        session.set_current_subaccount(subaccount)
 
-    tx = session.create_transaction(details)
-    tx = session.sign_transaction(tx)
-    tx = session.send_transaction(tx).resolve()
-    txhash = tx['txhash']
+        tx = session.create_transaction(details)
+        tx = session.sign_transaction(tx)
+        tx = session.send_transaction(tx).resolve()
+        txhash = tx['txhash']
 
-    # Wait for the tx notification
-    found = False
-    for i in range(60):
-        try:
-            event = session.notifications.get_nowait()
-            if event['event'] == 'transaction' and event['transaction']['txhash'] == txhash:
-                print 'Transaction {} processed'.format(txhash)
-                found = True
-                break
-        except queue.Empty as e:
-            time.sleep(1)
+        # Wait for the tx notification
+        found = False
+        for i in range(60):
+            try:
+                event = session.notifications.get_nowait()
+                if event['event'] == 'transaction' and event['transaction']['txhash'] == txhash:
+                    found = True
+                    break
+            except queue.Empty as e:
+                time.sleep(1)
 
-    assert found, 'tx {} not found'.format(txhash)
+        assert found, 'tx {} not found'.format(txhash)
 
-    # The subaccounts balance should have been updated
-    subaccounts = session.get_subaccounts()
-    assert not subaccounts[0]['is_dirty']
-    new_balance = subaccounts[0]["satoshi"]
-    assert new_balance < old_balance
+        # The subaccounts balance should have been updated
+        subaccounts = session.get_subaccounts()
+        assert not subaccounts[subaccount]['is_dirty']
+        new_balance = subaccounts[subaccount]["satoshi"]
+        assert new_balance < old_balance
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@
 
 #include "containers.hpp"
 #include "exception.hpp"
+#include "ga_strings.hpp"
 
 namespace {
 // Server gives 3 attempts to get the twofactor code right before it's invalidated
@@ -26,7 +27,7 @@ GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, const std::strin
 void GA_twofactor_call::set_error(const std::string& error_message)
 {
     m_state = state_type::error;
-    m_error = { { "error", error_message } };
+    m_error = error_message;
 }
 
 void GA_twofactor_call::request_code(const std::string& method)
@@ -85,7 +86,7 @@ void GA_twofactor_call::operator()()
             }
         } else {
             const auto& error_message = ga::sdk::get_error_details(e).second;
-            m_error = { { "error", error_message.empty() ? std::string(e.what()) : error_message } };
+            set_error(error_message.empty() ? std::string(e.what()) : error_message);
             m_state = state_type::error;
         }
     }
@@ -93,7 +94,7 @@ void GA_twofactor_call::operator()()
 
 nlohmann::json GA_twofactor_call::get_status() const
 {
-    GA_SDK_RUNTIME_ASSERT(m_state == state_type::error || m_error.is_null());
+    GA_SDK_RUNTIME_ASSERT(m_state == state_type::error || m_error.empty());
 
     std::string status_str;
     nlohmann::json status;
@@ -163,7 +164,7 @@ GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
             // server.
             // FIXME: Allow the user to specify their own seed in the future.
             if (data != ga::sdk::json_get_value(current_subconfig, "data")) {
-                set_error("Inconsistent data provided for enabling gauth");
+                set_error(ga::sdk::res::inconsistent_gauth_data);
                 return;
             }
         }
@@ -249,7 +250,7 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
 GA_change_limits_call::GA_change_limits_call(ga::sdk::session& session, const nlohmann::json& details)
     : GA_twofactor_call(session, "change_tx_limits")
     , m_limit_details(details)
-    , m_is_decrease(m_session.is_spending_limits_decrease(details))
+    , m_is_decrease(m_methods.empty() ? false : m_session.is_spending_limits_decrease(details))
 {
     if (m_is_decrease) {
         m_state = state_type::make_call; // Limit decreases do not require 2fa

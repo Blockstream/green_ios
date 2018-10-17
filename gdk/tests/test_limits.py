@@ -38,9 +38,17 @@ def do_test(network, debug):
         }).resolve()
         gauth_config = sender.get_twofactor_config()['gauth']
 
-    # Set tx limit to 5000 satoshi (which doesn't require twofactor since none is enabled)
-    limits = { 'is_fiat': False, 'total': 5000 }
+    # Setting tx limits now doesn't require twofactor since none is enabled
+    # Set tx limit to $1.50
+    limits = { 'is_fiat': True, 'fiat': "1.50" }
     sender.twofactor_change_limits(limits).resolve(throw, throw)
+    assert sender.get_twofactor_config()["limits"]["fiat"] == "1.50"
+    assert sender.get_twofactor_config()["limits"]["is_fiat"] == True
+
+    # Set tx limit to 5000 satoshi
+    limits = { 'is_fiat': False, 'satoshi': 5000 }
+    sender.twofactor_change_limits(limits).resolve(throw, throw)
+    assert sender.get_twofactor_config()["limits"]["satoshi"] == 5000
 
     # Enable gauth
     sender.change_settings_twofactor('gauth', {
@@ -48,21 +56,24 @@ def do_test(network, debug):
     }).resolve()
 
     # Lower tx limit to 4500 satoshi. Since we are lowering the limit, this doesn't need 2fa
-    limits['total'] = 4500
+    limits['satoshi'] = 4500
     sender.twofactor_change_limits(limits).resolve(throw, throw)
+    assert sender.get_twofactor_config()["limits"]["satoshi"] == 4500
 
     # Increasing the limit requires 2fa
-    limits['total'] = 5000
+    limits['satoshi'] = 5000
     try:
         sender.twofactor_change_limits(limits).resolve(throw, throw)
         assert False
     except:
         pass
+    assert sender.get_twofactor_config()["limits"]["satoshi"] == 4500
 
     # Sending 6666 requires 2fa
     assert send_requires_2fa(sender, address, 6666)
     # Sending 2000 is under the limit and so doesn't
     assert not send_requires_2fa(sender, address, 2000)
+    assert sender.get_twofactor_config()["limits"]["satoshi"] != 4500
 
 
 if __name__ == '__main__':

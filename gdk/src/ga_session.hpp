@@ -137,8 +137,11 @@ namespace sdk {
         std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
 
     private:
+        std::vector<unsigned char> get_encryption_password(const nlohmann::json& input_json) const;
+
         void set_enabled_twofactor_methods(nlohmann::json& config);
         void update_login_data(nlohmann::json&& login_data, bool watch_only);
+        void update_fiat_rate(const std::string& rate_str) const;
         void update_spending_limits(const nlohmann::json& details);
 
         autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
@@ -225,6 +228,7 @@ namespace sdk {
         void* m_notification_context;
 
         nlohmann::json m_login_data;
+        std::array<uint32_t, 32> m_gait_path;
         nlohmann::json m_limits_data;
         nlohmann::json m_twofactor_config;
         std::string m_mnemonic;
@@ -233,6 +237,7 @@ namespace sdk {
         mutable std::string m_fiat_rate;
         std::string m_fiat_currency;
         uint32_t m_current_subaccount;
+        uint64_t m_earliest_block_time;
 
         mutable std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
         uint32_t m_next_subaccount;
@@ -244,6 +249,7 @@ namespace sdk {
         uint32_t m_system_message_ack_id; // Currently returned message id to ack
         std::string m_system_message_ack; // Currently returned message to ack
         bool m_watch_only;
+        bool m_is_locked;
         const boost::asio::ssl::rfc2818_verification m_rfc2818_verifier;
         bool m_cert_pin_validated;
         bool m_debug;

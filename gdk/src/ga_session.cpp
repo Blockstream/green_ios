@@ -76,6 +76,12 @@ namespace sdk {
         static const uint32_t DEFAULT_MIN_FEE = 1000; // 1 satoshi/byte
         static const uint32_t NUM_FEE_ESTIMATES = 25; // Min fee followed by blocks 1-24
 
+        static const std::array<uint32_t, 1> PASSWORD_PATH{ { 0x70617373 // 'pass'
+            | BIP32_INITIAL_HARDENED_CHILD } };
+        static const std::array<unsigned char, 8> PASSWORD_SALT = {
+            { 0x70, 0x61, 0x73, 0x73, 0x73, 0x61, 0x6c, 0x74 } // 'passsalt'
+        };
+
         static std::once_flag one_time_setup_flag;
 
         static void one_time_setup()
@@ -87,11 +93,11 @@ namespace sdk {
         }
 
         // FIXME: too slow. lacks validation.
-        static std::array<unsigned char, 32> uint256_to_base256(const std::string& input)
+        static std::array<unsigned char, SHA256_LEN> uint256_to_base256(const std::string& input)
         {
             constexpr size_t base = 256;
 
-            std::array<unsigned char, 32> repr{};
+            std::array<unsigned char, SHA256_LEN> repr{};
             size_t i = repr.size() - 1;
             for (boost::multiprecision::checked_uint256_t num(input); num; num = num / base, --i) {
                 repr[i] = static_cast<unsigned char>(num % base);
@@ -140,6 +146,43 @@ namespace sdk {
                 const auto buffer = nlohmann::json::to_msgpack(json);
                 return msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), buffer.size());
             }
+        }
+
+        static auto get_local_encryption_password(const wally_ext_key_ptr& master_key)
+        {
+            const bool public_ = true;
+            const auto derived = derive_key(master_key, PASSWORD_PATH, public_);
+            const auto pubkey = gsl::make_span(derived->pub_key);
+            std::vector<unsigned char> password(PBKDF2_HMAC_SHA512_LEN);
+            pbkdf2_hmac_sha512(pubkey, PASSWORD_SALT, 0, 2048, password);
+            return password;
+        }
+
+        static auto get_encryption_key(
+            const std::vector<unsigned char>& password, const gsl::span<const unsigned char>& salt)
+        {
+            GA_SDK_RUNTIME_ASSERT_MSG(salt.size() == 16, "Invalid salt length");
+            std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN> key;
+            pbkdf2_hmac_sha512_256(password, salt, 0, 2048, key);
+            return key;
+        }
+
+        // Lookup key in json and if present decode it as hex and return the bytes, if not present
+        // return the result of calling f()
+        // This is useful in a couple of places where a bytes value can be optionally overridden in json
+        template <class F> auto json_default_hex(const nlohmann::json& json, const std::string& key, F&& f)
+        {
+            const auto p = json.find(key);
+            return p == json.end() ? f() : bytes_from_hex(p->get<std::string>());
+        }
+
+        static auto get_encryption_salt(const nlohmann::json& input_json)
+        {
+            return json_default_hex(input_json, "salt", []() {
+                std::vector<unsigned char> salt(16);
+                get_random_bytes(salt.size(), salt.data(), salt.size());
+                return salt;
+            });
         }
 
         static auto get_subaccount_master_key(const wally_ext_key_ptr& master_key, uint32_t subaccount)
@@ -224,17 +267,22 @@ namespace sdk {
             return utxos;
         }
 
-        static std::string sign_hash(const wally_ext_key_ptr& master_key, const std::vector<uint32_t>& path,
-            const std::array<unsigned char, 32>& hash)
+        static auto sign_hash(const wally_ext_key_ptr& master_key, const std::vector<uint32_t>& path,
+            const std::array<unsigned char, SHA256_LEN>& hash)
         {
             // FIXME: secure_array
-            std::array<unsigned char, EC_PRIVATE_KEY_LEN> login_priv_key;
-            derive_private_key(master_key, path, login_priv_key);
+            std::array<unsigned char, EC_PRIVATE_KEY_LEN> signing_key;
+            derive_private_key(master_key, path, signing_key);
 
             std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-            ec_sig_from_bytes(login_priv_key, hash, EC_FLAG_ECDSA | EC_FLAG_GRIND_R, sig);
+            ec_sig_from_bytes(signing_key, hash, EC_FLAG_ECDSA | EC_FLAG_GRIND_R, sig);
+            return sig;
+        }
 
-            return hex_from_bytes(ec_sig_to_der(sig));
+        static auto sign_hash_to_der(const wally_ext_key_ptr& master_key, const std::vector<uint32_t>& path,
+            const std::array<unsigned char, SHA256_LEN>& hash)
+        {
+            return ec_sig_to_der(sign_hash(master_key, path, hash));
         }
 
         template <typename T>
@@ -309,25 +357,46 @@ namespace sdk {
             return mnemonic_from_bytes(ciphertext.data(), ciphertext.size());
         }
 
-        static amount::value_type get_limit_total(const nlohmann::json& details, bool is_fiat)
+        static std::string aes_cbc_decrypt(
+            const std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN>& key, const std::string& ciphertext)
+        {
+            const auto ciphertext_bytes = bytes_from_hex(ciphertext);
+            const auto iv = gsl::make_span(ciphertext_bytes.data(), AES_BLOCK_LEN);
+            const auto encrypted
+                = gsl::make_span(ciphertext_bytes.data() + iv.size(), ciphertext_bytes.size() - iv.size());
+            std::vector<unsigned char> plaintext(encrypted.size());
+            const auto written = aes_cbc(key, iv, encrypted, AES_FLAG_DECRYPT, plaintext);
+            GA_SDK_RUNTIME_ASSERT(written <= plaintext.size());
+            return std::string(plaintext.begin(), plaintext.begin() + written);
+        }
+
+        static std::string aes_cbc_encrypt(
+            const std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN>& key, const std::string& plaintext)
+        {
+            // FIXME: secure_array
+            const auto iv = get_random_bytes<AES_BLOCK_LEN>();
+            const auto plaintext_bytes
+                = gsl::make_span(reinterpret_cast<const unsigned char*>(plaintext.data()), plaintext.size());
+            const size_t plaintext_padded_size = (plaintext.size() / AES_BLOCK_LEN + 1) * AES_BLOCK_LEN;
+            std::vector<unsigned char> encrypted(iv.size() + plaintext_padded_size);
+            auto ciphertext = gsl::make_span(encrypted.data() + iv.size(), plaintext_padded_size);
+            const auto written = aes_cbc(key, iv, plaintext_bytes, AES_FLAG_ENCRYPT, ciphertext);
+            GA_SDK_RUNTIME_ASSERT(written == static_cast<size_t>(ciphertext.size()));
+            std::copy(iv.begin(), iv.end(), encrypted.begin());
+            return hex_from_bytes(encrypted);
+        }
+
+        static amount::value_type get_limit_total(const nlohmann::json& details)
         {
             const auto& total_p = details.at("total");
             amount::value_type total;
-            uint32_t mult = is_fiat ? 100 : 1;
             if (total_p.is_number()) {
                 total = total_p;
             } else {
                 const std::string total_str = total_p;
-                if (total_str.find('.') == std::string::npos) {
-                    total = strtoul(total_str.c_str(), nullptr, 10);
-                } else {
-                    GA_SDK_RUNTIME_ASSERT(is_fiat);
-                    const double total_d = strtod(total_str.c_str(), nullptr) * 100;
-                    total = total_d;
-                    mult = 1; // Already multipled
-                }
+                total = strtoul(total_str.c_str(), nullptr, 10);
             }
-            return total * mult;
+            return total;
         }
     } // namespace
 
@@ -359,12 +428,14 @@ namespace sdk {
         , m_notification_context(nullptr)
         , m_min_fee_rate(DEFAULT_MIN_FEE)
         , m_current_subaccount(0)
+        , m_earliest_block_time(0)
         , m_next_subaccount(0)
         , m_block_height(0)
         , m_master_key(nullptr)
         , m_system_message_id(0)
         , m_system_message_ack_id(0)
         , m_watch_only(true)
+        , m_is_locked(false)
         , m_rfc2818_verifier(websocketpp::uri(m_net_params.gait_wamp_url()).get_host())
         , m_cert_pin_validated(false)
         , m_debug(debug)
@@ -516,7 +587,7 @@ namespace sdk {
 
         const auto challenge_hash = uint256_to_base256(challenge);
 
-        return { sign_hash(master_key, path, challenge_hash), hex_from_bytes(path_bytes) };
+        return { hex_from_bytes(sign_hash_to_der(master_key, path, challenge_hash)), hex_from_bytes(path_bytes) };
     }
 
     nlohmann::json ga_session::set_fee_estimates(const nlohmann::json& fee_estimates)
@@ -603,6 +674,12 @@ namespace sdk {
     {
         m_login_data = login_data;
 
+        // Parse gait_path into a derivation path
+        const auto gait_path_bytes = bytes_from_hex(m_login_data["gait_path"]);
+        GA_SDK_RUNTIME_ASSERT(gait_path_bytes.size() == m_gait_path.size() * 2);
+        adjacent_transform(gait_path_bytes.begin(), gait_path_bytes.end(), m_gait_path.begin(),
+            [](auto first, auto second) { return uint32_t((first << 8u) + second); });
+
         const uint32_t min_fee_rate = m_login_data["min_fee"];
         if (min_fee_rate != m_min_fee_rate) {
             m_min_fee_rate = min_fee_rate;
@@ -610,7 +687,7 @@ namespace sdk {
         }
         m_fiat_source = login_data["exchange"];
         m_fiat_currency = login_data["fiat_currency"];
-        m_fiat_rate = login_data["fiat_exchange"];
+        update_fiat_rate(login_data["fiat_exchange"]);
 
         const uint32_t block_height = m_login_data["block_height"];
         m_block_height = block_height;
@@ -645,12 +722,26 @@ namespace sdk {
         m_system_message_ack_id = 0;
         m_system_message_ack = std::string();
         m_watch_only = watch_only;
+        // FIXME: Assert we aren't locked in all calls that should be disabled
+        // (the server prevents these calls but its faster to reject them locally)
+        m_is_locked = login_data.value("reset_2fa_active", false);
 
         const auto p = m_login_data.find("limits");
         update_spending_limits(p == m_login_data.end() ? nlohmann::json() : *p);
 
         auto& appearance = login_data["appearance"];
         m_current_subaccount = json_get_value(appearance, "current_subaccount", 0u);
+        m_earliest_block_time = m_login_data["earliest_key_creation_time"];
+
+        // Notify the caller of 2fa reset status
+        if (m_notification_handler) {
+            const auto& days_remaining = login_data["reset_2fa_days_remaining"];
+            const auto& disputed = login_data["reset_2fa_disputed"];
+            nlohmann::json reset_status
+                = { { "is_active", m_is_locked }, { "days_remaining", days_remaining }, { "is_disputed", disputed } };
+            call_notification_handler(
+                new nlohmann::json({ { "event", "twofactor_reset" }, { "twofactor_reset", reset_status } }));
+        }
 
         // Notify the caller of the current subaccount
         on_subaccount_changed(m_current_subaccount);
@@ -663,9 +754,14 @@ namespace sdk {
             nlohmann::json({ { "block_height", block_height }, { "block_hash", m_login_data["block_hash"] } }));
     }
 
+    void ga_session::update_fiat_rate(const std::string& rate_str) const
+    {
+        m_fiat_rate = amount::format_amount(rate_str, 8);
+    }
+
     void ga_session::update_spending_limits(const nlohmann::json& limits)
     {
-        // FIXME: locking, set on server
+        // FIXME: locking
         if (limits.is_null()) {
             m_limits_data = { { "is_fiat", false }, { "per_tx", 0 }, { "total", 0 } };
         } else {
@@ -676,9 +772,9 @@ namespace sdk {
     nlohmann::json ga_session::get_spending_limits() const
     {
         // FIXME: locking
-        const bool is_fiat = m_limits_data["is_fiat"];
-        amount::value_type total = get_limit_total(m_limits_data, is_fiat);
+        amount::value_type total = get_limit_total(m_limits_data);
 
+        const bool is_fiat = m_limits_data["is_fiat"];
         nlohmann::json converted_limits;
         if (is_fiat) {
             converted_limits = convert_fiat_cents(total);
@@ -694,9 +790,17 @@ namespace sdk {
         // FIXME: Locking
         const bool current_is_fiat = m_limits_data.at("is_fiat").get<bool>();
         const bool new_is_fiat = details.at("is_fiat").get<bool>();
-        return current_is_fiat == new_is_fiat
-            && get_limit_total(details, new_is_fiat) < get_limit_total(m_limits_data, current_is_fiat);
-        ;
+        GA_SDK_RUNTIME_ASSERT(new_is_fiat == (details.find("fiat") != details.end()));
+
+        if (current_is_fiat != new_is_fiat)
+            return false;
+
+        const amount::value_type current_total = m_limits_data["total"];
+        if (new_is_fiat) {
+            return amount::get_fiat_cents(details["fiat"]) <= current_total;
+        } else {
+            return details["satoshi"] <= current_total;
+        }
     }
 
     void ga_session::on_new_transaction(nlohmann::json&& details)
@@ -734,7 +838,7 @@ namespace sdk {
     void ga_session::on_new_block(nlohmann::json&& details)
     {
         json_rename_key(details, "count", "block_height");
-
+        details["initial_timestamp"] = m_earliest_block_time;
         const uint32_t block_height = details["block_height"];
         GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
         m_block_height = block_height;
@@ -824,20 +928,11 @@ namespace sdk {
     {
         // FIXME: clear password after use
         const auto password = get_pin_password(pin, pin_data["pin_identifier"]);
-
-        const auto encrypted = bytes_from_hex(pin_data["encrypted_data"]);
-        const auto iv = gsl::make_span(encrypted.data(), AES_BLOCK_LEN);
-        const auto ciphertext = gsl::make_span(encrypted.data() + iv.size(), encrypted.size() - iv.size());
-
         std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN> key;
         get_pin_key(password, pin_data["salt"], key);
 
-        std::vector<unsigned char> plaintext(ciphertext.size());
-        const auto written = aes_cbc(key, iv, ciphertext, AES_FLAG_DECRYPT, plaintext);
-        GA_SDK_RUNTIME_ASSERT(written <= plaintext.size());
-
         // FIXME: clear data somehow?
-        const auto data = nlohmann::json::parse(std::begin(plaintext), std::begin(plaintext) + written);
+        const auto data = nlohmann::json::parse(aes_cbc_decrypt(key, pin_data["encrypted_data"]));
 
         m_mnemonic = data["mnemonic"];
 
@@ -905,7 +1000,7 @@ namespace sdk {
         std::array<unsigned char, SHA256_LEN> hash;
         const size_t written = format_bitcoin_message(message_hex_bytes, BITCOIN_MESSAGE_FLAG_HASH, hash);
         GA_SDK_RUNTIME_ASSERT(written == hash.size());
-        const auto signature = sign_hash(m_master_key, path, hash);
+        const auto signature = hex_from_bytes(sign_hash_to_der(m_master_key, path, hash));
 
         wamp_call([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); },
             "com.greenaddress.login.ack_system_message", m_system_message_ack_id, message_hash_hex, signature);
@@ -922,28 +1017,30 @@ namespace sdk {
         return amount::convert_fiat_cents(fiat_cents, m_fiat_currency, m_fiat_rate);
     }
 
+    std::vector<unsigned char> ga_session::get_encryption_password(const nlohmann::json& input_json) const
+    {
+        return json_default_hex(
+            input_json, "password", [this]() { return get_local_encryption_password(m_master_key); });
+    }
+
     nlohmann::json ga_session::encrypt(const nlohmann::json& input_json) const
     {
-        if (is_watch_only() && input_json.find("key") == input_json.end()) {
-            GA_SDK_RUNTIME_ASSERT_MSG(false, "A key must be provided to encrypt in watch-only mode");
-        }
-
-        // FIXME: Issue 47
-        // Implement AES encryption, using input_json["key"] if given,
-        // otherwise a privately derived key.
-        return { { "ciphertext", input_json.at("plaintext") } };
+        const auto password = get_encryption_password(input_json);
+        const auto salt = get_encryption_salt(input_json);
+        const auto key = get_encryption_key(password, gsl::make_span(salt));
+        const auto plaintext = input_json.at("plaintext");
+        const auto ciphertext = aes_cbc_encrypt(key, plaintext);
+        return { { "ciphertext", ciphertext }, { "salt", hex_from_bytes(salt) } };
     }
 
     nlohmann::json ga_session::decrypt(const nlohmann::json& input_json) const
     {
-        if (is_watch_only() && input_json.find("key") == input_json.end()) {
-            GA_SDK_RUNTIME_ASSERT_MSG(false, "A key must be provided to decrypt in watch-only mode");
-        }
-
-        // FIXME: Issue 47
-        // Implement AES decryption, using input_json["key"] if given,
-        // otherwise a privately derived key.
-        return { { "plaintext", input_json.at("ciphertext") } };
+        const auto password = get_encryption_password(input_json);
+        const auto salt = get_encryption_salt(input_json);
+        const auto key = get_encryption_key(password, gsl::make_span(salt));
+        const auto ciphertext = input_json.at("ciphertext");
+        const auto plaintext = aes_cbc_decrypt(key, ciphertext);
+        return { { "plaintext", plaintext } };
     }
 
     bool ga_session::set_watch_only(const std::string& username, const std::string& password)
@@ -985,7 +1082,7 @@ namespace sdk {
             details = m_subaccounts.at(subaccount);
         } else {
             details = p->second;
-            balance = amount::convert(p->second, m_fiat_currency, m_fiat_rate);
+            balance = convert_amount(p->second);
         }
 
         for (const auto kv : balance.items()) {
@@ -1091,9 +1188,16 @@ namespace sdk {
 
     void ga_session::change_settings_limits(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
-        // FIXME: Allow fiat limits to be set directly as a fiat string in the users ccy
-        const nlohmann::json args
-            = { { "is_fiat", details.at("is_fiat") }, { "per_tx", 0 }, { "total", details.at("total") } };
+        const bool is_fiat = details.at("is_fiat").get<bool>();
+        GA_SDK_RUNTIME_ASSERT(is_fiat == (details.find("fiat") != details.end()));
+
+        nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", 0 } };
+        if (is_fiat) {
+            args["total"] = amount::get_fiat_cents(details["fiat"]);
+        } else {
+            args["total"] = convert_amount(details)["satoshi"];
+        }
+
         change_settings("tx_limits", as_messagepack(args).get(), twofactor_data);
         update_spending_limits(args);
     }
@@ -1109,7 +1213,7 @@ namespace sdk {
         // FIXME: Locking
         m_fiat_source = exchange;
         m_fiat_currency = currency;
-        m_fiat_rate = fiat_rate;
+        update_fiat_rate(fiat_rate);
     }
 
     nlohmann::json ga_session::get_transactions(uint32_t subaccount, uint32_t page_id)
@@ -1133,7 +1237,7 @@ namespace sdk {
         // Note: fiat_value is actually the fiat exchange rate
         if (!txs["fiat_value"].is_null()) {
             const double fiat_rate = txs["fiat_value"];
-            m_fiat_rate = std::to_string(fiat_rate);
+            update_fiat_rate(std::to_string(fiat_rate));
         }
         txs.erase("fiat_value");
 
@@ -1163,11 +1267,15 @@ namespace sdk {
                 const auto tx = tx_from_hex(tx_data);
                 update_tx_info(tx, tx_details);
             } else {
-                // FIXME: Until the server gives us the vsize back, these
-                // values are incorrect, however this isn't a regression.
                 tx_details["transaction_size"] = tx_size;
-                tx_details["transaction_vsize"] = tx_size;
-                tx_details["transaction_weight"] = tx_size * 4;
+                if (tx_details.find("vsize") == tx_details.end() || tx_details["vsize"].is_null()) {
+                    // FIXME: Can be removed once the backend is upgraded and DB back populated
+                    tx_details["transaction_vsize"] = tx_size;
+                    tx_details["transaction_weight"] = tx_size * 4;
+                } else {
+                    tx_details["transaction_weight"] = tx_details["vsize"].get<uint32_t>() * 4;
+                    json_rename_key(tx_details, "vsize", "transaction_vsize");
+                }
             }
             // Compute fee in satoshi/kb, with the best integer accuracy we can
             const uint32_t tx_vsize = tx_details["transaction_vsize"];
@@ -1347,12 +1455,12 @@ namespace sdk {
             subtype = data["subtype"];
 
         if (subaccount == 0) {
-            return ga::sdk::output_script(m_net_params, m_master_key, wally_ext_key_ptr(), m_login_data["gait_path"],
-                type, subtype, subaccount, pointer);
+            return ga::sdk::output_script(
+                m_net_params, m_master_key, wally_ext_key_ptr(), m_gait_path, type, subtype, subaccount, pointer);
         } else {
             const auto subaccount_master_key = get_subaccount_master_key(m_master_key, subaccount);
             return ga::sdk::output_script(m_net_params, subaccount_master_key, get_recovery_extkey(subaccount),
-                m_login_data["gait_path"], type, subtype, subaccount, pointer);
+                m_gait_path, type, subtype, subaccount, pointer);
         }
     }
 
@@ -1456,7 +1564,7 @@ namespace sdk {
             wamp_call([&balance](wamp_call_result result) { balance = get_json_result(result.get()); },
                 "com.greenaddress.txs.get_balance", subaccount, num_confs);
             // FIXME: Locking, Make sure another session didn't change fiat currency
-            m_fiat_rate = balance["fiat_exchange"]; // Note: key name is wrong from the server!
+            update_fiat_rate(balance["fiat_exchange"]); // Note: key name is wrong from the server!
             const std::string satoshi_str = json_get_value(balance, "satoshi");
             satoshi = strtoul(satoshi_str.c_str(), NULL, 10);
         }
@@ -1468,7 +1576,7 @@ namespace sdk {
             sa["is_dirty"] = false;
         }
 
-        nlohmann::json details = amount::convert({ { "satoshi", satoshi } }, m_fiat_currency, m_fiat_rate);
+        nlohmann::json details = convert_amount({ { "satoshi", satoshi } });
         details["subaccount"] = subaccount;
         return details;
     }
@@ -1545,13 +1653,14 @@ namespace sdk {
             nlohmann::json gauth_config
                 = { { "enabled", gauth_enabled }, { "confirmed", gauth_enabled }, { "data", gauth_data } };
 
-            nlohmann::json twofactor_config
-                = { { "all_methods", ALL_2FA_METHODS }, { "email", email_config }, { "sms", sms_config },
-                      { "phone", phone_config }, { "gauth", gauth_config }, { "limits", get_spending_limits() } };
+            nlohmann::json twofactor_config = { { "all_methods", ALL_2FA_METHODS }, { "email", email_config },
+                { "sms", sms_config }, { "phone", phone_config }, { "gauth", gauth_config } };
             set_enabled_twofactor_methods(twofactor_config);
             std::swap(m_twofactor_config, twofactor_config);
         }
-        return m_twofactor_config;
+        nlohmann::json ret = m_twofactor_config;
+        ret["limits"] = get_spending_limits();
+        return ret;
     }
 
     void ga_session::set_enabled_twofactor_methods(nlohmann::json& config)
@@ -1715,21 +1824,11 @@ namespace sdk {
         std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN> key;
         get_pin_key(password, salt_b64, key);
 
-        // FIXME: secure_array
-        const auto iv = get_random_bytes<AES_BLOCK_LEN>();
         // FIXME: secure string
         const std::string json = nlohmann::json({ { "mnemonic", mnemonic }, { "seed", hex_from_bytes(seed) } }).dump();
-        const auto plaintext = gsl::make_span(reinterpret_cast<const unsigned char*>(json.data()), json.size());
-
-        const size_t plaintext_padded_size = (json.size() / AES_BLOCK_LEN + 1) * AES_BLOCK_LEN;
-        std::vector<unsigned char> encrypted(iv.size() + plaintext_padded_size);
-        auto ciphertext = gsl::make_span(encrypted.data() + iv.size(), plaintext_padded_size);
-        const auto written = aes_cbc(key, iv, plaintext, AES_FLAG_ENCRYPT, ciphertext);
-        GA_SDK_RUNTIME_ASSERT(written == static_cast<size_t>(ciphertext.size()));
-        std::copy(iv.begin(), iv.end(), encrypted.begin());
 
         return { { "pin_identifier", pin_identifier }, { "salt", salt_b64 },
-            { "encrypted_data", hex_from_bytes(encrypted) } };
+            { "encrypted_data", aes_cbc_encrypt(key, json) } };
     }
 
     std::vector<unsigned char> ga_session::get_pin_password(const std::string& pin, const std::string& pin_identifier)
@@ -1768,12 +1867,16 @@ namespace sdk {
         const uint32_t flags = is_segwit_script_type(type) ? WALLY_TX_FLAG_USE_WITNESS : 0;
         tx_get_btc_signature_hash(tx, index, prevout_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash);
 
-        // FIXME: secure_array
-        std::array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
-        derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
+        std::vector<uint32_t> path;
+        path.reserve(4);
+        if (subaccount != 0) {
+            path.emplace_back(0x80000000 | 3u);
+            path.emplace_back(0x80000000 | subaccount);
+        }
+        path.emplace_back(1u); // BRANCH_REGULAR
+        path.emplace_back(pointer);
 
-        std::array<unsigned char, EC_SIGNATURE_LEN> user_sig;
-        ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA | EC_FLAG_GRIND_R, user_sig);
+        const auto user_sig = sign_hash(m_master_key, path, tx_hash);
 
         if (is_segwit_script_type(type)) {
             // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)

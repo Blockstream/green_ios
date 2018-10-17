@@ -110,6 +110,10 @@ class Session(object):
         return login_with_pin(self.session_obj, pin, self._to_json(pin_data))
         return self
 
+    def set_watch_only(self, username, password):
+        set_watch_only(self.session_obj, username, password)
+        return self
+
     def login_watch_only(self, username, password):
         login_watch_only(self.session_obj, username, password)
         return self
@@ -148,6 +152,9 @@ class Session(object):
 
     def get_transaction_details(self, txhash_hex):
         return json.loads(get_transaction_details(self.session_obj, txhash_hex))
+
+    def convert_amount(self, details):
+        return json.loads(convert_amount(self.session_obj, self._to_json(details)))
 
     def get_balance(self, subaccount=0, num_confs=0):
         return json.loads(get_balance(self.session_obj, subaccount, num_confs))
@@ -197,6 +204,12 @@ class Session(object):
     def twofactor_change_limits(self, details):
         return Call(twofactor_change_limits(self.session_obj, self._to_json(details)))
 
+
+    def encrypt(self, plaintext):
+        return json.loads(encrypt(self.session_obj, self._to_json(plaintext)))
+
+    def decrypt(self, ciphertext):
+        return json.loads(decrypt(self.session_obj, self._to_json(ciphertext)))
 
 _old_get_networks = get_networks
 def get_networks():

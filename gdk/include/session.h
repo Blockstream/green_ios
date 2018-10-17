@@ -77,7 +77,7 @@ GASDK_API int GA_disconnect(struct GA_session* session);
 GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic);
 
 /**
- * Authenticate an user.
+ * Authenticate a user.
  *
  * @session The server session to use.
  * @mnemonic The user's mnemonic passphrase.
@@ -88,7 +88,7 @@ GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic)
 GASDK_API int GA_login(struct GA_session* session, const char* mnemonic, const char* password);
 
 /**
- * Authenticate an user.
+ * Authenticate a user.
  *
  * @session The server session to use.
  * @pin The user PIN.
@@ -99,7 +99,18 @@ GASDK_API int GA_login(struct GA_session* session, const char* mnemonic, const c
 GASDK_API int GA_login_with_pin(struct GA_session* session, const char* pin, const GA_json* pin_data);
 
 /**
- * Authenticate an user in watch only mode.
+ * Set a watch-only login for the wallet.
+ *
+ * @session The server session to use.
+ * @username The username.
+ * @password The password.
+ *
+ * GA_ERROR if setting the watch-only login is unsuccessful.
+ */
+GASDK_API int GA_set_watch_only(struct GA_session* session, const char* username, const char* password);
+
+/**
+ * Authenticate a user in watch only mode.
  *
  * @session The server session to use.
  * @username The username.

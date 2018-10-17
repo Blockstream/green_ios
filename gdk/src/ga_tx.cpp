@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "boost_wrapper.hpp"
-
+#include "ga_strings.hpp"
 #include "include/session.hpp"
 #include "transaction_utils.hpp"
 #include "utils.hpp"
@@ -234,7 +234,7 @@ namespace sdk {
         // We must have addressees to send to, and if sending everything, only one
         const auto& addressees = result.at("addressees");
         if (addressees.empty()) {
-            result["error"] = "No outputs";
+            result["error"] = res::no_outputs; // No outputs
             return result;
         }
 
@@ -242,7 +242,7 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(!is_rbf || !send_all);
 
         if (send_all && addressees.size() > 1) {
-            result["error"] = "Send all requires a single output";
+            result["error"] = res::send_all_requires_single; // Send all requires a single output
             return result;
         }
 
@@ -341,7 +341,7 @@ namespace sdk {
             if (total < am) {
                 if (manual_selection || used_utxos.size() == utxos.size()) {
                     // Used all inputs and do not have enough funds
-                    result["error"] = "Insufficient funds";
+                    result["error"] = res::insufficient_funds; // Insufficient funds
                     return result;
                 }
 
@@ -397,7 +397,7 @@ namespace sdk {
         result["change_index"] = change_index;
 
         if (user_fee_rate < min_fee_rate) {
-            result["error"] = "Fee rate is below minimum accepted fee rate";
+            result["error"] = res::fee_rate_below_minimum; // Fee rate is below minimum accepted fee rate
         }
         update_tx_info(tx, result);
         return result;
