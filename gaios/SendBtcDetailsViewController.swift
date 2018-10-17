@@ -283,6 +283,7 @@ class SendBtcDetailsViewController: UIViewController {
         customFeeTextField.isHidden = true
         if (priority == TransactionPriority.Low) {
             selectedButton = lowFeeButton
+            fee = AccountStore.shared.getFeeRateLow()
             lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -293,6 +294,7 @@ class SendBtcDetailsViewController: UIViewController {
             mediumFeeButton.layer.borderWidth = 1
         } else if (priority == TransactionPriority.Medium) {
             selectedButton = mediumFeeButton
+            fee = AccountStore.shared.getFeeRateMedium()
             mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
             lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -303,6 +305,7 @@ class SendBtcDetailsViewController: UIViewController {
             mediumFeeButton.layer.borderWidth = 2
         } else if (priority == TransactionPriority.High) {
             selectedButton = highFeeButton
+            fee = AccountStore.shared.getFeeRateHigh()
             lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
@@ -335,7 +338,6 @@ class SendBtcDetailsViewController: UIViewController {
     @IBAction func lowFeeClicked(_ sender: Any) {
         priority = TransactionPriority.Low
         updatePriorityButtons()
-        fee = AccountStore.shared.getFeeRateLow()
         updateEstimate()
         customFeeTextField.resignFirstResponder()
     }
@@ -343,7 +345,6 @@ class SendBtcDetailsViewController: UIViewController {
     @IBAction func mediumFeeClicked(_ sender: Any) {
         priority = TransactionPriority.Medium
         updatePriorityButtons()
-        fee = AccountStore.shared.getFeeRateMedium()
         updateEstimate()
         customFeeTextField.resignFirstResponder()
     }
@@ -351,13 +352,13 @@ class SendBtcDetailsViewController: UIViewController {
     @IBAction func highFeeClicked(_ sender: Any) {
         priority = TransactionPriority.High
         updatePriorityButtons()
-        fee = AccountStore.shared.getFeeRateHigh()
         updateEstimate()
         customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func customFeeClicked(_ sender: Any) {
         priority = TransactionPriority.Custom
+        customFeeTextField.becomeFirstResponder()
         updatePriorityButtons()
     }
 }
