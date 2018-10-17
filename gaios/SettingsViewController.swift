@@ -90,7 +90,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             } else if (indexPath.row == 2) {
                 pager?.hideButtons()
                 self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
-            }  else if (indexPath.row == 4) {
+            } else if (indexPath.row == 3) {
+                pager?.hideButtons()
+                self.performSegue(withIdentifier: "autolock", sender: nil)
+            } else if (indexPath.row == 4) {
                 if let url = URL(string: SettingsStore.shared.supportURL) {
                     UIApplication.shared.open(url, options: [:])
                 }

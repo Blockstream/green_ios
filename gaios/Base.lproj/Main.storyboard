@@ -157,6 +157,7 @@
                         <segue destination="Mod-4I-fsQ" kind="show" identifier="editTwoFactor" id="3d2-SH-cEy"/>
                         <segue destination="80V-46-g4d" kind="show" identifier="screenLock" id="xcl-Dg-JhF"/>
                         <segue destination="npE-4D-Ee3" kind="show" identifier="transactionFee" id="yP2-yJ-Lxy"/>
+                        <segue destination="tbc-8o-t8J" kind="show" identifier="autolock" id="a42-4h-VXc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -5175,6 +5176,121 @@
             </objects>
             <point key="canvasLocation" x="8859.375" y="-3533.4507042253522"/>
         </scene>
+        <!--Autolock Settings View Controller-->
+        <scene sceneID="K91-7s-mFy">
+            <objects>
+                <viewController id="tbc-8o-t8J" customClass="AutolockSettingsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="i4g-Mv-xy3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NU1-B8-MJK">
+                                <rect key="frame" x="16" y="36" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="NU1-B8-MJK" secondAttribute="height" multiplier="27:27" id="fdl-OL-QjU"/>
+                                    <constraint firstAttribute="height" constant="35" id="ujR-kS-slt"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
+                                <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonClicked:" destination="tbc-8o-t8J" eventType="touchUpInside" id="ITl-CS-unP"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Autolock after" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2b2-l8-5Sk">
+                                <rect key="frame" x="106" y="43" width="108" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="BGo-sK-kSd">
+                                <rect key="frame" x="0.0" y="338" width="320" height="230"/>
+                                <color key="backgroundColor" name="customTitaniumMedium"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="230" id="Ixl-wX-zXW"/>
+                                </constraints>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="wcv-gc-4nH" customClass="DenominationCell" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wcv-gc-4nH" id="Mnu-AF-BFu">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bCf-jT-boB">
+                                                    <rect key="frame" x="16" y="13" width="37.5" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="stepIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="rZJ-G4-GmX">
+                                                    <rect key="frame" x="292" y="16" width="12" height="12"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="12" id="390-Le-cdx"/>
+                                                        <constraint firstAttribute="height" constant="12" id="ePc-gP-u1B"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" name="customTitaniumMedium"/>
+                                            <constraints>
+                                                <constraint firstItem="bCf-jT-boB" firstAttribute="leading" secondItem="Mnu-AF-BFu" secondAttribute="leading" constant="16" id="GCb-52-H7Z"/>
+                                                <constraint firstAttribute="trailing" secondItem="rZJ-G4-GmX" secondAttribute="trailing" constant="16" id="TVC-rm-ibO"/>
+                                                <constraint firstItem="bCf-jT-boB" firstAttribute="centerY" secondItem="Mnu-AF-BFu" secondAttribute="centerY" id="hLq-h4-3aV"/>
+                                                <constraint firstItem="rZJ-G4-GmX" firstAttribute="centerY" secondItem="Mnu-AF-BFu" secondAttribute="centerY" id="qzW-hg-h1L"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" name="customTitaniumMedium"/>
+                                        <connections>
+                                            <outlet property="leftLabel" destination="bCf-jT-boB" id="gAh-43-62I"/>
+                                            <outlet property="rightImageView" destination="rZJ-G4-GmX" id="jWq-1Y-DaV"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="center" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fLW-Jf-hMT">
+                                <rect key="frame" x="10" y="139" width="300" height="57"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="57" id="grv-Kw-Pqe"/>
+                                </constraints>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="47"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Seconds" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rSp-tG-YiL">
+                                <rect key="frame" x="130" y="111" width="60" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" name="customTitaniumLight"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="lOQ-Lu-pIz" firstAttribute="trailing" secondItem="fLW-Jf-hMT" secondAttribute="trailing" constant="10" id="0ku-pp-X08"/>
+                            <constraint firstItem="NU1-B8-MJK" firstAttribute="leading" secondItem="lOQ-Lu-pIz" secondAttribute="leading" constant="16" id="I7d-dY-fIl"/>
+                            <constraint firstItem="NU1-B8-MJK" firstAttribute="width" secondItem="NU1-B8-MJK" secondAttribute="height" multiplier="27:27" id="Rcq-om-Lvy"/>
+                            <constraint firstItem="fLW-Jf-hMT" firstAttribute="centerX" secondItem="i4g-Mv-xy3" secondAttribute="centerX" id="UTe-Ah-xYV"/>
+                            <constraint firstItem="fLW-Jf-hMT" firstAttribute="leading" secondItem="lOQ-Lu-pIz" secondAttribute="leading" constant="10" id="Zup-Je-MdS"/>
+                            <constraint firstItem="BGo-sK-kSd" firstAttribute="trailing" secondItem="lOQ-Lu-pIz" secondAttribute="trailing" id="dM3-QU-MoR"/>
+                            <constraint firstItem="rSp-tG-YiL" firstAttribute="centerX" secondItem="i4g-Mv-xy3" secondAttribute="centerX" id="eKe-y7-Cvv"/>
+                            <constraint firstItem="NU1-B8-MJK" firstAttribute="top" secondItem="lOQ-Lu-pIz" secondAttribute="top" constant="16" id="fe6-jc-ywf"/>
+                            <constraint firstItem="2b2-l8-5Sk" firstAttribute="centerX" secondItem="i4g-Mv-xy3" secondAttribute="centerX" id="i9P-zB-hw3"/>
+                            <constraint firstAttribute="bottom" secondItem="BGo-sK-kSd" secondAttribute="bottom" id="iKS-Iq-IlO"/>
+                            <constraint firstItem="fLW-Jf-hMT" firstAttribute="top" secondItem="rSp-tG-YiL" secondAttribute="bottom" constant="10" id="kiF-aD-ON4"/>
+                            <constraint firstItem="fLW-Jf-hMT" firstAttribute="top" secondItem="2b2-l8-5Sk" secondAttribute="bottom" constant="75" id="lsU-La-G87"/>
+                            <constraint firstItem="2b2-l8-5Sk" firstAttribute="centerY" secondItem="NU1-B8-MJK" secondAttribute="centerY" id="qxS-xp-S3K"/>
+                            <constraint firstItem="BGo-sK-kSd" firstAttribute="leading" secondItem="lOQ-Lu-pIz" secondAttribute="leading" id="ra9-bY-VHn"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="lOQ-Lu-pIz"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="BGo-sK-kSd" id="Hvd-kV-sUF"/>
+                        <outlet property="unitLabel" destination="rSp-tG-YiL" id="6mN-gt-JKp"/>
+                        <outlet property="unitTextField" destination="fLW-Jf-hMT" id="3x9-zm-7ES"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gEL-uU-eCc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9855" y="-3543"/>
+        </scene>
     </scenes>
     <resources>
         <image name="backarrow" width="60" height="96"/>
@@ -5214,13 +5330,22 @@
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
+            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumLight">
+            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumMedium">
+            <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

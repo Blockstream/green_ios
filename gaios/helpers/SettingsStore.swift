@@ -129,6 +129,27 @@ class SettingsStore {
         }
     }
 
+    func setAutolockSettings(time: Int, type: AutoLock) {
+        if(type == AutoLock.Custom) {
+            let setting = SettingsItem(settingsName: settingsAutolock, property: ["type" : type.rawValue, "time": String(time)], text: securityLogout, secondaryText: type.rawValue)
+            allSettings[settingsAutolock] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        } else {
+            let setting = SettingsItem(settingsName: settingsAutolock, property: ["type" : type.rawValue, "time": String(timeForAutolock(lock: type))], text: securityLogout, secondaryText: type.rawValue)
+            allSettings[settingsAutolock] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        }
+    }
+
+    func getAutolockSettings() -> (AutoLock, Int) {
+        let setting = allSettings[settingsAutolock]
+        let lock = setting!.settingsProperty["type"]!
+        let time = Int(setting!.settingsProperty["time"]!)
+        return (AutoLock(rawValue: lock)!, time!)
+    }
+
     func getFeeSettings() -> (TransactionPriority, Int) {
         let setting = allSettings[settingsFee]
         let priority = setting!.settingsProperty["priority"]!
@@ -159,8 +180,21 @@ class SettingsStore {
         return SettingsItem(settingsName: settingsFee, property: ["priority" : TransactionPriority.Medium.rawValue, "satoshi" : String(0)], text: accountFee, secondaryText: TransactionPriority.Medium.rawValue)
     }
 
+    func timeForAutolock(lock: AutoLock) -> Int {
+        if (lock == AutoLock.minute) {
+            return 60
+        } else if (lock == AutoLock.twoMinutes) {
+            return 120
+        } else if (lock == AutoLock.fiveMinutes) {
+            return 300
+        } else {
+            return 600
+        }
+    }
+
     func defaultAutolockSettings() -> SettingsItem {
-        return SettingsItem(settingsName: settingsAutolock, property: ["time": String(600)], text: securityLogout, secondaryText: "5 minutes")
+        let lock = AutoLock.fiveMinutes
+        return SettingsItem(settingsName: settingsAutolock, property: ["type" : lock.rawValue, "time": String(timeForAutolock(lock: lock))], text: securityLogout, secondaryText: lock.rawValue)
     }
 
     func defaultDenominationSettings() -> SettingsItem {
@@ -374,6 +408,14 @@ public enum TransactionPriority: String {
     case Low = "Low"
     case Medium = "Medium"
     case High = "High"
+    case Custom = "Custom"
+}
+
+public enum AutoLock: String {
+    case minute = "1 Minute"
+    case twoMinutes = "2 Minutes"
+    case fiveMinutes = "5 Minutes"
+    case tenMinutes = "10 Minutes"
     case Custom = "Custom"
 }
 

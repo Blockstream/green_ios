@@ -64,6 +64,7 @@
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
+		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
@@ -174,6 +175,7 @@
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
+		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
@@ -385,6 +387,7 @@
 				676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */,
 				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
 				0981927E217692C700D8434F /* TransactionFeeViewController.swift */,
+				098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */,
 				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
@@ -778,6 +781,7 @@
 				09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */,
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
+				098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
