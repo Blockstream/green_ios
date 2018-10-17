@@ -57,6 +57,7 @@ class SendBtcDetailsViewController: UIViewController {
         setButton()
         customFeeTextField.attributedPlaceholder = NSAttributedString(string: "0",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        customFeeTextField.addTarget(self, action: #selector(customFeeDidChange(_:)), for: .editingChanged)
         hideKeyboardWhenTappedAround()
         NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -147,6 +148,15 @@ class SendBtcDetailsViewController: UIViewController {
             nextController.payload = g_payload
             nextController.selectedType = selectedType
         }
+    }
+
+    @objc func customFeeDidChange(_ textField: UITextField) {
+        let amount: String = textField.text!
+        guard let amount_i = Int(amount) else {
+            return
+        }
+        fee = UInt64(1024 * amount_i)
+        updateEstimate()
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -306,6 +316,7 @@ class SendBtcDetailsViewController: UIViewController {
             let def = SettingsStore.shared.getFeeSettings().0
             if (def == TransactionPriority.Custom) {
                 customFeeTextField.text = String(SettingsStore.shared.getFeeSettings().1)
+                fee = UInt64(SettingsStore.shared.getFeeSettings().1 * 1024)
             }
             customFeeTextField.isHidden = false
             customFeeLabel.isHidden = false
@@ -348,6 +359,5 @@ class SendBtcDetailsViewController: UIViewController {
     @IBAction func customFeeClicked(_ sender: Any) {
         priority = TransactionPriority.Custom
         updatePriorityButtons()
-        fee = 0
     }
 }
