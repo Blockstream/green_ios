@@ -12,7 +12,8 @@ import UIKit
 class CustomApplication: UIApplication {
 
     private var timeoutInSeconds: TimeInterval {
-        return TimeInterval(SettingsStore.shared.getAutolockSettings().1)
+        let time = TimeInterval(SettingsStore.shared.getAutolockSettings().1)
+        return time
     }
 
     private var idleTimer: Timer?
@@ -30,7 +31,8 @@ class CustomApplication: UIApplication {
     }
 
     @objc private func timeout() {
-        print("time is out!")
+        print("lock me")
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
     }
 
     override func sendEvent(_ event: UIEvent) {

@@ -250,10 +250,59 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    @objc func lockApplication(_ notification: NSNotification) {
+        //check if user is loggedIn
+        connect()
+        lock()
+    }
+
+    func lock() {
+        print("locking now")
+        let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
+        let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
+        let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
+        if (bioData != nil && pinData != nil && password != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+            firstVC.pinData = pinData!
+            firstVC.loginMode = true
+            firstVC.bioData = bioData!
+            firstVC.password = password!
+            firstVC.bioAuth = true
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
+            return
+        } else if(bioData != nil && password != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
+            firstVC.password = password!
+            firstVC.pinData = bioData!
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
+            return
+        } else if (pinData != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+            firstVC.pinData = pinData!
+            firstVC.loginMode = true
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
+            return
+        } else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
+        }
+    }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         //AppDelegate.removeKeychainData()
         loadNetworkSettings()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: "autolock"), object: nil)
+
         DispatchQueue.global(qos: .background).async {
             self.connect()
         }
@@ -314,44 +363,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if (timeElapsed < 600) {
             print("time elapsed is less than 5 minutes")
         } else {
-            //logout here
-            print("time elapsed is larger than 5 minutes")
-            let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
-            let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
-            let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
-            if (bioData != nil && pinData != nil && password != nil) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-                firstVC.pinData = pinData!
-                firstVC.loginMode = true
-                firstVC.bioData = bioData!
-                firstVC.password = password!
-                firstVC.bioAuth = true
-                self.window?.rootViewController = firstVC
-                self.window?.makeKeyAndVisible()
-                return
-            } else if(bioData != nil && password != nil) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
-                firstVC.password = password!
-                firstVC.pinData = bioData!
-                self.window?.rootViewController = firstVC
-                self.window?.makeKeyAndVisible()
-                return
-            } else if (pinData != nil) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-                firstVC.pinData = pinData!
-                firstVC.loginMode = true
-                self.window?.rootViewController = firstVC
-                self.window?.makeKeyAndVisible()
-                return
-            } else {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
-                self.window?.rootViewController = firstVC
-                self.window?.makeKeyAndVisible()
-            }
+            lock()
         }
     }
 
