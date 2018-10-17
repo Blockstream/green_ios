@@ -184,7 +184,6 @@ func saveNetworkSettingsToDisk() {
 }
 
 
-@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?

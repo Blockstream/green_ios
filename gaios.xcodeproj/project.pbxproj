@@ -65,6 +65,8 @@
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
 		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
+		098192832176D05500D8434F /* CustomApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* CustomApplication.swift */; };
+		098192852176D12F00D8434F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192842176D12F00D8434F /* main.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
@@ -176,6 +178,8 @@
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
 		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
+		098192822176D05500D8434F /* CustomApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomApplication.swift; sourceTree = "<group>"; };
+		098192842176D12F00D8434F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
@@ -362,6 +366,8 @@
 				092C7BC620D2381700F90DF2 /* Views */,
 				092E1EAE20CF98AF00362253 /* helpers */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
+				098192842176D12F00D8434F /* main.swift */,
+				098192822176D05500D8434F /* CustomApplication.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
 				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
@@ -748,6 +754,7 @@
 				092A84CF211BFE120062F0B2 /* CongratsViewController.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */,
+				098192852176D12F00D8434F /* main.swift in Sources */,
 				676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */,
 				09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
@@ -810,6 +817,7 @@
 				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
+				098192832176D05500D8434F /* CustomApplication.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

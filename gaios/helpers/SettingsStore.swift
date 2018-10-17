@@ -144,10 +144,15 @@ class SettingsStore {
     }
 
     func getAutolockSettings() -> (AutoLock, Int) {
-        let setting = allSettings[settingsAutolock]
-        let lock = setting!.settingsProperty["type"]!
-        let time = Int(setting!.settingsProperty["time"]!)
-        return (AutoLock(rawValue: lock)!, time!)
+        if let setting = allSettings[settingsAutolock] {
+            let lock = setting.settingsProperty["type"]!
+            let time = Int(setting.settingsProperty["time"]!)
+            return (AutoLock(rawValue: lock)!, time!)
+        }
+        let def = defaultAutolockSettings()
+        let dlock = def.settingsProperty["type"]!
+        let dtime = Int(def.settingsProperty["time"]!)
+        return (AutoLock(rawValue: dlock)!, dtime!)
     }
 
     func getFeeSettings() -> (TransactionPriority, Int) {
