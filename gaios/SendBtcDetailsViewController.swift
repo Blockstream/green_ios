@@ -26,6 +26,7 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var customFeeTextField: UITextField!
     @IBOutlet weak var customFeeLabel: UILabel!
+    @IBOutlet weak var customFeeUnitLabel: UILabel!
 
     var selectedType = TransactionType.FIAT
     var maxAmountBTC = 0
@@ -54,7 +55,7 @@ class SendBtcDetailsViewController: UIViewController {
         }
         updateMaxAmountLabel()
         setButton()
-        customFeeTextField.attributedPlaceholder = NSAttributedString(string: "0 satoshi / byte",
+        customFeeTextField.attributedPlaceholder = NSAttributedString(string: "0",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         hideKeyboardWhenTappedAround()
         NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -268,8 +269,10 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updatePriorityButtons() {
         customFeeLabel.isHidden = true
+        customFeeUnitLabel.isHidden = true
         customFeeTextField.isHidden = true
         if (priority == TransactionPriority.Low) {
+            selectedButton = lowFeeButton
             lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -279,6 +282,7 @@ class SendBtcDetailsViewController: UIViewController {
             customfeeButton.layer.borderWidth = 1
             mediumFeeButton.layer.borderWidth = 1
         } else if (priority == TransactionPriority.Medium) {
+            selectedButton = mediumFeeButton
             mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
             lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -288,6 +292,7 @@ class SendBtcDetailsViewController: UIViewController {
             customfeeButton.layer.borderWidth = 1
             mediumFeeButton.layer.borderWidth = 2
         } else if (priority == TransactionPriority.High) {
+            selectedButton = highFeeButton
             lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
@@ -297,12 +302,14 @@ class SendBtcDetailsViewController: UIViewController {
             customfeeButton.layer.borderWidth = 1
             mediumFeeButton.layer.borderWidth = 1
         } else if (priority == TransactionPriority.Custom) {
+            selectedButton = customfeeButton
             let def = SettingsStore.shared.getFeeSettings().0
             if (def == TransactionPriority.Custom) {
                 customFeeTextField.text = String(SettingsStore.shared.getFeeSettings().1)
             }
             customFeeTextField.isHidden = false
             customFeeLabel.isHidden = false
+            customFeeUnitLabel.isHidden = false
             lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -315,29 +322,26 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @IBAction func lowFeeClicked(_ sender: Any) {
-        selectedButton = lowFeeButton
-        fee = AccountStore.shared.getFeeRateLow()
-        updateEstimate()
         priority = TransactionPriority.Low
         updatePriorityButtons()
+        fee = AccountStore.shared.getFeeRateLow()
+        updateEstimate()
         customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
-        selectedButton = mediumFeeButton
-        fee = AccountStore.shared.getFeeRateMedium()
-        updateEstimate()
         priority = TransactionPriority.Medium
         updatePriorityButtons()
+        fee = AccountStore.shared.getFeeRateMedium()
+        updateEstimate()
         customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
-        selectedButton = highFeeButton
-        fee = AccountStore.shared.getFeeRateHigh()
-        updateEstimate()
         priority = TransactionPriority.High
         updatePriorityButtons()
+        fee = AccountStore.shared.getFeeRateHigh()
+        updateEstimate()
         customFeeTextField.resignFirstResponder()
     }
 
