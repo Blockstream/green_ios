@@ -16,6 +16,7 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
     @IBOutlet weak var tableView: UITableView!
     let autolockTypes: [AutoLock] = [AutoLock.minute, AutoLock.twoMinutes, AutoLock.fiveMinutes, AutoLock.tenMinutes, AutoLock.Custom]
 
+    @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var unitTextField: UITextField!
     @IBOutlet weak var unitLabel: UILabel!
     override func viewDidLoad() {
@@ -26,6 +27,7 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
         unitTextField.delegate = self
         updateUnitUI()
         hideKeyboardWhenTappedAround()
+        warningLabel.isHidden = true
     }
 
     func updateUnitUI() {
@@ -41,7 +43,13 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
 
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let time = Int(textField.text!) {
-            SettingsStore.shared.setAutolockSettings(time: time, type: AutoLock.Custom)
+            if (time < 5) {
+                warningLabel.isHidden = false
+                return
+            } else {
+                warningLabel.isHidden = true
+                SettingsStore.shared.setAutolockSettings(time: time, type: AutoLock.Custom)
+            }
         }
         updateUnitUI()
         tableView.reloadData()
@@ -82,6 +90,7 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
             unitTextField.becomeFirstResponder()
         } else {
             SettingsStore.shared.setAutolockSettings(time: 0, type: lock)
+            warningLabel.isHidden = true
             updateUnitUI()
             tableView.reloadData()
         }

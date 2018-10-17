@@ -5261,16 +5261,24 @@
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5 seconds is minimum" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2IU-eU-icE">
+                                <rect key="frame" x="84" y="206" width="152.5" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="lOQ-Lu-pIz" firstAttribute="trailing" secondItem="fLW-Jf-hMT" secondAttribute="trailing" constant="10" id="0ku-pp-X08"/>
+                            <constraint firstItem="2IU-eU-icE" firstAttribute="centerX" secondItem="i4g-Mv-xy3" secondAttribute="centerX" id="6kL-l4-qh7"/>
                             <constraint firstItem="NU1-B8-MJK" firstAttribute="leading" secondItem="lOQ-Lu-pIz" secondAttribute="leading" constant="16" id="I7d-dY-fIl"/>
                             <constraint firstItem="NU1-B8-MJK" firstAttribute="width" secondItem="NU1-B8-MJK" secondAttribute="height" multiplier="27:27" id="Rcq-om-Lvy"/>
                             <constraint firstItem="fLW-Jf-hMT" firstAttribute="centerX" secondItem="i4g-Mv-xy3" secondAttribute="centerX" id="UTe-Ah-xYV"/>
                             <constraint firstItem="fLW-Jf-hMT" firstAttribute="leading" secondItem="lOQ-Lu-pIz" secondAttribute="leading" constant="10" id="Zup-Je-MdS"/>
                             <constraint firstItem="BGo-sK-kSd" firstAttribute="trailing" secondItem="lOQ-Lu-pIz" secondAttribute="trailing" id="dM3-QU-MoR"/>
                             <constraint firstItem="rSp-tG-YiL" firstAttribute="centerX" secondItem="i4g-Mv-xy3" secondAttribute="centerX" id="eKe-y7-Cvv"/>
+                            <constraint firstItem="2IU-eU-icE" firstAttribute="top" secondItem="fLW-Jf-hMT" secondAttribute="bottom" constant="10" id="ebm-5z-o2c"/>
                             <constraint firstItem="NU1-B8-MJK" firstAttribute="top" secondItem="lOQ-Lu-pIz" secondAttribute="top" constant="16" id="fe6-jc-ywf"/>
                             <constraint firstItem="2b2-l8-5Sk" firstAttribute="centerX" secondItem="i4g-Mv-xy3" secondAttribute="centerX" id="i9P-zB-hw3"/>
                             <constraint firstAttribute="bottom" secondItem="BGo-sK-kSd" secondAttribute="bottom" id="iKS-Iq-IlO"/>
@@ -5285,6 +5293,7 @@
                         <outlet property="tableView" destination="BGo-sK-kSd" id="Hvd-kV-sUF"/>
                         <outlet property="unitLabel" destination="rSp-tG-YiL" id="6mN-gt-JKp"/>
                         <outlet property="unitTextField" destination="fLW-Jf-hMT" id="3x9-zm-7ES"/>
+                        <outlet property="warningLabel" destination="2IU-eU-icE" id="7T3-JB-fVR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gEL-uU-eCc" userLabel="First Responder" sceneMemberID="firstResponder"/>
