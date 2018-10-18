@@ -101,10 +101,12 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
 
                         } else if (parsed == "call") {
                             let json = try result?.call()
-                            self.stopAnimating()
-                            print("No 2 factor")
+                            self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+                                self.stopAnimating()
+                                self.navigationController?.popToRootViewController(animated: true)
+                            }
                         }
-                        print(status)
                     } catch {
                         self.stopAnimating()
                         print("couldn't call")
