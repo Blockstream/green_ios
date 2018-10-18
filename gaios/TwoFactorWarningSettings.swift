@@ -34,10 +34,12 @@ class TwoFactorWarningSettings: UIViewController {
 
     @IBAction func noFactorSwitched(_ sender: UISwitch) {
         SettingsStore.shared.setTwoFactorWarning(noFactor: noFactorSwitch.isOn, oneFactor: oneFactorSwitch.isOn)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "twoFactorWarningChanged"), object: nil, userInfo: nil)
     }
 
     @IBAction func oneFactorSwitch(_ sender: Any) {
         SettingsStore.shared.setTwoFactorWarning(noFactor: noFactorSwitch.isOn, oneFactor: oneFactorSwitch.isOn)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "twoFactorWarningChanged"), object: nil, userInfo: nil)
     }
 
 }

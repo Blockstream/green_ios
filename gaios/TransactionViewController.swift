@@ -36,8 +36,13 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         NotificationStore.shared.refreshNotifications = {
             self.updateViewModel()
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(self.notificationChanged(_:)), name: NSNotification.Name(rawValue: "notificationChanged"), object: nil)
     }
-    
+
+    @objc func notificationChanged(_ notification: NSNotification) {
+        updateViewModel()
+    }
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
         let item = items[indexPath.row]
