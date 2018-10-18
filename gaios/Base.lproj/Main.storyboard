@@ -4311,25 +4311,51 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HLV-va-6KG">
+                                <rect key="frame" x="16" y="510" width="288" height="42"/>
+                                <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="Gf3-7h-bim"/>
+                                </constraints>
+                                <state key="normal" title="Increase Fee">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="increaseFeeClicked:" destination="zxH-Uq-pPW" eventType="touchUpInside" id="uKo-r1-OwW"/>
+                                    <action selector="shareButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="QAE-i1-uok"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Increasing Fee to recommended level will change expected confirmation time to x blocks" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B4n-IG-BzY">
+                                <rect key="frame" x="30" y="446" width="260" height="54"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" name="customTitaniumLight"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="aYU-Xd-5Mx" secondAttribute="trailing" constant="16" id="0JM-Pr-3SR"/>
                             <constraint firstItem="urc-Ok-Tuj" firstAttribute="top" secondItem="bMU-X1-kBn" secondAttribute="bottom" constant="12" id="2c3-Eq-eTy"/>
+                            <constraint firstItem="rFE-l7-ht6" firstAttribute="bottom" secondItem="HLV-va-6KG" secondAttribute="bottom" constant="16" id="3ep-Iz-1Wt"/>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="6Z7-4H-g0M" secondAttribute="trailing" constant="16" id="6tR-08-lTp"/>
                             <constraint firstItem="6Z7-4H-g0M" firstAttribute="leading" secondItem="Bkr-Xa-WKw" secondAttribute="leading" constant="16" id="7C3-di-dpB"/>
                             <constraint firstItem="FfF-vK-F6g" firstAttribute="leading" secondItem="Rpi-Zd-6ud" secondAttribute="leading" constant="16" id="7TR-y7-IMf"/>
+                            <constraint firstItem="HLV-va-6KG" firstAttribute="top" secondItem="B4n-IG-BzY" secondAttribute="bottom" constant="10" id="AAP-QJ-f0m"/>
                             <constraint firstItem="Rpi-Zd-6ud" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="BB7-3o-BDc"/>
                             <constraint firstItem="gkK-nf-Uhp" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="ENL-Kb-Qkb"/>
                             <constraint firstItem="FfF-vK-F6g" firstAttribute="top" secondItem="Rpi-Zd-6ud" secondAttribute="bottom" constant="12" id="ERc-0O-Yqc"/>
+                            <constraint firstItem="HLV-va-6KG" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="FFw-Jg-V8W"/>
                             <constraint firstItem="gkK-nf-Uhp" firstAttribute="width" secondItem="gkK-nf-Uhp" secondAttribute="height" multiplier="27:27" id="Hpj-g0-sUE"/>
                             <constraint firstItem="bMU-X1-kBn" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="JSn-lI-bkV"/>
                             <constraint firstItem="aYU-Xd-5Mx" firstAttribute="leading" secondItem="mu9-t1-UPb" secondAttribute="leading" constant="16" id="RIu-Mr-Hml"/>
                             <constraint firstItem="dOP-aH-DRY" firstAttribute="centerX" secondItem="vZy-33-xla" secondAttribute="centerX" id="Vg5-P2-07d"/>
+                            <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="HLV-va-6KG" secondAttribute="trailing" constant="16" id="XFR-Gg-ssF"/>
                             <constraint firstItem="3wN-a1-Hrx" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="XNR-4A-Pe7"/>
                             <constraint firstItem="bMU-X1-kBn" firstAttribute="top" secondItem="gkK-nf-Uhp" secondAttribute="bottom" constant="50" id="YMO-Oc-7VU"/>
+                            <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="B4n-IG-BzY" secondAttribute="trailing" constant="30" id="YQu-ed-4L3"/>
                             <constraint firstItem="3wN-a1-Hrx" firstAttribute="top" secondItem="aYU-Xd-5Mx" secondAttribute="bottom" constant="10" id="YSP-iu-yST"/>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="urc-Ok-Tuj" secondAttribute="trailing" constant="16" id="ZM8-qd-2vE"/>
+                            <constraint firstItem="B4n-IG-BzY" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="30" id="bUV-Fn-Lji"/>
                             <constraint firstItem="v1Y-n7-LaR" firstAttribute="top" secondItem="dOP-aH-DRY" secondAttribute="bottom" constant="10" id="c8e-Rk-bSU"/>
                             <constraint firstItem="v1Y-n7-LaR" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="cTe-mL-Gay"/>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="v1Y-n7-LaR" secondAttribute="trailing" constant="16" id="caj-Rh-BVO"/>
@@ -4352,16 +4378,19 @@
                     </view>
                     <connections>
                         <outlet property="amountLabel" destination="GEc-HO-hqS" id="nCb-tm-1tF"/>
+                        <outlet property="bottomLabel" destination="B4n-IG-BzY" id="yhO-Fg-vWv"/>
                         <outlet property="dateLabel" destination="aYU-Xd-5Mx" id="iLX-Pd-6iw"/>
-                        <outlet property="feeLabel" destination="6Z7-4H-g0M" id="i9o-A4-KHY"/>
+                        <outlet property="feeButton" destination="HLV-va-6KG" id="sDX-8s-u0v"/>
+                        <outlet property="feeLabel" destination="6Z7-4H-g0M" id="X2G-yt-8qg"/>
                         <outlet property="hashLabel" destination="urc-Ok-Tuj" id="Rsr-cF-Uqk"/>
                         <outlet property="memoLabel" destination="FfF-vK-F6g" id="vFs-wW-Toa"/>
+                        <outlet property="topConstraint" destination="YMO-Oc-7VU" id="o9Q-aC-m6G"/>
                         <outlet property="warniniglabel" destination="v1Y-n7-LaR" id="s5J-bc-KO6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bFv-Dd-3RS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9647" y="776"/>
+            <point key="canvasLocation" x="9646.875" y="775.35211267605632"/>
         </scene>
         <!--transactions-->
         <scene sceneID="19M-wj-2Dc">
@@ -5168,8 +5197,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="47"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Satoshi / kilobyte" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n3f-ta-66O">
-                                <rect key="frame" x="101" y="111" width="118" height="18"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Satoshi / Byte" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n3f-ta-66O">
+                                <rect key="frame" x="112.5" y="111" width="95" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
@@ -5448,14 +5477,11 @@
         <namedColor name="customTitaniumDark">
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
-            <color red="0.3921568627" green="0.47058823529999999" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
