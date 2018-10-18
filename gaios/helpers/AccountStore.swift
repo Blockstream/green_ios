@@ -316,9 +316,17 @@ class AccountStore {
         let enabled = config!["any_enabled"] as! Bool
         return enabled
     }
-    
+
     func getWalletForSubAccount(pointer: Int) -> WalletItem {
         return m_wallets[pointer]
+    }
+
+    func twoFactorsEnabledCount() -> Int {
+        if let config = getTwoFactorConfig() {
+            let methods = config["enabled_methods"] as! NSArray
+            return methods.count
+        }
+        return 0
     }
 
     @objc func incomingTransaction(_ notification: NSNotification) {

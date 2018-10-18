@@ -20,6 +20,8 @@ class NotificationStore {
     var localNotification: [String: NotificationItem] = [String: NotificationItem]()
     var allNotifications: [String: NotificationItem] = [String: NotificationItem]()
     var newNotificationCount = 0
+    let warringNoTwoFactor = "You don't have two factor authentication enabled, enable it to improve security!"
+    let warringOneTwoFactor = "You have only one two factor method enabled, add a backup method to improve security!"
 
     func getTransactions() {
         AccountStore.shared.getWallets(cached: true).done { (wallets: Array<WalletItem>) in
@@ -128,9 +130,33 @@ class NotificationStore {
         delegate?.dismissNotification()
     }
 
-    func createWelcomeNotification() -> NotificationItem{
+    func createWelcomeNotification() -> NotificationItem {
         let date = Date()
-        return NotificationItem(date: date, title: "Welcome", text: "Thank you for downloading Green! please leave us a review when you get a chance.", id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970)
+        return NotificationItem(date: date, title: "Welcome", text: "Thank you for downloading Green! please leave us a review when you get a chance.", id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
+    }
+
+    func createWarningNotification() -> NotificationItem? {
+        let date = Date()
+        let twoFactorSettings = SettingsStore.shared.getTwoFactorWarning()
+        if (!AccountStore.shared.isTwoFactorEnabled() && twoFactorSettings.0) {
+            return NotificationItem(date: date, title: "Warning!", text: warringNoTwoFactor, id: "warninghash1", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+        } else if (AccountStore.shared.twoFactorsEnabledCount() == 1 &&  twoFactorSettings.1) {
+            return NotificationItem(date: date, title: "Warning!", text: warringOneTwoFactor, id: "warninghash2", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+        }
+        return nil
+    }
+
+    func removeWarning() {
+
+    }
+
+    func maybeAddWarningNotification() {
+        if let warning = createWarningNotification() {
+            allNotifications.removeValue(forKey: warning.id)
+            allNotifications[warning.id] = warning
+            self.newNotificationCount += 1
+            writeNotificationsToDisk()
+        }
     }
 
     func maybeAddWelcomeNotification() {
@@ -158,12 +184,13 @@ class NotificationStore {
             bodyText = String(format: "Your  %@ BTC sent to %@ has been confirmed", amountText, counterparty)
         }
         
-        return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970)
+        return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
     }
 
     func initializeNotificationStore() {
         allNotifications = loadNotificationsFromDisk()
         maybeAddWelcomeNotification()
+        maybeAddWarningNotification()
         refreshNotifications?()
         getTransactions()
     }
@@ -180,14 +207,16 @@ class NotificationItem: Codable{
     var timestamp: Double
     var id: String
     var seen: Bool
+    var isWarning: Bool
 
-    init(date: Date, title: String, text: String, id: String, seen: Bool, timestamp: Double) {
+    init(date: Date, title: String, text: String, id: String, seen: Bool, timestamp: Double, isWarning: Bool) {
         self.title = title
         self.text = text
         self.date = date
         self.id = id
         self.seen = seen
         self.timestamp = timestamp
+        self.isWarning = isWarning
     }
 }
 

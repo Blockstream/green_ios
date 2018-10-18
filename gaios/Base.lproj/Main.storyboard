@@ -158,6 +158,7 @@
                         <segue destination="80V-46-g4d" kind="show" identifier="screenLock" id="xcl-Dg-JhF"/>
                         <segue destination="npE-4D-Ee3" kind="show" identifier="transactionFee" id="yP2-yJ-Lxy"/>
                         <segue destination="tbc-8o-t8J" kind="show" identifier="autolock" id="a42-4h-VXc"/>
+                        <segue destination="4u7-GI-Irj" kind="show" identifier="twoFactorWarning" id="HGk-IF-JfZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3794,7 +3795,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="465" width="288" height="20.5"/>
+                                <rect key="frame" x="16" y="465" width="288" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -5327,6 +5328,88 @@
             </objects>
             <point key="canvasLocation" x="9855" y="-3543"/>
         </scene>
+        <!--Two Factor Warning Settings-->
+        <scene sceneID="knO-iI-gtb">
+            <objects>
+                <viewController id="4u7-GI-Irj" customClass="TwoFactorWarningSettings" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="xU1-bc-GGI">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w1Y-ac-8lk">
+                                <rect key="frame" x="16" y="36" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="w1Y-ac-8lk" secondAttribute="height" multiplier="27:27" id="4cV-I2-2F4"/>
+                                    <constraint firstAttribute="height" constant="35" id="fwO-aH-htq"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
+                                <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonClicked:" destination="4u7-GI-Irj" eventType="touchUpInside" id="ZjR-6I-aRY"/>
+                                    <action selector="backButtonPressed:" destination="pU1-Se-Foe" eventType="touchUpInside" id="3a9-QI-8YF"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Two Factor Warning" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ebc-W0-biZ">
+                                <rect key="frame" x="84" y="43" width="152" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Two Factor Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wud-ct-Ks3">
+                                <rect key="frame" x="16" y="136" width="177" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jEq-0H-yuS">
+                                <rect key="frame" x="255" y="131" width="51" height="31"/>
+                                <connections>
+                                    <action selector="noFactorSwitched:" destination="4u7-GI-Irj" eventType="valueChanged" id="lar-KW-UEI"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Only One Two-Factor Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OD0-eF-ySY">
+                                <rect key="frame" x="16" y="187" width="229" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I1F-Vl-RpS">
+                                <rect key="frame" x="255" y="182" width="51" height="31"/>
+                                <connections>
+                                    <action selector="oneFactorSwitch:" destination="4u7-GI-Irj" eventType="valueChanged" id="eET-65-5wK"/>
+                                </connections>
+                            </switch>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="Ebc-W0-biZ" firstAttribute="centerX" secondItem="xU1-bc-GGI" secondAttribute="centerX" id="4qa-1b-FVW"/>
+                            <constraint firstItem="I1F-Vl-RpS" firstAttribute="centerY" secondItem="OD0-eF-ySY" secondAttribute="centerY" id="BB1-m4-GEV"/>
+                            <constraint firstItem="OD0-eF-ySY" firstAttribute="leading" secondItem="6No-Qw-mbz" secondAttribute="leading" constant="16" id="FhC-F0-jRp"/>
+                            <constraint firstItem="OD0-eF-ySY" firstAttribute="top" secondItem="wud-ct-Ks3" secondAttribute="bottom" constant="30" id="Hh9-1F-XqQ"/>
+                            <constraint firstItem="Ebc-W0-biZ" firstAttribute="centerY" secondItem="w1Y-ac-8lk" secondAttribute="centerY" id="S9N-4x-xwZ"/>
+                            <constraint firstItem="w1Y-ac-8lk" firstAttribute="leading" secondItem="6No-Qw-mbz" secondAttribute="leading" constant="16" id="VNm-Pr-aVa"/>
+                            <constraint firstItem="jEq-0H-yuS" firstAttribute="centerY" secondItem="wud-ct-Ks3" secondAttribute="centerY" id="Vg1-V1-idx"/>
+                            <constraint firstItem="6No-Qw-mbz" firstAttribute="trailing" secondItem="I1F-Vl-RpS" secondAttribute="trailing" constant="16" id="d8R-QE-IGM"/>
+                            <constraint firstItem="w1Y-ac-8lk" firstAttribute="width" secondItem="w1Y-ac-8lk" secondAttribute="height" multiplier="27:27" id="fFU-ar-P94"/>
+                            <constraint firstItem="wud-ct-Ks3" firstAttribute="top" secondItem="w1Y-ac-8lk" secondAttribute="bottom" constant="65" id="jar-2T-pbb"/>
+                            <constraint firstItem="w1Y-ac-8lk" firstAttribute="top" secondItem="6No-Qw-mbz" secondAttribute="top" constant="16" id="ns5-BP-A9W"/>
+                            <constraint firstItem="wud-ct-Ks3" firstAttribute="leading" secondItem="6No-Qw-mbz" secondAttribute="leading" constant="16" id="ovU-uG-vVW"/>
+                            <constraint firstItem="6No-Qw-mbz" firstAttribute="trailing" secondItem="jEq-0H-yuS" secondAttribute="trailing" constant="16" id="yGr-KA-OKM"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6No-Qw-mbz"/>
+                    </view>
+                    <connections>
+                        <outlet property="noFactorLabel" destination="wud-ct-Ks3" id="QnM-Qu-S5W"/>
+                        <outlet property="noFactorSwitch" destination="jEq-0H-yuS" id="SaT-Ws-lRf"/>
+                        <outlet property="oneFactorLabel" destination="OD0-eF-ySY" id="lWd-0H-khI"/>
+                        <outlet property="oneFactorSwitch" destination="I1F-Vl-RpS" id="Uyb-eg-vDe"/>
+                        <outlet property="topLabel" destination="Ebc-W0-biZ" id="kQv-hn-QHo"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6QP-Yh-DSD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10744" y="-3544"/>
+        </scene>
     </scenes>
     <resources>
         <image name="backarrow" width="60" height="96"/>
@@ -5365,6 +5448,9 @@
         <namedColor name="customTitaniumDark">
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -5387,6 +5473,6 @@
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>
         <segue reference="ZM7-6x-yYR"/>
-        <segue reference="wGg-ef-t0T"/>
+        <segue reference="Ssh-xP-Hwg"/>
     </inferredMetricsTieBreakers>
 </document>

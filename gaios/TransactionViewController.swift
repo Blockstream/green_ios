@@ -56,6 +56,11 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = tableView.dequeueReusableCell(withIdentifier: "NotificationCell", for: indexPath) as! NotificationTableCell
         let item: NotificationItem = items.reversed()[indexPath.row]
         cell.mainText.text = item.text
+        if(item.isWarning) {
+            cell.title.textColor = UIColor.red
+        } else {
+            cell.title.textColor = UIColor.white
+        }
         cell.title.text = item.title
         cell.date.text = NotificationStore.shared.dateToText(date: item.date)
         cell.date.sizeToFit()

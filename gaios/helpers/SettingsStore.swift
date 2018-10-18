@@ -21,9 +21,10 @@ class SettingsStore {
         let securityImage = #imageLiteral(resourceName: "security")
         let securityRecovery = "Show Recovery Seed"
         let securityScreenLock = "Screen Lock"
-        let securityTwoFactor = "Two-factor Authentication"
+        let securityTwoFactor = "Two-Factor Authentication"
+        let securityTwoFactorWarning = "Two-Factor Warning"
         let securitySupport = "Support"
-        let securityLogout = "Automatically lock after"
+        let securityLogout = "Automatically Lock After"
     let sectionAdvanced = "Advanced"
         let advancedImage = #imageLiteral(resourceName: "advanced")
         let advancedSegwit = "Enable Segwit"
@@ -31,7 +32,7 @@ class SettingsStore {
     let sectionAbout = "About"
         let aboutImage = #imageLiteral(resourceName: "about")
         let aboutVersion = "Version"
-        let aboutTOS = "Terms of use"
+        let aboutTOS = "Terms of Use"
         let aboutPrivacy = "Privacy Policy"
 
     let settingsCurrency = "settingsCurrency"
@@ -44,7 +45,7 @@ class SettingsStore {
     let settingsTwoFactor = "settingsTwoFactor"
     let settingsAutolock = "settingsAutolock"
     let settingsSupport = "settingsSupport"
-
+    let settingsTwoFactorWarning = "settingsTwoFactorWarning"
     let settingsNLockTime = "settingsNLockTime"
 
     let settingsVersion = "settingsVersion"
@@ -169,6 +170,24 @@ class SettingsStore {
         return ScreenLock(rawValue: raw!)!
     }
 
+    //returns if warning for nofactor and one factor are enabled (NoFactor, OneFactor)
+    func getTwoFactorWarning() -> (Bool, Bool) {
+        let setting = allSettings[settingsTwoFactorWarning]
+        let noFactor = setting?.settingsProperty["noFactor"]
+        let oneFactor = setting?.settingsProperty["oneFactor"]
+        return (noFactor == "true", oneFactor == "true")
+    }
+
+    func setTwoFactorWarning(noFactor: Bool, oneFactor: Bool) {
+        let enabledText = noFactor || oneFactor ? "Enabled" : "Disabled"
+        let noFactorText = noFactor ? "true" : "false"
+        let oneFactorText = oneFactor ? "true" : "false"
+        let setting = SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": noFactorText, "oneFactor" : oneFactorText], text: securityTwoFactorWarning, secondaryText: enabledText)
+        allSettings[settingsTwoFactorWarning] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
     func getDenominationSettings() -> String {
         return (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!
     }
@@ -200,6 +219,10 @@ class SettingsStore {
     func defaultAutolockSettings() -> SettingsItem {
         let lock = AutoLock.fiveMinutes
         return SettingsItem(settingsName: settingsAutolock, property: ["type" : lock.rawValue, "time": String(timeForAutolock(lock: lock))], text: securityLogout, secondaryText: lock.rawValue)
+    }
+
+    func defaultTwoFactorWarning() -> SettingsItem {
+        return SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": "true", "oneFactor" : "true"], text: securityTwoFactorWarning, secondaryText: "Enabled")
     }
 
     func defaultDenominationSettings() -> SettingsItem {
@@ -278,16 +301,19 @@ class SettingsStore {
         } else {
             twoFactor = defaultTwoFactor()
         }
+        let twoFactorWarning = allSettings[settingsTwoFactorWarning] == nil ? defaultTwoFactorWarning() : allSettings[settingsTwoFactorWarning]
         let autolock = allSettings[settingsAutolock] == nil ? defaultAutolockSettings() : allSettings[settingsAutolock]
         let support = allSettings[settingsSupport] == nil ? defaultSupport() : allSettings[settingsSupport]
         securitySettings.append(recovery!)
         securitySettings.append(screenLock!)
         securitySettings.append(twoFactor!)
+        securitySettings.append(twoFactorWarning!)
         securitySettings.append(autolock!)
         securitySettings.append(support!)
         allSettings[settingsRecovery] = recovery
         allSettings[settingsScreenLock] = screenLock
         allSettings[settingsTwoFactor] = twoFactor
+        allSettings[settingsTwoFactorWarning] = twoFactorWarning
         allSettings[settingsSupport] = support
         allSettings[settingsAutolock] = autolock
         let section = SettingsSection(sectionName: sectionSecurity, settingsInSection: securitySettings)
