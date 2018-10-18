@@ -43,7 +43,22 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        topLabel.text = topTitle.rawValue
+        do{
+            if let json = try twoFactor?.getStatus() {
+                let method = json["method"] as! String
+                if (method == "sms") {
+                    topLabel.text = TitleText.sms.rawValue
+                } else if (method == "phone") {
+                    topLabel.text = TitleText.phone.rawValue
+                } else if (method == "gauth") {
+                    topLabel.text = TitleText.email.rawValue
+                } else if (method == "email") {
+                    topLabel.text = TitleText.email.rawValue
+                }
+            }
+        } catch {
+            print("couldn't get status")
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

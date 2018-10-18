@@ -120,6 +120,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             nextController.twoFactor = sender as? TwoFactorCall
+            nextController.hideButton = true
         }
         if let nextController = segue.destination as? TwoFactorSlectorViewController {
             nextController.twoFactor = sender as? TwoFactorCall
