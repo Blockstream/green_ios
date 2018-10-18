@@ -22,7 +22,8 @@ class SettingsStore {
         let securityRecovery = "Show Recovery Seed"
         let securityScreenLock = "Screen Lock"
         let securityTwoFactor = "Two-Factor Authentication"
-        let securityTwoFactorWarning = "Two-Factor Warning"
+        let securityTwoFactorWarning = "Two-Factor Warnings"
+        let securityTwoFactorLimit = "Two-Factor Treshold"
         let securitySupport = "Support"
         let securityLogout = "Automatically Lock After"
     let sectionAdvanced = "Advanced"
@@ -47,6 +48,7 @@ class SettingsStore {
     let settingsSupport = "settingsSupport"
     let settingsTwoFactorWarning = "settingsTwoFactorWarning"
     let settingsNLockTime = "settingsNLockTime"
+    let settingsTwoFactorLimit = "settingsTwoFactorLimit"
 
     let settingsVersion = "settingsVersion"
     let settingsTOS = "settingsTOS"
@@ -188,6 +190,29 @@ class SettingsStore {
         writeSettingsToDisk()
     }
 
+    func setTwoFactorLimit(enabled: Bool, treshold: Double, fiat: Bool) {
+        let isFiat = fiat ? "true" : "false"
+        let isEnabled = enabled ? "true" : "false"
+        let tresholdText = String(treshold)
+        let secondaryText = enabled ? "Enabled" : "Disabled"
+        let details = ["fiat" : isFiat, "enabled" : isEnabled, "treshold" : tresholdText]
+        let setting = SettingsItem(settingsName: settingsTwoFactorLimit, property: details, text: securityTwoFactorLimit, secondaryText: secondaryText)
+        allSettings[settingsTwoFactorLimit] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
+    func getTwoFactorLimit() -> (enabled: Bool, treshold: Double, fiat: Bool) {
+        let set =  allSettings[settingsTwoFactorLimit]
+        let enabled = set?.settingsProperty["enabled"] == "true" ? true : false
+        if (!enabled) {
+            return(false, 0, false)
+        }
+        let fiat = set?.settingsProperty["fiat"] == "true" ? true : false
+        let treshold = Double(set!.settingsProperty["enabled"]!)!
+        return (enabled, treshold, fiat)
+    }
+
     func getDenominationSettings() -> String {
         return (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!
     }
@@ -223,6 +248,10 @@ class SettingsStore {
 
     func defaultTwoFactorWarning() -> SettingsItem {
         return SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": "true", "oneFactor" : "true"], text: securityTwoFactorWarning, secondaryText: "Enabled")
+    }
+
+    func defaultTwoFactorLimit() -> SettingsItem {
+        return SettingsItem(settingsName: settingsTwoFactorLimit, property: ["enabled" : "false"], text: securityTwoFactorLimit, secondaryText: "Disabled")
     }
 
     func defaultDenominationSettings() -> SettingsItem {
@@ -302,17 +331,20 @@ class SettingsStore {
             twoFactor = defaultTwoFactor()
         }
         let twoFactorWarning = allSettings[settingsTwoFactorWarning] == nil ? defaultTwoFactorWarning() : allSettings[settingsTwoFactorWarning]
+        let twoFactorLimit = allSettings[settingsTwoFactorLimit] == nil ? defaultTwoFactorLimit() : allSettings[settingsTwoFactorLimit]
         let autolock = allSettings[settingsAutolock] == nil ? defaultAutolockSettings() : allSettings[settingsAutolock]
         let support = allSettings[settingsSupport] == nil ? defaultSupport() : allSettings[settingsSupport]
         securitySettings.append(recovery!)
         securitySettings.append(screenLock!)
         securitySettings.append(twoFactor!)
         securitySettings.append(twoFactorWarning!)
+        securitySettings.append(twoFactorLimit!)
         securitySettings.append(autolock!)
         securitySettings.append(support!)
         allSettings[settingsRecovery] = recovery
         allSettings[settingsScreenLock] = screenLock
         allSettings[settingsTwoFactor] = twoFactor
+        allSettings[settingsTwoFactorLimit] = twoFactorLimit
         allSettings[settingsTwoFactorWarning] = twoFactorWarning
         allSettings[settingsSupport] = support
         allSettings[settingsAutolock] = autolock

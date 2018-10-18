@@ -159,6 +159,7 @@
                         <segue destination="npE-4D-Ee3" kind="show" identifier="transactionFee" id="yP2-yJ-Lxy"/>
                         <segue destination="tbc-8o-t8J" kind="show" identifier="autolock" id="a42-4h-VXc"/>
                         <segue destination="4u7-GI-Irj" kind="show" identifier="twoFactorWarning" id="HGk-IF-JfZ"/>
+                        <segue destination="jB7-Eo-Pwf" kind="show" identifier="twoFactorLimit" id="3Us-TD-UHA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -5439,6 +5440,106 @@
             </objects>
             <point key="canvasLocation" x="10744" y="-3544"/>
         </scene>
+        <!--Two Factor Limit View Controller-->
+        <scene sceneID="qcc-Ge-SXC">
+            <objects>
+                <viewController id="jB7-Eo-Pwf" customClass="TwoFactorLimitViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="I00-fi-Ow9">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hhI-p9-F4W">
+                                <rect key="frame" x="16" y="36" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="hhI-p9-F4W" secondAttribute="height" multiplier="27:27" id="Eq6-le-cae"/>
+                                    <constraint firstAttribute="height" constant="35" id="U55-3v-bly"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
+                                <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonClicked:" destination="jB7-Eo-Pwf" eventType="touchUpInside" id="daJ-Lv-E5x"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Two-Factor treshold" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ftO-An-X9M">
+                                <rect key="frame" x="83" y="43" width="155" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="right" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ab7-yZ-oZi">
+                                <rect key="frame" x="127" y="139" width="33" height="57"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="57" id="SUP-Mu-I4M"/>
+                                </constraints>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="47"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't need two factor code for transactions under the selected value" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LXf-em-GWL">
+                                <rect key="frame" x="16" y="206" width="288" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" name="customTitaniumLight"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gyd-mo-6vL">
+                                <rect key="frame" x="185" y="151" width="60" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="bgF-WT-FwL"/>
+                                    <constraint firstAttribute="width" constant="60" id="xSJ-vZ-y8c"/>
+                                </constraints>
+                                <state key="normal" title="USD">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" name="customMatrixGreen"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dqu-Ig-IY5">
+                                <rect key="frame" x="0.0" y="526" width="320" height="42"/>
+                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="zHb-Qp-UPh"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <state key="normal" title="Get code">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="getCodeClicked:" destination="AkI-Xf-xYq" eventType="touchUpInside" id="BCH-QD-h64"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="dqu-Ig-IY5" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" id="3D7-Qb-6A9"/>
+                            <constraint firstItem="hhI-p9-F4W" firstAttribute="width" secondItem="hhI-p9-F4W" secondAttribute="height" multiplier="27:27" id="3y5-cG-Wh4"/>
+                            <constraint firstItem="Gyd-mo-6vL" firstAttribute="centerY" secondItem="ab7-yZ-oZi" secondAttribute="centerY" id="4RK-b0-lej"/>
+                            <constraint firstItem="Gyd-mo-6vL" firstAttribute="leading" secondItem="ab7-yZ-oZi" secondAttribute="trailing" constant="25" id="5bL-AJ-B8y"/>
+                            <constraint firstItem="ab7-yZ-oZi" firstAttribute="top" secondItem="ftO-An-X9M" secondAttribute="bottom" constant="75" id="8x7-e2-5gd"/>
+                            <constraint firstItem="ftO-An-X9M" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="9B0-44-2zq"/>
+                            <constraint firstItem="hhI-p9-F4W" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="BTp-if-epg"/>
+                            <constraint firstItem="55a-8O-c7N" firstAttribute="bottom" secondItem="dqu-Ig-IY5" secondAttribute="bottom" id="Cuv-Dm-lMX"/>
+                            <constraint firstItem="LXf-em-GWL" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="PDf-Qs-ZtK"/>
+                            <constraint firstItem="hhI-p9-F4W" firstAttribute="top" secondItem="55a-8O-c7N" secondAttribute="top" constant="16" id="POj-50-eZ0"/>
+                            <constraint firstItem="ab7-yZ-oZi" firstAttribute="trailing" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="VTY-qe-q0r"/>
+                            <constraint firstItem="dqu-Ig-IY5" firstAttribute="trailing" secondItem="55a-8O-c7N" secondAttribute="trailing" id="Xdn-Ul-FbH"/>
+                            <constraint firstItem="ftO-An-X9M" firstAttribute="centerY" secondItem="hhI-p9-F4W" secondAttribute="centerY" id="bUt-Gg-VOj"/>
+                            <constraint firstItem="LXf-em-GWL" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="eau-Qh-a2z"/>
+                            <constraint firstItem="LXf-em-GWL" firstAttribute="top" secondItem="ab7-yZ-oZi" secondAttribute="bottom" constant="10" id="ezj-5x-fTv"/>
+                            <constraint firstItem="55a-8O-c7N" firstAttribute="trailing" secondItem="LXf-em-GWL" secondAttribute="trailing" constant="16" id="y4t-xv-rng"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="55a-8O-c7N"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WXx-ec-RDp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="11647.5" y="-3544.0140845070423"/>
+        </scene>
     </scenes>
     <resources>
         <image name="backarrow" width="60" height="96"/>
@@ -5474,6 +5575,15 @@
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -5491,7 +5601,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Oir-Oa-Fhf"/>
+        <segue reference="oJr-DX-JrD"/>
         <segue reference="Pqg-Zu-9Zd"/>
         <segue reference="yIW-Ly-oWL"/>
         <segue reference="Iy9-iC-rNo"/>

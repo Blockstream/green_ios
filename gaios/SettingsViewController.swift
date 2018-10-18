@@ -95,8 +95,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.performSegue(withIdentifier: "twoFactorWarning", sender: nil)
             } else if (indexPath.row == 4) {
                 pager?.hideButtons()
-                self.performSegue(withIdentifier: "autolock", sender: nil)
+                self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
             } else if (indexPath.row == 5) {
+                pager?.hideButtons()
+                self.performSegue(withIdentifier: "autolock", sender: nil)
+            } else if (indexPath.row == 6) {
                 if let url = URL(string: SettingsStore.shared.supportURL) {
                     UIApplication.shared.open(url, options: [:])
                 }
