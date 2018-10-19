@@ -356,6 +356,16 @@ public class Session {
         return TwoFactorCall(optr: optr!);
     }
 
+    public func setTwoFactorLimit(details: [String: Any]) throws -> TwoFactorCall{
+        var optr: OpaquePointer? = nil;
+        var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+        defer {
+            GA_destroy_json(details_json)
+        }
+        try callWrapper(fun: GA_twofactor_change_limits(session, details_json, &optr))
+        return TwoFactorCall(optr: optr!)
+    }
+
     public func resetTwoFactor(email: String, isDispute: Bool) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
         try callWrapper(fun: GA_twofactor_reset(session, email, UInt32(isDispute ? GA_TRUE : GA_FALSE), &optr))
