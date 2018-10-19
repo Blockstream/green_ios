@@ -25,7 +25,7 @@ class TwoFactorLimitViewController: UIViewController {
         setButton()
         if(!AccountStore.shared.isTwoFactorEnabled()) {
             setLimitButton.isEnabled = false
-            descriptionLabel.text = "You need to enable Two-Factor Authentication before setting the limit"
+            descriptionLabel.text = "You need to enable Two-Factor Authentication before setting the treshold"
         }
     }
 
