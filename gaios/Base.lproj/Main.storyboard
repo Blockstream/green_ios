@@ -5498,19 +5498,23 @@
                                         <color key="value" name="customMatrixGreen"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="fiatButtonClicked:" destination="jB7-Eo-Pwf" eventType="touchUpInside" id="8rc-D1-RXe"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dqu-Ig-IY5">
-                                <rect key="frame" x="0.0" y="526" width="320" height="42"/>
+                                <rect key="frame" x="0.0" y="546" width="320" height="42"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="zHb-Qp-UPh"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="Get code">
+                                <state key="normal" title="Set Limit">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
                                     <action selector="getCodeClicked:" destination="AkI-Xf-xYq" eventType="touchUpInside" id="BCH-QD-h64"/>
+                                    <action selector="setLimitClicked:" destination="jB7-Eo-Pwf" eventType="touchUpInside" id="dva-DG-oNu"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -5523,7 +5527,7 @@
                             <constraint firstItem="ab7-yZ-oZi" firstAttribute="top" secondItem="ftO-An-X9M" secondAttribute="bottom" constant="75" id="8x7-e2-5gd"/>
                             <constraint firstItem="ftO-An-X9M" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="9B0-44-2zq"/>
                             <constraint firstItem="hhI-p9-F4W" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="BTp-if-epg"/>
-                            <constraint firstItem="55a-8O-c7N" firstAttribute="bottom" secondItem="dqu-Ig-IY5" secondAttribute="bottom" id="Cuv-Dm-lMX"/>
+                            <constraint firstItem="55a-8O-c7N" firstAttribute="bottom" secondItem="dqu-Ig-IY5" secondAttribute="bottom" constant="-20" id="Cuv-Dm-lMX"/>
                             <constraint firstItem="LXf-em-GWL" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="PDf-Qs-ZtK"/>
                             <constraint firstItem="hhI-p9-F4W" firstAttribute="top" secondItem="55a-8O-c7N" secondAttribute="top" constant="16" id="POj-50-eZ0"/>
                             <constraint firstItem="ab7-yZ-oZi" firstAttribute="trailing" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="VTY-qe-q0r"/>
@@ -5535,6 +5539,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="55a-8O-c7N"/>
                     </view>
+                    <connections>
+                        <outlet property="descriptionLabel" destination="LXf-em-GWL" id="QK7-ot-cwi"/>
+                        <outlet property="fiatButton" destination="Gyd-mo-6vL" id="zF2-mj-tw3"/>
+                        <outlet property="limitButtonConstraint" destination="Cuv-Dm-lMX" id="9MO-6P-DUl"/>
+                        <outlet property="limitTextField" destination="ab7-yZ-oZi" id="vPb-6K-2du"/>
+                        <outlet property="setLimitButton" destination="dqu-Ig-IY5" id="fYk-2a-sXb"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WXx-ec-RDp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
