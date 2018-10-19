@@ -3379,7 +3379,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Iuq-Z7-RiN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5863" y="-1771"/>
+            <point key="canvasLocation" x="5655" y="-1735"/>
         </scene>
         <!--Enter Mnemonics View Controller-->
         <scene sceneID="Vxs-Tv-sVV">
@@ -5545,6 +5545,8 @@
                         <outlet property="limitButtonConstraint" destination="Cuv-Dm-lMX" id="9MO-6P-DUl"/>
                         <outlet property="limitTextField" destination="ab7-yZ-oZi" id="vPb-6K-2du"/>
                         <outlet property="setLimitButton" destination="dqu-Ig-IY5" id="fYk-2a-sXb"/>
+                        <segue destination="U8O-Z4-13N" kind="show" identifier="verifyCode" id="RUz-mH-4gJ"/>
+                        <segue destination="hgO-EC-JdX" kind="show" identifier="selectTwoFactor" id="552-x0-S8S"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WXx-ec-RDp" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -5612,10 +5614,10 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="oJr-DX-JrD"/>
+        <segue reference="Xyh-IG-SIs"/>
         <segue reference="Pqg-Zu-9Zd"/>
         <segue reference="yIW-Ly-oWL"/>
-        <segue reference="Iy9-iC-rNo"/>
+        <segue reference="552-x0-S8S"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>

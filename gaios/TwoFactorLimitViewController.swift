@@ -63,24 +63,40 @@ class TwoFactorLimitViewController: UIViewController {
     @IBAction func setLimitClicked(_ sender: Any) {
         if let amount = Double(limitTextField.text!) {
             do {
-                /*var details = [String:String]()
+                var details = [String:Any]()
                 if(fiat) {
-                    details["is_fiat"] = "true"
+                    details["is_fiat"] = true
                     details["fiat"] = String(amount)
                 } else {
-                    details["is_fiat"] = "false"
+                    details["is_fiat"] = false
                     details["satoshi"] = String(amount)
                 }
                 let factor = try getSession().setTwoFactorLimit(details: details)
                 let status = try factor.getStatus()
                 let statusString = status!["status"] as! String
-                if (statusString == "call") {
-                    let call = try factor.call()
-                    let callStatus = try factor.getStatus()
-                }*/
+                if (statusString == "request_code") {
+                    let methods = status!["methods"] as! NSArray
+                    if (methods.count == 1) {
+                        let met = methods[0] as! String
+                        let request = try factor.requestCode(method: met)
+                        self.performSegue(withIdentifier: "verifyCode", sender: factor)
+                    } else {
+                        self.performSegue(withIdentifier: "selectTwoFactor", sender: factor)
+                    }
+                }
             } catch {
                 print("couldnt set limit")
             }
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.twoFactor = sender as? TwoFactorCall
+            nextController.hideButton = true
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
+            nextController.twoFactor = sender as? TwoFactorCall
         }
     }
 
