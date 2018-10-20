@@ -580,19 +580,23 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable setting name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="atf-bZ-hc4">
-                                <rect key="frame" x="16" y="136" width="155.5" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable setting name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="atf-bZ-hc4">
+                                <rect key="frame" x="16" y="136" width="229" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="15v-PA-Qfh">
                                 <rect key="frame" x="255" y="131" width="51" height="31"/>
+                                <connections>
+                                    <action selector="statusChanged:" destination="qMa-Ep-FVb" eventType="valueChanged" id="KiA-fg-29q"/>
+                                </connections>
                             </switch>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="QT9-jr-xS9" firstAttribute="top" secondItem="0e6-hM-Yvb" secondAttribute="top" constant="16" id="3u0-YZ-3dd"/>
+                            <constraint firstItem="15v-PA-Qfh" firstAttribute="leading" secondItem="atf-bZ-hc4" secondAttribute="trailing" constant="10" id="LJn-TZ-5eA"/>
                             <constraint firstItem="AeJ-l0-hIZ" firstAttribute="centerX" secondItem="7pL-9r-rw3" secondAttribute="centerX" id="Utg-s2-XDB"/>
                             <constraint firstItem="atf-bZ-hc4" firstAttribute="leading" secondItem="0e6-hM-Yvb" secondAttribute="leading" constant="16" id="Whq-Na-4at"/>
                             <constraint firstItem="atf-bZ-hc4" firstAttribute="top" secondItem="QT9-jr-xS9" secondAttribute="bottom" constant="65" id="aaS-c6-wMd"/>
@@ -606,6 +610,7 @@
                     </view>
                     <connections>
                         <outlet property="bottomLabel" destination="atf-bZ-hc4" id="C4z-8k-zoQ"/>
+                        <outlet property="statusSwitch" destination="15v-PA-Qfh" id="pOq-L5-gnK"/>
                         <outlet property="topLabel" destination="AeJ-l0-hIZ" id="sSU-Vq-3h2"/>
                     </connections>
                 </viewController>
@@ -5588,20 +5593,8 @@
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

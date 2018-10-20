@@ -24,12 +24,14 @@ class SettingsStore {
         let securityTwoFactor = "Two-Factor Authentication"
         let securityTwoFactorWarning = "Two-Factor Warnings"
         let securityTwoFactorLimit = "Two-Factor Treshold"
+        let securityTwoFactorReset = "Request Two-Factor Reset"
         let securitySupport = "Support"
         let securityLogout = "Automatically Lock After"
     let sectionAdvanced = "Advanced"
         let advancedImage = #imageLiteral(resourceName: "advanced")
         let advancedSegwit = "Enable Segwit"
-        let advancedNLock = "nLockTimeTransactions"
+        let advancedNLock = "nLockTime Recovery Emails"
+        let advancedRequestNLocktmie =  "Request nLockTime Transactions"
     let sectionAbout = "About"
         let aboutImage = #imageLiteral(resourceName: "about")
         let aboutVersion = "Version"
@@ -213,7 +215,24 @@ class SettingsStore {
         return (enabled, treshold, fiat)
     }
 
+    func setNLocktimeEmailsEnabled(enabled: Bool) {
+        let enabledText = enabled ? "true" : "false"
+        let secondary = enabled ? "Enabled" : "Disabled"
+         let setting = SettingsItem(settingsName: settingsNLockTime, property:["enabled" : enabledText], text: advancedNLock, secondaryText: secondary)
+        allSettings[settingsNLockTime] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
+    func getNLocktimeEmailsEnabled() -> Bool {
+        let settings = allSettings[settingsNLockTime]
+        let property = settings?.settingsProperty["enabled"]
+        return property == "true"
+    }
+
     func getDenominationSettings() -> String {
+        let denomination = allSettings[settingsDenomination]
+        let setting = denomination?.settingsProperty[settingsDenomination]
         return (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!
     }
 
@@ -285,7 +304,7 @@ class SettingsStore {
     }
 
     func defaultNlockTime() -> SettingsItem {
-        return SettingsItem(settingsName: settingsNLockTime, property:[String : String](), text: advancedNLock, secondaryText: "")
+        return SettingsItem(settingsName: settingsNLockTime, property:["enabled" : "false"], text: advancedNLock, secondaryText: "Disabled")
     }
 
     func defaultVersion() -> SettingsItem {
