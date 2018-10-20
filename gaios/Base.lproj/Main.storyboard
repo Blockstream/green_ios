@@ -5679,8 +5679,24 @@
                                     <action selector="requestClicked:" destination="QMk-gQ-Hbn" eventType="touchUpInside" id="d7R-6g-u6z"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="New Email" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9xl-x7-l7U">
+                                <rect key="frame" x="0.0" y="172.5" width="320" height="42"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="Hu4-bl-7QX"/>
+                                </constraints>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter new email:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xTt-zl-tnW">
+                                <rect key="frame" x="94" y="141" width="133" height="21.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Warning: Resetting two-factor  authentication will lock your wallet." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bR1-rK-Vrk">
-                                <rect key="frame" x="16" y="141" width="288" height="41"/>
+                                <rect key="frame" x="16" y="425" width="288" height="41"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -5691,22 +5707,32 @@
                             <constraint firstItem="bR1-rK-Vrk" firstAttribute="centerX" secondItem="jWp-9G-x1x" secondAttribute="centerX" id="0Nh-8D-pxt"/>
                             <constraint firstItem="FOg-wV-S8I" firstAttribute="leading" secondItem="PZa-l8-Utr" secondAttribute="leading" constant="16" id="AxT-oH-oIk"/>
                             <constraint firstItem="EE2-4S-7Z3" firstAttribute="top" secondItem="PZa-l8-Utr" secondAttribute="top" constant="16" id="IMD-4W-mYD"/>
-                            <constraint firstItem="bR1-rK-Vrk" firstAttribute="top" secondItem="EE2-4S-7Z3" secondAttribute="bottom" constant="70" id="JVH-lv-s9j"/>
+                            <constraint firstItem="9xl-x7-l7U" firstAttribute="top" secondItem="xTt-zl-tnW" secondAttribute="bottom" constant="10" id="Ipp-JF-UJe"/>
                             <constraint firstItem="PZa-l8-Utr" firstAttribute="trailing" secondItem="FOg-wV-S8I" secondAttribute="trailing" constant="16" id="KCi-vx-qjn"/>
+                            <constraint firstItem="FOg-wV-S8I" firstAttribute="top" secondItem="bR1-rK-Vrk" secondAttribute="bottom" constant="40" id="KaS-Is-OJa"/>
+                            <constraint firstItem="xTt-zl-tnW" firstAttribute="centerX" secondItem="jWp-9G-x1x" secondAttribute="centerX" id="LYB-7Q-dg3"/>
                             <constraint firstItem="EE2-4S-7Z3" firstAttribute="width" secondItem="EE2-4S-7Z3" secondAttribute="height" multiplier="27:27" id="OnZ-yd-71O"/>
+                            <constraint firstItem="9xl-x7-l7U" firstAttribute="centerX" secondItem="jWp-9G-x1x" secondAttribute="centerX" id="Pgo-b6-1XH"/>
+                            <constraint firstItem="9xl-x7-l7U" firstAttribute="leading" secondItem="PZa-l8-Utr" secondAttribute="leading" id="Rpo-0P-X5h"/>
                             <constraint firstItem="fBr-km-vvK" firstAttribute="centerX" secondItem="jWp-9G-x1x" secondAttribute="centerX" id="Ycd-zn-rWl"/>
                             <constraint firstItem="PZa-l8-Utr" firstAttribute="trailing" secondItem="bR1-rK-Vrk" secondAttribute="trailing" constant="16" id="ak0-jM-Mma"/>
+                            <constraint firstItem="PZa-l8-Utr" firstAttribute="trailing" secondItem="9xl-x7-l7U" secondAttribute="trailing" id="dB8-Ne-XuF"/>
                             <constraint firstItem="fBr-km-vvK" firstAttribute="centerY" secondItem="EE2-4S-7Z3" secondAttribute="centerY" id="dQG-7B-c6b"/>
+                            <constraint firstItem="xTt-zl-tnW" firstAttribute="top" secondItem="EE2-4S-7Z3" secondAttribute="bottom" constant="70" id="eYJ-R5-Dex"/>
                             <constraint firstItem="PZa-l8-Utr" firstAttribute="bottom" secondItem="FOg-wV-S8I" secondAttribute="bottom" constant="20" id="fPa-Nq-Z7a"/>
                             <constraint firstItem="bR1-rK-Vrk" firstAttribute="leading" secondItem="PZa-l8-Utr" secondAttribute="leading" constant="16" id="hoh-mc-uNE"/>
                             <constraint firstItem="EE2-4S-7Z3" firstAttribute="leading" secondItem="PZa-l8-Utr" secondAttribute="leading" constant="16" id="xwW-sw-fKI"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="PZa-l8-Utr"/>
                     </view>
+                    <connections>
+                        <outlet property="emailTextField" destination="9xl-x7-l7U" id="1iP-DV-5eb"/>
+                        <segue destination="U8O-Z4-13N" kind="show" identifier="verifyCode" id="qrV-jP-MQi"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lcU-CG-wYD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12504" y="-3418"/>
+            <point key="canvasLocation" x="12502.5" y="-3418.3098591549297"/>
         </scene>
     </scenes>
     <resources>
@@ -5769,7 +5795,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Xyh-IG-SIs"/>
+        <segue reference="qrV-jP-MQi"/>
         <segue reference="Pqg-Zu-9Zd"/>
         <segue reference="yIW-Ly-oWL"/>
         <segue reference="552-x0-S8S"/>
