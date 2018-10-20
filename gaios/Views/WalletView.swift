@@ -459,10 +459,22 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         transactionTableView.allowsSelection = true
         transactionTableView.isUserInteractionEnabled = true
         transactionTableView.separatorColor = UIColor.customTitaniumLight()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
         //prepareWalletHeaderView()
         
     }
-    
+
+    @objc func refreshTransactions(_ notification: NSNotification) {
+        print(notification.userInfo ?? "")
+        if let dict = notification.userInfo as NSDictionary? {
+            if let accounts = dict["subaccounts"] as? NSArray {
+                for acc in accounts {
+                    updateViewModel(account: acc as! Int)
+                }
+            }
+        }
+    }
+
     func insert(cardViews: [CardView]) {
         
         self.insertedCardViews = cardViews

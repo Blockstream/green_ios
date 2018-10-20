@@ -21,9 +21,10 @@ class GreenAddressService: SessionNotificationDelegate {
         } else if (event == "transaction") {
             let transaction = dict["transaction"] as! [String: Any]
             let type = transaction["type"] as! String
+            let subaccounts = transaction["subaccounts"] as! NSArray
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "transaction"), object: nil, userInfo: ["subaccounts" : subaccounts])
             if (type == "incoming") {
                 print("incoming transaction")
-                let subaccounts = transaction["subaccounts"] as! NSArray
                 DispatchQueue.main.async {
                     self.showIncomingNotification()
                 }
