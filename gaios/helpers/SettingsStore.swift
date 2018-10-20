@@ -31,7 +31,7 @@ class SettingsStore {
         let advancedImage = #imageLiteral(resourceName: "advanced")
         let advancedSegwit = "Enable Segwit"
         let advancedNLock = "nLockTime Recovery Emails"
-        let advancedRequestNLocktmie =  "Request nLockTime Transactions"
+        let advancedRequestNLocktime =  "Request nLockTime Transactions"
     let sectionAbout = "About"
         let aboutImage = #imageLiteral(resourceName: "about")
         let aboutVersion = "Version"
@@ -265,6 +265,14 @@ class SettingsStore {
         return SettingsItem(settingsName: settingsAutolock, property: ["type" : lock.rawValue, "time": String(timeForAutolock(lock: lock))], text: securityLogout, secondaryText: lock.rawValue)
     }
 
+    func defaultTwoFactorReset() -> SettingsItem {
+        return SettingsItem(settingsName: securityTwoFactorReset, property:[String:String](), text: securityTwoFactorReset, secondaryText: "")
+    }
+
+    func defaultRequestNlockTime() -> SettingsItem {
+        return SettingsItem(settingsName: advancedRequestNLocktime, property:[String:String](), text: advancedRequestNLocktime, secondaryText: "")
+    }
+
     func defaultTwoFactorWarning() -> SettingsItem {
         return SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": "true", "oneFactor" : "true"], text: securityTwoFactorWarning, secondaryText: "Enabled")
     }
@@ -351,19 +359,23 @@ class SettingsStore {
         }
         let twoFactorWarning = allSettings[settingsTwoFactorWarning] == nil ? defaultTwoFactorWarning() : allSettings[settingsTwoFactorWarning]
         let twoFactorLimit = allSettings[settingsTwoFactorLimit] == nil ? defaultTwoFactorLimit() : allSettings[settingsTwoFactorLimit]
+        let twoFactorReset = defaultTwoFactorReset()
         let autolock = allSettings[settingsAutolock] == nil ? defaultAutolockSettings() : allSettings[settingsAutolock]
         let support = allSettings[settingsSupport] == nil ? defaultSupport() : allSettings[settingsSupport]
+
         securitySettings.append(recovery!)
         securitySettings.append(screenLock!)
         securitySettings.append(twoFactor!)
         securitySettings.append(twoFactorWarning!)
         securitySettings.append(twoFactorLimit!)
+        securitySettings.append(twoFactorReset)
         securitySettings.append(autolock!)
         securitySettings.append(support!)
         allSettings[settingsRecovery] = recovery
         allSettings[settingsScreenLock] = screenLock
         allSettings[settingsTwoFactor] = twoFactor
         allSettings[settingsTwoFactorLimit] = twoFactorLimit
+        allSettings[securityTwoFactorReset] = twoFactorReset
         allSettings[settingsTwoFactorWarning] = twoFactorWarning
         allSettings[settingsSupport] = support
         allSettings[settingsAutolock] = autolock
@@ -374,8 +386,11 @@ class SettingsStore {
     func createAdvancedSection() -> SettingsSection {
         var advancedSettings = Array<SettingsItem>()
         let nlock = allSettings[settingsNLockTime] == nil ? defaultNlockTime() : allSettings[settingsNLockTime]
+        let nlockrequest = defaultRequestNlockTime()
         advancedSettings.append(nlock!)
+        advancedSettings.append(nlockrequest)
         allSettings[settingsNLockTime] = nlock
+        allSettings[advancedRequestNLocktime] = nlockrequest
         let section = SettingsSection(sectionName: sectionAdvanced, settingsInSection: advancedSettings)
         return section
     }

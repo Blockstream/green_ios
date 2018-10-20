@@ -84,6 +84,8 @@
 		09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A8991520FADFE000E105EC /* IntroPageViewController.swift */; };
 		09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AA2122357700989B1D /* UIViewController+helpers.swift */; };
 		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
+		09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */; };
+		09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B656217AC833001B5002 /* RequestNLockEmails.swift */; };
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
 		09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */; };
 		09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */; };
@@ -199,6 +201,8 @@
 		09A8991520FADFE000E105EC /* IntroPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroPageViewController.swift; sourceTree = "<group>"; };
 		09B761AA2122357700989B1D /* UIViewController+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+helpers.swift"; sourceTree = "<group>"; };
 		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
+		09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestTwoFactorReset.swift; sourceTree = "<group>"; };
+		09C5B656217AC833001B5002 /* RequestNLockEmails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestNLockEmails.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
 		09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricIDAuth.swift; sourceTree = "<group>"; };
 		09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDViewController.swift; sourceTree = "<group>"; };
@@ -400,6 +404,8 @@
 				098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */,
 				09377B6F2178409E00C4E347 /* TwoFactorWarningSettings.swift */,
 				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
+				09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */,
+				09C5B656217AC833001B5002 /* RequestNLockEmails.swift */,
 				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
@@ -776,6 +782,7 @@
 				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,
 				092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */,
 				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
+				09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */,
 				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
 				676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */,
 				09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */,
@@ -824,6 +831,7 @@
 				092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */,
 				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
+				09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 				098192832176D05500D8434F /* CustomApplication.swift in Sources */,
 			);

@@ -98,8 +98,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
             } else if (indexPath.row == 5) {
                 pager?.hideButtons()
-                self.performSegue(withIdentifier: "autolock", sender: nil)
+                self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
             } else if (indexPath.row == 6) {
+                pager?.hideButtons()
+                self.performSegue(withIdentifier: "autolock", sender: nil)
+            } else if (indexPath.row == 7) {
                 if let url = URL(string: SettingsStore.shared.supportURL) {
                     UIApplication.shared.open(url, options: [:])
                 }
@@ -110,7 +113,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
             } else if (indexPath.row == 1) {
                 pager?.hideButtons()
-                self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
+                self.performSegue(withIdentifier: "requestNlock", sender: nil)
             }
         } else if (indexPath.section == 3) {
             if (indexPath.row == 1) {
