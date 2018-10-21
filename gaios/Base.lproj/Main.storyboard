@@ -1220,7 +1220,7 @@
                                         </userDefinedRuntimeAttributes>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="Port number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fzS-4x-C28">
-                                        <rect key="frame" x="16" y="335" width="288" height="40"/>
+                                        <rect key="frame" x="16" y="291" width="288" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="0ia-Gu-eBN"/>
                                         </constraints>
@@ -1250,48 +1250,41 @@
                                             <action selector="saveButtonClicked:" destination="aGG-jd-tuj" eventType="touchUpInside" id="rzf-SK-T81"/>
                                         </connections>
                                     </button>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="Passwod" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lrD-vk-F87">
-                                        <rect key="frame" x="16" y="285" width="288" height="40"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="r4L-W6-wdH"/>
-                                        </constraints>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable TOR routing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LwB-pb-DrC">
+                                        <rect key="frame" x="16" y="356" width="148" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no"/>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                <color key="value" name="customTitaniumLight"/>
-                                            </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                <real key="value" value="1"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                    </textField>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6J4-Ht-vbB">
+                                        <rect key="frame" x="255" y="351" width="51" height="31"/>
+                                    </switch>
                                 </subviews>
                                 <color key="backgroundColor" name="customTitaniumMedium"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="lrD-vk-F87" secondAttribute="trailing" constant="16" id="26N-cG-xtW"/>
                                     <constraint firstItem="jlM-Wd-gCH" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="2px-FH-3MJ"/>
                                     <constraint firstItem="EWS-8g-l6M" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="3FV-Aq-hHt"/>
                                     <constraint firstAttribute="trailing" secondItem="fzS-4x-C28" secondAttribute="trailing" constant="16" id="7n3-M8-LxH"/>
                                     <constraint firstItem="3tM-QW-C4m" firstAttribute="width" secondItem="eM0-lZ-AQD" secondAttribute="width" multiplier="0.5" constant="-20" id="8hK-i1-oH8"/>
+                                    <constraint firstItem="fzS-4x-C28" firstAttribute="top" secondItem="EWS-8g-l6M" secondAttribute="bottom" constant="16" id="ADS-zr-oSH"/>
                                     <constraint firstItem="TV3-Eg-fyH" firstAttribute="top" secondItem="eM0-lZ-AQD" secondAttribute="top" constant="16" id="B2O-54-doW"/>
-                                    <constraint firstItem="lrD-vk-F87" firstAttribute="top" secondItem="EWS-8g-l6M" secondAttribute="bottom" constant="10" id="Dws-hX-JYc"/>
                                     <constraint firstItem="MWE-nO-TTF" firstAttribute="top" secondItem="2pO-Xf-pcB" secondAttribute="bottom" constant="20" id="ESI-dk-DgX"/>
-                                    <constraint firstItem="fzS-4x-C28" firstAttribute="top" secondItem="lrD-vk-F87" secondAttribute="bottom" constant="10" id="J0S-pU-ibN"/>
+                                    <constraint firstItem="6J4-Ht-vbB" firstAttribute="centerY" secondItem="LwB-pb-DrC" secondAttribute="centerY" id="HSg-xo-AGM"/>
                                     <constraint firstItem="TV3-Eg-fyH" firstAttribute="width" secondItem="3tM-QW-C4m" secondAttribute="width" id="NNm-34-hyv"/>
                                     <constraint firstAttribute="trailing" secondItem="EWS-8g-l6M" secondAttribute="trailing" constant="16" id="OhP-uK-Jvd"/>
                                     <constraint firstItem="2pO-Xf-pcB" firstAttribute="top" secondItem="3tM-QW-C4m" secondAttribute="bottom" constant="8" id="U7v-tz-aOQ"/>
                                     <constraint firstItem="EWS-8g-l6M" firstAttribute="top" secondItem="MWE-nO-TTF" secondAttribute="bottom" constant="10" id="VSs-nA-2j8"/>
                                     <constraint firstItem="fzS-4x-C28" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="Ylj-zT-30y"/>
                                     <constraint firstItem="3tM-QW-C4m" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="Zos-gc-eNB"/>
+                                    <constraint firstAttribute="trailing" secondItem="6J4-Ht-vbB" secondAttribute="trailing" constant="16" id="gfe-8P-l1Z"/>
                                     <constraint firstItem="2pO-Xf-pcB" firstAttribute="width" secondItem="3tM-QW-C4m" secondAttribute="width" id="hbh-T2-bvC"/>
                                     <constraint firstItem="3tM-QW-C4m" firstAttribute="top" secondItem="eM0-lZ-AQD" secondAttribute="top" constant="16" id="hlo-Iu-vpg"/>
                                     <constraint firstAttribute="trailing" secondItem="jlM-Wd-gCH" secondAttribute="trailing" constant="16" id="jnJ-cP-RCh"/>
                                     <constraint firstAttribute="bottom" secondItem="jlM-Wd-gCH" secondAttribute="bottom" constant="25" id="l2X-mv-mCq"/>
+                                    <constraint firstItem="LwB-pb-DrC" firstAttribute="top" secondItem="fzS-4x-C28" secondAttribute="bottom" constant="25" id="lR7-4n-dbj"/>
                                     <constraint firstItem="MWE-nO-TTF" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="mLt-lz-ekA"/>
+                                    <constraint firstItem="LwB-pb-DrC" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="mmt-Yc-OXp"/>
                                     <constraint firstItem="TV3-Eg-fyH" firstAttribute="leading" secondItem="3tM-QW-C4m" secondAttribute="trailing" constant="8" id="n9d-pI-gNz"/>
-                                    <constraint firstItem="lrD-vk-F87" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="o1n-Hf-AZz"/>
                                     <constraint firstItem="2pO-Xf-pcB" firstAttribute="leading" secondItem="eM0-lZ-AQD" secondAttribute="leading" constant="16" id="zyo-Xj-yvl"/>
                                 </constraints>
                             </view>
@@ -1311,12 +1304,12 @@
                         <outlet property="liquidSelector" destination="2pO-Xf-pcB" id="aNg-4r-zhX"/>
                         <outlet property="mainnetIndicator" destination="1jl-aa-jK0" id="hVa-de-eKs"/>
                         <outlet property="mainnetSelector" destination="3tM-QW-C4m" id="QP1-MR-sjq"/>
-                        <outlet property="passwordTextField" destination="lrD-vk-F87" id="ely-pg-UZW"/>
                         <outlet property="portTextField" destination="fzS-4x-C28" id="k0w-OD-9kr"/>
                         <outlet property="saveButton" destination="jlM-Wd-gCH" id="nN8-aX-dmR"/>
                         <outlet property="testnetIndicator" destination="A7Z-Ez-jgK" id="qqD-B1-J4Y"/>
                         <outlet property="testnetSelector" destination="TV3-Eg-fyH" id="1AF-YQ-l4D"/>
                         <outlet property="topConstraint" destination="N7x-vn-Jau" id="k1T-Z0-8dv"/>
+                        <outlet property="torSwitch" destination="6J4-Ht-vbB" id="iYN-3u-WIj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hgF-7l-W9P" userLabel="First Responder" sceneMemberID="firstResponder"/>

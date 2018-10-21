@@ -15,12 +15,13 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var ipTextField: UITextField!
-    @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var portTextField: UITextField!
+    @IBOutlet weak var torSwitch: UISwitch!
+
     @IBOutlet weak var mainnetIndicator: UIView!
     @IBOutlet weak var testnetIndicator: UIView!
     @IBOutlet weak var liquidIndicator: UIView!
-    
+
     @IBOutlet weak var mainnetSelector: DesignableView!
     @IBOutlet weak var testnetSelector: DesignableView!
     @IBOutlet weak var liquidSelector: DesignableView!
@@ -30,13 +31,10 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         ipTextField.delegate = self
-        passwordTextField.delegate = self
         portTextField.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(NetworkSelectionSettings.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(NetworkSelectionSettings.keyboardWillHide), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
         ipTextField.attributedPlaceholder = NSAttributedString(string: "IP address",
-                                                               attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        passwordTextField.attributedPlaceholder = NSAttributedString(string: "Password",
                                                                attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         portTextField.attributedPlaceholder = NSAttributedString(string: "Port number",
                                                                attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
@@ -47,6 +45,10 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         let gesture2 = UITapGestureRecognizer(target: self, action:  #selector (self.liquidSelected (_:)))
         liquidSelector.addGestureRecognizer(gesture2)
         network = getNetwork()
+        let networkSettings = getNetworkSettings()
+        ipTextField.text = networkSettings.ipAddress
+        portTextField.text = networkSettings.portNumber
+        torSwitch.isOn = networkSettings.torEnabled
         updatebuttons()
     }
 
@@ -99,7 +101,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
 
     @IBAction func saveButtonClicked(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
-        setNetwork(net: network)
+        setAllNetworkSettings(net: network, ip: ipTextField.text!, port: portTextField.text!, tor: torSwitch.isOn)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

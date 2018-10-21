@@ -88,6 +88,7 @@ func getSession() -> Session {
 var network: Network = Network.TestNet
 var proxyIp: String = ""
 var proxyPort: String = ""
+var torEnabled: Bool = false
 
 func getNetwork() -> Network {
     return network
@@ -108,20 +109,30 @@ func setProxyPort(port: String) {
     saveNetworkSettingsToDisk()
 }
 
+func setAllNetworkSettings(net: Network, ip: String, port: String, tor: Bool) {
+    network = net
+    proxyIp = ip
+    proxyPort = port
+    torEnabled = tor
+    saveNetworkSettingsToDisk()
+}
+
 class NetworkSettings: Codable {
     var network: String
     var ipAddress: String
     var portNumber: String
+    var torEnabled: Bool
 
-    init(network: String, ipAddress: String, portNumber: String) {
+    init(network: String, ipAddress: String, portNumber: String, torEnabled: Bool) {
         self.network = network
         self.ipAddress = ipAddress
         self.portNumber = portNumber
+        self.torEnabled = torEnabled
     }
 }
 
-func getNetworkSettings() -> NetworkSettings{
-    return NetworkSettings(network: getNetwork().rawValue, ipAddress:proxyIp, portNumber: proxyPort)
+func getNetworkSettings() -> NetworkSettings {
+    return NetworkSettings(network: getNetwork().rawValue, ipAddress:proxyIp, portNumber: proxyPort, torEnabled: torEnabled)
 }
 
 func setDefaultNetworkSetings() {
@@ -166,6 +177,7 @@ func loadNetworkSettings() {
         setNetwork(net: networkForString(net: network.network))
         proxyPort = network.portNumber
         proxyIp = network.ipAddress
+        torEnabled = network.torEnabled
     } catch {
         setDefaultNetworkSetings()
     }
@@ -240,14 +252,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func connect() {
-        wrap {
-            try getSession().connect(network: getNetwork(), debug: true)
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                try getSession().connect(network: getNetwork(), debug: true)
             }.done {
                 print("Connected")
             }.catch { error in
                 DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                    self.connect()
+                    //self.connect()
                 }
+            }
         }
     }
 
@@ -304,9 +318,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: "autolock"), object: nil)
 
-        DispatchQueue.global(qos: .background).async {
-            self.connect()
-        }
+        connect()
+
         let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
         let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
