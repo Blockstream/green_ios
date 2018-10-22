@@ -51,6 +51,19 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
                         }.catch { error in
                             print("could't call two factor")
                     }
+                } else if (status == "request_code") {
+                    let methods = json!["methods"] as! NSArray
+                    if(methods.count > 1) {
+                        self.performSegue(withIdentifier: "twoFactorSelector", sender: twoFactor)
+                    } else {
+                        let method = methods[0] as! String
+                        let req = try twoFactor?.requestCode(method: method)
+                        let status1 = try twoFactor?.getStatus()
+                        let parsed1 = status1!["status"] as! String
+                        if(parsed1 == "resolve_code") {
+                            self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                        }
+                    }
                 }
             }.catch { error in
                 print("could get two factor status")
@@ -83,6 +96,9 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             nextController.onboarding = true
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
             nextController.twoFactor = sender as! TwoFactorCall
         }
     }

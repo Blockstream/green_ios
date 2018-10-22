@@ -49,6 +49,19 @@ class SetGauthViewController: UIViewController {
                 if(status_call == "resolve_code") {
                     self.performSegue(withIdentifier: "twoFactor", sender: factor)
                 }
+            } else if (status == "request_code") {
+                let methods = json!["methods"] as! NSArray
+                if(methods.count > 1) {
+                    self.performSegue(withIdentifier: "twoFactorSelector", sender: factor)
+                } else {
+                    let method = methods[0] as! String
+                    let req = try factor?.requestCode(method: method)
+                    let status1 = try factor?.getStatus()
+                    let parsed1 = status1!["status"] as! String
+                    if(parsed1 == "resolve_code") {
+                        self.performSegue(withIdentifier: "twoFactor", sender: factor)
+                    }
+                }
             }
         } catch {
             print("something went wrong")
@@ -58,6 +71,9 @@ class SetGauthViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             nextController.onboarding = true
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
             nextController.twoFactor = sender as! TwoFactorCall
         }
     }

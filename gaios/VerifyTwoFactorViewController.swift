@@ -43,6 +43,10 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setTitle()
+    }
+
+    func setTitle() {
         do{
             if let json = try twoFactor?.getStatus() {
                 let method = json["method"] as! String
@@ -51,7 +55,7 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                 } else if (method == "phone") {
                     topLabel.text = TitleText.phone.rawValue
                 } else if (method == "gauth") {
-                    topLabel.text = TitleText.email.rawValue
+                    topLabel.text = TitleText.gauth.rawValue
                 } else if (method == "email") {
                     topLabel.text = TitleText.email.rawValue
                 }
@@ -98,6 +102,11 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                                     self.navigationController?.popToRootViewController(animated: true)
                                 }
                             }
+                        } else if (status == "resolve_code") {
+                            pinCode = ""
+                            updateView()
+                            setTitle()
+                            //now confirm your new 2fa
                         } else {
                             print("wrong pin")
                             //show hud failure

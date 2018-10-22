@@ -3084,6 +3084,7 @@
                         <outlet property="qrCodeImageView" destination="YCg-kw-T2x" id="ZDj-7L-raS"/>
                         <outlet property="secretLabel" destination="kPj-p0-KMB" id="YdD-xM-XsH"/>
                         <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="Oir-Oa-Fhf"/>
+                        <segue destination="hgO-EC-JdX" kind="show" identifier="twoFactorSelector" id="QDj-e2-Si9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0hh-lv-EsQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3177,11 +3178,12 @@
                         <outlet property="getCodeButton" destination="lhM-em-hja" id="S7l-1E-jQo"/>
                         <outlet property="textField" destination="dyf-gQ-Uj2" id="XW8-Gx-90S"/>
                         <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="oJr-DX-JrD"/>
+                        <segue destination="hgO-EC-JdX" kind="show" identifier="twoFactorSelector" id="mQx-0x-IZx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LeC-5w-MHG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4494.375" y="-2468.6619718309857"/>
+            <point key="canvasLocation" x="4485" y="-2735"/>
         </scene>
         <!--Set Email View Controller-->
         <scene sceneID="IZJ-eN-QjP">
@@ -3264,11 +3266,12 @@
                         <outlet property="getCodeButton" destination="PKQ-UY-3b4" id="8B4-63-lI8"/>
                         <outlet property="textField" destination="3RB-4g-aw1" id="3Rk-u1-NDb"/>
                         <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="hpa-7Q-TAx"/>
+                        <segue destination="hgO-EC-JdX" kind="show" identifier="twoFactorSelector" id="c22-Au-VAX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pdB-Nu-ruw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4485" y="-1771"/>
+            <point key="canvasLocation" x="4380" y="-1736"/>
         </scene>
         <!--Two Factor Slector View Controller-->
         <scene sceneID="3Gc-D7-agD">
@@ -5762,20 +5765,8 @@
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -5788,13 +5779,13 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="qrV-jP-MQi"/>
+        <segue reference="hpa-7Q-TAx"/>
         <segue reference="Pqg-Zu-9Zd"/>
         <segue reference="yIW-Ly-oWL"/>
-        <segue reference="552-x0-S8S"/>
-        <segue reference="Urb-Nk-GEO"/>
-        <segue reference="dtp-RI-Fbe"/>
-        <segue reference="ONE-Lh-9HX"/>
+        <segue reference="c22-Au-VAX"/>
+        <segue reference="pCj-2Y-T3h"/>
+        <segue reference="J3A-P7-WsW"/>
+        <segue reference="JAa-xy-EZp"/>
         <segue reference="ZM7-6x-yYR"/>
         <segue reference="wGg-ef-t0T"/>
     </inferredMetricsTieBreakers>
