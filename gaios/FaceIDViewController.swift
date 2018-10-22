@@ -31,8 +31,7 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    func authenticate() {
         bioID.authenticateUser { (message) in
             if(message == nil) {
                 let size = CGSize(width: 30, height: 30)
@@ -44,19 +43,28 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
                             AccountStore.shared.initializeAccountStore()
                             self.performSegue(withIdentifier: "mainMenu", sender: self)
                         }
-                    }.catch { error in
-                        print("incorrect PIN ", error)
-                        DispatchQueue.main.async {
-                            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                            self.stopAnimating()
-                        }
+                        }.catch { error in
+                            print("incorrect PIN ", error)
+                            DispatchQueue.main.async {
+                                NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                self.stopAnimating()
+                            }
                     }
                 }
             } else {
-                //error
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                    if (self.isViewLoaded && (self.view.window != nil)) {
+                        self.authenticate()
+                    }
+                }
             }
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        authenticate()
     }
 }
