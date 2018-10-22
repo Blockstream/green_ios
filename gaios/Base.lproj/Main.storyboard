@@ -1815,6 +1815,7 @@
                     <connections>
                         <outlet property="headerView" destination="nWW-qZ-OhM" id="CJp-Sj-oig"/>
                         <outlet property="tableView" destination="LSB-PT-hak" id="9tm-1r-oS5"/>
+                        <outlet property="titleLabel" destination="gJQ-yO-g1K" id="2cR-7W-Wmx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3q2-RO-OGg" userLabel="First Responder" sceneMemberID="firstResponder"/>

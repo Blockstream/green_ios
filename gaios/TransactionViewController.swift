@@ -8,6 +8,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var tableView: UITableView!
     var items = [NotificationItem]()
     @IBOutlet weak var headerView: UIView!
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -29,6 +30,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
             self.updateViewModel()
         }
         NotificationCenter.default.addObserver(self, selector: #selector(self.notificationChanged(_:)), name: NSNotification.Name(rawValue: "notificationChanged"), object: nil)
+        titleLabel.text = "anotifications"
     }
 
     @objc func notificationChanged(_ notification: NSNotification) {
