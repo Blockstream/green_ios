@@ -1,11 +1,3 @@
-//
-//  BiometricIDAuth.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import LocalAuthentication
 
@@ -18,7 +10,7 @@ enum BiometricType {
 class BiometricIDAuth {
     let context = LAContext()
     var loginReason = "Logging in with Touch ID"
-    
+
     func biometricType() -> BiometricType {
         let _ = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
         if #available(iOS 11.0, *) {
@@ -35,17 +27,17 @@ class BiometricIDAuth {
             // Fallback on earlier versions
         }
     }
-    
+
     func canEvaluatePolicy() -> Bool {
         return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
     }
-    
+
     func authenticateUser(completion: @escaping (String?) -> Void) {
         guard canEvaluatePolicy() else {
             completion("Touch ID not available")
             return
         }
-        
+
         context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: loginReason) { (success, evaluateError) in
             if success {
                 DispatchQueue.main.async {
@@ -55,7 +47,7 @@ class BiometricIDAuth {
             } else {
                 if #available(iOS 11.0, *) {
                     let message: String
-                    
+
                     switch evaluateError {
                     case LAError.authenticationFailed?:
                         message = "There was a problem verifying your identity."
@@ -75,7 +67,7 @@ class BiometricIDAuth {
                     completion(message)
                 } else {
                     let message: String
-                    
+
                     switch evaluateError {
                     case LAError.authenticationFailed?:
                         message = "There was a problem verifying your identity."

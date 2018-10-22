@@ -1,17 +1,9 @@
-//
-//  SendBtcViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import AVFoundation
 
 class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
+
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var QRCodeReader: UIView!
     @IBOutlet weak var tableView: UITableView!
@@ -84,7 +76,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     @objc func textFieldDidChange(_ textField: UITextField) {
         updateButton()
     }
-    
+
     func updateButton() {
         if(textfield.text != nil && textfield.text != "") {
             //bottomButton.layer.sublayers?.removeFirst()
@@ -114,11 +106,11 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     {
         return 65;
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return wallets.count
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let wallet = wallets[indexPath.row]
         textfield.text = wallet.address
@@ -143,7 +135,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.mainContent.cornerRadius = 5
         cell.layer.zPosition = CGFloat(indexPath.row)
         return cell;
-        
+
     }
 
     @objc func someAction(_ sender:UITapGestureRecognizer){
@@ -175,7 +167,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
             return
         }
-        
+
         captureSession = AVCaptureSession()
         if captureSession.canAddInput(captureDeviceInput) {
             captureSession.addInput(captureDeviceInput)
@@ -183,10 +175,10 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         else {
             return
         }
-        
+
         let captureMetadataOutput = AVCaptureMetadataOutput()
-        
-        
+
+
         if captureSession.canAddOutput(captureMetadataOutput) {
             captureSession.addOutput(captureMetadataOutput)
             captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
@@ -200,12 +192,12 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         videoPreviewLayer?.frame = QRCodeReader.layer.bounds
         videoPreviewLayer?.videoGravity = .resizeAspectFill
         QRCodeReader.layer.addSublayer(videoPreviewLayer!)
-        
+
         captureSession.startRunning()
-        
+
         // Initialize QR Code Frame to highlight the QR code
         qrCodeFrameView = UIView()
-        
+
         if let qrCodeFrameView = qrCodeFrameView {
             qrCodeFrameView.layer.borderColor = UIColor.red.cgColor
             qrCodeFrameView.layer.borderWidth = 4
@@ -217,7 +209,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBAction func nextButtonClicked(_ sender: Any) {
         self.performSegue(withIdentifier: "next", sender: self)
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcDetailsViewController {
             nextController.wallet = wallet
@@ -229,22 +221,22 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
 }
 
 extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
-    
+
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         // Check if the metadataObjects array is not nil and it contains at least one object.
         if metadataObjects.count == 0 {
             qrCodeFrameView?.frame = CGRect.zero
             return
         }
-        
+
         // Get the metadata object.
         let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
-        
+
         if supportedCodeTypes.contains(metadataObj.type) {
             // If the found metadata is equal to the QR code metadata (or barcode) then update the status label's text and set the bounds
             let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
             qrCodeFrameView?.frame = barCodeObject!.bounds
-            
+
             if metadataObj.stringValue != nil {
                 let uri = metadataObj.stringValue
                 print(uri)
@@ -266,5 +258,5 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
         }
         //captureSession.stopRunning()
     }
-    
+
 }

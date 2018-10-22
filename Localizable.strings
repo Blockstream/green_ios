@@ -1,11 +1,3 @@
-/* 
-  Localizable.strings
-  gaios
-
-  Created by Strahinja Markovic on 10/15/18.
-  Copyright © 2018 Blockstream inc. All rights reserved.
-*/
-
 "wallets" = "Wallets";
 "main_wallet" = "Main Wallet";
 "bitcoins_most_secure_wallet" = "Bitcoin's most secure wallet";
@@ -60,7 +52,6 @@
 "receive" = "Receive";
 "amount" = "Amount";
 "share_address" = "Share Address";
-"enter_bitcoin_address" = "Enter Bitcoin Address";
 "scan_recepients_qr_code" = "Scan recepient's QR code";
 "or" = "Or";
 "enter_bitcoin_address" = "Enter Bitcoin Address";

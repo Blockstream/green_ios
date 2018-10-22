@@ -1,22 +1,14 @@
-//
-//  TransactionViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import PromiseKit
 
 
 class TransactionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
+
     @IBOutlet weak var tableView: UITableView!
     var items = [NotificationItem]()
     @IBOutlet weak var headerView: UIView!
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateViewModel()
@@ -51,13 +43,13 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         let total = 88 + height + 40
         return total
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "NotificationCell", for: indexPath) as! NotificationTableCell
         let item: NotificationItem = items.reversed()[indexPath.row]
         cell.mainText.text = item.text
@@ -73,7 +65,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         NotificationStore.shared.setSeen(id: item.id)
         cell.separatorInset = UIEdgeInsetsMake(0, 42, 0, 16)
         return cell;
-        
+
     }
 
     func updateViewModel() {

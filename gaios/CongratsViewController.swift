@@ -1,16 +1,8 @@
-//
-//  CongratsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class CongratsViewController: UIViewController {
-    
+
     @IBOutlet weak var topButton: UIButton!
     @IBOutlet weak var bottomButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
@@ -36,7 +28,7 @@ class CongratsViewController: UIViewController {
             topButton.setTitle("Touch/Face ID not available", for: UIControlState.normal)
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])

@@ -1,17 +1,9 @@
-//
-//  NetworkSelectionSettings.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
-    
-    
+
+
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var ipTextField: UITextField!
@@ -57,7 +49,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         topConstraint.constant = 200
         setupView()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         delegate?.networkDismissed()
@@ -67,16 +59,16 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         network = Network.MainNet
         updatebuttons()
     }
-    
+
     @objc func testnetSelected(_ sender:UITapGestureRecognizer) {
         network = Network.TestNet
         updatebuttons()
     }
-    
+
     @objc func liquidSelected(_ sender:UITapGestureRecognizer) {
         updatebuttons()
     }
-    
+
     func updatebuttons() {
         if (network == Network.TestNet) {
             mainnetIndicator.isHidden = true
@@ -92,7 +84,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
             liquidIndicator.isHidden = false
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         view.layoutIfNeeded()
@@ -103,12 +95,12 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         self.dismiss(animated: true, completion: nil)
         setAllNetworkSettings(net: network, ip: ipTextField.text!, port: portTextField.text!, tor: torSwitch.isOn)
     }
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
     }
-    
+
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
 
@@ -121,7 +113,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
 
         }
     }
-    
+
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             let animations = { [weak self] in
@@ -133,7 +125,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
             UIView.animateKeyframes(withDuration: 0.5, delay: 0, options: options, animations: animations, completion: nil)
         }
     }
-    
+
     func setupView() {
         self.view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
     }

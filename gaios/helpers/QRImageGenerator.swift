@@ -1,16 +1,8 @@
-//
-//  QRImageGenerator.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class QRImageGenerator {
-    
+
     static func imageForText(text: String, frame: CGRect) -> UIImage? {
         let data = text.data(using: String.Encoding.ascii, allowLossyConversion: false)
 
@@ -29,7 +21,7 @@ class QRImageGenerator {
         let scaleX = frame.size.width / qrCodeImage.extent.size.width
         let scaleY = frame.size.height / qrCodeImage.extent.size.height
         let scaledImage = qrCodeImage.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-        
+
         return UIImage(ciImage: scaledImage)
     }
 
