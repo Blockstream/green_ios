@@ -15,12 +15,12 @@ class NotificationStore {
     var refreshNotifications: (()->())?
 
     private init() { }
-    
+
     var notifications: [String: NotificationItem] = [String: NotificationItem]()
     var localNotification: [String: NotificationItem] = [String: NotificationItem]()
     var allNotifications: [String: NotificationItem] = [String: NotificationItem]()
     var newNotificationCount = 0
-    let warringNoTwoFactor = "You don't have two factor authentication enabled, enable it to improve security!"
+    let warringNoTwoFactor = "pyou_dont_have_two_factor"
     let warringOneTwoFactor = "You have only one two factor method enabled, add a backup method to improve security!"
 
     func getTransactions() {
@@ -78,7 +78,7 @@ class NotificationStore {
             print("error writing notifications to disk")
         }
     }
-    
+
     func loadNotificationsFromDisk() -> [String: NotificationItem] {
         guard let url = Storage.getDocumentsURL()?.appendingPathComponent("notifications.json") else {
             return [String: NotificationItem]()
@@ -94,7 +94,7 @@ class NotificationStore {
             return [String: NotificationItem]()
         }
     }
-    
+
     func getNotifications() -> Array<NotificationItem> {
         return Array(allNotifications.values).sorted(by: { $0.timestamp < ($1.timestamp) })
     }
@@ -183,7 +183,7 @@ class NotificationStore {
             title = "Confirmation"
             bodyText = String(format: "Your  %@ BTC sent to %@ has been confirmed", amountText, counterparty)
         }
-        
+
         return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
     }
 

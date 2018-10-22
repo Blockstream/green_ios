@@ -45,7 +45,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             cell.status.text = String(format: "(%d/6)", confirmCount)
             cell.status.textColor = UIColor.red
         } else {
-            cell.status.text = "completed"
+            cell.status.text = "pcompleted"
             cell.status.textColor = UIColor.customTitaniumLight()
         }
         cell.selectionStyle = .none
