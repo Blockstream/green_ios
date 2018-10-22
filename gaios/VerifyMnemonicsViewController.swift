@@ -1,11 +1,3 @@
-//
-//  VerifyMnemonicsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import NVActivityIndicatorView
@@ -23,7 +15,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     @IBOutlet weak var button3: DesignableButton!
     let numberOfSteps: Int = 3
     @IBOutlet weak var bottomText: UILabel!
-    
+
     lazy var buttonsArray: Array<UIButton> = [button0, button1, button2, button3]
 
 

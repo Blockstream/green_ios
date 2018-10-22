@@ -1,16 +1,8 @@
-//
-//  ImpoveSecurityViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class ImproveSecurityViewController: UIViewController {
-    
+
     let bioID = BiometricIDAuth()
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var twoFactorButton: UIButton!
@@ -20,7 +12,7 @@ class ImproveSecurityViewController: UIViewController {
         skipButton.contentHorizontalAlignment = .left
         twoFactorButton.contentHorizontalAlignment = .left
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let pinController = segue.destination as? PinLoginViewController {
             pinController.setPinMode = true

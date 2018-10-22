@@ -1,16 +1,8 @@
-//
-//  SendBtcDetailsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Blockstream inc. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class SendBtcDetailsViewController: UIViewController {
-    
+
     var toAddress: String? = nil
     @IBOutlet weak var lowFeeButton: DesignableButton!
     @IBOutlet weak var mediumFeeButton: DesignableButton!
@@ -107,7 +99,7 @@ class SendBtcDetailsViewController: UIViewController {
 
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reviewButton.layoutIfNeeded()

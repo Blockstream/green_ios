@@ -1,11 +1,3 @@
-//
-//  TwoFactorLimitViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 10/18/18.
-//  Copyright © 2018 Blockstream.inc All rights reserved.
-//
-
 import Foundation
 import UIKit
 
