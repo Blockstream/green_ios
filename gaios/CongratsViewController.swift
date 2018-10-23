@@ -10,7 +10,7 @@ class CongratsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        topLabel.text = NSLocalizedString("pcongrats_you_ate_now_a_proud", comment: "")
+        topLabel.text = NSLocalizedString("pcongratsnyou_are_now_a_nproud", comment: "")
         if(bioID.canEvaluatePolicy()){
             if(bioID.biometricType() == BiometricType.faceID) {
                 topButton.setTitle(NSLocalizedString("penable_face_id", comment: ""), for: UIControlState.normal)
@@ -19,12 +19,12 @@ class CongratsViewController: UIViewController {
             } else {
                 topButton.isUserInteractionEnabled = false
                 topButton.backgroundColor = UIColor.customTitaniumLight()
-                topButton.setTitle(NSLocalizedString("ptouch_face_id_unavailable", comment: ""), for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("ptouchface_id_not_available", comment: ""), for: UIControlState.normal)
             }
         } else {
             topButton.isUserInteractionEnabled = false
             topButton.backgroundColor = UIColor.customTitaniumLight()
-            topButton.setTitle(NSLocalizedString("ptouch_face_id_unavailable", comment: ""), for: UIControlState.normal)
+            topButton.setTitle(NSLocalizedString("ptouchface_id_not_available", comment: ""), for: UIControlState.normal)
         }
     }
 
