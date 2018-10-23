@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -44,7 +42,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fn9-uI-Loh">
-                                            <rect key="frame" x="124.5" y="10" width="72" height="24"/>
+                                            <rect key="frame" x="124" y="10" width="72" height="24"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
@@ -104,7 +102,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="downArrow" translatesAutoresizingMaskIntoConstraints="NO" id="O76-3o-oVZ">
-                                                    <rect key="frame" x="300" y="17" width="10" height="16"/>
+                                                    <rect key="frame" x="300" y="17.5" width="10" height="16"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="10" id="Bfi-fM-8BT"/>
                                                         <constraint firstAttribute="height" constant="16" id="lvb-ff-oEg"/>
@@ -648,7 +646,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recovery Words" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0F4-cT-jFA">
-                                <rect key="frame" x="98" y="43" width="125" height="21"/>
+                                <rect key="frame" x="97.5" y="43" width="125" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -808,7 +806,7 @@
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add Another Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lKe-zd-T0h">
-                                        <rect key="frame" x="70.5" y="20" width="148" height="21"/>
+                                        <rect key="frame" x="70" y="20" width="148" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -994,7 +992,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bitcoin's most secure wallet." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="foO-sh-acY">
-                                <rect key="frame" x="57.5" y="254" width="206" height="20"/>
+                                <rect key="frame" x="57" y="254" width="206" height="20"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -1801,7 +1799,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gJQ-yO-g1K">
-                                            <rect key="frame" x="105.5" y="10" width="110.5" height="24"/>
+                                            <rect key="frame" x="105" y="10" width="110.5" height="24"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
@@ -1891,7 +1889,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-KU-8DT">
-                                <rect key="frame" x="16" y="111" width="162" height="21"/>
+                                <rect key="frame" x="16" y="111" width="161" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -1924,7 +1922,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallet Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J9b-kK-iA4">
-                                <rect key="frame" x="56" y="196" width="97" height="21"/>
+                                <rect key="frame" x="56" y="195.5" width="97" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -1961,7 +1959,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Itr-BV-GH4">
-                                <rect key="frame" x="54" y="283" width="250" height="21"/>
+                                <rect key="frame" x="54" y="282.5" width="250" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -2392,13 +2390,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Word4" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vfH-Ui-UpA">
-                                <rect key="frame" x="130" y="361" width="59" height="24"/>
+                                <rect key="frame" x="130.5" y="361" width="59" height="24"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Word6" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC1-jM-ZYk">
-                                <rect key="frame" x="131" y="439" width="59" height="24"/>
+                                <rect key="frame" x="130.5" y="439" width="59" height="24"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -2945,7 +2943,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Improve security" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="16w-nZ-XSS">
-                                <rect key="frame" x="97" y="43.5" width="127" height="20.5"/>
+                                <rect key="frame" x="96.5" y="43.5" width="127" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -3326,7 +3324,7 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="forwardArrow" translatesAutoresizingMaskIntoConstraints="NO" id="q1k-X9-m97">
-                                <rect key="frame" x="277" y="186" width="27" height="16"/>
+                                <rect key="frame" x="277" y="186.5" width="27" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="27" id="ICj-vt-SUq"/>
                                     <constraint firstAttribute="height" constant="16" id="b90-Fg-hDe"/>
@@ -3720,7 +3718,7 @@
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scan recepient's QR code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2fA-eI-Yvz">
-                                        <rect key="frame" x="70.5" y="160" width="180.5" height="18"/>
+                                        <rect key="frame" x="70" y="160" width="180.5" height="18"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -3949,9 +3947,16 @@
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GEh-rg-b8E">
                                 <rect key="frame" x="16" y="242" width="98" height="30"/>
+                                <color key="tintColor" name="customTitaniumDark"/>
                                 <state key="normal" title="Send all funds">
+                                    <color key="titleColor" name="customTitaniumLight"/>
+                                </state>
+                                <state key="selected">
                                     <color key="titleColor" name="customMatrixGreen"/>
                                 </state>
+                                <connections>
+                                    <action selector="sendAllFundsClick:" destination="cFP-IA-4E2" eventType="touchUpInside" id="1jS-nn-ybI"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00 USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zCl-qx-s75">
                                 <rect key="frame" x="120" y="248" width="66" height="18"/>
@@ -4071,7 +4076,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="satoshi / byte" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SKW-ay-YvK">
-                                <rect key="frame" x="40" y="439" width="81.5" height="16"/>
+                                <rect key="frame" x="40" y="438.5" width="81.5" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
@@ -4271,7 +4276,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="~0.0 USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2aZ-Zn-588">
-                                <rect key="frame" x="16" y="415" width="62.5" height="17"/>
+                                <rect key="frame" x="16" y="415" width="62" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="17" id="Aai-Rk-zlU"/>
                                 </constraints>
@@ -4914,7 +4919,7 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="forwardArrow" translatesAutoresizingMaskIntoConstraints="NO" id="7Xj-9M-vwV">
-                                <rect key="frame" x="277" y="112" width="27" height="16"/>
+                                <rect key="frame" x="277" y="112.5" width="27" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="Ibd-gm-ylU"/>
                                     <constraint firstAttribute="width" constant="27" id="dKB-8a-dSY"/>
@@ -5592,7 +5597,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Two-Factor treshold" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ftO-An-X9M">
-                                <rect key="frame" x="83" y="43" width="155" height="21"/>
+                                <rect key="frame" x="82.5" y="43" width="155" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -5613,7 +5618,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gyd-mo-6vL">
-                                <rect key="frame" x="185" y="151" width="60" height="32"/>
+                                <rect key="frame" x="185" y="151.5" width="60" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="bgF-WT-FwL"/>
                                     <constraint firstAttribute="width" constant="60" id="xSJ-vZ-y8c"/>
@@ -5741,7 +5746,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter new email:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xTt-zl-tnW">
-                                <rect key="frame" x="94" y="141" width="133" height="21.5"/>
+                                <rect key="frame" x="93.5" y="141" width="133" height="21.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -5791,47 +5796,47 @@
         </scene>
     </scenes>
     <resources>
-        <image name="backarrow" width="60" height="96"/>
-        <image name="blockstreamGreen" width="280" height="114"/>
-        <image name="digital" width="100" height="129"/>
-        <image name="downArrow" width="50" height="25"/>
-        <image name="email" width="100" height="100"/>
-        <image name="erase" width="75" height="49"/>
-        <image name="forwardArrow" width="100" height="61"/>
-        <image name="gauth" width="100" height="100"/>
-        <image name="graphic" width="750" height="485"/>
-        <image name="liquid" width="200" height="101"/>
-        <image name="mainnet" width="200" height="200"/>
-        <image name="matrix404" width="781" height="692"/>
-        <image name="matrixSquares" width="693" height="484"/>
-        <image name="north" width="1000" height="750"/>
-        <image name="page1" width="314" height="708"/>
-        <image name="page2" width="283" height="518"/>
-        <image name="paper" width="100" height="111"/>
-        <image name="phoneCall" width="100" height="104"/>
-        <image name="plus" width="48" height="48"/>
-        <image name="scan" width="283" height="281"/>
-        <image name="search" width="75" height="75"/>
-        <image name="sendWhite" width="48" height="48"/>
-        <image name="sms" width="100" height="141"/>
+        <image name="backarrow" width="120" height="192"/>
+        <image name="blockstreamGreen" width="560" height="229"/>
+        <image name="digital" width="200" height="258"/>
+        <image name="downArrow" width="100" height="50"/>
+        <image name="email" width="200" height="200"/>
+        <image name="erase" width="150" height="98"/>
+        <image name="forwardArrow" width="200" height="122"/>
+        <image name="gauth" width="200" height="200"/>
+        <image name="graphic" width="1500" height="970"/>
+        <image name="liquid" width="400" height="203"/>
+        <image name="mainnet" width="400" height="400"/>
+        <image name="matrix404" width="1563" height="1384"/>
+        <image name="matrixSquares" width="346.75" height="242.25"/>
+        <image name="north" width="2000" height="1500"/>
+        <image name="page1" width="629" height="1417"/>
+        <image name="page2" width="567" height="1037"/>
+        <image name="paper" width="200" height="223"/>
+        <image name="phoneCall" width="200" height="208"/>
+        <image name="plus" width="96" height="96"/>
+        <image name="scan" width="567" height="563"/>
+        <image name="search" width="150" height="150"/>
+        <image name="sendWhite" width="24.25" height="24.25"/>
+        <image name="sms" width="200" height="283"/>
         <image name="stepIndicator" width="18" height="18"/>
-        <image name="testnet" width="200" height="200"/>
-        <image name="transactions" width="24" height="17"/>
-        <image name="user" width="66" height="66"/>
+        <image name="testnet" width="400" height="400"/>
+        <image name="transactions" width="72" height="52"/>
+        <image name="user" width="133" height="133"/>
         <image name="wallet" width="31" height="31"/>
-        <image name="wallet2" width="108" height="108"/>
-        <image name="world" width="100" height="103"/>
+        <image name="wallet2" width="216" height="216"/>
+        <image name="world" width="200" height="207"/>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
-            <color red="0.1176470588" green="0.13725490200000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
-            <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.21568627450980393" green="0.24705882352941178" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customVeryDark">
             <color red="0.10196078431372549" green="0.11764705882352941" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

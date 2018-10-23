@@ -24,7 +24,7 @@ class SendBtcDetailsViewController: UIViewController {
     var feeLabel: UILabel = UILabel()
     var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
-    var maxAmountBTC = 0
+    var maxAmountBTC: Double = 0
     var btcAmount: Double = 0
     var fee: UInt64 = 1
     var selectedButton : UIButton? = nil
@@ -100,7 +100,8 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updateMaxAmountLabel() {
         if (selectedType == TransactionType.BTC) {
-            //maxAmountBTC = wallet?.balance
+            guard let amount = wallet?.balance else { return }
+            maxAmountBTC = Double(amount)! / 100000000
             maxAmountLabel.text = String(format: "%f %@", maxAmountBTC, SettingsStore.shared.getDenominationSettings())
         } else {
             let maxFiat = maxAmountBTC //FIXME
@@ -118,6 +119,10 @@ class SendBtcDetailsViewController: UIViewController {
         updateButton()
     }
 
+    @IBAction func sendAllFundsClick(_ sender: Any) {
+        sendAllFundsButton.isSelected = !sendAllFundsButton.isSelected;
+    }
+    
     @IBAction func nextButtonClicked(_ sender: UIButton) {
         self.performSegue(withIdentifier: "confirm", sender: self)
     }
@@ -191,6 +196,8 @@ class SendBtcDetailsViewController: UIViewController {
 
         details["fee_rate"] = fee
         details["addressees"] = [toAddress]
+        details["change_subaccount"] = wallet?.pointer
+        details["send_all"] = sendAllFundsButton.isSelected
 
         do {
             let unspent = try getSession().getUnspentOutputs(subaccount: (wallet?.pointer)!, num_confs: 1)
