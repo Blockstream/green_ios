@@ -71,6 +71,7 @@
 "pdont_take_screenshots_of_your" = "Don't take screenshots of your seed!";
 "pdouble_spend_by" = "Double spend by";
 "pdouble_spend" = "double spend";
+"pdownload_finished" = "Download finished";
 "peconomy" = "Economy";
 "pemail_address" = "email address";
 "pemail" = "Email";
@@ -239,6 +240,7 @@
 "psave" = "Save";
 "psave_your_recovery_seed" = "Save your recovery seed";
 "psaving_the_username_on_the" = "Saving the username on the device can be dangerous; if someone can access your memory they will have access to your username in clear text. If you choose to continue, please press \"OK\".";
+"ps_blocks_left" = "%@ blocks left";
 "pscreen_lock" = "Screen Lock";
 "psearch" = "Search";
 "psecond" = "second";
@@ -246,7 +248,7 @@
 "pselect_network" = "Select network";
 "psend_all_funds" = "Send all funds";
 "psending" = "SENDING";
-"psend" = "SEND";
+"psend" = "Send";
 "pset_a_new_pin" = "Set a new PIN";
 "pset_custom_fee" = "Set custom fee";
 "pset_limit" = "Set Limit";
