@@ -151,7 +151,6 @@
                         <segue destination="qMa-Ep-FVb" kind="show" identifier="switch" id="1zM-rW-Pdo"/>
                         <segue destination="s51-Si-EAJ" kind="show" identifier="recovery" id="HPP-44-6o5"/>
                         <segue destination="HFJ-t3-WQm" kind="show" identifier="denomination" id="sYN-Li-Q3m"/>
-                        <segue destination="B5O-7h-VGM" kind="presentation" identifier="logout" id="yIW-Ly-oWL"/>
                         <segue destination="Mod-4I-fsQ" kind="show" identifier="editTwoFactor" id="3d2-SH-cEy"/>
                         <segue destination="80V-46-g4d" kind="show" identifier="screenLock" id="xcl-Dg-JhF"/>
                         <segue destination="npE-4D-Ee3" kind="show" identifier="transactionFee" id="yP2-yJ-Lxy"/>
@@ -160,6 +159,7 @@
                         <segue destination="jB7-Eo-Pwf" kind="show" identifier="twoFactorLimit" id="3Us-TD-UHA"/>
                         <segue destination="Ms9-tQ-5eg" kind="show" identifier="requestNlock" id="uWa-8N-mMS"/>
                         <segue destination="QMk-gQ-Hbn" kind="show" identifier="twoFactorReset" id="azf-Vv-sq5"/>
+                        <segue destination="kWT-Yh-qgi" kind="presentation" identifier="logout" id="fhM-Q9-pGm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -5851,6 +5851,6 @@
         <segue reference="J3A-P7-WsW"/>
         <segue reference="JAa-xy-EZp"/>
         <segue reference="ZM7-6x-yYR"/>
-        <segue reference="cPf-Ot-shi"/>
+        <segue reference="fhM-Q9-pGm"/>
     </inferredMetricsTieBreakers>
 </document>

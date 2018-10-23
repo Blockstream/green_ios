@@ -20,12 +20,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     @IBAction func logoutClicked(_ sender: Any) {
-        //TODO: important! remove keychain data, remove notifications and settings
-        /*wrap { try getSession().removeAccount()}.done {
+        wrap {
+            try getSession().disconnect()
+        }.done {
             self.performSegue(withIdentifier: "logout", sender: nil)
-            }.catch { error in
+        }.catch { error in
             print("problem while logging out")
-        }*/
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

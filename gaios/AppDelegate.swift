@@ -264,6 +264,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    func disconnect() {
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                try getSession().disconnect()
+            }.done {
+                print("Disconnected")
+            }.catch { error in
+                DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                    self.disconnect()
+                }
+            }
+        }
+    }
+
     @objc func lockApplication(_ notification: NSNotification) {
         //check if user is loggedIn
         connect()

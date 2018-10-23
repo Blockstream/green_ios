@@ -185,6 +185,10 @@ public class Session {
                                                     UInt32(debug ? GA_TRUE : GA_FALSE)))
     }
 
+    public func disconnect() throws {
+        try callWrapper(fun: GA_disconnect(session))
+    }
+
     public func registerUser(mnemonic: String) throws {
         try callWrapper(fun: GA_register_user(session, mnemonic))
     }
