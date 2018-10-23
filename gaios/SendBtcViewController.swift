@@ -71,6 +71,7 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         navigationController?.navigationBar.tintColor = UIColor.white
         hideKeyboardWhenTappedAround()
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        bottomButton.setTitle(NSLocalizedString("padd_amount", comment: ""), for: .normal)
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {

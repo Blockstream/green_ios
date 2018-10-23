@@ -5,12 +5,14 @@ class DenominationSelectorViewController : UIViewController, UITableViewDelegate
 
     @IBOutlet weak var tableView: UITableView!
     let denominations: [String] = [SettingsStore.shared.denominationPrimary, SettingsStore.shared.denominationMilli, SettingsStore.shared.denominationMicro]
+    @IBOutlet weak var topLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.tableFooterView = UIView()
+        topLabel.text = NSLocalizedString("pdenomination", comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

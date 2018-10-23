@@ -8,6 +8,7 @@ class SetGauthViewController: UIViewController {
     @IBOutlet weak var nextButton: UIButton!
     var secret: String? = ""
     var otp: String? = ""
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +20,8 @@ class SetGauthViewController: UIViewController {
         }
         qrCodeImageView.image = QRImageGenerator.imageForText(text: otp!, frame: qrCodeImageView.frame)
         secretLabel.text = secret
+        nextButton.setTitle(NSLocalizedString("pnext", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("pgoogle_authenticator_qrcode", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

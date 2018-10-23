@@ -10,22 +10,21 @@ class CongratsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let text = NSAttributedString(string: "Congrats!\n You are now a \n proud owner of \n Bitcoin wallet.")
-        topLabel.attributedText = text
+        topLabel.text = NSLocalizedString("pcongrats_you_ate_now_a_proud", comment: "")
         if(bioID.canEvaluatePolicy()){
             if(bioID.biometricType() == BiometricType.faceID) {
-                topButton.setTitle("Enable Face ID", for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("penable_face_id", comment: ""), for: UIControlState.normal)
             } else if (bioID.biometricType() == BiometricType.touchID) {
-                topButton.setTitle("Enabe Touch ID", for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("penable_touch_id", comment: ""), for: UIControlState.normal)
             } else {
                 topButton.isUserInteractionEnabled = false
                 topButton.backgroundColor = UIColor.customTitaniumLight()
-                topButton.setTitle("Touch/Face ID not available", for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("ptouch_face_id_unavailable", comment: ""), for: UIControlState.normal)
             }
         } else {
             topButton.isUserInteractionEnabled = false
             topButton.backgroundColor = UIColor.customTitaniumLight()
-            topButton.setTitle("Touch/Face ID not available", for: UIControlState.normal)
+            topButton.setTitle(NSLocalizedString("ptouch_face_id_unavailable", comment: ""), for: UIControlState.normal)
         }
     }
 

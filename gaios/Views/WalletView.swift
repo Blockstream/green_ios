@@ -30,14 +30,14 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             cell.amount.textColor = UIColor.white
         }
         if(item.blockheight == 0) {
-            cell.status.text = "unconfirmed"
+            cell.status.text = NSLocalizedString("punconfirmed", comment: "")
             cell.status.textColor = UIColor.red
         } else if (AccountStore.shared.getBlockheight() - item.blockheight < 6) {
             let confirmCount = AccountStore.shared.getBlockheight() - item.blockheight + 1
             cell.status.text = String(format: "(%d/6)", confirmCount)
             cell.status.textColor = UIColor.red
         } else {
-            cell.status.text = "pcompleted"
+            cell.status.text = NSLocalizedString("pcompleted", comment: "")
             cell.status.textColor = UIColor.customTitaniumLight()
         }
         cell.selectionStyle = .none

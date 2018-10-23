@@ -30,7 +30,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
             self.updateViewModel()
         }
         NotificationCenter.default.addObserver(self, selector: #selector(self.notificationChanged(_:)), name: NSNotification.Name(rawValue: "notificationChanged"), object: nil)
-        titleLabel.text = "anotifications"
+        titleLabel.text = NSLocalizedString("pnotifications", comment: "")
     }
 
     @objc func notificationChanged(_ notification: NSNotification) {

@@ -31,6 +31,8 @@ class CreateWalletViewController: UIViewController {
         widths = generateAllWidths(maxWidth: Int(maxWidth), blockWidth: Int(width))
         createIndicators()
         loadWords()
+        topLabel.text = NSLocalizedString("pwrite_down_the_words", comment: "")
+        nextButton.setTitle(NSLocalizedString("pnext", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

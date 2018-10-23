@@ -3,7 +3,6 @@ import UIKit
 
 class SendBtcDetailsViewController: UIViewController {
 
-    var toAddress: String? = nil
     @IBOutlet weak var lowFeeButton: DesignableButton!
     @IBOutlet weak var mediumFeeButton: DesignableButton!
     @IBOutlet weak var highFeeButton: DesignableButton!
@@ -11,15 +10,19 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var customfeeButton: DesignableButton!
     @IBOutlet weak var maxAmountLabel: UILabel!
     @IBOutlet weak var amountTextField: UITextField!
-    var feeLabel: UILabel = UILabel()
-    var wallet: WalletItem? = nil
     @IBOutlet weak var reviewButton: UIButton!
     @IBOutlet weak var currencySwitch: UIButton!
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var customFeeTextField: UITextField!
     @IBOutlet weak var customFeeLabel: UILabel!
     @IBOutlet weak var customFeeUnitLabel: UILabel!
+    @IBOutlet weak var recipientTitle: UILabel!
+    @IBOutlet weak var sendAllFundsButton: UIButton!
+    @IBOutlet weak var minerFeeTitle: UILabel!
 
+    var toAddress: String? = nil
+    var feeLabel: UILabel = UILabel()
+    var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
     var maxAmountBTC = 0
     var btcAmount: Double = 0
@@ -53,6 +56,13 @@ class SendBtcDetailsViewController: UIViewController {
         hideKeyboardWhenTappedAround()
         NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        reviewButton.setTitle(NSLocalizedString("preview", comment: ""), for: .normal)
+        recipientTitle.text = NSLocalizedString("precipient", comment: "")
+        minerFeeTitle.text = NSLocalizedString("pminer_fee", comment: "")
+        lowFeeButton.setTitle(NSLocalizedString("plow", comment: ""), for: .normal)
+        mediumFeeButton.setTitle(NSLocalizedString("pnormal", comment: ""), for: .normal)
+        highFeeButton.setTitle(NSLocalizedString("phigh", comment: ""), for: .normal)
+        customfeeButton.setTitle(NSLocalizedString("pcustom", comment: ""), for: .normal)
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {

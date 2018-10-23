@@ -5,9 +5,10 @@ class TransactionFeeViewController : UIViewController, UITableViewDelegate, UITa
 
     @IBOutlet weak var tableView: UITableView!
     let priorities: [TransactionPriority] = [TransactionPriority.Low, TransactionPriority.Medium, TransactionPriority.High, TransactionPriority.Custom]
-
+    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var unitTextField: UITextField!
     @IBOutlet weak var unitLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
@@ -16,6 +17,7 @@ class TransactionFeeViewController : UIViewController, UITableViewDelegate, UITa
         unitTextField.delegate = self
         updateUnitUI()
         hideKeyboardWhenTappedAround()
+        titleLabel.text = NSLocalizedString("", comment: "")
     }
 
     func updateUnitUI() {

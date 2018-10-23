@@ -9,6 +9,7 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
     @IBOutlet weak var textField: SearchTextField!
     @IBOutlet weak var currentCurrency: UILabel!
     @IBOutlet weak var currentExchange: UILabel!
+    @IBOutlet weak var topLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,10 +20,12 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
         getAvailableCurrencies()
         hideKeyboardWhenTappedAround()
         textField.delegate = self
-        textField.attributedPlaceholder = NSAttributedString(string: "Search",
+        let localizedSearch = NSLocalizedString("psearch", comment: "")
+        textField.attributedPlaceholder = NSAttributedString(string: localizedSearch,
                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         refreshCurrency()
+        topLabel.text = NSLocalizedString("pcurrency", comment:"")
     }
 
     func refreshCurrency() {

@@ -4,6 +4,16 @@ import NVActivityIndicatorView
 
 class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate{
 
+    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var slidingButton: SlidingButton!
+    @IBOutlet weak var fiatAmountLabel: UILabel!
+    @IBOutlet weak var walletNameLabel: UILabel!
+    @IBOutlet weak var recepientAddressLabel: UILabel!
+    @IBOutlet weak var sendingTitle: UILabel!
+    @IBOutlet weak var fromTitle: UILabel!
+    @IBOutlet weak var toTitle: UILabel!
+    @IBOutlet weak var myNotesTitle: UILabel!
+
     var toAddress: String = ""
     var fiat_amount: Double = 0
     var fiatFeeAmount: Double = 0
@@ -14,12 +24,6 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     var wallet: WalletItem? = nil
     var payload: [String : Any]? = nil
     var selectedType: TransactionType? = nil
-    @IBOutlet weak var textView: UITextView!
-
-    @IBOutlet weak var slidingButton: SlidingButton!
-    @IBOutlet weak var fiatAmountLabel: UILabel!
-    @IBOutlet weak var walletNameLabel: UILabel!
-    @IBOutlet weak var recepientAddressLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +38,10 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         textView.delegate = self
         textView.text = "Add a note..."
         textView.textColor = UIColor.customTitaniumLight()
-
+        sendingTitle.text = NSLocalizedString("psending", comment: "")
+        fromTitle.text = NSLocalizedString("pfrom", comment: "")
+        toTitle.text = NSLocalizedString("pto", comment: "")
+        myNotesTitle.text = NSLocalizedString("pmy_notes", comment: "")
     }
 
     override func viewDidAppear(_ animated: Bool) {

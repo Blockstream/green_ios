@@ -3,11 +3,11 @@ import UIKit
 
 class TOSViewController: UIViewController {
 
-
     @IBOutlet weak var nButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var tosTextView: UITextView!
     @IBOutlet weak var tosButton: DesignableButton!
+    @IBOutlet weak var secondaryLabel: UILabel!
 
     @IBAction func nextButtonClicked(_ sender: Any) {
         self.performSegue(withIdentifier: "next", sender: self)
@@ -55,10 +55,12 @@ class TOSViewController: UIViewController {
         tosTextView.attributedText = tosString
         tosTextView.font = UIFont.systemFont(ofSize: 16)
         tosTextView.isUserInteractionEnabled = true
-
-        let topString = NSMutableAttributedString(string: "GREEN is non-custodial\n Bitcoin wallet.")
+        let stringLocalized = NSLocalizedString("pgreen_is_noncustodial_bitcoin", comment: "")
+        let topString = NSMutableAttributedString(string: stringLocalized)
 
         topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
         topLabel.attributedText = topString
+        secondaryLabel.text = NSLocalizedString("", comment: "")
+        nButton.setTitle(NSLocalizedString("pnext", comment: ""), for: .normal)
     }
 }

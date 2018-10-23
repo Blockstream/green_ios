@@ -6,20 +6,21 @@ class EditScreenLockSettings: UIViewController {
     @IBOutlet weak var bioSwitch: UISwitch!
     @IBOutlet weak var pinSwitch: UISwitch!
     let bioID = BiometricIDAuth()
-
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         if(self.bioID.canEvaluatePolicy()) {
             if(self.bioID.biometricType() == BiometricType.faceID) {
-                bioAuthLabel.text = "Face ID"
+                bioAuthLabel.text = NSLocalizedString("pface_id", comment: "")
             } else if (self.bioID.biometricType() == BiometricType.touchID) {
-                bioAuthLabel.text = "Touch ID"
+                bioAuthLabel.text = NSLocalizedString("pface_id", comment: "")
             }
         } else {
-            bioAuthLabel.text = "Face ID / Touch ID not available"
+            bioAuthLabel.text = NSLocalizedString("ptouch_face_id_unavailable", comment: "")
             bioSwitch.isUserInteractionEnabled = false
         }
+        titleLabel.text = NSLocalizedString("pscreen_lock", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

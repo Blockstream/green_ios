@@ -3,11 +3,16 @@ import UIKit
 
 class WelcomeBackViewController: UIViewController {
 
+    @IBOutlet weak var welcomeLabel: UILabel!
     let bioID = BiometricIDAuth()
-
     @IBOutlet weak var topButton: UIButton!
+    @IBOutlet weak var bottomButon: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        welcomeLabel.text = NSLocalizedString("pwelcome_back_to_your_bitcoin_wallet", comment: "")
+        topButton.setTitle(NSLocalizedString("penable_face_id", comment: ""), for: .normal)
+        bottomButon.setTitle(NSLocalizedString("pset_pin", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

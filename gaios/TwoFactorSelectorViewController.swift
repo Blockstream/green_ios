@@ -16,33 +16,33 @@ class TwoFactorSlectorViewController: UIViewController {
     @IBOutlet weak var secondArrow: UIImageView!
     @IBOutlet weak var thirdArrow: UIImageView!
     @IBOutlet weak var fourthArrow: UIImageView!
+    @IBOutlet weak var titleLabel: UILabel!
+
     lazy var buttons: [UIButton] = [firstButton, secondButton, thirdButton, fourthButton]
     lazy var iconImage: [UIImageView] = [firstImage, secondImage, thirdImage, fourthImage]
     lazy var arrowImage: [UIImageView] = [firstArrow, secondArrow, thirdArrow, fourthArrow]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         do {
             let json = try twoFactor?.getStatus()
             let methods = json!["methods"] as! NSArray
             for index in 0..<methods.count {
                 let method = methods[index] as! String
                 if(method == "email") {
-                    buttons[index].setTitle("Email", for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("pemail", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "email")
                 } else if (method == "sms") {
-                    buttons[index].setTitle("SMS", for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("psms", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "sms")
                 } else if (method == "gauth") {
-                    buttons[index].setTitle("Google Authenticator", for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("pgoogle_auth", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "gauth")
                 } else if (method == "phone") {
-                    buttons[index].setTitle("Phone Call", for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("pcall", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "phoneCall")
                 }
             }
-
             for index in methods.count..<buttons.count {
                 buttons[index].isHidden = true
                 iconImage[index].isHidden = true
@@ -51,6 +51,7 @@ class TwoFactorSlectorViewController: UIViewController {
         } catch {
            print("couldn't get status")
         }
+        titleLabel.text = NSLocalizedString("papprove_using", comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
@@ -60,16 +61,6 @@ class TwoFactorSlectorViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             let pair = sender as! (TwoFactorCall, String)
-            let method = pair.1
-            if(method == "sms") {
-                nextController.topTitle = TitleText.sms
-            } else if (method == "phone") {
-                nextController.topTitle = TitleText.phone
-            } else if (method == "email") {
-                nextController.topTitle = TitleText.email
-            } else if (method == "gauth") {
-                nextController.topTitle = TitleText.gauth
-            }
             nextController.twoFactor = pair.0
             nextController.hideButton = true
         }

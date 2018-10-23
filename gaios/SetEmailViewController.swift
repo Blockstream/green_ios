@@ -4,10 +4,10 @@ import NVActivityIndicatorView
 
 class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
 
-
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var getCodeButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,6 +15,8 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         textField.attributedPlaceholder = NSAttributedString(string: "email@domainm.com",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        getCodeButton.setTitle(NSLocalizedString("pget_code", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("penter_your_email_address", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -22,7 +22,6 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
     var labels: Array<UILabel> = Array<UILabel>()
     var indicator: UIView? = nil
     var hideButton = false
-    var topTitle = TitleText.email
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,13 +42,13 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
             if let json = try twoFactor?.getStatus() {
                 let method = json["method"] as! String
                 if (method == "sms") {
-                    topLabel.text = TitleText.sms.rawValue
+                    topLabel.text = NSLocalizedString(TitleText.sms.rawValue, comment: "")
                 } else if (method == "phone") {
-                    topLabel.text = TitleText.phone.rawValue
+                    topLabel.text = NSLocalizedString(TitleText.phone.rawValue, comment: "")
                 } else if (method == "gauth") {
-                    topLabel.text = TitleText.gauth.rawValue
+                    topLabel.text = NSLocalizedString(TitleText.gauth.rawValue, comment: "")
                 } else if (method == "email") {
-                    topLabel.text = TitleText.email.rawValue
+                    topLabel.text = NSLocalizedString(TitleText.email.rawValue, comment: "")
                 }
             }
         } catch {
@@ -172,8 +171,8 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
 }
 
 public enum TitleText: String {
-    case email = "Enter code sent to your email"
-    case sms = "Enter code received via SMS"
-    case phone = "Enter code received via phone call"
-    case gauth = "Enter your Google Authenticator code"
+    case email = "penter_code_sent_to_your_email"
+    case sms = "penter_code_received_via_sms"
+    case phone = "penter_code_received_via_phone_call"
+    case gauth = "penter_your_google_authenticator_code"
 }

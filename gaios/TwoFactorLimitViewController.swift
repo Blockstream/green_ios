@@ -9,6 +9,7 @@ class TwoFactorLimitViewController: UIViewController {
     @IBOutlet weak var limitButtonConstraint: NSLayoutConstraint!
     var fiat: Bool = true
     @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,8 +18,11 @@ class TwoFactorLimitViewController: UIViewController {
         setButton()
         if(!AccountStore.shared.isTwoFactorEnabled()) {
             setLimitButton.isEnabled = false
-            descriptionLabel.text = "You need to enable Two-Factor Authentication before setting the treshold"
+            descriptionLabel.text = NSLocalizedString("pyou_need_to_enable_two_factor", comment: "")
         }
+        titleLabel.text = NSLocalizedString("ptwo_factor_treshold", comment: "")
+        descriptionLabel.text = NSLocalizedString("ptwo_factor_treshold_description", comment: "")
+        setLimitButton.setTitle(NSLocalizedString("pset_limit", comment: ""), for: .normal)
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {

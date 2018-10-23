@@ -3,8 +3,19 @@ import UIKit
 
 class EnableTwoFactorViewController : UIViewController {
 
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var emailButton: UIButton!
+    @IBOutlet weak var smsButton: UIButton!
+    @IBOutlet weak var phoneCallButton: UIButton!
+    @IBOutlet weak var gauthButton: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        titleLabel.text = NSLocalizedString("ptwo_factor_authentication", comment: "")
+        emailButton.setTitle(NSLocalizedString("pemail", comment: ""), for: .normal)
+        smsButton.setTitle(NSLocalizedString("psms", comment: ""), for: .normal)
+        phoneCallButton.setTitle(NSLocalizedString("pcall", comment: ""), for: .normal)
+        gauthButton.setTitle(NSLocalizedString("pgoogle_auth", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -12,8 +12,8 @@ class NotificationStore {
     var localNotification: [String: NotificationItem] = [String: NotificationItem]()
     var allNotifications: [String: NotificationItem] = [String: NotificationItem]()
     var newNotificationCount = 0
-    let warringNoTwoFactor = "pyou_dont_have_two_factor"
-    let warringOneTwoFactor = "You have only one two factor method enabled, add a backup method to improve security!"
+    let warrningNoTwoFactor = NSLocalizedString("pyou_dont_have_two_factor", comment: "")
+    let warrningOneTwoFactor = NSLocalizedString("pyou_only_have_one_two_factor", comment: "")
 
     func getTransactions() {
         AccountStore.shared.getWallets(cached: true).done { (wallets: Array<WalletItem>) in
@@ -124,16 +124,19 @@ class NotificationStore {
 
     func createWelcomeNotification() -> NotificationItem {
         let date = Date()
-        return NotificationItem(date: date, title: "Welcome", text: "Thank you for downloading Green! please leave us a review when you get a chance.", id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
+        let localizedTitle = NSLocalizedString("pwelcome", comment: "")
+        let localizedMessage = NSLocalizedString("pthank_you_for_downloading_green", comment: "")
+        return NotificationItem(date: date, title: localizedTitle, text: localizedMessage, id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
     }
 
     func createWarningNotification() -> NotificationItem? {
         let date = Date()
         let twoFactorSettings = SettingsStore.shared.getTwoFactorWarning()
+        let localizedWarning = NSLocalizedString("pwarning", comment: "")
         if (!AccountStore.shared.isTwoFactorEnabled() && twoFactorSettings.0) {
-            return NotificationItem(date: date, title: "Warning!", text: warringNoTwoFactor, id: "warninghash1", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+            return NotificationItem(date: date, title: localizedWarning, text: warrningNoTwoFactor, id: "warninghash1", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
         } else if (AccountStore.shared.twoFactorsEnabledCount() == 1 &&  twoFactorSettings.1) {
-            return NotificationItem(date: date, title: "Warning!", text: warringOneTwoFactor, id: "warninghash2", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+            return NotificationItem(date: date, title: localizedWarning, text: warrningOneTwoFactor, id: "warninghash2", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
         }
         return nil
     }
@@ -169,11 +172,13 @@ class NotificationStore {
         var bodyText = ""
         let amountText = String.satoshiToBTC(satoshi: abs(amount))
         if(type != "outgoing") {
-            title = "Deposit"
-            bodyText = String(format: "You have received %@ BTC", amountText)
+            title = NSLocalizedString("pteposit", comment: "")
+            let localized = NSLocalizedString("pyou_have_received", comment: "")
+            bodyText = String(format: localized, amountText)
         } else {
-            title = "Confirmation"
-            bodyText = String(format: "Your  %@ BTC sent to %@ has been confirmed", amountText, counterparty)
+            title = NSLocalizedString("pconfirmation", comment: "")
+            let localized = NSLocalizedString("pyour_btc_sent_to", comment: "")
+            bodyText = String(format: localized, amountText, counterparty)
         }
 
         return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)

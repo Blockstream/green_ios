@@ -7,11 +7,19 @@ class EditTwoFactorViewController: UIViewController {
     @IBOutlet weak var smsSwitch: UISwitch!
     @IBOutlet weak var phoneSwitch: UISwitch!
     @IBOutlet weak var gauth: UISwitch!
-
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var emailLabel: UILabel!
+    @IBOutlet weak var smsLabel: UILabel!
+    @IBOutlet weak var phoneCallLabel: UILabel!
+    @IBOutlet weak var gauthLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        titleLabel.text = NSLocalizedString("ptwo_factor_settings", comment: "")
+        emailLabel.text = NSLocalizedString("pemail", comment: "")
+        smsLabel.text = NSLocalizedString("psms", comment: "")
+        phoneCallLabel.text = NSLocalizedString("pphone_call", comment: "")
+        gauthLabel.text = NSLocalizedString("pgauth", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

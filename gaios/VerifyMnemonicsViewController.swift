@@ -106,7 +106,8 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func updateLabels() {
-        topLabel.text = String(format: "What is the word at position %d ?", questionPosition + 1)
+        let localized = NSLocalizedString("pwhat_is_the_word_at_position", comment: "")
+        topLabel.text = String(format: "%@ %d ?",localized, questionPosition + 1)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -175,7 +176,8 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
             }
         } else {
             let size = CGSize(width: 30, height: 30)
-            startAnimating(size, message: "Wrong answer, try again!", messageFont: nil, type: NVActivityIndicatorType.blank)
+            let message = NSLocalizedString("pwrong_answer_try_again", comment: "")
+            startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
                 self.stopAnimating()
                 self.navigationController?.popViewController(animated: true)

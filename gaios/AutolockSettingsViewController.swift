@@ -7,10 +7,11 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
 
     @IBOutlet weak var tableView: UITableView!
     let autolockTypes: [AutoLock] = [AutoLock.minute, AutoLock.twoMinutes, AutoLock.fiveMinutes, AutoLock.tenMinutes, AutoLock.Custom]
-
     @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var unitTextField: UITextField!
     @IBOutlet weak var unitLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
@@ -20,6 +21,9 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
         updateUnitUI()
         hideKeyboardWhenTappedAround()
         warningLabel.isHidden = true
+        titleLabel.text = NSLocalizedString("pautolock_after", comment: "")
+        unitLabel.text = NSLocalizedString("pseconds", comment: "")
+        warningLabel.text = NSLocalizedString("p5seconds_minimum", comment: "")
     }
 
     func updateUnitUI() {

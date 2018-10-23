@@ -9,6 +9,7 @@ class SetPhoneViewController: UIViewController {
     var sms = false
     var phoneCall = false
     var onboarding = true
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,6 +18,8 @@ class SetPhoneViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         textField.attributedPlaceholder = NSAttributedString(string: "+1 123456789",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        getCodeButton.setTitle(NSLocalizedString("pget_code", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("penter_phone_number", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -14,6 +14,13 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var feeButton: UIButton!
     @IBOutlet weak var bottomLabel: UILabel!
 
+    @IBOutlet weak var titlelabel: UILabel!
+    @IBOutlet weak var hashTitle: UILabel!
+    @IBOutlet weak var dateTitle: UILabel!
+    @IBOutlet weak var feeTitle: UILabel!
+    @IBOutlet weak var amountTitle: UILabel!
+    @IBOutlet weak var memoTitle: UILabel!
+
     var transaction: TransactionItem? = nil
 
     override func viewDidLoad() {
@@ -31,10 +38,18 @@ class TransactionDetailViewController: UIViewController {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
         } else if (AccountStore.shared.getBlockheight() - (transaction?.blockheight)! < 6) {
             let blocks = AccountStore.shared.getBlockheight() - (transaction?.blockheight)! + 1
-            warniniglabel.text = String(format: "(%d/6) blocks confirmed", blocks)
+            let localizedConfirmed = NSLocalizedString("pblocks_confirmed", comment: "")
+            warniniglabel.text = String(format: "(%d/6) %@", blocks, localizedConfirmed)
         } else {
             warniniglabel.isHidden = true
         }
+        titlelabel.text = NSLocalizedString("ptransaction_details", comment: "")
+        hashTitle.text = NSLocalizedString("phash", comment: "")
+        dateTitle.text = NSLocalizedString("pdate", comment: "")
+        feeTitle.text = NSLocalizedString("pfee", comment: "")
+        amountTitle.text = NSLocalizedString("pamount", comment: "")
+        memoTitle.text = NSLocalizedString("pmemo", comment: "")
+        feeButton.setTitle(NSLocalizedString("pincrease_fee", comment: ""), for: .normal)
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {

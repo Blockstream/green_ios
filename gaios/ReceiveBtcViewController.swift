@@ -6,15 +6,18 @@ class ReceiveBtcViewController: UIViewController {
 
     @IBOutlet weak var walletAddressLabel: UILabel!
     @IBOutlet weak var walletQRCode: UIImageView!
-    var receiveAddress: String? = nil
-    var wallet: WalletItem? = nil
     @IBOutlet weak var amountTextfield: UITextField!
     @IBOutlet weak var estimateLabel: UILabel!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var fiatSwitchButton: UIButton!
+    @IBOutlet weak var typeLabel: UILabel!
+    @IBOutlet weak var amountLabel: UILabel!
+    @IBOutlet weak var receiveLabel: UILabel!
+
+    var receiveAddress: String? = nil
+    var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
     var amount_g: Double = 0
-    @IBOutlet weak var typeLabel: UILabel!
     var zoomView: UIView? = nil
 
     override func viewDidLoad() {
@@ -37,7 +40,9 @@ class ReceiveBtcViewController: UIViewController {
         walletQRCode.isUserInteractionEnabled = true
         walletQRCode.addGestureRecognizer(tap)
         NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
-
+        receiveLabel.text = NSLocalizedString("preceive", comment: "")
+        amountLabel.text = NSLocalizedString("pamount", comment: "")
+        shareButton.setTitle(NSLocalizedString("pshare_address", comment: ""), for: .normal)
     }
 
     @objc func newAddress(_ notification: NSNotification) {
@@ -48,14 +53,12 @@ class ReceiveBtcViewController: UIViewController {
                     receiveAddress = wallet?.address
                     walletAddressLabel.text = wallet?.address
                     updateQRCode(amount: amount_g)
-                    print("refresh address here")
                 }
             }
         }
     }
 
     @objc func zoomQR(recognizer: UITapGestureRecognizer) {
-        print("show QR Code")
         zoomView = UIView()
         zoomView!.frame = self.view.frame
         zoomView!.backgroundColor = UIColor.customMatrixGreen()
