@@ -18,10 +18,10 @@ class TwoFactorLimitViewController: UIViewController {
         setButton()
         if(!AccountStore.shared.isTwoFactorEnabled()) {
             setLimitButton.isEnabled = false
-            descriptionLabel.text = NSLocalizedString("pyou_need_to_enable_two_factor", comment: "")
+            descriptionLabel.text = NSLocalizedString("pyou_need_to_enable_twofactor", comment: "")
         }
-        titleLabel.text = NSLocalizedString("ptwo_factor_treshold", comment: "")
-        descriptionLabel.text = NSLocalizedString("ptwo_factor_treshold_description", comment: "")
+        titleLabel.text = NSLocalizedString("ptwofactor_treshold", comment: "")
+        descriptionLabel.text = NSLocalizedString("pyou_dont_need_two_factor_code", comment: "")
         setLimitButton.setTitle(NSLocalizedString("pset_limit", comment: ""), for: .normal)
     }
 

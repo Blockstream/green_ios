@@ -173,11 +173,11 @@ class NotificationStore {
         let amountText = String.satoshiToBTC(satoshi: abs(amount))
         if(type != "outgoing") {
             title = NSLocalizedString("pteposit", comment: "")
-            let localized = NSLocalizedString("pyou_have_received", comment: "")
+            let localized = NSLocalizedString("pyou_have_received_s_btc", comment: "")
             bodyText = String(format: localized, amountText)
         } else {
             title = NSLocalizedString("pconfirmation", comment: "")
-            let localized = NSLocalizedString("pyour_btc_sent_to", comment: "")
+            let localized = NSLocalizedString("pyour__s_btc_sent_to_s_has_been", comment: "")
             bodyText = String(format: localized, amountText, counterparty)
         }
 

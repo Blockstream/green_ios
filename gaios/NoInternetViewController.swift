@@ -10,7 +10,7 @@ class NoInternetViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         errorLabel.text = NSLocalizedString("perror", comment: "")
-        descriptionLabel.text = NSLocalizedString("pyou_are_not_connected", comment: "")
+        descriptionLabel.text = NSLocalizedString("pyou_are_not_connected_to_the", comment: "")
         bottomButton.setTitle(NSLocalizedString("prefresh", comment: ""), for: .normal)
     }
 

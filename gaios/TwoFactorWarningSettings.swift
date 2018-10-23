@@ -18,9 +18,9 @@ class TwoFactorWarningSettings: UIViewController {
         let settings = SettingsStore.shared.getTwoFactorWarning()
         noFactorSwitch.isOn = settings.0
         oneFactorSwitch.isOn = settings.1
-        topLabel.text = NSLocalizedString("ptwo_factor_warning", comment: "")
+        topLabel.text = NSLocalizedString("ptwofactor_warning", comment: "")
         noFactorLabel.text = NSLocalizedString("pno_two_factor_enabled", comment: "")
-        oneFactorLabel.text = NSLocalizedString("ponly_one_two_factor_enabled", comment: "")
+        oneFactorLabel.text = NSLocalizedString("ponly_one_twofactor_enabled", comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

@@ -15,7 +15,7 @@ class EditTwoFactorViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = NSLocalizedString("ptwo_factor_settings", comment: "")
+        titleLabel.text = NSLocalizedString("ptwofactor_settings", comment: "")
         emailLabel.text = NSLocalizedString("pemail", comment: "")
         smsLabel.text = NSLocalizedString("psms", comment: "")
         phoneCallLabel.text = NSLocalizedString("pphone_call", comment: "")

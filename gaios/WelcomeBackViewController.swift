@@ -10,7 +10,7 @@ class WelcomeBackViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        welcomeLabel.text = NSLocalizedString("pwelcome_back_to_your_bitcoin_wallet", comment: "")
+        welcomeLabel.text = NSLocalizedString("pwelcome_back_to_your_bitcoin", comment: "")
         topButton.setTitle(NSLocalizedString("penable_face_id", comment: ""), for: .normal)
         bottomButon.setTitle(NSLocalizedString("pset_pin", comment: ""), for: .normal)
     }

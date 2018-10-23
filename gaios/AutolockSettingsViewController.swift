@@ -23,7 +23,7 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
         warningLabel.isHidden = true
         titleLabel.text = NSLocalizedString("pautolock_after", comment: "")
         unitLabel.text = NSLocalizedString("pseconds", comment: "")
-        warningLabel.text = NSLocalizedString("p5seconds_minimum", comment: "")
+        warningLabel.text = NSLocalizedString("p5_seconds_minimum", comment: "")
     }
 
     func updateUnitUI() {

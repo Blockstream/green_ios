@@ -17,7 +17,7 @@ class EditScreenLockSettings: UIViewController {
                 bioAuthLabel.text = NSLocalizedString("pface_id", comment: "")
             }
         } else {
-            bioAuthLabel.text = NSLocalizedString("ptouch_face_id_unavailable", comment: "")
+            bioAuthLabel.text = NSLocalizedString("ptouchface_id_not_available", comment: "")
             bioSwitch.isUserInteractionEnabled = false
         }
         titleLabel.text = NSLocalizedString("pscreen_lock", comment: "")

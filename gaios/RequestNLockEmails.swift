@@ -10,7 +10,7 @@ class RequestNLockEmails : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         titleLabel.text = NSLocalizedString("prequest_nlocktime", comment: "")
-        descriptionLabel.text = NSLocalizedString("prequest_will_send", comment: "")
+        descriptionLabel.text = NSLocalizedString("prequest_will_send_nlocktimezip", comment: "")
         requestButton.setTitle(NSLocalizedString("prequest", comment: ""), for: .normal)
     }
     override func viewWillAppear(_ animated: Bool) {
