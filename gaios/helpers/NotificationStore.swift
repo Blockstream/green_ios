@@ -25,7 +25,7 @@ class NotificationStore {
                             print(tx)
                             let transaction = tx as! [String : Any]
                             let blockHeight = transaction["block_height"] as! UInt32
-                            if (AccountStore.shared.getBlockheight() - blockHeight < 6) {
+                            if (AccountStore.shared.getBlockheight() - blockHeight < 1) {
                                 continue
                             }
                             let satoshi:Int = transaction["satoshi"] as! Int
