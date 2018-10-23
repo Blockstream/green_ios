@@ -17,10 +17,12 @@ class TwoFactorSlectorViewController: UIViewController {
     @IBOutlet weak var thirdArrow: UIImageView!
     @IBOutlet weak var fourthArrow: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var backButton: UIButton!
 
     lazy var buttons: [UIButton] = [firstButton, secondButton, thirdButton, fourthButton]
     lazy var iconImage: [UIImageView] = [firstImage, secondImage, thirdImage, fourthImage]
     lazy var arrowImage: [UIImageView] = [firstArrow, secondArrow, thirdArrow, fourthArrow]
+    var hideButton: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +54,7 @@ class TwoFactorSlectorViewController: UIViewController {
            print("couldn't get status")
         }
         titleLabel.text = NSLocalizedString("papprove_using", comment: "")
+        backButton.isHidden = hideButton
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

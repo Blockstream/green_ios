@@ -125,6 +125,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         }
         if let nextController = segue.destination as? TwoFactorSlectorViewController {
             nextController.twoFactor = sender as? TwoFactorCall
+            nextController.hideButton = true
         }
     }
 

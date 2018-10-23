@@ -3468,6 +3468,7 @@
                         <viewLayoutGuide key="safeArea" id="vPV-9a-6OS"/>
                     </view>
                     <connections>
+                        <outlet property="backButton" destination="UVr-Ev-Jtr" id="e6U-Lo-sB9"/>
                         <outlet property="firstArrow" destination="q1k-X9-m97" id="eIK-ud-OM4"/>
                         <outlet property="firstButton" destination="r10-nP-55O" id="Emo-Sw-WoL"/>
                         <outlet property="firstImage" destination="q6Y-JF-mB1" id="icv-as-qhj"/>
