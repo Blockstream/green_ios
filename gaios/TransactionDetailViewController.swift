@@ -32,7 +32,7 @@ class TransactionDetailViewController: UIViewController {
         dateLabel.text = transaction?.date
         feeButton.isHidden = true
         bottomLabel.isHidden = true
-        if(transaction?.blockheight == 0) {
+        if(transaction?.blockheight == 0 && transaction?.type == "outgoing") {
             feeButton.isHidden = false
             bottomLabel.isHidden = false
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
