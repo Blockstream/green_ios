@@ -54,10 +54,6 @@ class TwoFactorSlectorViewController: UIViewController {
         titleLabel.text = NSLocalizedString("papprove_using", comment: "")
     }
 
-    @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
-    }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             let pair = sender as! (TwoFactorCall, String)
@@ -92,6 +88,10 @@ class TwoFactorSlectorViewController: UIViewController {
         } catch {
             print("couldn't get status")
         }
-
     }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+
 }

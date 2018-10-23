@@ -3425,6 +3425,9 @@
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="12" minY="9" maxX="12" maxY="9"/>
                                 <state key="normal" image="backarrow"/>
+                                <connections>
+                                    <action selector="backButtonClicked:" destination="hgO-EC-JdX" eventType="touchUpInside" id="7oc-YC-peA"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
