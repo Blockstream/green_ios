@@ -241,23 +241,57 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
             if metadataObj.stringValue != nil {
                 let uri = metadataObj.stringValue
                 print(uri)
-                do {
-                    var details = [String: Any]()
-                    var toAddress = [String: Any]()
-                    toAddress["address"] = uri
-                    details["addressees"] = [toAddress]
-                    let payload = try getSession().createTransaction(details: details)
-                    //pass payload to next
-                    self.captureSession.stopRunning()
-                    self.videoPreviewLayer?.removeFromSuperlayer()
-                    self.qrCodeFrameView?.frame = CGRect.zero
-                    self.performSegue(withIdentifier: "next", sender: self)
-                } catch {
+                if (!parseBitcoinUri(uri!)) {
                     print("something went wrong tryign to print payload")
+                    return;
                 }
+                self.captureSession.stopRunning()
+                self.videoPreviewLayer?.removeFromSuperlayer()
+                self.qrCodeFrameView?.frame = CGRect.zero
+                self.performSegue(withIdentifier: "next", sender: self)
             }
         }
         //captureSession.stopRunning()
+    }
+    
+    func parseBitcoinUri(_ uri: String) -> Bool {
+        let blockchainInfoScheme = "bitcoin://";
+        let correctScheme = "bitcoin:";
+        var schemeSpecific: String?
+        var amount : Double?
+        var address : String?
+        
+        if (uri.starts(with: blockchainInfoScheme)) {
+            schemeSpecific = String(uri.prefix(blockchainInfoScheme.count))
+        } else if (uri.starts(with: correctScheme)) {
+            schemeSpecific = String(uri.prefix(correctScheme.count))
+        } else {
+            address = uri
+        }
+        
+        if ((schemeSpecific) != nil) {
+            var splitted = schemeSpecific?.components(separatedBy: "?")
+            if (splitted?.count == 0) {
+                return false
+            }
+            address = splitted![0]
+            if ((splitted?.count)! > 1) {
+                let params = splitted![1].components(separatedBy: "&")
+                for param in params {
+                    let keyvalue = param.components(separatedBy: "=")
+                    if (keyvalue.count > 0 && keyvalue[0] == "amount") {
+                        amount = Double(keyvalue[1])
+                    }
+                }
+            }
+        }
+        // check if address is valid before copy to global vars with lib Wally
+        if (address == nil) {
+            return false
+        }
+        self.textfield.text = address
+        self.prefillAmount = amount!
+        return true
     }
 
 }
