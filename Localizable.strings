@@ -104,6 +104,7 @@
 "pface_id" = "Face ID";
 "pfee" = "Fee";
 "pfee_increase" = "Fee increase";
+"pfee_rate_is_below_minimum" = "Fee rate is below minimum accepted fee rate";
 "pfeerate_must_be_higher_than" = "Feerate must be higher than minimum relay feerate";
 "pfee__size_bytes__fee_per_kb" = "Fee / Size (bytes) / Fee per kB";
 "pfiat_exchange_currency" = "Fiat exchange currency";
@@ -128,6 +129,7 @@
 "pi_confirm_i_have_read_and" = "I confirm I have read and understood the above message";
 "pif_you_increase_the_fee_now_to" = "If you increase the fee now to the recommended level, the transaction will be expected to confirm after %1$d %2$@.";
 "pimportant_message" = "Important Message";
+"pinconsistent_data_provided_for" = "Inconsistent data provided for enabling gauth";
 "pincrease_fee" = "Increase fee";
 "pinsufficient_funds" = "Insufficient funds";
 "pinvalid_address" = "Invalid address";
@@ -171,6 +173,7 @@
 "pnlocktime_transaction_request" = "nLocktime transaction request sent";
 "pno_attempts_remaining" = "No attempts remaining";
 "pno_bloom_info_available" = "No bloom info available.";
+"pno_outputs" = "No outputs";
 "pno_peers_connected" = "No Peers Connected";
 "pno_pin_provided_exiting" = "No PIN provided, exiting.";
 "pnormal" = "Normal";
@@ -247,6 +250,7 @@
 "pseconds" = "seconds";
 "pselect_network" = "Select network";
 "psend_all_funds" = "Send all funds";
+"psend_all_requires_a_single" = "Send all requires a single output";
 "psending" = "SENDING";
 "psend" = "Send";
 "pset_a_new_pin" = "Set a new PIN";
