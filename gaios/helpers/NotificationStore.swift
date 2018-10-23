@@ -24,15 +24,15 @@ class NotificationStore {
                         for tx in list {
                             print(tx)
                             let transaction = tx as! [String : Any]
+                            let blockHeight = transaction["block_height"] as! UInt32
+                            if (AccountStore.shared.getBlockheight() - blockHeight < 6) {
+                                continue
+                            }
                             let satoshi:Int = transaction["satoshi"] as! Int
                             let hash = transaction["txhash"] as! String
                             let dateString = transaction["created_at"] as! String
                             let date = Date.dateFromString(dateString: dateString)
                             let type = transaction["type"] as! String
-                            if(type == "outgoing") {
-                                print(tx)
-                                print("blah")
-                            }
                             let adressees = transaction["addressees"] as! [String]
                             var counterparty = ""
                             if (adressees.count > 0) {
