@@ -1,4 +1,3 @@
-
 "prestore" = "Restore";
 "psave" = "Save";
 "penter" = "Enter";
@@ -297,7 +296,7 @@
 "pi_agree_to_the" = "I agree to the";
 "pterms_of_service" = "Terms of Service";
 "pnext" = "Next";
-"pgreen_is_noncustodial_bitcoin" = "GREEN is non-custodial Bitcoin wallet"; //GREEN must be uppercase
+"pgreen_is_noncustodial_bitcoin" = "GREEN is non-custodial Bitcoin wallet";
 "pyou_have_full_control_of_your_funds" = "You have full controll of your funds";
 "psave_your_recovery_seed" = "Save your recovery seed";
 "pwrite_down_your_seed_words_on" = "Write down your seed words on paper or cold storage devoice";
