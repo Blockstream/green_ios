@@ -4,7 +4,6 @@
 "pqr_scanner" = "QR Scanner";
 "pcreate" = "Create";
 "pi_secured_the_passphrase_and_i" = "I secured the passphrase and I have read the ToS";
-"pterms_of_service" = "Terms of Service";
 "ppin" = "PIN";
 "pdisconnected" = "Disconnected";
 "pnew_transaction" = "New transaction";
@@ -254,7 +253,6 @@
 "pnfc_logo" = "NFC Logo";
 "pshare" = "Share";
 "psettings" = "Settings";
-"pnotifications" = "Notifications";
 "plog_out" = "Log Out";
 "pversion" = "Version";
 "pterms_of_use" = "Terms of Use";
