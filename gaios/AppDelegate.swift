@@ -247,12 +247,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func connect() {
         DispatchQueue.global(qos: .background).async {
             wrap {
-                try getSession().connect(network: getNetwork(), debug: true)
+                let netset = getNetworkSettings()
+                if(netset.ipAddress != "" && netset.portNumber != "") {
+                    let uri = String(format: "socks5://%@:%@/", netset.ipAddress, netset.portNumber)
+                    try getSession().connectWithProxy(network: getNetwork(), proxy_uri: uri, use_tor: netset.torEnabled, debug: true)
+                } else {
+                    try getSession().connect(network: getNetwork(), debug: true)
+                }
             }.done {
                 print("Connected")
             }.catch { error in
                 DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                    //self.connect()
+                    self.connect()
                 }
             }
         }
