@@ -328,13 +328,15 @@ class AccountStore {
                 print(accounts)
                 for acc in accounts {
                     let pointer = acc as! Int
-                    DispatchQueue.main.async {
-                        let p = UInt32(pointer)
-                        do {
-                            self.m_wallets[pointer].address = try getSession().getReceiveAddress(subaccount: p)
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "addressChanged"), object: nil, userInfo: ["pointer" : pointer])
-                        } catch {
-                            print("couldn't get new address")
+                    let p = UInt32(pointer)
+                    DispatchQueue.global(qos: .background).async {
+                        wrap {
+                            try getSession().getReceiveAddress(subaccount: p)
+                        }.done { address in
+                            DispatchQueue.main.async {
+                                self.m_wallets[pointer].address = address
+                                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "addressChanged"), object: nil, userInfo: ["pointer" : pointer])
+                            }
                         }
                     }
                 }
