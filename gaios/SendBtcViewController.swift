@@ -216,9 +216,9 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
         var address : String?
         
         if (uri.starts(with: blockchainInfoScheme)) {
-            schemeSpecific = String(uri.prefix(blockchainInfoScheme.count))
+            schemeSpecific = String(uri.suffix(uri.count - blockchainInfoScheme.count))
         } else if (uri.starts(with: correctScheme)) {
-            schemeSpecific = String(uri.prefix(correctScheme.count))
+            schemeSpecific = String(uri.suffix(uri.count - correctScheme.count))
         } else {
             address = uri
         }
@@ -244,7 +244,9 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
             return false
         }
         self.textfield.text = address
-        self.prefillAmount = amount!
+        if (amount != nil) {
+            self.prefillAmount = amount!
+        }
         return true
     }
 
