@@ -1017,7 +1017,7 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="qi9-Hk-q1Y" firstAttribute="centerX" secondItem="soW-Tu-XRH" secondAttribute="centerX" id="4J5-6X-f5O"/>
                             <constraint firstItem="53d-UR-mMD" firstAttribute="leading" secondItem="uis-0X-sLw" secondAttribute="trailing" constant="2" id="4iy-jh-KoL"/>
@@ -3729,19 +3729,21 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KFn-tp-Pa3">
-                                <rect key="frame" x="0.0" y="175" width="320" height="750"/>
+                                <rect key="frame" x="0.0" y="175" width="320" height="323"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="north" translatesAutoresizingMaskIntoConstraints="NO" id="oiR-TU-EwA">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="750"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="323"/>
                                     </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="scan" translatesAutoresizingMaskIntoConstraints="NO" id="5lz-vU-al3">
-                                        <rect key="frame" x="-27.5" y="187.5" width="375" height="375"/>
+                                        <rect key="frame" x="95.5" y="96.5" width="130.5" height="130"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="5lz-vU-al3" secondAttribute="height" multiplier="1:1" id="AWm-9I-SNf"/>
+                                            <constraint firstAttribute="height" constant="130" id="Vp5-N8-uST"/>
+                                            <constraint firstAttribute="width" constant="130" id="hIS-Vf-q9s"/>
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scan recepient's QR code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2fA-eI-Yvz">
-                                        <rect key="frame" x="70" y="572.5" width="180.5" height="18"/>
+                                        <rect key="frame" x="70" y="16" width="180.5" height="18"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -3749,7 +3751,6 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="2fA-eI-Yvz" firstAttribute="top" secondItem="5lz-vU-al3" secondAttribute="bottom" constant="10" id="2yo-uw-LdY"/>
                                     <constraint firstItem="oiR-TU-EwA" firstAttribute="top" secondItem="KFn-tp-Pa3" secondAttribute="top" id="NS4-8Z-AQH"/>
                                     <constraint firstAttribute="bottom" secondItem="oiR-TU-EwA" secondAttribute="bottom" id="RgC-ud-kI1"/>
                                     <constraint firstItem="oiR-TU-EwA" firstAttribute="leading" secondItem="KFn-tp-Pa3" secondAttribute="leading" id="W17-Wo-Nec"/>
@@ -3758,7 +3759,7 @@
                                     <constraint firstItem="2fA-eI-Yvz" firstAttribute="centerX" secondItem="KFn-tp-Pa3" secondAttribute="centerX" id="cLa-7i-gna"/>
                                     <constraint firstItem="5lz-vU-al3" firstAttribute="centerY" secondItem="KFn-tp-Pa3" secondAttribute="centerY" id="crt-FO-dKr"/>
                                     <constraint firstItem="5lz-vU-al3" firstAttribute="centerX" secondItem="KFn-tp-Pa3" secondAttribute="centerX" id="fZt-Eg-JRQ"/>
-                                    <constraint firstItem="5lz-vU-al3" firstAttribute="height" secondItem="oiR-TU-EwA" secondAttribute="height" multiplier="0.5" id="nwJ-nq-bsl"/>
+                                    <constraint firstItem="2fA-eI-Yvz" firstAttribute="top" secondItem="KFn-tp-Pa3" secondAttribute="top" constant="16" id="p4s-0x-ANd"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z6Y-bU-qR2">
@@ -3800,7 +3801,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owv-rr-Wjs">
-                                <rect key="frame" x="0.0" y="925" width="320" height="106"/>
+                                <rect key="frame" x="0.0" y="498" width="320" height="106"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yKw-zw-wMj">
                                         <rect key="frame" x="16" y="16" width="288" height="42"/>
@@ -3923,7 +3924,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="454" width="288" height="20.5"/>
+                                <rect key="frame" x="16" y="454" width="288" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -5876,6 +5877,9 @@
         <namedColor name="customTitaniumDark">
             <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.11764705882352941" green="0.13725490196078433" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -5888,13 +5892,13 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="rpv-sH-2b4"/>
-        <segue reference="eGI-fa-57A"/>
+        <segue reference="Pqg-Zu-9Zd"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="Euy-K3-Vvj"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>
         <segue reference="ZM7-6x-yYR"/>
-        <segue reference="fhM-Q9-pGm"/>
+        <segue reference="wGg-ef-t0T"/>
     </inferredMetricsTieBreakers>
 </document>
