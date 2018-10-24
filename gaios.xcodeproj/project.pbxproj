@@ -64,6 +64,8 @@
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
+		097D20C621804CD00089C379 /* Bip39Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C521804CD00089C379 /* Bip39Helper.swift */; };
+		097D20C82180503B0089C379 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C72180503B0089C379 /* Trie.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
 		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
@@ -176,6 +178,8 @@
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
+		097D20C521804CD00089C379 /* Bip39Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bip39Helper.swift; sourceTree = "<group>"; };
+		097D20C72180503B0089C379 /* Trie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trie.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
 		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
@@ -298,6 +302,8 @@
 				0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */,
 				09DA612520E73A2300C3EA03 /* String+random.swift */,
 				0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */,
+				097D20C521804CD00089C379 /* Bip39Helper.swift */,
+				097D20C72180503B0089C379 /* Trie.swift */,
 				09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */,
 				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
 				092D05AE2123E27A00B9B7CD /* NotificationStore.swift */,
@@ -761,6 +767,7 @@
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */,
 				0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */,
+				097D20C82180503B0089C379 /* Trie.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
 				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,
@@ -813,6 +820,7 @@
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
+				097D20C621804CD00089C379 /* Bip39Helper.swift in Sources */,
 				098192832176D05500D8434F /* CustomApplication.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
