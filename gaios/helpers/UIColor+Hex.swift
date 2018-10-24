@@ -11,7 +11,7 @@ extension UIColor {
     }
 
     class func customTitaniumDark() -> UIColor {
-        return UIColor(red:30.0/255.0, green:35.0/255.0, blue:41.0/255.0, alpha:1);
+        return UIColor(named: "customTitaniumDark")!
     }
 
     class func customTitaniumMedium() -> UIColor {

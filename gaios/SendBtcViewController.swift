@@ -2,13 +2,11 @@ import Foundation
 import UIKit
 import AVFoundation
 
-class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SendBtcViewController: UIViewController {
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var QRCodeReader: UIView!
-    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var topImage: UIImageView!
-    @IBOutlet weak var header: UIView!
     var prefillAmount:Double = 0
     @IBOutlet weak var bottomButton: UIButton!
 
@@ -42,11 +40,6 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         let nib = UINib(nibName: "WalletCard", bundle: nil)
-
-        tableView.tableFooterView = UIView()
-        tableView.register(nib, forCellReuseIdentifier: "walletCard")
-        tableView.separatorColor = UIColor.clear
-        tableView.tableHeaderView = UIView(frame: CGRect(origin: tableView.frame.origin, size: CGSize(width: 0.0, height: 18)))
         let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = topImage.bounds
@@ -60,14 +53,6 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
         self.QRCodeReader.addGestureRecognizer(gesture)
         QRCodeReader.isUserInteractionEnabled = true
-        AccountStore.shared.getWallets(cached: true).done { (accs:Array<WalletItem>) in
-            self.wallets = accs.reversed()
-            self.tableView.reloadData()
-        }
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.isUserInteractionEnabled = true
-        tableView.allowsSelection = true
         navigationController?.navigationBar.tintColor = UIColor.white
         hideKeyboardWhenTappedAround()
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
@@ -100,48 +85,12 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
         bottomButton.layoutIfNeeded()
         updateButton()
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        //scan()
+    }
+
+    @objc func someAction(_ sender:UITapGestureRecognizer) {
         scan()
-    }
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    {
-        return 65;
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return wallets.count
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let wallet = wallets[indexPath.row]
-        textfield.text = wallet.address
-        updateButton()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "walletCard", for: indexPath) as! WalletTableCell
-        let a = wallets[indexPath.row]
-        cell.name.text = a.name
-        cell.balance.text = String.satoshiToBTC(satoshi: a.balance)
-        cell.backgroundColor = UIColor.clear
-        let shadowPath = UIBezierPath(rect: CGRect(x: -5,
-                                                   y: -5,
-                                                   width:  cell.mainContent.frame.size.width + 5,
-                                                   height:  75))
-        cell.mainContent.layer.masksToBounds = false
-        cell.mainContent.layer.shadowColor = UIColor.black.cgColor
-        cell.mainContent.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        cell.mainContent.layer.shadowOpacity = 0.5
-        cell.mainContent.layer.shadowPath = shadowPath.cgPath
-        cell.mainContent.cornerRadius = 5
-        cell.layer.zPosition = CGFloat(indexPath.row)
-        return cell;
-
-    }
-
-    @objc func someAction(_ sender:UITapGestureRecognizer){
-
-        scan()
+        sender.isEnabled = false
     }
 
     func scan() {
@@ -219,6 +168,11 @@ class SendBtcViewController: UIViewController, UITableViewDelegate, UITableViewD
             nextController.selectedType = TransactionType.BTC
         }
     }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+
 }
 
 extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {

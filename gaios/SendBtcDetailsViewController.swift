@@ -370,4 +370,9 @@ class SendBtcDetailsViewController: UIViewController {
         customFeeTextField.becomeFirstResponder()
         updatePriorityButtons()
     }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+
 }
