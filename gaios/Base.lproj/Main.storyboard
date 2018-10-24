@@ -38,7 +38,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="r4T-PV-5vR">
                                 <rect key="frame" x="0.0" y="20" width="320" height="488"/>
-                                <color key="backgroundColor" red="0.1215686275" green="0.1333333333" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" name="customTitaniumDark"/>
                                 <view key="tableHeaderView" contentMode="scaleToFill" id="RIv-03-SQg">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -5899,6 +5899,6 @@
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>
         <segue reference="ZM7-6x-yYR"/>
-        <segue reference="wGg-ef-t0T"/>
+        <segue reference="fhM-Q9-pGm"/>
     </inferredMetricsTieBreakers>
 </document>
