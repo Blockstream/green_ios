@@ -1,7 +1,7 @@
 sources = ['../include/amount.hpp',
            'amount.cpp',
-           '../include/assertion.hpp',
            'assertion.cpp',
+           'assertion.hpp',
            'autobahn_wrapper.hpp',
            'boost_wrapper.hpp',
            'containers.hpp',
@@ -9,7 +9,8 @@ sources = ['../include/amount.hpp',
            'exception.cpp',
            'exception.hpp',
            'ffi_c.cpp',
-           '../include/ga_wally.hpp',
+           'ga_wally.cpp',
+           'ga_wally.hpp',
            '../include/network_parameters.hpp',
            '../include/session.hpp',
            'ga_session.cpp',
@@ -22,13 +23,17 @@ sources = ['../include/amount.hpp',
            'memory.hpp',
            'network_parameters.cpp',
            'session.cpp',
+           'signer.cpp',
+           'signer.hpp',
            'transaction_utils.cpp',
            'transaction_utils.hpp',
            '../include/twofactor.hpp',
            'twofactor.cpp',
            'twofactor_calls.hpp',
            'utils.hpp',
-           'utils.cpp']
+           'utils.cpp',
+           'xpub_hdkey.cpp',
+           'xpub_hdkey.hpp']
 
 headers = ['../include/common.h',
            '../include/containers.h',
@@ -50,7 +55,7 @@ if clang_tidy.found()
                    depends : fix_compile_commands)
 endif
 
-dependencies = subproject_deps + [atomic_dep, m_dep, threads_dep, dl_dep, ws2_dep, bcrypt_dep, ssp_dep]
+dependencies = subproject_deps + [atomic_dep, m_dep, threads_dep, dl_dep, ws2_dep, bcrypt_dep, ssp_dep, log_dep]
 
 local_link_args = []
 link_whole = []

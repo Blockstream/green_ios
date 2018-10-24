@@ -1,201 +1,202 @@
-#include <gsl/span>
-
 #include "boost_wrapper.hpp"
 
-#include "include/assertion.hpp"
+#include "assertion.hpp"
 #include "include/session.hpp"
 #include "memory.hpp"
 #include "transaction_utils.hpp"
 #include "utils.hpp"
+#include "xpub_hdkey.hpp"
 
 namespace ga {
 namespace sdk {
-    static const std::array<unsigned char, EC_SIGNATURE_LEN> DUMMY_GA_SIG
-        = { { 0xff, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
-            0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0xff, 0x7f, 0x7f,
-            0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
-            0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f } };
-    static const std::array<unsigned char, 75> DUMMY_GA_SIG_DER_PUSH = { { 0x00, 0x49, 0x30, 0x46, 0x02, 0x21, 0x00,
-        0xff, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
-        0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x02, 0x21, 0x00, 0xff,
-        0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f,
-        0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x01 } };
+    // Dummy signatures are needed for correctly sizing transactions. If our signer supports
+    // low-R signatures, we estimate on a 71 byte signature, and occasionally produce 70 byte
+    // signatures. Otherwise, we estimate on 72 bytes and occasionally produce 70 or 71 byte
+    // signatures. Worst-case overestimation is therefore 2 bytes per input * 2 sigs, or
+    // 1 vbyte per input for segwit transactions.
+
+    // We construct our dummy sigs R, S from OP_SUBSTR/OP_INVALIDOPCODE.
+#define SIG_SLED(INITIAL, B) INITIAL, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B
+#define SIG_BYTES(INITIAL, B) SIG_SLED(INITIAL, B), SIG_SLED(B, B)
+
+#define SIG_HIGH SIG_BYTES(OP_INVALIDOPCODE, OP_SUBSTR)
+#define SIG_LOW SIG_BYTES(OP_SUBSTR, OP_SUBSTR)
+
+#define SIG_72(INITIAL, B) SIG_HIGH, SIG_HIGH
+#define SIG_71(INITIAL, B) SIG_LOW, SIG_HIGH
+
+    static const ecdsa_sig_t DUMMY_GA_SIG = { { SIG_HIGH, SIG_HIGH } };
+    static const ecdsa_sig_t DUMMY_GA_SIG_LOW_R = { { SIG_LOW, SIG_HIGH } };
+
+    // DER encodings of the above
+    static const std::vector<unsigned char> DUMMY_GA_SIG_DER_PUSH
+        = { { 0x00, 0x49, 0x30, 0x46, 0x02, 0x21, 0x00, SIG_HIGH, 0x02, 0x21, 0x00, SIG_HIGH, 0x01 } };
+    static const std::vector<unsigned char> DUMMY_GA_SIG_DER_PUSH_LOW_R
+        = { { 0x00, 0x49, 0x30, 0x45, 0x02, 0x20, SIG_LOW, 0x02, 0x21, 0x00, SIG_HIGH, 0x01 } };
+
     static const std::array<unsigned char, 3> OP_0_PREFIX = { { 0x00, 0x01, 0x00 } };
 
-    namespace {
-        static wally_ext_key_ptr ga_pub_key(const network_parameters& net_params,
-            const std::array<uint32_t, 32>& gait_path, uint32_t subaccount, uint32_t pointer)
-        {
-            using bytes = std::vector<unsigned char>;
-
-            GA_SDK_RUNTIME_ASSERT(!net_params.chain_code().empty());
-            GA_SDK_RUNTIME_ASSERT(!net_params.pub_key().empty());
-
-            // FIXME: cache the top level keys
-            const auto dcc_bytes = bytes_from_hex(net_params.chain_code());
-            const auto dpk_bytes = bytes_from_hex(net_params.pub_key());
-
-            ext_key* p;
-            uint32_t version = net_params.main_net() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
-            bip32_key_init_alloc(version, 0, 0, dcc_bytes, dpk_bytes, bytes{}, bytes{}, bytes{}, &p);
-
-            wally_ext_key_ptr server_pub_key{ p };
-
-            const uint32_t path_prefix = subaccount != 0 ? 3 : 1;
-            std::vector<uint32_t> path(gait_path.size() + 1);
-            init_container(path, gsl::make_span(&path_prefix, 1), gait_path);
-
-            if (subaccount != 0) {
-                path.push_back(subaccount);
-            }
-            path.push_back(pointer);
-
-            return derive_key(server_pub_key, path, true);
-        }
-    } // namespace
-
-    std::array<unsigned char, HASH160_LEN + 1> p2sh_address_from_bytes(
-        const network_parameters& net_params, const std::vector<unsigned char>& script)
+    static script_type get_script_type_from_address_type(const std::string& addr_type)
     {
-        std::array<unsigned char, HASH160_LEN> hash;
+        if (addr_type == address_type::csv)
+            return script_type::p2sh_p2wsh_csv_fortified_out;
+        if (addr_type == address_type::p2wsh)
+            return script_type::p2sh_p2wsh_fortified_out;
+        GA_SDK_RUNTIME_ASSERT(addr_type == address_type::p2sh);
+        return script_type::p2sh_fortified_out;
+    }
+
+    inline auto p2sh_address_from_bytes(const network_parameters& net_params, byte_span_t script)
+    {
         std::array<unsigned char, HASH160_LEN + 1> addr;
-        hash160(script, hash);
+        const auto hash = hash160(script);
         addr[0] = net_params.btc_p2sh_version();
         std::copy(hash.begin(), hash.end(), addr.begin() + 1);
         return addr;
     }
 
-    std::array<unsigned char, HASH160_LEN + 1> p2sh_p2wsh_address_from_bytes(
-        const network_parameters& net_params, const std::vector<unsigned char>& script)
+    inline auto p2sh_p2wsh_address_from_bytes(const network_parameters& net_params, byte_span_t script)
     {
-        std::vector<unsigned char> witness(SHA256_LEN + 2);
-        GA_SDK_RUNTIME_ASSERT(witness_program_from_bytes(script, WALLY_SCRIPT_SHA256, witness) == witness.size());
-        return p2sh_address_from_bytes(net_params, witness);
+        return p2sh_address_from_bytes(net_params, witness_program_from_bytes(script, WALLY_SCRIPT_SHA256));
+    }
+
+    std::string get_address_from_script(
+        const network_parameters& net_params, byte_span_t script, const std::string& addr_type)
+    {
+        if (addr_type == address_type::p2sh) {
+            return base58check_from_bytes(p2sh_address_from_bytes(net_params, script));
+        } else if (addr_type == address_type::p2wsh || addr_type == address_type::csv) {
+            return base58check_from_bytes(p2sh_p2wsh_address_from_bytes(net_params, script));
+        }
+        GA_SDK_RUNTIME_ASSERT(false);
+        __builtin_unreachable();
     }
 
     std::vector<unsigned char> output_script_for_address(
         const network_parameters& net_params, const std::string& address)
     {
-        std::vector<unsigned char> ret;
         if (boost::starts_with(address, net_params.bech32_prefix())) {
-            std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2WSH_LEN> script;
-            size_t written = addr_segwit_to_bytes(address, net_params.bech32_prefix(), 0, script);
-
-            GA_SDK_RUNTIME_ASSERT(written == WALLY_SCRIPTPUBKEY_P2WSH_LEN || written == WALLY_SCRIPTPUBKEY_P2WPKH_LEN);
-            GA_SDK_RUNTIME_ASSERT(script[0] == 0); // Must be a segwit v0 script
-            ret.assign(std::begin(script), std::begin(script) + written);
+            // Segwit v0 P2WPKH or P2WSH
+            return addr_segwit_v0_to_bytes(address, net_params.bech32_prefix());
         } else {
-            std::array<unsigned char, 1 + HASH160_LEN + BASE58_CHECKSUM_LEN> sc;
-            const size_t written = base58_to_bytes(address, BASE58_FLAG_CHECKSUM, sc);
-            GA_SDK_RUNTIME_ASSERT(written == 1 + HASH160_LEN);
-            const auto script_hash = gsl::make_span(sc.data() + 1, written - 1);
+            // Base58 encoded bitcoin address
+            const auto addr_bytes = base58check_to_bytes(address);
+            GA_SDK_RUNTIME_ASSERT(addr_bytes.size() == 1 + HASH160_LEN);
+            const auto script_hash = gsl::make_span(addr_bytes).subspan(1, HASH160_LEN);
 
-            if (sc.front() == net_params.btc_p2sh_version()) {
-                std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2SH_LEN> script;
-                GA_SDK_RUNTIME_ASSERT(scriptpubkey_p2sh_from_bytes(script_hash, 0, script) == script.size());
-                ret.assign(std::begin(script), std::end(script));
-            } else if (sc.front() == net_params.btc_version()) {
-                std::array<unsigned char, WALLY_SCRIPTPUBKEY_P2PKH_LEN> script;
-                GA_SDK_RUNTIME_ASSERT(scriptpubkey_p2pkh_from_bytes(script_hash, 0, script) == script.size());
-                ret.assign(std::begin(script), std::end(script));
+            if (addr_bytes.front() == net_params.btc_p2sh_version()) {
+                return scriptpubkey_p2sh_from_hash160(script_hash);
+            } else if (addr_bytes.front() == net_params.btc_version()) {
+                return scriptpubkey_p2pkh_from_hash160(script_hash);
             } else {
                 GA_SDK_RUNTIME_ASSERT(false); // Unknown address version
+                __builtin_unreachable();
             }
         }
-        return ret;
     }
 
-    std::vector<unsigned char> output_script(const network_parameters& net_params, const wally_ext_key_ptr& key,
-        const wally_ext_key_ptr& backup_key, const std::array<uint32_t, 32>& gait_path, script_type type,
-        uint32_t subtype, uint32_t subaccount, uint32_t pointer)
+    static std::vector<unsigned char> output_script(const pub_key_t& ga_pub_key, const pub_key_t& user_pub_key,
+        gsl::span<const unsigned char> backup_pub_key, script_type type, uint32_t subtype)
     {
-        const bool is_2of3 = !!backup_key;
-        const auto server_child_key = ga_pub_key(net_params, gait_path, subaccount, pointer);
-        const auto child_path = std::array<uint32_t, 2>{ { 1, pointer } };
-        const auto client_child_key = derive_key(key, child_path, true);
+        const bool is_2of3 = !backup_pub_key.empty();
 
         size_t n_pubkeys = 2, threshold = 2;
         std::vector<unsigned char> keys;
-        keys.reserve(3 * EC_PUBLIC_KEY_LEN);
-        const auto spub_key = static_cast<unsigned char*>(server_child_key->pub_key);
-        const auto cpub_key = static_cast<unsigned char*>(client_child_key->pub_key);
-        keys.insert(keys.end(), spub_key, spub_key + EC_PUBLIC_KEY_LEN);
-        keys.insert(keys.end(), cpub_key, cpub_key + EC_PUBLIC_KEY_LEN);
+        keys.reserve(3 * ga_pub_key.size());
+        keys.insert(keys.end(), std::begin(ga_pub_key), std::end(ga_pub_key));
+        keys.insert(keys.end(), std::begin(user_pub_key), std::end(user_pub_key));
         if (is_2of3) {
-            const auto backup_child_key = derive_key(backup_key, child_path, true);
-            const auto bpub_key = static_cast<unsigned char*>(backup_child_key->pub_key);
-            keys.insert(keys.end(), bpub_key, bpub_key + EC_PUBLIC_KEY_LEN);
+            GA_SDK_RUNTIME_ASSERT(static_cast<size_t>(backup_pub_key.size()) == ga_pub_key.size());
+            keys.insert(keys.end(), std::begin(backup_pub_key), std::end(backup_pub_key));
             ++n_pubkeys;
         }
 
-        const size_t max_script_len = 13 + n_pubkeys * (EC_PUBLIC_KEY_LEN + 1) + 4;
+        const size_t max_script_len = 13 + n_pubkeys * (ga_pub_key.size() + 1) + 4;
         std::vector<unsigned char> script(max_script_len);
-        size_t written;
 
         if (type == script_type::p2sh_p2wsh_csv_fortified_out && is_2of3) {
             // CSV 2of3, subtype is the number of CSV blocks
-            written = scriptpubkey_csv_2of3_then_2_from_bytes(keys, subtype, 0, script);
+            scriptpubkey_csv_2of3_then_2_from_bytes(keys, subtype, script);
         } else if (type == script_type::p2sh_p2wsh_csv_fortified_out) {
             // CSV 2of2, subtype is the number of CSV blocks
-            written = scriptpubkey_csv_2of2_then_1_from_bytes(keys, subtype, 0, script);
+            scriptpubkey_csv_2of2_then_1_from_bytes(keys, subtype, script);
         } else {
             // P2SH or P2SH-P2WSH standard 2of2/2of3 multisig
-            written = scriptpubkey_multisig_from_bytes(keys, threshold, 0, script);
+            scriptpubkey_multisig_from_bytes(keys, threshold, script);
         }
-        GA_SDK_RUNTIME_ASSERT(written <= script.size());
-        script.resize(written);
         return script;
     }
 
-    std::vector<unsigned char> input_script(const std::vector<unsigned char>& prevout_script,
-        const std::array<unsigned char, EC_SIGNATURE_LEN>& user_sig,
-        const std::array<unsigned char, EC_SIGNATURE_LEN>& ga_sig)
+    std::vector<unsigned char> output_script(ga_pubkeys& pubkeys, ga_user_pubkeys& user_pubkeys,
+        ga_user_pubkeys& recovery_pubkeys, uint32_t subaccount, const nlohmann::json& data)
+    {
+        const uint32_t pointer = data["pointer"];
+        script_type type;
+
+        auto addr_type = data.find("addr_type");
+        if (addr_type != data.end()) {
+            // Address
+            // TODO: get script_type from returned address (requires server support)
+            type = get_script_type_from_address_type(*addr_type);
+        } else {
+            type = data["script_type"];
+        }
+        uint32_t subtype = 0;
+        if (type == script_type::p2sh_p2wsh_csv_fortified_out)
+            subtype = data["subtype"];
+
+        const auto ga_pub_key = pubkeys.derive(subaccount, pointer);
+        const auto user_pub_key = user_pubkeys.derive(subaccount, pointer);
+
+        if (recovery_pubkeys.have_subaccount(subaccount)) {
+            // 2of3
+            return output_script(ga_pub_key, user_pub_key, recovery_pubkeys.derive(subaccount, pointer), type, subtype);
+        } else {
+            // 2of2
+            return output_script(ga_pub_key, user_pub_key, empty_span(), type, subtype);
+        }
+    }
+
+    std::vector<unsigned char> input_script(signer& user_signer, const std::vector<unsigned char>& prevout_script,
+        const ecdsa_sig_t& user_sig, const ecdsa_sig_t& ga_sig)
     {
         const std::array<uint32_t, 2> sighashes = { { WALLY_SIGHASH_ALL, WALLY_SIGHASH_ALL } };
-        std::array<unsigned char, EC_SIGNATURE_LEN * 2> sigs;
+        std::array<unsigned char, sizeof(ecdsa_sig_t) * 2> sigs;
         init_container(sigs, ga_sig, user_sig);
-        std::vector<unsigned char> script(1 + (EC_SIGNATURE_DER_MAX_LOW_R_LEN + 2) * 2 + 3 + prevout_script.size());
-        const size_t written = scriptsig_multisig_from_bytes(prevout_script, sigs, sighashes, 0, script);
-        GA_SDK_RUNTIME_ASSERT(written <= script.size());
-        script.resize(written);
+        const uint32_t sig_len
+            = user_signer.supports_low_r() ? EC_SIGNATURE_DER_MAX_LEN : EC_SIGNATURE_DER_MAX_LOW_R_LEN;
+        std::vector<unsigned char> script(1 + (sig_len + 2) * 2 + 3 + prevout_script.size());
+        scriptsig_multisig_from_bytes(prevout_script, sigs, sighashes, script);
         return script;
     }
 
     std::vector<unsigned char> input_script(
-        const std::vector<unsigned char>& prevout_script, const std::array<unsigned char, EC_SIGNATURE_LEN>& user_sig)
+        signer& user_signer, const std::vector<unsigned char>& prevout_script, const ecdsa_sig_t& user_sig)
     {
-        std::vector<unsigned char> full_script = input_script(prevout_script, user_sig, DUMMY_GA_SIG);
+        const ecdsa_sig_t& dummy_sig = user_signer.supports_low_r() ? DUMMY_GA_SIG_LOW_R : DUMMY_GA_SIG;
+        const std::vector<unsigned char>& dummy_push
+            = user_signer.supports_low_r() ? DUMMY_GA_SIG_DER_PUSH_LOW_R : DUMMY_GA_SIG_DER_PUSH;
+
+        std::vector<unsigned char> full_script = input_script(user_signer, prevout_script, user_sig, dummy_sig);
         // Replace the dummy sig with PUSH(0)
-        GA_SDK_RUNTIME_ASSERT(std::search(full_script.begin(), full_script.end(), DUMMY_GA_SIG_DER_PUSH.begin(),
-                                  DUMMY_GA_SIG_DER_PUSH.end())
+        GA_SDK_RUNTIME_ASSERT(std::search(full_script.begin(), full_script.end(), dummy_push.begin(), dummy_push.end())
             == full_script.begin());
-        auto suffix = gsl::make_span(
-            full_script.data() + DUMMY_GA_SIG_DER_PUSH.size(), full_script.size() - DUMMY_GA_SIG_DER_PUSH.size());
+        auto suffix = gsl::make_span(full_script).subspan(dummy_push.size());
 
         std::vector<unsigned char> script(OP_0_PREFIX.size() + suffix.size());
         init_container(script, OP_0_PREFIX, suffix);
         return script;
     }
 
-    std::vector<unsigned char> dummy_input_script(const std::vector<unsigned char>& prevout_script)
+    std::vector<unsigned char> dummy_input_script(signer& user_signer, const std::vector<unsigned char>& prevout_script)
     {
-        return input_script(prevout_script, DUMMY_GA_SIG, DUMMY_GA_SIG);
+        const ecdsa_sig_t& dummy_sig = user_signer.supports_low_r() ? DUMMY_GA_SIG_LOW_R : DUMMY_GA_SIG;
+        return input_script(user_signer, prevout_script, dummy_sig, dummy_sig);
     }
 
-    std::array<unsigned char, 3 + SHA256_LEN> witness_script(const std::vector<unsigned char>& script)
+    std::vector<unsigned char> witness_script(const std::vector<unsigned char>& script)
     {
-        const uint32_t flags = WALLY_SCRIPT_SHA256 | WALLY_SCRIPT_AS_PUSH;
-        std::array<unsigned char, 3 + SHA256_LEN> witness;
-        GA_SDK_RUNTIME_ASSERT(witness_program_from_bytes(script, flags, witness) == witness.size());
-        return witness;
-    }
-
-    std::vector<unsigned char> tx_to_bytes(const wally_tx_ptr& tx)
-    {
-        const uint32_t flags = WALLY_TX_FLAG_USE_WITNESS;
-        std::vector<unsigned char> buff(tx_get_length(tx, flags));
-        GA_SDK_RUNTIME_ASSERT(tx_to_bytes(tx, flags, buff) == buff.size());
-        return buff;
+        return witness_program_from_bytes(script, WALLY_SCRIPT_SHA256 | WALLY_SCRIPT_AS_PUSH);
     }
 
     amount get_tx_fee(const wally_tx_ptr& tx, amount min_fee_rate, amount fee_rate)
@@ -212,41 +213,24 @@ namespace sdk {
         const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi)
     {
         // FIXME: Support OP_RETURN outputs
-        const auto output_script = output_script_for_address(net_params, address);
-        tx_add_raw_output(tx, satoshi, output_script, 0);
+        tx_add_raw_output(tx, satoshi, output_script_for_address(net_params, address));
         return amount(satoshi);
     }
 
-    amount add_tx_addressee(
-        session& session, const network_parameters& net_params, wally_tx_ptr& tx, const nlohmann::json& addressee)
+    amount add_tx_addressee(session& session, const network_parameters& net_params, wally_tx_ptr& tx,
+        nlohmann::json& result, const nlohmann::json& addressee)
     {
-        // FIXME: Split this out into
-        // 1) Converting the addressee to an actual address + amount
-        // 2) Setting tx fields like label from any present in a uri
-        // 3) Adding the actual tx output
-        // Consider exposing (1) and or(2) for more flexibility for UX devs
-        const auto dest_p = addressee.find("address");
-        GA_SDK_RUNTIME_ASSERT(dest_p != addressee.end());
-
-        std::string address;
-        uint32_t satoshi;
-
-        const std::string dest = *dest_p;
-        const nlohmann::json uri_parts = parse_bitcoin_uri(dest);
-        if (!uri_parts.is_null()) {
-            // BIP21 or BIP70
-            // FIXME: memo from uri
-            // FIXME: BIP 70
-            address = uri_parts.at("address");
-            // FIXME: there might not be an amount in the URI
-            // FIXME: should parse_bitcoin_uri do the amount conversion?
-            satoshi = session.convert_amount(uri_parts)["satoshi"];
+        std::string address = addressee.at("address");
+        nlohmann::json amount;
+        nlohmann::json payment_uri_params = parse_bitcoin_uri(address);
+        if (!payment_uri_params.is_null()) {
+            result["bip21"] = payment_uri_params;
+            address = payment_uri_params.at("address");
+            amount = session.convert_amount({ { "btc", payment_uri_params["amount"] } });
         } else {
-            // P2SH/P2SH-P2WSH/bech32 + amount
-            address = *dest_p;
-            satoshi = session.convert_amount(addressee)["satoshi"];
+            amount = session.convert_amount(addressee);
         }
-        return add_tx_output(net_params, tx, address, satoshi);
+        return add_tx_output(net_params, tx, address, amount["satoshi"]);
     }
 
     void update_tx_info(const wally_tx_ptr& tx, nlohmann::json& result)

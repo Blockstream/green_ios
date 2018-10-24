@@ -503,14 +503,17 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 %returns_void__(GA_login)
 %returns_void__(GA_login_watch_only)
 %returns_void__(GA_login_with_pin)
-%returns_void__(GA_register_user)
+%returns_struct(GA_login_with_hardware, GA_twofactor_call)
 %returns_void__(GA_register_network)
+%returns_void__(GA_register_user)
+%returns_struct(GA_register_user_with_hardware, GA_twofactor_call)
 %returns_struct(GA_remove_account, GA_twofactor_call)
 %returns_void__(GA_send_nlocktimes)
 %returns_struct(GA_send_transaction, GA_twofactor_call)
 %returns_void__(GA_set_current_subaccount)
 %returns_struct(GA_set_pin, GA_json)
 %returns_void__(GA_set_transaction_memo)
+%returns_void__(GA_set_watch_only)
 %returns_struct(GA_sign_transaction, GA_json)
 %returns_void__(GA_twofactor_call)
 %returns_struct(GA_twofactor_cancel_reset, GA_twofactor_call)
@@ -520,6 +523,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 %returns_struct(GA_twofactor_get_status, GA_json)
 %returns_void__(GA_twofactor_request_code)
 %returns_void__(GA_twofactor_resolve_code)
+%returns_void__(GA_validate_mnemonic)
 
 /* TODO
 GA_convert_json_value_to_bool

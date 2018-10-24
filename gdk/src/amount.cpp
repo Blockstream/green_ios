@@ -7,8 +7,8 @@
 
 #include "boost_wrapper.hpp"
 
+#include "assertion.hpp"
 #include "include/amount.hpp"
-#include "include/assertion.hpp"
 
 namespace ga {
 namespace sdk {

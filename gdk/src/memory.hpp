@@ -19,6 +19,15 @@ namespace sdk {
         std::copy(arg1.begin(), arg1.end(), dst.data());
         std::copy(arg2.begin(), arg2.end(), dst.data() + arg1.size());
     }
+
+    // Make a byte span out of string input
+    inline auto ustring_span(const std::string& str)
+    {
+        return gsl::make_span(reinterpret_cast<const unsigned char*>(str.data()), str.size());
+    }
+
+    // Make an empty byte span
+    template <typename T = unsigned char> inline auto empty_span() { return gsl::make_span<const T>(nullptr, 0); }
 } // namespace sdk
 } // namespace ga
 

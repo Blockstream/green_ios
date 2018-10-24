@@ -5,7 +5,8 @@
 #include "session.hpp"
 
 struct GA_twofactor_call {
-    GA_twofactor_call(ga::sdk::session& session, const std::string& action);
+    GA_twofactor_call(
+        ga::sdk::session& session, const std::string& action, const nlohmann::json& hw_device = nlohmann::json());
     GA_twofactor_call(const GA_twofactor_call&) = delete;
     GA_twofactor_call& operator=(const GA_twofactor_call&) = delete;
     GA_twofactor_call(GA_twofactor_call&&) = delete;
@@ -42,6 +43,7 @@ protected:
     nlohmann::json m_twofactor_data; // Actual data to send along with any call
     state_type m_state; // Current state
     uint32_t m_attempts_remaining;
+    nlohmann::json m_hw_device;
 };
 
 #endif

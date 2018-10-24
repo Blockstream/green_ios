@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <array>
 #include <ctime>
-#include <gsl/span>
 #include <string>
 #include <vector>
 
@@ -15,7 +14,7 @@ namespace ga {
 namespace sdk {
     namespace {
         // Dummy data for transaction creation with correctly sized data for fee estimation
-        static const std::vector<unsigned char> DUMMY_WITNESS_SCRIPT(3 + SHA256_LEN);
+        static const std::array<unsigned char, 3 + SHA256_LEN> DUMMY_WITNESS_SCRIPT{};
 
         static const std::string UTXO_SEL_DEFAULT("default"); // Use the default utxo selection strategy
         static const std::string UTXO_SEL_MANUAL("manual"); // Use manual utxo selection
@@ -30,22 +29,30 @@ namespace sdk {
             const uint32_t sequence = session.is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
             const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
             const auto type = script_type(u["script_type"]);
+            const bool low_r = session.get_signer().supports_low_r();
+            const uint32_t dummy_sig_type = low_r ? WALLY_TX_DUMMY_SIG_LOW_R : WALLY_TX_DUMMY_SIG;
 
             // TODO: Create correctly sized dummys instead of actual script (faster)
-            const auto prevout_script = session.output_script(subaccount, u);
+            const auto prevout_script = output_script(
+                session.get_ga_pubkeys(), session.get_user_pubkeys(), session.get_recovery_pubkeys(), subaccount, u);
+
             wally_tx_witness_stack_ptr wit;
 
             if (is_segwit_script_type(type)) {
                 // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
                 wit = tx_witness_stack_init(4);
                 tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_NULL);
-                tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG_LOW_R);
-                tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_SIG_LOW_R);
+                tx_witness_stack_add_dummy(wit, dummy_sig_type);
+                tx_witness_stack_add_dummy(wit, dummy_sig_type);
                 tx_witness_stack_add(wit, prevout_script);
             }
 
-            tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
-                wit ? DUMMY_WITNESS_SCRIPT : dummy_input_script(prevout_script), wit, 0);
+            const auto txid = bytes_from_hex_rev(txhash);
+            if (wit) {
+                tx_add_raw_input(tx, txid, index, sequence, DUMMY_WITNESS_SCRIPT, wit);
+            } else {
+                tx_add_raw_input(tx, txid, index, sequence, dummy_input_script(session.get_signer(), prevout_script));
+            }
 
             return amount(u["satoshi"]);
         }
@@ -136,7 +143,7 @@ namespace sdk {
                         const uint32_t i = input["pt_idx"];
                         GA_SDK_RUNTIME_ASSERT(i < tx->num_inputs);
                         std::reverse(&tx->inputs[i].txhash[0], &tx->inputs[i].txhash[0] + WALLY_TXHASH_LEN);
-                        utxo["txhash"] = hex_from_bytes(gsl::make_span(tx->inputs[i].txhash));
+                        utxo["txhash"] = hex_from_bytes(tx->inputs[i].txhash);
                         utxo["pt_idx"] = tx->inputs[i].index;
                         used_utxos_map.emplace(i, utxo);
                     }
@@ -258,7 +265,7 @@ namespace sdk {
         amount required_total{ 0 };
 
         for (const auto& addressee : addressees) {
-            required_total += add_tx_addressee(session, net_params, tx, addressee);
+            required_total += add_tx_addressee(session, net_params, tx, result, addressee);
         }
 
         std::vector<uint32_t> used_utxos;
@@ -403,6 +410,45 @@ namespace sdk {
         return result;
     }
 
+    static void sign_input(session& session, const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u)
+    {
+        const auto txhash = u["txhash"];
+        const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
+        const uint32_t pointer = u["pointer"];
+        const amount::value_type v = u["satoshi"]; // FIXME: Allow amount conversions directly
+        const amount satoshi{ v };
+        const auto type = script_type(u["script_type"]);
+
+        const auto prevout_script = output_script(
+            session.get_ga_pubkeys(), session.get_user_pubkeys(), session.get_recovery_pubkeys(), subaccount, u);
+
+        const uint32_t flags = is_segwit_script_type(type) ? WALLY_TX_FLAG_USE_WITNESS : 0;
+        const auto tx_hash
+            = tx_get_btc_signature_hash(tx, index, prevout_script, satoshi.value(), WALLY_SIGHASH_ALL, flags);
+
+        std::vector<uint32_t> path;
+        path.reserve(4);
+        if (subaccount != 0) {
+            path.emplace_back(harden(3));
+            path.emplace_back(harden(subaccount));
+        }
+        path.emplace_back(1u); // BRANCH_REGULAR
+        path.emplace_back(pointer);
+
+        const auto user_sig = session.get_signer().sign_hash(path, tx_hash);
+
+        if (is_segwit_script_type(type)) {
+            // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
+            // Note that this requires setting the inputs sequence number to the CSV time too
+            auto wit = tx_witness_stack_init(1);
+            tx_witness_stack_add(wit, ec_sig_to_der(user_sig, true));
+            tx_set_input_witness(tx, index, wit);
+            tx_set_input_script(tx, index, witness_script(prevout_script));
+        } else {
+            tx_set_input_script(tx, index, input_script(session.get_signer(), prevout_script, user_sig));
+        }
+    }
+
     nlohmann::json sign_ga_transaction(session& session, const nlohmann::json& details)
     {
         GA_SDK_RUNTIME_ASSERT(json_get_value(details, "error").empty());
@@ -419,13 +465,13 @@ namespace sdk {
         size_t i = 0;
         if (result.find("old_used_utxos") != result.end()) {
             for (const auto& utxo : result["old_used_utxos"]) {
-                session.sign_input(tx, i, utxo);
+                sign_input(session, tx, i, utxo);
                 ++i;
             }
         }
         for (const auto& ui : used_utxos) {
             const uint32_t utxo_index = ui;
-            session.sign_input(tx, i, utxos.at(utxo_index));
+            sign_input(session, tx, i, utxos.at(utxo_index));
             ++i;
         }
         result["user_signed"] = true;

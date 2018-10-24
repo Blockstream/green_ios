@@ -1,6 +1,6 @@
 #include <mutex>
 
-#include "include/assertion.hpp"
+#include "assertion.hpp"
 #include "include/network_parameters.hpp"
 
 // TODO: Use std::string_view when its fully supported

@@ -77,6 +77,18 @@ GASDK_API int GA_disconnect(struct GA_session* session);
 GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic);
 
 /**
+ * Create a new user account using a hardware wallet/HSM/TPM.
+ *
+ * @session The server session to use.
+ * @mnemonic The user's mnemonic passphrase.
+ * @hw_device Details about the hardware device being use to register.
+ *
+ * GA_ERROR if registration is unsuccessful.
+ */
+GASDK_API int GA_register_user_with_hardware(
+    struct GA_session* session, const GA_json* hw_device, struct GA_twofactor_call** call);
+
+/**
  * Authenticate a user.
  *
  * @session The server session to use.
@@ -86,6 +98,18 @@ GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic)
  * GA_ERROR if authentication is unsuccessful.
  */
 GASDK_API int GA_login(struct GA_session* session, const char* mnemonic, const char* password);
+
+/**
+ * Authenticate a user using a hardware wallet/HSM/TPM.
+ *
+ * @session The server session to use.
+ * @hw_device Details about the hardware device being use to login.
+ * @call Destination for the resulting GA_twofactor_call to perform the login.
+ *
+ * GA_ERROR if authentication is unsuccessful.
+ */
+GASDK_API int GA_login_with_hardware(
+    struct GA_session* session, const GA_json* hw_device, struct GA_twofactor_call** call);
 
 /**
  * Authenticate a user.
@@ -273,13 +297,13 @@ GASDK_API int GA_convert_amount(struct GA_session* session, const GA_json* json,
  * @session The server session to use.
  * @mnemonic The user's mnemonic passphrase.
  * @pin The user PIN.
- * @device The user device identifier.
+ * @device_id The user device identifier.
  * @pin_data The returned PIN data containing the user's encrypted mnemonic passphrase.
  *
  * GA_ERROR if the PIN could not be set.
  */
 GASDK_API int GA_set_pin(
-    struct GA_session* session, const char* mnemonic, const char* pin, const char* device, GA_json** pin_data);
+    struct GA_session* session, const char* mnemonic, const char* pin, const char* device_id, GA_json** pin_data);
 
 /**
  * Set the sessions current subaccount.

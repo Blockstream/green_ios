@@ -1,7 +1,7 @@
-#include "include/ga_wally.hpp"
 #include "include/session.hpp"
 #include "include/twofactor.h"
 #include "src/boost_wrapper.hpp"
+#include "src/ga_wally.hpp"
 #include "utils.hpp"
 
 namespace {

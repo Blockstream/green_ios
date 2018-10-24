@@ -4,6 +4,31 @@
 
 #include "include/twofactor.hpp"
 
+class GA_register_call : public GA_twofactor_call {
+public:
+    GA_register_call(
+        ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent = std::string());
+
+private:
+    state_type call_impl() override;
+    nlohmann::json m_details;
+    std::string m_user_agent;
+};
+
+class GA_login_call : public GA_twofactor_call {
+public:
+    GA_login_call(
+        ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent = std::string());
+
+private:
+    void set_data(const std::string& action);
+
+    state_type call_impl() override;
+    nlohmann::json m_details;
+    std::string m_user_agent;
+    std::string m_challenge;
+};
+
 class GA_change_settings_twofactor_call : public GA_twofactor_call {
 public:
     GA_change_settings_twofactor_call(

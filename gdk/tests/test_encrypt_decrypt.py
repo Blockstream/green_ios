@@ -84,9 +84,21 @@ def test_watch_only(session):
     assert encrypted['ciphertext'] != PLAINTEXT
     assert 'password' not in encrypted
     assert PASSWORD not in str(encrypted)
-    encrypted.update({'password': PASSWORD})
-    decrypted = session.decrypt(encrypted)
-    assert decrypted['plaintext'] == PLAINTEXT
+    to_decrypt = encrypted
+    to_decrypt.update({'password': PASSWORD})
+    to_decrypt = session.decrypt(to_decrypt)
+    assert to_decrypt['plaintext'] == PLAINTEXT
+
+    # Watch only must provide a password
+    for fn in [lambda session: session.encrypt({'plaintext': PLAINTEXT}),
+               lambda session: session.decrypt(encrypted)]:
+        caught = False
+        try:
+            fn(session)
+        except Exception as e:
+            caught = True
+        assert caught
+
 
 if __name__ == "__main__":
     test_greenbits_testvector(Session('localtest', '', False, False))

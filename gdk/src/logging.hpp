@@ -2,6 +2,10 @@
 #define GA_SDK_LOGGING_HPP
 #pragma once
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
+
 #include "boost_wrapper.hpp"
 
 namespace ga {
@@ -30,7 +34,26 @@ namespace sdk {
         }
     } // namespace
 
+#ifdef __ANDROID__
+    class android_backend : public boost::log::sinks::basic_formatted_sink_backend<char> {
+    public:
+        void consume(const boost::log::record_view&, const std::string& formatted_message)
+        {
+            // TODO: severity levels
+            __android_log_print(ANDROID_LOG_DEBUG, "GASDK", "%s", formatted_message.c_str());
+        }
+    };
+
+    BOOST_LOG_INLINE_GLOBAL_LOGGER_INIT(gdk_logger, boost::log::sources::logger_mt)
+    {
+        using sink_t = boost::log::sinks::asynchronous_sink<android_backend>;
+        auto sink = boost::make_shared<sink_t>(boost::make_shared<android_backend>());
+        boost::log::core::get()->add_sink(sink);
+        return boost::log::sources::logger_mt{};
+    }
+#else
     BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(gdk_logger, boost::log::sources::logger_mt)
+#endif
 
 #define GDK_LOG_NAMED_SCOPE(name)                                                                                      \
     BOOST_LOG_SEV(gdk_logger::get(), boost::log::trivial::info)                                                        \

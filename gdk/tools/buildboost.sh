@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 set -e
-set -x
 
 function compile_flags() {
     echo "`python -c "import sys; print('<compile_flags>'.join([''] + map(lambda x: x + '\n', sys.argv[1:])))" $@`"

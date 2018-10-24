@@ -50,7 +50,12 @@ class Call(object):
                 method = select_method_fn(status['methods'])
                 twofactor_request_code(self.call_obj, method.encode('utf-8'))
             elif state == 'resolve_code':
-                code = resolve_code_fn(status['method'])
+                if status['device']:
+                    # Hardware device authorization requested
+                    code = resolve_code_fn(status['required_data'])
+                else:
+                    # Twofactor authorization requested
+                    code = resolve_code_fn(status['method'])
                 twofactor_resolve_code(self.call_obj, code.encode('utf-8'))
             elif state == 'call':
                 twofactor_call(self.call_obj)
@@ -102,13 +107,19 @@ class Session(object):
         register_user(self.session_obj, mnemonic)
         return self
 
+    def register_user_with_hardware(self, hw_device):
+        return Call(register_user_with_hardware(self.session_obj, self._to_json(hw_device)))
+
     def login(self, mnemonic, password=''):
         login(self.session_obj, mnemonic, password)
         return self
 
     def login_with_pin(self, pin, pin_data):
-        return login_with_pin(self.session_obj, pin, self._to_json(pin_data))
+        login_with_pin(self.session_obj, pin, self._to_json(pin_data))
         return self
+
+    def login_with_hardware(self, hw_device):
+        return Call(login_with_hardware(self.session_obj, self._to_json(hw_device)))
 
     def set_watch_only(self, username, password):
         set_watch_only(self.session_obj, username, password)
@@ -121,8 +132,8 @@ class Session(object):
     def remove_account(self):
         return Call(remove_account(self.session_obj))
 
-    def set_pin(self, mnemonic, pin, device):
-        return json.loads(set_pin(self.session_obj, mnemonic, pin, device))
+    def set_pin(self, mnemonic, pin, hw_device):
+        return json.loads(set_pin(self.session_obj, mnemonic, pin, hw_device))
 
     def set_current_subaccount(self, subaccount):
         return set_current_subaccount(self.session_obj, subaccount)
@@ -204,12 +215,12 @@ class Session(object):
     def twofactor_change_limits(self, details):
         return Call(twofactor_change_limits(self.session_obj, self._to_json(details)))
 
-
     def encrypt(self, plaintext):
         return json.loads(encrypt(self.session_obj, self._to_json(plaintext)))
 
     def decrypt(self, ciphertext):
         return json.loads(decrypt(self.session_obj, self._to_json(ciphertext)))
+
 
 _old_get_networks = get_networks
 def get_networks():

@@ -8,12 +8,14 @@
 #include "common.h"
 
 #include "amount.hpp"
-#include "ga_wally.hpp"
 #include "network_parameters.hpp"
 
 namespace ga {
 namespace sdk {
     class ga_session;
+    class signer;
+    class ga_pubkeys;
+    class ga_user_pubkeys;
 
     namespace address_type {
         GASDK_API extern const std::string p2sh;
@@ -41,6 +43,13 @@ namespace sdk {
         void disconnect();
 
         void register_user(const std::string& mnemonic, const std::string& user_agent = std::string());
+        void register_user(const std::string& master_pub_key_hex, const std::string& master_chain_code_hex,
+            const std::string& gait_path_hex, const std::string& user_agent = std::string());
+
+        std::string get_challenge(const std::string& address);
+        void authenticate(const std::string& sig_der_hex, const std::string& path_hex, const std::string& device_id,
+            const std::string& user_agent, const nlohmann::json& hw_device);
+        void register_subaccount_xpubs(const std::vector<std::string>& bip32_xpubs);
         void login(const std::string& mnemonic, const std::string& password = std::string(),
             const std::string& user_agent = std::string());
         void login_with_pin(
@@ -93,7 +102,7 @@ namespace sdk {
             const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data);
         nlohmann::json cancel_twofactor_reset(const nlohmann::json& twofactor_data);
 
-        nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
+        nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device_id);
 
         nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_unspent_outputs_for_private_key(
@@ -119,8 +128,6 @@ namespace sdk {
         nlohmann::json encrypt(const nlohmann::json& input_json);
         nlohmann::json decrypt(const nlohmann::json& input_json);
 
-        // FIXME: make this an internal function
-        std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
         amount get_min_fee_rate() const;
         bool have_subaccounts() const;
         uint32_t get_block_height() const;
@@ -128,8 +135,13 @@ namespace sdk {
         nlohmann::json get_spending_limits() const;
         bool is_spending_limits_decrease(const nlohmann::json& limit_details);
 
-        void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
         nlohmann::json send(const nlohmann::json& details, const nlohmann::json& twofactor_data);
+
+        const network_parameters& get_network_parameters() const;
+        signer& get_signer();
+        ga_pubkeys& get_ga_pubkeys();
+        ga_user_pubkeys& get_user_pubkeys();
+        ga_user_pubkeys& get_recovery_pubkeys();
 
     private:
         template <typename F, typename... Args> auto exception_wrapper(F&& f, Args&&... args);

@@ -360,9 +360,10 @@ public class Session {
         return TwoFactorCall(optr: optr!);
     }
 
-    public func setTwoFactorLimit(details: [String: Any]) throws -> TwoFactorCall{
+    public func setTwoFactorLimit(details: [String: Any]) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
         var details_json: OpaquePointer = try convertDictToJSON(dict: details)
+        let string = try convertOpaqueJsonToString(o:details_json)
         defer {
             GA_destroy_json(details_json)
         }

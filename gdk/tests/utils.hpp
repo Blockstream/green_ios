@@ -7,7 +7,7 @@
 #include "argparser.h"
 #include "include/session.h"
 #include "include/utils.h"
-#include "include/assertion.hpp"
+#include "src/assertion.hpp"
 
 template <typename Exception, typename T>
 void assert_throws(T&& fn)

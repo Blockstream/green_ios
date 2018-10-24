@@ -166,11 +166,17 @@ GA_SDK_DEFINE_C_FUNCTION_1(GA_disconnect, struct GA_session*, session, { session
 GA_SDK_DEFINE_C_FUNCTION_2(
     GA_register_user, struct GA_session*, session, const char*, mnemonic, { session->register_user(mnemonic); })
 
+GA_SDK_DEFINE_C_FUNCTION_3(GA_register_user_with_hardware, struct GA_session*, session, const GA_json*, device_data,
+    struct GA_twofactor_call**, call, { *call = new GA_register_call(*session, *json_cast(device_data)); })
+
 GA_SDK_DEFINE_C_FUNCTION_3(GA_login, struct GA_session*, session, const char*, mnemonic, const char*, password,
     { session->login(mnemonic, password); })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, struct GA_session*, session, const char*, pin, const GA_json*, pin_data,
     { session->login_with_pin(pin, *json_cast(pin_data)); })
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_hardware, struct GA_session*, session, const GA_json*, device_data,
+    struct GA_twofactor_call**, call, { *call = new GA_login_call(*session, *json_cast(device_data)); })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_login_watch_only, struct GA_session*, session, const char*, username, const char*,
     password, { session->login_watch_only(username, password); })

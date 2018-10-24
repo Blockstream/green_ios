@@ -171,6 +171,7 @@ dl_dep = compiler.find_library('dl', required : false)
 ws2_dep = compiler.find_library('ws2_32', required : cross_win_build)
 bcrypt_dep = compiler.find_library('bcrypt', required : cross_win_build)
 ssp_dep = compiler.find_library('ssp', required : cross_win_build)
+log_dep = compiler.find_library('log', required : cross_android_build)
 
 subproject_deps = []
 

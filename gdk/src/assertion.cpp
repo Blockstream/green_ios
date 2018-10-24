@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include "include/assertion.hpp"
+#include "assertion.hpp"
 
 namespace ga {
 namespace sdk {

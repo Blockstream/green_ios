@@ -85,8 +85,34 @@ namespace sdk {
     void session::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-
         exception_wrapper([&] { m_impl->register_user(mnemonic, user_agent); });
+    }
+
+    void session::register_user(const std::string& master_pub_key_hex, const std::string& master_chain_code_hex,
+        const std::string& gait_path_hex, const std::string& user_agent)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        exception_wrapper(
+            [&] { m_impl->register_user(master_pub_key_hex, master_chain_code_hex, gait_path_hex, user_agent); });
+    }
+
+    std::string session::get_challenge(const std::string& address)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_challenge(address); });
+    }
+
+    void session::authenticate(const std::string& sig_der_hex, const std::string& path_hex,
+        const std::string& device_id, const std::string& user_agent, const nlohmann::json& hw_device)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        exception_wrapper([&] { m_impl->authenticate(sig_der_hex, path_hex, device_id, user_agent, hw_device); });
+    }
+
+    void session::register_subaccount_xpubs(const std::vector<std::string>& bip32_xpubs)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        exception_wrapper([&] { m_impl->register_subaccount_xpubs(bip32_xpubs); });
     }
 
     void session::login(const std::string& mnemonic, const std::string& password, const std::string& user_agent)
@@ -386,12 +412,6 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->decrypt(input_json); });
     }
 
-    std::vector<unsigned char> session::output_script(uint32_t subaccount, const nlohmann::json& data) const
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return m_impl->output_script(subaccount, data); // Note no exception_wrapper
-    }
-
     amount session::get_min_fee_rate() const
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
@@ -427,16 +447,41 @@ namespace sdk {
         return m_impl->is_spending_limits_decrease(details); // Note no exception_wrapper
     }
 
-    void session::sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const
-    {
-        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return m_impl->sign_input(tx, index, u); // Note no exception_wrapper
-    }
-
     nlohmann::json session::send(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
         return m_impl->send_transaction(details, twofactor_data); // Note no exception_wrapper
     }
+
+    const network_parameters& session::get_network_parameters() const
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_network_parameters(); // Note no exception_wrapper
+    }
+
+    signer& session::get_signer()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_signer(); // Note no exception_wrapper
+    }
+
+    ga_pubkeys& session::get_ga_pubkeys()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_ga_pubkeys(); // Note no exception_wrapper
+    }
+
+    ga_user_pubkeys& session::get_user_pubkeys()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_user_pubkeys(); // Note no exception_wrapper
+    }
+
+    ga_user_pubkeys& session::get_recovery_pubkeys()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->get_recovery_pubkeys(); // Note no exception_wrapper
+    }
+
 } // namespace sdk
 } // namespace ga

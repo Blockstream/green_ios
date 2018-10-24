@@ -3,6 +3,7 @@
 #include "argparser.h"
 
 #include "include/session.hpp"
+#include "src/assertion.hpp"
 
 const std::string DEFAULT_MNEMONIC("dismiss chaos result march slow sock hybrid foster chest analyst blue decline "
                                    "alarm advance polar squeeze shy actress target satoshi sleep wage cruel tell");

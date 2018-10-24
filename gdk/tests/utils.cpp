@@ -1,6 +1,6 @@
 #include "src/utils.hpp"
-#include "include/ga_wally.hpp"
 #include "src/boost_wrapper.hpp"
+#include "src/ga_wally.hpp"
 #include "utils.hpp"
 
 struct GA_session* create_new_wallet(struct options* options)

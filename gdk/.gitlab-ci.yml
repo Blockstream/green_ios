@@ -6,7 +6,7 @@ before_script:
   - ./tools/clean.sh meson
 
 test_gcc:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   script:
@@ -30,7 +30,7 @@ test_fedora_clang:
     - ./tools/build.sh --clang
 
 test_clang:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   script:
@@ -39,7 +39,7 @@ test_clang:
     - ./tools/format.sh && git diff --exit-code
 
 test_clang_tidy:
-  image: greenaddress/ci@sha256:3dcbc8f3b6555b6727fb2c6a6ff481185f2ee4fe138a6ec1bdcc66945b59cade
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   script:
@@ -47,7 +47,7 @@ test_clang_tidy:
     - ./tools/build.sh --clang-tidy-version=3.8 --clang
 
 gdk_clang_ndk_armeabi-v7a:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:
@@ -59,10 +59,10 @@ gdk_clang_ndk_armeabi-v7a:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
-    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $PWD/gdk-android-jni --ndk armeabi-v7a
+    - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk armeabi-v7a
 
 gdk_clang_ndk_arm64-v8a:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:
@@ -74,10 +74,10 @@ gdk_clang_ndk_arm64-v8a:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
-    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $PWD/gdk-android-jni --ndk arm64-v8a
+    - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk arm64-v8a
 
 gdk_clang_ndk_x86:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:
@@ -89,10 +89,10 @@ gdk_clang_ndk_x86:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
-    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $PWD/gdk-android-jni --ndk x86
+    - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk x86
 
 gdk_clang_ndk_x86_64:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:
@@ -104,7 +104,7 @@ gdk_clang_ndk_x86_64:
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
-    - ANDROID_NDK=/android-ndk-r18 ./tools/build.sh --install $PWD/gdk-android-jni --ndk x86_64
+    - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk x86_64
 
 test_osx_clang:
   tags:
@@ -200,7 +200,7 @@ test_freebsd_clang:
     - ./tools/build.sh --clang
 
 test_windows_mingw_w64_cross:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:
@@ -213,7 +213,7 @@ test_windows_mingw_w64_cross:
     - ./tools/build.sh --mingw-w64
 
 apidocs:
-  image: greenaddress/ci@sha256:2a2241504c52f9829d07ff01611b00f9dac6afbff67b9ff6dad60dde66404380
+  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:

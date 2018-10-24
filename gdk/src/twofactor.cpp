@@ -7,20 +7,52 @@
 namespace {
 // Server gives 3 attempts to get the twofactor code right before it's invalidated
 static const uint32_t TWO_FACTOR_ATTEMPTS = 3;
+static const std::string CHALLENGE_PREFIX("greenaddress.it      login ");
 
 // Return true if the error represents 'two factor authentication required'
 static bool is_twofactor_invalid_code_error(const autobahn::call_error& e)
 {
     return ga::sdk::get_error_details(e).second == "Invalid Two Factor Authentication Code";
 }
+
+static auto get_xpub(const std::string& bip32_xpub_str)
+{
+    const auto hdkey = ga::sdk::bip32_public_key_from_bip32_xpub(bip32_xpub_str);
+    return ga::sdk::make_xpub(hdkey.get());
+}
+
+static auto get_paths_json(bool include_root = true)
+{
+    std::vector<nlohmann::json> paths;
+    if (include_root) {
+        paths.emplace_back(std::vector<uint32_t>());
+    }
+    return paths;
+}
+
+// FIXME: Belongs in xpubs or signer
+static auto get_subaccount_path(uint32_t subaccount)
+{
+    if (subaccount == 0) {
+        return std::vector<uint32_t>();
+    } else {
+        return std::vector<uint32_t>{ ga::sdk::harden(3), ga::sdk::harden(subaccount) };
+    }
+}
+
 } // namespace
 
-GA_twofactor_call::GA_twofactor_call(ga::sdk::session& session, const std::string& action)
+//
+// Common auth handling
+//
+GA_twofactor_call::GA_twofactor_call(
+    ga::sdk::session& session, const std::string& action, const nlohmann::json& hw_device)
     : m_session(session)
-    , m_methods(session.get_enabled_twofactor_methods())
+    , m_methods(hw_device.is_null() ? session.get_enabled_twofactor_methods() : std::vector<std::string>())
     , m_action(action)
-    , m_state(m_methods.empty() ? state_type::make_call : state_type::request_code)
+    , m_state(m_methods.empty() && hw_device.is_null() ? state_type::make_call : state_type::request_code)
     , m_attempts_remaining(TWO_FACTOR_ATTEMPTS)
+    , m_hw_device(hw_device.is_null() ? hw_device : hw_device.at("device"))
 {
 }
 
@@ -95,22 +127,32 @@ void GA_twofactor_call::operator()()
 nlohmann::json GA_twofactor_call::get_status() const
 {
     GA_SDK_RUNTIME_ASSERT(m_state == state_type::error || m_error.empty());
+    const bool is_hw_action = !m_hw_device.is_null();
 
     std::string status_str;
     nlohmann::json status;
 
     switch (m_state) {
     case state_type::request_code:
+        GA_SDK_RUNTIME_ASSERT(!is_hw_action);
+
         // Caller should ask the user to pick 2fa and request a code
         status_str = "request_code";
         status["methods"] = m_methods;
         break;
     case state_type::resolve_code:
-        // Caller should resolve the code the user has entered
         status_str = "resolve_code";
-        status["method"] = m_method;
-        if (m_method != "gauth") {
-            status["attempts_remaining"] = m_attempts_remaining;
+        if (is_hw_action) {
+            // Caller must interact with the hardware and return
+            // the returning data to us
+            status["method"] = m_hw_device.at("name");
+            status["required_data"] = m_twofactor_data;
+        } else {
+            // Caller should resolve the code the user has entered
+            status["method"] = m_method;
+            if (m_method != "gauth") {
+                status["attempts_remaining"] = m_attempts_remaining;
+            }
         }
         break;
     case state_type::make_call:
@@ -131,10 +173,109 @@ nlohmann::json GA_twofactor_call::get_status() const
     GA_SDK_RUNTIME_ASSERT(!status_str.empty());
     status["status"] = status_str;
     status["action"] = m_action;
+    status["device"] = m_hw_device;
     return status;
 }
 
+//
+// Register
+//
+GA_register_call::GA_register_call(
+    ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent)
+    : GA_twofactor_call(session, "get_xpubs", details)
+    , m_details(details)
+    , m_user_agent(user_agent)
+{
+    // To register, we need the master xpub to identify the wallet,
+    // and the registration xpub to compute the gait_path.
+    m_state = state_type::resolve_code;
+    m_twofactor_data = { { "action", m_action }, { "device", m_hw_device } };
+    auto paths = get_paths_json();
+    paths.emplace_back(std::vector<uint32_t>{ ga::sdk::harden(0x4741) });
+    m_twofactor_data["paths"] = paths;
+}
+
+GA_twofactor_call::state_type GA_register_call::call_impl()
+{
+    const nlohmann::json args = nlohmann::json::parse(m_code);
+    const std::vector<std::string> xpubs = args.at("xpubs");
+    const auto master_xpub = get_xpub(xpubs.at(0));
+
+    const auto master_chain_code_hex = ga::sdk::hex_from_bytes(master_xpub.first);
+    const auto master_pub_key_hex = ga::sdk::hex_from_bytes(master_xpub.second);
+
+    // Get our gait path xpub and compute gait_path from it
+    const auto gait_xpub = get_xpub(xpubs.at(1));
+    const auto gait_path_hex = ga::sdk::hex_from_bytes(ga::sdk::ga_pubkeys::get_gait_path_bytes(gait_xpub));
+
+    m_session.register_user(master_pub_key_hex, master_chain_code_hex, gait_path_hex, m_user_agent);
+    return state_type::done;
+}
+
+//
+// Login
+//
+GA_login_call::GA_login_call(ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent)
+    : GA_twofactor_call(session, "get_xpubs", details)
+    , m_details(details)
+    , m_user_agent(user_agent)
+{
+    // We first need the challenge, so ask the caller for the master pubkey.
+    m_state = state_type::resolve_code;
+    set_data("get_xpubs");
+    m_twofactor_data["paths"] = get_paths_json();
+}
+
+GA_twofactor_call::state_type GA_login_call::call_impl()
+{
+    const nlohmann::json args = nlohmann::json::parse(m_code);
+
+    if (m_action == "get_xpubs") {
+        const std::vector<std::string> xpubs = args.at("xpubs");
+
+        if (m_challenge.empty()) {
+            // Compute the challenge with the mastre pubkey
+            const auto master_xpub = get_xpub(xpubs.at(0));
+            const auto btc_version = m_session.get_network_parameters().btc_version();
+            m_challenge = m_session.get_challenge(ga::sdk::address_from_xpub(btc_version, master_xpub));
+
+            // Ask the caller to sign the challenge
+            set_data("sign_message");
+            m_twofactor_data["message"] = CHALLENGE_PREFIX + m_challenge;
+            m_twofactor_data["path"] = std::vector<uint32_t>{ 0x4741b11e };
+            return state_type::resolve_code;
+        } else {
+            // Register the xpub for each of our subaccounts
+            m_session.register_subaccount_xpubs(xpubs);
+            return state_type::done;
+        }
+    } else if (m_action == "sign_message") {
+        // Log in and set up the session
+        m_session.authenticate(args.at("signature"), "GA", std::string(), m_user_agent, m_hw_device);
+
+        // Ask the caller for the xpubs for each subaccount
+        std::vector<nlohmann::json> paths;
+        for (const auto sa : m_session.get_subaccounts()) {
+            // FIXME: Cache master xpub from above for subaccount 0
+            // rather than asking the hardware again.
+            paths.emplace_back(get_subaccount_path(sa["pointer"]));
+        }
+        set_data("get_xpubs");
+        m_twofactor_data["paths"] = paths;
+        return state_type::resolve_code;
+    }
+    return state_type::done;
+}
+
+void GA_login_call::set_data(const std::string& action)
+{
+    m_action = action;
+    m_twofactor_data = { { "action", m_action }, { "device", m_hw_device } };
+}
+
+//
 // Enable 2FA
+//
 GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
     ga::sdk::session& session, const std::string& method_to_update, const nlohmann::json& details)
     : GA_twofactor_call(session, "enable_2fa")
@@ -246,7 +387,9 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
     }
 }
 
+//
 // Change limits
+//
 GA_change_limits_call::GA_change_limits_call(ga::sdk::session& session, const nlohmann::json& details)
     : GA_twofactor_call(session, "change_tx_limits")
     , m_limit_details(details)
@@ -271,7 +414,9 @@ GA_twofactor_call::state_type GA_change_limits_call::call_impl()
     return state_type::done;
 }
 
+//
 // Remove account
+//
 GA_remove_account_call::GA_remove_account_call(ga::sdk::session& session)
     : GA_twofactor_call(session, "remove_account")
 {
@@ -283,7 +428,9 @@ GA_twofactor_call::state_type GA_remove_account_call::call_impl()
     return state_type::done;
 }
 
+//
 // Send transaction
+//
 GA_send_call::GA_send_call(ga::sdk::session& session, const nlohmann::json& tx_details)
     : GA_twofactor_call(session, "send_raw_tx")
     , m_tx_details(tx_details)
@@ -350,6 +497,9 @@ GA_twofactor_call::state_type GA_send_call::call_impl()
     return state_type::done;
 }
 
+//
+// Request 2fa reset
+//
 GA_twofactor_reset_call::GA_twofactor_reset_call(ga::sdk::session& session, const std::string& email, bool is_dispute)
     : GA_twofactor_call(session, "request_reset")
     , m_reset_email(email)
@@ -376,6 +526,9 @@ GA_twofactor_call::state_type GA_twofactor_reset_call::call_impl()
     }
 }
 
+//
+// Cancel 2fa reset
+//
 GA_twofactor_cancel_reset_call::GA_twofactor_cancel_reset_call(ga::sdk::session& session)
     : GA_twofactor_call(session, "cancel_reset")
 {

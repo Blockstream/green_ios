@@ -12,6 +12,8 @@
 #include "autobahn_wrapper.hpp"
 #include "boost_wrapper.hpp"
 #include "logging.hpp"
+#include "signer.hpp"
+#include "xpub_hdkey.hpp"
 
 namespace ga {
 namespace sdk {
@@ -50,15 +52,21 @@ namespace sdk {
         void connect();
         void reset();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
+        void register_user(const std::string& master_pub_key_hex, const std::string& master_chain_code_hex,
+            const std::string& gait_path_hex, const std::string& user_agent);
+
+        std::string get_challenge(const std::string& address);
+        void authenticate(const std::string& sig_der_hex, const std::string& path_hex, const std::string& device_id,
+            const std::string& user_agent, const nlohmann::json& hw_device = nlohmann::json());
+        void register_subaccount_xpubs(const std::vector<std::string>& bip32_xpubs);
+
         void login(const std::string& mnemonic, const std::string& user_agent);
         void login(const std::string& mnemonic, const std::string& password, const std::string& user_agent);
-        void login_with_pin(
-            const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent = std::string());
+        void login_with_pin(const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent);
         void login_watch_only(const std::string& username, const std::string& password, const std::string& user_agent);
+
         bool set_watch_only(const std::string& username, const std::string& password);
         bool remove_account(const nlohmann::json& twofactor_data);
-
-        wally_ext_key_ptr get_recovery_extkey(uint32_t subaccount) const;
 
         template <typename T>
         void change_settings(const std::string& key, const T& value, const nlohmann::json& twofactor_data);
@@ -98,7 +106,7 @@ namespace sdk {
             const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data);
         nlohmann::json cancel_twofactor_reset(const nlohmann::json& twofactor_data);
 
-        nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
+        nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device_id);
 
         nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_unspent_outputs_for_private_key(
@@ -133,12 +141,13 @@ namespace sdk {
         nlohmann::json get_spending_limits() const;
         bool is_spending_limits_decrease(const nlohmann::json& limit_details);
         const network_parameters& get_network_parameters() const { return m_net_params; }
-        void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
-        std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
+
+        signer& get_signer();
+        ga_pubkeys& get_ga_pubkeys();
+        ga_user_pubkeys& get_user_pubkeys();
+        ga_user_pubkeys& get_recovery_pubkeys();
 
     private:
-        std::vector<unsigned char> get_encryption_password(const nlohmann::json& input_json) const;
-
         void set_enabled_twofactor_methods(nlohmann::json& config);
         void update_login_data(nlohmann::json&& login_data, bool watch_only);
         void update_fiat_rate(const std::string& rate_str) const;
@@ -152,12 +161,11 @@ namespace sdk {
         void on_new_block(nlohmann::json&& details);
         void on_new_fees(nlohmann::json&& details);
 
-        nlohmann::json insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
+        nlohmann::json insert_subaccount(uint32_t subaccount, const std::string& name, const std::string& receiving_id,
             const std::string& recovery_pub_key, const std::string& recovery_chain_code, const std::string& type,
             amount satoshi, bool has_txs);
 
-        static std::pair<std::string, std::string> sign_challenge(
-            const wally_ext_key_ptr& master_key, const std::string& challenge);
+        std::pair<std::string, std::string> sign_challenge(const std::string& challenge);
 
         nlohmann::json set_fee_estimates(const nlohmann::json& fee_estimates);
 
@@ -210,8 +218,6 @@ namespace sdk {
 
         std::vector<unsigned char> get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
-        uint32_t get_bip32_version() const;
-
         const network_parameters m_net_params;
         const std::string m_proxy;
         const bool m_use_tor;
@@ -228,6 +234,7 @@ namespace sdk {
         void* m_notification_context;
 
         nlohmann::json m_login_data;
+        std::vector<unsigned char> m_local_encryption_password;
         std::array<uint32_t, 32> m_gait_path;
         nlohmann::json m_limits_data;
         nlohmann::json m_twofactor_config;
@@ -240,10 +247,13 @@ namespace sdk {
         uint64_t m_earliest_block_time;
 
         mutable std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
+        std::unique_ptr<ga_pubkeys> m_ga_pubkeys;
+        std::unique_ptr<ga_user_pubkeys> m_user_pubkeys;
+        std::unique_ptr<ga_user_pubkeys> m_recovery_pubkeys;
         uint32_t m_next_subaccount;
         std::vector<uint32_t> m_fee_estimates;
         std::atomic<uint32_t> m_block_height;
-        wally_ext_key_ptr m_master_key;
+        std::unique_ptr<signer> m_signer;
 
         uint32_t m_system_message_id; // Next system message
         uint32_t m_system_message_ack_id; // Currently returned message id to ack
