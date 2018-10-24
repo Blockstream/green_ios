@@ -13,6 +13,7 @@ class InitialViewController: UIViewController, NetworkDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        Bip39helper.shared.initializeHelper()
         topButton.setTitle(NSLocalizedString("pcreate_wallet", comment: ""), for: .normal)
         restoreWalletbutton.setTitle(NSLocalizedString("prestore_existing_wallet", comment: ""), for: .normal)
         titleLabel.text = NSLocalizedString("pbitcoins_most_secure_wallet", comment: "")
