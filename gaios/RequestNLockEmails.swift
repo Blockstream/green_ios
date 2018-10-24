@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class RequestNLockEmails : UIViewController {
+class RequestNLockEmails : UIViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
@@ -22,6 +23,25 @@ class RequestNLockEmails : UIViewController {
     }
 
     @IBAction func requestClicked(_ sender: Any) {
-        //make a request
+        let size = CGSize(width: 30, height: 30)
+        let message = NSLocalizedString("psending_request", comment: "")
+        self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+        wrap {
+            try getSession().sendNlocktimes()
+        }.done {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                NVActivityIndicatorPresenter.sharedInstance.setMessage(NSLocalizedString("prequest_sent", comment: ""))
+            }
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                self.stopAnimating()
+            }
+        }.catch { error in
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                NVActivityIndicatorPresenter.sharedInstance.setMessage(NSLocalizedString("prequest_failed", comment: ""))
+            }
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                self.stopAnimating()
+            }
+        }
     }
 }
