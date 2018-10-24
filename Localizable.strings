@@ -356,3 +356,7 @@
 "pyour_balance_is_not_confirmed" = "Your balance is not confirmed. Either you have some unconfirmed incoming transactions, or SPV verification has not finished.";
 "pyour__s_btc_sent_to_s_has_been" = "Your  %@ BTC sent to %@ has been confirmed";
 "pyour_transaction_threshold_is_1s" = "Your transaction threshold is %1$@.";
+"pthank_you_for_downloading_green" = "Thank you for downloading Green! please leave us a review when you get a chance";
+"prequest_sent" = "Request Sent";
+"sending_request" = "Sending Request...";
+"prequest_failed" = "Request Failed";
