@@ -210,6 +210,10 @@ public class Session {
         try callWrapper(fun: GA_login_watch_only(session, username, password))
     }
 
+    public func setWatchOnly(username: String, password: String) throws {
+        try callWrapper(fun: GA_set_watch_only(session, username, password))
+    }
+
     public func removeAccount() throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
         try callWrapper(fun: GA_remove_account(session, &optr));

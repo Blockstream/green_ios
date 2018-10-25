@@ -85,6 +85,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 } else if (indexPath.row == 2) {
                     pager?.hideButtons()
                     self.performSegue(withIdentifier: "transactionFee", sender: nil)
+                } else if (indexPath.row == 3) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "watchOnly", sender: nil)
                 }
             } else if (indexPath.section == 1) {
                 if (indexPath.row == 0) {

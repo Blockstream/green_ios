@@ -365,5 +365,6 @@
 "pi_forgot_my_password" = "I forgot my password";
 "plogin_failed" = "Login Failed";
 "plog_in_using_seed" = "Log in using seed";
-
-
+"psomething_went_wrong" = "Something went wrong";
+"pwarning_password_must_be" = "Warning: password must be at least 8 characters long.";
+"pset_watch_only" = "Set Watch-Only";
