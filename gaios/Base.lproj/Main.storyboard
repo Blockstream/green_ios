@@ -939,7 +939,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <segue destination="4ce-3b-8z0" kind="showDetail" id="kes-5q-haC"/>
+                                    <action selector="cacnelButtonClicked:" destination="0c7-Wv-kP2" eventType="touchUpInside" id="oEa-e7-vpV"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Log In to receive funds &amp; check balance" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GdA-0X-R6I">
@@ -1008,6 +1008,9 @@
                                 <state key="normal" title="Log In">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="loginButtonClicked:" destination="0c7-Wv-kP2" eventType="touchUpInside" id="0wU-MX-9hO"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="klq-4g-JZt">
                                 <rect key="frame" x="92" y="540.5" width="136" height="29"/>
@@ -1015,6 +1018,9 @@
                                 <state key="normal" title="I forgot my password">
                                     <color key="titleColor" name="customTitaniumLight"/>
                                 </state>
+                                <connections>
+                                    <action selector="forgotMyPasswordClicked:" destination="0c7-Wv-kP2" eventType="touchUpInside" id="WDX-nN-TxZ"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
@@ -1052,11 +1058,13 @@
                         <outlet property="rememberTitle" destination="ydR-W6-6S8" id="yEP-M0-aIm"/>
                         <outlet property="titlelabel" destination="GdA-0X-R6I" id="dD8-HH-mRc"/>
                         <outlet property="usernameTextField" destination="w3Q-ON-XH0" id="YKf-bR-KNt"/>
+                        <segue destination="iqZ-ST-Be8" kind="show" identifier="main" id="Sx5-Ok-KDL"/>
+                        <segue destination="o6l-5o-Ocm" kind="show" identifier="enterMnemonics" id="4QF-E2-lEm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZOO-44-PSc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3215.625" y="-1107.0422535211267"/>
+            <point key="canvasLocation" x="-3203" y="-1239"/>
         </scene>
         <!--Initial View Controller-->
         <scene sceneID="9Y1-6R-Bdc">
@@ -1155,7 +1163,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <segue destination="0c7-Wv-kP2" kind="showDetail" id="Ygy-Gq-6Y5"/>
+                                    <segue destination="0c7-Wv-kP2" kind="show" id="Ygy-Gq-6Y5"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -6188,14 +6196,14 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="rpv-sH-2b4"/>
-        <segue reference="Pqg-Zu-9Zd"/>
+        <segue reference="Sx5-Ok-KDL"/>
         <segue reference="ho6-WN-AfT"/>
+        <segue reference="4QF-E2-lEm"/>
         <segue reference="Euy-K3-Vvj"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>
         <segue reference="ZM7-6x-yYR"/>
-        <segue reference="fhM-Q9-pGm"/>
-        <segue reference="kes-5q-haC"/>
+        <segue reference="Ssh-xP-Hwg"/>
     </inferredMetricsTieBreakers>
 </document>

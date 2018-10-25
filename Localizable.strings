@@ -364,6 +364,6 @@
 "plog_in" = "Log In";
 "pi_forgot_my_password" = "I forgot my password";
 "plogin_failed" = "Login Failed";
-
+"plog_in_using_seed" = "Log in using seed";
 
 
