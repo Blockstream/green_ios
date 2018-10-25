@@ -363,5 +363,7 @@
 "plog_in_to_receive_funds" = "Log In to receive funds & check balance.";
 "plog_in" = "Log In";
 "pi_forgot_my_password" = "I forgot my password";
+"plogin_failed" = "Login Failed";
+
 
 
