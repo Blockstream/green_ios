@@ -67,6 +67,7 @@
 		097D20C621804CD00089C379 /* Bip39Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C521804CD00089C379 /* Bip39Helper.swift */; };
 		097D20C82180503B0089C379 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C72180503B0089C379 /* Trie.swift */; };
 		097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C9218068850089C379 /* AddressDetailViewController.swift */; };
+		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
 		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
@@ -182,6 +183,7 @@
 		097D20C521804CD00089C379 /* Bip39Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bip39Helper.swift; sourceTree = "<group>"; };
 		097D20C72180503B0089C379 /* Trie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trie.swift; sourceTree = "<group>"; };
 		097D20C9218068850089C379 /* AddressDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDetailViewController.swift; sourceTree = "<group>"; };
+		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
 		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 				098192842176D12F00D8434F /* main.swift */,
 				098192822176D05500D8434F /* CustomApplication.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
+				097D20CB218161B10089C379 /* WatchOnlySignIn.swift */,
 				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
 				09546B3A216DA243009BABFE /* WelcomeBackViewController.swift */,
@@ -826,6 +829,7 @@
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 				097D20C621804CD00089C379 /* Bip39Helper.swift in Sources */,
 				098192832176D05500D8434F /* CustomApplication.swift in Sources */,
+				097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
