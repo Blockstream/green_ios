@@ -27,6 +27,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
         passwordTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: passwordTextField.frame.height))
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
+        hideKeyboardWhenTappedAround()
     }
 
     @IBAction func loginButtonClicked(_ sender: Any) {

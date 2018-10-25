@@ -981,7 +981,7 @@
                                 </constraints>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" textContentType="password"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
                                         <real key="value" value="1"/>
@@ -6210,7 +6210,7 @@
                                 </constraints>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" textContentType="password"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
                                         <real key="value" value="1"/>

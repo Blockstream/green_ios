@@ -25,6 +25,7 @@ class WatchOnlySettings: UIViewController, NVActivityIndicatorViewable {
         passwordTextField.leftViewMode = .always
         saveButton.setTitle(NSLocalizedString("psave", comment: ""), for: .normal)
         warningLabel.text = NSLocalizedString("pwarning_password_must_be", comment: "")
+        hideKeyboardWhenTappedAround()
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
