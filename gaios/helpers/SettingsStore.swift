@@ -443,10 +443,14 @@ class SettingsStore {
 
     func loadAllSections() {
         allSections.removeAll()
-        allSections.append(createAccountSection())
-        allSections.append(createSecuritySection())
-        allSections.append(createAdvancedSection())
-        allSections.append(createAboutSection())
+        if(AccountStore.shared.isWatchOnly) {
+            allSections.append(createAboutSection())
+        } else {
+            allSections.append(createAccountSection())
+            allSections.append(createSecuritySection())
+            allSections.append(createAdvancedSection())
+            allSections.append(createAboutSection())
+        }
     }
 
     func initSettingsStore() {

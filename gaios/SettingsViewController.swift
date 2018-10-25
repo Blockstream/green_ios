@@ -62,60 +62,74 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if(indexPath.section == 0) {
-            if (indexPath.row == 0) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "currency", sender: nil)
-            } else if (indexPath.row == 1) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "denomination", sender: nil)
-            } else if (indexPath.row == 2) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "transactionFee", sender: nil)
-            }
-        } else if (indexPath.section == 1) {
-            if (indexPath.row == 0) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "recovery", sender: nil)
-            } else if (indexPath.row == 1) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "screenLock", sender: nil)
-            } else if (indexPath.row == 2) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
-            } else if (indexPath.row == 3) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "twoFactorWarning", sender: nil)
-            } else if (indexPath.row == 4) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
-            } else if (indexPath.row == 5) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
-            } else if (indexPath.row == 6) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "autolock", sender: nil)
-            } else if (indexPath.row == 7) {
-                if let url = URL(string: SettingsStore.shared.supportURL) {
-                    UIApplication.shared.open(url, options: [:])
+        if(AccountStore.shared.isWatchOnly) {
+              if (indexPath.section == 0) {
+                if (indexPath.row == 1) {
+                    if let url = URL(string: SettingsStore.shared.tosURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                } else if (indexPath.row == 2) {
+                    if let url = URL(string: SettingsStore.shared.privacyPolicyURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
                 }
             }
-        } else if (indexPath.section == 2) {
-            if (indexPath.row == 0) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
-            } else if (indexPath.row == 1) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "requestNlock", sender: nil)
-            }
-        } else if (indexPath.section == 3) {
-            if (indexPath.row == 1) {
-                if let url = URL(string: SettingsStore.shared.tosURL) {
-                    UIApplication.shared.open(url, options: [:])
+        } else {
+            if(indexPath.section == 0) {
+                if (indexPath.row == 0) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "currency", sender: nil)
+                } else if (indexPath.row == 1) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "denomination", sender: nil)
+                } else if (indexPath.row == 2) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "transactionFee", sender: nil)
                 }
-            } else if (indexPath.row == 2) {
-                if let url = URL(string: SettingsStore.shared.privacyPolicyURL) {
-                    UIApplication.shared.open(url, options: [:])
+            } else if (indexPath.section == 1) {
+                if (indexPath.row == 0) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "recovery", sender: nil)
+                } else if (indexPath.row == 1) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "screenLock", sender: nil)
+                } else if (indexPath.row == 2) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
+                } else if (indexPath.row == 3) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "twoFactorWarning", sender: nil)
+                } else if (indexPath.row == 4) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
+                } else if (indexPath.row == 5) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
+                } else if (indexPath.row == 6) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "autolock", sender: nil)
+                } else if (indexPath.row == 7) {
+                    if let url = URL(string: SettingsStore.shared.supportURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                }
+            } else if (indexPath.section == 2) {
+                if (indexPath.row == 0) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
+                } else if (indexPath.row == 1) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "requestNlock", sender: nil)
+                }
+            } else if (indexPath.section == 3) {
+                if (indexPath.row == 1) {
+                    if let url = URL(string: SettingsStore.shared.tosURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                } else if (indexPath.row == 2) {
+                    if let url = URL(string: SettingsStore.shared.privacyPolicyURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
                 }
             }
         }

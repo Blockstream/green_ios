@@ -6,6 +6,7 @@ class AccountStore {
     static let shared = AccountStore()
     var m_wallets:Array<WalletItem> = Array()
     var blockHeight: UInt32 = 0
+    var isWatchOnly: Bool = false
 
     let denominationBTC: Double = 100000000
     let denominationMilliBTC: Double = 100000

@@ -42,6 +42,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
         }.done{
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
                 self.stopAnimating()
+                AccountStore.shared.isWatchOnly = true
                 AccountStore.shared.initializeAccountStore()
                 self.performSegue(withIdentifier: "main", sender: nil)
             }

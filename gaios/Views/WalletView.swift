@@ -913,7 +913,13 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             presentedFooterView.frame = CGRect(origin: origin!, size: size!)
             presentedFooterView.layer.opacity = 0
             presentedFooterView.backgroundColor = UIColor.customTitaniumMedium()
+
             scrollView.insertSubview(presentedFooterView, belowSubview: presentedCardView!)
+            if(AccountStore.shared.isWatchOnly) {
+                presentedFooterView.sendView.isHidden = true
+                presentedFooterView.separatorView.isHidden = true
+                NSLayoutConstraint(item: presentedFooterView.receiveView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: presentedFooterView.receiveView.superview, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
+            }
         }
 
         if (transactionTableView.superview == nil) {
