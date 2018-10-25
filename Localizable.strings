@@ -360,3 +360,8 @@
 "prequest_sent" = "Request Sent";
 "sending_request" = "Sending Request...";
 "prequest_failed" = "Request Failed";
+"plog_in_to_receive_funds" = "Log In to receive funds & check balance.";
+"plog_in" = "Log In";
+"pi_forgot_my_password" = "I forgot my password";
+
+
