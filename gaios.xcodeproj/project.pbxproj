@@ -66,6 +66,7 @@
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
 		097D20C621804CD00089C379 /* Bip39Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C521804CD00089C379 /* Bip39Helper.swift */; };
 		097D20C82180503B0089C379 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C72180503B0089C379 /* Trie.swift */; };
+		097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C9218068850089C379 /* AddressDetailViewController.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
 		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
@@ -180,6 +181,7 @@
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
 		097D20C521804CD00089C379 /* Bip39Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bip39Helper.swift; sourceTree = "<group>"; };
 		097D20C72180503B0089C379 /* Trie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trie.swift; sourceTree = "<group>"; };
+		097D20C9218068850089C379 /* AddressDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDetailViewController.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
 		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
@@ -414,6 +416,7 @@
 				676FCF2D1F9D0CF800354E93 /* Info.plist */,
 				09342FDB21004309009DCDEA /* CustomAlertInputView.swift */,
 				09358BD52106A57D00D1066F /* CustomAletView.swift */,
+				097D20C9218068850089C379 /* AddressDetailViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
@@ -781,6 +784,7 @@
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
 				09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
+				097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,

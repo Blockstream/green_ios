@@ -110,29 +110,15 @@ class ViewController: UIViewController, WalletViewDelegate {
             return
         }
         if let tag = recognizer.view?.tag {
+            let addressDetail = self.storyboard?.instantiateViewController(withIdentifier: "addressDetail") as! AddressDetailViewController
             let item = wallets[tag]
-            zoomView = UIView()
-            zoomView!.frame = self.view.frame
-            zoomView!.backgroundColor = UIColor.customMatrixGreen()
-            let tap = UITapGestureRecognizer(target: self, action: #selector(hideQR))
-            zoomView!.isUserInteractionEnabled = true
-            zoomView!.addGestureRecognizer(tap)
-            let width = zoomView!.frame.width
-            let height = width
-            let yorigin = zoomView!.frame.height/2 - height/2
-            let qrimage = UIImageView()
-            qrimage.frame = CGRect(x: 0, y: yorigin, width: width, height: height)
-            let uri = bip21Helper.btcURIforAddress(address: item.address)
-            qrimage.image = QRImageGenerator.imageForTextDark(text: uri, frame: qrimage.frame)
-            zoomView?.addSubview(qrimage)
-            UIApplication.shared.keyWindow?.addSubview(zoomView!)
-        }
-    }
-
-    @objc func hideQR(recognizer: UITapGestureRecognizer) {
-        if(zoomView != nil) {
-            zoomView?.removeFromSuperview()
-            zoomView?.isHidden = true
+            addressDetail.wallet = item
+            addressDetail.providesPresentationContextTransitionStyle = true
+            addressDetail.definesPresentationContext = true
+            addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+            addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+            hideButtons()
+            self.present(addressDetail, animated: true, completion: nil)
         }
     }
 

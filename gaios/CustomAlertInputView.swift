@@ -17,6 +17,7 @@ class CustomAlertInputView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         textField.becomeFirstResponder()
+        hideKeyboardWhenTappedAround()
     }
 
     override func viewWillAppear(_ animated: Bool) {
