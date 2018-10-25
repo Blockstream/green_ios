@@ -10,9 +10,9 @@ class WelcomeBackViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        welcomeLabel.text = NSLocalizedString("pwelcome_back_to_your_bitcoin", comment: "")
-        topButton.setTitle(NSLocalizedString("penable_face_id", comment: ""), for: .normal)
-        bottomButon.setTitle(NSLocalizedString("pset_pin", comment: ""), for: .normal)
+        welcomeLabel.text = NSLocalizedString("id_welcome_back_to_your_wallet", comment: "")
+        topButton.setTitle(NSLocalizedString("id_enable_face_id", comment: ""), for: .normal)
+        bottomButon.setTitle(NSLocalizedString("id_set_pin", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

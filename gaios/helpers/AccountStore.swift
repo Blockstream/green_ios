@@ -23,7 +23,7 @@ class AccountStore {
                 let address = try getSession().getReceiveAddress(subaccount: pointer)
                 let balance = try getSession().getBalance(subaccount: pointer, numConfs: 0)
                 let satoshi = balance!["satoshi"] as! UInt32
-                let name = pointer == 0 ? NSLocalizedString("pmain", comment: "") : account["name"] as! String
+                let name = pointer == 0 ? NSLocalizedString("id_main", comment: "") : account["name"] as! String
                 let currency = balance!["fiat_currency"] as! String
                 let wallet: WalletItem = WalletItem(name: name, address: address, balance: String(satoshi), currency: currency, pointer: pointer)
                 result.append(wallet)

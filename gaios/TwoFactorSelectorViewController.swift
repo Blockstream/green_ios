@@ -32,16 +32,16 @@ class TwoFactorSlectorViewController: UIViewController {
             for index in 0..<methods.count {
                 let method = methods[index] as! String
                 if(method == "email") {
-                    buttons[index].setTitle(NSLocalizedString("pemail", comment: ""), for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("id_email", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "email")
                 } else if (method == "sms") {
-                    buttons[index].setTitle(NSLocalizedString("psms", comment: ""), for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("id_sms", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "sms")
                 } else if (method == "gauth") {
-                    buttons[index].setTitle(NSLocalizedString("pgoogle_auth", comment: ""), for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("id_google_auth", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "gauth")
                 } else if (method == "phone") {
-                    buttons[index].setTitle(NSLocalizedString("pcall", comment: ""), for: UIControlState.normal)
+                    buttons[index].setTitle(NSLocalizedString("id_call", comment: ""), for: UIControlState.normal)
                     iconImage[index].image = #imageLiteral(resourceName: "phoneCall")
                 }
             }
@@ -53,7 +53,7 @@ class TwoFactorSlectorViewController: UIViewController {
         } catch {
            print("couldn't get status")
         }
-        titleLabel.text = NSLocalizedString("papprove_using", comment: "")
+        titleLabel.text = NSLocalizedString("id_approve_using", comment: "")
         backButton.isHidden = hideButton
     }
 

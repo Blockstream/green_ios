@@ -15,11 +15,11 @@ class EditTwoFactorViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = NSLocalizedString("ptwofactor_settings", comment: "")
-        emailLabel.text = NSLocalizedString("pemail", comment: "")
-        smsLabel.text = NSLocalizedString("psms", comment: "")
-        phoneCallLabel.text = NSLocalizedString("pphone_call", comment: "")
-        gauthLabel.text = NSLocalizedString("pgauth", comment: "")
+        titleLabel.text = NSLocalizedString("id_twofactor_settings", comment: "")
+        emailLabel.text = NSLocalizedString("id_email", comment: "")
+        smsLabel.text = NSLocalizedString("id_sms", comment: "")
+        phoneCallLabel.text = NSLocalizedString("id_phone_call", comment: "")
+        gauthLabel.text = NSLocalizedString("id_google_authenticator", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

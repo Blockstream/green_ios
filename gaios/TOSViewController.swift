@@ -55,12 +55,12 @@ class TOSViewController: UIViewController {
         tosTextView.attributedText = tosString
         tosTextView.font = UIFont.systemFont(ofSize: 16)
         tosTextView.isUserInteractionEnabled = true
-        let stringLocalized = NSLocalizedString("pgreen_is_noncustodial_bitcoin", comment: "")
+        let stringLocalized = NSLocalizedString("id_green_is_a_noncustodial_wallet", comment: "")
         let topString = NSMutableAttributedString(string: stringLocalized)
 
         topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
         topLabel.attributedText = topString
         secondaryLabel.text = NSLocalizedString("", comment: "")
-        nButton.setTitle(NSLocalizedString("pnext", comment: ""), for: .normal)
+        nButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
     }
 }

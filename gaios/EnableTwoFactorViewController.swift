@@ -11,11 +11,11 @@ class EnableTwoFactorViewController : UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = NSLocalizedString("ptwo_factor_authentication", comment: "")
-        emailButton.setTitle(NSLocalizedString("pemail", comment: ""), for: .normal)
-        smsButton.setTitle(NSLocalizedString("psms", comment: ""), for: .normal)
-        phoneCallButton.setTitle(NSLocalizedString("pcall", comment: ""), for: .normal)
-        gauthButton.setTitle(NSLocalizedString("pgoogle_auth", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("id_twofactor_authentication", comment: "")
+        emailButton.setTitle(NSLocalizedString("id_email", comment: ""), for: .normal)
+        smsButton.setTitle(NSLocalizedString("id_sms", comment: ""), for: .normal)
+        phoneCallButton.setTitle(NSLocalizedString("id_call", comment: ""), for: .normal)
+        gauthButton.setTitle(NSLocalizedString("id_google_auth", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

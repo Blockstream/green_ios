@@ -10,21 +10,21 @@ class CongratsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        topLabel.text = NSLocalizedString("pcongratsnyou_are_now_a_nproud", comment: "")
+        topLabel.text = NSLocalizedString("id_congratulationsnyou_are_now_the", comment: "")
         if(bioID.canEvaluatePolicy()){
             if(bioID.biometricType() == BiometricType.faceID) {
-                topButton.setTitle(NSLocalizedString("penable_face_id", comment: ""), for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("id_enable_face_id", comment: ""), for: UIControlState.normal)
             } else if (bioID.biometricType() == BiometricType.touchID) {
-                topButton.setTitle(NSLocalizedString("penable_touch_id", comment: ""), for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("id_enable_touch_id", comment: ""), for: UIControlState.normal)
             } else {
                 topButton.isUserInteractionEnabled = false
                 topButton.backgroundColor = UIColor.customTitaniumLight()
-                topButton.setTitle(NSLocalizedString("ptouchface_id_not_available", comment: ""), for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("id_touchface_id_not_available", comment: ""), for: UIControlState.normal)
             }
         } else {
             topButton.isUserInteractionEnabled = false
             topButton.backgroundColor = UIColor.customTitaniumLight()
-            topButton.setTitle(NSLocalizedString("ptouchface_id_not_available", comment: ""), for: UIControlState.normal)
+            topButton.setTitle(NSLocalizedString("id_touchface_id_not_available", comment: ""), for: UIControlState.normal)
         }
     }
 

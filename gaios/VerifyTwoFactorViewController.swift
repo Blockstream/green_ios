@@ -171,8 +171,8 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
 }
 
 public enum TitleText: String {
-    case email = "penter_code_sent_to_your_email"
-    case sms = "penter_code_received_via_sms"
-    case phone = "penter_code_received_via_phone"
-    case gauth = "penter_your_google_authenticator"
+    case email = "id_enter_code_sent_to_your_email"
+    case sms = "id_enter_code_received_via_sms"
+    case phone = "id_enter_code_received_via_phone"
+    case gauth = "id_enter_your_google_authenticator"
 }

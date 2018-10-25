@@ -16,8 +16,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
         hideKeyboardWhenTappedAround()
-        topLabel.text = NSLocalizedString("penter_your_wallet_recovery_seed", comment: "")
-        doneButton.setTitle(NSLocalizedString("pdone", comment: ""), for: .normal)
+        topLabel.text = NSLocalizedString("id_enter_your_wallet_recovery_seed", comment: "")
+        doneButton.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
     }
 
     override func viewDidLayoutSubviews() {

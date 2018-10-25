@@ -10,7 +10,7 @@ class ShowMnemonicsViewController : UIViewController {
         super.viewDidLoad()
         mnemonics = getAppDelegate().getMnemonicWords()!
         createViews()
-        topLabel.text = NSLocalizedString("precovery_words", comment: "")
+        topLabel.text = NSLocalizedString("id_recovery_words", comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

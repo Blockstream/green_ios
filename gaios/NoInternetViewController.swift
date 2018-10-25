@@ -9,9 +9,9 @@ class NoInternetViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        errorLabel.text = NSLocalizedString("perror", comment: "")
-        descriptionLabel.text = NSLocalizedString("pyou_are_not_connected_to_the", comment: "")
-        bottomButton.setTitle(NSLocalizedString("prefresh", comment: ""), for: .normal)
+        errorLabel.text = NSLocalizedString("id_error", comment: "")
+        descriptionLabel.text = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+        bottomButton.setTitle(NSLocalizedString("id_refresh", comment: ""), for: .normal)
     }
 
     @IBAction func refreshClicked(_ sender: Any) {

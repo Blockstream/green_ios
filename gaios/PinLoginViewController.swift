@@ -39,9 +39,9 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad() {
         super.viewDidLoad()
         if (setPinMode == true) {
-            topLabel.text = NSLocalizedString("pset_a_new_pin", comment: "")
+            topLabel.text = NSLocalizedString("id_set_a_new_pin", comment: "")
         } else {
-            topLabel.text = NSLocalizedString("penter_pin", comment: "")
+            topLabel.text = NSLocalizedString("id_enter_pin", comment: "")
         }
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
         for label in labels {
