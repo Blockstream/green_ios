@@ -40,6 +40,10 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         super.viewDidLoad()
         if (setPinMode == true) {
             topLabel.text = NSLocalizedString("id_set_a_new_pin", comment: "")
+        } else if (loginMode){
+            if let data = KeychainHelper.loadPassword(service: "pinData", account: "user") {
+                pinData = data
+            }
         } else {
             topLabel.text = NSLocalizedString("id_enter_pin", comment: "")
         }
