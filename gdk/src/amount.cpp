@@ -3,9 +3,9 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <json.hpp>
-
 #include "boost_wrapper.hpp"
+#include "exception.hpp"
+#include "ga_strings.hpp"
 
 #include "assertion.hpp"
 #include "include/amount.hpp"
@@ -54,6 +54,9 @@ namespace sdk {
         const auto end_p = amount_json.end();
         const int key_count = (satoshi_p != end_p) + (btc_p != end_p) + (mbtc_p != end_p) + (ubtc_p != end_p)
             + (bits_p != end_p) + (fiat_p != end_p);
+        if (key_count != 1) {
+            throw user_error(res::id_no_amount_specified);
+        }
         GA_SDK_RUNTIME_ASSERT(key_count == 1);
 
         const std::string fr_str = fiat_rate.empty() ? "0" : fiat_rate;

@@ -2,9 +2,11 @@
 #define GA_SDK_SIGNER_HPP
 #pragma once
 
+#include <gsl/span>
+
 #include "ga_wally.hpp"
+#include "include/network_parameters.hpp"
 #include "memory.hpp"
-#include <map>
 
 namespace ga {
 namespace sdk {

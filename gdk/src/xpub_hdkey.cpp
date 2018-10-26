@@ -1,3 +1,7 @@
+#include <cstring>
+
+#include "memory.hpp"
+#include "utils.hpp"
 #include "xpub_hdkey.hpp"
 
 namespace ga {

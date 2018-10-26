@@ -37,6 +37,12 @@ class wally_device(object):
         sig_der = wally.ec_sig_to_der(wally.ec_sig_from_bytes(priv_key, hash_, wally.EC_FLAG_ECDSA))
         return json.dumps({'signature': wally.hex_from_bytes(sig_der)})
 
+    def sign_tx(self, required_data):
+        tx_data = required_data['transaction']
+        tx_hex = tx_data['transaction'].encode('ascii')
+        tx = wally.tx_from_hex(tx_hex, wally.WALLY_TX_FLAG_USE_WITNESS)
+        # FIXME: Sign
+        return json.dumps('{}')
 
 
 WALLY_DEVICE = wally_device()
@@ -95,8 +101,7 @@ def do_test(network, debug):
 
         session.set_current_subaccount(subaccount)
         tx = session.create_transaction(details)
-        #print tx
-        #tx = session.sign_transaction(tx)
+        tx = session.sign_transaction_with_hardware(hw_info, tx).resolve(throw, hw_resolver)
         #tx = session.send_transaction(tx).resolve()
         #txhash = tx['txhash']
 

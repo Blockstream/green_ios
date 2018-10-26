@@ -6,15 +6,19 @@
 #include "autobahn_wrapper.hpp"
 #include "exception.hpp"
 #include "ga_session.hpp"
+#include "ga_tx.hpp"
 #include "logging.hpp"
 
 namespace ga {
 namespace sdk {
-    namespace address_type {
-        const std::string p2sh("p2sh");
-        const std::string p2wsh("p2wsh");
-        const std::string csv("csv");
-    }; // namespace address_type
+    static void log_exception(const char* preamble, const std::exception& e)
+    {
+        try {
+            const auto what = e.what();
+            GDK_LOG_SEV(log_level::debug) << preamble << what;
+        } catch (const std::exception&) {
+        }
+    }
 
     template <typename F, typename... Args> auto session::exception_wrapper(F&& f, Args&&... args)
     {
@@ -39,14 +43,14 @@ namespace sdk {
                 std::pair<std::string, std::string> details = get_error_details(e);
                 GDK_LOG_SEV(log_level::debug) << "server exception (" << details.first << "):" << details.second;
             } catch (const std::exception&) {
+                log_exception("call error:", e);
             }
             throw;
+        } catch (const user_error& e) {
+            log_exception("user error:", e);
+            throw;
         } catch (const std::exception& e) {
-            try {
-                const auto what = e.what();
-                GDK_LOG_SEV(log_level::debug) << "unknown exception:" << what;
-            } catch (const std::exception&) {
-            }
+            log_exception("unknown exception:", e);
             disconnect();
             throw;
         }
@@ -335,8 +339,13 @@ namespace sdk {
     nlohmann::json session::create_transaction(const nlohmann::json& details)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
-        return exception_wrapper(
-            [&] { return create_ga_transaction(*this, m_impl->get_network_parameters(), details); });
+        return exception_wrapper([&] {
+            try {
+                return create_ga_transaction(*this, m_impl->get_network_parameters(), details);
+            } catch (const user_error& e) {
+                return nlohmann::json({ { "error", e.what() } });
+            }
+        });
     }
 
     nlohmann::json session::sign_transaction(const nlohmann::json& details)

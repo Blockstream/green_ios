@@ -16,6 +16,7 @@ static int check_result(int result)
         break;
     case GA_ERROR:
         PyErr_SetString(PyExc_RuntimeError, "Failed");
+        break;
     default: /* FIXME */
         PyErr_SetString(PyExc_RuntimeError, "Connection Error");
         break;

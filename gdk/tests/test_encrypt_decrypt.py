@@ -13,6 +13,7 @@ def test_greenbits_testvector(session):
     session.register_user(MNEMONIC).login(MNEMONIC, '')
     plaintext = session.decrypt({'ciphertext': CIPHERTEXT, 'salt': SALT})['plaintext']
     plaintext = json.loads(plaintext)
+    # Note that the format of returned addresses has changed since this test was written
     PLAINTEXT = {
         "subaccount": 0,
         "script": "5221029b5435f3cc4eb2d3eaa499108e8fafa34dd27b3d496dd2b5e072f35d6591bb0e2103776059a7a14c90bdf92b063772d09ca53a8ba734b8055335d88a2758105fa3d552ae",

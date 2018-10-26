@@ -17,10 +17,14 @@ grep 'public final static' $3/GASDKConstants.java >>$result
 cat $5 >>$result
 echo '}' >>$result
 
-JAVAC_TARGET=1.7
-$JAVA_HOME/bin/javac -implicit:none -source $JAVAC_TARGET -target $JAVAC_TARGET \
-    -bootclasspath $JAVA_HOME/jre/lib/rt.jar \
-    -sourcepath $3/com/blockstream/libgreenaddress/ $3/com/blockstream/libgreenaddress/GASDK.java
+JAVAC_SOURCE=$7
+JAVAC_TARGET=$7
+JAVAC_ARGS="-implicit:none -source $JAVAC_SOURCE -target $JAVAC_TARGET -sourcepath $3/com/blockstream/libgreenaddress/ $3/com/blockstream/libgreenaddress/GASDK.java"
+if [ $JAVAC_TARGET = "1.7" ] ; then
+    JAVAC_ARGS="$JAVAC_ARGS -bootclasspath $JAVA_HOME/jre/lib/rt.jar"
+fi
+
+$JAVA_HOME/bin/javac $JAVAC_ARGS
 
 tmp_wally_java_dir=`mktemp -d`
 pushd . > /dev/null

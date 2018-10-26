@@ -14,7 +14,9 @@
 *.so
 *.dylib
 *.tar
+*.pyc
 Package.resolved
 .idea/
 docs/source/session.rst
 docs/build
+.pytest_cache/

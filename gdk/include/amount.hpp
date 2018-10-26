@@ -2,16 +2,17 @@
 #define GA_SDK_AMOUNT_HPP
 #pragma once
 
-#include <json.hpp>
 #include <ostream>
 #include <string>
+
+#include <nlohmann/json.hpp>
 
 namespace ga {
 namespace sdk {
 
     class amount final {
     public:
-        // Internally, BTC amounts are held as sotoshi
+        // Internally, BTC amounts are held as satoshi
         using value_type = uint64_t;
 
         static constexpr value_type coin_value = 100000000;

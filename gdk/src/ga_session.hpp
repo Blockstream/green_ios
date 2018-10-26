@@ -136,7 +136,11 @@ namespace sdk {
 
         amount get_min_fee_rate() const { return amount(m_min_fee_rate); }
         uint32_t get_block_height() const { return m_block_height; }
-        bool have_subaccounts() const { return m_subaccounts.size() != 1u; }
+        bool have_subaccounts() const
+        {
+            GA_SDK_RUNTIME_ASSERT(!m_subaccounts.empty());
+            return m_subaccounts.size() != 1u;
+        }
         amount get_dust_threshold() const;
         nlohmann::json get_spending_limits() const;
         bool is_spending_limits_decrease(const nlohmann::json& limit_details);

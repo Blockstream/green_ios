@@ -1,6 +1,8 @@
 #include "boost_wrapper.hpp"
 
 #include "assertion.hpp"
+#include "exception.hpp"
+#include "ga_strings.hpp"
 #include "include/session.hpp"
 #include "memory.hpp"
 #include "transaction_utils.hpp"
@@ -9,13 +11,20 @@
 
 namespace ga {
 namespace sdk {
-    // Dummy signatures are needed for correctly sizing transactions. If our signer supports
-    // low-R signatures, we estimate on a 71 byte signature, and occasionally produce 70 byte
-    // signatures. Otherwise, we estimate on 72 bytes and occasionally produce 70 or 71 byte
-    // signatures. Worst-case overestimation is therefore 2 bytes per input * 2 sigs, or
-    // 1 vbyte per input for segwit transactions.
+    namespace address_type {
+        const std::string p2pkh("p2pkh");
+        const std::string p2sh("p2sh");
+        const std::string p2wsh("p2wsh");
+        const std::string csv("csv");
+    }; // namespace address_type
 
-    // We construct our dummy sigs R, S from OP_SUBSTR/OP_INVALIDOPCODE.
+        // Dummy signatures are needed for correctly sizing transactions. If our signer supports
+        // low-R signatures, we estimate on a 71 byte signature, and occasionally produce 70 byte
+        // signatures. Otherwise, we estimate on 72 bytes and occasionally produce 70 or 71 byte
+        // signatures. Worst-case overestimation is therefore 2 bytes per input * 2 sigs, or
+        // 1 vbyte per input for segwit transactions.
+
+        // We construct our dummy sigs R, S from OP_SUBSTR/OP_INVALIDOPCODE.
 #define SIG_SLED(INITIAL, B) INITIAL, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B
 #define SIG_BYTES(INITIAL, B) SIG_SLED(INITIAL, B), SIG_SLED(B, B)
 
@@ -35,16 +44,6 @@ namespace sdk {
         = { { 0x00, 0x49, 0x30, 0x45, 0x02, 0x20, SIG_LOW, 0x02, 0x21, 0x00, SIG_HIGH, 0x01 } };
 
     static const std::array<unsigned char, 3> OP_0_PREFIX = { { 0x00, 0x01, 0x00 } };
-
-    static script_type get_script_type_from_address_type(const std::string& addr_type)
-    {
-        if (addr_type == address_type::csv)
-            return script_type::p2sh_p2wsh_csv_fortified_out;
-        if (addr_type == address_type::p2wsh)
-            return script_type::p2sh_p2wsh_fortified_out;
-        GA_SDK_RUNTIME_ASSERT(addr_type == address_type::p2sh);
-        return script_type::p2sh_fortified_out;
-    }
 
     inline auto p2sh_address_from_bytes(const network_parameters& net_params, byte_span_t script)
     {
@@ -130,20 +129,13 @@ namespace sdk {
     std::vector<unsigned char> output_script(ga_pubkeys& pubkeys, ga_user_pubkeys& user_pubkeys,
         ga_user_pubkeys& recovery_pubkeys, uint32_t subaccount, const nlohmann::json& data)
     {
-        const uint32_t pointer = data["pointer"];
+        const uint32_t pointer = data.at("pointer");
         script_type type;
 
-        auto addr_type = data.find("addr_type");
-        if (addr_type != data.end()) {
-            // Address
-            // TODO: get script_type from returned address (requires server support)
-            type = get_script_type_from_address_type(*addr_type);
-        } else {
-            type = data["script_type"];
-        }
+        type = data.at("script_type");
         uint32_t subtype = 0;
         if (type == script_type::p2sh_p2wsh_csv_fortified_out)
-            subtype = data["subtype"];
+            subtype = data.at("subtype");
 
         const auto ga_pub_key = pubkeys.derive(subaccount, pointer);
         const auto user_pub_key = user_pubkeys.derive(subaccount, pointer);
@@ -194,6 +186,12 @@ namespace sdk {
         return input_script(user_signer, prevout_script, dummy_sig, dummy_sig);
     }
 
+    std::vector<unsigned char> dummy_external_input_script(const signer& user_signer, byte_span_t pub_key)
+    {
+        const ecdsa_sig_t& dummy_sig = user_signer.supports_low_r() ? DUMMY_GA_SIG_LOW_R : DUMMY_GA_SIG;
+        return scriptsig_p2pkh_from_der(pub_key, ec_sig_to_der(dummy_sig, true));
+    }
+
     std::vector<unsigned char> witness_script(const std::vector<unsigned char>& script)
     {
         return witness_program_from_bytes(script, WALLY_SCRIPT_SHA256 | WALLY_SCRIPT_AS_PUSH);
@@ -213,23 +211,57 @@ namespace sdk {
         const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi)
     {
         // FIXME: Support OP_RETURN outputs
-        tx_add_raw_output(tx, satoshi, output_script_for_address(net_params, address));
+        std::vector<unsigned char> output_script;
+        try {
+            output_script = output_script_for_address(net_params, address);
+        } catch (const std::exception& e) {
+            throw user_error(res::id_invalid_address);
+        }
+        tx_add_raw_output(tx, satoshi, output_script);
         return amount(satoshi);
     }
 
-    amount add_tx_addressee(session& session, const network_parameters& net_params, wally_tx_ptr& tx,
-        nlohmann::json& result, const nlohmann::json& addressee)
+    auto get_addressee_amount(session& session, const nlohmann::json& addressee)
     {
+        const auto params = addressee.find("bip21-params");
+        if (params != addressee.end()) {
+            const auto payment_uri_amount = params->find("amount");
+            if (payment_uri_amount != params->end()) {
+                const auto amount_uri = session.convert_amount({ { "btc", payment_uri_amount->get<std::string>() } });
+
+                // fail if the amount is also specified in the addressee and it is different
+                bool conflicting_amount = false;
+                try {
+                    const auto amount_addressee = session.convert_amount(addressee);
+                    conflicting_amount = amount_addressee["satoshi"] != amount_uri["satoshi"];
+                } catch (const user_error&) {
+                    // no amount in addressee
+                }
+                if (conflicting_amount) {
+                    throw user_error(res::id_conflicting_amount_in_payment);
+                }
+                return amount_uri;
+            }
+        }
+
+        // payment uri does not contain an amount
+        // amount must be in addressee - fail if it's not
+        return session.convert_amount(addressee);
+    }
+
+    amount add_tx_addressee(
+        session& session, const network_parameters& net_params, wally_tx_ptr& tx, nlohmann::json& addressee)
+    {
+        // address may be a literal address or a bip21-style payment uri
         std::string address = addressee.at("address");
-        nlohmann::json amount;
         nlohmann::json payment_uri_params = parse_bitcoin_uri(address);
         if (!payment_uri_params.is_null()) {
-            result["bip21"] = payment_uri_params;
             address = payment_uri_params.at("address");
-            amount = session.convert_amount({ { "btc", payment_uri_params["amount"] } });
-        } else {
-            amount = session.convert_amount(addressee);
+            addressee["address"] = address;
+            addressee["bip21-params"] = payment_uri_params["bip21-params"];
         }
+        const auto amount = get_addressee_amount(session, addressee);
+        addressee.update(amount);
         return add_tx_output(net_params, tx, address, amount["satoshi"]);
     }
 

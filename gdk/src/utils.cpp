@@ -15,9 +15,15 @@
 
 #include <openssl/rand.h>
 
+#include <gsl/span>
+
 #include "boost_wrapper.hpp"
 
 #include "assertion.hpp"
+#include "exception.hpp"
+#include "ga_strings.hpp"
+#include "ga_wally.hpp"
+#include "memory.hpp"
 #include "utils.hpp"
 
 #include "include/utils.h"
@@ -185,14 +191,7 @@ namespace sdk {
         return bip39_mnemonic_from_bytes(ciphertext);
     }
 
-    // Parse a bitcoin uri as described in bip21/72 and return the components thereof
-    //  e.g.
-    //  parse_bitcoin_uri('bitcoin:abcdefg?amount=1.1&label=foo')
-    //  =>
-    //    {'address': 'abcdefg',
-    //     'amount': '1.1',
-    //     'label': 'foo'}
-    //
+    // Parse a bitcoin uri as described in bip21/72 and return the components
     // If the uri passed is not a bitcoin uri return a null json object.
     nlohmann::json parse_bitcoin_uri(const std::string& uri)
     {
@@ -218,14 +217,17 @@ namespace sdk {
             if (!address.empty()) {
                 parsed["address"] = address;
             }
+            nlohmann::json params;
             while (!tail.empty()) {
                 std::string param, key, value;
                 std::tie(param, tail) = split(tail, '&');
                 std::tie(key, value) = split(param, '=');
-                GA_SDK_RUNTIME_ASSERT_MSG(
-                    !boost::algorithm::starts_with(key, "req-"), "Unhandled required bip21 key: " + key);
-                parsed.emplace(key, value);
+                if (boost::algorithm::starts_with(key, "req-")) {
+                    throw user_error(res::id_unknown_bip21_parameter);
+                }
+                params.emplace(key, value);
             }
+            parsed["bip21-params"] = params;
         }
         return parsed;
     }

@@ -515,6 +515,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 %returns_void__(GA_set_transaction_memo)
 %returns_void__(GA_set_watch_only)
 %returns_struct(GA_sign_transaction, GA_json)
+%returns_struct(GA_sign_transaction_with_hardware, GA_twofactor_call)
 %returns_void__(GA_twofactor_call)
 %returns_struct(GA_twofactor_cancel_reset, GA_twofactor_call)
 %returns_struct(GA_twofactor_reset, GA_twofactor_call)

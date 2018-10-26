@@ -2,8 +2,8 @@
 #define GA_SDK_SESSION_HPP
 #pragma once
 
-#include <json.hpp>
 #include <memory>
+#include <nlohmann/json.hpp>
 
 #include "common.h"
 
@@ -16,12 +16,6 @@ namespace sdk {
     class signer;
     class ga_pubkeys;
     class ga_user_pubkeys;
-
-    namespace address_type {
-        GASDK_API extern const std::string p2sh;
-        GASDK_API extern const std::string p2wsh; // Actually p2sh-p2wsh
-        GASDK_API extern const std::string csv;
-    }; // namespace address_type
 
     class GASDK_API session {
     public:
@@ -67,7 +61,6 @@ namespace sdk {
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
 
-        void subscribe(const std::string& topic, std::function<void(const std::string& output)> callback);
         void set_notification_handler(GA_notification_handler handler, void* context);
 
         nlohmann::json get_receive_address(uint32_t subaccount, const std::string& addr_type = std::string());

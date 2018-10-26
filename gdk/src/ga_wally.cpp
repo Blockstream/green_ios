@@ -18,6 +18,13 @@ namespace sdk {
         return ret;
     }
 
+    std::array<unsigned char, SHA256_LEN> sha256(byte_span_t data)
+    {
+        std::array<unsigned char, SHA256_LEN> ret;
+        GA_SDK_VERIFY(wally_sha256(data.data(), data.size(), ret.data(), ret.size()));
+        return ret;
+    }
+
     std::array<unsigned char, SHA256_LEN> sha256d(byte_span_t data)
     {
         std::array<unsigned char, SHA256_LEN> ret;
@@ -132,6 +139,17 @@ namespace sdk {
             signatures.size(), sighashes.data(), sighashes.size(), flags, &out[0], out.size(), &written));
         GA_SDK_RUNTIME_ASSERT(written <= out.size());
         out.resize(written);
+    }
+
+    std::vector<unsigned char> scriptsig_p2pkh_from_der(byte_span_t pub_key, byte_span_t sig)
+    {
+        std::vector<unsigned char> out(2 + pub_key.size() + 2 + sig.size());
+        size_t written;
+        GA_SDK_VERIFY(wally_scriptsig_p2pkh_from_der(
+            pub_key.data(), pub_key.size(), sig.data(), sig.size(), out.data(), out.size(), &written));
+        GA_SDK_RUNTIME_ASSERT(written <= out.size());
+        out.resize(written);
+        return out;
     }
 
     void scriptpubkey_csv_2of2_then_1_from_bytes(byte_span_t keys, uint32_t csv_blocks, std::vector<unsigned char>& out)
@@ -336,6 +354,35 @@ namespace sdk {
             der.push_back(WALLY_SIGHASH_ALL);
         }
         return der;
+    }
+
+    std::vector<unsigned char> ec_public_key_from_private_key(byte_span_t private_key)
+    {
+        std::vector<unsigned char> ret(EC_PUBLIC_KEY_LEN);
+        GA_SDK_VERIFY(
+            wally_ec_public_key_from_private_key(private_key.data(), private_key.size(), ret.data(), ret.size()));
+        return ret;
+    }
+
+    std::vector<unsigned char> ec_public_key_decompress(byte_span_t public_key)
+    {
+        std::vector<unsigned char> ret(EC_PUBLIC_KEY_UNCOMPRESSED_LEN);
+        GA_SDK_VERIFY(wally_ec_public_key_decompress(public_key.data(), public_key.size(), ret.data(), ret.size()));
+        return ret;
+    }
+
+    // FIXME: move to wally?
+    std::vector<unsigned char> wif_to_private_key_bytes(
+        const std::string& wif_priv_key, unsigned char version, bool& compressed)
+    {
+        const std::vector<unsigned char> priv_key_bytes = base58check_to_bytes(wif_priv_key);
+        GA_SDK_RUNTIME_ASSERT(priv_key_bytes.size() == 33 || priv_key_bytes.size() == 34);
+        GA_SDK_RUNTIME_ASSERT(priv_key_bytes[0] == version);
+        compressed = priv_key_bytes.size() == 34;
+        if (compressed) {
+            GA_SDK_RUNTIME_ASSERT(priv_key_bytes[33] == 0x01);
+        }
+        return priv_key_bytes;
     }
 
     //

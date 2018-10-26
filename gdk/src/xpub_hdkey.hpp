@@ -2,8 +2,12 @@
 #define GA_SDK_XPUB_HDKEY_HPP
 #pragma once
 
-#include "ga_wally.hpp"
+#include <gsl/span>
 #include <map>
+
+#include "ga_wally.hpp"
+#include "include/network_parameters.hpp"
+#include "memory.hpp"
 
 namespace ga {
 namespace sdk {

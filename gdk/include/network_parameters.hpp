@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
+#include "common.h"
+
 namespace ga {
 namespace sdk {
 

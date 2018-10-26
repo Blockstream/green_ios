@@ -1,4 +1,5 @@
 #include "signer.hpp"
+#include "include/network_parameters.hpp"
 #include "utils.hpp"
 
 namespace ga {

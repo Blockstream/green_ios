@@ -7,26 +7,37 @@
 class GA_register_call : public GA_twofactor_call {
 public:
     GA_register_call(
-        ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent = std::string());
+        ga::sdk::session& session, const nlohmann::json& hw_details, const std::string& user_agent = std::string());
 
 private:
     state_type call_impl() override;
-    nlohmann::json m_details;
+
     std::string m_user_agent;
 };
 
 class GA_login_call : public GA_twofactor_call {
 public:
     GA_login_call(
-        ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent = std::string());
+        ga::sdk::session& session, const nlohmann::json& hw_details, const std::string& user_agent = std::string());
 
 private:
     void set_data(const std::string& action);
 
     state_type call_impl() override;
-    nlohmann::json m_details;
+
     std::string m_user_agent;
     std::string m_challenge;
+};
+
+class GA_sign_transaction_call : public GA_twofactor_call {
+public:
+    GA_sign_transaction_call(
+        ga::sdk::session& session, const nlohmann::json& hw_details, const nlohmann::json& tx_details);
+
+private:
+    state_type call_impl() override;
+
+    nlohmann::json m_tx_details;
 };
 
 class GA_change_settings_twofactor_call : public GA_twofactor_call {
@@ -82,6 +93,7 @@ private:
     nlohmann::json m_limit_details;
     bool m_twofactor_required;
     bool m_under_limit;
+    bool m_bumping_fee;
 };
 
 class GA_twofactor_reset_call : public GA_twofactor_call {

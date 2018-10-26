@@ -81,7 +81,7 @@ GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic)
  *
  * @session The server session to use.
  * @mnemonic The user's mnemonic passphrase.
- * @hw_device Details about the hardware device being use to register.
+ * @hw_device Details about the hardware device being used to register.
  *
  * GA_ERROR if registration is unsuccessful.
  */
@@ -103,7 +103,7 @@ GASDK_API int GA_login(struct GA_session* session, const char* mnemonic, const c
  * Authenticate a user using a hardware wallet/HSM/TPM.
  *
  * @session The server session to use.
- * @hw_device Details about the hardware device being use to login.
+ * @hw_device Details about the hardware device being used to login.
  * @call Destination for the resulting GA_twofactor_call to perform the login.
  *
  * GA_ERROR if authentication is unsuccessful.
@@ -331,7 +331,7 @@ GASDK_API int GA_create_transaction(
     struct GA_session* session, const GA_json* transaction_details, GA_json** transaction);
 
 /*
- * Sign the users inputs to a transaction.
+ * Sign the user's inputs to a transaction.
  *
  * @session The server session to use.
  * @transaction_details The transaction details for signing, previously returned from GA_create_transaction.
@@ -341,6 +341,19 @@ GASDK_API int GA_create_transaction(
  */
 GASDK_API int GA_sign_transaction(
     struct GA_session* session, const GA_json* transaction_details, GA_json** transaction);
+
+/*
+ * Sign the user's inputs to a transaction.
+ *
+ * @session The server session to use.
+ * @transaction_details The transaction details for signing, previously returned from GA_create_transaction.
+ * @hw_device Details about the hardware device being used to sign.
+ * @call Destination for the resulting GA_twofactor_call to perform the signing.
+ *
+ * GA_ERROR if the transaction could not be signed.
+ */
+GASDK_API int GA_sign_transaction_with_hardware(struct GA_session* session, const GA_json* hw_device,
+    const GA_json* transaction_details, struct GA_twofactor_call** call);
 
 /*
  * Send a transaction created by GA_create_transaction and signed by GA_sign_transaction.
@@ -397,8 +410,8 @@ GASDK_API int GA_get_fee_estimates(struct GA_session* session, GA_json** estimat
  * Get the user's mnemonic passphrase.
  *
  * @session The server session to use.
- * @password Optional password to encrypt the users mnemonic passphrase with.
- * @mnemonic Destination for the users 24 word mnemonic passphrase. if a
+ * @password Optional password to encrypt the user's mnemonic passphrase with.
+ * @mnemonic Destination for the user's 24 word mnemonic passphrase. if a
  *     non-empty password is given, the returned mnemonic passphrase will be
  *     27 words long and will require the password to use for logging in.
  *
@@ -447,7 +460,7 @@ GASDK_API int GA_get_twofactor_config(struct GA_session* session, GA_json** conf
  * @input The data to encrypt.
  * @output Destination for the encrypted data.
  *
- * If no key is given, the data is encrypted using a key derived from the users mnemonics.
+ * If no key is given, the data is encrypted using a key derived from the user's mnemonics.
  * This will fail to decrypt the data correctly if the user is logged in in watch-only
  * mode. For watch only users a key must be provided by the caller.
  *

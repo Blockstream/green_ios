@@ -31,27 +31,34 @@ namespace sdk {
             const auto type = script_type(u["script_type"]);
             const bool low_r = session.get_signer().supports_low_r();
             const uint32_t dummy_sig_type = low_r ? WALLY_TX_DUMMY_SIG_LOW_R : WALLY_TX_DUMMY_SIG;
+            const bool external = !json_get_value(u, "private_key").empty();
 
-            // TODO: Create correctly sized dummys instead of actual script (faster)
-            const auto prevout_script = output_script(
-                session.get_ga_pubkeys(), session.get_user_pubkeys(), session.get_recovery_pubkeys(), subaccount, u);
-
-            wally_tx_witness_stack_ptr wit;
-
-            if (is_segwit_script_type(type)) {
-                // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
-                wit = tx_witness_stack_init(4);
-                tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_NULL);
-                tx_witness_stack_add_dummy(wit, dummy_sig_type);
-                tx_witness_stack_add_dummy(wit, dummy_sig_type);
-                tx_witness_stack_add(wit, prevout_script);
-            }
-
-            const auto txid = bytes_from_hex_rev(txhash);
-            if (wit) {
-                tx_add_raw_input(tx, txid, index, sequence, DUMMY_WITNESS_SCRIPT, wit);
+            if (external) {
+                tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
+                    dummy_external_input_script(session.get_signer(), bytes_from_hex(u["public_key"])));
             } else {
-                tx_add_raw_input(tx, txid, index, sequence, dummy_input_script(session.get_signer(), prevout_script));
+                // TODO: Create correctly sized dummys instead of actual script (faster)
+                const auto prevout_script = output_script(session.get_ga_pubkeys(), session.get_user_pubkeys(),
+                    session.get_recovery_pubkeys(), subaccount, u);
+
+                wally_tx_witness_stack_ptr wit;
+
+                if (is_segwit_script_type(type)) {
+                    // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
+                    wit = tx_witness_stack_init(4);
+                    tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_NULL);
+                    tx_witness_stack_add_dummy(wit, dummy_sig_type);
+                    tx_witness_stack_add_dummy(wit, dummy_sig_type);
+                    tx_witness_stack_add(wit, prevout_script);
+                }
+
+                const auto txid = bytes_from_hex_rev(txhash);
+                if (wit) {
+                    tx_add_raw_input(tx, txid, index, sequence, DUMMY_WITNESS_SCRIPT, wit);
+                } else {
+                    tx_add_raw_input(
+                        tx, txid, index, sequence, dummy_input_script(session.get_signer(), prevout_script));
+                }
             }
 
             return amount(u["satoshi"]);
@@ -184,6 +191,250 @@ namespace sdk {
             }
             return std::make_pair(is_rbf, is_cpfp);
         }
+
+        void create_ga_transaction_impl(session& session, const network_parameters& net_params, nlohmann::json& result)
+        {
+            result["error"] = std::string(); // Clear any previous error
+            result["user_signed"] = false;
+            result["server_signed"] = false;
+
+            // Check for RBF/CPFP
+            bool is_rbf, is_cpfp;
+            std::tie(is_rbf, is_cpfp) = check_bump_tx(session, result);
+
+            const uint32_t current_subaccount = result.value("subaccount", session.get_current_subaccount());
+
+            const bool is_redeposit = result.value("is_redeposit", false);
+
+            if (is_redeposit) {
+                if (result.find("addressees") == result.end()) {
+                    // For re-deposit/CPFP, create the addressee if not present already
+                    const auto address = session.get_receive_address(current_subaccount)["address"];
+                    std::vector<nlohmann::json> addressees;
+                    addressees.emplace_back(nlohmann::json({ { "address", address }, { "satoshi", 0 } }));
+                    result["addressees"] = addressees;
+                }
+                // When re-depositing, send everything and don't create change
+                result["send_all"] = true;
+            }
+            result["is_redeposit"] = is_redeposit;
+
+            bool is_sweep = false;
+            if (result.find("private_key") != result.end()) {
+                // create sweep transaction
+                if (result.find("utxos") != result.end()) {
+                    // check for sweep related keys
+                    for (const auto& utxo : result["utxos"]) {
+                        GA_SDK_RUNTIME_ASSERT(!json_get_value(utxo, "private_key").empty());
+                    }
+                } else {
+                    result["utxos"] = session.get_unspent_outputs_for_private_key(
+                        result["private_key"], json_get_value(result, "passphrase"), 0);
+                }
+                if (result["utxos"].empty()) {
+                    result["error"] = res::id_no_utxos_found;
+                    return;
+                }
+                result["send_all"] = true;
+                GA_SDK_RUNTIME_ASSERT(result.find("addressees") == result.end());
+                const auto address = session.get_receive_address(current_subaccount)["address"];
+                std::vector<nlohmann::json> addressees;
+                addressees.emplace_back(nlohmann::json({ { "address", address }, { "satoshi", 0 } }));
+                result["addressees"] = addressees;
+                is_sweep = true;
+            }
+
+            // Let the caller know if addressees should not be modified
+            result["addressees_read_only"] = is_redeposit || is_rbf || is_cpfp || is_sweep;
+
+            if (result.find("utxos") == result.end()) {
+                // Fetch the users utxos from the current subaccount.
+                // Always spend utxos with 1 confirmation, unless we are in testnet.
+                // Even in testnet, if RBFing, require 1 confirmation.
+                const bool main_net = net_params.main_net();
+                const uint32_t num_confs = main_net || is_rbf || is_cpfp ? 1 : 0;
+                result["utxos"] = session.get_unspent_outputs(current_subaccount, num_confs);
+            }
+
+            const bool send_all = json_add_if_missing(result, "send_all", false);
+            const std::string strategy = json_add_if_missing(result, "utxo_strategy", UTXO_SEL_DEFAULT);
+            const bool manual_selection = strategy == UTXO_SEL_MANUAL;
+            GA_SDK_RUNTIME_ASSERT(strategy == UTXO_SEL_DEFAULT || manual_selection);
+            if (!manual_selection) {
+                // We will recompute the used utxos
+                result.erase("used_utxos");
+            }
+
+            // We must have addressees to send to, and if sending everything, only one
+            auto& addressees = result.at("addressees");
+            if (addressees.empty()) {
+                result["error"] = res::id_no_outputs; // No outputs
+                return;
+            }
+
+            // Send all should not be visible/set when RBFing
+            GA_SDK_RUNTIME_ASSERT(!is_rbf || !send_all);
+
+            if (send_all && addressees.size() > 1) {
+                result["error"] = res::id_send_all_requires_a_single; // Send all requires a single output
+                return;
+            }
+
+            const auto& utxos = result["utxos"];
+            const uint32_t current_block_height = session.get_block_height();
+            const uint32_t num_extra_utxos = is_rbf ? result["old_used_utxos"].size() : 0;
+            wally_tx_ptr tx = tx_init(current_block_height, utxos.size() + num_extra_utxos, addressees.size() + 1);
+            if (!is_rbf) {
+                set_anti_snipe_locktime(tx, current_block_height);
+            }
+
+            // Add all outputs and compute the total amount of satoshi to be sent
+            amount required_total{ 0 };
+
+            for (auto& addressee : addressees) {
+                required_total += add_tx_addressee(session, net_params, tx, addressee);
+            }
+
+            std::vector<uint32_t> used_utxos;
+            used_utxos.reserve(utxos.size());
+            uint32_t utxo_index = 0;
+
+            amount available_total, total, fee, v;
+
+            if (is_rbf) {
+                // Add all the old utxos. Note we don't add them to used_utxos
+                // since the user can't choose to remove them
+                for (const auto& utxo : result["old_used_utxos"]) {
+                    v = add_utxo(session, tx, utxo);
+                    available_total += v;
+                    total += v;
+                    ++utxo_index;
+                }
+            }
+
+            if (manual_selection) {
+                // Add all selected utxos
+                for (const auto& ui : result["used_utxos"]) {
+                    utxo_index = ui;
+                    v = add_utxo(session, tx, utxos.at(utxo_index));
+                    available_total += v;
+                    total += v;
+                    used_utxos.emplace_back(utxo_index);
+                }
+            } else {
+                // Collect utxos in order until we have covered the amount to send
+                // FIXME: Better coin selection algorithms (esp. minimum size)
+                for (const auto& utxo : utxos) {
+                    if (send_all || total < required_total) {
+                        v = add_utxo(session, tx, utxo);
+                        total += v;
+                        used_utxos.emplace_back(utxo_index);
+                        ++utxo_index;
+                    } else {
+                        v = static_cast<amount::value_type>(utxo["satoshi"]);
+                    }
+                    available_total += v;
+                }
+            }
+
+            // Return the available total for client insufficient fund handling
+            result["available_total"] = available_total.value();
+
+            bool have_change = false;
+            uint32_t change_index = NO_CHANGE_INDEX;
+            if (is_rbf) {
+                have_change = result.value("have_change", false);
+                if (have_change) {
+                    add_tx_output(net_params, tx, result["change_address"]);
+                    change_index = tx->num_outputs - 1;
+                }
+            }
+
+            const amount dust_threshold = session.get_dust_threshold();
+            const amount user_fee_rate = amount(result.at("fee_rate"));
+            const amount min_fee_rate = session.get_min_fee_rate();
+            const amount old_fee = amount(result.value("old_fee", 0));
+            const amount network_fee = amount(result.value("network_fee", 0));
+
+            for (;;) {
+                const amount min_change = have_change ? amount() : dust_threshold;
+
+                fee = get_tx_fee(tx, min_fee_rate, user_fee_rate);
+                // For RBF, the new fee must be larger than the old fee *before*
+                // the bandwidth fee is added
+                fee = fee < old_fee ? old_fee + 1 : fee;
+                const amount fee_increment = fee - old_fee + network_fee;
+                fee += network_fee;
+
+                if (send_all) {
+                    required_total = total - fee - min_change;
+                    tx->outputs[0].satoshi = required_total.value();
+                }
+
+                const amount am = required_total + fee + min_change;
+                if (total < am) {
+                    if (manual_selection || used_utxos.size() == utxos.size()) {
+                        // Used all inputs and do not have enough funds
+                        result["error"] = res::id_insufficient_funds; // Insufficient funds
+                        return;
+                    }
+
+                    // FIXME: Use our strategy here when non-default implemented
+                    total += add_utxo(session, tx, utxos[tx->num_inputs]);
+                    used_utxos.emplace_back(utxo_index);
+                    ++utxo_index;
+                    continue;
+                }
+
+                if (total == am || have_change) {
+                    result["fee"] = fee.value();
+                    result["fee_increment"] = fee_increment.value();
+                    result["network_fee"] = network_fee.value();
+                    break;
+                }
+
+                // Add a change output, re-using the previously generated change
+                // address if we can
+                std::string change_address = json_get_value(result, "change_address");
+                if (change_address.empty()) {
+                    // Find out where to send any change
+                    uint32_t change_subaccount = result.value("change_subaccount", current_subaccount);
+                    // TODO: store change address meta data and pass it to the
+                    // server to validate when sending (requires backend support)
+                    change_address = session.get_receive_address(change_subaccount)["address"];
+                    result["change_subaccount"] = change_subaccount;
+                    result["change_address"] = change_address;
+                }
+                add_tx_output(net_params, tx, change_address);
+                have_change = true;
+                change_index = tx->num_outputs - 1;
+            }
+
+            result["used_utxos"] = used_utxos;
+            result["have_change"] = have_change;
+            result["satoshi"] = required_total.value();
+
+            amount::value_type change_amount = 0;
+            if (have_change) {
+                // Set the change amount
+                auto& change_output = tx->outputs[change_index];
+                change_output.satoshi = (total - required_total - fee).value();
+                change_amount = change_output.satoshi;
+                const uint32_t new_change_index = get_uniform_uint32_t(tx->num_outputs);
+                if (change_index != new_change_index) {
+                    // Randomize change output
+                    std::swap(tx->outputs[new_change_index], change_output);
+                    change_index = new_change_index;
+                }
+            }
+            result["change_amount"] = change_amount;
+            result["change_index"] = change_index;
+
+            if (user_fee_rate < min_fee_rate) {
+                result["error"] = res::id_fee_rate_is_below_minimum; // Fee rate is below minimum accepted fee rate
+            }
+            update_tx_info(tx, result);
+        }
     } // namespace
 
     nlohmann::json create_ga_transaction(
@@ -191,222 +442,17 @@ namespace sdk {
     {
         // Copy all inputs into our result (they will be overridden below as needed)
         nlohmann::json result(details); // FIXME: support in place for calling from send
-
-        result["error"] = std::string(); // Clear any previous error
-        result["user_signed"] = false;
-        result["server_signed"] = false;
-
-        // Check for RBF/CPFP
-        bool is_rbf, is_cpfp;
-        std::tie(is_rbf, is_cpfp) = check_bump_tx(session, result);
-
-        const uint32_t current_subaccount = result.value("subaccount", session.get_current_subaccount());
-
-        const bool is_redeposit = result.value("is_redeposit", false);
-
-        if (is_redeposit) {
-            if (result.find("addressees") == result.end()) {
-                // For re-deposit/CPFP, create the addressee if not present already
-                const auto address = session.get_receive_address(current_subaccount)["address"];
-                std::vector<nlohmann::json> addressees;
-                addressees.emplace_back(nlohmann::json({ { "address", address }, { "satoshi", 0 } }));
-                result["addressees"] = addressees;
-            }
-            // When re-depositing, send everything and don't create change
-            result["send_all"] = true;
-        }
-        result["is_redeposit"] = is_redeposit;
-
-        // Let the caller know if addressees should not be modified
-        result["addressees_read_only"] = is_redeposit || is_rbf || is_cpfp;
-
-        if (result.find("utxos") == result.end()) {
-            // Fetch the users utxos from the current subaccount.
-            // Always spend utxos with 1 confirmation, unless we are in testnet.
-            // Even in testnet, if RBFing, require 1 confirmation.
-            const bool main_net = net_params.main_net();
-            const uint32_t num_confs = main_net || is_rbf || is_cpfp ? 1 : 0;
-            result["utxos"] = session.get_unspent_outputs(current_subaccount, num_confs);
-        }
-
-        const bool send_all = json_add_if_missing(result, "send_all", false);
-        const std::string strategy = json_add_if_missing(result, "utxo_strategy", UTXO_SEL_DEFAULT);
-        const bool manual_selection = strategy == UTXO_SEL_MANUAL;
-        GA_SDK_RUNTIME_ASSERT(strategy == UTXO_SEL_DEFAULT || manual_selection);
-        if (!manual_selection) {
-            // We will recompute the used utxos
-            result.erase("used_utxos");
-        }
-
-        // We must have addressees to send to, and if sending everything, only one
-        const auto& addressees = result.at("addressees");
-        if (addressees.empty()) {
-            result["error"] = res::no_outputs; // No outputs
-            return result;
-        }
-
-        // Send all should not be visible/set when RBFing
-        GA_SDK_RUNTIME_ASSERT(!is_rbf || !send_all);
-
-        if (send_all && addressees.size() > 1) {
-            result["error"] = res::send_all_requires_single; // Send all requires a single output
-            return result;
-        }
-
-        const auto& utxos = result["utxos"];
-        const uint32_t current_block_height = session.get_block_height();
-        const uint32_t num_extra_utxos = is_rbf ? result["old_used_utxos"].size() : 0;
-        wally_tx_ptr tx = tx_init(current_block_height, utxos.size() + num_extra_utxos, addressees.size() + 1);
-        if (!is_rbf) {
-            set_anti_snipe_locktime(tx, current_block_height);
-        }
-
-        // Add all outputs and compute the total amount of satoshi to be sent
-        amount required_total{ 0 };
-
-        for (const auto& addressee : addressees) {
-            required_total += add_tx_addressee(session, net_params, tx, result, addressee);
-        }
-
-        std::vector<uint32_t> used_utxos;
-        used_utxos.reserve(utxos.size());
-        uint32_t utxo_index = 0;
-
-        amount available_total, total, fee, v;
-
-        if (is_rbf) {
-            // Add all the old utxos. Note we don't add them to used_utxos
-            // since the user can't choose to remove them
-            for (const auto& utxo : result["old_used_utxos"]) {
-                v = add_utxo(session, tx, utxo);
-                available_total += v;
-                total += v;
-                ++utxo_index;
+        try {
+            // Wrap the actual processing in try/catch
+            // The idea here is that result is populated with as much detail as possible
+            // before returning any error to allow the caller to make iterative changes
+            // fixes each error
+            create_ga_transaction_impl(session, net_params, result);
+        } catch (const std::exception& e) {
+            if (result.value("error", "").empty()) {
+                result["error"] = e.what();
             }
         }
-
-        if (manual_selection) {
-            // Add all selected utxos
-            for (const auto& ui : result["used_utxos"]) {
-                utxo_index = ui;
-                v = add_utxo(session, tx, utxos.at(utxo_index));
-                available_total += v;
-                total += v;
-                used_utxos.emplace_back(utxo_index);
-            }
-        } else {
-            // Collect utxos in order until we have covered the amount to send
-            // FIXME: Better coin selection algorithms (esp. minimum size)
-            for (const auto& utxo : utxos) {
-                if (send_all || total < required_total) {
-                    v = add_utxo(session, tx, utxo);
-                    total += v;
-                    used_utxos.emplace_back(utxo_index);
-                    ++utxo_index;
-                } else {
-                    v = static_cast<amount::value_type>(utxo["satoshi"]);
-                }
-                available_total += v;
-            }
-        }
-
-        // Return the available total for client insufficient fund handling
-        result["available_total"] = available_total.value();
-
-        bool have_change = false;
-        uint32_t change_index = NO_CHANGE_INDEX;
-        if (is_rbf) {
-            have_change = result.value("have_change", false);
-            if (have_change) {
-                add_tx_output(net_params, tx, result["change_address"]);
-                change_index = tx->num_outputs - 1;
-            }
-        }
-
-        const amount dust_threshold = session.get_dust_threshold();
-        const amount user_fee_rate = amount(result.at("fee_rate"));
-        const amount min_fee_rate = session.get_min_fee_rate();
-        const amount old_fee = amount(result.value("old_fee", 0));
-        const amount network_fee = amount(result.value("network_fee", 0));
-
-        for (;;) {
-            const amount min_change = have_change ? amount() : dust_threshold;
-
-            fee = get_tx_fee(tx, min_fee_rate, user_fee_rate);
-            // For RBF, the new fee must be larger than the old fee *before*
-            // the bandwidth fee is added
-            fee = fee < old_fee ? old_fee + 1 : fee;
-            const amount fee_increment = fee - old_fee + network_fee;
-            fee += network_fee;
-
-            if (send_all) {
-                required_total = total - fee - min_change;
-                tx->outputs[0].satoshi = required_total.value();
-            }
-
-            const amount am = required_total + fee + min_change;
-            if (total < am) {
-                if (manual_selection || used_utxos.size() == utxos.size()) {
-                    // Used all inputs and do not have enough funds
-                    result["error"] = res::insufficient_funds; // Insufficient funds
-                    return result;
-                }
-
-                // FIXME: Use our strategy here when non-default implemented
-                total += add_utxo(session, tx, utxos[tx->num_inputs]);
-                used_utxos.emplace_back(utxo_index);
-                ++utxo_index;
-                continue;
-            }
-
-            if (total == am || have_change) {
-                result["fee"] = fee.value();
-                result["fee_increment"] = fee_increment.value();
-                result["network_fee"] = network_fee.value();
-                break;
-            }
-
-            // Add a change output, re-using the previously generated change
-            // address if we can
-            std::string change_address = json_get_value(result, "change_address");
-            if (change_address.empty()) {
-                // Find out where to send any change
-                uint32_t change_subaccount = result.value("change_subaccount", current_subaccount);
-                // TODO: store change address meta data and pass it to the
-                // server to validate when sending (requires backend support)
-                change_address = session.get_receive_address(change_subaccount)["address"];
-                result["change_subaccount"] = change_subaccount;
-                result["change_address"] = change_address;
-            }
-            add_tx_output(net_params, tx, change_address);
-            have_change = true;
-            change_index = tx->num_outputs - 1;
-        }
-
-        result["used_utxos"] = used_utxos;
-        result["have_change"] = have_change;
-        result["satoshi"] = required_total.value();
-
-        amount::value_type change_amount = 0;
-        if (have_change) {
-            // Set the change amount
-            auto& change_output = tx->outputs[change_index];
-            change_output.satoshi = (total - required_total - fee).value();
-            change_amount = change_output.satoshi;
-            const uint32_t new_change_index = get_uniform_uint32_t(tx->num_outputs);
-            if (change_index != new_change_index) {
-                // Randomize change output
-                std::swap(tx->outputs[new_change_index], change_output);
-                change_index = new_change_index;
-            }
-        }
-        result["change_amount"] = change_amount;
-        result["change_index"] = change_index;
-
-        if (user_fee_rate < min_fee_rate) {
-            result["error"] = res::fee_rate_below_minimum; // Fee rate is below minimum accepted fee rate
-        }
-        update_tx_info(tx, result);
         return result;
     }
 
@@ -414,66 +460,88 @@ namespace sdk {
     {
         const auto txhash = u["txhash"];
         const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
-        const uint32_t pointer = u["pointer"];
+        const uint32_t pointer = json_get_value(u, "pointer", 0u);
         const amount::value_type v = u["satoshi"]; // FIXME: Allow amount conversions directly
         const amount satoshi{ v };
         const auto type = script_type(u["script_type"]);
+        const std::string private_key = json_get_value(u, "private_key");
 
-        const auto prevout_script = output_script(
-            session.get_ga_pubkeys(), session.get_user_pubkeys(), session.get_recovery_pubkeys(), subaccount, u);
+        const auto prevout_script = !private_key.empty()
+            ? bytes_from_hex(u["prevout_script"])
+            : output_script(
+                  session.get_ga_pubkeys(), session.get_user_pubkeys(), session.get_recovery_pubkeys(), subaccount, u);
 
         const uint32_t flags = is_segwit_script_type(type) ? WALLY_TX_FLAG_USE_WITNESS : 0;
         const auto tx_hash
             = tx_get_btc_signature_hash(tx, index, prevout_script, satoshi.value(), WALLY_SIGHASH_ALL, flags);
 
-        std::vector<uint32_t> path;
-        path.reserve(4);
-        if (subaccount != 0) {
-            path.emplace_back(harden(3));
-            path.emplace_back(harden(subaccount));
-        }
-        path.emplace_back(1u); // BRANCH_REGULAR
-        path.emplace_back(pointer);
-
-        const auto user_sig = session.get_signer().sign_hash(path, tx_hash);
-
-        if (is_segwit_script_type(type)) {
-            // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
-            // Note that this requires setting the inputs sequence number to the CSV time too
-            auto wit = tx_witness_stack_init(1);
-            tx_witness_stack_add(wit, ec_sig_to_der(user_sig, true));
-            tx_set_input_witness(tx, index, wit);
-            tx_set_input_script(tx, index, witness_script(prevout_script));
+        if (!private_key.empty()) {
+            const auto private_key_bytes = bytes_from_hex(private_key);
+            const auto user_sig
+                = ec_sig_from_bytes(gsl::make_span(private_key_bytes).subspan(1).first(EC_PRIVATE_KEY_LEN), tx_hash);
+            tx_set_input_script(
+                tx, index, scriptsig_p2pkh_from_der(bytes_from_hex(u["public_key"]), ec_sig_to_der(user_sig, true)));
         } else {
-            tx_set_input_script(tx, index, input_script(session.get_signer(), prevout_script, user_sig));
+            std::vector<uint32_t> path;
+            path.reserve(4);
+            if (subaccount != 0) {
+                path.emplace_back(harden(3));
+                path.emplace_back(harden(subaccount));
+            }
+            path.emplace_back(1u); // BRANCH_REGULAR
+            path.emplace_back(pointer);
+
+            const auto user_sig = session.get_signer().sign_hash(path, tx_hash);
+
+            if (is_segwit_script_type(type)) {
+                // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
+                // Note that this requires setting the inputs sequence number to the CSV time too
+                auto wit = tx_witness_stack_init(1);
+                tx_witness_stack_add(wit, ec_sig_to_der(user_sig, true));
+                tx_set_input_witness(tx, index, wit);
+                tx_set_input_script(tx, index, witness_script(prevout_script));
+            } else {
+                tx_set_input_script(tx, index, input_script(session.get_signer(), prevout_script, user_sig));
+            }
         }
+    }
+
+    std::vector<nlohmann::json> get_ga_signing_inputs(const nlohmann::json& details)
+    {
+        GA_SDK_RUNTIME_ASSERT(json_get_value(details, "error").empty());
+
+        const auto& used_utxos = details.at("used_utxos");
+        const auto old_utxos = details.find("old_used_utxos");
+        const bool have_old = old_utxos != details.end();
+
+        std::vector<nlohmann::json> result;
+        result.reserve(used_utxos.size() + (have_old ? old_utxos->size() : 0));
+
+        if (have_old) {
+            for (const auto& utxo : *old_utxos) {
+                result.push_back(utxo);
+            }
+        }
+        const auto& utxos = details.at("utxos");
+        for (const auto& ui : used_utxos) {
+            const uint32_t utxo_index = ui;
+            result.push_back(utxos.at(utxo_index));
+        }
+        return result;
     }
 
     nlohmann::json sign_ga_transaction(session& session, const nlohmann::json& details)
     {
-        GA_SDK_RUNTIME_ASSERT(json_get_value(details, "error").empty());
+        auto tx = tx_from_hex(details.at("transaction"));
 
-        nlohmann::json result(details); // FIXME: support in place for calling from send
-
-        const auto& utxos = result.at("utxos");
-        const auto& used_utxos = result.at("used_utxos");
-
-        // FIXME: HW wallet support
-        // FIXME: Swept inputs need signing with the sweeping private key
-        // which should be passed in the tx details
-        auto tx = tx_from_hex(details["transaction"]);
+        const auto inputs = get_ga_signing_inputs(details);
         size_t i = 0;
-        if (result.find("old_used_utxos") != result.end()) {
-            for (const auto& utxo : result["old_used_utxos"]) {
-                sign_input(session, tx, i, utxo);
-                ++i;
-            }
-        }
-        for (const auto& ui : used_utxos) {
-            const uint32_t utxo_index = ui;
-            sign_input(session, tx, i, utxos.at(utxo_index));
+        for (const auto& utxo : inputs) {
+            sign_input(session, tx, i, utxo);
             ++i;
         }
+
+        nlohmann::json result(details);
         result["user_signed"] = true;
         update_tx_info(tx, result);
         return result;

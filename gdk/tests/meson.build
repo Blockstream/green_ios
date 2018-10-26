@@ -58,12 +58,17 @@ if build_jni
                     'WSSWatchOnlyLogin']
     foreach source : java_sources
         target_name = source + '_java_test'
+        command = ['javac', '-implicit:none', '-source', java_target, '-target', java_target,
+                   '-classpath', '@OUTDIR@/../src/swig_java/GASDK.jar', '-d', '@OUTDIR@', '@INPUT@']
+        if java_target == '1.7'
+            command += ['-bootclasspath', join_paths(java_home, 'jre', 'lib', 'rt.jar')]
+        endif
+
         test_target = custom_target(target_name,
-                          command : ['javac', '-implicit:none', '-bootclasspath', join_paths(java_home, 'jre', 'lib', 'rt.jar'), '-source', '1.7',
-                                     '-target', '1.7', '-classpath', '@OUTDIR@/../src/swig_java/GASDK.jar', '-d', '@OUTDIR@', '@INPUT@'],
-                                     input : source + '.java',
-                                     output : source + '.class',
-                                     depends : swig_target)
+                                    command : command,
+                                    input : source + '.java',
+                                    output : source + '.class',
+                                    depends : swig_target)
         test(target_name, java,
              args : ['-Xcheck:jni', '-classpath', '.:../src/swig_java/GASDK.jar', '-Djava.library.path=.:../src', source],
              workdir : meson.current_build_dir(),

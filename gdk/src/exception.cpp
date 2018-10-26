@@ -1,4 +1,5 @@
 #include "exception.hpp"
+#include "boost_wrapper.hpp"
 
 namespace ga {
 namespace sdk {

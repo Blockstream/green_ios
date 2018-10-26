@@ -2,7 +2,7 @@
 #define GA_SDK_CONTAINERS_HPP
 #pragma once
 
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <string>
 
 namespace ga {

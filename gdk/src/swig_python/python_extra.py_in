@@ -179,6 +179,10 @@ class Session(object):
     def sign_transaction(self, transaction_details):
         return json.loads(sign_transaction(self.session_obj, self._to_json(transaction_details)))
 
+    def sign_transaction_with_hardware(self, hw_device, transaction_details):
+        return Call(sign_transaction_with_hardware(self.session_obj, self._to_json(hw_device),
+                                                   self._to_json(transaction_details)))
+
     def send_transaction(self, transaction_details):
         return Call(send_transaction(self.session_obj, self._to_json(transaction_details)))
 

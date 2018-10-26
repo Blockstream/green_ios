@@ -5,8 +5,31 @@ cache:
 before_script:
   - ./tools/clean.sh meson
 
+image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
+
+.fedora_images:
+  image: greenaddress/fedora_ci@sha256:1b504d941e5d9953ed2fa40798c9c9e071cc3dbe1868115c25eee9f979f3c3ae
+  tags:
+    - ga
+
+.ndk_release:
+  tags:
+    - ga
+  artifacts:
+    expire_in: 1 day
+    when: on_success
+    paths:
+    - gdk-android-jni
+
+.osx_test:
+  tags:
+    - osx
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - subprojects/packagecache/
+
 test_gcc:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   script:
@@ -14,23 +37,18 @@ test_gcc:
     - ./tools/build.sh --gcc
 
 test_fedora_gcc:
-  image: greenaddress/fedora_ci@sha256:1b504d941e5d9953ed2fa40798c9c9e071cc3dbe1868115c25eee9f979f3c3ae
-  tags:
-    - ga
+  extends: .fedora_images
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --gcc
 
 test_fedora_clang:
-  image: greenaddress/fedora_ci@sha256:1b504d941e5d9953ed2fa40798c9c9e071cc3dbe1868115c25eee9f979f3c3ae
-  tags:
-    - ga
+  extends: .fedora_images
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --clang
 
 test_clang:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   script:
@@ -39,7 +57,6 @@ test_clang:
     - ./tools/format.sh && git diff --exit-code
 
 test_clang_tidy:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   script:
@@ -47,138 +64,71 @@ test_clang_tidy:
     - ./tools/build.sh --clang-tidy-version=3.8 --clang
 
 gdk_clang_ndk_armeabi-v7a:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
-  tags:
-    - ga
-  artifacts:
-    expire_in: 1 day
-    name: linux_ndk_armeabi-v7a
-    when: on_success
-    paths:
-    - gdk-android-jni
+  extends: .ndk_release
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
     - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk armeabi-v7a
 
 gdk_clang_ndk_arm64-v8a:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
-  tags:
-    - ga
-  artifacts:
-    expire_in: 1 day
-    name: linux_ndk_arm64-v8a
-    when: on_success
-    paths:
-    - gdk-android-jni
+  extends: .ndk_release
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
     - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk arm64-v8a
 
 gdk_clang_ndk_x86:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
-  tags:
-    - ga
-  artifacts:
-    expire_in: 1 day
-    name: linux_ndk_x86
-    when: on_success
-    paths:
-    - gdk-android-jni
+  extends: .ndk_release
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
     - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk x86
 
 gdk_clang_ndk_x86_64:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
-  tags:
-    - ga
-  artifacts:
-    expire_in: 1 day
-    name: linux_ndk_x86_64
-    when: on_success
-    paths:
-    - gdk-android-jni
+  extends: .ndk_release
   script:
     - cd $CI_PROJECT_DIR
     - mkdir gdk-android-jni
     - ANDROID_NDK=/android-ndk-r18b ./tools/build.sh --install $PWD/gdk-android-jni --ndk x86_64
 
 test_osx_clang:
-  tags:
-    - osx
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - subprojects/packagecache/
+  extends: .osx_test
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --lto=false --clang
 
 test_osx_ios:
-  tags:
-    - osx
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - subprojects/packagecache/
+  extends: .osx_test
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --lto=false --iphone static
 
 test_osx_ios_sim:
-  tags:
-    - osx
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - subprojects/packagecache/
+  extends: .osx_test
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --lto=false --iphonesim static
 
 test_osx_clang_ndk_armeabi-v7a:
-  tags:
-    - osx
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - subprojects/packagecache/
+  extends: .osx_test
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk armeabi-v7a
 
 test_osx_clang_ndk_arm64-v8a:
-  tags:
-    - osx
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - subprojects/packagecache/
+  extends: .osx_test
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk arm64-v8a
 
 test_osx_clang_ndk_x86:
-  tags:
-    - osx
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - subprojects/packagecache/
+  extends: .osx_test
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk x86
 
 test_osx_clang_ndk_x86_64:
-  tags:
-    - osx
-  cache:
-    key: "$CI_JOB_NAME"
-    paths:
-      - subprojects/packagecache/
+  extends: .osx_test
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --ndk x86_64
@@ -200,7 +150,6 @@ test_freebsd_clang:
     - ./tools/build.sh --clang
 
 test_windows_mingw_w64_cross:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:
@@ -213,7 +162,6 @@ test_windows_mingw_w64_cross:
     - ./tools/build.sh --mingw-w64
 
 apidocs:
-  image: greenaddress/ci@sha256:dd9486edee6ffcf4f9833db2c68761630728e8865ef89815c133ccacc326f47c
   tags:
     - ga
   artifacts:

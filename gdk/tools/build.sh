@@ -13,7 +13,7 @@ fi
 
 ANALYZE=false
 LIBTYPE="shared"
-MESON_OPTIONS="--unity=on"
+MESON_OPTIONS=""
 NINJA_TARGET=""
 EXTRA_CXXFLAGS=""
 COMPILER_VERSION=""
@@ -42,7 +42,7 @@ if (($# < 1)); then
     exit 0
 fi
 
-TEMPOPT=`"$GETOPT" -n "build.sh" -o x,b: -l analyze,clang,gcc,mingw-w64,prefix:,install:,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version: -- "$@"`
+TEMPOPT=`"$GETOPT" -n "build.sh" -o x,b: -l analyze,clang,gcc,mingw-w64,prefix:,install:,sanitizer:,compiler-version:,ndk:,iphone:,iphonesim:,buildtype:,lto:,clang-tidy-version:,unity: -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case "$1" in
@@ -57,6 +57,7 @@ while true; do
         --lto) MESON_OPTIONS="$MESON_OPTIONS -Dlto=$2"; shift 2 ;;
         --clang-tidy-version) MESON_OPTIONS="$MESON_OPTIONS -Dclang-tidy-version=-$2"; NINJA_TARGET="src/clang-tidy"; shift 2 ;;
         --prefix) MESON_OPTIONS="$MESON_OPTIONS --prefix=$2"; shift 2 ;;
+        --unity) MESON_OPTIONS="$MESON_OPTIONS --unity=$2"; shift 2 ;;
         -- ) shift; break ;;
         *) break ;;
     esac

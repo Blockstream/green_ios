@@ -7,7 +7,9 @@
 #include <new>
 #include <vector>
 
-#include <gsl/gsl_util>
+#include <gsl/span>
+
+#include "assertion.hpp"
 
 namespace ga {
 namespace sdk {

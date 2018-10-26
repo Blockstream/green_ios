@@ -7,6 +7,8 @@
 #undef EPOLL_CLOEXEC
 #endif
 
+#include "boost_wrapper.hpp"
+
 #if __clang__
 #pragma clang diagnostic push
 #if !defined __APPLE__ && __clang_major__ >= 6
@@ -26,6 +28,7 @@
 #endif
 
 #include <autobahn/autobahn.hpp>
+#include <autobahn/exceptions.hpp>
 #include <autobahn/wamp_session.hpp>
 #include <autobahn/wamp_websocketpp_websocket_transport.hpp>
 

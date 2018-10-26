@@ -1,6 +1,7 @@
 #include <initializer_list>
 #include <type_traits>
 
+#include "assertion.hpp"
 #include "exception.hpp"
 #include "include/amount.hpp"
 #include "include/network_parameters.hpp"
@@ -206,6 +207,10 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_create_transaction, struct GA_session*, session, c
 GA_SDK_DEFINE_C_FUNCTION_3(GA_sign_transaction, struct GA_session*, session, const GA_json*, transaction_details,
     GA_json**, transaction,
     { *json_cast(transaction) = new nlohmann::json(session->sign_transaction(*json_cast(transaction_details))); })
+
+GA_SDK_DEFINE_C_FUNCTION_4(GA_sign_transaction_with_hardware, struct GA_session*, session, const GA_json*, hw_device,
+    const GA_json*, transaction_details, struct GA_twofactor_call**, call,
+    { *call = new GA_sign_transaction_call(*session, *json_cast(hw_device), *json_cast(transaction_details)); });
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_send_nlocktimes, struct GA_session*, session, { session->send_nlocktimes(); })
 

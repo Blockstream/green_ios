@@ -121,23 +121,31 @@ if swig.found()
     pymodule = import('python3')
     python3 = pymodule.find_python()
 
-    res = run_command(python3, '-c', 'import os; print(os.environ["PYTHON_VERSION"], end = "")')
-    if res.returncode() == 0
-        python_version = res.stdout()
-        message('PYTHON_VERSION set to ' + python_version)
+    environment_variables = [
+        'PYTHON_VERSION',
+        'JAVA_HOME',
+        'JAVA_TARGET'
+    ]
+    foreach v : environment_variables
+        res = run_command(python3, '-c', 'import os; print(os.environ["' + v + '"], end = "")')
+        if res.returncode() == 0
+            stdout = res.stdout()
+            set_variable(v.to_lower(), stdout)
+            message(v + ' set to ' + stdout)
+        else
+            set_variable(v.to_lower(), '')
+            message(v + ' not set. Disabling...')
+        endif
+    endforeach
+
+    if python_version != ''
         python_dep = compiler.find_library('python' + python_version)
-    else
-        python_version = ''
-        message('$PYTHON_VERSION not set. Python bindings are disabled.')
     endif
 
-    res = run_command(python3, '-c', 'import os; print(os.environ["JAVA_HOME"], end = "")')
-    if res.returncode() == 0
-        java_home = res.stdout()
-        message('JAVA_HOME set to ' + java_home)
-    else
-        java_home = ''
+    if java_target == ''
+        java_target = '1.7'
     endif
+
     javac = add_languages('java', required : false)
     if not javac or java_home == ''
         message('Java not found or $JAVA_HOME not set. JNI bindings are disabled.')

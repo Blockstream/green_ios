@@ -1,8 +1,15 @@
 #include "include/twofactor.hpp"
 
+#include "assertion.hpp"
+#include "boost_wrapper.hpp"
 #include "containers.hpp"
 #include "exception.hpp"
 #include "ga_strings.hpp"
+#include "ga_tx.hpp"
+#include "ga_wally.hpp"
+#include "transaction_utils.hpp"
+#include "twofactor_calls.hpp"
+#include "xpub_hdkey.hpp"
 
 namespace {
 // Server gives 3 attempts to get the twofactor code right before it's invalidated
@@ -181,9 +188,8 @@ nlohmann::json GA_twofactor_call::get_status() const
 // Register
 //
 GA_register_call::GA_register_call(
-    ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent)
-    : GA_twofactor_call(session, "get_xpubs", details)
-    , m_details(details)
+    ga::sdk::session& session, const nlohmann::json& hw_details, const std::string& user_agent)
+    : GA_twofactor_call(session, "get_xpubs", hw_details)
     , m_user_agent(user_agent)
 {
     // To register, we need the master xpub to identify the wallet,
@@ -215,9 +221,8 @@ GA_twofactor_call::state_type GA_register_call::call_impl()
 //
 // Login
 //
-GA_login_call::GA_login_call(ga::sdk::session& session, const nlohmann::json& details, const std::string& user_agent)
-    : GA_twofactor_call(session, "get_xpubs", details)
-    , m_details(details)
+GA_login_call::GA_login_call(ga::sdk::session& session, const nlohmann::json& hw_details, const std::string& user_agent)
+    : GA_twofactor_call(session, "get_xpubs", hw_details)
     , m_user_agent(user_agent)
 {
     // We first need the challenge, so ask the caller for the master pubkey.
@@ -274,6 +279,41 @@ void GA_login_call::set_data(const std::string& action)
 }
 
 //
+// Sign tx
+//
+GA_sign_transaction_call::GA_sign_transaction_call(
+    ga::sdk::session& session, const nlohmann::json& hw_details, const nlohmann::json& tx_details)
+    : GA_twofactor_call(session, "sign_tx", hw_details)
+    , m_tx_details(tx_details)
+{
+    // Compute the data we need for the hardware to sign the transaction
+    m_state = state_type::resolve_code;
+
+    m_twofactor_data = { { "action", m_action }, { "device", m_hw_device }, { "transaction", tx_details } };
+
+    // We need the inputs, augmented with types, scripts and paths
+    const auto signing_inputs = ga::sdk::get_ga_signing_inputs(tx_details);
+    std::set<std::string> addr_types;
+    for (const auto input : signing_inputs) {
+        const auto& addr_type = input.at("address_type");
+        GA_SDK_RUNTIME_ASSERT(!addr_type.empty()); // Must be spendable by us
+        addr_types.insert(addr_type.get<std::string>());
+    }
+    if (addr_types.find(ga::sdk::address_type::p2pkh) != addr_types.end()) {
+        // FIXME: Use the software signer to sign sweep txs
+        GA_SDK_RUNTIME_ASSERT(false);
+    }
+    m_twofactor_data["signing_address_types"] = std::vector<std::string>(addr_types.begin(), addr_types.end());
+    m_twofactor_data["signing_inputs"] = signing_inputs;
+}
+
+GA_twofactor_call::state_type GA_sign_transaction_call::call_impl()
+{
+    // FIXME: sign
+    return state_type::done;
+}
+
+//
 // Enable 2FA
 //
 GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
@@ -292,7 +332,7 @@ GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
 
     if (!set_email && current_subconfig.value("enabled", !m_enabling) == m_enabling) {
         // Caller is attempting to enable or disable when thats already the current state
-        set_error(m_method + " is already " + (m_enabling ? "enabled" : "disabled"));
+        set_error(method_to_update + " is already " + (m_enabling ? "enabled" : "disabled"));
         return;
     }
 
@@ -305,7 +345,7 @@ GA_change_settings_twofactor_call::GA_change_settings_twofactor_call(
             // server.
             // FIXME: Allow the user to specify their own seed in the future.
             if (data != ga::sdk::json_get_value(current_subconfig, "data")) {
-                set_error(ga::sdk::res::inconsistent_gauth_data);
+                set_error(ga::sdk::res::id_inconsistent_data_provided_for);
                 return;
             }
         }
@@ -360,7 +400,7 @@ GA_twofactor_call::state_type GA_change_settings_twofactor_call::call_impl()
         }
         // Move to enable the 2fa method
         return on_init_done("enable_");
-    } else if (boost::starts_with(m_action, "enable_")) {
+    } else if (boost::algorithm::starts_with(m_action, "enable_")) {
         // The user has authorized enabling 2fa (if required), so enable the
         // method using its code (which proves the user got a code from the
         // method being enabled)
@@ -410,7 +450,7 @@ void GA_change_limits_call::request_code(const std::string& method)
 
 GA_twofactor_call::state_type GA_change_limits_call::call_impl()
 {
-    m_session.change_settings_limits(m_limit_details, m_is_decrease ? m_twofactor_data : nlohmann::json());
+    m_session.change_settings_limits(m_limit_details, m_is_decrease ? nlohmann::json() : m_twofactor_data);
     return state_type::done;
 }
 
@@ -436,8 +476,8 @@ GA_send_call::GA_send_call(ga::sdk::session& session, const nlohmann::json& tx_d
     , m_tx_details(tx_details)
     , m_twofactor_required(!m_methods.empty())
     , m_under_limit(false)
+    , m_bumping_fee(tx_details.find("previous_transaction") != tx_details.end())
 {
-    // FIXME: bumping, bumping under limits
     const uint32_t limit = m_twofactor_required ? session.get_spending_limits()["satoshi"].get<uint32_t>() : 0;
     const uint32_t satoshi = m_tx_details["satoshi"];
     const uint32_t fee = m_tx_details["fee"];
@@ -472,16 +512,26 @@ void GA_send_call::create_twofactor_data()
 {
     m_twofactor_data = nlohmann::json();
     if (m_twofactor_required) {
-        if (m_under_limit) {
-            // Tx is under the limit and a send hasn't previously failed causing
-            // the user to enter a code. Try sending without 2fa as an under limits spend
-            m_twofactor_data["try_under_limits_spend"] = m_limit_details;
+        if (m_bumping_fee) {
+            m_action = "bump_fee";
+
+            const auto previous_fee = m_tx_details["previous_transaction"].at("fee").get<int>();
+            const auto new_fee = m_limit_details.at("fee").get<int>();
+            const auto bump_amount = new_fee - previous_fee;
+            const auto amount_key = m_under_limit ? "try_under_limits_bump" : "amount";
+            m_twofactor_data[amount_key] = bump_amount;
         } else {
-            // 2FA is provided or not configured. Add the send details
-            m_twofactor_data["amount"] = m_limit_details["amount"];
-            m_twofactor_data["fee"] = m_limit_details["fee"];
-            m_twofactor_data["change_idx"] = m_limit_details["change_idx"];
-            // FIXME: recipient
+            if (m_under_limit) {
+                // Tx is under the limit and a send hasn't previously failed causing
+                // the user to enter a code. Try sending without 2fa as an under limits spend
+                m_twofactor_data["try_under_limits_spend"] = m_limit_details;
+            } else {
+                // 2FA is provided or not configured. Add the send details
+                m_twofactor_data["amount"] = m_limit_details["amount"];
+                m_twofactor_data["fee"] = m_limit_details["fee"];
+                m_twofactor_data["change_idx"] = m_limit_details["change_idx"];
+                // FIXME: recipient
+            }
         }
     }
 }
@@ -489,9 +539,12 @@ void GA_send_call::create_twofactor_data()
 GA_twofactor_call::state_type GA_send_call::call_impl()
 {
     // The api requires the request and action data to differ, which is non-optimal
-    ga::sdk::json_rename_key(m_twofactor_data, "amount", "send_raw_tx_amount");
     ga::sdk::json_rename_key(m_twofactor_data, "fee", "send_raw_tx_fee");
     ga::sdk::json_rename_key(m_twofactor_data, "change_idx", "send_raw_tx_change_idx");
+
+    const char* amount_key = m_bumping_fee ? "bump_fee_amount" : "send_raw_tx_amount";
+    ga::sdk::json_rename_key(m_twofactor_data, "amount", amount_key);
+
     // FIXME: recipient
     m_result = m_session.send_transaction(m_tx_details, m_twofactor_data);
     return state_type::done;

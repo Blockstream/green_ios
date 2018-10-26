@@ -67,6 +67,8 @@ namespace sdk {
     //
     std::array<unsigned char, HASH160_LEN> hash160(byte_span_t data);
 
+    std::array<unsigned char, SHA256_LEN> sha256(byte_span_t data);
+
     std::array<unsigned char, SHA256_LEN> sha256d(byte_span_t data);
 
     std::array<unsigned char, SHA512_LEN> sha512(byte_span_t data);
@@ -108,6 +110,8 @@ namespace sdk {
     //
     void scriptsig_multisig_from_bytes(
         byte_span_t script, byte_span_t signatures, uint32_span_t sighashes, std::vector<unsigned char>& out);
+
+    std::vector<unsigned char> scriptsig_p2pkh_from_der(byte_span_t pub_key, byte_span_t sig);
 
     void scriptpubkey_csv_2of2_then_1_from_bytes(
         byte_span_t keys, uint32_t csv_blocks, std::vector<unsigned char>& out);
@@ -161,6 +165,13 @@ namespace sdk {
         byte_span_t private_key, byte_span_t hash, uint32_t flags = EC_FLAG_ECDSA | EC_FLAG_GRIND_R);
 
     std::vector<unsigned char> ec_sig_to_der(byte_span_t sig, bool sighash = false);
+
+    std::vector<unsigned char> ec_public_key_from_private_key(byte_span_t private_key);
+
+    std::vector<unsigned char> ec_public_key_decompress(byte_span_t public_key);
+
+    std::vector<unsigned char> wif_to_private_key_bytes(
+        const std::string& wif_priv_key, unsigned char version, bool& compressed);
 
     //
     // Transactions

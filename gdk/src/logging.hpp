@@ -6,6 +6,7 @@
 #include <android/log.h>
 #endif
 
+#include "autobahn_wrapper.hpp"
 #include "boost_wrapper.hpp"
 
 namespace ga {
@@ -56,10 +57,10 @@ namespace sdk {
 #endif
 
 #define GDK_LOG_NAMED_SCOPE(name)                                                                                      \
-    BOOST_LOG_SEV(gdk_logger::get(), boost::log::trivial::info)                                                        \
+    BOOST_LOG_SEV(::ga::sdk::gdk_logger::get(), boost::log::trivial::info)                                             \
         << __FILE__ << ':' << __LINE__ << ':' << name << ':' << __func__;
 
-#define GDK_LOG_SEV(sev) BOOST_LOG_SEV(gdk_logger::get(), sev)
+#define GDK_LOG_SEV(sev) BOOST_LOG_SEV(::ga::sdk::gdk_logger::get(), ::ga::sdk::sev)
 
     class websocket_boost_logger {
     public:

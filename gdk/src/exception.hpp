@@ -3,7 +3,6 @@
 #pragma once
 
 #include "autobahn_wrapper.hpp"
-#include <autobahn/exceptions.hpp>
 #include <utility>
 
 namespace ga {
@@ -35,6 +34,14 @@ namespace sdk {
     public:
         timeout_error()
             : std::runtime_error("timeout error")
+        {
+        }
+    };
+
+    class user_error : public std::runtime_error {
+    public:
+        user_error(const std::string& what)
+            : std::runtime_error(what)
         {
         }
     };

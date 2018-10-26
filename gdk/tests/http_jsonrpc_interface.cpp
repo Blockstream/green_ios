@@ -1,5 +1,5 @@
 #include <iostream>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 #include "http_jsonrpc_interface.hpp"
 #include "src/assertion.hpp"
