@@ -170,20 +170,37 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {
-        if(isKeyboardShown) {
-            return
-        }
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            if(isKeyboardShown) {
+                return
+            }
+
             var frame = suggestionView.frame
             frame.origin.y = self.view.frame.height - keyboardSize.height - 42
             suggestionView.frame = frame
             suggestionView.layoutIfNeeded()
             isKeyboardShown = true
             print("showing keyboard")
+
+            let boxBottom = box.frame.origin.y + box.frame.height
+            let suggestionTop = suggestionView.frame.origin.y
+            if(boxBottom > suggestionTop){
+                let suggestedConstraint = constraint!.constant - (boxBottom - suggestionTop)
+                for index in 0..<textFields.count {
+                    if (textFields[index].isFirstResponder) {
+                        constraint?.isActive = false
+                        constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: suggestedConstraint)
+                        constraint?.isActive = true
+                    }
+                }
+            }
         }
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
+        constraint?.isActive = false
+        constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 18)
+        constraint?.isActive = true
         if(!isKeyboardShown) {
             return
         }
@@ -259,7 +276,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(box)
         NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.width, multiplier: 0, constant: view.frame.width).isActive = true
         NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: CGFloat(height)).isActive = true
-        constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 40)
+        constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 18)
         constraint!.isActive = true
         NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
 
