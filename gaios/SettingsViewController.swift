@@ -23,6 +23,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         wrap {
             try getSession().disconnect()
         }.done {
+            AccountStore.shared.isWatchOnly = false
             getAppDelegate().connect()
             self.performSegue(withIdentifier: "logout", sender: nil)
         }.catch { error in
