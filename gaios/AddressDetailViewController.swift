@@ -9,6 +9,7 @@ class AddressDetailViewController: UIViewController {
     @IBOutlet weak var qrImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var receiveAddressLabel: UILabel!
+    var amount: Double = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,8 +31,13 @@ class AddressDetailViewController: UIViewController {
     }
 
     func updateQRCode() {
-        let uri = bip21Helper.btcURIforAddress(address: (wallet?.address)!)
-        qrImageView.image = QRImageGenerator.imageForTextWhite(text: uri, frame: qrImageView.frame)
+        if (amount == 0) {
+            let uri = bip21Helper.btcURIforAddress(address: (wallet?.address)!)
+            qrImageView.image = QRImageGenerator.imageForTextWhite(text: uri, frame: qrImageView.frame)
+        } else {
+            let uri = bip21Helper.btcURIforAmnount(address:(wallet?.address)!, amount: amount)
+            qrImageView.image = QRImageGenerator.imageForTextWhite(text: uri, frame: qrImageView.frame)
+        }
     }
 
     @IBAction func generateNewAddress(_ sender: Any) {

@@ -18,7 +18,6 @@ class ReceiveBtcViewController: UIViewController {
     var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
     var amount_g: Double = 0
-    var zoomView: UIView? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,35 +58,14 @@ class ReceiveBtcViewController: UIViewController {
     }
 
     @objc func zoomQR(recognizer: UITapGestureRecognizer) {
-        zoomView = UIView()
-        zoomView!.frame = self.view.frame
-        zoomView!.backgroundColor = UIColor.customMatrixGreen()
-        let tap = UITapGestureRecognizer(target: self, action: #selector(hideQR))
-        zoomView!.isUserInteractionEnabled = true
-        zoomView!.addGestureRecognizer(tap)
-        let width = zoomView!.frame.width
-        let height = width
-        let yorigin = zoomView!.frame.height/2 - height/2
-        let qrimage = UIImageView()
-        qrimage.frame = CGRect(x: 0, y: yorigin, width: width, height: height)
-
-        if (amount_g == 0) {
-            let uri = bip21Helper.btcURIforAddress(address: receiveAddress!)
-            qrimage.image = QRImageGenerator.imageForTextDark(text: uri, frame: qrimage.frame)
-        } else {
-            let uri = bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: amount_g)
-            qrimage.image = QRImageGenerator.imageForTextDark(text: uri, frame: qrimage.frame)
-        }
-
-        zoomView?.addSubview(qrimage)
-        UIApplication.shared.keyWindow?.addSubview(zoomView!)
-    }
-
-    @objc func hideQR(recognizer: UITapGestureRecognizer) {
-        if(zoomView != nil) {
-            zoomView?.removeFromSuperview()
-            zoomView?.isHidden = true
-        }
+        let addressDetail = self.storyboard?.instantiateViewController(withIdentifier: "addressDetail") as! AddressDetailViewController
+        addressDetail.wallet = wallet
+        addressDetail.amount = amount_g
+        addressDetail.providesPresentationContextTransitionStyle = true
+        addressDetail.definesPresentationContext = true
+        addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+        addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        self.present(addressDetail, animated: true, completion: nil)
     }
 
     @IBAction func switchButtonClicked(_ sender: Any) {
