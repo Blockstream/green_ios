@@ -93,7 +93,7 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                                     self.navigationController?.popToRootViewController(animated: true)
                                 }
                             }
-                        } else if (status == "resolve_code") {
+                        } else if (call_status == "resolve_code") {
                             pinCode = ""
                             updateView()
                             setTitle()
