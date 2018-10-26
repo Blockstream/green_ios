@@ -1,16 +1,8 @@
-//
-//  SettingsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/18/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
+
     @IBOutlet weak var tableView: UITableView!
     let settingsIcon:[UIImage] = [#imageLiteral(resourceName: "account"),#imageLiteral(resourceName: "security"),#imageLiteral(resourceName: "advanced"),#imageLiteral(resourceName: "about")]
     var pager: MainMenuPageViewController? = nil
@@ -28,12 +20,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     @IBAction func logoutClicked(_ sender: Any) {
-        //TODO: important! remove keychain data, remove notifications and settings
-        /*wrap { try getSession().removeAccount()}.done {
+        wrap {
+            try getSession().disconnect()
+        }.done {
+            getAppDelegate().connect()
             self.performSegue(withIdentifier: "logout", sender: nil)
-            }.catch { error in
+        }.catch { error in
             print("problem while logging out")
-        }*/
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -69,45 +63,77 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if(indexPath.section == 0) {
-            if (indexPath.row == 0) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "currency", sender: nil)
-            } else if (indexPath.row == 1) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "denomination", sender: nil)
-            }
-        } else if (indexPath.section == 1) {
-            if (indexPath.row == 0) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "recovery", sender: nil)
-            } else if (indexPath.row == 1) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "screenLock", sender: nil)
-            } else if (indexPath.row == 2) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
-            }  else if (indexPath.row == 3) {
-                if let url = URL(string: SettingsStore.shared.supportURL) {
-                    UIApplication.shared.open(url, options: [:])
+        if(AccountStore.shared.isWatchOnly) {
+              if (indexPath.section == 0) {
+                if (indexPath.row == 1) {
+                    if let url = URL(string: SettingsStore.shared.tosURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                } else if (indexPath.row == 2) {
+                    if let url = URL(string: SettingsStore.shared.privacyPolicyURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
                 }
             }
-        } else if (indexPath.section == 2) {
-            if (indexPath.row == 0) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
-            } else if (indexPath.row == 1) {
-                pager?.hideButtons()
-                self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
-            }
-        } else if (indexPath.section == 3) {
-            if (indexPath.row == 1) {
-                if let url = URL(string: SettingsStore.shared.tosURL) {
-                    UIApplication.shared.open(url, options: [:])
+        } else {
+            if(indexPath.section == 0) {
+                if (indexPath.row == 0) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "currency", sender: nil)
+                } else if (indexPath.row == 1) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "denomination", sender: nil)
+                } else if (indexPath.row == 2) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "transactionFee", sender: nil)
+                } else if (indexPath.row == 3) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "watchOnly", sender: nil)
                 }
-            } else if (indexPath.row == 2) {
-                if let url = URL(string: SettingsStore.shared.privacyPolicyURL) {
-                    UIApplication.shared.open(url, options: [:])
+            } else if (indexPath.section == 1) {
+                if (indexPath.row == 0) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "recovery", sender: nil)
+                } else if (indexPath.row == 1) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "screenLock", sender: nil)
+                } else if (indexPath.row == 2) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
+                } else if (indexPath.row == 3) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "twoFactorWarning", sender: nil)
+                } else if (indexPath.row == 4) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
+                } else if (indexPath.row == 5) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
+                } else if (indexPath.row == 6) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "autolock", sender: nil)
+                } else if (indexPath.row == 7) {
+                    if let url = URL(string: SettingsStore.shared.supportURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                }
+            } else if (indexPath.section == 2) {
+                if (indexPath.row == 0) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
+                } else if (indexPath.row == 1) {
+                    pager?.hideButtons()
+                    self.performSegue(withIdentifier: "requestNlock", sender: nil)
+                }
+            } else if (indexPath.section == 3) {
+                if (indexPath.row == 1) {
+                    if let url = URL(string: SettingsStore.shared.tosURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                } else if (indexPath.row == 2) {
+                    if let url = URL(string: SettingsStore.shared.privacyPolicyURL) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
                 }
             }
         }
@@ -116,6 +142,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? ToggleSettingsViewController {
             nextController.settings = sender as? SettingsItem
+        }
+        if let nextController = segue.destination as? PinLoginViewController {
+            nextController.loginMode = true
         }
     }
 

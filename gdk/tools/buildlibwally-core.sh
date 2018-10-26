@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -e
 
-WALLYCORE_NAME="libwally-core-9157583037d986b8c1f8f6fbf4a4b73b25410fc0"
+WALLYCORE_NAME="libwally-core-db560d0fc9fd86b916c50bce9f14bf297e9d2358"
 
 cp -r "${MESON_SOURCE_ROOT}/subprojects/${WALLYCORE_NAME}" "${MESON_BUILD_ROOT}/libwally-core"
 
@@ -42,7 +42,7 @@ if [ \( "$1" = "--ndk" \) ]; then
 
     make -o configure install
 elif [ \( "$1" = "--iphone" \) -o \( "$1" = "--iphonesim" \) ]; then
-    export CFLAGS="$SDK_CFLAGS -fembed-bitcode -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0 -O3"
+    export CFLAGS="$SDK_CFLAGS -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0 -O3"
     export LDFLAGS="$SDK_LDFLAGS -isysroot ${IOS_SDK_PATH} -miphoneos-version-min=9.0"
     export CC=${XCODE_DEFAULT_PATH}/clang
     export CXX=${XCODE_DEFAULT_PATH}/clang++

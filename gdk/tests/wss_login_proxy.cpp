@@ -18,9 +18,7 @@ int main(int argc, char** argv)
         const bool debug = options->quiet == 0;
         sdk::session session;
         try {
-            session.connect(options->testnet ? sdk::make_testnet_network("socks5://localhost")
-                                             : sdk::make_localtest_network("socks5://localhost"),
-                debug);
+            session.connect(options->network, "socks5://localhost", false, debug);
         } catch (const std::exception&) {
             if (options->testnet == 0) {
                 std::cerr << "Skipping test (requires testnet or local environment w/proxy)" << std::endl;

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "containers.hpp"
+#include "ga_wally.hpp"
 #include "include/common.h"
 
 namespace ga {
@@ -39,13 +40,19 @@ namespace sdk {
     std::vector<unsigned char> bytes_from_hex_rev(const char* hex, size_t siz);
     inline auto bytes_from_hex_rev(const std::string& hex) { return bytes_from_hex_rev(hex.data(), hex.size()); }
 
-    // FIXME: secure_vector
-    std::vector<unsigned char> mnemonic_to_bytes(const std::string& mnemonic);
-
-    GASDK_API std::string mnemonic_from_bytes(const unsigned char* entropy, size_t siz);
-    std::string generate_mnemonic();
-
     GASDK_API nlohmann::json parse_bitcoin_uri(const std::string& s);
+
+    // Mnemonic handling
+    std::string encrypt_mnemonic(const std::string& plaintext_mnemonic, const std::string& password);
+    std::string decrypt_mnemonic(const std::string& encrypted_mnemonic, const std::string& password);
+
+    // Encryption
+    nlohmann::json encrypt_data(const nlohmann::json& input, const std::vector<unsigned char>& default_password);
+    nlohmann::json decrypt_data(const nlohmann::json& input, const std::vector<unsigned char>& default_password);
+    std::string aes_cbc_decrypt(
+        const std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN>& key, const std::string& ciphertext);
+    std::string aes_cbc_encrypt(
+        const std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN>& key, const std::string& plaintext);
 } // namespace sdk
 } // namespace ga
 

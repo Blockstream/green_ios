@@ -1,6 +1,4 @@
 c_cpp_sources = [
-    'amount.cpp',
-    'wss_change_settings_c.c',
     'wss_connect.cpp',
     'wss_create_subaccount.cpp',
     'wss_get_tx_list.cpp',
@@ -56,8 +54,7 @@ foreach source : c_cpp_sources
 endforeach
 
 if build_jni
-    java_sources = ['WSSConnect',
-                    'WSSLogin',
+    java_sources = ['WSSLogin',
                     'WSSWatchOnlyLogin']
     foreach source : java_sources
         target_name = source + '_java_test'
@@ -68,7 +65,7 @@ if build_jni
                                      output : source + '.class',
                                      depends : swig_target)
         test(target_name, java,
-             args : ['-classpath', '.:../src/swig_java/GASDK.jar', '-Djava.library.path=.:../src', source],
+             args : ['-Xcheck:jni', '-classpath', '.:../src/swig_java/GASDK.jar', '-Djava.library.path=.:../src', source],
              workdir : meson.current_build_dir(),
              depends : test_target)
     endforeach

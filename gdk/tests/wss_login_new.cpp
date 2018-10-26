@@ -2,7 +2,6 @@
 
 #include "argparser.h"
 
-#include "include/exception.hpp"
 #include "include/session.hpp"
 #include "utils.hpp"
 
@@ -29,7 +28,7 @@ int main(int argc, char** argv)
 
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
+            session.connect(options->network, std::string(), false, debug);
             session.login_watch_only(username, "password");
             const auto address = session.get_receive_address(0);
             std::cerr << "address: " << address["address"] << std::endl;
@@ -37,9 +36,9 @@ int main(int argc, char** argv)
 
         {
             sdk::session session;
-            session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
-            assert_throws<ga::sdk::login_error>([&] { session.login("0001", pin_info); });
-            session.login("0000", pin_info);
+            session.connect(options->network, std::string(), false, debug);
+            assert_throws<std::exception>([&] { session.login_with_pin("0001", pin_info); });
+            session.login_with_pin("0000", pin_info);
             // TODO GA_SDK_RUNTIME_ASSERT(result.get<bool>("first_login") == false);
             GA_SDK_RUNTIME_ASSERT(session.remove_account(nlohmann::json()));
         }

@@ -1,11 +1,3 @@
-//
-//  VerifyMnemonicsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 5/30/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import NVActivityIndicatorView
@@ -23,7 +15,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     @IBOutlet weak var button3: DesignableButton!
     let numberOfSteps: Int = 3
     @IBOutlet weak var bottomText: UILabel!
-    
+
     lazy var buttonsArray: Array<UIButton> = [button0, button1, button2, button3]
 
 
@@ -114,7 +106,8 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func updateLabels() {
-        topLabel.text = String(format: "What is the word at position %d ?", questionPosition + 1)
+        let localized = NSLocalizedString("id_what_is_the_word_at_position", comment: "")
+        topLabel.text = String(format: "%@ %d ?",localized, questionPosition + 1)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -182,7 +175,13 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                 updateLabels()
             }
         } else {
-            //ALERT
+            let size = CGSize(width: 30, height: 30)
+            let message = NSLocalizedString("id_wrong_answer_try_again", comment: "")
+            startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
+                self.stopAnimating()
+                self.navigationController?.popViewController(animated: true)
+            }
         }
     }
 

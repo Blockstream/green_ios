@@ -2,8 +2,7 @@
 #include <json.hpp>
 
 #include "http_jsonrpc_interface.hpp"
-#include "include/assertion.hpp"
-
+#include "src/assertion.hpp"
 #include "src/boost_wrapper.hpp"
 
 namespace ga {

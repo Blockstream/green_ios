@@ -1,17 +1,9 @@
-//
-//  HorizontalLineLayer.swift
-//  StepIndicator
-//
-//  Created by Yun CHEN on 2017/9/1.
-//  Copyright © 2017 Yun CHEN. All rights reserved.
-//
-
 import UIKit
 
 class LineLayer: CAShapeLayer {
-    
+
     private let tintLineLayer = CAShapeLayer()
-    
+
     // MARK: - Properties
     var tintColor:UIColor?
     var isFinished:Bool = false {
@@ -19,21 +11,21 @@ class LineLayer: CAShapeLayer {
             self.updateStatus()
         }
     }
-    
+
     var isHorizontal:Bool = true {
         didSet{
             self.updateStatus()
         }
     }
-    
+
     //MARK: - Initialization
     override init() {
         super.init()
-        
+
         self.fillColor = UIColor.clear.cgColor
         self.lineWidth = 2
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -41,7 +33,7 @@ class LineLayer: CAShapeLayer {
     override init(layer: Any) {
         super.init(layer: layer)
     }
-    
+
     // MARK: - Functions
     func updateStatus() {
         self.drawLinePath()
@@ -52,10 +44,10 @@ class LineLayer: CAShapeLayer {
             tintLineLayer.removeFromSuperlayer()
         }
     }
-    
+
     private func drawLinePath() {
         let linePath = UIBezierPath()
-        
+
         if self.isHorizontal {
             let centerY = self.frame.height / 2.0
             linePath.move(to: CGPoint(x: 0, y: centerY))
@@ -69,10 +61,10 @@ class LineLayer: CAShapeLayer {
 
         self.path = linePath.cgPath
     }
-    
+
     private func drawTintLineAnimated() {
         let tintLinePath = UIBezierPath()
-        
+
         if self.isHorizontal {
             let centerY = self.frame.height / 2.0
             tintLinePath.move(to: CGPoint(x: 0, y: centerY))
@@ -88,9 +80,9 @@ class LineLayer: CAShapeLayer {
         self.tintLineLayer.frame = self.bounds
         self.tintLineLayer.strokeColor = self.tintColor?.cgColor
         self.tintLineLayer.lineWidth = self.lineWidth
-        
+
         self.addSublayer(self.tintLineLayer)
-        
+
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = 0
         self.tintLineLayer.add(animation, forKey: "animationDrawLine")

@@ -1,11 +1,3 @@
-//
-//  IntroPageViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/14/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -20,18 +12,18 @@ class IntroPageViewController: UIPageViewController, UIPageViewControllerDelegat
             self.getViewController(withIdentifier: "Page2")
         ]
     }()
-    
+
     fileprivate func getViewController(withIdentifier identifier: String) -> UIViewController
     {
         return UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier)
     }
-    
+
     override func viewDidLoad()
     {
         super.viewDidLoad()
         self.dataSource = self
         self.delegate   = self
-        
+
         if let firstVC = pages.first
         {
             setViewControllers([firstVC], direction: .forward, animated: true, completion: nil)
@@ -43,7 +35,7 @@ class IntroPageViewController: UIPageViewController, UIPageViewControllerDelegat
         addButton()
         addBackButton()
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         button.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
@@ -85,7 +77,7 @@ class IntroPageViewController: UIPageViewController, UIPageViewControllerDelegat
     @objc func backButtonClicked(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
     }
-    
+
     func addButton() {
         button = UIButton(frame: CGRect(x: 0 , y: 0, width: 60, height: 30))
         button.backgroundColor = UIColor.customMatrixGreen()
@@ -120,40 +112,40 @@ class IntroPageViewController: UIPageViewController, UIPageViewControllerDelegat
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        
+
         guard let viewControllerIndex = pages.index(of: viewController) else { return nil }
-        
+
         let previousIndex = viewControllerIndex - 1
-        
+
         guard previousIndex >= 0          else { return pages.last }
-        
+
         guard pages.count > previousIndex else { return nil        }
-        
+
         return pages[previousIndex]
     }
-    
+
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController?
     {
         guard let viewControllerIndex = pages.index(of: viewController) else { return nil }
-        
+
         let nextIndex = viewControllerIndex + 1
-        
+
         guard nextIndex < pages.count else { return pages.first }
-        
+
         guard pages.count > nextIndex else { return nil         }
-        
+
         return pages[nextIndex]
     }
-    
+
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         let pageContentViewController = pageViewController.viewControllers![0]
         self.pageControl.currentPage = pages.index(of: pageContentViewController)!
     }
-    
+
     func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
         return 2
     }
-    
+
     func presentationIndexForPageViewController(pageViewController: UIPageViewController) -> Int {
         return 0
     }

@@ -194,7 +194,7 @@ if [ \( -d "$ANDROID_NDK" \) -a \( "$BUILD" = "--ndk" \) ]; then
 
         if [ ! -f "build-clang-$1-$2/build.ninja" ]; then
             rm -rf build-clang-$1-$2/meson-private
-            if [ ! -f "build-clang-$1-$2/toolchain" ]; then
+            if [ ! -d "build-clang-$1-$2/toolchain" ]; then
                 NDK_ARCH=$SDK_ARCH
                 if [[ $SDK_ARCH == "aarch64" ]]; then
                     NDK_ARCH="arm64"

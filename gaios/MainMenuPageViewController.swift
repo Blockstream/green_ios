@@ -1,11 +1,3 @@
-//
-//  MainMenuPageViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/17/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -60,9 +52,9 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 27).isActive = true
          NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 27).isActive = true
-        
+
         NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 22).isActive = true
-        
+
         if #available(iOS 11, *) {
             NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.view.safeAreaLayoutGuide, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -16).isActive = true
         } else {
@@ -80,9 +72,9 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         button1.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 27).isActive = true
         NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 22).isActive = true
-        
+
         NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-        
+
         if #available(iOS 11, *) {
             NSLayoutConstraint(item: button1, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.view.safeAreaLayoutGuide, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -16).isActive = true
         } else {
@@ -99,9 +91,9 @@ class MainMenuPageViewController: UIPageViewController, UIPageViewControllerDele
         button2.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 27).isActive = true
         NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 22).isActive = true
-        
+
         NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: -22).isActive = true
-        
+
         if #available(iOS 11, *) {
             NSLayoutConstraint(item: button2, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.view.safeAreaLayoutGuide, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -16).isActive = true
         } else {

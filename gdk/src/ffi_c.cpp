@@ -1,32 +1,33 @@
+#include <initializer_list>
 #include <type_traits>
 
+#include "exception.hpp"
 #include "include/amount.hpp"
-#include "include/exception.hpp"
+#include "include/network_parameters.hpp"
 #include "include/session.h"
 #include "include/session.hpp"
 #include "include/twofactor.h"
 #include "include/twofactor.hpp"
+#include "include/utils.h"
 #include "src/twofactor_calls.hpp"
 
 namespace {
 
-static void assert_invoke_args() {}
-
-template <typename Arg, typename... Args>
-static typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args);
-
-template <typename Arg, typename... Args>
-static typename std::enable_if_t<!std::is_pointer<Arg>::value> assert_invoke_args(
-    Arg __attribute__((unused)) arg, Args&&... args)
+template <typename Arg>
+static typename std::enable_if_t<!std::is_pointer<Arg>::value> assert_pointer_args(
+    const Arg& arg __attribute__((unused)))
 {
-    assert_invoke_args(std::forward<Args>(args)...);
 }
 
-template <typename Arg, typename... Args>
-static typename std::enable_if_t<std::is_pointer<Arg>::value> assert_invoke_args(Arg arg, Args&&... args)
+template <typename Arg>
+static typename std::enable_if_t<std::is_pointer<Arg>::value> assert_pointer_args(const Arg& arg)
 {
     GA_SDK_RUNTIME_ASSERT(arg);
-    assert_invoke_args(std::forward<Args>(args)...);
+}
+
+template <typename... Args> static void assert_invoke_args(Args&&... args)
+{
+    (void)std::initializer_list<int>{ (assert_pointer_args(std::forward<Args>(args)), 0)... };
 }
 
 template <typename F, typename... Args> static auto c_invoke(F&& f, Args&&... args)
@@ -153,43 +154,35 @@ int GA_destroy_json(GA_json* json)
     return GA_OK;
 }
 
-GA_SDK_DEFINE_C_FUNCTION_3(GA_connect, struct GA_session*, session, uint32_t, network, uint32_t, debug,
+GA_SDK_DEFINE_C_FUNCTION_3(GA_connect, struct GA_session*, session, const char*, network, uint32_t, debug,
     { return GA_connect_with_proxy(session, network, "", GA_NO_TOR, debug); })
 
-GA_SDK_DEFINE_C_FUNCTION_5(GA_connect_with_proxy, struct GA_session*, session, uint32_t, network, const char*,
-    proxy_uri, uint32_t, use_tor, uint32_t, debug, {
-        GA_SDK_RUNTIME_ASSERT(proxy_uri);
-        auto&& params = [](uint32_t network, const std::string& proxy_uri, bool use_tor) {
-            switch (network) {
-            case GA_NETWORK_MAINNET:
-                return ga::sdk::make_mainnet_network(proxy_uri, use_tor);
-            case GA_NETWORK_TESTNET:
-                return ga::sdk::make_testnet_network(proxy_uri, use_tor);
-            case GA_NETWORK_LOCALTEST:
-                return ga::sdk::make_localtest_network(proxy_uri, use_tor);
-            case GA_NETWORK_REGTEST:
-                return ga::sdk::make_regtest_network(proxy_uri, use_tor);
-            default:
-                GA_SDK_RUNTIME_ASSERT(false);
-                __builtin_unreachable();
-            }
-        }(network, proxy_uri, use_tor == GA_USE_TOR);
-
-        session->connect(std::move(params), debug != GA_FALSE);
-    })
+GA_SDK_DEFINE_C_FUNCTION_5(GA_connect_with_proxy, struct GA_session*, session, const char*, network, const char*,
+    proxy_uri, uint32_t, use_tor, uint32_t, debug,
+    { session->connect(network, proxy_uri, use_tor != GA_FALSE, debug != GA_FALSE); })
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_disconnect, struct GA_session*, session, { session->disconnect(); })
 
 GA_SDK_DEFINE_C_FUNCTION_2(
     GA_register_user, struct GA_session*, session, const char*, mnemonic, { session->register_user(mnemonic); })
 
-GA_SDK_DEFINE_C_FUNCTION_2(GA_login, struct GA_session*, session, const char*, mnemonic, { session->login(mnemonic); })
+GA_SDK_DEFINE_C_FUNCTION_3(GA_register_user_with_hardware, struct GA_session*, session, const GA_json*, device_data,
+    struct GA_twofactor_call**, call, { *call = new GA_register_call(*session, *json_cast(device_data)); })
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_login, struct GA_session*, session, const char*, mnemonic, const char*, password,
+    { session->login(mnemonic, password); })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_pin, struct GA_session*, session, const char*, pin, const GA_json*, pin_data,
-    { session->login(pin, *json_cast(pin_data)); })
+    { session->login_with_pin(pin, *json_cast(pin_data)); })
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_login_with_hardware, struct GA_session*, session, const GA_json*, device_data,
+    struct GA_twofactor_call**, call, { *call = new GA_login_call(*session, *json_cast(device_data)); })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_login_watch_only, struct GA_session*, session, const char*, username, const char*,
     password, { session->login_watch_only(username, password); })
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_set_watch_only, struct GA_session*, session, const char*, username, const char*, password,
+    { session->set_watch_only(username, password); })
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_get_fee_estimates, struct GA_session*, session, GA_json**, estimates,
     { *json_cast(estimates) = new nlohmann::json(session->get_fee_estimates()); })
@@ -223,13 +216,10 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_set_transaction_memo, struct GA_session*, session,
         session->set_transaction_memo(txhash_hex, memo, memo_type_str);
     })
 
-using callback_t = void (*)(void*, char* output);
-
-GA_SDK_DEFINE_C_FUNCTION_4(GA_subscribe_to_topic_as_json, struct GA_session*, session, const char*, topic, callback_t,
-    callback, void*, context, {
-        GA_SDK_RUNTIME_ASSERT(callback);
-        session->subscribe(
-            topic, [callback, context](const std::string& event) { callback(context, to_c_string(event)); });
+GA_SDK_DEFINE_C_FUNCTION_3(
+    GA_set_notification_handler, struct GA_session*, session, GA_notification_handler, handler, void*, context, {
+        GA_SDK_RUNTIME_ASSERT(handler);
+        session->set_notification_handler(handler, context);
     })
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_remove_account, struct GA_session*, session, struct GA_twofactor_call**, call,
@@ -240,13 +230,6 @@ GA_SDK_DEFINE_C_FUNCTION_3(GA_create_subaccount, struct GA_session*, session, co
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_get_subaccounts, struct GA_session*, session, GA_json**, subaccounts,
     { *json_cast(subaccounts) = new nlohmann::json(session->get_subaccounts()); })
-
-GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_tx_limits, struct GA_session*, session, uint32_t, is_fiat, uint32_t,
-    total, const GA_json*, twofactor_data, {
-        namespace sdk = ga::sdk;
-        GA_SDK_RUNTIME_ASSERT(is_fiat == GA_FALSE || is_fiat == GA_TRUE);
-        session->change_settings_tx_limits(is_fiat == GA_TRUE, total, *json_cast(twofactor_data));
-    })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings_pricing_source, struct GA_session*, session, const char*, currency,
     const char*, exchange, { session->change_settings_pricing_source(currency, exchange); })
@@ -289,11 +272,20 @@ GA_SDK_DEFINE_C_FUNCTION_5(GA_set_pin, struct GA_session*, session, const char*,
     const char*, device, GA_json**, pin_data,
     { *json_cast(pin_data) = new nlohmann::json(session->set_pin(mnemonic, pin, device)); })
 
+GA_SDK_DEFINE_C_FUNCTION_2(GA_set_current_subaccount, struct GA_session*, session, uint32_t, subaccount,
+    { session->set_current_subaccount(subaccount); });
+
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_string_to_json, const char*, input, GA_json**, output,
     { *json_cast(output) = new nlohmann::json(nlohmann::json::parse(input)); });
 
 GA_SDK_DEFINE_C_FUNCTION_2(GA_convert_json_to_string, const GA_json*, json, char**, output,
     { *output = to_c_string(json_cast(json)->dump()); });
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_register_network, const char*, name, const GA_json*, json,
+    { ga::sdk::network_parameters::add(name, *json_cast(json)); });
+
+GA_SDK_DEFINE_C_FUNCTION_1(GA_get_networks, GA_json**, output,
+    { *json_cast(output) = new nlohmann::json(ga::sdk::network_parameters::get_all()); });
 
 // twofactor.h
 //
@@ -315,8 +307,18 @@ GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_twofactor, struct GA_session*, ses
     const GA_json*, details, struct GA_twofactor_call**, call,
     { *call = new GA_change_settings_twofactor_call(*session, method, *json_cast(details)); })
 
+GA_SDK_DEFINE_C_FUNCTION_4(GA_twofactor_reset, struct GA_session*, session, const char*, email, uint32_t, is_dispute,
+    struct GA_twofactor_call**, call,
+    { *call = new GA_twofactor_reset_call(*session, email, is_dispute != GA_FALSE); });
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_cancel_reset, struct GA_session*, session, struct GA_twofactor_call**, call,
+    { *call = new GA_twofactor_cancel_reset_call(*session); });
+
 GA_SDK_DEFINE_C_FUNCTION_3(GA_send_transaction, struct GA_session*, session, const GA_json*, transaction_details,
     struct GA_twofactor_call**, call, { *call = new GA_send_call(*session, *json_cast(transaction_details)); });
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_twofactor_change_limits, struct GA_session*, session, const GA_json*, details,
+    struct GA_twofactor_call**, call, { *call = new GA_change_limits_call(*session, *json_cast(details)); })
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_convert_json_value_to_bool, const GA_json*, json, const char*, path, uint32_t*, output, {
     bool v;

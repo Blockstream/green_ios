@@ -60,6 +60,29 @@ GASDK_API int GA_generate_mnemonic(char** output);
  */
 GASDK_API int GA_validate_mnemonic(const char* mnemonic);
 
+/**
+ * Register a network configuration
+ *
+ * @name The name of the network to register
+ * @json The network configuration JSON to register
+ *
+ * Any existing configuration with the same name is overwritten.
+ * If the provided JSON is empty, any existing configuration for
+ * the network is removed.
+ *
+ * GA_ERROR if the network configuration is invalid.
+ */
+GASDK_API int GA_register_network(const char* name, const GA_json* json);
+
+/**
+ * Get the available network configurations
+ *
+ * @output Destination for the network configuration JSON
+ *
+ * GA_ERROR if the network configuration cannot be fetched.
+ */
+GASDK_API int GA_get_networks(GA_json** output);
+
 #ifdef __cplusplus
 }
 #endif

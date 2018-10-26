@@ -1,11 +1,3 @@
-//
-//  EnterMnemonicsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 7/15/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -23,11 +15,20 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         createUI()
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+        hideKeyboardWhenTappedAround()
+        topLabel.text = NSLocalizedString("id_enter_your_wallet_recovery_seed", comment: "")
+        doneButton.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        doneButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        //doneButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        doneButton.backgroundColor = UIColor.customTitaniumLight()
+        doneButton.isUserInteractionEnabled = false
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
@@ -43,6 +44,17 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         return result.lowercased()
     }
 
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        print(textField.text)
+        for field in textFields {
+            if(field.text == nil || field.text == "") {
+                return
+            }
+        }
+        doneButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        doneButton.isUserInteractionEnabled = true
+    }
+
     @IBAction func doneButtonClicked(_ sender: Any) {
         let trimmedUserProvidedMnemonic = mergeTextFields()
         //print(trimmedUserProvidedMnemonic)
@@ -56,7 +68,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
                 getAppDelegate().setMnemonicWords(array!)
                 AppDelegate.removeKeychainData()
                 AccountStore.shared.initializeAccountStore()
-                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                self.performSegue(withIdentifier: "next", sender: self)
             }.catch { error in
                 print("Login failed")
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -115,6 +127,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         textField.autocorrectionType = .no
         textField.adjustsFontSizeToFitWidth = true
         textField.delegate = self
+        textField.returnKeyType = UIReturnKeyType.done
+        textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         block.addSubview(textField)
         textFields.append(textField)
 

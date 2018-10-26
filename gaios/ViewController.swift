@@ -1,8 +1,7 @@
-
 import UIKit
 import PromiseKit
 
-class ViewController: UIViewController, WalletViewDelegate{
+class ViewController: UIViewController, WalletViewDelegate {
 
     @IBOutlet weak var walletHeaderView: UIView!
     @IBOutlet weak var walletView: WalletView!
@@ -12,6 +11,8 @@ class ViewController: UIViewController, WalletViewDelegate{
     @IBOutlet weak var addCardViewButton: UIButton!
     var wallets:Array<WalletItem> = Array<WalletItem>()
     var pager: MainMenuPageViewController? = nil
+    var zoomView: UIView? = nil
+    var presented: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,16 @@ class ViewController: UIViewController, WalletViewDelegate{
         walletView.presentedFooterView.receiveButton.addTarget(self, action: #selector(self.receiveToWallet(_:)), for: .touchUpInside)
         walletView.presentedFooterView.sendButton.addTarget(self, action: #selector(self.sendfromWallet(_:)), for: .touchUpInside)
         walletView.delegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
+    }
+
+    @objc func newAddress(_ notification: NSNotification) {
+        print(notification.userInfo ?? "")
+        if let dict = notification.userInfo as NSDictionary? {
+            if let pointer = dict["pointer"] as? Int {
+                walletView.updateWallet(forCardview: pointer)
+            }
+        }
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -36,6 +47,9 @@ class ViewController: UIViewController, WalletViewDelegate{
         super.viewDidAppear(animated)
     }
 
+    func showTransaction(tx: TransactionItem) {
+        self.performSegue(withIdentifier: "txDetails", sender: tx)
+    }
 
     func reloadWallets() {
 
@@ -62,6 +76,10 @@ class ViewController: UIViewController, WalletViewDelegate{
             cardView.presentedDidUpdate()
             let uri = bip21Helper.btcURIforAddress(address: item.address)
             cardView.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: cardView.QRImageView.frame)
+            let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
+            cardView.QRImageView.isUserInteractionEnabled = false
+            cardView.QRImageView.addGestureRecognizer(tap)
+            cardView.QRImageView.tag = index
             coloredCardViews.append(cardView)
         }
 
@@ -87,8 +105,25 @@ class ViewController: UIViewController, WalletViewDelegate{
         }
     }
 
+    @objc func zoomQR(recognizer: UITapGestureRecognizer) {
+        if(!presented) {
+            return
+        }
+        if let tag = recognizer.view?.tag {
+            let addressDetail = self.storyboard?.instantiateViewController(withIdentifier: "addressDetail") as! AddressDetailViewController
+            let item = wallets[tag]
+            addressDetail.wallet = item
+            addressDetail.providesPresentationContextTransitionStyle = true
+            addressDetail.definesPresentationContext = true
+            addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+            addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+            hideButtons()
+            self.present(addressDetail, animated: true, completion: nil)
+        }
+    }
+
     func refreshWallets() {
-        AccountStore.shared.getWallets().done { (accs:Array<WalletItem>) in
+        AccountStore.shared.getWallets(cached: true).done { (accs:Array<WalletItem>) in
             DispatchQueue.main.async {
                 if(accs.count == 0) {
                     return
@@ -122,14 +157,18 @@ class ViewController: UIViewController, WalletViewDelegate{
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        walletView.dismissPresentedCardView(animated: true)
         if let nextController = segue.destination as? SendBtcViewController {
             self.navigationController!.navigationBar.isHidden = false
             nextController.wallet = (walletView.presentedCardView as! ColoredCardView).wallet
         }
         if let nextController = segue.destination as? ReceiveBtcViewController {
             nextController.receiveAddress = (walletView.presentedCardView as! ColoredCardView).addressLabel.text
+            nextController.wallet = (walletView.presentedCardView as! ColoredCardView).wallet
         }
+        if let nextController = segue.destination as? TransactionDetailViewController {
+            nextController.transaction = sender as? TransactionItem
+        }
+
         hideButtons()
     }
 
@@ -149,17 +188,21 @@ class ViewController: UIViewController, WalletViewDelegate{
     }
 
     func cardViewPresented(cardView: CardView) {
+        presented = true
         hideButtons()
         let wallet = cardView as! ColoredCardView
         wallet.balanceLabel.textColor = UIColor.white
         wallet.nameLabel.textColor = UIColor.white
+        wallet.QRImageView.isUserInteractionEnabled = true
     }
 
     func cardViewDismissed(cardView: CardView) {
+        presented = false
         if(self.navigationController?.viewControllers.count == 1) {
             showButtons()
         }
         let wallet = cardView as! ColoredCardView
+        wallet.QRImageView.isUserInteractionEnabled = false
         if(wallet.index < wallets.count - 1) {
             wallet.balanceLabel.textColor = UIColor.customTitaniumLight()
             wallet.nameLabel.textColor = UIColor.customTitaniumLight()

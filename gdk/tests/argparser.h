@@ -10,6 +10,7 @@ extern "C" {
 
 struct options {
     int quiet;
+    const char* network;
     int testnet;
 };
 

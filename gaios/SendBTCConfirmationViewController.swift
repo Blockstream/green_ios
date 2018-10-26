@@ -1,16 +1,18 @@
-//
-//  SendBTCConfirmationViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 6/26/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import NVActivityIndicatorView
 
 class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate{
+
+    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var slidingButton: SlidingButton!
+    @IBOutlet weak var fiatAmountLabel: UILabel!
+    @IBOutlet weak var walletNameLabel: UILabel!
+    @IBOutlet weak var recepientAddressLabel: UILabel!
+    @IBOutlet weak var sendingTitle: UILabel!
+    @IBOutlet weak var fromTitle: UILabel!
+    @IBOutlet weak var toTitle: UILabel!
+    @IBOutlet weak var myNotesTitle: UILabel!
 
     var toAddress: String = ""
     var fiat_amount: Double = 0
@@ -22,12 +24,6 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     var wallet: WalletItem? = nil
     var payload: [String : Any]? = nil
     var selectedType: TransactionType? = nil
-    @IBOutlet weak var textView: UITextView!
-
-    @IBOutlet weak var slidingButton: SlidingButton!
-    @IBOutlet weak var fiatAmountLabel: UILabel!
-    @IBOutlet weak var walletNameLabel: UILabel!
-    @IBOutlet weak var recepientAddressLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +38,10 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         textView.delegate = self
         textView.text = "Add a note..."
         textView.textColor = UIColor.customTitaniumLight()
-
+        sendingTitle.text = NSLocalizedString("id_sending", comment: "")
+        fromTitle.text = NSLocalizedString("id_from", comment: "")
+        toTitle.text = NSLocalizedString("id_to", comment: "")
+        myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -101,10 +100,12 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
 
                         } else if (parsed == "call") {
                             let json = try result?.call()
-                            self.stopAnimating()
-                            print("No 2 factor")
+                            self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+                                self.stopAnimating()
+                                self.navigationController?.popToRootViewController(animated: true)
+                            }
                         }
-                        print(status)
                     } catch {
                         self.stopAnimating()
                         print("couldn't call")
@@ -126,4 +127,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         }
     }
 
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
 }

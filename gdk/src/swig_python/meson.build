@@ -1,7 +1,7 @@
 message('Building Python bindings...')
 
-swig_py_target = custom_target('swig',
-                     command : [join_paths(meson.source_root(), 'tools', 'swig_py.sh'),
+swig_py_target = custom_target('swig-python',
+                     command : [join_paths(meson.source_root(), 'tools', 'swig_python.sh'),
                                 sed, '@OUTDIR@/gasdk_py_wrap.c', '@OUTDIR@', '@INPUT0@', '@INPUT1@'],
                      input : ['swig_gasdk.i', 'python_extra.py_in'],
                      output : ['gasdk_py_wrap.c'])

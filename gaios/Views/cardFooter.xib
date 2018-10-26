@@ -144,7 +144,10 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outlet property="receiveButton" destination="xZk-DH-KBp" id="Rfn-QL-4El"/>
+                <outlet property="receiveView" destination="nwL-xg-dd3" id="Zcb-IP-YJc"/>
                 <outlet property="sendButton" destination="jl1-A8-YvP" id="6uV-Gu-ela"/>
+                <outlet property="sendView" destination="RMx-oq-Www" id="irQ-G3-Uc7"/>
+                <outlet property="separatorView" destination="U1U-bv-7sz" id="LGX-Jv-9s7"/>
             </connections>
             <point key="canvasLocation" x="90.5" y="93.5"/>
         </view>

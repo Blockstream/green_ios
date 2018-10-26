@@ -4,13 +4,11 @@
 #include <thread>
 #include <vector>
 
-#include <gsl/span>
-
 #include "boost_wrapper.hpp"
-#include "include/exception.hpp"
 #include "include/session.hpp"
 
 #include "autobahn_wrapper.hpp"
+#include "exception.hpp"
 #include "ga_session.hpp"
 #include "logging.hpp"
 #include "memory.hpp"
@@ -19,12 +17,53 @@
 
 namespace ga {
 namespace sdk {
+    struct websocket_rng_type {
+        uint32_t operator()() const;
+    };
+
+    struct websocketpp_gdk_config : public websocketpp::config::asio_client {
+        using alog_type = websocket_boost_logger;
+        using elog_type = websocket_boost_logger;
+
+#ifdef NDEBUG
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
+#else
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
+#endif
+        using rng_type = websocket_rng_type;
+
+        struct transport_config : public websocketpp::config::asio_client::transport_config {
+            using alog_type = websocket_boost_logger;
+            using elog_type = websocket_boost_logger;
+        };
+        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_config::transport_config>;
+    };
+
+    struct websocketpp_gdk_tls_config : public websocketpp::config::asio_tls_client {
+        using alog_type = websocket_boost_logger;
+        using elog_type = websocket_boost_logger;
+#ifdef NDEBUG
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
+#else
+        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
+        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
+#endif
+        using rng_type = websocket_rng_type;
+
+        struct transport_config : public websocketpp::config::asio_tls_client::transport_config {
+            using alog_type = websocket_boost_logger;
+            using elog_type = websocket_boost_logger;
+        };
+        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_tls_config::transport_config>;
+    };
+
     boost::log::sources::logger_mt& websocket_boost_logger::m_log = gdk_logger::get();
 
     namespace {
         static const std::string DEFAULT_USER_AGENT("[v2,sw,csv]");
-        static const unsigned char GA_LOGIN_NONCE[30] = { 'G', 'r', 'e', 'e', 'n', 'A', 'd', 'd', 'r', 'e', 's', 's',
-            '.', 'i', 't', ' ', 'H', 'D', ' ', 'w', 'a', 'l', 'l', 'e', 't', ' ', 'p', 'a', 't', 'h' };
         // TODO: The server should return these
         static const std::vector<std::string> ALL_2FA_METHODS = { { "email" }, { "sms" }, { "phone" }, { "gauth" } };
 
@@ -33,35 +72,35 @@ namespace sdk {
         static const uint32_t DEFAULT_MIN_FEE = 1000; // 1 satoshi/byte
         static const uint32_t NUM_FEE_ESTIMATES = 25; // Min fee followed by blocks 1-24
 
+        static const std::array<uint32_t, 1> PASSWORD_PATH{ { harden(0x70617373) } }; // 'pass'
+        static const std::array<unsigned char, 8> PASSWORD_SALT = {
+            { 0x70, 0x61, 0x73, 0x73, 0x73, 0x61, 0x6c, 0x74 } // 'passsalt'
+        };
+
         static std::once_flag one_time_setup_flag;
 
         static void one_time_setup()
         {
             std::call_once(one_time_setup_flag, [] {
-                wally::init(0);
-                wally::secp_randomize(get_random_bytes<WALLY_SECP_RANDOMIZE_LEN>());
+                GA_SDK_VERIFY(wally_init(0));
+                auto entropy = get_random_bytes<WALLY_SECP_RANDOMIZE_LEN>();
+                GA_SDK_VERIFY(wally_secp_randomize(entropy.data(), entropy.size()));
+                wally_bzero(entropy.data(), entropy.size());
             });
         }
 
         // FIXME: too slow. lacks validation.
-        static std::array<unsigned char, 32> uint256_to_base256(const std::string& input)
+        static std::array<unsigned char, SHA256_LEN> uint256_to_base256(const std::string& input)
         {
             constexpr size_t base = 256;
 
-            std::array<unsigned char, 32> repr;
+            std::array<unsigned char, SHA256_LEN> repr{};
             size_t i = repr.size() - 1;
             for (boost::multiprecision::checked_uint256_t num(input); num; num = num / base, --i) {
                 repr[i] = static_cast<unsigned char>(num % base);
             }
 
             return repr;
-        }
-
-        static void get_pin_key(const std::vector<unsigned char>& password, const std::string& salt,
-            std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN>& out)
-        {
-            const auto salt_bytes = gsl::make_span(reinterpret_cast<const unsigned char*>(salt.data()), salt.size());
-            pbkdf2_hmac_sha512_256(password, salt_bytes, 0, 2048, out);
         }
 
         template <typename T> static nlohmann::json get_json_result(const T& result)
@@ -99,78 +138,6 @@ namespace sdk {
             }
         }
 
-        static auto get_subaccount_master_key(const wally_ext_key_ptr& master_key, uint32_t subaccount)
-        {
-            GA_SDK_RUNTIME_ASSERT(subaccount != 0);
-            const bool public_ = false;
-            return derive_key(master_key,
-                std::array<uint32_t, 2>{
-                    { BIP32_INITIAL_HARDENED_CHILD | 3, BIP32_INITIAL_HARDENED_CHILD | subaccount } },
-                public_);
-        }
-
-        static auto get_subaccount_master_xpub(const wally_ext_key_ptr& master_key, uint32_t subaccount)
-        {
-            const auto subkey = get_subaccount_master_key(master_key, subaccount);
-            return std::make_pair(
-                hex_from_bytes(gsl::make_span(subkey->pub_key)), hex_from_bytes(gsl::make_span(subkey->chain_code)));
-        }
-
-        static auto get_recovery_key(const wally_ext_key_ptr& hdkey, const std::string& xpub, uint32_t subaccount)
-        {
-            std::string pub_key, chain_code;
-            std::tie(pub_key, chain_code) = get_subaccount_master_xpub(hdkey, subaccount);
-            return std::make_tuple(pub_key, chain_code, xpub);
-        }
-
-        static auto get_recovery_key(const std::string& mnemonic, uint32_t bip32_version, uint32_t subaccount)
-        {
-            bip39_mnemonic_validate(nullptr, mnemonic);
-
-            // FIXME: secure_array
-            std::array<unsigned char, BIP39_SEED_LEN_512> seed;
-            GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
-
-            ext_key* p;
-            bip32_key_from_seed_alloc(seed, bip32_version, BIP32_FLAG_SKIP_HASH, &p);
-            wally_ext_key_ptr hdkey(p);
-            std::array<unsigned char, BIP32_SERIALIZED_LEN> xpub_bytes;
-            bip32_key_serialize(hdkey, BIP32_FLAG_KEY_PUBLIC, xpub_bytes);
-            return get_recovery_key(hdkey, base58check_from_bytes(xpub_bytes), subaccount);
-        }
-
-        static auto get_recovery_key(const std::string& xpub, uint32_t subaccount)
-        {
-            std::array<unsigned char, BIP32_SERIALIZED_LEN + BASE58_CHECKSUM_LEN> xpub_bytes;
-            GA_SDK_RUNTIME_ASSERT(base58check_to_bytes(xpub, xpub_bytes) == BIP32_SERIALIZED_LEN);
-
-            ext_key* p;
-            bip32_key_unserialize_alloc(gsl::make_span(xpub_bytes.data(), BIP32_SERIALIZED_LEN), &p);
-            return get_recovery_key(wally_ext_key_ptr(p), xpub, subaccount);
-        }
-
-        static std::string get_address_from_script(const network_parameters& net_params,
-            const std::vector<unsigned char>& script, const std::string& addr_type)
-        {
-            if (addr_type == address_type::p2sh) {
-                return base58check_from_bytes(p2sh_address_from_bytes(net_params, script));
-            } else if (addr_type == address_type::p2wsh || addr_type == address_type::csv) {
-                return base58check_from_bytes(p2sh_p2wsh_address_from_bytes(net_params, script));
-            }
-            GA_SDK_RUNTIME_ASSERT(false);
-            __builtin_unreachable();
-        }
-
-        static script_type get_script_type_from_address_type(const std::string& addr_type)
-        {
-            if (addr_type == address_type::csv)
-                return script_type::p2sh_p2wsh_csv_fortified_out;
-            if (addr_type == address_type::p2wsh)
-                return script_type::p2sh_p2wsh_fortified_out;
-            GA_SDK_RUNTIME_ASSERT(addr_type == address_type::p2sh);
-            return script_type::p2sh_fortified_out;
-        }
-
         static nlohmann::json cleanup_utxos(nlohmann::json& utxos)
         {
             for (auto& utxo : utxos) {
@@ -181,19 +148,37 @@ namespace sdk {
             return utxos;
         }
 
-        static std::string sign_hash(const wally_ext_key_ptr& master_key, const std::vector<uint32_t>& path,
-            const std::array<unsigned char, 32>& hash)
+        inline auto sig_to_der_hex(const ecdsa_sig_t& signature) { return hex_from_bytes(ec_sig_to_der(signature)); }
+
+        template <typename T>
+        void connect_to_endpoint(const wamp_session_ptr& session, const ga_session::transport_t& transport)
         {
-            // FIXME: secure_array
-            std::array<unsigned char, EC_PRIVATE_KEY_LEN> login_priv_key;
-            derive_private_key(master_key, path, login_priv_key);
+            std::array<boost::future<void>, 3> futures;
+            futures[0] = boost::get<std::shared_ptr<T>>(transport)->connect().then([&](boost::future<void> connected) {
+                connected.get();
+                futures[1] = session->start().then([&](boost::future<void> started) {
+                    started.get();
+                    futures[2] = session->join("realm1").then([&](boost::future<uint64_t> joined) { joined.get(); });
+                });
+            });
 
-            std::array<unsigned char, EC_SIGNATURE_LEN> sig;
-            ec_sig_from_bytes(login_priv_key, hash, EC_FLAG_ECDSA | EC_FLAG_GRIND_R, sig);
-
-            return hex_from_bytes(ec_sig_to_der(sig));
+            for (auto&& f : futures) {
+                f.get();
+            }
         }
 
+        static amount::value_type get_limit_total(const nlohmann::json& details)
+        {
+            const auto& total_p = details.at("total");
+            amount::value_type total;
+            if (total_p.is_number()) {
+                total = total_p;
+            } else {
+                const std::string total_str = total_p;
+                total = strtoul(total_str.c_str(), nullptr, 10);
+            }
+            return total;
+        }
     } // namespace
 
     uint32_t websocket_rng_type::operator()() const
@@ -215,16 +200,22 @@ namespace sdk {
         m_run_thread.join();
     }
 
-    ga_session::ga_session(network_parameters net_params, bool debug)
-        : m_controller(m_io)
-        , m_net_params(std::move(net_params))
+    ga_session::ga_session(const network_parameters& net_params, const std::string& proxy, bool use_tor, bool debug)
+        : m_net_params(net_params)
+        , m_proxy(proxy)
+        , m_use_tor(use_tor)
+        , m_controller(m_io)
+        , m_notification_handler(nullptr)
+        , m_notification_context(nullptr)
         , m_min_fee_rate(DEFAULT_MIN_FEE)
+        , m_current_subaccount(0)
+        , m_earliest_block_time(0)
         , m_next_subaccount(0)
         , m_block_height(0)
-        , m_master_key(nullptr)
         , m_system_message_id(0)
         , m_system_message_ack_id(0)
         , m_watch_only(true)
+        , m_is_locked(false)
         , m_rfc2818_verifier(websocketpp::uri(m_net_params.gait_wamp_url()).get_host())
         , m_cert_pin_validated(false)
         , m_debug(debug)
@@ -250,8 +241,7 @@ namespace sdk {
 
     bool ga_session::connect_with_tls() const
     {
-        return boost::algorithm::starts_with(
-            !m_net_params.get_use_tor() ? m_net_params.gait_wamp_url() : m_net_params.gait_onion(), "wss://");
+        return boost::algorithm::starts_with(m_net_params.get_connection_string(m_use_tor), "wss://");
     }
 
     void ga_session::connect()
@@ -260,17 +250,34 @@ namespace sdk {
 
         const bool tls = connect_with_tls();
         tls ? make_transport<transport_tls>() : make_transport<transport>();
-        tls ? connect_to_endpoint<transport_tls>() : connect_to_endpoint<transport>();
+        tls ? connect_to_endpoint<transport_tls>(m_session, m_transport)
+            : connect_to_endpoint<transport>(m_session, m_transport);
     }
 
-    void ga_session::connect_to_endpoint_impl(
-        std::array<boost::future<void>, 3>& futures, boost::future<void>& connected) const
+    template <typename T> std::enable_if_t<std::is_same<T, client>::value> ga_session::set_tls_init_handler() {}
+    template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> ga_session::set_tls_init_handler()
     {
-        connected.get();
-        futures[1] = m_session->start().then([&](boost::future<void> started) {
-            started.get();
-            futures[2] = m_session->join("realm1").then([&](boost::future<uint64_t> joined) { joined.get(); });
-        });
+        m_cert_pin_validated = false;
+        boost::get<std::unique_ptr<T>>(m_client)->set_tls_init_handler(
+            [this](const websocketpp::connection_hdl) { return tls_init_handler_impl(); });
+    }
+
+    template <typename T> void ga_session::make_client()
+    {
+        m_client = std::make_unique<T>();
+        boost::get<std::unique_ptr<T>>(m_client)->init_asio(&m_io);
+        set_tls_init_handler<T>();
+    }
+
+    template <typename T> void ga_session::make_transport()
+    {
+        using client_type
+            = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
+
+        m_transport = std::make_shared<T>(
+            *boost::get<client_type>(m_client), m_net_params.get_connection_string(m_use_tor), m_proxy, m_debug);
+        boost::get<std::shared_ptr<T>>(m_transport)
+            ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
     }
 
     context_ptr ga_session::tls_init_handler_impl()
@@ -326,8 +333,11 @@ namespace sdk {
         return ctx;
     }
 
-    void ga_session::disconnect() const
+    void ga_session::disconnect()
     {
+        if (m_notification_handler) {
+            call_notification_handler(new nlohmann::json());
+        }
         no_std_exception_escape([this] { m_session->leave().get(); });
         no_std_exception_escape([this] { m_session->stop().get(); });
         connect_with_tls() ? disconnect_transport<transport_tls>() : disconnect_transport<transport>();
@@ -341,13 +351,7 @@ namespace sdk {
         // FIXME: securely destroy all held data
     }
 
-    uint32_t ga_session::get_bip32_version() const
-    {
-        return m_net_params.main_net() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
-    }
-
-    std::pair<std::string, std::string> ga_session::sign_challenge(
-        const wally_ext_key_ptr& master_key, const std::string& challenge)
+    std::pair<std::string, std::string> ga_session::sign_challenge(const std::string& challenge)
     {
         auto path_bytes = get_random_bytes<8>();
 
@@ -357,22 +361,22 @@ namespace sdk {
 
         const auto challenge_hash = uint256_to_base256(challenge);
 
-        return { sign_hash(master_key, path, challenge_hash), hex_from_bytes(path_bytes) };
+        return { sig_to_der_hex(m_signer->sign_hash(path, challenge_hash)), hex_from_bytes(path_bytes) };
     }
 
-    void ga_session::set_fee_estimates(const nlohmann::json& fee_estimates)
+    nlohmann::json ga_session::set_fee_estimates(const nlohmann::json& fee_estimates)
     {
         // Convert server estimates into an array of NUM_FEE_ESTIMATES estimates
         // ordered by block, with the minimum allowable fee at position 0
         std::map<uint32_t, uint32_t> ordered_estimates;
         for (const auto& e : fee_estimates) {
-            const auto& feerate = e["feerate"];
+            const auto& fee_rate = e["feerate"];
             double btc_per_k;
-            if (feerate.is_string()) {
-                const std::string feerate_str = feerate;
-                btc_per_k = boost::lexical_cast<double>(feerate_str);
+            if (fee_rate.is_string()) {
+                const std::string fee_rate_str = fee_rate;
+                btc_per_k = boost::lexical_cast<double>(fee_rate_str);
             } else {
-                btc_per_k = feerate;
+                btc_per_k = fee_rate;
             }
             if (btc_per_k > 0) {
                 const uint32_t actual_block = e["blocks"];
@@ -396,54 +400,67 @@ namespace sdk {
             }
         }
 
-        if (i == 1u) {
-            // No usable estimates, use existing ones until new ones arrive
-            return;
-        }
+        if (i != 1u) {
+            // We have updated estimates, use them
+            while (i < NUM_FEE_ESTIMATES) {
+                new_estimates[i] = new_estimates[i - 1];
+                ++i;
+            }
 
-        while (i < NUM_FEE_ESTIMATES) {
-            new_estimates[i] = new_estimates[i - 1];
-            ++i;
+            // FIXME locking for m_fee_estimates
+            std::swap(m_fee_estimates, new_estimates);
         }
-
-        // FIXME locking for m_fee_estimates
-        std::swap(m_fee_estimates, new_estimates);
+        return m_fee_estimates;
     }
 
     void ga_session::register_user(const std::string& mnemonic, const std::string& user_agent)
     {
-        // Only the English word list is supported. This check is important because bip39_mnemonic_to_seed
-        // does not do any validation (by design)
-        bip39_mnemonic_validate(nullptr, mnemonic);
+        software_signer registerer(m_net_params, mnemonic);
 
-        // FIXME: secure_array
-        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
+        // Get our master xpub
+        const auto master_xpub = registerer.get_xpub();
+        const auto master_chain_code_hex = hex_from_bytes(master_xpub.first);
+        const auto master_pub_key_hex = hex_from_bytes(master_xpub.second);
 
-        ext_key master;
-        bip32_key_from_seed(seed, get_bip32_version(), BIP32_FLAG_SKIP_HASH, &master);
-        // Since we don't use the private key or seed further, wipe them immediately
-        wally::clear(static_cast<unsigned char*>(master.priv_key), sizeof(master.priv_key));
-        wally::clear(seed);
+        // Get our gait path xpub and compute gait_path from it
+        const auto gait_xpub = registerer.get_xpub(ga_pubkeys::get_gait_generation_path());
+        const auto gait_path_hex = hex_from_bytes(ga_pubkeys::get_gait_path_bytes(gait_xpub));
 
-        std::array<unsigned char, sizeof(master.chain_code) + sizeof(master.pub_key)> path_data;
-        init_container(path_data, gsl::make_span(master.chain_code), gsl::make_span(master.pub_key));
+        register_user(master_pub_key_hex, master_chain_code_hex, gait_path_hex, user_agent);
+    }
 
-        std::array<unsigned char, HMAC_SHA512_LEN> path;
-        hmac_sha512(gsl::make_span(GA_LOGIN_NONCE), path_data, path);
-
-        const auto pub_key = hex_from_bytes(gsl::make_span(master.pub_key));
-        const auto chain_code = hex_from_bytes(gsl::make_span(master.chain_code));
-        const auto hex_path = hex_from_bytes(path);
-        const auto ua = DEFAULT_USER_AGENT + user_agent + "_ga_sdk";
-
+    void ga_session::register_user(const std::string& master_pub_key_hex, const std::string& master_chain_code_hex,
+        const std::string& gait_path_hex, const std::string& user_agent)
+    {
         wamp_call([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); },
-            "com.greenaddress.login.register", pub_key, chain_code, ua, hex_path);
+            "com.greenaddress.login.register", master_pub_key_hex, master_chain_code_hex,
+            DEFAULT_USER_AGENT + user_agent + "_ga_sdk", gait_path_hex);
+    }
+
+    std::string ga_session::get_challenge(const std::string& address)
+    {
+        const bool nlocktime_support = true;
+        std::string challenge;
+        wamp_call([&challenge](wamp_call_result result) { challenge = result.get().argument<std::string>(0); },
+            "com.greenaddress.login.get_trezor_challenge", address, nlocktime_support);
+        return challenge;
     }
 
     void ga_session::update_login_data(nlohmann::json&& login_data, bool watch_only)
     {
         m_login_data = login_data;
+
+        // Parse gait_path into a derivation path
+        const auto gait_path_bytes = bytes_from_hex(m_login_data["gait_path"]);
+        GA_SDK_RUNTIME_ASSERT(gait_path_bytes.size() == m_gait_path.size() * 2);
+        adjacent_transform(gait_path_bytes.begin(), gait_path_bytes.end(), m_gait_path.begin(),
+            [](auto first, auto second) { return uint32_t((first << 8u) + second); });
+
+        // Create our GA and recovery pubkey collections
+        // FIXME: server doesn't return xpubs for the regular user subaccounts,
+        // which prevents address validation in watch only mode.
+        m_ga_pubkeys = std::make_unique<ga_pubkeys>(m_net_params, m_gait_path);
+        m_recovery_pubkeys = std::make_unique<ga_user_pubkeys>(m_net_params);
 
         const uint32_t min_fee_rate = m_login_data["min_fee"];
         if (min_fee_rate != m_min_fee_rate) {
@@ -452,45 +469,81 @@ namespace sdk {
         }
         m_fiat_source = login_data["exchange"];
         m_fiat_currency = login_data["fiat_currency"];
-        m_fiat_rate = login_data["fiat_exchange"];
+        update_fiat_rate(login_data["fiat_exchange"]);
 
         const uint32_t block_height = m_login_data["block_height"];
         m_block_height = block_height;
 
         m_subaccounts.clear();
         m_next_subaccount = 0;
-        for (const auto& subaccount : m_login_data["subaccounts"]) {
-            const uint32_t pointer = subaccount["pointer"];
-            std::string type = subaccount["type"];
+        for (const auto& sa : m_login_data["subaccounts"]) {
+            const uint32_t subaccount = sa["pointer"];
+            std::string type = sa["type"];
             if (type == "simple")
                 type = "2of2";
-            insert_subaccount(subaccount["name"], pointer, subaccount["receiving_id"],
-                json_get_value(subaccount, "2of3_backup_pubkey", std::string()),
-                json_get_value(subaccount, "2of3_backup_chaincode", std::string()), type,
-                subaccount.value("has_txs", false));
-            if (pointer > m_next_subaccount)
-                m_next_subaccount = pointer;
+            const std::string satoshi_str = sa["satoshi"];
+            const amount satoshi{ strtoul(satoshi_str.c_str(), NULL, 10) };
+            const std::string recovery_chain_code = json_get_value(sa, "2of3_backup_chaincode");
+            const std::string recovery_pub_key = json_get_value(sa, "2of3_backup_pubkey");
+
+            insert_subaccount(subaccount, sa["name"], sa["receiving_id"], recovery_pub_key, recovery_chain_code, type,
+                satoshi, sa.value("has_txs", false));
+            if (subaccount > m_next_subaccount)
+                m_next_subaccount = subaccount;
         }
         ++m_next_subaccount;
 
         // Insert the main account so callers can treat all accounts equally
+        const std::string satoshi_str = login_data["satoshi"];
+        const amount satoshi{ strtoul(satoshi_str.c_str(), NULL, 10) };
         const bool has_txs = m_login_data.value("has_txs", false);
         insert_subaccount(
-            std::string(), 0, m_login_data["receiving_id"], std::string(), std::string(), "2of2", has_txs);
+            0, std::string(), m_login_data["receiving_id"], std::string(), std::string(), "2of2", satoshi, has_txs);
 
         m_system_message_id = m_login_data.value("next_system_message_id", 0);
         m_system_message_ack_id = 0;
         m_system_message_ack = std::string();
         m_watch_only = watch_only;
+        // FIXME: Assert we aren't locked in all calls that should be disabled
+        // (the server prevents these calls but its faster to reject them locally)
+        m_is_locked = login_data.value("reset_2fa_active", false);
 
-        set_fee_estimates(m_login_data["fee_estimates"]);
         const auto p = m_login_data.find("limits");
         update_spending_limits(p == m_login_data.end() ? nlohmann::json() : *p);
+
+        auto& appearance = login_data["appearance"];
+        m_current_subaccount = json_get_value(appearance, "current_subaccount", 0u);
+        m_earliest_block_time = m_login_data["earliest_key_creation_time"];
+
+        // Notify the caller of 2fa reset status
+        if (m_notification_handler) {
+            const auto& days_remaining = login_data["reset_2fa_days_remaining"];
+            const auto& disputed = login_data["reset_2fa_disputed"];
+            nlohmann::json reset_status
+                = { { "is_active", m_is_locked }, { "days_remaining", days_remaining }, { "is_disputed", disputed } };
+            call_notification_handler(
+                new nlohmann::json({ { "event", "twofactor_reset" }, { "twofactor_reset", reset_status } }));
+        }
+
+        // Notify the caller of the current subaccount
+        on_subaccount_changed(m_current_subaccount);
+
+        // Notify the caller of the current fees
+        on_new_fees(set_fee_estimates(m_login_data["fee_estimates"]));
+
+        // Notify the caller of their current block
+        on_new_block(
+            nlohmann::json({ { "block_height", block_height }, { "block_hash", m_login_data["block_hash"] } }));
+    }
+
+    void ga_session::update_fiat_rate(const std::string& rate_str) const
+    {
+        m_fiat_rate = amount::format_amount(rate_str, 8);
     }
 
     void ga_session::update_spending_limits(const nlohmann::json& limits)
     {
-        // FIXME: locking, set on server
+        // FIXME: locking
         if (limits.is_null()) {
             m_limits_data = { { "is_fiat", false }, { "per_tx", 0 }, { "total", 0 } };
         } else {
@@ -501,17 +554,10 @@ namespace sdk {
     nlohmann::json ga_session::get_spending_limits() const
     {
         // FIXME: locking
-        const auto& total_p = m_limits_data["total"];
-        amount::value_type total;
-        if (total_p.is_number()) {
-            total = total_p;
-        } else {
-            const std::string total_str = total_p;
-            total = strtoul(total_str.c_str(), NULL, 10);
-        }
+        amount::value_type total = get_limit_total(m_limits_data);
 
-        nlohmann::json converted_limits;
         const bool is_fiat = m_limits_data["is_fiat"];
+        nlohmann::json converted_limits;
         if (is_fiat) {
             converted_limits = convert_fiat_cents(total);
         } else {
@@ -521,97 +567,170 @@ namespace sdk {
         return converted_limits;
     }
 
-    void ga_session::on_new_transaction(const nlohmann::json& details)
+    bool ga_session::is_spending_limits_decrease(const nlohmann::json& details)
     {
-        // FIXME: Update have_transactions in each affected subaccount,
-        // mark cached tx lists (when implemented) as dirty, and notify the user
-        (void)details;
+        // FIXME: Locking
+        const bool current_is_fiat = m_limits_data.at("is_fiat").get<bool>();
+        const bool new_is_fiat = details.at("is_fiat").get<bool>();
+        GA_SDK_RUNTIME_ASSERT(new_is_fiat == (details.find("fiat") != details.end()));
+
+        if (current_is_fiat != new_is_fiat)
+            return false;
+
+        const amount::value_type current_total = m_limits_data["total"];
+        if (new_is_fiat) {
+            return amount::get_fiat_cents(details["fiat"]) <= current_total;
+        } else {
+            return details["satoshi"] <= current_total;
+        }
     }
 
-    void ga_session::login(const std::string& mnemonic, const std::string& user_agent)
+    void ga_session::on_new_transaction(nlohmann::json&& details)
+    {
+        // Mark the balances of each affected subaccount dirty
+        const auto& affected_subaccounts = details["subaccounts"];
+        for (uint32_t subaccount : affected_subaccounts) {
+            const auto p = m_subaccounts.find(subaccount);
+            // FIXME: Handle other logged in sessions creating subaccounts
+            GA_SDK_RUNTIME_ASSERT_MSG(p != m_subaccounts.end(), "Unknown subaccount");
+            p->second["has_transactions"] = true;
+            p->second["is_dirty"] = true;
+        }
+
+        // FIXME: Mark cached tx lists (when implemented) as dirty
+        if (!m_notification_handler) {
+            return;
+        }
+
+        const std::string value_str = details["value"];
+        int64_t satoshi = strtol(value_str.c_str(), NULL, 10);
+        details["satoshi"] = abs(satoshi);
+
+        // FIXME: We can't determine if this is a re-deposit based on the
+        // information the server give us. We should fetch the tx details
+        // in tx_list format, cache them, and notify that data instead.
+        const bool is_deposit = satoshi >= 0;
+        details["type"] = is_deposit ? "incoming" : "outgoing";
+        details.erase("value");
+        details.erase("wallet_id");
+        call_notification_handler(
+            new nlohmann::json({ { "event", "transaction" }, { "transaction", std::move(details) } }));
+    }
+
+    void ga_session::on_new_block(nlohmann::json&& details)
+    {
+        json_rename_key(details, "count", "block_height");
+        details["initial_timestamp"] = m_earliest_block_time;
+        const uint32_t block_height = details["block_height"];
+        GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
+        m_block_height = block_height;
+        if (m_notification_handler) {
+            details.erase("diverged_count");
+            call_notification_handler(new nlohmann::json({ { "event", "block" }, { "block", std::move(details) } }));
+        }
+    }
+
+    void ga_session::on_subaccount_changed(uint32_t subaccount)
+    {
+        // Note: notification recipient must destroy the passed JSON
+        if (m_notification_handler) {
+            call_notification_handler(
+                new nlohmann::json({ { "event", "subaccount" }, { "subaccount", get_subaccount(subaccount) } }));
+        }
+    }
+
+    void ga_session::on_new_fees(nlohmann::json&& fee_estimates)
+    {
+        // Note: notification recipient must destroy the passed JSON
+        if (m_notification_handler) {
+            call_notification_handler(new nlohmann::json({ { "event", "fees" }, { "fees", fee_estimates } }));
+        }
+    }
+
+    void ga_session::login(const std::string& mnemonic, const std::string& password, const std::string& user_agent)
     {
         GDK_LOG_NAMED_SCOPE("login");
 
-        GA_SDK_RUNTIME_ASSERT_MSG(!m_master_key, "re-login on an existing session always fails");
+        GA_SDK_RUNTIME_ASSERT_MSG(!m_signer, "re-login on an existing session always fails");
+        login(password.empty() ? mnemonic : decrypt_mnemonic(mnemonic, password), user_agent);
+    }
 
-        bip39_mnemonic_validate(nullptr, mnemonic);
+    void ga_session::authenticate(const std::string& sig_der_hex, const std::string& path_hex,
+        const std::string& device_id, const std::string& user_agent, const nlohmann::json& hw_device)
+    {
+        if (m_signer.get() == nullptr) {
+            // Logging in with a hardware wallet; create our proxy signer
+            GA_SDK_RUNTIME_ASSERT(!hw_device.is_null());
+            m_signer = std::make_unique<hardware_signer>(m_net_params, hw_device);
+        }
 
-        // FIXME: secure_array
-        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
-
-        // FIXME: Allocate m_master_key in mlocked memory and pass it
-        ext_key* p;
-        bip32_key_from_seed_alloc(seed, get_bip32_version(), 0, &p);
-
-        m_master_key = wally_ext_key_ptr(p);
-
-        unsigned char btc_ver[1] = { m_net_params.btc_version() };
-        std::array<unsigned char, sizeof(btc_ver) + sizeof(m_master_key->hash160)> vpkh;
-        init_container(vpkh, gsl::make_span(btc_ver), gsl::make_span(m_master_key->hash160));
-
-        std::string challenge;
-        wamp_call([&challenge](wamp_call_result result) { challenge = result.get().argument<std::string>(0); },
-            "com.greenaddress.login.get_challenge", base58check_from_bytes(vpkh));
-
-        const auto hexder_path = sign_challenge(m_master_key, challenge);
+        // FIXME: If no device id is given, generate one, update our settings and
+        // call the storage interface to store the settings (once storage/caching is implemented)
+        std::string id = device_id.empty() ? "fake_dev_id" : device_id;
         wamp_call([this](wamp_call_result result) { update_login_data(get_json_result(result.get()), false); },
-            "com.greenaddress.login.authenticate", hexder_path.first, false, hexder_path.second,
-            std::string("fake_dev_id"), DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
-
-        m_mnemonic = mnemonic;
+            "com.greenaddress.login.authenticate", sig_der_hex, false, path_hex, device_id,
+            DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
 
         const std::string receiving_id = m_login_data["receiving_id"];
         m_subscriptions.emplace_back(subscribe("com.greenaddress.txs.wallet_" + receiving_id,
             [this](const autobahn::wamp_event& event) { on_new_transaction(get_json_result(event)); }));
 
-        m_subscriptions.emplace_back(subscribe("com.greenaddress.blocks", [this](const autobahn::wamp_event& event) {
-            const nlohmann::json block_ev = get_json_result(event);
-            const uint32_t block_height = block_ev["count"];
-            GA_SDK_RUNTIME_ASSERT(block_height >= m_block_height);
-            m_block_height = block_height;
-        }));
+        m_subscriptions.emplace_back(subscribe("com.greenaddress.blocks",
+            [this](const autobahn::wamp_event& event) { on_new_block(get_json_result(event)); }));
 
         m_subscriptions.emplace_back(subscribe("com.greenaddress.fee_estimates",
-            [this](const autobahn::wamp_event& event) { set_fee_estimates(get_fees_as_json(event)); }));
+            [this](const autobahn::wamp_event& event) { on_new_fees(set_fee_estimates(get_fees_as_json(event))); }));
 
         if (m_login_data.value("segwit_server", true) && !m_login_data["appearance"].value("use_segwit", false)) {
             // Enable segwit
             m_login_data["appearance"]["use_segwit"] = true;
 
-            /* FIXME: Server doesn't return a value in all envs yet
             bool r;
             wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
-            */
-            wamp_call([](wamp_call_result result) { result.get(); }, "com.greenaddress.login.set_appearance",
-                as_messagepack(m_login_data["appearance"]).get());
-            // FIXME GA_SDK_RUNTIME_ASSERT(r);
+                "com.greenaddress.login.set_appearance", as_messagepack(m_login_data["appearance"]).get());
+            GA_SDK_RUNTIME_ASSERT(r);
         }
     }
 
-    void ga_session::login(const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
+    void ga_session::login(const std::string& mnemonic, const std::string& user_agent)
+    {
+        // Create our signer
+        m_signer = std::make_unique<software_signer>(m_net_params, mnemonic);
+
+        // Create our local user keys repository
+        m_user_pubkeys = std::make_unique<ga_user_pubkeys>(m_net_params, m_signer->get_xpub());
+
+        // Cache local encryption password
+        const auto pwd_xpub = m_signer->get_xpub(PASSWORD_PATH);
+        const auto local_password = pbkdf2_hmac_sha512(pwd_xpub.second, PASSWORD_SALT);
+        m_local_encryption_password.assign(std::begin(local_password), std::end(local_password));
+
+        // FIXME: Unify normal and trezor logins
+        std::string challenge;
+        wamp_call([&challenge](wamp_call_result result) { challenge = result.get().argument<std::string>(0); },
+            "com.greenaddress.login.get_challenge", m_signer->get_challenge());
+
+        const auto hexder_path = sign_challenge(challenge);
+        m_mnemonic = mnemonic;
+
+        authenticate(hexder_path.first, hexder_path.second, std::string(), user_agent);
+    }
+
+    void ga_session::login_with_pin(
+        const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent)
     {
         // FIXME: clear password after use
         const auto password = get_pin_password(pin, pin_data["pin_identifier"]);
-
-        const auto encrypted = bytes_from_hex(pin_data["encrypted_data"]);
-        const auto iv = gsl::make_span(encrypted.data(), AES_BLOCK_LEN);
-        const auto ciphertext = gsl::make_span(encrypted.data() + iv.size(), encrypted.size() - iv.size());
-
-        std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN> key;
-        get_pin_key(password, pin_data["salt"], key);
-
-        std::vector<unsigned char> plaintext(ciphertext.size());
-        const auto written = aes_cbc(key, iv, ciphertext, AES_FLAG_DECRYPT, plaintext);
-        GA_SDK_RUNTIME_ASSERT(written <= plaintext.size());
+        const std::string salt = pin_data["salt"];
+        const auto key = pbkdf2_hmac_sha512_256(password, ustring_span(salt));
 
         // FIXME: clear data somehow?
-        const auto data = nlohmann::json::parse(std::begin(plaintext), std::begin(plaintext) + written);
+        const auto data = nlohmann::json::parse(aes_cbc_decrypt(key, pin_data["encrypted_data"]));
 
         m_mnemonic = data["mnemonic"];
 
         // FIXME: log in directly from the seed instead of the mnemonic
-        login(m_mnemonic, user_agent);
+        login(m_mnemonic, std::string(), user_agent);
     }
 
     void ga_session::login_watch_only(
@@ -622,18 +741,30 @@ namespace sdk {
             "com.greenaddress.login.watch_only_v2", "custom", args, DEFAULT_USER_AGENT + user_agent + "_ga_sdk");
     }
 
+    void ga_session::register_subaccount_xpubs(const std::vector<std::string>& bip32_xpubs)
+    {
+        GA_SDK_RUNTIME_ASSERT(!m_subaccounts.empty());
+        GA_SDK_RUNTIME_ASSERT(bip32_xpubs.size() == m_subaccounts.size());
+        GA_SDK_RUNTIME_ASSERT(!m_user_pubkeys.get());
+
+        m_user_pubkeys = std::make_unique<ga_user_pubkeys>(m_net_params, make_xpub(bip32_xpubs[0]));
+        for (size_t i = 1; i < m_subaccounts.size(); ++i) {
+            m_user_pubkeys->add_subaccount(m_subaccounts[i]["pointer"], make_xpub(bip32_xpubs[i]));
+        }
+    }
+
     nlohmann::json ga_session::get_fee_estimates()
     {
         // FIXME: locking, augment with last_updated, user preference for display?
-        return { { "estimates", m_fee_estimates } };
+        return { { "fees", m_fee_estimates } };
     }
 
     std::string ga_session::get_mnemonic_passphrase(const std::string& password)
     {
         GA_SDK_RUNTIME_ASSERT(!is_watch_only());
-        GA_SDK_RUNTIME_ASSERT(password.empty()); // FIXME: Implement encryption
         GA_SDK_RUNTIME_ASSERT(!m_mnemonic.empty());
-        return m_mnemonic;
+
+        return password.empty() ? m_mnemonic : encrypt_mnemonic(m_mnemonic, password);
     }
 
     std::string ga_session::get_system_message()
@@ -661,20 +792,13 @@ namespace sdk {
     {
         GA_SDK_RUNTIME_ASSERT(!message.empty() && message == m_system_message_ack);
 
-        std::array<unsigned char, SHA256_LEN> message_hash;
-        sha256d(std::vector<unsigned char>(message.begin(), message.end()), message_hash);
-
-        const auto message_hash_hex = hex_from_bytes(message_hash);
+        const auto message_hash_hex = hex_from_bytes(sha256d(ustring_span(message)));
         const auto ls_uint32_hex = message_hash_hex.substr(message_hash_hex.length() - 8);
         const uint32_t ls_uint32 = std::stoul(ls_uint32_hex, nullptr, 16);
-        static const auto unharden = ~(0x01 << 31);
-        const std::vector<uint32_t> path = { { 0x4741b11e, 6, ls_uint32 & unharden } };
+        const std::vector<uint32_t> path = { { 0x4741b11e, 6, unharden(ls_uint32) } };
 
-        std::vector<unsigned char> message_hex_bytes(message_hash_hex.begin(), message_hash_hex.end());
-        std::array<unsigned char, SHA256_LEN> hash;
-        const size_t written = format_bitcoin_message(message_hex_bytes, BITCOIN_MESSAGE_FLAG_HASH, hash);
-        GA_SDK_RUNTIME_ASSERT(written == hash.size());
-        const auto signature = sign_hash(m_master_key, path, hash);
+        const auto hash = format_bitcoin_message_hash(ustring_span(message_hash_hex));
+        const auto signature = sig_to_der_hex(m_signer->sign_hash(path, hash));
 
         wamp_call([](wamp_call_result result) { GA_SDK_RUNTIME_ASSERT(result.get().argument<bool>(0)); },
             "com.greenaddress.login.ack_system_message", m_system_message_ack_id, message_hash_hex, signature);
@@ -693,26 +817,12 @@ namespace sdk {
 
     nlohmann::json ga_session::encrypt(const nlohmann::json& input_json) const
     {
-        if (is_watch_only() && input_json.find("key") == input_json.end()) {
-            GA_SDK_RUNTIME_ASSERT_MSG(false, "A key must be provided to encrypt in watch-only mode");
-        }
-
-        // FIXME: Issue 47
-        // Implement AES encryption, using input_json["key"] if given,
-        // otherwise a privately derived key.
-        return { { "plaintext", input_json.at("ciphertext") } };
+        return encrypt_data(input_json, m_local_encryption_password);
     }
 
     nlohmann::json ga_session::decrypt(const nlohmann::json& input_json) const
     {
-        if (is_watch_only() && input_json.find("key") == input_json.end()) {
-            GA_SDK_RUNTIME_ASSERT_MSG(false, "A key must be provided to decrypt in watch-only mode");
-        }
-
-        // FIXME: Issue 47
-        // Implement AES decryption, using input_json["key"] if given,
-        // otherwise a privately derived key.
-        return { { "ciphertext", input_json.at("plaintext") } };
+        return decrypt_data(input_json, m_local_encryption_password);
     }
 
     bool ga_session::set_watch_only(const std::string& username, const std::string& password)
@@ -733,32 +843,65 @@ namespace sdk {
 
     nlohmann::json ga_session::get_subaccounts() const
     {
-        std::vector<nlohmann::json> subaccounts;
-        subaccounts.reserve(m_subaccounts.size());
-        for (auto s : m_subaccounts)
-            subaccounts.emplace_back(s.second);
-        return nlohmann::json(subaccounts);
+        std::vector<nlohmann::json> details;
+        details.reserve(m_subaccounts.size());
+
+        for (auto sa : m_subaccounts)
+            details.emplace_back(get_subaccount(sa.first));
+
+        return details;
     }
 
     nlohmann::json ga_session::get_subaccount(uint32_t subaccount) const
     {
         const auto p = m_subaccounts.find(subaccount);
         GA_SDK_RUNTIME_ASSERT(p != m_subaccounts.end());
-        return p->second;
+        nlohmann::json details;
+        nlohmann::json balance;
+
+        if (p->second.value("is_dirty", true)) {
+            balance = get_balance(subaccount, 0); // Update the details
+            details = m_subaccounts.at(subaccount);
+        } else {
+            details = p->second;
+            balance = convert_amount(p->second);
+        }
+
+        for (const auto kv : balance.items()) {
+            details[kv.key()] = kv.value();
+        }
+        return details;
     }
 
-    nlohmann::json ga_session::insert_subaccount(const std::string& name, uint32_t pointer,
+    nlohmann::json ga_session::insert_subaccount(uint32_t subaccount, const std::string& name,
         const std::string& receiving_id, const std::string& recovery_pub_key, const std::string& recovery_chain_code,
-        const std::string& type, bool has_txs)
+        const std::string& type, amount satoshi, bool has_txs)
     {
-        GA_SDK_RUNTIME_ASSERT(m_subaccounts.find(pointer) == m_subaccounts.end());
+        GA_SDK_RUNTIME_ASSERT(m_subaccounts.find(subaccount) == m_subaccounts.end());
         GA_SDK_RUNTIME_ASSERT(type == "2of2" || type == "2of3");
 
-        nlohmann::json subaccount = { { "name", name }, { "pointer", pointer }, { "receiving_id", receiving_id },
+        // FIXME: replace "pointer" with "subaccount"; pointer should only be used
+        // for the final path element in a derivation
+        nlohmann::json sa = { { "name", name }, { "pointer", subaccount }, { "receiving_id", receiving_id },
             { "type", type }, { "recovery_pub_key", recovery_pub_key }, { "recovery_chain_code", recovery_chain_code },
-            { "has_transactions", has_txs } };
-        m_subaccounts[pointer] = subaccount;
-        return subaccount;
+            { "satoshi", satoshi.value() }, { "has_transactions", has_txs }, { "is_dirty", false } };
+        m_subaccounts[subaccount] = sa;
+
+        if (subaccount != 0) {
+            // Add user and recovery pubkeys for the subaccount
+            if (m_user_pubkeys.get()) {
+                // FIXME: If subaccounts from the server returned their xpubs this wouldn't be
+                // needed, however this isn't safe until xpubs are signed by our master key.
+                const uint32_t path[2] = { harden(3), harden(subaccount) };
+                m_user_pubkeys->add_subaccount(subaccount, m_signer->get_xpub(path));
+            }
+
+            if (m_recovery_pubkeys.get() && !recovery_chain_code.empty()) {
+                m_recovery_pubkeys->add_subaccount(subaccount, make_xpub(recovery_chain_code, recovery_pub_key));
+            }
+        }
+
+        return sa;
     }
 
     nlohmann::json ga_session::create_subaccount(const nlohmann::json& details)
@@ -766,72 +909,56 @@ namespace sdk {
         const std::string name = details.at("name");
         const std::string type = details.at("type");
         std::string recovery_mnemonic;
-        std::string pub_key;
-        std::string chain_code;
         std::string recovery_pub_key;
         std::string recovery_chain_code;
-        std::string recovery_xpub;
+        std::string recovery_bip32_xpub;
 
         const uint32_t subaccount = m_next_subaccount;
 
-        std::tie(pub_key, chain_code) = get_subaccount_master_xpub(m_master_key, subaccount);
+        GA_SDK_RUNTIME_ASSERT(subaccount < 16384u); // Disallow more than 16k subaccounts
+
+        const uint32_t path[2] = { harden(3), harden(subaccount) };
+        const auto xpub = m_signer->get_xpub(path);
+
         if (type == "2of3") {
-            // The user can provide a recovery mnemonic or xpub; if not,
+            // The user can provide a recovery mnemonic or bip32 xpub; if not,
             // we generate and return a mnemonic for them.
-            const auto user_recovery_xpub = json_get_value(details, "recovery_xpub");
-            if (!user_recovery_xpub.empty()) {
-                std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
-                    = get_recovery_key(user_recovery_xpub, subaccount);
-            } else {
-                const auto user_recovery_mnemonic = json_get_value(details, "recovery_mnemonic");
-                if (user_recovery_mnemonic.empty()) {
-                    recovery_mnemonic = generate_mnemonic();
-                } else {
-                    recovery_mnemonic = user_recovery_mnemonic; // User provided
+            std::string mnemonic_or_xpub = json_get_value(details, "recovery_xpub");
+            if (mnemonic_or_xpub.empty()) {
+                recovery_mnemonic = json_get_value(details, "recovery_mnemonic");
+                if (recovery_mnemonic.empty()) {
+                    recovery_mnemonic = bip39_mnemonic_from_bytes(get_random_bytes<32>());
                 }
-                std::tie(recovery_pub_key, recovery_chain_code, recovery_xpub)
-                    = get_recovery_key(recovery_mnemonic, get_bip32_version(), subaccount);
+                mnemonic_or_xpub = recovery_mnemonic;
             }
+
+            software_signer subsigner(m_net_params, recovery_mnemonic);
+
+            const uint32_t path[2] = { 1, subaccount };
+            const auto recovery_xpub = subsigner.get_xpub(path);
+
+            recovery_chain_code = hex_from_bytes(recovery_xpub.first);
+            recovery_pub_key = hex_from_bytes(recovery_xpub.second);
+            recovery_bip32_xpub = subsigner.get_bip32_xpub(empty_span<uint32_t>());
         }
 
         std::string receiving_id;
         wamp_call([&receiving_id](wamp_call_result result) { receiving_id = result.get().argument<std::string>(0); },
-            "com.greenaddress.txs.create_subaccount", subaccount, name, pub_key, chain_code, recovery_pub_key,
-            recovery_chain_code);
+            "com.greenaddress.txs.create_subaccount", subaccount, name, hex_from_bytes(xpub.second),
+            hex_from_bytes(xpub.first), recovery_pub_key, recovery_chain_code);
 
         ++m_next_subaccount;
 
         const bool has_txs = false;
-        nlohmann::json subaccount_details
-            = insert_subaccount(name, subaccount, receiving_id, recovery_pub_key, recovery_chain_code, type, has_txs);
+
+        nlohmann::json subaccount_details = insert_subaccount(
+            subaccount, name, receiving_id, recovery_pub_key, recovery_chain_code, type, amount(), has_txs);
         if (type == "2of3") {
             subaccount_details["recovery_mnemonic"] = recovery_mnemonic;
-            subaccount_details["recovery_xpub"] = recovery_xpub;
+            subaccount_details["recovery_xpub"] = recovery_bip32_xpub;
         }
         return subaccount_details;
     } // namespace sdk
-
-    wally_ext_key_ptr ga_session::get_recovery_extkey(uint32_t subaccount) const
-    {
-        using bytes = std::vector<unsigned char>;
-
-        if (subaccount == 0)
-            return wally_ext_key_ptr(); // Main account is always 2of2
-
-        const nlohmann::json details = get_subaccount(subaccount);
-        const std::string chain_code = details["recovery_chain_code"];
-        const std::string pub_key = details["recovery_pub_key"];
-
-        if (chain_code.empty() || pub_key.empty())
-            return wally_ext_key_ptr();
-
-        ext_key* p;
-        uint32_t version = m_net_params.main_net() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
-        bip32_key_init_alloc(
-            version, 0, 0, bytes_from_hex(chain_code), bytes_from_hex(pub_key), bytes{}, bytes{}, bytes{}, &p);
-
-        return wally_ext_key_ptr(p);
-    }
 
     template <typename T>
     void ga_session::change_settings(const std::string& key, const T& value, const nlohmann::json& twofactor_data)
@@ -842,11 +969,20 @@ namespace sdk {
         GA_SDK_RUNTIME_ASSERT(r);
     }
 
-    void ga_session::change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data)
+    void ga_session::change_settings_limits(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
-        // FIXME: move to use update_spending_limits
-        const nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", 0 }, { "total", total } };
+        const bool is_fiat = details.at("is_fiat").get<bool>();
+        GA_SDK_RUNTIME_ASSERT(is_fiat == (details.find("fiat") != details.end()));
+
+        nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", 0 } };
+        if (is_fiat) {
+            args["total"] = amount::get_fiat_cents(details["fiat"]);
+        } else {
+            args["total"] = convert_amount(details)["satoshi"];
+        }
+
         change_settings("tx_limits", as_messagepack(args).get(), twofactor_data);
+        update_spending_limits(args);
     }
 
     void ga_session::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
@@ -860,7 +996,7 @@ namespace sdk {
         // FIXME: Locking
         m_fiat_source = exchange;
         m_fiat_currency = currency;
-        m_fiat_rate = fiat_rate;
+        update_fiat_rate(fiat_rate);
     }
 
     nlohmann::json ga_session::get_transactions(uint32_t subaccount, uint32_t page_id)
@@ -884,22 +1020,36 @@ namespace sdk {
         // Note: fiat_value is actually the fiat exchange rate
         if (!txs["fiat_value"].is_null()) {
             const double fiat_rate = txs["fiat_value"];
-            m_fiat_rate = std::to_string(fiat_rate);
+            update_fiat_rate(std::to_string(fiat_rate));
         }
         txs.erase("fiat_value");
 
         txs["page_id"] = page_id;
         json_add_if_missing(txs, "next_page_id", 0, true);
 
+        // Remove all replaced transactions
+        // FIXME: Add 'replaces' to txs that were bumped, and mark replaced
+        // txs that aren't in our list as double spent
+        std::vector<nlohmann::json> tx_list;
+        tx_list.reserve(txs["list"].size());
         for (auto& tx_details : txs["list"]) {
+            if (tx_details.find("replaced_by") == tx_details.end()) {
+                tx_list.emplace_back(tx_details);
+            }
+        }
+
+        for (auto& tx_details : tx_list) {
             const uint32_t tx_block_height = json_add_if_missing(tx_details, "block_height", 0, true);
             // TODO: Server should set subaccount to null if this is a spend from multiple subaccounts
             json_add_if_missing(tx_details, "has_payment_request", false);
             json_add_if_missing(tx_details, "memo", std::string());
             const std::string fee_str = tx_details["fee"];
-            tx_details["fee"] = boost::lexical_cast<amount::value_type>(fee_str);
+            const amount::value_type fee = strtoul(fee_str.c_str(), NULL, 10);
+            tx_details["fee"] = fee;
             const std::string tx_data = json_get_value(tx_details, "data");
             tx_details.erase("data");
+            const uint32_t tx_size = tx_details["size"];
+            tx_details.erase("size");
             if (!tx_data.empty()) {
                 // Only unconfirmed transactions are returned with the tx hex.
                 // In this case update the size, weight etc.
@@ -910,7 +1060,20 @@ namespace sdk {
                 // front so callers can always expect it.
                 const auto tx = tx_from_hex(tx_data);
                 update_tx_info(tx, tx_details);
+            } else {
+                tx_details["transaction_size"] = tx_size;
+                if (tx_details.find("vsize") == tx_details.end() || tx_details["vsize"].is_null()) {
+                    // FIXME: Can be removed once the backend is upgraded and DB back populated
+                    tx_details["transaction_vsize"] = tx_size;
+                    tx_details["transaction_weight"] = tx_size * 4;
+                } else {
+                    tx_details["transaction_weight"] = tx_details["vsize"].get<uint32_t>() * 4;
+                    json_rename_key(tx_details, "vsize", "transaction_vsize");
+                }
             }
+            // Compute fee in satoshi/kb, with the best integer accuracy we can
+            const uint32_t tx_vsize = tx_details["transaction_vsize"];
+            tx_details["fee_rate"] = fee * 1000 / tx_vsize;
 
             amount received, spent;
             bool is_from_me = false; // Are any inputs from our wallet?
@@ -1026,6 +1189,7 @@ namespace sdk {
             tx_details["user_signed"] = true;
             tx_details["server_signed"] = true;
         }
+        txs["list"] = tx_list;
         return txs;
     }
 
@@ -1044,49 +1208,27 @@ namespace sdk {
         return sub;
     }
 
-    autobahn::wamp_subscription ga_session::subscribe(
-        const std::string& topic, const std::function<void(const std::string& output)>& callback)
+    void ga_session::set_notification_handler(GA_notification_handler handler, void* context)
     {
-        return subscribe(topic, [callback](const autobahn::wamp_event& event) {
-            const auto ev = event.argument<msgpack::object>(0);
-            std::stringstream strm;
-            strm << ev;
-            callback(strm.str());
-        });
+        m_notification_handler = handler;
+        m_notification_context = context;
+    }
+
+    void ga_session::call_notification_handler(nlohmann::json* details)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_notification_handler != nullptr);
+        // Note: notification recipient must destroy the passed JSON
+        const GA_json* details_c = reinterpret_cast<const GA_json*>(details);
+        m_notification_handler(m_notification_context, details_c);
+        if (!details_c) {
+            set_notification_handler(nullptr, nullptr);
+        }
     }
 
     amount ga_session::get_dust_threshold() const
     {
         const amount::value_type v = m_login_data["dust"];
         return amount(v);
-    }
-
-    std::vector<unsigned char> ga_session::output_script(uint32_t subaccount, const nlohmann::json& data) const
-    {
-        GA_SDK_RUNTIME_ASSERT(!is_watch_only());
-        const uint32_t pointer = data["pointer"];
-        script_type type;
-
-        auto addr_type = data.find("addr_type");
-        if (addr_type != data.end()) {
-            // Address
-            // TODO: get script_type from returned address (requires server support)
-            type = get_script_type_from_address_type(*addr_type);
-        } else {
-            type = data["script_type"];
-        }
-        uint32_t subtype = 0;
-        if (type == script_type::p2sh_p2wsh_csv_fortified_out)
-            subtype = data["subtype"];
-
-        if (subaccount == 0) {
-            return ga::sdk::output_script(m_net_params, m_master_key, wally_ext_key_ptr(), m_login_data["gait_path"],
-                type, subtype, subaccount, pointer);
-        } else {
-            const auto subaccount_master_key = get_subaccount_master_key(m_master_key, subaccount);
-            return ga::sdk::output_script(m_net_params, subaccount_master_key, get_recovery_extkey(subaccount),
-                m_login_data["gait_path"], type, subtype, subaccount, pointer);
-        }
     }
 
     nlohmann::json ga_session::get_unspent_outputs(uint32_t subaccount, uint32_t num_confs)
@@ -1160,7 +1302,8 @@ namespace sdk {
 
         if (!is_watch_only()) {
             // Compute the address locally to verify the servers data
-            const auto user_script = output_script(subaccount, address);
+            const auto user_script
+                = output_script(*m_ga_pubkeys, *m_user_pubkeys, *m_recovery_pubkeys, subaccount, address);
             const auto user_address = get_address_from_script(m_net_params, user_script, addr_type);
             GA_SDK_RUNTIME_ASSERT(server_address == user_address);
         }
@@ -1169,15 +1312,41 @@ namespace sdk {
         return address;
     }
 
-    nlohmann::json ga_session::get_balance(uint32_t subaccount, uint32_t num_confs)
+    nlohmann::json ga_session::get_balance(uint32_t subaccount, uint32_t num_confs) const
     {
-        nlohmann::json balance;
-        wamp_call([&balance](wamp_call_result result) { balance = get_json_result(result.get()); },
-            "com.greenaddress.txs.get_balance", subaccount, num_confs);
-        // FIXME: Locking, Make sure another session didn't change fiat currency
-        m_fiat_rate = balance["fiat_exchange"]; // Note: key name is wrong from the server!
-        const std::string satoshi_str = json_get_value(balance, "satoshi");
-        return amount::convert({ { "satoshi", strtoul(satoshi_str.c_str(), NULL, 10) } }, m_fiat_currency, m_fiat_rate);
+        amount::value_type satoshi;
+        bool use_cached = false;
+
+        if (num_confs == 0) {
+            // See if we can return our cached value
+            const auto p = m_subaccounts.find(subaccount);
+            GA_SDK_RUNTIME_ASSERT_MSG(p != m_subaccounts.end(), "Unknown subaccount");
+            if (!p->second.value("is_dirty", true)) {
+                satoshi = p->second["satoshi"];
+                use_cached = true;
+            }
+        }
+
+        if (!use_cached) {
+            nlohmann::json balance;
+            wamp_call([&balance](wamp_call_result result) { balance = get_json_result(result.get()); },
+                "com.greenaddress.txs.get_balance", subaccount, num_confs);
+            // FIXME: Locking, Make sure another session didn't change fiat currency
+            update_fiat_rate(balance["fiat_exchange"]); // Note: key name is wrong from the server!
+            const std::string satoshi_str = json_get_value(balance, "satoshi");
+            satoshi = strtoul(satoshi_str.c_str(), NULL, 10);
+        }
+
+        if (num_confs == 0 && !use_cached) {
+            // Cache the balance
+            auto& sa = m_subaccounts[subaccount];
+            sa["satoshi"] = satoshi;
+            sa["is_dirty"] = false;
+        }
+
+        nlohmann::json details = convert_amount({ { "satoshi", satoshi } });
+        details["subaccount"] = subaccount;
+        return details;
     }
 
     nlohmann::json ga_session::get_available_currencies() const
@@ -1188,9 +1357,31 @@ namespace sdk {
         return a;
     }
 
+    // Note: Current design is to always enable RBF if the server supports
+    // it, perhaps allowing disabling for individual txs or only for BIP 70
+#if 1
     bool ga_session::is_rbf_enabled() const { return m_login_data["rbf"]; }
+#else
+    bool ga_session::is_rbf_enabled() const
+    {
+        return m_login_data["rbf"] && m_login_data["appearance"].value("replace_by_fee", false);
+    }
+#endif
 
     bool ga_session::is_watch_only() const { return m_watch_only; }
+
+    uint32_t ga_session::get_current_subaccount() { return m_current_subaccount; }
+
+    void ga_session::set_current_subaccount(uint32_t subaccount)
+    {
+        // Note we don't check if the subaccount is the same. This lets
+        // callers who choose to run their balance updating logic entirely
+        // from notifications simply set the current subaccount when they
+        // receive a tx notification that affects it, and get the updated
+        // balance notified automatically.
+        m_current_subaccount = subaccount;
+        on_subaccount_changed(subaccount);
+    }
 
     const std::string& ga_session::get_default_address_type() const
     {
@@ -1202,10 +1393,10 @@ namespace sdk {
         return address_type::p2sh;
     }
 
-    nlohmann::json ga_session::get_twofactor_config()
+    nlohmann::json ga_session::get_twofactor_config(bool reset_cached)
     {
         // FIXME: Locking
-        if (m_twofactor_config.is_null()) {
+        if (m_twofactor_config.is_null() || reset_cached) {
             nlohmann::json f;
             wamp_call([&f](wamp_call_result result) { f = get_json_result(result.get()); },
                 "com.greenaddress.twofactor.get_config");
@@ -1230,17 +1421,14 @@ namespace sdk {
             nlohmann::json gauth_config
                 = { { "enabled", gauth_enabled }, { "confirmed", gauth_enabled }, { "data", gauth_data } };
 
-            nlohmann::json twofactor_config = {
-                { "all_methods", ALL_2FA_METHODS },
-                { "email", email_config },
-                { "sms", sms_config },
-                { "phone", phone_config },
-                { "gauth", gauth_config },
-            };
+            nlohmann::json twofactor_config = { { "all_methods", ALL_2FA_METHODS }, { "email", email_config },
+                { "sms", sms_config }, { "phone", phone_config }, { "gauth", gauth_config } };
             set_enabled_twofactor_methods(twofactor_config);
             std::swap(m_twofactor_config, twofactor_config);
         }
-        return m_twofactor_config;
+        nlohmann::json ret = m_twofactor_config;
+        ret["limits"] = get_spending_limits();
+        return ret;
     }
 
     void ga_session::set_enabled_twofactor_methods(nlohmann::json& config)
@@ -1347,23 +1535,47 @@ namespace sdk {
             [](wamp_call_result result) { result.get(); }, api_method, action, as_messagepack(twofactor_data).get());
     }
 
-    nlohmann::json ga_session::set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device)
+    nlohmann::json ga_session::reset_twofactor(const std::string& email)
     {
-        bip39_mnemonic_validate(nullptr, mnemonic);
+        const std::string api_method = "com.greenaddress.twofactor.request_reset";
+        nlohmann::json state;
+        wamp_call([&state](wamp_call_result result) { state = get_json_result(result.get()); }, api_method, email);
+        return state;
+    }
 
+    nlohmann::json ga_session::confirm_twofactor_reset(
+        const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data)
+    {
+        const std::string api_method = "com.greenaddress.twofactor.confirm_reset";
+        nlohmann::json state;
+        wamp_call([&state](wamp_call_result result) { state = get_json_result(result.get()); }, api_method, email,
+            is_dispute, as_messagepack(twofactor_data).get());
+        return state;
+    }
+
+    nlohmann::json ga_session::cancel_twofactor_reset(const nlohmann::json& twofactor_data)
+    {
+        const std::string api_method = "com.greenaddress.twofactor.cancel_reset";
+        nlohmann::json state;
+        wamp_call([&state](wamp_call_result result) { state = get_json_result(result.get()); }, api_method,
+            as_messagepack(twofactor_data).get());
+        return state;
+    }
+
+    nlohmann::json ga_session::set_pin(
+        const std::string& mnemonic, const std::string& pin, const std::string& device_id)
+    {
         GA_SDK_RUNTIME_ASSERT(pin.length() >= 4);
-        GA_SDK_RUNTIME_ASSERT(!device.empty() && device.length() <= 100);
+        GA_SDK_RUNTIME_ASSERT(!device_id.empty() && device_id.length() <= 100);
+
+        // FIXME: secure_array
+        const auto seed = bip39_mnemonic_to_seed(mnemonic);
 
         // Ask the server to create a new PIN identifier and PIN password
         std::string pin_identifier;
         wamp_call(
             [&pin_identifier](wamp_call_result result) { pin_identifier = result.get().argument<std::string>(0); },
-            "com.greenaddress.pin.set_pin_login", pin, device);
-
-        // FIXME: secure_array
-        std::array<unsigned char, BIP39_SEED_LEN_512> seed;
-        GA_SDK_RUNTIME_ASSERT(bip39_mnemonic_to_seed(mnemonic, nullptr, seed) == seed.size());
-        // const auto mnemonic_bytes = mnemonic_to_bytes(mnemonic);
+            "com.greenaddress.pin.set_pin_login", pin, device_id);
 
         // TODO: Get password from pin.set_pin_login when server is updated
         const auto password = get_pin_password(pin, pin_identifier);
@@ -1374,24 +1586,13 @@ namespace sdk {
         // old GreenBits installs.
         const auto salt = get_random_bytes<16>();
         const auto salt_b64 = websocketpp::base64_encode(salt.data(), salt.size());
-        std::array<unsigned char, PBKDF2_HMAC_SHA256_LEN> key;
-        get_pin_key(password, salt_b64, key);
+        const auto key = pbkdf2_hmac_sha512_256(password, ustring_span(salt_b64));
 
-        // FIXME: secure_array
-        const auto iv = get_random_bytes<AES_BLOCK_LEN>();
         // FIXME: secure string
         const std::string json = nlohmann::json({ { "mnemonic", mnemonic }, { "seed", hex_from_bytes(seed) } }).dump();
-        const auto plaintext = gsl::make_span(reinterpret_cast<const unsigned char*>(json.data()), json.size());
-
-        const size_t plaintext_padded_size = (json.size() / AES_BLOCK_LEN + 1) * AES_BLOCK_LEN;
-        std::vector<unsigned char> encrypted(iv.size() + plaintext_padded_size);
-        auto ciphertext = gsl::make_span(encrypted.data() + iv.size(), plaintext_padded_size);
-        const auto written = aes_cbc(key, iv, plaintext, AES_FLAG_ENCRYPT, ciphertext);
-        GA_SDK_RUNTIME_ASSERT(written == static_cast<size_t>(ciphertext.size()));
-        std::copy(iv.begin(), iv.end(), encrypted.begin());
 
         return { { "pin_identifier", pin_identifier }, { "salt", salt_b64 },
-            { "encrypted_data", hex_from_bytes(encrypted) } };
+            { "encrypted_data", aes_cbc_encrypt(key, json) } };
     }
 
     std::vector<unsigned char> ga_session::get_pin_password(const std::string& pin, const std::string& pin_identifier)
@@ -1415,38 +1616,30 @@ namespace sdk {
         return std::vector<unsigned char>(password.begin(), password.end());
     }
 
-    void ga_session::sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const
+    signer& ga_session::get_signer()
     {
-        const auto txhash = u["txhash"];
-        const uint32_t subaccount = u.value("subaccount", 0);
-        const uint32_t pointer = u["pointer"];
-        const amount::value_type v = u["satoshi"]; // FIXME: Allow amount conversions directly
-        const amount satoshi{ v };
-        const auto type = script_type(u["script_type"]);
+        GA_SDK_RUNTIME_ASSERT_MSG(m_signer.get() != nullptr, "Cannot sign in watch-only mode");
+        return *m_signer;
+    };
 
-        const auto prevout_script = output_script(subaccount, u);
+    ga_pubkeys& ga_session::get_ga_pubkeys()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_ga_pubkeys.get() != nullptr);
+        return *m_ga_pubkeys;
+    }
 
-        std::array<unsigned char, SHA256_LEN> tx_hash;
-        const uint32_t flags = is_segwit_script_type(type) ? WALLY_TX_FLAG_USE_WITNESS : 0;
-        tx_get_btc_signature_hash(tx, index, prevout_script, satoshi.value(), WALLY_SIGHASH_ALL, flags, tx_hash);
+    ga_user_pubkeys& ga_session::get_user_pubkeys()
+    {
+        GA_SDK_RUNTIME_ASSERT_MSG(m_user_pubkeys.get() != nullptr, "Cannot derive keys in watch-only mode");
+        GA_SDK_RUNTIME_ASSERT(m_user_pubkeys.get() != nullptr);
+        return *m_user_pubkeys;
+    }
 
-        // FIXME: secure_array
-        std::array<unsigned char, EC_PRIVATE_KEY_LEN> client_priv_key;
-        derive_private_key(m_master_key, std::array<uint32_t, 2>{ { 1, pointer } }, client_priv_key);
-
-        std::array<unsigned char, EC_SIGNATURE_LEN> user_sig;
-        ec_sig_from_bytes(client_priv_key, tx_hash, EC_FLAG_ECDSA | EC_FLAG_GRIND_R, user_sig);
-
-        if (is_segwit_script_type(type)) {
-            // TODO: If the UTXO is CSV and expired, spend it using the users key only (smaller)
-            // Note that this requires setting the inputs sequence number to the CSV time too
-            auto wit = tx_witness_stack_init(1);
-            tx_witness_stack_add(wit, ec_sig_to_der(user_sig, true));
-            tx_set_input_witness(tx, index, wit);
-            tx_set_input_script(tx, index, witness_script(prevout_script));
-        } else {
-            tx_set_input_script(tx, index, input_script(prevout_script, user_sig));
-        }
+    ga_user_pubkeys& ga_session::get_recovery_pubkeys()
+    {
+        GA_SDK_RUNTIME_ASSERT_MSG(m_recovery_pubkeys.get() != nullptr, "Cannot derive keys in watch-only mode");
+        GA_SDK_RUNTIME_ASSERT(m_recovery_pubkeys.get() != nullptr);
+        return *m_recovery_pubkeys;
     }
 
     nlohmann::json ga_session::send_transaction(const nlohmann::json& details, const nlohmann::json& twofactor_data)

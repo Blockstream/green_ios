@@ -29,6 +29,7 @@ $JAVA_HOME/bin/jar xf $6
 popd > /dev/null
 
 $JAVA_HOME/bin/jar cf $3/GASDK.jar -C $3 'com/blockstream/libgreenaddress/GASDK$Obj.class' \
+  -C $3 'com/blockstream/libgreenaddress/GASDK$NotificationHandler.class' \
   -C $3 'com/blockstream/libgreenaddress/GASDK$JSONConverter.class' \
   -C $3 'com/blockstream/libgreenaddress/GASDK.class' \
   -C $tmp_wally_java_dir .

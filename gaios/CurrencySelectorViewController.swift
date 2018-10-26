@@ -1,11 +1,3 @@
-//
-//  CurrencySelectorViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/22/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -17,6 +9,7 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
     @IBOutlet weak var textField: SearchTextField!
     @IBOutlet weak var currentCurrency: UILabel!
     @IBOutlet weak var currentExchange: UILabel!
+    @IBOutlet weak var topLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,10 +20,12 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
         getAvailableCurrencies()
         hideKeyboardWhenTappedAround()
         textField.delegate = self
-        textField.attributedPlaceholder = NSAttributedString(string: "Search",
+        let localizedSearch = NSLocalizedString("id_search", comment: "")
+        textField.attributedPlaceholder = NSAttributedString(string: localizedSearch,
                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         refreshCurrency()
+        topLabel.text = NSLocalizedString("id_currency", comment:"")
     }
 
     func refreshCurrency() {

@@ -1,11 +1,58 @@
-//
-//  AppDelegate.swift
-//  gaios
-//
-
 import UIKit
 
-class GreenAddressService {
+
+
+
+class GreenAddressService: SessionNotificationDelegate {
+
+    func newNotification(dict: [String : Any]) {
+        let event = dict["event"] as! String
+        if (event == "block") {
+            let block = dict["block"] as! [String: Any]
+            let blockHeight = block["block_height"] as! UInt32
+            AccountStore.shared.setBlockHeight(height: blockHeight)
+        } else if (event == "transaction") {
+            let transaction = dict["transaction"] as! [String: Any]
+            let type = transaction["type"] as! String
+            let subaccounts = transaction["subaccounts"] as! NSArray
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "transaction"), object: nil, userInfo: ["subaccounts" : subaccounts])
+            if (type == "incoming") {
+                print("incoming transaction")
+                DispatchQueue.main.async {
+                    self.showIncomingNotification()
+                }
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "incomingTX"), object: nil, userInfo: ["subaccounts" : subaccounts])
+            } else if (type == "outgoing"){
+                print("outgoing transaction")
+            }
+        }
+    }
+
+    func showIncomingNotification() {
+        let window = UIApplication.shared.keyWindow!
+        let v = UIView(frame: window.bounds)
+        window.addSubview(v);
+        v.backgroundColor = UIColor.black
+        let label = UILabel()
+        label.frame = CGRect(x: 0, y: 0, width: 120, height: 30)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Transaction Received"
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        v.addSubview(label)
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 220).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 30).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.3) {
+            v.removeFromSuperview()
+        }
+    }
+
+    public init() {
+       Session.delegate = self
+    }
+
     var session: Session = try! Session()
 
     var loginData: [String: Any]? = nil
@@ -32,6 +79,9 @@ func getSession() -> Session {
 }
 
 var network: Network = Network.TestNet
+var proxyIp: String = ""
+var proxyPort: String = ""
+var torEnabled: Bool = false
 
 func getNetwork() -> Network {
     return network
@@ -39,9 +89,107 @@ func getNetwork() -> Network {
 
 func setNetwork(net: Network) {
     network = net
+    saveNetworkSettingsToDisk()
 }
 
-@UIApplicationMain
+func setProxyIp(ip: String) {
+    proxyIp = ip
+    saveNetworkSettingsToDisk()
+}
+
+func setProxyPort(port: String) {
+    proxyPort = port
+    saveNetworkSettingsToDisk()
+}
+
+func setAllNetworkSettings(net: Network, ip: String, port: String, tor: Bool) {
+    network = net
+    proxyIp = ip
+    proxyPort = port
+    torEnabled = tor
+    saveNetworkSettingsToDisk()
+}
+
+class NetworkSettings: Codable {
+    var network: String
+    var ipAddress: String
+    var portNumber: String
+    var torEnabled: Bool
+
+    init(network: String, ipAddress: String, portNumber: String, torEnabled: Bool) {
+        self.network = network
+        self.ipAddress = ipAddress
+        self.portNumber = portNumber
+        self.torEnabled = torEnabled
+    }
+}
+
+func getNetworkSettings() -> NetworkSettings {
+    return NetworkSettings(network: getNetwork().rawValue, ipAddress:proxyIp, portNumber: proxyPort, torEnabled: torEnabled)
+}
+
+func setDefaultNetworkSetings() {
+    setNetwork(net: Network.TestNet)
+    proxyPort = ""
+    proxyIp = ""
+}
+
+func stringForNetwork(net: Network) ->String {
+    if(net == Network.MainNet) {
+        return "MainNet"
+    } else if(net == Network.TestNet) {
+        return "TestNet"
+    } else if(net == Network.LocalTest) {
+        return "LocalTest"
+    } else {
+        return "RegTest"
+    }
+}
+
+func networkForString(net: String) -> Network {
+    if (net == "mainnet") {
+        return Network.MainNet
+    } else if (net == "testnet") {
+        return Network.TestNet
+    } else if (net == "localtest") {
+        return Network.LocalTest
+    } else {
+        return Network.RegTest
+    }
+}
+
+func loadNetworkSettings() {
+    guard let url = Storage.getDocumentsURL()?.appendingPathComponent("network.json") else {
+        setDefaultNetworkSetings()
+        return
+    }
+    let decoder = JSONDecoder()
+    do {
+        let data = try Data(contentsOf: url, options: [])
+        let network = try decoder.decode( NetworkSettings.self, from: data)
+        setNetwork(net: networkForString(net: network.network))
+        proxyPort = network.portNumber
+        proxyIp = network.ipAddress
+        torEnabled = network.torEnabled
+    } catch {
+        setDefaultNetworkSetings()
+    }
+}
+
+func saveNetworkSettingsToDisk() {
+    guard let url = Storage.getDocumentsURL()?.appendingPathComponent("network.json") else {
+        return
+    }
+    let encoder = JSONEncoder()
+    do {
+        let data = try encoder.encode(getNetworkSettings())
+        try data.write(to: url, options: [])
+    } catch {
+        print("error writing network settings to disk")
+    }
+}
+
+
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
@@ -82,47 +230,142 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     static func removeKeychainData() {
+        removeBioKeychainData()
+        removePinKeychainData()
+    }
+
+    static func removeBioKeychainData() {
+        KeychainHelper.removePassword(service: "bioData", account: "user")
+        KeychainHelper.removePassword(service: "bioPassword", account: "user")
+    }
+
+    static func removePinKeychainData() {
         KeychainHelper.removePassword(service: "pinData", account: "user")
-        KeychainHelper.removePassword(service: "password", account: "user")
+        KeychainHelper.removePassword(service: "pinPassword", account: "user")
     }
 
     func connect() {
-        wrap {
-            try getSession().connect(network: getNetwork(), debug: true)
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                let netset = getNetworkSettings()
+                if(netset.ipAddress != "" && netset.portNumber != "") {
+                    let uri = String(format: "socks5://%@:%@/", netset.ipAddress, netset.portNumber)
+                    try getSession().connectWithProxy(network: getNetwork(), proxy_uri: uri, use_tor: netset.torEnabled, debug: true)
+                } else {
+                    try getSession().connect(network: getNetwork(), debug: true)
+                }
             }.done {
                 print("Connected")
             }.catch { error in
                 DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
                     self.connect()
                 }
+            }
+        }
+    }
+
+    func disconnect() {
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                try getSession().disconnect()
+            }.done {
+                print("Disconnected")
+            }.catch { error in
+                DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                    self.disconnect()
+                }
+            }
+        }
+    }
+
+    @objc func lockApplication(_ notification: NSNotification) {
+        //check if user is loggedIn
+        connect()
+        lock()
+    }
+
+    func lock() {
+        print("locking now")
+        let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
+        let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
+        let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
+        if (bioData != nil && pinData != nil && password != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+            firstVC.pinData = pinData!
+            firstVC.loginMode = true
+            firstVC.bioData = bioData!
+            firstVC.password = password!
+            firstVC.bioAuth = true
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
+            return
+        } else if(bioData != nil && password != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
+            firstVC.password = password!
+            firstVC.pinData = bioData!
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
+            return
+        } else if (pinData != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+            firstVC.pinData = pinData!
+            firstVC.loginMode = true
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
+            return
+        } else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
+            self.window?.rootViewController = firstVC
+            self.window?.makeKeyAndVisible()
         }
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        connect()
         //AppDelegate.removeKeychainData()
+        loadNetworkSettings()
 
+        NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: "autolock"), object: nil)
+
+        connect()
+
+        let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
-        if(pinData != nil) {
-            let password = KeychainHelper.loadPassword(service: "password", account: "user")
-            if(password != nil) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
-                firstVC.password = password!
-                firstVC.pinData = pinData!
-                self.window?.rootViewController = firstVC
-                return true
-            }
+        let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
+        if (bioData != nil && pinData != nil && password != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
             firstVC.pinData = pinData!
+            firstVC.loginMode = true
+            firstVC.bioData = bioData!
+            firstVC.password = password!
+            firstVC.bioAuth = true
             self.window?.rootViewController = firstVC
-        } else {
+            return true
+        } else if(bioData != nil && password != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
+            firstVC.password = password!
+            firstVC.pinData = bioData!
             self.window?.rootViewController = firstVC
+            return true
+        } else if(pinData != nil) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
+            firstVC.pinData = pinData!
+            firstVC.loginMode = true
+            self.window?.rootViewController = firstVC
+            return true
         }
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
+        self.window?.rootViewController = firstVC
+
         return true
     }
 
@@ -147,31 +390,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if (timeElapsed < 600) {
             print("time elapsed is less than 5 minutes")
         } else {
-            //logout here
-            print("time elapsed is larger than 5 minutes")
-            let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
-            if(pinData != nil) {
-                let password = KeychainHelper.loadPassword(service: "password", account: "user")
-                if(password != nil) {
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
-                    firstVC.password = password!
-                    firstVC.pinData = pinData!
-                    self.window?.rootViewController = firstVC
-                    self.window?.makeKeyAndVisible()
-                    return
-                }
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-                firstVC.pinData = pinData!
-                self.window?.rootViewController = firstVC
-                self.window?.makeKeyAndVisible()
-            } else {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
-                self.window?.rootViewController = firstVC
-                self.window?.makeKeyAndVisible()
-            }
+            lock()
         }
     }
 

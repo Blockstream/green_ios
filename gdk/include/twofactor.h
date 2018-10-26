@@ -113,11 +113,40 @@ GASDK_API int GA_destroy_twofactor_call(struct GA_twofactor_call* call);
 GASDK_API int GA_change_settings_twofactor(
     struct GA_session* session, const char* method, const GA_json* twofactor_details, struct GA_twofactor_call** call);
 
-/** Change the transaction limit (total, BTC) */
-#if 0
-GASDK_API int GA_twofactor_change_tx_limits(
-    struct GA_session* session, const char* total, struct GA_twofactor_call** call);
-#endif
+/**
+ * Request to begin the two factor authentication reset process.
+ *
+ * @session The server session to use.
+ * @email The new email address to enable once the reset waiting period expires.
+ * @is_dispute GA_TRUE if the reset request is disputed, otherwise GA_FALSE.
+ * @call Destination for the resulting GA_twofactor_call to request the reset.
+ *
+ * GA_ERROR if the reset is unsuccessful.
+ */
+GASDK_API int GA_twofactor_reset(
+    struct GA_session* session, const char* email, uint32_t is_dispute, struct GA_twofactor_call** call);
+
+/**
+ * Cancel all outstanding two factor resets and unlock the wallet for normal operation.
+ *
+ * @session The server session to use.
+ * @call Destination for the resulting GA_twofactor_call to cancel the reset.
+ *
+ * GA_ERROR if the cancellation is unsuccessful.
+ */
+GASDK_API int GA_twofactor_cancel_reset(struct GA_session* session, struct GA_twofactor_call** call);
+
+/**
+ * Change twofactor limits settings.
+ *
+ * @session The server session to use.
+ * @limit_details Details of the new transaction limits
+ * @call Destination for the resulting GA_twofactor_call to perform the change.
+ *
+ * GA_ERROR if transaction limits could not be changed.
+ */
+GASDK_API int GA_twofactor_change_limits(
+    struct GA_session* session, const GA_json* limit_details, struct GA_twofactor_call** call);
 
 #ifdef __cplusplus
 }

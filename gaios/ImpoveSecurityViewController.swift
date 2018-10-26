@@ -1,16 +1,8 @@
-//
-//  ImpoveSecurityViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 6/28/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class ImproveSecurityViewController: UIViewController {
-    
+
     let bioID = BiometricIDAuth()
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var twoFactorButton: UIButton!
@@ -19,8 +11,10 @@ class ImproveSecurityViewController: UIViewController {
         super.viewDidLoad()
         skipButton.contentHorizontalAlignment = .left
         twoFactorButton.contentHorizontalAlignment = .left
+        skipButton.setTitle(NSLocalizedString("id_skip_not_recommended", comment: ""), for: .normal)
+        twoFactorButton.setTitle(NSLocalizedString("id_add_twofactor_authentication", comment: ""), for: .normal)
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let pinController = segue.destination as? PinLoginViewController {
             pinController.setPinMode = true

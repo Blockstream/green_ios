@@ -28,7 +28,7 @@ static const std::string DEFAULT_MNEMONIC_2(
 static void login(sdk::session& session, const std::string& mnemonic, struct options* options)
 {
     const bool debug = options->quiet == 0;
-    session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
+    session.connect(options->network, std::string(), false, debug);
     session.register_user(mnemonic);
     session.login(mnemonic);
 }

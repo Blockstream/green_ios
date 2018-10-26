@@ -1,17 +1,8 @@
-//
-//  SendBtcDetailsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 6/26/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class SendBtcDetailsViewController: UIViewController {
-    
-    var toAddress: String? = nil
+
     @IBOutlet weak var lowFeeButton: DesignableButton!
     @IBOutlet weak var mediumFeeButton: DesignableButton!
     @IBOutlet weak var highFeeButton: DesignableButton!
@@ -19,17 +10,26 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var customfeeButton: DesignableButton!
     @IBOutlet weak var maxAmountLabel: UILabel!
     @IBOutlet weak var amountTextField: UITextField!
-    var feeLabel: UILabel = UILabel()
-    var wallet: WalletItem? = nil
     @IBOutlet weak var reviewButton: UIButton!
     @IBOutlet weak var currencySwitch: UIButton!
+    @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var customFeeTextField: UITextField!
+    @IBOutlet weak var customFeeLabel: UILabel!
+    @IBOutlet weak var customFeeUnitLabel: UILabel!
+    @IBOutlet weak var recipientTitle: UILabel!
+    @IBOutlet weak var sendAllFundsButton: UIButton!
+    @IBOutlet weak var minerFeeTitle: UILabel!
 
+    var toAddress: String? = nil
+    var feeLabel: UILabel = UILabel()
+    var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
-    var maxAmountBTC = 0
+    var maxAmountBTC: Double = 0
     var btcAmount: Double = 0
     var fee: UInt64 = 1
     var selectedButton : UIButton? = nil
     var g_payload: [String: Any]? = nil
+    var priority: TransactionPriority? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +41,8 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        mediumFeeClicked(0)
+        priority = SettingsStore.shared.getFeeSettings().0
+        updatePriorityButtons()
         if (btcAmount != 0) {
             updateEstimate()
             let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
@@ -49,6 +50,40 @@ class SendBtcDetailsViewController: UIViewController {
         }
         updateMaxAmountLabel()
         setButton()
+        customFeeTextField.attributedPlaceholder = NSAttributedString(string: "0",
+                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        customFeeTextField.addTarget(self, action: #selector(customFeeDidChange(_:)), for: .editingChanged)
+        hideKeyboardWhenTappedAround()
+        NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        reviewButton.setTitle(NSLocalizedString("id_review", comment: ""), for: .normal)
+        recipientTitle.text = NSLocalizedString("id_recipient", comment: "")
+        minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "")
+        lowFeeButton.setTitle(NSLocalizedString("id_low", comment: ""), for: .normal)
+        mediumFeeButton.setTitle(NSLocalizedString("id_normal", comment: ""), for: .normal)
+        highFeeButton.setTitle(NSLocalizedString("id_high", comment: ""), for: .normal)
+        customfeeButton.setTitle(NSLocalizedString("id_custom", comment: ""), for: .normal)
+    }
+
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if (self.view.frame.origin.y == 0 && customFeeTextField.isFirstResponder) {
+                let textfieldPosition = customFeeTextField.frame.origin.y
+                let height = self.view.frame.height
+                let keyboardtop = height - keyboardSize.height // y point keyboard top
+                let target = keyboardtop - 130
+                let diff = textfieldPosition - target
+                self.view.frame.origin.y -= diff
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0 {
+                self.view.frame.origin.y = 0
+            }
+        }
     }
 
     func setButton() {
@@ -65,7 +100,8 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updateMaxAmountLabel() {
         if (selectedType == TransactionType.BTC) {
-            //maxAmountBTC = wallet?.balance
+            guard let amount = wallet?.balance else { return }
+            maxAmountBTC = Double(amount)! / 100000000
             maxAmountLabel.text = String(format: "%f %@", maxAmountBTC, SettingsStore.shared.getDenominationSettings())
         } else {
             let maxFiat = maxAmountBTC //FIXME
@@ -74,14 +110,19 @@ class SendBtcDetailsViewController: UIViewController {
 
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reviewButton.layoutIfNeeded()
+        errorLabel.isHidden = true
         reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         updateButton()
     }
 
+    @IBAction func sendAllFundsClick(_ sender: Any) {
+        sendAllFundsButton.isSelected = !sendAllFundsButton.isSelected;
+    }
+    
     @IBAction func nextButtonClicked(_ sender: UIButton) {
         self.performSegue(withIdentifier: "confirm", sender: self)
     }
@@ -101,11 +142,11 @@ class SendBtcDetailsViewController: UIViewController {
             nextController.toAddress = toAddress!
             if ( selectedType == TransactionType.FIAT) {
                 let amount = amountTextField.text!
-                nextController.fiat_amount = Double(amount)!
+                nextController.fiat_amount = btcAmount
                 nextController.btc_amount = AccountStore.shared.fiatToBtc(amount: nextController.fiat_amount)
             } else {
                 let amount = amountTextField.text!
-                nextController.btc_amount = Double(amount)!
+                nextController.btc_amount = btcAmount
                 nextController.fiat_amount = AccountStore.shared.btcToFiat(amount: nextController.btc_amount)
             }
             nextController.wallet = wallet
@@ -116,15 +157,24 @@ class SendBtcDetailsViewController: UIViewController {
         }
     }
 
+    @objc func customFeeDidChange(_ textField: UITextField) {
+        let amount: String = textField.text!
+        guard let amount_i = Int(amount) else {
+            return
+        }
+        fee = UInt64(1024 * amount_i)
+        updateEstimate()
+    }
+
     @objc func textFieldDidChange(_ textField: UITextField) {
         let amount: String = textField.text!
         guard let amount_d = Double(amount) else {
             return
         }
         if (selectedType == TransactionType.BTC) {
-            btcAmount = amount_d
+            btcAmount = getDenominatedAmount(amount: amount_d)
         } else if (selectedType == TransactionType.FIAT) {
-            btcAmount = AccountStore.shared.USDtoBTC(amount: amount_d)
+            btcAmount = AccountStore.shared.fiatToBtc(amount: amount_d)
         }
         updateEstimate()
     }
@@ -146,6 +196,8 @@ class SendBtcDetailsViewController: UIViewController {
 
         details["fee_rate"] = fee
         details["addressees"] = [toAddress]
+        details["change_subaccount"] = wallet?.pointer
+        details["send_all"] = sendAllFundsButton.isSelected
 
         do {
             let unspent = try getSession().getUnspentOutputs(subaccount: (wallet?.pointer)!, num_confs: 1)
@@ -153,6 +205,7 @@ class SendBtcDetailsViewController: UIViewController {
             if (details.count == 0 || (details["utxos"] as! [Any]).count == 0) {
                 g_payload = nil
                 updateButton()
+                setLabel(button: selectedButton!, fee: 0)
                 return
             }
             print(details)
@@ -161,8 +214,13 @@ class SendBtcDetailsViewController: UIViewController {
             if (error != "") {
                 g_payload = nil
                 updateButton()
+                errorLabel.isHidden = false
+                errorLabel.text = error
+                setLabel(button: selectedButton!, fee: 0)
+                //update error message
                 return
             }
+            errorLabel.isHidden = true
             g_payload = payload
             updateButton()
             let fee = payload!["fee"] as! UInt64
@@ -194,6 +252,19 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.resignFirstResponder()
     }
 
+    func getDenominatedAmount(amount: Double) -> Double{
+        let denomination = SettingsStore.shared.getDenominationSettings()
+        var amount_denominated: Double = 0
+        if(denomination == SettingsStore.shared.denominationPrimary) {
+            amount_denominated = amount
+        } else if (denomination == SettingsStore.shared.denominationMilli) {
+            amount_denominated = amount / 1000
+        } else if (denomination == SettingsStore.shared.denominationMicro){
+            amount_denominated = amount / 1000000
+        }
+        return amount_denominated
+    }
+
     func setLabel(button: UIButton, fee: UInt64) {
         feeLabel.removeFromSuperview()
         if(fee == 0) {
@@ -215,57 +286,93 @@ class SendBtcDetailsViewController: UIViewController {
         NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 10).isActive = true
     }
 
+    func updatePriorityButtons() {
+        customFeeLabel.isHidden = true
+        customFeeUnitLabel.isHidden = true
+        customFeeTextField.isHidden = true
+        if (priority == TransactionPriority.Low) {
+            selectedButton = lowFeeButton
+            fee = AccountStore.shared.getFeeRateLow()
+            lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            lowFeeButton.layer.borderWidth = 2
+            highFeeButton.layer.borderWidth = 1
+            customfeeButton.layer.borderWidth = 1
+            mediumFeeButton.layer.borderWidth = 1
+        } else if (priority == TransactionPriority.Medium) {
+            selectedButton = mediumFeeButton
+            fee = AccountStore.shared.getFeeRateMedium()
+            mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            lowFeeButton.layer.borderWidth = 1
+            highFeeButton.layer.borderWidth = 1
+            customfeeButton.layer.borderWidth = 1
+            mediumFeeButton.layer.borderWidth = 2
+        } else if (priority == TransactionPriority.High) {
+            selectedButton = highFeeButton
+            fee = AccountStore.shared.getFeeRateHigh()
+            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            lowFeeButton.layer.borderWidth = 1
+            highFeeButton.layer.borderWidth = 2
+            customfeeButton.layer.borderWidth = 1
+            mediumFeeButton.layer.borderWidth = 1
+        } else if (priority == TransactionPriority.Custom) {
+            selectedButton = customfeeButton
+            let def = SettingsStore.shared.getFeeSettings().0
+            if (def == TransactionPriority.Custom) {
+                customFeeTextField.text = String(SettingsStore.shared.getFeeSettings().1)
+                fee = UInt64(SettingsStore.shared.getFeeSettings().1 * 1024)
+            }
+            customFeeTextField.isHidden = false
+            customFeeLabel.isHidden = false
+            customFeeUnitLabel.isHidden = false
+            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+            customfeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            lowFeeButton.layer.borderWidth = 1
+            highFeeButton.layer.borderWidth = 1
+            customfeeButton.layer.borderWidth = 2
+            mediumFeeButton.layer.borderWidth = 1
+        }
+    }
+
     @IBAction func lowFeeClicked(_ sender: Any) {
-        selectedButton = lowFeeButton
-        fee = AccountStore.shared.getFeeRateLow()
+        priority = TransactionPriority.Low
+        updatePriorityButtons()
         updateEstimate()
-        lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        lowFeeButton.layer.borderWidth = 2
-        highFeeButton.layer.borderWidth = 1
-        customfeeButton.layer.borderWidth = 1
-        mediumFeeButton.layer.borderWidth = 1
+        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
-        selectedButton = mediumFeeButton
-        fee = AccountStore.shared.getFeeRateMedium()
+        priority = TransactionPriority.Medium
+        updatePriorityButtons()
         updateEstimate()
-        mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        lowFeeButton.layer.borderWidth = 1
-        highFeeButton.layer.borderWidth = 1
-        customfeeButton.layer.borderWidth = 1
-        mediumFeeButton.layer.borderWidth = 2
+        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
-        selectedButton = highFeeButton
-        fee = AccountStore.shared.getFeeRateHigh()
+        priority = TransactionPriority.High
+        updatePriorityButtons()
         updateEstimate()
-        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        lowFeeButton.layer.borderWidth = 1
-        highFeeButton.layer.borderWidth = 2
-        customfeeButton.layer.borderWidth = 1
-        mediumFeeButton.layer.borderWidth = 1
+        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func customFeeClicked(_ sender: Any) {
-        fee = 2
-        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        customfeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        lowFeeButton.layer.borderWidth = 1
-        highFeeButton.layer.borderWidth = 1
-        customfeeButton.layer.borderWidth = 2
-        mediumFeeButton.layer.borderWidth = 1
+        priority = TransactionPriority.Custom
+        customFeeTextField.becomeFirstResponder()
+        updatePriorityButtons()
     }
+
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+
 }

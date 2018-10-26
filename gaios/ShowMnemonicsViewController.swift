@@ -1,11 +1,3 @@
-//
-//  ShowMnemonicsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/27/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -18,6 +10,7 @@ class ShowMnemonicsViewController : UIViewController {
         super.viewDidLoad()
         mnemonics = getAppDelegate().getMnemonicWords()!
         createViews()
+        topLabel.text = NSLocalizedString("id_recovery_words", comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

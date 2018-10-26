@@ -1,11 +1,3 @@
-//
-//  VerifyTwoFactorViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/9/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import NVActivityIndicatorView
@@ -40,6 +32,30 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
         backButton.isHidden = hideButton
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setTitle()
+    }
+
+    func setTitle() {
+        do{
+            if let json = try twoFactor?.getStatus() {
+                let method = json["method"] as! String
+                if (method == "sms") {
+                    topLabel.text = NSLocalizedString(TitleText.sms.rawValue, comment: "")
+                } else if (method == "phone") {
+                    topLabel.text = NSLocalizedString(TitleText.phone.rawValue, comment: "")
+                } else if (method == "gauth") {
+                    topLabel.text = NSLocalizedString(TitleText.gauth.rawValue, comment: "")
+                } else if (method == "email") {
+                    topLabel.text = NSLocalizedString(TitleText.email.rawValue, comment: "")
+                }
+            }
+        } catch {
+            print("couldn't get status")
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateView()
@@ -56,8 +72,6 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                     try twoFactor?.resolveCode(code: pinCode)
                     let resolve_json = try twoFactor?.getStatus()
                     let resolve_status = resolve_json!["status"] as! String
-                    print(resolve_json)
-                    print("hello1")
                     if(resolve_status == "call") {
                         try twoFactor?.call()
                         let call_json = try twoFactor?.getStatus()
@@ -67,8 +81,23 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                             if(onboarding) {
                                 self.performSegue(withIdentifier: "mainMenu", sender: nil)
                             } else {
-                                self.navigationController?.popToRootViewController(animated: true)
+                                let action = call_json!["action"] as! String
+                                if(action == "send_raw_tx") {
+                                    self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+                                        self.stopAnimating()
+                                        self.navigationController?.popToRootViewController(animated: true)
+
+                                    }
+                                } else {
+                                    self.navigationController?.popToRootViewController(animated: true)
+                                }
                             }
+                        } else if (status == "resolve_code") {
+                            pinCode = ""
+                            updateView()
+                            setTitle()
+                            //now confirm your new 2fa
                         } else {
                             print("wrong pin")
                             //show hud failure
@@ -139,4 +168,11 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
         self.navigationController?.popViewController(animated: true)
     }
 
+}
+
+public enum TitleText: String {
+    case email = "id_enter_code_sent_to_your_email"
+    case sms = "id_enter_code_received_via_sms"
+    case phone = "id_enter_code_received_via_phone"
+    case gauth = "id_enter_your_google_authenticator"
 }

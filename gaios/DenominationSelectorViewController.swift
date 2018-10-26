@@ -1,11 +1,3 @@
-//
-//  DenominationSelectorViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/28/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -13,12 +5,14 @@ class DenominationSelectorViewController : UIViewController, UITableViewDelegate
 
     @IBOutlet weak var tableView: UITableView!
     let denominations: [String] = [SettingsStore.shared.denominationPrimary, SettingsStore.shared.denominationMilli, SettingsStore.shared.denominationMicro]
+    @IBOutlet weak var topLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.tableFooterView = UIView()
+        topLabel.text = NSLocalizedString("id_denomination", comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

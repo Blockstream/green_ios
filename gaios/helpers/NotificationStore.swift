@@ -1,11 +1,3 @@
-//
-//  NotificationStore.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/14/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 
 class NotificationStore {
@@ -15,14 +7,16 @@ class NotificationStore {
     var refreshNotifications: (()->())?
 
     private init() { }
-    
+
     var notifications: [String: NotificationItem] = [String: NotificationItem]()
     var localNotification: [String: NotificationItem] = [String: NotificationItem]()
     var allNotifications: [String: NotificationItem] = [String: NotificationItem]()
     var newNotificationCount = 0
+    let warrningNoTwoFactor = NSLocalizedString("id_you_dont_have_twofactor", comment: "")
+    let warrningOneTwoFactor = NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
 
     func getTransactions() {
-        AccountStore.shared.getWallets().done { (wallets: Array<WalletItem>) in
+        AccountStore.shared.getWallets(cached: true).done { (wallets: Array<WalletItem>) in
             for wallet in wallets {
                 wrap{ try getSession().getTransactions(subaccount: wallet.pointer, page: 0)
                     }.done { (transactions: [String: Any]?) in
@@ -30,15 +24,15 @@ class NotificationStore {
                         for tx in list {
                             print(tx)
                             let transaction = tx as! [String : Any]
+                            let blockHeight = transaction["block_height"] as! UInt32
+                            if (AccountStore.shared.getBlockheight() - blockHeight < 1) {
+                                continue
+                            }
                             let satoshi:Int = transaction["satoshi"] as! Int
                             let hash = transaction["txhash"] as! String
                             let dateString = transaction["created_at"] as! String
                             let date = Date.dateFromString(dateString: dateString)
                             let type = transaction["type"] as! String
-                            if(type == "outgoing") {
-                                print(tx)
-                                print("blah")
-                            }
                             let adressees = transaction["addressees"] as! [String]
                             var counterparty = ""
                             if (adressees.count > 0) {
@@ -76,7 +70,7 @@ class NotificationStore {
             print("error writing notifications to disk")
         }
     }
-    
+
     func loadNotificationsFromDisk() -> [String: NotificationItem] {
         guard let url = Storage.getDocumentsURL()?.appendingPathComponent("notifications.json") else {
             return [String: NotificationItem]()
@@ -92,7 +86,7 @@ class NotificationStore {
             return [String: NotificationItem]()
         }
     }
-    
+
     func getNotifications() -> Array<NotificationItem> {
         return Array(allNotifications.values).sorted(by: { $0.timestamp < ($1.timestamp) })
     }
@@ -128,9 +122,36 @@ class NotificationStore {
         delegate?.dismissNotification()
     }
 
-    func createWelcomeNotification() -> NotificationItem{
+    func createWelcomeNotification() -> NotificationItem {
         let date = Date()
-        return NotificationItem(date: date, title: "Welcome", text: "Thank you for downloading Green! please leave us a review when you get a chance.", id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970)
+        let localizedTitle = NSLocalizedString("id_welcome", comment: "")
+        let localizedMessage = NSLocalizedString("id_thank_you_for_downloading_green", comment: "")
+        return NotificationItem(date: date, title: localizedTitle, text: localizedMessage, id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
+    }
+
+    func createWarningNotification() -> NotificationItem? {
+        let date = Date()
+        let twoFactorSettings = SettingsStore.shared.getTwoFactorWarning()
+        let localizedWarning = NSLocalizedString("id_warning", comment: "")
+        if (!AccountStore.shared.isTwoFactorEnabled() && twoFactorSettings.0) {
+            return NotificationItem(date: date, title: localizedWarning, text: warrningNoTwoFactor, id: "warninghash1", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+        } else if (AccountStore.shared.twoFactorsEnabledCount() == 1 &&  twoFactorSettings.1) {
+            return NotificationItem(date: date, title: localizedWarning, text: warrningOneTwoFactor, id: "warninghash2", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+        }
+        return nil
+    }
+
+    func removeWarning() {
+
+    }
+
+    func maybeAddWarningNotification() {
+        if let warning = createWarningNotification() {
+            allNotifications.removeValue(forKey: warning.id)
+            allNotifications[warning.id] = warning
+            self.newNotificationCount += 1
+            writeNotificationsToDisk()
+        }
     }
 
     func maybeAddWelcomeNotification() {
@@ -151,21 +172,38 @@ class NotificationStore {
         var bodyText = ""
         let amountText = String.satoshiToBTC(satoshi: abs(amount))
         if(type != "outgoing") {
-            title = "Deposit"
-            bodyText = String(format: "You have received %@ BTC", amountText)
+            title = NSLocalizedString("id_deposit", comment: "")
+            let localized = NSLocalizedString("id_you_have_received_s_btc", comment: "")
+            bodyText = String(format: localized, amountText)
         } else {
-            title = "Confirmation"
-            bodyText = String(format: "Your  %@ BTC sent to %@ has been confirmed", amountText, counterparty)
+            title = NSLocalizedString("id_confirmation", comment: "")
+            let localized = NSLocalizedString("id_your_s_btc_sent_to_s_has_been", comment: "")
+            bodyText = String(format: localized, amountText, counterparty)
         }
-        
-        return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970)
+
+        return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
     }
 
     func initializeNotificationStore() {
         allNotifications = loadNotificationsFromDisk()
         maybeAddWelcomeNotification()
+        maybeAddWarningNotification()
         refreshNotifications?()
         getTransactions()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.warningChanged(_:)), name: NSNotification.Name(rawValue: "twoFactorWarningChanged"), object: nil)
+    }
+
+    @objc func warningChanged(_ notification: NSNotification) {
+        let settings = SettingsStore.shared.getTwoFactorWarning()
+        if(!settings.0) {
+            allNotifications.removeValue(forKey: "warninghash1")
+            writeNotificationsToDisk()
+        } else if (!settings.1) {
+            allNotifications.removeValue(forKey: "warninghash2")
+            writeNotificationsToDisk()
+        }
+        createWarningNotification()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationChanged"), object: nil, userInfo: nil)
     }
 
     let walletTransactions: [UInt32: Array<NotificationItem>] =  [UInt32: Array<NotificationItem>]()
@@ -180,14 +218,16 @@ class NotificationItem: Codable{
     var timestamp: Double
     var id: String
     var seen: Bool
+    var isWarning: Bool
 
-    init(date: Date, title: String, text: String, id: String, seen: Bool, timestamp: Double) {
+    init(date: Date, title: String, text: String, id: String, seen: Bool, timestamp: Double, isWarning: Bool) {
         self.title = title
         self.text = text
         self.date = date
         self.id = id
         self.seen = seen
         self.timestamp = timestamp
+        self.isWarning = isWarning
     }
 }
 

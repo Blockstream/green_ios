@@ -1,21 +1,15 @@
-//
-//  SetPhoneViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 9/28/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class SetPhoneViewController: UIViewController {
-   
+
     @IBOutlet weak var textField: SearchTextField!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
     @IBOutlet weak var getCodeButton: UIButton!
     var sms = false
     var phoneCall = false
+    var onboarding = true
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +18,8 @@ class SetPhoneViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         textField.attributedPlaceholder = NSAttributedString(string: "+1 123456789",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        getCodeButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("id_enter_phone_number", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -52,6 +48,19 @@ class SetPhoneViewController: UIViewController {
                         self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
                         }.catch { error in
                             print("could't call two factor")
+                    }
+                } else if (status == "request_code") {
+                    let methods = json!["methods"] as! NSArray
+                    if(methods.count > 1) {
+                        self.performSegue(withIdentifier: "twoFactorSelector", sender: twoFactor)
+                    } else {
+                        let method = methods[0] as! String
+                        let req = try twoFactor?.requestCode(method: method)
+                        let status1 = try twoFactor?.getStatus()
+                        let parsed1 = status1!["status"] as! String
+                        if(parsed1 == "resolve_code") {
+                            self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                        }
                     }
                 }
                 }.catch { error in
@@ -88,7 +97,10 @@ class SetPhoneViewController: UIViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.onboarding = true
+            nextController.onboarding = onboarding
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
             nextController.twoFactor = sender as! TwoFactorCall
         }
     }

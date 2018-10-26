@@ -12,51 +12,13 @@
 #include "autobahn_wrapper.hpp"
 #include "boost_wrapper.hpp"
 #include "logging.hpp"
+#include "signer.hpp"
+#include "xpub_hdkey.hpp"
 
 namespace ga {
 namespace sdk {
-    struct websocket_rng_type {
-        uint32_t operator()() const;
-    };
-
-    struct websocketpp_gdk_config : public websocketpp::config::asio_client {
-        using alog_type = websocket_boost_logger;
-        using elog_type = websocket_boost_logger;
-
-#ifdef NDEBUG
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
-#else
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
-#endif
-        using rng_type = websocket_rng_type;
-
-        struct transport_config : public websocketpp::config::asio_client::transport_config {
-            using alog_type = websocket_boost_logger;
-            using elog_type = websocket_boost_logger;
-        };
-        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_config::transport_config>;
-    };
-
-    struct websocketpp_gdk_tls_config : public websocketpp::config::asio_tls_client {
-        using alog_type = websocket_boost_logger;
-        using elog_type = websocket_boost_logger;
-#ifdef NDEBUG
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::app;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::info;
-#else
-        static const websocketpp::log::level alog_level = websocketpp::log::alevel::devel;
-        static const websocketpp::log::level elog_level = websocketpp::log::elevel::devel;
-#endif
-        using rng_type = websocket_rng_type;
-
-        struct transport_config : public websocketpp::config::asio_tls_client::transport_config {
-            using alog_type = websocket_boost_logger;
-            using elog_type = websocket_boost_logger;
-        };
-        using transport_type = websocketpp::transport::asio::endpoint<websocketpp_gdk_tls_config::transport_config>;
-    };
+    struct websocketpp_gdk_config;
+    struct websocketpp_gdk_tls_config;
 
     using client = websocketpp::client<websocketpp_gdk_config>;
     using client_tls = websocketpp::client<websocketpp_gdk_tls_config>;
@@ -77,7 +39,9 @@ namespace sdk {
 
     class ga_session final {
     public:
-        ga_session(network_parameters net_params, bool debug);
+        using transport_t = boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>>;
+
+        ga_session(const network_parameters& net_params, const std::string& proxy, bool use_tor, bool debug);
         ga_session(const ga_session& other) = delete;
         ga_session(ga_session&& other) noexcept = delete;
         ga_session& operator=(const ga_session& other) = delete;
@@ -88,34 +52,43 @@ namespace sdk {
         void connect();
         void reset();
         void register_user(const std::string& mnemonic, const std::string& user_agent);
+        void register_user(const std::string& master_pub_key_hex, const std::string& master_chain_code_hex,
+            const std::string& gait_path_hex, const std::string& user_agent);
+
+        std::string get_challenge(const std::string& address);
+        void authenticate(const std::string& sig_der_hex, const std::string& path_hex, const std::string& device_id,
+            const std::string& user_agent, const nlohmann::json& hw_device = nlohmann::json());
+        void register_subaccount_xpubs(const std::vector<std::string>& bip32_xpubs);
+
         void login(const std::string& mnemonic, const std::string& user_agent);
-        void login(
-            const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent = std::string());
+        void login(const std::string& mnemonic, const std::string& password, const std::string& user_agent);
+        void login_with_pin(const std::string& pin, const nlohmann::json& pin_data, const std::string& user_agent);
         void login_watch_only(const std::string& username, const std::string& password, const std::string& user_agent);
+
         bool set_watch_only(const std::string& username, const std::string& password);
         bool remove_account(const nlohmann::json& twofactor_data);
 
-        wally_ext_key_ptr get_recovery_extkey(uint32_t subaccount) const;
-
         template <typename T>
         void change_settings(const std::string& key, const T& value, const nlohmann::json& twofactor_data);
-        void change_settings_tx_limits(bool is_fiat, uint32_t total, const nlohmann::json& twofactor_data);
+        void change_settings_limits(const nlohmann::json& limit_details, const nlohmann::json& twofactor_data);
 
         nlohmann::json get_transactions(uint32_t subaccount, uint32_t page_id);
-        autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
-        autobahn::wamp_subscription subscribe(
-            const std::string& topic, const std::function<void(const std::string& output)>& callback);
+
+        void set_notification_handler(GA_notification_handler handler, void* context);
+
         nlohmann::json get_subaccounts() const;
         nlohmann::json get_subaccount(uint32_t subaccount) const;
         nlohmann::json create_subaccount(const nlohmann::json& details);
         nlohmann::json get_receive_address(uint32_t subaccount, const std::string& addr_type) const;
-        nlohmann::json get_balance(uint32_t subaccount, uint32_t num_confs);
+        nlohmann::json get_balance(uint32_t subaccount, uint32_t num_confs) const;
         nlohmann::json get_available_currencies() const;
         bool is_rbf_enabled() const;
         bool is_watch_only() const;
+        uint32_t get_current_subaccount();
+        void set_current_subaccount(uint32_t subaccount);
         const std::string& get_default_address_type() const;
 
-        nlohmann::json get_twofactor_config();
+        nlohmann::json get_twofactor_config(bool reset_cached = false);
         std::vector<std::string> get_all_twofactor_methods();
         std::vector<std::string> get_enabled_twofactor_methods();
 
@@ -126,11 +99,14 @@ namespace sdk {
         void enable_twofactor(const std::string& method, const std::string& code);
         void enable_gauth(const std::string& code, const nlohmann::json& twofactor_data);
         void disable_twofactor(const std::string& method, const nlohmann::json& twofactor_data);
-
         void twofactor_request_code(
             const std::string& method, const std::string& action, const nlohmann::json& twofactor_data);
+        nlohmann::json reset_twofactor(const std::string& email);
+        nlohmann::json confirm_twofactor_reset(
+            const std::string& email, bool is_dispute, const nlohmann::json& twofactor_data);
+        nlohmann::json cancel_twofactor_reset(const nlohmann::json& twofactor_data);
 
-        nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device);
+        nlohmann::json set_pin(const std::string& mnemonic, const std::string& pin, const std::string& device_id);
 
         nlohmann::json get_unspent_outputs(uint32_t subaccount, uint32_t num_confs);
         nlohmann::json get_unspent_outputs_for_private_key(
@@ -163,77 +139,51 @@ namespace sdk {
         bool have_subaccounts() const { return m_subaccounts.size() != 1u; }
         amount get_dust_threshold() const;
         nlohmann::json get_spending_limits() const;
+        bool is_spending_limits_decrease(const nlohmann::json& limit_details);
         const network_parameters& get_network_parameters() const { return m_net_params; }
-        void sign_input(const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u) const;
-        std::vector<unsigned char> output_script(uint32_t subaccount, const nlohmann::json& data) const;
+
+        signer& get_signer();
+        ga_pubkeys& get_ga_pubkeys();
+        ga_user_pubkeys& get_user_pubkeys();
+        ga_user_pubkeys& get_recovery_pubkeys();
 
     private:
         void set_enabled_twofactor_methods(nlohmann::json& config);
         void update_login_data(nlohmann::json&& login_data, bool watch_only);
-        void update_spending_limits(const nlohmann::json& limits_parent);
-        void on_new_transaction(const nlohmann::json& details);
+        void update_fiat_rate(const std::string& rate_str) const;
+        void update_spending_limits(const nlohmann::json& details);
 
-        nlohmann::json insert_subaccount(const std::string& name, uint32_t pointer, const std::string& receiving_id,
+        autobahn::wamp_subscription subscribe(const std::string& topic, const autobahn::wamp_event_handler& callback);
+        void call_notification_handler(nlohmann::json* details);
+
+        void on_subaccount_changed(uint32_t subaccount);
+        void on_new_transaction(nlohmann::json&& details);
+        void on_new_block(nlohmann::json&& details);
+        void on_new_fees(nlohmann::json&& details);
+
+        nlohmann::json insert_subaccount(uint32_t subaccount, const std::string& name, const std::string& receiving_id,
             const std::string& recovery_pub_key, const std::string& recovery_chain_code, const std::string& type,
-            bool has_txs);
+            amount satoshi, bool has_txs);
 
-        static std::pair<std::string, std::string> sign_challenge(
-            const wally_ext_key_ptr& master_key, const std::string& challenge);
+        std::pair<std::string, std::string> sign_challenge(const std::string& challenge);
 
-        void set_fee_estimates(const nlohmann::json& fee_estimates);
+        nlohmann::json set_fee_estimates(const nlohmann::json& fee_estimates);
 
         bool connect_with_tls() const;
 
         context_ptr tls_init_handler_impl();
 
-        template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler() {}
-        template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler()
-        {
-            m_cert_pin_validated = false;
-            boost::get<std::unique_ptr<T>>(m_client)->set_tls_init_handler(
-                [this](const websocketpp::connection_hdl) { return tls_init_handler_impl(); });
-        }
-
-        template <typename T> void make_client()
-        {
-            m_client = std::make_unique<T>();
-            boost::get<std::unique_ptr<T>>(m_client)->init_asio(&m_io);
-            set_tls_init_handler<T>();
-        }
-
-        template <typename T> void make_transport()
-        {
-            using client_type
-                = std::unique_ptr<std::conditional_t<std::is_same<T, transport_tls>::value, client_tls, client>>;
-
-            m_transport = std::make_shared<T>(*boost::get<client_type>(m_client),
-                !m_net_params.get_use_tor() ? m_net_params.gait_wamp_url() : m_net_params.gait_onion(),
-                m_net_params.get_proxy(), m_debug);
-            boost::get<std::shared_ptr<T>>(m_transport)
-                ->attach(std::static_pointer_cast<autobahn::wamp_transport_handler>(m_session));
-        }
-        template <typename T> void connect_to_endpoint() const
-        {
-            std::array<boost::future<void>, 3> futures;
-            futures[0]
-                = boost::get<std::shared_ptr<T>>(m_transport)->connect().then([&](boost::future<void> connected) {
-                      connect_to_endpoint_impl(futures, connected);
-                  });
-
-            for (auto&& f : futures) {
-                f.get();
-            }
-        }
-
-        void connect_to_endpoint_impl(
-            std::array<boost::future<void>, 3>& futures, boost::future<void>& connected) const;
+        template <typename T> std::enable_if_t<std::is_same<T, client>::value> set_tls_init_handler();
+        template <typename T> std::enable_if_t<std::is_same<T, client_tls>::value> set_tls_init_handler();
+        template <typename T> void make_client();
+        template <typename T> void make_transport();
 
         template <typename T> void disconnect_transport() const
         {
             no_std_exception_escape([this] { boost::get<std::shared_ptr<T>>(m_transport)->disconnect().get(); });
         }
 
-        void disconnect() const;
+        void disconnect();
         void unsubscribe();
 
         template <typename F, typename... Args>
@@ -268,37 +218,48 @@ namespace sdk {
 
         std::vector<unsigned char> get_pin_password(const std::string& pin, const std::string& pin_identifier);
 
-        uint32_t get_bip32_version() const;
+        const network_parameters m_net_params;
+        const std::string m_proxy;
+        const bool m_use_tor;
 
         boost::asio::io_service m_io;
         boost::variant<std::unique_ptr<client>, std::unique_ptr<client_tls>> m_client;
-        boost::variant<std::shared_ptr<transport>, std::shared_ptr<transport_tls>> m_transport;
+        transport_t m_transport;
         wamp_session_ptr m_session;
         std::vector<autobahn::wamp_subscription> m_subscriptions;
 
         event_loop_controller m_controller;
 
-        network_parameters m_net_params;
+        GA_notification_handler m_notification_handler;
+        void* m_notification_context;
 
         nlohmann::json m_login_data;
+        std::vector<unsigned char> m_local_encryption_password;
+        std::array<uint32_t, 32> m_gait_path;
         nlohmann::json m_limits_data;
         nlohmann::json m_twofactor_config;
         std::string m_mnemonic;
         amount::value_type m_min_fee_rate;
         std::string m_fiat_source;
-        std::string m_fiat_rate;
+        mutable std::string m_fiat_rate;
         std::string m_fiat_currency;
+        uint32_t m_current_subaccount;
+        uint64_t m_earliest_block_time;
 
-        std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
+        mutable std::map<uint32_t, nlohmann::json> m_subaccounts; // Includes 0 for main
+        std::unique_ptr<ga_pubkeys> m_ga_pubkeys;
+        std::unique_ptr<ga_user_pubkeys> m_user_pubkeys;
+        std::unique_ptr<ga_user_pubkeys> m_recovery_pubkeys;
         uint32_t m_next_subaccount;
         std::vector<uint32_t> m_fee_estimates;
         std::atomic<uint32_t> m_block_height;
-        wally_ext_key_ptr m_master_key;
+        std::unique_ptr<signer> m_signer;
 
         uint32_t m_system_message_id; // Next system message
         uint32_t m_system_message_ack_id; // Currently returned message id to ack
         std::string m_system_message_ack; // Currently returned message to ack
         bool m_watch_only;
+        bool m_is_locked;
         const boost::asio::ssl::rfc2818_verification m_rfc2818_verifier;
         bool m_cert_pin_validated;
         bool m_debug;

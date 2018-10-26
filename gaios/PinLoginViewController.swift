@@ -1,11 +1,3 @@
-//
-//  PinLoginViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 6/19/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import NVActivityIndicatorView
@@ -25,9 +17,19 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var pinCode: String = ""
     var pinData: String = ""
     var pinConfirm: String = ""
+    var bioData: String = ""
+    var password: String = ""
 
     var setPinMode: Bool = false
+    var editPinMode: Bool = false
+    var loginMode: Bool = false
+    var removePinMode: Bool = false
+    var restoreMode: Bool = false
+
     var confirmPin: Bool = false
+    var bioAuth: Bool = false
+    let bioID = BiometricIDAuth()
+
 
     var views: Array<UIView> = Array<UIView>()
     var labels: Array<UILabel> = Array<UILabel>()
@@ -37,7 +39,13 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad() {
         super.viewDidLoad()
         if (setPinMode == true) {
-            topLabel.text = "Set a new PIN"
+            topLabel.text = NSLocalizedString("id_set_a_new_pin", comment: "")
+        } else if (loginMode){
+            if let data = KeychainHelper.loadPassword(service: "pinData", account: "user") {
+                pinData = data
+            }
+        } else {
+            topLabel.text = NSLocalizedString("id_enter_pin", comment: "")
         }
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
         for label in labels {
@@ -49,6 +57,33 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateView()
+        if (bioAuth) {
+            bioID.authenticateUser { (message) in
+                if(message == nil) {
+                    let size = CGSize(width: 30, height: 30)
+                    self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+                    DispatchQueue.global(qos: .background).async {
+                        wrap { return try getSession().loginWithPin(pin: self.password, pin_data: self.bioData) }.done { _ in
+                            DispatchQueue.main.async {
+                                self.stopAnimating()
+                                AccountStore.shared.initializeAccountStore()
+                                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                            }
+                            }.catch { error in
+                                print("incorrect PIN ", error)
+                                DispatchQueue.main.async {
+                                    NVActivityIndicatorPresenter.sharedInstance.setMessage("Bio Login Failed")
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                    self.stopAnimating()
+                                }
+                        }
+                    }
+                } else {
+                    //error
+                }
+            }
+        }
     }
 
     func updateAttemptsLabel() {
@@ -68,7 +103,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             return
         }
 
-        if (setPinMode == false) {
+        if (loginMode == true) {
             let size = CGSize(width: 30, height: 30)
             startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
             DispatchQueue.global(qos: .background).async {
@@ -96,7 +131,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
                 }
             }
-        } else {
+        } else if (setPinMode == true) {
             if (confirmPin == true) {
                 //set pin
                 print("olla1")
@@ -120,9 +155,21 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             }
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
+                                let settings = SettingsStore.shared.getScreenLockSetting()
+                                if (settings == ScreenLock.None) {
+                                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
+                                } else if (settings == ScreenLock.FaceID || settings == ScreenLock.TouchID) {
+                                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
+                                }
+                                KeychainHelper.savePassword(service: "pinPassword", account: "user", data: self.pinCode)
                                 KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
-                                self.performSegue(withIdentifier: "improveSecurity", sender: self)
+                                if(self.editPinMode == true) {
+                                    self.navigationController?.popViewController(animated: true)
+                                } else if (self.restoreMode == true) {
+                                    self.performSegue(withIdentifier: "mainMenu", sender: nil)
+                                } else {
+                                    self.performSegue(withIdentifier: "improveSecurity", sender: self)
+                                }
                             }
                         }.catch { error in
                             print("setPin failed")
@@ -140,13 +187,31 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             pinConfirm = pinCode
             pinCode = ""
             updateView()
-            print("olla")
             //show confirm pin
             topLabel.text = "Confirm PIN"
+        } else if (removePinMode == true) {
+            let pass = KeychainHelper.loadPassword(service: "pinPassword", account: "user")
+            if (pass == pinCode) {
+                AppDelegate.removePinKeychainData()
+                let settings = SettingsStore.shared.getScreenLockSetting()
+                if (settings == ScreenLock.Pin) {
+                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.None)
+                } else if (settings == ScreenLock.all) {
+                    let bioID = BiometricIDAuth()
+                    if (bioID.biometricType() == BiometricType.faceID) {
+                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.FaceID)
+                    } else if (bioID.biometricType() == BiometricType.touchID) {
+                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
+                    }
+                }
+            }
+            self.navigationController?.popViewController(animated: true)
+            return
         }
     }
 
     func resetEverything() {
+        confirmPin = false
         pinCode = ""
         updateView()
     }
@@ -198,7 +263,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
-        if(setPinMode) {
+        if(setPinMode || editPinMode) {
             self.navigationController?.popViewController(animated: true)
         } else {
             self.performSegue(withIdentifier: "entrance", sender: nil)

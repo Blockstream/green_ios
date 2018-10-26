@@ -1,16 +1,8 @@
-//
-//  CreateWalletViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 5/31/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class CreateWalletViewController: UIViewController {
-    
+
     @IBOutlet weak var topLabel: UILabel!
     var viewArray: Array<UIView> = []
     var mnemonics:[String] = []
@@ -28,6 +20,7 @@ class CreateWalletViewController: UIViewController {
     var indicatorBoxes: Array<UIView> = []
     var indicatorLayers: [CAGradientLayer?] = [CAGradientLayer?](repeatElement(nil, count: 24))
     var widths: Array<Int>  = []
+    var firstTime = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +31,27 @@ class CreateWalletViewController: UIViewController {
         widths = generateAllWidths(maxWidth: Int(maxWidth), blockWidth: Int(width))
         createIndicators()
         loadWords()
+        topLabel.text = NSLocalizedString("id_write_down_the_words", comment: "")
+        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        if(firstTime) {
+            firstTime = false
+            return
+        }
+        animateBackwardsRow(row: 0)
+        animateBackwardsRow(row: 1)
+        animateBackwardsRow(row: 2)
+        animateBackwardsRow(row: 3)
+        pageCounter = 0
+        loadWords()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animateRow(row: 0)
     }
 
     func createIndicators() {
@@ -155,16 +169,6 @@ class CreateWalletViewController: UIViewController {
         anim.duration = 0.5
         layer?.add(anim, forKey: "loc")
         layer?.locations = endLocations as [NSNumber]
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        animateRow(row: 0)
     }
 
     override func viewDidLayoutSubviews() {

@@ -3,6 +3,7 @@
 #include "argparser.h"
 
 #include "include/session.hpp"
+#include "src/assertion.hpp"
 
 const std::string DEFAULT_MNEMONIC("dismiss chaos result march slow sock hybrid foster chest analyst blue decline "
                                    "alarm advance polar squeeze shy actress target satoshi sleep wage cruel tell");
@@ -16,7 +17,7 @@ int main(int argc, char** argv)
     try {
         const bool debug = options->quiet == 0;
         sdk::session session;
-        session.connect(options->testnet ? sdk::make_testnet_network() : sdk::make_localtest_network(), debug);
+        session.connect(options->network, std::string(), false, debug);
         session.register_user(DEFAULT_MNEMONIC);
         session.login(DEFAULT_MNEMONIC);
         // TODO GA_SDK_RUNTIME_ASSERT(result.get<int>("min_fee") == 1000);

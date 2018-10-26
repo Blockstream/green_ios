@@ -11,12 +11,6 @@
 extern "C" {
 #endif
 
-/** Network parameters to use */
-#define GA_NETWORK_MAINNET 0
-#define GA_NETWORK_TESTNET 1
-#define GA_NETWORK_LOCALTEST 100
-#define GA_NETWORK_REGTEST 101
-
 /** Values for onion uri flag */
 #define GA_NO_TOR 0
 #define GA_USE_TOR 1
@@ -24,12 +18,6 @@ extern "C" {
 /** Values for transaction memo type */
 #define GA_MEMO_USER 0
 #define GA_MEMO_BIP70 1
-
-/** A server session */
-struct GA_session;
-
-/** An api method call that potentially requires two factor authentication to complete */
-struct GA_twofactor_call;
 
 /**
  * Create a new server session.
@@ -52,18 +40,18 @@ GASDK_API int GA_destroy_session(struct GA_session* session);
  * Connect to a remote server using the specified network.
  *
  * @session The server session to use.
- * @network The network parameters to use.
+ * @network The name of the network to connect to.
  * @debug Output transport debug information to stderr.
  *
  * GA_ERROR if connection is unsuccessful.
  */
-GASDK_API int GA_connect(struct GA_session* session, uint32_t network, uint32_t debug);
+GASDK_API int GA_connect(struct GA_session* session, const char* network, uint32_t debug);
 
 /**
  * Connect to a remote server using the specified network and proxy.
  *
  * @session The server session to use.
- * @network The network parameters to use.
+ * @network The name of the network to connect to.
  * @proxy The proxy server to use.
  * @use_tor Use the onion address for the @network.
  * @debug Output transport debug information to stderr.
@@ -71,7 +59,7 @@ GASDK_API int GA_connect(struct GA_session* session, uint32_t network, uint32_t 
  * GA_ERROR if connection is unsuccessful.
  */
 GASDK_API int GA_connect_with_proxy(
-    struct GA_session* session, uint32_t network, const char* proxy_uri, uint32_t use_tor, uint32_t debug);
+    struct GA_session* session, const char* network, const char* proxy_uri, uint32_t use_tor, uint32_t debug);
 
 /**
  * UNUSED
@@ -89,17 +77,42 @@ GASDK_API int GA_disconnect(struct GA_session* session);
 GASDK_API int GA_register_user(struct GA_session* session, const char* mnemonic);
 
 /**
- * Authenticate an user.
+ * Create a new user account using a hardware wallet/HSM/TPM.
  *
  * @session The server session to use.
  * @mnemonic The user's mnemonic passphrase.
+ * @hw_device Details about the hardware device being use to register.
+ *
+ * GA_ERROR if registration is unsuccessful.
+ */
+GASDK_API int GA_register_user_with_hardware(
+    struct GA_session* session, const GA_json* hw_device, struct GA_twofactor_call** call);
+
+/**
+ * Authenticate a user.
+ *
+ * @session The server session to use.
+ * @mnemonic The user's mnemonic passphrase.
+ * @password The user's password to decrypt a 27 word mnemonic, or a blank string if none.
  *
  * GA_ERROR if authentication is unsuccessful.
  */
-GASDK_API int GA_login(struct GA_session* session, const char* mnemonic);
+GASDK_API int GA_login(struct GA_session* session, const char* mnemonic, const char* password);
 
 /**
- * Authenticate an user.
+ * Authenticate a user using a hardware wallet/HSM/TPM.
+ *
+ * @session The server session to use.
+ * @hw_device Details about the hardware device being use to login.
+ * @call Destination for the resulting GA_twofactor_call to perform the login.
+ *
+ * GA_ERROR if authentication is unsuccessful.
+ */
+GASDK_API int GA_login_with_hardware(
+    struct GA_session* session, const GA_json* hw_device, struct GA_twofactor_call** call);
+
+/**
+ * Authenticate a user.
  *
  * @session The server session to use.
  * @pin The user PIN.
@@ -110,7 +123,18 @@ GASDK_API int GA_login(struct GA_session* session, const char* mnemonic);
 GASDK_API int GA_login_with_pin(struct GA_session* session, const char* pin, const GA_json* pin_data);
 
 /**
- * Authenticate an user in watch only mode.
+ * Set a watch-only login for the wallet.
+ *
+ * @session The server session to use.
+ * @username The username.
+ * @password The password.
+ *
+ * GA_ERROR if setting the watch-only login is unsuccessful.
+ */
+GASDK_API int GA_set_watch_only(struct GA_session* session, const char* username, const char* password);
+
+/**
+ * Authenticate a user in watch only mode.
  *
  * @session The server session to use.
  * @username The username.
@@ -158,19 +182,6 @@ GASDK_API int GA_create_subaccount(struct GA_session* session, const GA_json* de
  * GA_ERROR if subaccounts could not be fetched.
  */
 GASDK_API int GA_get_subaccounts(struct GA_session* session, GA_json** subaccounts);
-
-/**
- * Change transaction limits settings.
- *
- * @session The server session to use.
- * @is_fiat One of @GA_TRUE or @GA_FALSE.
- * @total Amount in total per transaction in satoshi.
- * @twofactor_data Two factor authentication details for the action.
- *
- * GA_ERROR if transaction limits could not be changed.
- */
-GASDK_API int GA_change_settings_tx_limits(
-    struct GA_session* session, uint32_t is_fiat, uint32_t total, const GA_json* twofactor_data);
 
 /**
  * Set the pricing source for a user's GreenAddress wallet.
@@ -286,13 +297,26 @@ GASDK_API int GA_convert_amount(struct GA_session* session, const GA_json* json,
  * @session The server session to use.
  * @mnemonic The user's mnemonic passphrase.
  * @pin The user PIN.
- * @device The user device identifier.
+ * @device_id The user device identifier.
  * @pin_data The returned PIN data containing the user's encrypted mnemonic passphrase.
  *
  * GA_ERROR if the PIN could not be set.
  */
 GASDK_API int GA_set_pin(
-    struct GA_session* session, const char* mnemonic, const char* pin, const char* device, GA_json** pin_data);
+    struct GA_session* session, const char* mnemonic, const char* pin, const char* device_id, GA_json** pin_data);
+
+/**
+ * Set the sessions current subaccount.
+ *
+ * @session The server session to use.
+ * @subaccount The subaccount number to set as the current subaccount.
+ *
+ * This results in a notification of the subaccount change which includes the
+ * subaccounts current balance.
+ *
+ * GA_ERROR if balance could not be retrieved.
+ */
+GASDK_API int GA_set_current_subaccount(struct GA_session* session, uint32_t subaccount);
 
 /*
  * Construct a transaction.
@@ -446,16 +470,23 @@ GASDK_API int GA_decrypt(struct GA_session* session, const GA_json* input, GA_js
 
 #ifndef SWIG
 /*
- * Subscribe to a notification topic.
+ * Set a handler to be called when notifications arrive.
  *
- * @session The server session to use.
- * @topic The topic to subscribe to.
- * @callback The callback for the topic value as JSON.
+ * @session The server session to receive notifications for.
+ * @handler The handler to receive notifications.
+ * @context A context pointer to be passed to the handler.
  *
- * GA_ERROR if topic cannot be subscribed to.
+ * This must be called after before GA_connect/GA_connect_with_proxy.
+ * Notifications may arrive on different threads so the caller must ensure
+ * that shared data is correctly locked within the handler.
+ * The GA_json object passed to the caller must be destroyed by the caller
+ * using GA_destroy_json. Failing to do so will result in memory leaks.
+ * When the session is disconnected/destroyed, a final call will be made to
+ * the handler with a NULL notification.
+ *
+ * GA_ERROR if the session has already been connected.
  */
-GASDK_API int GA_subscribe_to_topic_as_json(
-    struct GA_session* session, const char* topic, void (*callback)(void*, char* output), void* context);
+GASDK_API int GA_set_notification_handler(struct GA_session* session, GA_notification_handler handler, void* context);
 #endif
 
 #ifdef __cplusplus

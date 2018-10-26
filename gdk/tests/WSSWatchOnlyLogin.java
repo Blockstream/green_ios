@@ -6,20 +6,25 @@ public class WSSWatchOnlyLogin {
     private final static String PASSWORD = "domenicotestnet";
 
     public static void main(final String args[]) throws Exception {
-        int network = GASDK.GA_NETWORK_TESTNET;
+        String network = "testnet";
+        int debug = GASDK.GA_FALSE;
         for (final String arg : args) {
             if (arg.equals("-l")) {
-                network = GASDK.GA_NETWORK_LOCALTEST;
+                network = "localtest";
+                break;
+            }
+            if (arg.equals("-q")) {
+                debug = GASDK.GA_TRUE;
                 break;
             }
         }
 
         final Object session = GASDK.create_session();
         try {
-        GASDK.connect(session, network, GASDK.GA_TRUE);
+        GASDK.connect(session, network, debug);
         GASDK.login_watch_only(session, USERNAME, PASSWORD);
         } catch (final Exception ex) {
-            if (network == GASDK.GA_NETWORK_LOCALTEST) {
+            if (network != "testnet") {
                 System.out.println("Skipping test (requires testnet or local environment w/proxy)");
                 return;
             }

@@ -1,32 +1,30 @@
-//
-//  InstructionViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/6/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class InstructionViewController: UIViewController {
-    
+
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var bottomLabel: UILabel!
-    
-    
+    @IBOutlet weak var middleLabel: UILabel!
+    @IBOutlet weak var topLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        //customize
+        titleLabel.text = NSLocalizedString("id_save_your_recovery_seed", comment: "")
+        topLabel.text = NSLocalizedString("id_write_down_your_seed_words_on", comment: "")
+        middleLabel.text = NSLocalizedString("id_dont_store_your_seed_in_email", comment: "")
+        bottomLabel.text = NSLocalizedString("id_dont_take_screenshots_of_your", comment: "")
+        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         bottomLabel.sizeToFit()
     }
-    
+
     @IBAction func backButtonClicked(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
-    
+
 }

@@ -1,11 +1,3 @@
-//
-//  SetGauthViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 10/3/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -15,16 +7,21 @@ class SetGauthViewController: UIViewController {
     @IBOutlet weak var secretLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
     var secret: String? = ""
+    var otp: String? = ""
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         secret = AccountStore.shared.getGauthSecret()
+        otp = AccountStore.shared.getGauthOTP()
         if (secret == nil) {
             print("something went wrong gauth")
             return
         }
-        qrCodeImageView.image = QRImageGenerator.imageForText(text: secret!, frame: qrCodeImageView.frame)
+        qrCodeImageView.image = QRImageGenerator.imageForText(text: otp!, frame: qrCodeImageView.frame)
         secretLabel.text = secret
+        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("id_google_authenticator_qrcode", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -43,17 +40,36 @@ class SetGauthViewController: UIViewController {
             if (status == "call") {
                 try factor?.call()
                 let json_call = try factor?.getStatus()
-                let status_call = json!["status"] as! String
-                try factor?.call()
-                let json_call1 = try factor?.getStatus()
-                let status_call1 = json!["status"] as! String
-                print(status_call)
-                print("status call")
-                self.performSegue(withIdentifier: "twoFactor", sender: factor)
+                let status_call = json_call!["status"] as! String
+                if(status_call == "resolve_code") {
+                    self.performSegue(withIdentifier: "twoFactor", sender: factor)
+                }
+            } else if (status == "request_code") {
+                let methods = json!["methods"] as! NSArray
+                if(methods.count > 1) {
+                    self.performSegue(withIdentifier: "twoFactorSelector", sender: factor)
+                } else {
+                    let method = methods[0] as! String
+                    let req = try factor?.requestCode(method: method)
+                    let status1 = try factor?.getStatus()
+                    let parsed1 = status1!["status"] as! String
+                    if(parsed1 == "resolve_code") {
+                        self.performSegue(withIdentifier: "twoFactor", sender: factor)
+                    }
+                }
             }
         } catch {
             print("something went wrong")
         }
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.onboarding = true
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+    }
 }

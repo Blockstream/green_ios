@@ -1,23 +1,26 @@
-//
-//  EnableTwoFactorViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 9/27/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class EnableTwoFactorViewController : UIViewController {
 
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var emailButton: UIButton!
+    @IBOutlet weak var smsButton: UIButton!
+    @IBOutlet weak var phoneCallButton: UIButton!
+    @IBOutlet weak var gauthButton: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        titleLabel.text = NSLocalizedString("id_twofactor_authentication", comment: "")
+        emailButton.setTitle(NSLocalizedString("id_email", comment: ""), for: .normal)
+        smsButton.setTitle(NSLocalizedString("id_sms", comment: ""), for: .normal)
+        phoneCallButton.setTitle(NSLocalizedString("id_call", comment: ""), for: .normal)
+        gauthButton.setTitle(NSLocalizedString("id_google_auth", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
     }
 
     @IBAction func phoneCallClicked(_ sender: Any) {

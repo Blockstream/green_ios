@@ -35,8 +35,15 @@ namespace sdk {
         static nlohmann::json convert(
             const nlohmann::json& amount_json, const std::string& fiat_currency, const std::string& fiat_rate);
 
+        // Convert fiat cents to fiat + BTC amounts
         static nlohmann::json convert_fiat_cents(
             value_type cents, const std::string& fiat_currency, const std::string& fiat_rate);
+
+        // Get fiat cents from a fiat string
+        static value_type get_fiat_cents(const std::string& fiat_str);
+
+        // Format a number string to include 'dp' decimal places
+        static std::string format_amount(const std::string& value_str, size_t dp);
 
         amount& operator=(value_type v)
         {

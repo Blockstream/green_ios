@@ -1,16 +1,8 @@
-//
-//  CongratsViewController.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/8/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
 class CongratsViewController: UIViewController {
-    
+
     @IBOutlet weak var topButton: UIButton!
     @IBOutlet weak var bottomButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
@@ -18,25 +10,24 @@ class CongratsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let text = NSAttributedString(string: "Congrats!\n You are now a \n proud owner of \n Bitcoin wallet.")
-        topLabel.attributedText = text
+        topLabel.text = NSLocalizedString("id_congratulationsnyou_are_now_the", comment: "")
         if(bioID.canEvaluatePolicy()){
             if(bioID.biometricType() == BiometricType.faceID) {
-                topButton.setTitle("Enable Face ID", for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("id_enable_face_id", comment: ""), for: UIControlState.normal)
             } else if (bioID.biometricType() == BiometricType.touchID) {
-                topButton.setTitle("Enabe Touch ID", for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("id_enable_touch_id", comment: ""), for: UIControlState.normal)
             } else {
                 topButton.isUserInteractionEnabled = false
                 topButton.backgroundColor = UIColor.customTitaniumLight()
-                topButton.setTitle("Touch/Face ID not available", for: UIControlState.normal)
+                topButton.setTitle(NSLocalizedString("id_touchface_id_not_available", comment: ""), for: UIControlState.normal)
             }
         } else {
             topButton.isUserInteractionEnabled = false
             topButton.backgroundColor = UIColor.customTitaniumLight()
-            topButton.setTitle("Touch/Face ID not available", for: UIControlState.normal)
+            topButton.setTitle(NSLocalizedString("id_touchface_id_not_available", comment: ""), for: UIControlState.normal)
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
@@ -66,8 +57,8 @@ class CongratsViewController: UIViewController {
                                 SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
                             }
                         }
-                        KeychainHelper.savePassword(service: "password", account: "user", data: password)
-                        KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
+                        KeychainHelper.savePassword(service: "bioPassword", account: "user", data: password)
+                        KeychainHelper.savePassword(service: "bioData", account: "user", data: result!)
                         self.performSegue(withIdentifier: "improveSecurity", sender: self)
                     }.catch { error in
                         print("setPin failed")

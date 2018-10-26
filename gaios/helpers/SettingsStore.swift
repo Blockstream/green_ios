@@ -1,11 +1,3 @@
-//
-//  SettingsStore.swift
-//  gaios
-//
-//  Created by Strahinja Markovic on 8/23/18.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
-
 import Foundation
 import PromiseKit
 
@@ -15,33 +7,42 @@ class SettingsStore {
         let accountImage = #imageLiteral(resourceName: "account")
         let accountCurrency = "Alternative Currency"
         let accountDenomination = "Show Bitcoin in"
+        let accountFee = "Transaction Priority"
         let accountWatchOnly = "Watch-only login"
     let sectionSecurity = "Security"
         let securityImage = #imageLiteral(resourceName: "security")
         let securityRecovery = "Show Recovery Seed"
         let securityScreenLock = "Screen Lock"
-        let securityTwoFactor = "Two-factor Authentication"
+        let securityTwoFactor = "Two-Factor Authentication"
+        let securityTwoFactorWarning = "Two-Factor Warnings"
+        let securityTwoFactorLimit = "Two-Factor Treshold"
+        let securityTwoFactorReset = "Request Two-Factor Reset"
         let securitySupport = "Support"
+        let securityLogout = "Automatically Lock After"
     let sectionAdvanced = "Advanced"
         let advancedImage = #imageLiteral(resourceName: "advanced")
         let advancedSegwit = "Enable Segwit"
-        let advancedNLock = "nLockTimeTransactions"
+        let advancedNLock = "nLockTime Recovery Emails"
+        let advancedRequestNLocktime =  "Request nLockTime Transactions"
     let sectionAbout = "About"
         let aboutImage = #imageLiteral(resourceName: "about")
         let aboutVersion = "Version"
-        let aboutTOS = "Terms of use"
+        let aboutTOS = "Terms of Use"
         let aboutPrivacy = "Privacy Policy"
 
     let settingsCurrency = "settingsCurrency"
     let settingsDenomination = "settingsDenomination"
     let settingsWatchOnly = "settingsWatchOnly"
+    let settingsFee = "settingsFee"
 
     let settingsRecovery = "settingsRecovery"
     let settingsScreenLock = "settingsScreenLock"
     let settingsTwoFactor = "settingsTwoFactor"
+    let settingsAutolock = "settingsAutolock"
     let settingsSupport = "settingsSupport"
-
+    let settingsTwoFactorWarning = "settingsTwoFactorWarning"
     let settingsNLockTime = "settingsNLockTime"
+    let settingsTwoFactorLimit = "settingsTwoFactorLimit"
 
     let settingsVersion = "settingsVersion"
     let settingsTOS = "settingsTOS"
@@ -54,6 +55,8 @@ class SettingsStore {
     let denominationPrimary = "BTC"
     let denominationMilli = "mBTC"
     let denominationMicro = "uBTC"
+
+    let feeMedium = "Medium"
 
     let screenLockSettingsValueDefault = "None"
     let screenLockSettingsValuePin = "Pin"
@@ -109,6 +112,53 @@ class SettingsStore {
         writeSettingsToDisk()
     }
 
+    func setFeeSettings(satoshi: Int, priority: TransactionPriority) {
+        if (priority == TransactionPriority.Low || priority == TransactionPriority.Medium || priority == TransactionPriority.High) {
+            let setting = SettingsItem(settingsName: settingsFee, property: ["priority" : priority.rawValue, "satoshi" : String(0)], text: accountFee, secondaryText: priority.rawValue)
+            allSettings[settingsFee] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        } else {
+            let setting = SettingsItem(settingsName: settingsFee, property: ["priority" : priority.rawValue, "satoshi" : String(satoshi)], text: accountFee, secondaryText: priority.rawValue)
+            allSettings[settingsFee] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        }
+    }
+
+    func setAutolockSettings(time: Int, type: AutoLock) {
+        if(type == AutoLock.Custom) {
+            let setting = SettingsItem(settingsName: settingsAutolock, property: ["type" : type.rawValue, "time": String(time)], text: securityLogout, secondaryText: type.rawValue)
+            allSettings[settingsAutolock] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        } else {
+            let setting = SettingsItem(settingsName: settingsAutolock, property: ["type" : type.rawValue, "time": String(timeForAutolock(lock: type))], text: securityLogout, secondaryText: type.rawValue)
+            allSettings[settingsAutolock] = setting
+            loadAllSections()
+            writeSettingsToDisk()
+        }
+    }
+
+    func getAutolockSettings() -> (AutoLock, Int) {
+        if let setting = allSettings[settingsAutolock] {
+            let lock = setting.settingsProperty["type"]!
+            let time = Int(setting.settingsProperty["time"]!)
+            return (AutoLock(rawValue: lock)!, time!)
+        }
+        let def = defaultAutolockSettings()
+        let dlock = def.settingsProperty["type"]!
+        let dtime = Int(def.settingsProperty["time"]!)
+        return (AutoLock(rawValue: dlock)!, dtime!)
+    }
+
+    func getFeeSettings() -> (TransactionPriority, Int) {
+        let setting = allSettings[settingsFee]
+        let priority = setting!.settingsProperty["priority"]!
+        let satoshi = Int(setting!.settingsProperty["satoshi"]!)
+        return (TransactionPriority(rawValue: priority)!, satoshi!)
+    }
+
     func getScreenLockSetting() -> ScreenLock {
         let setting = allSettings[settingsScreenLock]
         let property = setting?.settingsProperty[settingsScreenLock]
@@ -116,7 +166,65 @@ class SettingsStore {
         return ScreenLock(rawValue: raw!)!
     }
 
+    //returns if warning for nofactor and one factor are enabled (NoFactor, OneFactor)
+    func getTwoFactorWarning() -> (Bool, Bool) {
+        let setting = allSettings[settingsTwoFactorWarning]
+        let noFactor = setting?.settingsProperty["noFactor"]
+        let oneFactor = setting?.settingsProperty["oneFactor"]
+        return (noFactor == "true", oneFactor == "true")
+    }
+
+    func setTwoFactorWarning(noFactor: Bool, oneFactor: Bool) {
+        let enabledText = noFactor || oneFactor ? "Enabled" : "Disabled"
+        let noFactorText = noFactor ? "true" : "false"
+        let oneFactorText = oneFactor ? "true" : "false"
+        let setting = SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": noFactorText, "oneFactor" : oneFactorText], text: securityTwoFactorWarning, secondaryText: enabledText)
+        allSettings[settingsTwoFactorWarning] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
+    func setTwoFactorLimit(enabled: Bool, treshold: Double, fiat: Bool) {
+        let isFiat = fiat ? "true" : "false"
+        let isEnabled = enabled ? "true" : "false"
+        let tresholdText = String(treshold)
+        let secondaryText = enabled ? "Enabled" : "Disabled"
+        let details = ["fiat" : isFiat, "enabled" : isEnabled, "treshold" : tresholdText]
+        let setting = SettingsItem(settingsName: settingsTwoFactorLimit, property: details, text: securityTwoFactorLimit, secondaryText: secondaryText)
+        allSettings[settingsTwoFactorLimit] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
+    func getTwoFactorLimit() -> (enabled: Bool, treshold: Double, fiat: Bool) {
+        let set =  allSettings[settingsTwoFactorLimit]
+        let enabled = set?.settingsProperty["enabled"] == "true" ? true : false
+        if (!enabled) {
+            return(false, 0, false)
+        }
+        let fiat = set?.settingsProperty["fiat"] == "true" ? true : false
+        let treshold = Double(set!.settingsProperty["enabled"]!)!
+        return (enabled, treshold, fiat)
+    }
+
+    func setNLocktimeEmailsEnabled(enabled: Bool) {
+        let enabledText = enabled ? "true" : "false"
+        let secondary = enabled ? "Enabled" : "Disabled"
+         let setting = SettingsItem(settingsName: settingsNLockTime, property:["enabled" : enabledText], text: advancedNLock, secondaryText: secondary)
+        allSettings[settingsNLockTime] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
+    func getNLocktimeEmailsEnabled() -> Bool {
+        let settings = allSettings[settingsNLockTime]
+        let property = settings?.settingsProperty["enabled"]
+        return property == "true"
+    }
+
     func getDenominationSettings() -> String {
+        let denomination = allSettings[settingsDenomination]
+        let setting = denomination?.settingsProperty[settingsDenomination]
         return (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!
     }
 
@@ -126,6 +234,43 @@ class SettingsStore {
 
     func getCurrencyString() -> String {
         return (allSettings[settingsCurrency]?.settingsProperty["currency"])!
+    }
+
+    func defaultFeeSettings() -> SettingsItem {
+        return SettingsItem(settingsName: settingsFee, property: ["priority" : TransactionPriority.Medium.rawValue, "satoshi" : String(0)], text: accountFee, secondaryText: TransactionPriority.Medium.rawValue)
+    }
+
+    func timeForAutolock(lock: AutoLock) -> Int {
+        if (lock == AutoLock.minute) {
+            return 60
+        } else if (lock == AutoLock.twoMinutes) {
+            return 120
+        } else if (lock == AutoLock.fiveMinutes) {
+            return 300
+        } else {
+            return 600
+        }
+    }
+
+    func defaultAutolockSettings() -> SettingsItem {
+        let lock = AutoLock.fiveMinutes
+        return SettingsItem(settingsName: settingsAutolock, property: ["type" : lock.rawValue, "time": String(timeForAutolock(lock: lock))], text: securityLogout, secondaryText: lock.rawValue)
+    }
+
+    func defaultTwoFactorReset() -> SettingsItem {
+        return SettingsItem(settingsName: securityTwoFactorReset, property:[String:String](), text: securityTwoFactorReset, secondaryText: "")
+    }
+
+    func defaultRequestNlockTime() -> SettingsItem {
+        return SettingsItem(settingsName: advancedRequestNLocktime, property:[String:String](), text: advancedRequestNLocktime, secondaryText: "")
+    }
+
+    func defaultTwoFactorWarning() -> SettingsItem {
+        return SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": "true", "oneFactor" : "true"], text: securityTwoFactorWarning, secondaryText: "Enabled")
+    }
+
+    func defaultTwoFactorLimit() -> SettingsItem {
+        return SettingsItem(settingsName: settingsTwoFactorLimit, property: ["enabled" : "false"], text: securityTwoFactorLimit, secondaryText: "Disabled")
     }
 
     func defaultDenominationSettings() -> SettingsItem {
@@ -159,7 +304,7 @@ class SettingsStore {
     }
 
     func defaultNlockTime() -> SettingsItem {
-        return SettingsItem(settingsName: settingsNLockTime, property:[String : String](), text: advancedNLock, secondaryText: "")
+        return SettingsItem(settingsName: settingsNLockTime, property:["enabled" : "false"], text: advancedNLock, secondaryText: "Disabled")
     }
 
     func defaultVersion() -> SettingsItem {
@@ -179,12 +324,15 @@ class SettingsStore {
         var accountSettings = Array<SettingsItem>()
         let currency = allSettings[settingsCurrency] == nil ? defaultCurrencySettings() : allSettings[settingsCurrency]
         let denomination = allSettings[settingsDenomination] == nil ? defaultDenominationSettings() : allSettings[settingsDenomination]
+        let fee = allSettings[settingsFee] == nil ? defaultFeeSettings() : allSettings[settingsFee]
         let watch = allSettings[settingsWatchOnly] == nil ? defaultWatchOnlySettings() : allSettings[settingsWatchOnly]
         accountSettings.append(currency!)
         accountSettings.append(denomination!)
+        accountSettings.append(fee!)
         accountSettings.append(watch!)
         allSettings[settingsCurrency] = currency
         allSettings[settingsDenomination] = denomination
+        allSettings[settingsFee] = fee
         allSettings[settingsWatchOnly] = watch
         let section = SettingsSection(sectionName: sectionAccount, settingsInSection: accountSettings)
         return section
@@ -194,16 +342,35 @@ class SettingsStore {
         var securitySettings = Array<SettingsItem>()
         let recovery = allSettings[settingsRecovery] == nil ? defaultRecoverySeed() : allSettings[settingsRecovery]
         let screenLock = allSettings[settingsScreenLock] == nil ? defaultScreenLock() : allSettings[settingsScreenLock]
-        let twoFactor = allSettings[settingsTwoFactor] == nil ? defaultTwoFactor() : allSettings[settingsTwoFactor]
+
+        var twoFactor: SettingsItem? = nil
+        if(AccountStore.shared.isTwoFactorEnabled()) {
+            twoFactor = SettingsItem(settingsName: settingsTwoFactor, property:[String : String](), text: securityTwoFactor, secondaryText: "Enabled")
+        } else {
+            twoFactor = defaultTwoFactor()
+        }
+        let twoFactorWarning = allSettings[settingsTwoFactorWarning] == nil ? defaultTwoFactorWarning() : allSettings[settingsTwoFactorWarning]
+        let twoFactorLimit = allSettings[settingsTwoFactorLimit] == nil ? defaultTwoFactorLimit() : allSettings[settingsTwoFactorLimit]
+        let twoFactorReset = defaultTwoFactorReset()
+        let autolock = allSettings[settingsAutolock] == nil ? defaultAutolockSettings() : allSettings[settingsAutolock]
         let support = allSettings[settingsSupport] == nil ? defaultSupport() : allSettings[settingsSupport]
+
         securitySettings.append(recovery!)
         securitySettings.append(screenLock!)
         securitySettings.append(twoFactor!)
+        securitySettings.append(twoFactorWarning!)
+        securitySettings.append(twoFactorLimit!)
+        securitySettings.append(twoFactorReset)
+        securitySettings.append(autolock!)
         securitySettings.append(support!)
         allSettings[settingsRecovery] = recovery
         allSettings[settingsScreenLock] = screenLock
         allSettings[settingsTwoFactor] = twoFactor
+        allSettings[settingsTwoFactorLimit] = twoFactorLimit
+        allSettings[securityTwoFactorReset] = twoFactorReset
+        allSettings[settingsTwoFactorWarning] = twoFactorWarning
         allSettings[settingsSupport] = support
+        allSettings[settingsAutolock] = autolock
         let section = SettingsSection(sectionName: sectionSecurity, settingsInSection: securitySettings)
         return section
     }
@@ -211,8 +378,11 @@ class SettingsStore {
     func createAdvancedSection() -> SettingsSection {
         var advancedSettings = Array<SettingsItem>()
         let nlock = allSettings[settingsNLockTime] == nil ? defaultNlockTime() : allSettings[settingsNLockTime]
+        let nlockrequest = defaultRequestNlockTime()
         advancedSettings.append(nlock!)
+        advancedSettings.append(nlockrequest)
         allSettings[settingsNLockTime] = nlock
+        allSettings[advancedRequestNLocktime] = nlockrequest
         let section = SettingsSection(sectionName: sectionAdvanced, settingsInSection: advancedSettings)
         return section
     }
@@ -273,10 +443,14 @@ class SettingsStore {
 
     func loadAllSections() {
         allSections.removeAll()
-        allSections.append(createAccountSection())
-        allSections.append(createSecuritySection())
-        allSections.append(createAdvancedSection())
-        allSections.append(createAboutSection())
+        if(AccountStore.shared.isWatchOnly) {
+            allSections.append(createAboutSection())
+        } else {
+            allSections.append(createAccountSection())
+            allSections.append(createSecuritySection())
+            allSections.append(createAdvancedSection())
+            allSections.append(createAboutSection())
+        }
     }
 
     func initSettingsStore() {
@@ -321,5 +495,20 @@ public enum ScreenLock: UInt32 {
     case TouchID = 2
     case FaceID = 3
     case all = 4
+}
+
+public enum TransactionPriority: String {
+    case Low = "Low"
+    case Medium = "Medium"
+    case High = "High"
+    case Custom = "Custom"
+}
+
+public enum AutoLock: String {
+    case minute = "1 Minute"
+    case twoMinutes = "2 Minutes"
+    case fiveMinutes = "5 Minutes"
+    case tenMinutes = "10 Minutes"
+    case Custom = "Custom"
 }
 

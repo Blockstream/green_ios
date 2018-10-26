@@ -54,12 +54,26 @@
 		09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09358BD52106A57D00D1066F /* CustomAletView.swift */; };
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
 		0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */; };
+		09377B702178409E00C4E347 /* TwoFactorWarningSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B6F2178409E00C4E347 /* TwoFactorWarningSettings.swift */; };
+		09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
 		09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B342166F499009BABFE /* EditTwoFactorViewController.swift */; };
 		09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* EditScreenLockSettings.swift */; };
+		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
+		09546B3B216DA243009BABFE /* WelcomeBackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3A216DA243009BABFE /* WelcomeBackViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
 		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
+		097D20C621804CD00089C379 /* Bip39Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C521804CD00089C379 /* Bip39Helper.swift */; };
+		097D20C82180503B0089C379 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C72180503B0089C379 /* Trie.swift */; };
+		097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C9218068850089C379 /* AddressDetailViewController.swift */; };
+		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
+		0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */; };
+		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
+		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
+		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
+		098192832176D05500D8434F /* CustomApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* CustomApplication.swift */; };
+		098192852176D12F00D8434F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192842176D12F00D8434F /* main.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
@@ -75,23 +89,20 @@
 		09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A8991520FADFE000E105EC /* IntroPageViewController.swift */; };
 		09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AA2122357700989B1D /* UIViewController+helpers.swift */; };
 		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
+		09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */; };
+		09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B656217AC833001B5002 /* RequestNLockEmails.swift */; };
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
 		09DA612820E73C4E00C3EA03 /* BiometricIDAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */; };
 		09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
-		676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */; };
-		676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */; };
 		676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */; };
 		676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF251F9D0CF800354E93 /* Main.storyboard */; };
 		676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF281F9D0CF800354E93 /* Assets.xcassets */; };
 		676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */; };
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
-		676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
-		676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF531F9D0E7100354E93 /* CreateViewController.swift */; };
-		67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -160,12 +171,26 @@
 		09358BD52106A57D00D1066F /* CustomAletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAletView.swift; sourceTree = "<group>"; };
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
 		0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetViewController.swift; sourceTree = "<group>"; };
+		09377B6F2178409E00C4E347 /* TwoFactorWarningSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorWarningSettings.swift; sourceTree = "<group>"; };
+		09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLimitViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
 		09546B342166F499009BABFE /* EditTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTwoFactorViewController.swift; sourceTree = "<group>"; };
 		09546B3621686053009BABFE /* EditScreenLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScreenLockSettings.swift; sourceTree = "<group>"; };
+		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
+		09546B3A216DA243009BABFE /* WelcomeBackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeBackViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
 		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
+		097D20C521804CD00089C379 /* Bip39Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bip39Helper.swift; sourceTree = "<group>"; };
+		097D20C72180503B0089C379 /* Trie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trie.swift; sourceTree = "<group>"; };
+		097D20C9218068850089C379 /* AddressDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDetailViewController.swift; sourceTree = "<group>"; };
+		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
+		0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
+		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
+		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
+		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
+		098192822176D05500D8434F /* CustomApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomApplication.swift; sourceTree = "<group>"; };
+		098192842176D12F00D8434F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
@@ -181,6 +206,8 @@
 		09A8991520FADFE000E105EC /* IntroPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroPageViewController.swift; sourceTree = "<group>"; };
 		09B761AA2122357700989B1D /* UIViewController+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+helpers.swift"; sourceTree = "<group>"; };
 		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
+		09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestTwoFactorReset.swift; sourceTree = "<group>"; };
+		09C5B656217AC833001B5002 /* RequestNLockEmails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestNLockEmails.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
 		09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricIDAuth.swift; sourceTree = "<group>"; };
 		09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDViewController.swift; sourceTree = "<group>"; };
@@ -190,8 +217,6 @@
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
-		676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTCUnitsTableViewController.swift; sourceTree = "<group>"; };
-		676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceViewController.swift; sourceTree = "<group>"; };
 		676FCF1C1F9D0CF800354E93 /* gaios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gaios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		676FCF261F9D0CF800354E93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -204,10 +229,7 @@
 		676FCF3D1F9D0CF800354E93 /* gaiosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = gaiosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		676FCF411F9D0CF800354E93 /* gaiosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gaiosUITests.swift; sourceTree = "<group>"; };
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarControllerScene.swift; sourceTree = "<group>"; };
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
-		676FCF531F9D0E7100354E93 /* CreateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
-		67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBookTableViewControllerScene.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -286,6 +308,8 @@
 				0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */,
 				09DA612520E73A2300C3EA03 /* String+random.swift */,
 				0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */,
+				097D20C521804CD00089C379 /* Bip39Helper.swift */,
+				097D20C72180503B0089C379 /* Trie.swift */,
 				09DA612720E73C4E00C3EA03 /* BiometricIDAuth.swift */,
 				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
 				092D05AE2123E27A00B9B7CD /* NotificationStore.swift */,
@@ -324,6 +348,7 @@
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
+				0981927C217531E000D8434F /* Localizable.strings */,
 				0933A598210716EC00C43838 /* GreenAddress.swift */,
 				676FCF1E1F9D0CF800354E93 /* gaios */,
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
@@ -351,8 +376,13 @@
 				092C7BC620D2381700F90DF2 /* Views */,
 				092E1EAE20CF98AF00362253 /* helpers */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
+				098192842176D12F00D8434F /* main.swift */,
+				098192822176D05500D8434F /* CustomApplication.swift */,
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
+				097D20CB218161B10089C379 /* WatchOnlySignIn.swift */,
+				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
+				09546B3A216DA243009BABFE /* WelcomeBackViewController.swift */,
 				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
 				0926C14B211912AE0008F94A /* InstructionViewController.swift */,
 				092D5C6320C04D130077048C /* CreateWalletViewController.swift */,
@@ -371,29 +401,32 @@
 				09546B342166F499009BABFE /* EditTwoFactorViewController.swift */,
 				09546B3621686053009BABFE /* EditScreenLockSettings.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
-				676845FF1FAA4174002D79ED /* BTCUnitsTableViewController.swift */,
 				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
+				0981927E217692C700D8434F /* TransactionFeeViewController.swift */,
+				098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */,
+				09377B6F2178409E00C4E347 /* TwoFactorWarningSettings.swift */,
+				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
+				0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */,
+				09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */,
+				09C5B656217AC833001B5002 /* RequestNLockEmails.swift */,
 				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				092D47F420EA2570005720F3 /* TransactionViewController.swift */,
 				092C7BC820D238BD00F90DF2 /* ViewController.swift */,
+				09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */,
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
 				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
 				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
 				0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */,
 				092A84D0211C082F0062F0B2 /* TwoFactorSelectorViewController.swift */,
 				676FCF2D1F9D0CF800354E93 /* Info.plist */,
-				676FCF531F9D0E7100354E93 /* CreateViewController.swift */,
 				09342FDB21004309009DCDEA /* CustomAlertInputView.swift */,
 				09358BD52106A57D00D1066F /* CustomAletView.swift */,
-				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
-				676FCF4F1F9D0E7100354E93 /* TabBarControllerScene.swift */,
+				097D20C9218068850089C379 /* AddressDetailViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
-				676846011FAB9CD4002D79ED /* TermsOfServiceViewController.swift */,
 				09A8991520FADFE000E105EC /* IntroPageViewController.swift */,
-				67FF0F2F1FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift */,
 				0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */,
 			);
 			path = gaios;
@@ -537,6 +570,7 @@
 				092C7BCE20D238BE00F90DF2 /* ColoredCardView.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */,
+				0981927D217531E000D8434F /* Localizable.strings in Resources */,
 				092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */,
 				092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
@@ -726,26 +760,30 @@
 				092D05AF2123E27A00B9B7CD /* NotificationStore.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
 				09309F2521365E6900DE093B /* SettingsStore.swift in Sources */,
+				09377B702178409E00C4E347 /* TwoFactorWarningSettings.swift in Sources */,
 				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
 				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
+				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
 				092A84CF211BFE120062F0B2 /* CongratsViewController.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* KeychainHelper.swift in Sources */,
-				676846021FAB9CD4002D79ED /* TermsOfServiceViewController.swift in Sources */,
+				098192852176D12F00D8434F /* main.swift in Sources */,
+				09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				09B761AB2122357700989B1D /* UIViewController+helpers.swift in Sources */,
+				0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */,
 				0992F86C20E5741D00F6AAAB /* ImpoveSecurityViewController.swift in Sources */,
+				097D20C82180503B0089C379 /* Trie.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
 				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,
 				092C7BCC20D238BE00F90DF2 /* ViewController.swift in Sources */,
 				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
-				676FCF581F9D0E7100354E93 /* CreateViewController.swift in Sources */,
-				676846001FAA4174002D79ED /* BTCUnitsTableViewController.swift in Sources */,
+				09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */,
 				09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */,
 				09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */,
 				09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */,
@@ -753,6 +791,7 @@
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
 				09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
+				097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
@@ -764,15 +803,16 @@
 				09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */,
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
+				098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
-				676FCF541F9D0E7100354E93 /* TabBarControllerScene.swift in Sources */,
 				09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
 				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
+				09546B3B216DA243009BABFE /* WelcomeBackViewController.swift in Sources */,
 				09342FD620FDD569009DCDEA /* MainMenuPageViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
@@ -783,13 +823,17 @@
 				092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */,
-				67FF0F301FBCB15E00743F6B /* AddressBookTableViewControllerScene.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */,
+				0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */,
 				09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */,
 				092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */,
 				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
+				09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
+				097D20C621804CD00089C379 /* Bip39Helper.swift in Sources */,
+				098192832176D05500D8434F /* CustomApplication.swift in Sources */,
+				097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -958,6 +1002,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D9W37S9468;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = gaios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -991,6 +1036,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D9W37S9468;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = gaios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
