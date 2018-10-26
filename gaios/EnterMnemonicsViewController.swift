@@ -10,10 +10,12 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
     var constraint: NSLayoutConstraint? = nil
     var isKeyboardShown = false
     var suggestionView = UIView()
+    var pasteView = UIView()
     var suggestion1 = UILabel()
     var suggestion2 = UILabel()
     var suggestion3 = UILabel()
     lazy var labels = [suggestion1, suggestion2, suggestion3]
+    var mnemonic: [String]? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +37,45 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         super.viewWillAppear(animated)
         doneButton.backgroundColor = UIColor.customTitaniumLight()
         doneButton.isUserInteractionEnabled = false
+        if var pasteString = UIPasteboard.general.string {
+            while(pasteString.last == " ") {
+                pasteString.removeLast()
+            }
+            let separated = pasteString.components(separatedBy: " ")
+            if(separated.count == 24) {
+                mnemonic = separated
+                createPasteView(mnemonics: pasteString)
+                pasteView.isHidden = false
+            }
+        }
+    }
+
+    func createPasteView(mnemonics: String) {
+        pasteView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 100)
+        pasteView.backgroundColor = UIColor.lightGray
+        let label = UILabel()
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.textColor = UIColor.white
+        label.frame = CGRect(x: 0, y: 0, width: pasteView.frame.width, height: pasteView.frame.height)
+        label.text = mnemonics
+        pasteView.addSubview(label)
+        pasteView.isHidden = true
+        pasteView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(pasteTapped))
+        pasteView.addGestureRecognizer(tap)
+        self.view.addSubview(pasteView)
+    }
+
+    @objc func pasteTapped(sender:UITapGestureRecognizer) {
+        for index in 0..<textFields.count {
+            let textField = textFields[index]
+            textField.text = mnemonic?[index]
+            if textField.isFirstResponder {
+                textField.resignFirstResponder()
+            }
+        }
+        doneButtonEnable()
     }
 
     func createSuggestionView() {
@@ -132,19 +173,27 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
+    func doneButtonEnable() {
+        doneButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        doneButton.isUserInteractionEnabled = true
+    }
+
     @objc func textFieldDidChange(_ textField: UITextField) {
         if((textField.text?.count)! > 0) {
+            pasteView.isHidden = true
             updateSuggestions(prefix: textField.text!)
         } else {
             suggestionView.isHidden = true
+            if(mnemonic != nil) {
+                pasteView.isHidden = false
+            }
         }
         for field in textFields {
             if(field.text == nil || field.text == "") {
                 return
             }
         }
-        doneButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-        doneButton.isUserInteractionEnabled = true
+        doneButtonEnable()
     }
 
     @IBAction func doneButtonClicked(_ sender: Any) {
@@ -176,9 +225,13 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
             }
 
             var frame = suggestionView.frame
-            frame.origin.y = self.view.frame.height - keyboardSize.height - 42
+            frame.origin.y = self.view.frame.height - keyboardSize.height - frame.height
+            var frameP = pasteView.frame
+            frameP.origin.y = self.view.frame.height - keyboardSize.height - frameP.height
             suggestionView.frame = frame
+            pasteView.frame = frameP
             suggestionView.layoutIfNeeded()
+            pasteView.layoutIfNeeded()
             isKeyboardShown = true
             print("showing keyboard")
 
@@ -207,7 +260,10 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             var frame = suggestionView.frame
             frame.origin.y = self.view.frame.height
+            var frameP = pasteView.frame
+            frameP.origin.y = self.view.frame.height
             suggestionView.frame = frame
+            pasteView.frame = frameP
             isKeyboardShown = false
             print("hiding keyboard")
 
