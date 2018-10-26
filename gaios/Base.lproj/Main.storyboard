@@ -3709,16 +3709,29 @@
                                     <action selector="backButtonClicked:" destination="S7A-ZA-0zR" eventType="touchUpInside" id="nge-me-6xJ"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="alH-2k-1ag">
+                                <rect key="frame" x="274" y="36" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="7St-wp-Ra6"/>
+                                    <constraint firstAttribute="width" constant="30" id="RuF-kV-n17"/>
+                                </constraints>
+                                <state key="normal" image="scan"/>
+                                <connections>
+                                    <action selector="startQRScan:" destination="o6l-5o-Ocm" eventType="touchUpInside" id="MS7-z0-qNh"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="sFk-uw-kin" firstAttribute="width" secondItem="sFk-uw-kin" secondAttribute="height" multiplier="27:27" id="9ZG-hi-E63"/>
                             <constraint firstItem="6Ka-HY-djy" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" constant="16" id="CXP-gV-zbK"/>
+                            <constraint firstItem="t2r-7e-jNo" firstAttribute="trailing" secondItem="alH-2k-1ag" secondAttribute="trailing" constant="16" id="EQC-lw-7Pf"/>
                             <constraint firstItem="WZL-Fg-xk4" firstAttribute="centerX" secondItem="5FT-sb-MH7" secondAttribute="centerX" id="EUq-CC-YRu"/>
                             <constraint firstItem="sFk-uw-kin" firstAttribute="width" secondItem="sFk-uw-kin" secondAttribute="height" multiplier="27:27" id="EkZ-ZB-idf"/>
                             <constraint firstItem="sFk-uw-kin" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" constant="16" id="HGp-rF-O7r"/>
                             <constraint firstItem="sFk-uw-kin" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="16" id="Sqp-nw-3zM"/>
                             <constraint firstItem="WZL-Fg-xk4" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="16" id="hhl-yu-dpF"/>
+                            <constraint firstItem="alH-2k-1ag" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="16" id="nl3-BV-jgq"/>
                             <constraint firstItem="t2r-7e-jNo" firstAttribute="bottom" secondItem="6Ka-HY-djy" secondAttribute="bottom" constant="16" id="pRL-dN-THt"/>
                             <constraint firstItem="t2r-7e-jNo" firstAttribute="trailing" secondItem="6Ka-HY-djy" secondAttribute="trailing" constant="16" id="vbL-u9-2MH"/>
                         </constraints>
