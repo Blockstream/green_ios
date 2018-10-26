@@ -8,27 +8,93 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
     var textFields: Array<UITextField> = []
     var box:UIView = UIView()
     var constraint: NSLayoutConstraint? = nil
+    var isKeyboardShown = false
+    var suggestionView = UIView()
+    var suggestion1 = UILabel()
+    var suggestion2 = UILabel()
+    var suggestion3 = UILabel()
+    lazy var labels = [suggestion1, suggestion2, suggestion3]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         createUI()
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         hideKeyboardWhenTappedAround()
         topLabel.text = NSLocalizedString("id_enter_your_wallet_recovery_seed", comment: "")
         doneButton.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
+        createSuggestionView()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        //doneButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         doneButton.backgroundColor = UIColor.customTitaniumLight()
         doneButton.isUserInteractionEnabled = false
+    }
+
+    func createSuggestionView() {
+        suggestionView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 42)
+        suggestionView.backgroundColor = UIColor.lightGray
+        let separator1 = UIView()
+        separator1.backgroundColor = UIColor.customTitaniumLight()
+        separator1.frame = CGRect(x: suggestionView.frame.width / 3, y: 0, width: 2, height: suggestionView.frame.height)
+        suggestionView.addSubview(separator1)
+        let separator2 = UIView()
+        separator2.backgroundColor = UIColor.customTitaniumLight()
+        separator2.frame = CGRect(x: suggestionView.frame.width*2 / 3, y: 0, width: 2, height: suggestionView.frame.height)
+        suggestionView.addSubview(separator2)
+
+        suggestion1.frame = CGRect(x: 0, y: 0, width: suggestionView.frame.width / 3, height: suggestionView.frame.height)
+        suggestion2.frame = CGRect(x: suggestionView.frame.width / 3, y: 0, width: suggestionView.frame.width / 3, height: suggestionView.frame.height)
+        suggestion3.frame = CGRect(x: suggestionView.frame.width * 2 / 3, y: 0, width: suggestionView.frame.width / 3, height: suggestionView.frame.height)
+
+        suggestion1.textAlignment = .center
+        suggestion2.textAlignment = .center
+        suggestion3.textAlignment = .center
+
+        suggestionView.addSubview(suggestion1)
+        suggestionView.addSubview(suggestion2)
+        suggestionView.addSubview(suggestion3)
+
+        suggestion1.textColor = UIColor.white
+        suggestion2.textColor = UIColor.white
+        suggestion3.textColor = UIColor.white
+
+        suggestion1.isUserInteractionEnabled = true
+        suggestion2.isUserInteractionEnabled = true
+        suggestion3.isUserInteractionEnabled = true
+
+        let tap1 = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped))
+        let tap2 = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped))
+        let tap3 = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped))
+
+        suggestion1.addGestureRecognizer(tap1)
+        suggestion2.addGestureRecognizer(tap2)
+        suggestion3.addGestureRecognizer(tap3)
+
+        suggestionView.isHidden = true
+        self.view.addSubview(suggestionView)
+    }
+
+    @objc func suggestionTapped(sender:UITapGestureRecognizer) {
+        let label = sender.view as! UILabel
+        print(label.text)
+        for index in 0..<textFields.count {
+            let textField = textFields[index]
+            if textField.isFirstResponder {
+                textField.text = label.text
+                if(index < textFields.count - 1) {
+                    let next = textFields[index+1]
+                    next.becomeFirstResponder()
+                }
+                break
+            }
+        }
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
@@ -44,8 +110,34 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         return result.lowercased()
     }
 
+    func updateSuggestions(prefix: String) {
+        if let suggestions = Bip39helper.shared.searchForBIP39Words(prefix: prefix) {
+            if (suggestions.count > 0) {
+                for index in 0..<suggestions.count {
+                    if(index == 3) {
+                        break
+                    } else if (index == suggestions.count-1) {
+                        for kindex in index..<3 {
+                            labels[kindex].text = ""
+                        }
+                    }
+                    labels[index].text = suggestions[index]
+                }
+                suggestionView.isHidden = false
+            } else {
+                suggestionView.isHidden = true
+            }
+        } else {
+            suggestionView.isHidden = true
+        }
+    }
+
     @objc func textFieldDidChange(_ textField: UITextField) {
-        print(textField.text)
+        if((textField.text?.count)! > 0) {
+            updateSuggestions(prefix: textField.text!)
+        } else {
+            suggestionView.isHidden = true
+        }
         for field in textFields {
             if(field.text == nil || field.text == "") {
                 return
@@ -78,20 +170,29 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            //box.frame.origin.y = self.view.frame.height - keyboardSize.height - box.frame.height
-          /*  view.removeConstraint(constraint!)
-            let viewheight = self.view.frame.height
-            let keyheight = keyboardSize.height
-            let boxh = box.frame.height
-            print("viewh = ", viewheight, " keyHeight = ", keyheight, " boxh = ", boxh)
-            constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -keyboardSize.height)
-            constraint?.isActive = true*/
+        if(isKeyboardShown) {
+            return
+        }
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            var frame = suggestionView.frame
+            frame.origin.y = self.view.frame.height - keyboardSize.height - 42
+            suggestionView.frame = frame
+            suggestionView.layoutIfNeeded()
+            isKeyboardShown = true
+            print("showing keyboard")
         }
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+        if(!isKeyboardShown) {
+            return
+        }
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            var frame = suggestionView.frame
+            frame.origin.y = self.view.frame.height
+            suggestionView.frame = frame
+            isKeyboardShown = false
+            print("hiding keyboard")
 
         }
     }
