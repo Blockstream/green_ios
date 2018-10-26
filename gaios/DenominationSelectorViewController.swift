@@ -12,7 +12,7 @@ class DenominationSelectorViewController : UIViewController, UITableViewDelegate
         tableView.dataSource = self
         tableView.delegate = self
         tableView.tableFooterView = UIView()
-        topLabel.text = NSLocalizedString("pdenomination", comment: "")
+        topLabel.text = NSLocalizedString("id_denomination", comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

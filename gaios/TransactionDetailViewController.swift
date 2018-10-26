@@ -38,18 +38,18 @@ class TransactionDetailViewController: UIViewController {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
         } else if (AccountStore.shared.getBlockheight() - (transaction?.blockheight)! < 6) {
             let blocks = AccountStore.shared.getBlockheight() - (transaction?.blockheight)! + 1
-            let localizedConfirmed = NSLocalizedString("pblocks_confirmed", comment: "")
+            let localizedConfirmed = NSLocalizedString("id_blocks_confirmed", comment: "")
             warniniglabel.text = String(format: "(%d/6) %@", blocks, localizedConfirmed)
         } else {
             warniniglabel.isHidden = true
         }
-        titlelabel.text = NSLocalizedString("ptransaction_details", comment: "")
-        hashTitle.text = NSLocalizedString("phash", comment: "")
-        dateTitle.text = NSLocalizedString("pdate", comment: "")
-        feeTitle.text = NSLocalizedString("pfee", comment: "")
-        amountTitle.text = NSLocalizedString("pamount", comment: "")
-        memoTitle.text = NSLocalizedString("pmemo", comment: "")
-        feeButton.setTitle(NSLocalizedString("pincrease_fee", comment: ""), for: .normal)
+        titlelabel.text = NSLocalizedString("id_transaction_details", comment: "")
+        hashTitle.text = NSLocalizedString("id_hash", comment: "")
+        dateTitle.text = NSLocalizedString("id_date", comment: "")
+        feeTitle.text = NSLocalizedString("id_fee", comment: "")
+        amountTitle.text = NSLocalizedString("id_amount", comment: "")
+        memoTitle.text = NSLocalizedString("id_memo", comment: "")
+        feeButton.setTitle(NSLocalizedString("id_increase_fee", comment: ""), for: .normal)
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {

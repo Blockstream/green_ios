@@ -15,8 +15,8 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
         NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         textField.attributedPlaceholder = NSAttributedString(string: "email@domainm.com",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        getCodeButton.setTitle(NSLocalizedString("pget_code", comment: ""), for: .normal)
-        titleLabel.text = NSLocalizedString("penter_your_email_address", comment: "")
+        getCodeButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("id_enter_your_email_address", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

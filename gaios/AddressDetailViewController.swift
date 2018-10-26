@@ -12,7 +12,7 @@ class AddressDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = NSLocalizedString("paddress", comment: "")
+        titleLabel.text = NSLocalizedString("id_address", comment: "")
         receiveAddressLabel.text = wallet?.address
         updateQRCode()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))

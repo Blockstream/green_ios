@@ -12,15 +12,15 @@ class EditScreenLockSettings: UIViewController {
         super.viewDidLoad()
         if(self.bioID.canEvaluatePolicy()) {
             if(self.bioID.biometricType() == BiometricType.faceID) {
-                bioAuthLabel.text = NSLocalizedString("pface_id", comment: "")
+                bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
             } else if (self.bioID.biometricType() == BiometricType.touchID) {
-                bioAuthLabel.text = NSLocalizedString("pface_id", comment: "")
+                bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
             }
         } else {
-            bioAuthLabel.text = NSLocalizedString("ptouchface_id_not_available", comment: "")
+            bioAuthLabel.text = NSLocalizedString("id_touchface_id_not_available", comment: "")
             bioSwitch.isUserInteractionEnabled = false
         }
-        titleLabel.text = NSLocalizedString("pscreen_lock", comment: "")
+        titleLabel.text = NSLocalizedString("id_screen_lock", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {

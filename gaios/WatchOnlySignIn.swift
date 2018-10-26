@@ -15,10 +15,10 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        rememberTitle.text = NSLocalizedString("premember_username", comment: "")
-        forgotButton.setTitle(NSLocalizedString("pi_forgot_my_password", comment: ""), for: .normal)
-        loginButton.setTitle(NSLocalizedString("plog_in", comment: ""), for: .normal)
-        titlelabel.text = NSLocalizedString("plog_in_to_receive_funds", comment: "")
+        rememberTitle.text = NSLocalizedString("id_remember_username", comment: "")
+        forgotButton.setTitle(NSLocalizedString("id_i_forgot_my_password", comment: ""), for: .normal)
+        loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
+        titlelabel.text = NSLocalizedString("id_log_in_to_receive_funds__check", comment: "")
         usernameTextField.attributedPlaceholder = NSAttributedString(string: "Username",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         passwordTextField.attributedPlaceholder = NSAttributedString(string: "Password",
@@ -32,7 +32,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
 
     @IBAction func loginButtonClicked(_ sender: Any) {
         let size = CGSize(width: 30, height: 30)
-        let message = NSLocalizedString("plogging_in_please_wait", comment: "")
+        let message = NSLocalizedString("id_logging_in_please_wait", comment: "")
         startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
 
         let username = usernameTextField.text
@@ -49,7 +49,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
             }
         }.catch { error in
             DispatchQueue.main.async{
-                let message = NSLocalizedString("plogin_failed", comment: "")
+                let message = NSLocalizedString("id_login_failed", comment: "")
                 NVActivityIndicatorPresenter.sharedInstance.setMessage(message)
             }
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
@@ -60,7 +60,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
 
     @IBAction func forgotMyPasswordClicked(_ sender: Any) {
         DispatchQueue.main.async{
-            let message = NSLocalizedString("plog_in_using_seed", comment: "")
+            let message = NSLocalizedString("id_log_in_using_seed", comment: "")
             let size = CGSize(width: 30, height: 30)
             self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
         }

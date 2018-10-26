@@ -11,11 +11,11 @@ class InstructionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = NSLocalizedString("psave_your_recovery_seed", comment: "")
-        topLabel.text = NSLocalizedString("pwrite_down_your_seed_words_on", comment: "")
-        middleLabel.text = NSLocalizedString("pdont_store_your_seed_in_email", comment: "")
-        bottomLabel.text = NSLocalizedString("pdont_take_screenshots_of_your", comment: "")
-        nextButton.setTitle(NSLocalizedString("pnext", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("id_save_your_recovery_seed", comment: "")
+        topLabel.text = NSLocalizedString("id_write_down_your_seed_words_on", comment: "")
+        middleLabel.text = NSLocalizedString("id_dont_store_your_seed_in_email", comment: "")
+        bottomLabel.text = NSLocalizedString("id_dont_take_screenshots_of_your", comment: "")
+        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

@@ -14,7 +14,7 @@ class WatchOnlySettings: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad() {
         super.viewDidLoad()
         warningLabel.isHidden = true
-        topLabel.text = NSLocalizedString("pset_watch_only", comment: "")
+        topLabel.text = NSLocalizedString("id_set_watchonly", comment: "")
         usernameTextField.attributedPlaceholder = NSAttributedString(string: "Username",
                                                                      attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         passwordTextField.attributedPlaceholder = NSAttributedString(string: "Password",
@@ -23,8 +23,8 @@ class WatchOnlySettings: UIViewController, NVActivityIndicatorViewable {
         passwordTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: passwordTextField.frame.height))
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
-        saveButton.setTitle(NSLocalizedString("psave", comment: ""), for: .normal)
-        warningLabel.text = NSLocalizedString("pwarning_password_must_be", comment: "")
+        saveButton.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+        warningLabel.text = NSLocalizedString("id_warning_password_must_be_at", comment: "")
         hideKeyboardWhenTappedAround()
     }
 
@@ -52,14 +52,14 @@ class WatchOnlySettings: UIViewController, NVActivityIndicatorViewable {
         }.done {
             self.hideWarning()
             let size = CGSize(width: 30, height: 30)
-            let message = NSLocalizedString("pdone", comment: "")
+            let message = NSLocalizedString("id_done", comment: "")
             self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                 self.stopAnimating()
             }
         }.catch { error in
             let size = CGSize(width: 30, height: 30)
-            let message = NSLocalizedString("psomething_went_wrong", comment: "")
+            let message = NSLocalizedString("id_something_went_wrong", comment: "")
             self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                 self.stopAnimating()

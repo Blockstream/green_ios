@@ -38,10 +38,10 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         textView.delegate = self
         textView.text = "Add a note..."
         textView.textColor = UIColor.customTitaniumLight()
-        sendingTitle.text = NSLocalizedString("psending", comment: "")
-        fromTitle.text = NSLocalizedString("pfrom", comment: "")
-        toTitle.text = NSLocalizedString("pto", comment: "")
-        myNotesTitle.text = NSLocalizedString("pmy_notes", comment: "")
+        sendingTitle.text = NSLocalizedString("id_sending", comment: "")
+        fromTitle.text = NSLocalizedString("id_from", comment: "")
+        toTitle.text = NSLocalizedString("id_to", comment: "")
+        myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
     }
 
     override func viewDidAppear(_ animated: Bool) {

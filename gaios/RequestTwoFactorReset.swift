@@ -14,10 +14,10 @@ class RequestTwoFactorReset : UIViewController {
         emailTextField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         hideKeyboardWhenTappedAround()
-        titleLabel.text = NSLocalizedString("prequest_two_factor_reset", comment: "")
-        emailLabel.text = NSLocalizedString("penter_new_email", comment: "")
-        warningLabel.text = NSLocalizedString("pwarning_resetting_two_factor", comment: "")
-        requestButton.setTitle(NSLocalizedString("prequest", comment: ""), for: .normal)
+        titleLabel.text = NSLocalizedString("id_request_twofactor_reset", comment: "")
+        emailLabel.text = NSLocalizedString("id_enter_new_email", comment: "")
+        warningLabel.text = NSLocalizedString("id_warning_resetting_twofactor", comment: "")
+        requestButton.setTitle(NSLocalizedString("id_request", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

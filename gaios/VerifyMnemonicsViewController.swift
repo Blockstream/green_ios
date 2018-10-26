@@ -106,7 +106,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func updateLabels() {
-        let localized = NSLocalizedString("pwhat_is_the_word_at_position", comment: "")
+        let localized = NSLocalizedString("id_what_is_the_word_at_position", comment: "")
         topLabel.text = String(format: "%@ %d ?",localized, questionPosition + 1)
     }
 
@@ -176,7 +176,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
             }
         } else {
             let size = CGSize(width: 30, height: 30)
-            let message = NSLocalizedString("pwrong_answer_try_again", comment: "")
+            let message = NSLocalizedString("id_wrong_answer_try_again", comment: "")
             startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
                 self.stopAnimating()

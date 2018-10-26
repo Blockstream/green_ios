@@ -12,8 +12,8 @@ class NotificationStore {
     var localNotification: [String: NotificationItem] = [String: NotificationItem]()
     var allNotifications: [String: NotificationItem] = [String: NotificationItem]()
     var newNotificationCount = 0
-    let warrningNoTwoFactor = NSLocalizedString("pyou_dont_have_two_factor", comment: "")
-    let warrningOneTwoFactor = NSLocalizedString("pyou_only_have_one_two_factor", comment: "")
+    let warrningNoTwoFactor = NSLocalizedString("id_you_dont_have_twofactor", comment: "")
+    let warrningOneTwoFactor = NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
 
     func getTransactions() {
         AccountStore.shared.getWallets(cached: true).done { (wallets: Array<WalletItem>) in
@@ -124,15 +124,15 @@ class NotificationStore {
 
     func createWelcomeNotification() -> NotificationItem {
         let date = Date()
-        let localizedTitle = NSLocalizedString("pwelcome", comment: "")
-        let localizedMessage = NSLocalizedString("pthank_you_for_downloading_green", comment: "")
+        let localizedTitle = NSLocalizedString("id_welcome", comment: "")
+        let localizedMessage = NSLocalizedString("id_thank_you_for_downloading_green", comment: "")
         return NotificationItem(date: date, title: localizedTitle, text: localizedMessage, id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
     }
 
     func createWarningNotification() -> NotificationItem? {
         let date = Date()
         let twoFactorSettings = SettingsStore.shared.getTwoFactorWarning()
-        let localizedWarning = NSLocalizedString("pwarning", comment: "")
+        let localizedWarning = NSLocalizedString("id_warning", comment: "")
         if (!AccountStore.shared.isTwoFactorEnabled() && twoFactorSettings.0) {
             return NotificationItem(date: date, title: localizedWarning, text: warrningNoTwoFactor, id: "warninghash1", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
         } else if (AccountStore.shared.twoFactorsEnabledCount() == 1 &&  twoFactorSettings.1) {
@@ -172,12 +172,12 @@ class NotificationStore {
         var bodyText = ""
         let amountText = String.satoshiToBTC(satoshi: abs(amount))
         if(type != "outgoing") {
-            title = NSLocalizedString("pdeposit", comment: "")
-            let localized = NSLocalizedString("pyou_have_received_s_btc", comment: "")
+            title = NSLocalizedString("id_deposit", comment: "")
+            let localized = NSLocalizedString("id_you_have_received_s_btc", comment: "")
             bodyText = String(format: localized, amountText)
         } else {
-            title = NSLocalizedString("pconfirmation", comment: "")
-            let localized = NSLocalizedString("pyour__s_btc_sent_to_s_has_been", comment: "")
+            title = NSLocalizedString("id_confirmation", comment: "")
+            let localized = NSLocalizedString("id_your_s_btc_sent_to_s_has_been", comment: "")
             bodyText = String(format: localized, amountText, counterparty)
         }
 
