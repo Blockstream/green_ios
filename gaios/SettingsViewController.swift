@@ -23,6 +23,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         wrap {
             try getSession().disconnect()
         }.done {
+            getAppDelegate().connect()
             self.performSegue(withIdentifier: "logout", sender: nil)
         }.catch { error in
             print("problem while logging out")
@@ -141,6 +142,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? ToggleSettingsViewController {
             nextController.settings = sender as? SettingsItem
+        }
+        if let nextController = segue.destination as? PinLoginViewController {
+            nextController.loginMode = true
         }
     }
 
