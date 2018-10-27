@@ -35,7 +35,7 @@ def rpc(name, params, host='localhost', port='19001'):
     request = __get_rpc_request(name)
     request['params'] = params
     return rpc_raw(request, host, port)
-    
+
 def generate(blocks):
     if not isinstance(blocks, list):
         blocks = [blocks]

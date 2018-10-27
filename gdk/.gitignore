@@ -20,3 +20,4 @@ Package.resolved
 docs/source/session.rst
 docs/build
 .pytest_cache/
+*.pyc

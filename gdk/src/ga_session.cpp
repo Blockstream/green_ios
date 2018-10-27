@@ -705,7 +705,8 @@ namespace sdk {
         m_subscriptions.emplace_back(subscribe("com.greenaddress.fee_estimates",
             [this](const autobahn::wamp_event& event) { on_new_fees(set_fee_estimates(get_fees_as_json(event))); }));
 
-        if (m_login_data.value("segwit_server", true) && !m_login_data["appearance"].value("use_segwit", false)) {
+        if (m_login_data.value("segwit_server", true)
+            && !json_get_value(m_login_data["appearance"], "use_segwit", false)) {
             // Enable segwit
             m_login_data["appearance"]["use_segwit"] = true;
 
@@ -995,18 +996,8 @@ namespace sdk {
 
     void ga_session::change_settings_limits(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
-        const bool is_fiat = details.at("is_fiat").get<bool>();
-        GA_SDK_RUNTIME_ASSERT(is_fiat == (details.find("fiat") != details.end()));
-
-        nlohmann::json args = { { "is_fiat", is_fiat }, { "per_tx", 0 } };
-        if (is_fiat) {
-            args["total"] = amount::get_fiat_cents(details["fiat"]);
-        } else {
-            args["total"] = convert_amount(details)["satoshi"];
-        }
-
-        change_settings("tx_limits", as_messagepack(args).get(), twofactor_data);
-        update_spending_limits(args);
+        change_settings("tx_limits", as_messagepack(details).get(), twofactor_data);
+        update_spending_limits(details);
     }
 
     void ga_session::change_settings_pricing_source(const std::string& currency, const std::string& exchange)
@@ -1277,8 +1268,6 @@ namespace sdk {
         // it can't be determined from the private_key format
         GA_SDK_RUNTIME_ASSERT(unused == 0);
 
-        (void)password;
-
         // FIXME: Issue 60:
         // Convert the private key string to a scriptpubkey, sha256 it into script_hash.
         // cleanup_utxos may need updating to handle the returned format and make it
@@ -1287,11 +1276,10 @@ namespace sdk {
         // create_transaction should then be augmented so it can build a correct sweep tx
         // when given the resulting utxos.
         // TODO: bip38
+        std::vector<unsigned char> private_key_bytes;
         bool compressed;
-        const auto private_key_bytes
-            = wif_to_private_key_bytes(private_key, m_net_params.main_net() ? 0x80 : 0xef, compressed);
-        auto public_key_bytes
-            = ec_public_key_from_private_key(gsl::make_span(private_key_bytes).subspan(1).first(EC_PRIVATE_KEY_LEN));
+        std::tie(private_key_bytes, compressed) = to_private_key_bytes(private_key, password, m_net_params.main_net());
+        auto public_key_bytes = ec_public_key_from_private_key(gsl::make_span(private_key_bytes));
         if (!compressed) {
             public_key_bytes = ec_public_key_decompress(public_key_bytes);
         }
@@ -1363,10 +1351,10 @@ namespace sdk {
 
         if (!is_watch_only()) {
             // Compute the address locally to verify the servers data
-            const auto user_script
-                = output_script(*m_ga_pubkeys, *m_user_pubkeys, *m_recovery_pubkeys, subaccount, address);
-            const auto user_address = get_address_from_script(m_net_params, user_script, addr_type);
+            const auto script = output_script(*m_ga_pubkeys, *m_user_pubkeys, *m_recovery_pubkeys, address);
+            const auto user_address = get_address_from_script(m_net_params, script, addr_type);
             GA_SDK_RUNTIME_ASSERT(server_address == user_address);
+            address["prevout_script"] = script;
         }
 
         address["address"] = server_address;
@@ -1745,7 +1733,7 @@ namespace sdk {
     {
         bool r;
         wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
-            "com.greenaddress.login.send_nlocktime");
+            "com.greenaddress.txs.send_nlocktime");
         GA_SDK_RUNTIME_ASSERT(r);
     }
 

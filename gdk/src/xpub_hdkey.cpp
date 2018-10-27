@@ -101,6 +101,15 @@ namespace sdk {
         add_subaccount(0, m_xpub);
     }
 
+    std::vector<uint32_t> ga_user_pubkeys::get_full_path(uint32_t subaccount, uint32_t pointer)
+    {
+        if (subaccount) {
+            return std::vector<uint32_t>({ harden(3), harden(subaccount), 1, pointer });
+        } else {
+            return std::vector<uint32_t>({ 1, pointer });
+        }
+    }
+
     bool ga_user_pubkeys::have_subaccount(uint32_t subaccount)
     {
         return m_subaccounts.find(subaccount) != m_subaccounts.end();

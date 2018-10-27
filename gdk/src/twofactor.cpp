@@ -294,10 +294,21 @@ GA_sign_transaction_call::GA_sign_transaction_call(
     // We need the inputs, augmented with types, scripts and paths
     const auto signing_inputs = ga::sdk::get_ga_signing_inputs(tx_details);
     std::set<std::string> addr_types;
-    for (const auto input : signing_inputs) {
+    nlohmann::json prev_txs;
+    for (const auto& input : signing_inputs) {
         const auto& addr_type = input.at("address_type");
         GA_SDK_RUNTIME_ASSERT(!addr_type.empty()); // Must be spendable by us
         addr_types.insert(addr_type.get<std::string>());
+
+        const ga::sdk::script_type utxo_script_type = input.at("script_type");
+        if (utxo_script_type != ga::sdk::script_type::p2sh_p2wsh_fortified_out
+            && utxo_script_type != ga::sdk::script_type::p2sh_p2wsh_csv_fortified_out) {
+            // Not a segwit script type, so fetch the previous tx
+            const std::string txhash = input.at("txhash");
+            if (prev_txs.find(txhash) == prev_txs.end()) {
+                prev_txs[txhash] = session.get_transaction_details(txhash)["transaction"];
+            }
+        }
     }
     if (addr_types.find(ga::sdk::address_type::p2pkh) != addr_types.end()) {
         // FIXME: Use the software signer to sign sweep txs
@@ -305,6 +316,7 @@ GA_sign_transaction_call::GA_sign_transaction_call(
     }
     m_twofactor_data["signing_address_types"] = std::vector<std::string>(addr_types.begin(), addr_types.end());
     m_twofactor_data["signing_inputs"] = signing_inputs;
+    m_twofactor_data["signing_transactions"] = prev_txs;
 }
 
 GA_twofactor_call::state_type GA_sign_transaction_call::call_impl()
@@ -435,8 +447,22 @@ GA_change_limits_call::GA_change_limits_call(ga::sdk::session& session, const nl
     , m_limit_details(details)
     , m_is_decrease(m_methods.empty() ? false : m_session.is_spending_limits_decrease(details))
 {
+    // Transform the details json that is passed in into the json that the api expects
+    // The api expects {is_fiat: bool, total: in satoshis, per_tx: not really used}
+    // This function takes a full amount json, e.g. {'BTC': 1234}
+    const bool is_fiat = details.at("is_fiat").get<bool>();
+    GA_SDK_RUNTIME_ASSERT(is_fiat == (details.find("fiat") != details.end()));
+    m_limit_details = { { "is_fiat", is_fiat }, { "per_tx", 0 } };
+    if (is_fiat) {
+        m_limit_details["total"] = ga::sdk::amount::get_fiat_cents(details["fiat"]);
+    } else {
+        m_limit_details["total"] = session.convert_amount(details)["satoshi"];
+    }
+
     if (m_is_decrease) {
         m_state = state_type::make_call; // Limit decreases do not require 2fa
+    } else {
+        m_twofactor_data = m_limit_details;
     }
 }
 
@@ -450,7 +476,7 @@ void GA_change_limits_call::request_code(const std::string& method)
 
 GA_twofactor_call::state_type GA_change_limits_call::call_impl()
 {
-    m_session.change_settings_limits(m_limit_details, m_is_decrease ? nlohmann::json() : m_twofactor_data);
+    m_session.change_settings_limits(m_limit_details, m_twofactor_data);
     return state_type::done;
 }
 

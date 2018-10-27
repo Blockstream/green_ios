@@ -108,6 +108,8 @@ namespace sdk {
         ga_user_pubkeys& operator=(ga_user_pubkeys&&) = default;
         virtual ~ga_user_pubkeys() = default;
 
+        static std::vector<uint32_t> get_full_path(uint32_t subaccount, uint32_t pointer);
+
         bool have_subaccount(uint32_t subaccount);
 
         void add_subaccount(uint32_t subaccount, const xpub_t& xpub);

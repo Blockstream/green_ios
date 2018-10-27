@@ -1,4 +1,6 @@
 from greenaddress import Session, queue, generate_mnemonic, get_random_bytes
+import random
+import string
 import time
 
 MNEMONIC = 'front strategy cry chronic base table divide zero ' \
@@ -8,6 +10,8 @@ MNEMONIC = 'front strategy cry chronic base table divide zero ' \
 MNEMONIC2 = 'simple pledge field ghost museum beyond news slab mistake ' \
             'turn fluid circle concert fluid shock timber emotion cage ' \
             'verb scorpion unknown mammal try fox'
+
+random_email = lambda: '@@' + ''.join(random.choice(string.ascii_letters) for i in range(16))
 
 
 def do_test(network, debug, mnemonic, sa):
@@ -95,25 +99,25 @@ def do_test(network, debug, mnemonic, sa):
             txhash = send_transaction()
 
             # Turn off email 2fa
-            try:
-                session.change_settings_twofactor("email",
-                    {'confirmed': False, 'enabled': False, 'data': "foo@bar.com" }).resolve()
-            except Exception as e:
-                # FIXME: this is a bit broken
-                pass
+            email = random_email()
 
-            # Bump the fee within limits
-            limit = 1e8 * 100 if bump_within_limits else 1
-            limits = { 'is_fiat': False, 'satoshi': limit }
-            session.twofactor_change_limits(limits).resolve()
+            if session.get_twofactor_config()['email']['enabled']:
+                # FIXME: see test_twofacor for why we have to set confirmed False here
+                session.change_settings_twofactor("email",
+                    {'confirmed': False, 'enabled': False, 'data': email }).resolve()
+
+            # Set limis to 1 so that subsequent change limits invokes 2fa
+            session.twofactor_change_limits({ 'is_fiat': False, 'satoshi': 1}).resolve()
 
             # Turn on email 2fa
-            try:
+            if not session.get_twofactor_config()['email']['enabled']:
                 session.change_settings_twofactor("email",
-                    {'confirmed': True, 'enabled': True, 'data': "foo@bar.com" }).resolve()
-            except Exception as e:
-                # Ignore errors due to email already being enabled
-                assert str(e) == "email is already enabled"
+                        {'confirmed': True, 'enabled': True, 'data': email }).resolve()
+
+            # Set limits so that the bump is either within or outside limits
+            limit = 100000000 if bump_within_limits else 1
+            limits = { 'is_fiat': False, 'satoshi': limit }
+            session.twofactor_change_limits(limits).resolve()
 
             # Bump the fee
             txs = session.get_transactions(subaccount, 0)

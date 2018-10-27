@@ -6,6 +6,10 @@ MNEMONIC = 'leopard alien speak merit record sauce stamp never dwarf way ' \
            'prison fan vital arrest bamboo melody wealth spice eyebrow ' \
            'attend volcano public rhythm tortoise'
 
+# tests/tools/create_test_user.py mnemonics
+MNEMONIC = 'cotton slot artwork now grace assume syrup route moment crisp ' \
+           'cargo sock wrap duty craft joy adult typical nut mad way autumn ' \
+           'comic silent'
 
 def throw(unused=None):
     assert False

@@ -127,15 +127,16 @@ namespace sdk {
     }
 
     std::vector<unsigned char> output_script(ga_pubkeys& pubkeys, ga_user_pubkeys& user_pubkeys,
-        ga_user_pubkeys& recovery_pubkeys, uint32_t subaccount, const nlohmann::json& data)
+        ga_user_pubkeys& recovery_pubkeys, const nlohmann::json& utxo)
     {
-        const uint32_t pointer = data.at("pointer");
+        const uint32_t subaccount = json_get_value(utxo, "subaccount", 0u);
+        const uint32_t pointer = utxo.at("pointer");
         script_type type;
 
-        type = data.at("script_type");
+        type = utxo.at("script_type");
         uint32_t subtype = 0;
         if (type == script_type::p2sh_p2wsh_csv_fortified_out)
-            subtype = data.at("subtype");
+            subtype = utxo.at("subtype");
 
         const auto ga_pub_key = pubkeys.derive(subaccount, pointer);
         const auto user_pub_key = user_pubkeys.derive(subaccount, pointer);
@@ -211,13 +212,13 @@ namespace sdk {
         const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi)
     {
         // FIXME: Support OP_RETURN outputs
-        std::vector<unsigned char> output_script;
+        std::vector<unsigned char> script;
         try {
-            output_script = output_script_for_address(net_params, address);
+            script = output_script_for_address(net_params, address);
         } catch (const std::exception& e) {
             throw user_error(res::id_invalid_address);
         }
-        tx_add_raw_output(tx, satoshi, output_script);
+        tx_add_raw_output(tx, satoshi, script);
         return amount(satoshi);
     }
 

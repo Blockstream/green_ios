@@ -1,4 +1,5 @@
 #include "ga_wally.hpp"
+#include "memory.hpp"
 
 namespace ga {
 namespace sdk {
@@ -125,6 +126,22 @@ namespace sdk {
         ext_key* p;
         GA_SDK_VERIFY(::bip32_key_from_seed_alloc(seed.data(), seed.size(), version, flags, &p));
         return wally_ext_key_ptr{ p };
+    }
+
+    // BIP 38
+    std::vector<unsigned char> bip38_raw_to_private_key(byte_span_t priv_key, byte_span_t passphrase, uint32_t flags)
+    {
+        std::vector<unsigned char> private_key(EC_PRIVATE_KEY_LEN);
+        GA_SDK_VERIFY(::bip38_raw_to_private_key(priv_key.data(), priv_key.size(), passphrase.data(), passphrase.size(),
+            flags, private_key.data(), private_key.size()));
+        return private_key;
+    }
+
+    size_t bip38_raw_get_flags(byte_span_t priv_key)
+    {
+        size_t flags;
+        GA_SDK_VERIFY(::bip38_raw_get_flags(priv_key.data(), priv_key.size(), &flags));
+        return flags;
     }
 
     //
@@ -372,17 +389,36 @@ namespace sdk {
     }
 
     // FIXME: move to wally?
-    std::vector<unsigned char> wif_to_private_key_bytes(
-        const std::string& wif_priv_key, unsigned char version, bool& compressed)
-    {
-        const std::vector<unsigned char> priv_key_bytes = base58check_to_bytes(wif_priv_key);
-        GA_SDK_RUNTIME_ASSERT(priv_key_bytes.size() == 33 || priv_key_bytes.size() == 34);
-        GA_SDK_RUNTIME_ASSERT(priv_key_bytes[0] == version);
-        compressed = priv_key_bytes.size() == 34;
-        if (compressed) {
-            GA_SDK_RUNTIME_ASSERT(priv_key_bytes[33] == 0x01);
+    namespace {
+        std::pair<byte_span_t, bool> wif_bytes_to_private_key_bytes(
+            const std::vector<unsigned char>& priv_key, unsigned char version)
+        {
+            GA_SDK_RUNTIME_ASSERT(priv_key.size() == 33 || priv_key.size() == 34);
+            GA_SDK_RUNTIME_ASSERT(priv_key[0] == version);
+            const bool compressed_pub_key = priv_key.size() == 34;
+            if (compressed_pub_key) {
+                GA_SDK_RUNTIME_ASSERT(priv_key[33] == 0x01);
+            }
+            return { gsl::make_span(priv_key).subspan(1).first(EC_PRIVATE_KEY_LEN), compressed_pub_key };
         }
-        return priv_key_bytes;
+    } // namespace
+
+    std::pair<std::vector<unsigned char>, bool> to_private_key_bytes(
+        const std::string& priv_key, const std::string& passphrase, bool mainnet)
+    {
+        auto bytes = base58check_to_bytes(priv_key);
+        if (bytes.size() == 33 || bytes.size() == 34) {
+            // WIF
+            const auto tmp = wif_bytes_to_private_key_bytes(bytes, mainnet ? 0x80 : 0xef);
+            return { std::vector<unsigned char>(tmp.first.cbegin(), tmp.first.cend()), tmp.second };
+        } else {
+            // BIP38
+            const size_t flags = bip38_raw_get_flags(bytes);
+            const bool compressed_pub_key = (flags & BIP38_KEY_COMPRESSED) != 0;
+            return { bip38_raw_to_private_key(gsl::make_span(bytes), ustring_span(passphrase),
+                         flags | (mainnet ? BIP38_KEY_MAINNET : BIP38_KEY_TESTNET)),
+                compressed_pub_key };
+        }
     }
 
     //

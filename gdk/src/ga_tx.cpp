@@ -9,6 +9,7 @@
 #include "include/session.hpp"
 #include "transaction_utils.hpp"
 #include "utils.hpp"
+#include "xpub_hdkey.hpp"
 
 namespace ga {
 namespace sdk {
@@ -22,24 +23,35 @@ namespace sdk {
         static const uint32_t NO_CHANGE_INDEX = -1;
 
         // Add a UTXO to a transaction. Returns the amount added
-        static amount add_utxo(session& session, const wally_tx_ptr& tx, const nlohmann::json& u)
+        static amount add_utxo(session& session, const wally_tx_ptr& tx, nlohmann::json& utxo)
         {
-            const std::string txhash = u["txhash"];
-            const uint32_t index = u["pt_idx"];
+            const std::string txhash = utxo["txhash"];
+            const auto txid = bytes_from_hex_rev(txhash);
+            const uint32_t index = utxo["pt_idx"];
             const uint32_t sequence = session.is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
-            const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
-            const auto type = script_type(u["script_type"]);
+            const auto type = script_type(utxo["script_type"]);
             const bool low_r = session.get_signer().supports_low_r();
             const uint32_t dummy_sig_type = low_r ? WALLY_TX_DUMMY_SIG_LOW_R : WALLY_TX_DUMMY_SIG;
-            const bool external = !json_get_value(u, "private_key").empty();
+            const bool external = !json_get_value(utxo, "private_key").empty();
 
             if (external) {
-                tx_add_raw_input(tx, bytes_from_hex_rev(txhash), index, sequence,
-                    dummy_external_input_script(session.get_signer(), bytes_from_hex(u["public_key"])));
+                tx_add_raw_input(tx, txid, index, sequence,
+                    dummy_external_input_script(session.get_signer(), bytes_from_hex(utxo["public_key"])));
             } else {
-                // TODO: Create correctly sized dummys instead of actual script (faster)
-                const auto prevout_script = output_script(session.get_ga_pubkeys(), session.get_user_pubkeys(),
-                    session.get_recovery_pubkeys(), subaccount, u);
+                // Populate the prevout script if missing so signing can use it later
+                if (utxo.find("prevout_script") == utxo.end()) {
+                    const auto script = output_script(
+                        session.get_ga_pubkeys(), session.get_user_pubkeys(), session.get_recovery_pubkeys(), utxo);
+                    utxo["prevout_script"] = hex_from_bytes(script);
+                }
+                const auto script = bytes_from_hex(utxo["prevout_script"]);
+
+                // Populate the full user path for h/w signing
+                if (utxo.find("user_path") == utxo.end()) {
+                    const uint32_t subaccount = json_get_value(utxo, "subaccount", 0u);
+                    const uint32_t pointer = utxo.at("pointer");
+                    utxo["user_path"] = ga_user_pubkeys::get_full_path(subaccount, pointer);
+                }
 
                 wally_tx_witness_stack_ptr wit;
 
@@ -49,23 +61,22 @@ namespace sdk {
                     tx_witness_stack_add_dummy(wit, WALLY_TX_DUMMY_NULL);
                     tx_witness_stack_add_dummy(wit, dummy_sig_type);
                     tx_witness_stack_add_dummy(wit, dummy_sig_type);
-                    tx_witness_stack_add(wit, prevout_script);
+                    tx_witness_stack_add(wit, script);
                 }
 
-                const auto txid = bytes_from_hex_rev(txhash);
                 if (wit) {
                     tx_add_raw_input(tx, txid, index, sequence, DUMMY_WITNESS_SCRIPT, wit);
                 } else {
-                    tx_add_raw_input(
-                        tx, txid, index, sequence, dummy_input_script(session.get_signer(), prevout_script));
+                    tx_add_raw_input(tx, txid, index, sequence, dummy_input_script(session.get_signer(), script));
                 }
             }
 
-            return amount(u["satoshi"]);
+            return amount(utxo["satoshi"]);
         }
 
         // Check if a tx to bump is present, and if so add the details required to bump it
-        static std::pair<bool, bool> check_bump_tx(session& session, nlohmann::json& result)
+        static std::pair<bool, bool> check_bump_tx(
+            session& session, nlohmann::json& result, uint32_t current_subaccount)
         {
             if (result.find("previous_transaction") == result.end()) {
                 return std::make_pair(false, false);
@@ -83,6 +94,18 @@ namespace sdk {
                 // Transaction is confirmed or marked non-RBF
                 GA_SDK_RUNTIME_ASSERT_MSG(false, "Transaction can not be fee-bumped");
             }
+
+            // You cannot bump a tx from another subaccount, this is a
+            // programming error so assert it rather than returning in "error"
+            bool subaccount_ok = false;
+            for (const auto& io : prev_tx.at(is_rbf ? "inputs" : "outputs")) {
+                const auto subaccount = io.find("subaccount");
+                if (subaccount != io.end() && *subaccount == current_subaccount) {
+                    subaccount_ok = true;
+                    break;
+                }
+            }
+            GA_SDK_RUNTIME_ASSERT(subaccount_ok);
 
             auto tx = tx_from_hex(prev_tx["transaction"]);
             const auto min_fee_rate = session.get_min_fee_rate();
@@ -198,11 +221,11 @@ namespace sdk {
             result["user_signed"] = false;
             result["server_signed"] = false;
 
+            const uint32_t current_subaccount = result.value("subaccount", session.get_current_subaccount());
+
             // Check for RBF/CPFP
             bool is_rbf, is_cpfp;
-            std::tie(is_rbf, is_cpfp) = check_bump_tx(session, result);
-
-            const uint32_t current_subaccount = result.value("subaccount", session.get_current_subaccount());
+            std::tie(is_rbf, is_cpfp) = check_bump_tx(session, result, current_subaccount);
 
             const bool is_redeposit = result.value("is_redeposit", false);
 
@@ -252,7 +275,7 @@ namespace sdk {
                 // Always spend utxos with 1 confirmation, unless we are in testnet.
                 // Even in testnet, if RBFing, require 1 confirmation.
                 const bool main_net = net_params.main_net();
-                const uint32_t num_confs = main_net || is_rbf || is_cpfp ? 1 : 0;
+                const uint32_t num_confs = (main_net || is_rbf || is_cpfp) && !is_sweep ? 1 : 0;
                 result["utxos"] = session.get_unspent_outputs(current_subaccount, num_confs);
             }
 
@@ -280,7 +303,7 @@ namespace sdk {
                 return;
             }
 
-            const auto& utxos = result["utxos"];
+            auto& utxos = result["utxos"];
             const uint32_t current_block_height = session.get_block_height();
             const uint32_t num_extra_utxos = is_rbf ? result["old_used_utxos"].size() : 0;
             wally_tx_ptr tx = tx_init(current_block_height, utxos.size() + num_extra_utxos, addressees.size() + 1);
@@ -304,7 +327,7 @@ namespace sdk {
             if (is_rbf) {
                 // Add all the old utxos. Note we don't add them to used_utxos
                 // since the user can't choose to remove them
-                for (const auto& utxo : result["old_used_utxos"]) {
+                for (auto& utxo : result["old_used_utxos"]) {
                     v = add_utxo(session, tx, utxo);
                     available_total += v;
                     total += v;
@@ -324,7 +347,7 @@ namespace sdk {
             } else {
                 // Collect utxos in order until we have covered the amount to send
                 // FIXME: Better coin selection algorithms (esp. minimum size)
-                for (const auto& utxo : utxos) {
+                for (auto& utxo : utxos) {
                     if (send_all || total < required_total) {
                         v = add_utxo(session, tx, utxo);
                         total += v;
@@ -401,6 +424,7 @@ namespace sdk {
                     uint32_t change_subaccount = result.value("change_subaccount", current_subaccount);
                     // TODO: store change address meta data and pass it to the
                     // server to validate when sending (requires backend support)
+                    // FIXME: Put the whole address here for H/W signing?
                     change_address = session.get_receive_address(change_subaccount)["address"];
                     result["change_subaccount"] = change_subaccount;
                     result["change_address"] = change_address;
@@ -461,36 +485,23 @@ namespace sdk {
         const auto txhash = u["txhash"];
         const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
         const uint32_t pointer = json_get_value(u, "pointer", 0u);
-        const amount::value_type v = u["satoshi"]; // FIXME: Allow amount conversions directly
+        const amount::value_type v = u["satoshi"];
         const amount satoshi{ v };
         const auto type = script_type(u["script_type"]);
         const std::string private_key = json_get_value(u, "private_key");
 
-        const auto prevout_script = !private_key.empty()
-            ? bytes_from_hex(u["prevout_script"])
-            : output_script(
-                  session.get_ga_pubkeys(), session.get_user_pubkeys(), session.get_recovery_pubkeys(), subaccount, u);
+        const auto script = bytes_from_hex(u["prevout_script"]);
 
         const uint32_t flags = is_segwit_script_type(type) ? WALLY_TX_FLAG_USE_WITNESS : 0;
-        const auto tx_hash
-            = tx_get_btc_signature_hash(tx, index, prevout_script, satoshi.value(), WALLY_SIGHASH_ALL, flags);
+        const auto tx_hash = tx_get_btc_signature_hash(tx, index, script, satoshi.value(), WALLY_SIGHASH_ALL, flags);
 
         if (!private_key.empty()) {
             const auto private_key_bytes = bytes_from_hex(private_key);
-            const auto user_sig
-                = ec_sig_from_bytes(gsl::make_span(private_key_bytes).subspan(1).first(EC_PRIVATE_KEY_LEN), tx_hash);
+            const auto user_sig = ec_sig_from_bytes(private_key_bytes, tx_hash);
             tx_set_input_script(
                 tx, index, scriptsig_p2pkh_from_der(bytes_from_hex(u["public_key"]), ec_sig_to_der(user_sig, true)));
         } else {
-            std::vector<uint32_t> path;
-            path.reserve(4);
-            if (subaccount != 0) {
-                path.emplace_back(harden(3));
-                path.emplace_back(harden(subaccount));
-            }
-            path.emplace_back(1u); // BRANCH_REGULAR
-            path.emplace_back(pointer);
-
+            std::vector<uint32_t> path = ga_user_pubkeys::get_full_path(subaccount, pointer);
             const auto user_sig = session.get_signer().sign_hash(path, tx_hash);
 
             if (is_segwit_script_type(type)) {
@@ -499,9 +510,9 @@ namespace sdk {
                 auto wit = tx_witness_stack_init(1);
                 tx_witness_stack_add(wit, ec_sig_to_der(user_sig, true));
                 tx_set_input_witness(tx, index, wit);
-                tx_set_input_script(tx, index, witness_script(prevout_script));
+                tx_set_input_script(tx, index, witness_script(script));
             } else {
-                tx_set_input_script(tx, index, input_script(session.get_signer(), prevout_script, user_sig));
+                tx_set_input_script(tx, index, input_script(session.get_signer(), script, user_sig));
             }
         }
     }

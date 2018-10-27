@@ -105,6 +105,11 @@ namespace sdk {
     wally_ext_key_ptr bip32_key_from_seed_alloc(
         byte_span_t seed, uint32_t version, uint32_t flags = BIP32_FLAG_SKIP_HASH);
 
+    // BIP 38
+    std::vector<unsigned char> bip38_raw_to_private_key(byte_span_t priv_key, byte_span_t passphrase, uint32_t flags);
+
+    size_t bip38_raw_get_flags(byte_span_t priv_key);
+
     //
     // Scripts
     //
@@ -170,8 +175,8 @@ namespace sdk {
 
     std::vector<unsigned char> ec_public_key_decompress(byte_span_t public_key);
 
-    std::vector<unsigned char> wif_to_private_key_bytes(
-        const std::string& wif_priv_key, unsigned char version, bool& compressed);
+    std::pair<std::vector<unsigned char>, bool> to_private_key_bytes(
+        const std::string& priv_key, const std::string& passphrase, bool mainnet);
 
     //
     // Transactions
