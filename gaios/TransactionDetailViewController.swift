@@ -32,9 +32,7 @@ class TransactionDetailViewController: UIViewController {
         dateLabel.text = transaction?.date
         feeButton.isHidden = true
         bottomLabel.isHidden = true
-        if(transaction?.blockheight == 0 && transaction?.type == "outgoing") {
-            feeButton.isHidden = false
-            bottomLabel.isHidden = false
+        if(transaction?.blockheight == 0) {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
         } else if (AccountStore.shared.getBlockheight() - (transaction?.blockheight)! < 6) {
             let blocks = AccountStore.shared.getBlockheight() - (transaction?.blockheight)! + 1
@@ -42,6 +40,10 @@ class TransactionDetailViewController: UIViewController {
             warniniglabel.text = String(format: "(%d/6) %@", blocks, localizedConfirmed)
         } else {
             warniniglabel.isHidden = true
+        }
+        if(transaction?.canRBF)! {
+            feeButton.isHidden = false
+            bottomLabel.isHidden = false
         }
         titlelabel.text = NSLocalizedString("id_transaction_details", comment: "")
         hashTitle.text = NSLocalizedString("id_hash", comment: "")
@@ -53,6 +55,13 @@ class TransactionDetailViewController: UIViewController {
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
+        let increaseFee = self.storyboard?.instantiateViewController(withIdentifier: "increaseFee") as! IncreaseFeeViewController
+        increaseFee.transaction = transaction!
+        increaseFee.providesPresentationContextTransitionStyle = true
+        increaseFee.definesPresentationContext = true
+        increaseFee.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+        increaseFee.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        self.present(increaseFee, animated: true, completion: nil)
     }
 
     func feeText(fee: UInt32, size: UInt32) -> String {
