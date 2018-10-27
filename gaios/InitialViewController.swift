@@ -15,7 +15,7 @@ class InitialViewController: UIViewController, NetworkDelegate {
         super.viewDidLoad()
         Bip39helper.shared.initializeHelper()
         topButton.setTitle(NSLocalizedString("id_create_wallet", comment: ""), for: .normal)
-        restoreWalletbutton.setTitle(NSLocalizedString("id_restore_existing_wallet", comment: ""), for: .normal)
+        restoreWalletbutton.setTitle(NSLocalizedString("id_restore_an_existing_wallet", comment: ""), for: .normal)
         titleLabel.text = NSLocalizedString("id_bitcoins_most_secure_wallet", comment: "")
     }
 
