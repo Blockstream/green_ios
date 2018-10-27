@@ -29,6 +29,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             cell.address.text = item.address
             cell.amount.textColor = UIColor.white
         }
+
         if(item.blockheight == 0) {
             cell.status.text = NSLocalizedString("id_unconfirmed", comment: "")
             cell.status.textColor = UIColor.red
@@ -116,13 +117,13 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
                 let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
                 let adressees = transaction["addressees"] as! [String]
+                let can_rbf = transaction["can_rbf"] as! Bool
                 var counterparty = ""
                 if (adressees.count > 0) {
                     counterparty = adressees[0]
                 }
                 let formatedTransactionDate = Date.dayMonthYear(date: date)
-                //self.items.append(TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, ))
-                let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date)
+                let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date, canRBF: can_rbf, rawTransaction: transaction)
                 self.items.append(item)
             }
             print("success")

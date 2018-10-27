@@ -76,7 +76,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
     }
 }
 
-class TransactionItem: Codable {
+class TransactionItem {
     var timestamp: String
     var address: String
     var amount: String
@@ -90,8 +90,10 @@ class TransactionItem: Codable {
     var size: UInt32
     var memo: String
     var dateRaw: Date
+    var canRBF: Bool
+    var rawTransaction: [String: Any]
 
-    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double, type: String, hash: String, blockheight: UInt32, fee: UInt32, size: UInt32, memo: String, dateRaw: Date) {
+    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double, type: String, hash: String, blockheight: UInt32, fee: UInt32, size: UInt32, memo: String, dateRaw: Date, canRBF: Bool, rawTransaction: [String: Any]) {
         self.timestamp = timestamp
         self.address = address
         self.amount = amount
@@ -105,5 +107,7 @@ class TransactionItem: Codable {
         self.size = size
         self.memo = memo
         self.dateRaw = dateRaw
+        self.canRBF = canRBF
+        self.rawTransaction = rawTransaction
     }
 }
