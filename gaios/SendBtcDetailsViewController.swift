@@ -44,9 +44,13 @@ class SendBtcDetailsViewController: UIViewController {
         priority = SettingsStore.shared.getFeeSettings().0
         updatePriorityButtons()
         if (btcAmount != 0) {
+            if (selectedType == TransactionType.BTC) {
+                amountTextField.text = String(format: "%f", btcAmount)
+            } else {
+                let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
+                amountTextField.text = String(format: "%f", fiat)
+            }
             updateEstimate()
-            let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
-            amountTextField.text = String(format: "%.2f", fiat)
         }
         updateMaxAmountLabel()
         setButton()
