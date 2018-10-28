@@ -174,6 +174,13 @@ class SettingsStore {
         return (noFactor == "true", oneFactor == "true")
     }
 
+    func refreshTwoFactorSettings() {
+        let setting = defaultTwoFactor()
+        allSettings[settingsTwoFactor] = setting
+        loadAllSections()
+        writeSettingsToDisk()
+    }
+
     func setTwoFactorWarning(noFactor: Bool, oneFactor: Bool) {
         let enabledText = noFactor || oneFactor ? "Enabled" : "Disabled"
         let noFactorText = noFactor ? "true" : "false"
@@ -298,7 +305,13 @@ class SettingsStore {
     }
 
     func defaultTwoFactor() -> SettingsItem {
-        return SettingsItem(settingsName: settingsTwoFactor, property:[String : String](), text: securityTwoFactor, secondaryText: "None")
+        let methodCount = AccountStore.shared.isTwoFactorEnabled()
+        if (!methodCount) {
+            return SettingsItem(settingsName: settingsTwoFactor, property:[String : String](), text: securityTwoFactor, secondaryText: "None")
+
+        } else {
+            return SettingsItem(settingsName: settingsTwoFactor, property:[String : String](), text: securityTwoFactor, secondaryText: "Enabled")
+        }
     }
 
     func defaultSupport() -> SettingsItem {
@@ -344,13 +357,7 @@ class SettingsStore {
         var securitySettings = Array<SettingsItem>()
         let recovery = allSettings[settingsRecovery] == nil ? defaultRecoverySeed() : allSettings[settingsRecovery]
         let screenLock = allSettings[settingsScreenLock] == nil ? defaultScreenLock() : allSettings[settingsScreenLock]
-
-        var twoFactor: SettingsItem? = nil
-        if(AccountStore.shared.isTwoFactorEnabled()) {
-            twoFactor = SettingsItem(settingsName: settingsTwoFactor, property:[String : String](), text: securityTwoFactor, secondaryText: "Enabled")
-        } else {
-            twoFactor = defaultTwoFactor()
-        }
+        let twoFactor = defaultTwoFactor()
         let twoFactorWarning = allSettings[settingsTwoFactorWarning] == nil ? defaultTwoFactorWarning() : allSettings[settingsTwoFactorWarning]
         let twoFactorLimit = allSettings[settingsTwoFactorLimit] == nil ? defaultTwoFactorLimit() : allSettings[settingsTwoFactorLimit]
         let twoFactorReset = defaultTwoFactorReset()
@@ -359,7 +366,7 @@ class SettingsStore {
 
         securitySettings.append(recovery!)
         securitySettings.append(screenLock!)
-        securitySettings.append(twoFactor!)
+        securitySettings.append(twoFactor)
         securitySettings.append(twoFactorWarning!)
         securitySettings.append(twoFactorLimit!)
         securitySettings.append(twoFactorReset)

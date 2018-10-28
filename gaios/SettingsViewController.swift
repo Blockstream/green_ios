@@ -34,6 +34,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         pager?.showButtons()
+        SettingsStore.shared.refreshTwoFactorSettings()
         sections = SettingsStore.shared.getAllSections()
         tableView.reloadData()
     }
