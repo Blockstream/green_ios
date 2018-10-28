@@ -7,6 +7,7 @@
 #include "ga_strings.hpp"
 #include "ga_tx.hpp"
 #include "ga_wally.hpp"
+#include "logging.hpp"
 #include "transaction_utils.hpp"
 #include "twofactor_calls.hpp"
 #include "xpub_hdkey.hpp"
@@ -65,6 +66,7 @@ GA_twofactor_call::GA_twofactor_call(
 
 void GA_twofactor_call::set_error(const std::string& error_message)
 {
+    GDK_LOG_SEV(log_level::debug) << m_action << " call exception: " << error_message;
     m_state = state_type::error;
     m_error = error_message;
 }
@@ -128,6 +130,9 @@ void GA_twofactor_call::operator()()
             set_error(error_message.empty() ? std::string(e.what()) : error_message);
             m_state = state_type::error;
         }
+    } catch (const std::exception& e) {
+        set_error(m_action + std::string(" exception:") + e.what());
+        m_state = state_type::error;
     }
 }
 

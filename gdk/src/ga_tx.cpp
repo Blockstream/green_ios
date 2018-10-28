@@ -25,18 +25,18 @@ namespace sdk {
         // Add a UTXO to a transaction. Returns the amount added
         static amount add_utxo(session& session, const wally_tx_ptr& tx, nlohmann::json& utxo)
         {
-            const std::string txhash = utxo["txhash"];
+            const std::string txhash = utxo.at("txhash");
             const auto txid = bytes_from_hex_rev(txhash);
-            const uint32_t index = utxo["pt_idx"];
+            const uint32_t index = utxo.at("pt_idx");
             const uint32_t sequence = session.is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
-            const auto type = script_type(utxo["script_type"]);
+            const auto type = script_type(utxo.at("script_type"));
             const bool low_r = session.get_signer().supports_low_r();
             const uint32_t dummy_sig_type = low_r ? WALLY_TX_DUMMY_SIG_LOW_R : WALLY_TX_DUMMY_SIG;
             const bool external = !json_get_value(utxo, "private_key").empty();
 
             if (external) {
                 tx_add_raw_input(tx, txid, index, sequence,
-                    dummy_external_input_script(session.get_signer(), bytes_from_hex(utxo["public_key"])));
+                    dummy_external_input_script(session.get_signer(), bytes_from_hex(utxo.at("public_key"))));
             } else {
                 // Populate the prevout script if missing so signing can use it later
                 if (utxo.find("prevout_script") == utxo.end()) {
@@ -71,7 +71,7 @@ namespace sdk {
                 }
             }
 
-            return amount(utxo["satoshi"]);
+            return amount(utxo.at("satoshi"));
         }
 
         // Check if a tx to bump is present, and if so add the details required to bump it
@@ -107,11 +107,11 @@ namespace sdk {
             }
             GA_SDK_RUNTIME_ASSERT(subaccount_ok);
 
-            auto tx = tx_from_hex(prev_tx["transaction"]);
+            auto tx = tx_from_hex(prev_tx.at("transaction"));
             const auto min_fee_rate = session.get_min_fee_rate();
 
             // Store the old fee to determine the fee increment
-            const amount old_fee = amount(prev_tx["fee"]);
+            const amount old_fee = amount(prev_tx.at("fee"));
             result["old_fee"] = old_fee.value();
 
             if (is_rbf) {
@@ -129,7 +129,7 @@ namespace sdk {
                 // the network fee to the new transactions fee increases
                 // the overall fee rate of the pair to the desired rate,
                 // so that miners are incentivized to mine both together).
-                const amount new_fee_rate = amount(result["fee_rate"]);
+                const amount new_fee_rate = amount(result.at("fee_rate"));
                 const auto new_fee = get_tx_fee(tx, min_fee_rate, new_fee_rate);
                 const amount network_fee = new_fee <= old_fee ? amount() : new_fee;
                 result["network_fee"] = network_fee.value();
@@ -138,17 +138,17 @@ namespace sdk {
             if (is_rbf) {
                 // Compute addressees and any change details from the old tx
                 std::vector<nlohmann::json> addressees;
-                addressees.reserve(prev_tx["outputs"].size());
+                addressees.reserve(prev_tx.at("outputs").size());
                 uint32_t i = 0, change_index = NO_CHANGE_INDEX;
                 for (const auto& output : prev_tx["outputs"]) {
                     if (output.value("is_relevant", false) && change_index == NO_CHANGE_INDEX) {
                         // Change output. If there is already one we treat it as a regular output
                         change_index = i;
-                        result["change_address"] = output["address"];
-                        result["change_subaccount"] = output["subaccount"];
+                        result["change_address"] = output.at("address");
+                        result["change_subaccount"] = output.at("subaccount");
                     } else {
-                        addressees.emplace_back(
-                            nlohmann::json({ { "address", output["address"] }, { "satoshi", output["satoshi"] } }));
+                        addressees.emplace_back(nlohmann::json(
+                            { { "address", output.at("address") }, { "satoshi", output.at("satoshi") } }));
                     }
                     ++i;
                 }
@@ -158,7 +158,7 @@ namespace sdk {
                 if (change_index == NO_CHANGE_INDEX) {
                     // FIXME: When the server supports multiple subaccount sends, this
                     // will need to change to something smarter
-                    const uint32_t subaccount = prev_tx["subaccount"];
+                    const uint32_t subaccount = prev_tx.at("subaccount");
                     result["subaccount"] = subaccount;
                     result["change_subaccount"] = subaccount;
                 }
@@ -166,11 +166,11 @@ namespace sdk {
                 if (result.find("old_used_utxos") == result.end()) {
                     // Create 'fake' utxos for the existing inputs
                     std::map<uint32_t, nlohmann::json> used_utxos_map;
-                    for (const auto& input : prev_tx["inputs"]) {
+                    for (const auto& input : prev_tx.at("inputs")) {
                         GA_SDK_RUNTIME_ASSERT(input.value("is_relevant", false));
                         nlohmann::json utxo(input);
                         // Note pt_idx on endpoints is the index within the tx, not the previous tx!
-                        const uint32_t i = input["pt_idx"];
+                        const uint32_t i = input.at("pt_idx");
                         GA_SDK_RUNTIME_ASSERT(i < tx->num_inputs);
                         std::reverse(&tx->inputs[i].txhash[0], &tx->inputs[i].txhash[0] + WALLY_TXHASH_LEN);
                         utxo["txhash"] = hex_from_bytes(tx->inputs[i].txhash);
@@ -199,11 +199,11 @@ namespace sdk {
                 if (result.find("utxos") == result.end()) {
                     // Add a single output from the old tx as our new tx input
                     std::vector<nlohmann::json> utxos;
-                    for (const auto& output : prev_tx["outputs"]) {
+                    for (const auto& output : prev_tx.at("outputs")) {
                         if (output.value("is_relevant", false)) {
                             // First output paying to us, use it as the new tx input
                             nlohmann::json utxo(output);
-                            utxo["txhash"] = prev_tx["txhash"];
+                            utxo["txhash"] = prev_tx.at("txhash");
                             utxos.emplace_back(utxo);
                             break;
                         }
@@ -232,7 +232,7 @@ namespace sdk {
             if (is_redeposit) {
                 if (result.find("addressees") == result.end()) {
                     // For re-deposit/CPFP, create the addressee if not present already
-                    const auto address = session.get_receive_address(current_subaccount)["address"];
+                    const auto address = session.get_receive_address(current_subaccount).at("address");
                     std::vector<nlohmann::json> addressees;
                     addressees.emplace_back(nlohmann::json({ { "address", address }, { "satoshi", 0 } }));
                     result["addressees"] = addressees;
@@ -247,7 +247,7 @@ namespace sdk {
                 // create sweep transaction
                 if (result.find("utxos") != result.end()) {
                     // check for sweep related keys
-                    for (const auto& utxo : result["utxos"]) {
+                    for (const auto& utxo : result.at("utxos")) {
                         GA_SDK_RUNTIME_ASSERT(!json_get_value(utxo, "private_key").empty());
                     }
                 } else {
@@ -260,7 +260,7 @@ namespace sdk {
                 }
                 result["send_all"] = true;
                 GA_SDK_RUNTIME_ASSERT(result.find("addressees") == result.end());
-                const auto address = session.get_receive_address(current_subaccount)["address"];
+                const auto address = session.get_receive_address(current_subaccount).at("address");
                 std::vector<nlohmann::json> addressees;
                 addressees.emplace_back(nlohmann::json({ { "address", address }, { "satoshi", 0 } }));
                 result["addressees"] = addressees;
@@ -303,9 +303,9 @@ namespace sdk {
                 return;
             }
 
-            auto& utxos = result["utxos"];
+            auto& utxos = result.at("utxos");
             const uint32_t current_block_height = session.get_block_height();
-            const uint32_t num_extra_utxos = is_rbf ? result["old_used_utxos"].size() : 0;
+            const uint32_t num_extra_utxos = is_rbf ? result.at("old_used_utxos").size() : 0;
             wally_tx_ptr tx = tx_init(current_block_height, utxos.size() + num_extra_utxos, addressees.size() + 1);
             if (!is_rbf) {
                 set_anti_snipe_locktime(tx, current_block_height);
@@ -327,7 +327,7 @@ namespace sdk {
             if (is_rbf) {
                 // Add all the old utxos. Note we don't add them to used_utxos
                 // since the user can't choose to remove them
-                for (auto& utxo : result["old_used_utxos"]) {
+                for (auto& utxo : result.at("old_used_utxos")) {
                     v = add_utxo(session, tx, utxo);
                     available_total += v;
                     total += v;
@@ -337,7 +337,7 @@ namespace sdk {
 
             if (manual_selection) {
                 // Add all selected utxos
-                for (const auto& ui : result["used_utxos"]) {
+                for (const auto& ui : result.at("used_utxos")) {
                     utxo_index = ui;
                     v = add_utxo(session, tx, utxos.at(utxo_index));
                     available_total += v;
@@ -354,7 +354,7 @@ namespace sdk {
                         used_utxos.emplace_back(utxo_index);
                         ++utxo_index;
                     } else {
-                        v = static_cast<amount::value_type>(utxo["satoshi"]);
+                        v = static_cast<amount::value_type>(utxo.at("satoshi"));
                     }
                     available_total += v;
                 }
@@ -368,7 +368,7 @@ namespace sdk {
             if (is_rbf) {
                 have_change = result.value("have_change", false);
                 if (have_change) {
-                    add_tx_output(net_params, tx, result["change_address"]);
+                    add_tx_output(net_params, tx, result.at("change_address"));
                     change_index = tx->num_outputs - 1;
                 }
             }
@@ -425,7 +425,7 @@ namespace sdk {
                     // TODO: store change address meta data and pass it to the
                     // server to validate when sending (requires backend support)
                     // FIXME: Put the whole address here for H/W signing?
-                    change_address = session.get_receive_address(change_subaccount)["address"];
+                    change_address = session.get_receive_address(change_subaccount).at("address");
                     result["change_subaccount"] = change_subaccount;
                     result["change_address"] = change_address;
                 }
@@ -482,15 +482,15 @@ namespace sdk {
 
     static void sign_input(session& session, const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u)
     {
-        const auto txhash = u["txhash"];
+        const auto txhash = u.at("txhash");
         const uint32_t subaccount = json_get_value(u, "subaccount", 0u);
         const uint32_t pointer = json_get_value(u, "pointer", 0u);
-        const amount::value_type v = u["satoshi"];
+        const amount::value_type v = u.at("satoshi");
         const amount satoshi{ v };
-        const auto type = script_type(u["script_type"]);
+        const auto type = script_type(u.at("script_type"));
         const std::string private_key = json_get_value(u, "private_key");
 
-        const auto script = bytes_from_hex(u["prevout_script"]);
+        const auto script = bytes_from_hex(u.at("prevout_script"));
 
         const uint32_t flags = is_segwit_script_type(type) ? WALLY_TX_FLAG_USE_WITNESS : 0;
         const auto tx_hash = tx_get_btc_signature_hash(tx, index, script, satoshi.value(), WALLY_SIGHASH_ALL, flags);
@@ -499,7 +499,7 @@ namespace sdk {
             const auto private_key_bytes = bytes_from_hex(private_key);
             const auto user_sig = ec_sig_from_bytes(private_key_bytes, tx_hash);
             tx_set_input_script(
-                tx, index, scriptsig_p2pkh_from_der(bytes_from_hex(u["public_key"]), ec_sig_to_der(user_sig, true)));
+                tx, index, scriptsig_p2pkh_from_der(bytes_from_hex(u.at("public_key")), ec_sig_to_der(user_sig, true)));
         } else {
             std::vector<uint32_t> path = ga_user_pubkeys::get_full_path(subaccount, pointer);
             const auto user_sig = session.get_signer().sign_hash(path, tx_hash);

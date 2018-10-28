@@ -145,6 +145,7 @@ public class Session {
     private typealias NotificationHandler = @convention(c) (UnsafeMutableRawPointer?, OpaquePointer?) -> Void
     static var delegate: SessionNotificationDelegate? = nil
 
+    //FIXME: ADD SUPPORT FOR MULTIPLE SESSIONS
     private let notificationHandler : NotificationHandler = { (context: UnsafeMutableRawPointer?, details: OpaquePointer?) -> Void in
         let context : NotificationContext = Unmanaged.fromOpaque(context!).takeUnretainedValue()
         if let jsonDetails = details {
@@ -153,7 +154,7 @@ public class Session {
                     delegate?.newNotification(dict: dict)
                 }
             } catch {
-                print("couldn't convert notification")
+                print("couldn't convert json")
             }
         }
     }
@@ -367,7 +368,6 @@ public class Session {
     public func setTwoFactorLimit(details: [String: Any]) throws -> TwoFactorCall {
         var optr: OpaquePointer? = nil;
         var details_json: OpaquePointer = try convertDictToJSON(dict: details)
-        let string = try convertOpaqueJsonToString(o:details_json)
         defer {
             GA_destroy_json(details_json)
         }
