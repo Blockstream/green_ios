@@ -7,7 +7,7 @@ class AccountStore {
     var m_wallets:Array<WalletItem> = Array()
     var blockHeight: UInt32 = 0
     var isWatchOnly: Bool = false
-
+    public let GDKQueue = DispatchQueue(label: "gdk",attributes: .concurrent)
     let denominationBTC: Double = 100000000
     let denominationMilliBTC: Double = 100000
     let denominationMicroBTC: Double = 100
@@ -308,6 +308,18 @@ class AccountStore {
         }
         let enabled = config!["any_enabled"] as! Bool
         return enabled
+    }
+
+    func getTwoFactorLimit() -> (isFiat: Bool, amount: Double) {
+        if let config = getTwoFactorConfig() {
+            let limits = config["limits"] as! [String: Any]
+            let isFiat = limits["is_fiat"] as! Bool
+            let btcString = limits["btc"] as! String
+            let fiatString = limits["fiat"] as! String
+            return isFiat ? (isFiat, Double(fiatString)!) : (isFiat, Double(btcString)!)
+        } else {
+            return (false, 0)
+        }
     }
 
     func getWalletForSubAccount(pointer: Int) -> WalletItem {

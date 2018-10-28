@@ -184,13 +184,11 @@ class SettingsStore {
         writeSettingsToDisk()
     }
 
-    func setTwoFactorLimit(enabled: Bool, treshold: Double, fiat: Bool) {
-        let isFiat = fiat ? "true" : "false"
-        let isEnabled = enabled ? "true" : "false"
-        let tresholdText = String(treshold)
+    func setTwoFactorLimit() {
+        let limits = AccountStore.shared.getTwoFactorLimit()
+        let enabled = limits.amount != 0
         let secondaryText = enabled ? "Enabled" : "Disabled"
-        let details = ["fiat" : isFiat, "enabled" : isEnabled, "treshold" : tresholdText]
-        let setting = SettingsItem(settingsName: settingsTwoFactorLimit, property: details, text: securityTwoFactorLimit, secondaryText: secondaryText)
+        let setting = SettingsItem(settingsName: settingsTwoFactorLimit, property: [String:String](), text: securityTwoFactorLimit, secondaryText: secondaryText)
         allSettings[settingsTwoFactorLimit] = setting
         loadAllSections()
         writeSettingsToDisk()
@@ -270,7 +268,11 @@ class SettingsStore {
     }
 
     func defaultTwoFactorLimit() -> SettingsItem {
-        return SettingsItem(settingsName: settingsTwoFactorLimit, property: ["enabled" : "false"], text: securityTwoFactorLimit, secondaryText: "Disabled")
+        let limits = AccountStore.shared.getTwoFactorLimit()
+        let enabled = limits.amount != 0
+        let val = enabled ? "true" : "false"
+        let text = enabled ? "Enabled" : "Disabled"
+        return SettingsItem(settingsName: settingsTwoFactorLimit, property: ["enabled" : val], text: securityTwoFactorLimit, secondaryText: text)
     }
 
     func defaultDenominationSettings() -> SettingsItem {

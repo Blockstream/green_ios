@@ -23,6 +23,16 @@ class TwoFactorLimitViewController: UIViewController {
         titleLabel.text = NSLocalizedString("id_twofactor_treshold", comment: "")
         descriptionLabel.text = NSLocalizedString("id_you_dont_need_twofactor", comment: "")
         setLimitButton.setTitle(NSLocalizedString("id_set_limit", comment: ""), for: .normal)
+        let limits = AccountStore.shared.getTwoFactorLimit()
+        fiat = limits.isFiat
+        if (limits.amount == 0) {
+            limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
+                                                                       attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        } else {
+            limitTextField.text = String(limits.amount)
+        }
+        setButton()
+        SettingsStore.shared.setTwoFactorLimit()
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -79,6 +89,11 @@ class TwoFactorLimitViewController: UIViewController {
                     } else {
                         self.performSegue(withIdentifier: "selectTwoFactor", sender: factor)
                     }
+                } else if (statusString == "call") {
+                    let call = try factor.call()
+                    let jsonCall = try factor.getStatus()
+                    let status = jsonCall!["status"] as! String
+                    SettingsStore.shared.setTwoFactorLimit()
                 }
             } catch {
                 print("couldnt set limit")
