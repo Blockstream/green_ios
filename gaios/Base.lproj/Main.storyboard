@@ -5390,7 +5390,7 @@
                                 <color key="backgroundColor" red="0.027526069432497025" green="0.0031129433773458004" blue="0.003540748031809926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9xM-Sq-1oZ">
-                                <rect key="frame" x="16" y="54" width="288" height="459"/>
+                                <rect key="frame" x="16" y="38.5" width="288" height="490"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="B9S-Kz-a7A">
                                         <rect key="frame" x="74" y="57" width="140" height="140"/>
@@ -5412,9 +5412,9 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3es-RB-QEG">
-                                        <rect key="frame" x="0.0" y="407" width="288" height="52"/>
+                                        <rect key="frame" x="0.0" y="442" width="288" height="48"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="52" id="ccl-p3-iod"/>
+                                            <constraint firstAttribute="height" constant="48" id="ccl-p3-iod"/>
                                         </constraints>
                                         <state key="normal" title="Share">
                                             <color key="titleColor" name="customMatrixGreen"/>
@@ -5424,23 +5424,23 @@
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y18-hC-XzM">
-                                        <rect key="frame" x="0.0" y="406" width="288" height="1"/>
+                                        <rect key="frame" x="0.0" y="441" width="288" height="1"/>
                                         <color key="backgroundColor" name="customTitaniumMedium"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="hIQ-qz-7bK"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aF8-aA-SKy">
-                                        <rect key="frame" x="0.0" y="353" width="288" height="1"/>
+                                        <rect key="frame" x="0.0" y="392" width="288" height="1"/>
                                         <color key="backgroundColor" name="customTitaniumMedium"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="Ia4-Rl-pyM"/>
                                         </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Shc-Gd-dj5">
-                                        <rect key="frame" x="0.0" y="354" width="288" height="52"/>
+                                        <rect key="frame" x="0.0" y="393" width="288" height="48"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="52" id="r7q-gl-ZTz"/>
+                                            <constraint firstAttribute="height" constant="48" id="r7q-gl-ZTz"/>
                                         </constraints>
                                         <state key="normal" title="Copy to clipboard">
                                             <color key="titleColor" name="customMatrixGreen"/>
@@ -5450,22 +5450,41 @@
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ie6-IM-klx">
-                                        <rect key="frame" x="0.0" y="300" width="288" height="1"/>
+                                        <rect key="frame" x="0.0" y="343" width="288" height="1"/>
                                         <color key="backgroundColor" name="customTitaniumMedium"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="kzB-m0-WCb"/>
                                         </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dHS-TW-YB6">
-                                        <rect key="frame" x="0.0" y="301" width="288" height="52"/>
+                                        <rect key="frame" x="0.0" y="344" width="288" height="48"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="52" id="19l-71-vVD"/>
+                                            <constraint firstAttribute="height" constant="48" id="19l-71-vVD"/>
                                         </constraints>
                                         <state key="normal" title="Generate new address">
                                             <color key="titleColor" name="customMatrixGreen"/>
                                         </state>
                                         <connections>
                                             <action selector="generateNewAddress:" destination="nfu-fJ-eh9" eventType="touchUpInside" id="kYA-KB-PEw"/>
+                                        </connections>
+                                    </button>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EYW-uK-jZS">
+                                        <rect key="frame" x="0.0" y="292" width="288" height="1"/>
+                                        <color key="backgroundColor" name="customTitaniumMedium"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="1" id="avT-m6-9Ee"/>
+                                        </constraints>
+                                    </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hv3-zC-KX0">
+                                        <rect key="frame" x="0.0" y="293" width="288" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="c4C-7R-29i"/>
+                                        </constraints>
+                                        <state key="normal" title="Sweep from paper wallet">
+                                            <color key="titleColor" name="customMatrixGreen"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="sweepButtonClicked:" destination="nfu-fJ-eh9" eventType="touchUpInside" id="gJr-MO-Xvw"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -5477,15 +5496,21 @@
                                     <constraint firstItem="Y18-hC-XzM" firstAttribute="top" secondItem="Shc-Gd-dj5" secondAttribute="bottom" id="8cB-C8-HpI"/>
                                     <constraint firstItem="Shc-Gd-dj5" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" id="98t-RL-jAk"/>
                                     <constraint firstItem="t9G-2E-byY" firstAttribute="top" secondItem="9xM-Sq-1oZ" secondAttribute="top" constant="16" id="9cu-WC-mJn"/>
-                                    <constraint firstAttribute="height" constant="459" id="ARF-XF-pv4"/>
+                                    <constraint firstAttribute="trailing" secondItem="Hv3-zC-KX0" secondAttribute="trailing" id="9qa-Cp-fgW"/>
+                                    <constraint firstAttribute="height" constant="490" id="ARF-XF-pv4"/>
                                     <constraint firstAttribute="trailing" secondItem="3es-RB-QEG" secondAttribute="trailing" id="Azm-Z0-On1"/>
                                     <constraint firstItem="lF7-D6-vdH" firstAttribute="top" secondItem="B9S-Kz-a7A" secondAttribute="bottom" constant="20" id="K8U-aO-i9G"/>
                                     <constraint firstItem="dHS-TW-YB6" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" id="KcM-Bh-IFM"/>
+                                    <constraint firstAttribute="trailing" secondItem="EYW-uK-jZS" secondAttribute="trailing" id="LjR-lI-otm"/>
+                                    <constraint firstItem="EYW-uK-jZS" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" id="MpN-dt-yI9"/>
+                                    <constraint firstItem="ie6-IM-klx" firstAttribute="top" secondItem="Hv3-zC-KX0" secondAttribute="bottom" constant="2" id="Msw-1N-RrW"/>
                                     <constraint firstItem="lF7-D6-vdH" firstAttribute="centerX" secondItem="9xM-Sq-1oZ" secondAttribute="centerX" id="NrK-gg-a1P"/>
                                     <constraint firstItem="lF7-D6-vdH" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" constant="16" id="O9q-Kf-85m"/>
                                     <constraint firstAttribute="trailing" secondItem="aF8-aA-SKy" secondAttribute="trailing" id="Ryx-ZH-oKb"/>
                                     <constraint firstItem="3es-RB-QEG" firstAttribute="top" secondItem="Y18-hC-XzM" secondAttribute="bottom" id="Scu-Et-DRy"/>
+                                    <constraint firstItem="Hv3-zC-KX0" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" id="UGG-hg-o2p"/>
                                     <constraint firstAttribute="trailing" secondItem="lF7-D6-vdH" secondAttribute="trailing" constant="16" id="Uz6-ih-Kgc"/>
+                                    <constraint firstItem="Hv3-zC-KX0" firstAttribute="top" secondItem="EYW-uK-jZS" secondAttribute="bottom" id="YVB-hR-tZQ"/>
                                     <constraint firstItem="B9S-Kz-a7A" firstAttribute="top" secondItem="t9G-2E-byY" secondAttribute="bottom" constant="20" id="ZqO-H9-fEf"/>
                                     <constraint firstItem="t9G-2E-byY" firstAttribute="centerX" secondItem="9xM-Sq-1oZ" secondAttribute="centerX" id="b5i-JW-PjU"/>
                                     <constraint firstItem="ie6-IM-klx" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" id="ccZ-FU-5cM"/>
@@ -6546,10 +6571,13 @@
             <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -6559,6 +6587,9 @@
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.39215686274509803" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumMedium">
+            <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
             <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
