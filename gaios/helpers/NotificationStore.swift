@@ -193,8 +193,15 @@ class NotificationStore {
         NotificationCenter.default.addObserver(self, selector: #selector(self.warningChanged(_:)), name: NSNotification.Name(rawValue: "twoFactorWarningChanged"), object: nil)
     }
 
-    @objc func warningChanged(_ notification: NSNotification) {
+    func refreshWarning() {
         let settings = SettingsStore.shared.getTwoFactorWarning()
+        let twoFactorCount = AccountStore.shared.twoFactorsEnabledCount()
+        if(twoFactorCount > 1) {
+            allNotifications.removeValue(forKey: "warninghash2")
+            allNotifications.removeValue(forKey: "warninghash1")
+            writeNotificationsToDisk()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationChanged"), object: nil, userInfo: nil)
+        }
         if(!settings.0) {
             allNotifications.removeValue(forKey: "warninghash1")
             writeNotificationsToDisk()
@@ -202,8 +209,11 @@ class NotificationStore {
             allNotifications.removeValue(forKey: "warninghash2")
             writeNotificationsToDisk()
         }
-        createWarningNotification()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationChanged"), object: nil, userInfo: nil)
+    }
+
+    @objc func warningChanged(_ notification: NSNotification) {
+        refreshWarning()
     }
 
     let walletTransactions: [UInt32: Array<NotificationItem>] =  [UInt32: Array<NotificationItem>]()
