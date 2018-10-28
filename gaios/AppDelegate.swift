@@ -14,7 +14,14 @@ class GreenAddressService: SessionNotificationDelegate {
         } else if (event == "transaction") {
             let transaction = dict["transaction"] as! [String: Any]
             let type = transaction["type"] as! String
-            let subaccounts = transaction["subaccounts"] as! NSArray
+            let hash = transaction["txhash"] as! String
+            var subaccounts = Array<Int>()
+            if let accounts = transaction["subaccounts"] as? [Int] {
+                subaccounts.append(contentsOf: accounts)
+            }
+            if let account = transaction["subaccounts"] as? Int {
+                subaccounts.append(account)
+            }
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "transaction"), object: nil, userInfo: ["subaccounts" : subaccounts])
             if (type == "incoming") {
                 print("incoming transaction")
@@ -24,6 +31,7 @@ class GreenAddressService: SessionNotificationDelegate {
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "incomingTX"), object: nil, userInfo: ["subaccounts" : subaccounts])
             } else if (type == "outgoing"){
                 print("outgoing transaction")
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "outgoingTX"), object: nil, userInfo: ["subaccounts" : subaccounts, "txhash" : hash])
             }
         }
     }

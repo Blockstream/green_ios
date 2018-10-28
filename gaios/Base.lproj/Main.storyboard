@@ -4654,12 +4654,6 @@
                                     <action selector="shareButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="QAE-i1-uok"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Increasing fee to recommended level will change expected confirmation time to x blocks" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B4n-IG-BzY">
-                                <rect key="frame" x="30" y="446" width="260" height="54"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" name="customTitaniumLight"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
@@ -4669,7 +4663,6 @@
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="6Z7-4H-g0M" secondAttribute="trailing" constant="16" id="6tR-08-lTp"/>
                             <constraint firstItem="6Z7-4H-g0M" firstAttribute="leading" secondItem="Bkr-Xa-WKw" secondAttribute="leading" constant="16" id="7C3-di-dpB"/>
                             <constraint firstItem="FfF-vK-F6g" firstAttribute="leading" secondItem="Rpi-Zd-6ud" secondAttribute="leading" constant="16" id="7TR-y7-IMf"/>
-                            <constraint firstItem="HLV-va-6KG" firstAttribute="top" secondItem="B4n-IG-BzY" secondAttribute="bottom" constant="10" id="AAP-QJ-f0m"/>
                             <constraint firstItem="Rpi-Zd-6ud" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="BB7-3o-BDc"/>
                             <constraint firstItem="gkK-nf-Uhp" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="ENL-Kb-Qkb"/>
                             <constraint firstItem="FfF-vK-F6g" firstAttribute="top" secondItem="Rpi-Zd-6ud" secondAttribute="bottom" constant="12" id="ERc-0O-Yqc"/>
@@ -4681,10 +4674,8 @@
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="HLV-va-6KG" secondAttribute="trailing" constant="16" id="XFR-Gg-ssF"/>
                             <constraint firstItem="3wN-a1-Hrx" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="XNR-4A-Pe7"/>
                             <constraint firstItem="bMU-X1-kBn" firstAttribute="top" secondItem="gkK-nf-Uhp" secondAttribute="bottom" constant="50" id="YMO-Oc-7VU"/>
-                            <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="B4n-IG-BzY" secondAttribute="trailing" constant="30" id="YQu-ed-4L3"/>
                             <constraint firstItem="3wN-a1-Hrx" firstAttribute="top" secondItem="aYU-Xd-5Mx" secondAttribute="bottom" constant="10" id="YSP-iu-yST"/>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="urc-Ok-Tuj" secondAttribute="trailing" constant="16" id="ZM8-qd-2vE"/>
-                            <constraint firstItem="B4n-IG-BzY" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="30" id="bUV-Fn-Lji"/>
                             <constraint firstItem="v1Y-n7-LaR" firstAttribute="top" secondItem="dOP-aH-DRY" secondAttribute="bottom" constant="10" id="c8e-Rk-bSU"/>
                             <constraint firstItem="v1Y-n7-LaR" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="cTe-mL-Gay"/>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="v1Y-n7-LaR" secondAttribute="trailing" constant="16" id="caj-Rh-BVO"/>
@@ -4708,7 +4699,6 @@
                     <connections>
                         <outlet property="amountLabel" destination="GEc-HO-hqS" id="nCb-tm-1tF"/>
                         <outlet property="amountTitle" destination="3wN-a1-Hrx" id="vzi-0m-FEE"/>
-                        <outlet property="bottomLabel" destination="B4n-IG-BzY" id="yhO-Fg-vWv"/>
                         <outlet property="dateLabel" destination="aYU-Xd-5Mx" id="iLX-Pd-6iw"/>
                         <outlet property="dateTitle" destination="mu9-t1-UPb" id="qlQ-QO-fhg"/>
                         <outlet property="feeButton" destination="HLV-va-6KG" id="sDX-8s-u0v"/>

@@ -13,6 +13,7 @@ class ViewController: UIViewController, WalletViewDelegate {
     var pager: MainMenuPageViewController? = nil
     var zoomView: UIView? = nil
     var presented: Bool = false
+    var presentedWallet: WalletItem? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -137,16 +138,18 @@ class ViewController: UIViewController, WalletViewDelegate {
     }
 
     func refreshBalance() {
-        for wallet in self.wallets {
-            do {
-                let balance = try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
-                DispatchQueue.main.async {
-                    let satoshi = balance!["satoshi"] as! UInt32
-                    wallet.balance = String(satoshi)
-                    self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: String(satoshi))
+        AccountStore.shared.GDKQueue.async{
+            for wallet in self.wallets {
+                do {
+                    let balance = try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
+                    DispatchQueue.main.async {
+                        let satoshi = balance!["satoshi"] as! UInt32
+                        wallet.balance = String(satoshi)
+                        self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: String(satoshi))
+                    }
+                } catch {
+                    print("error updating balance")
                 }
-            } catch {
-                print("error updating balance")
             }
         }
     }
@@ -166,7 +169,10 @@ class ViewController: UIViewController, WalletViewDelegate {
             nextController.wallet = (walletView.presentedCardView as! ColoredCardView).wallet
         }
         if let nextController = segue.destination as? TransactionDetailViewController {
-            nextController.transaction = sender as? TransactionItem
+            nextController.transaction_g = sender as? TransactionItem
+            if presentedWallet != nil {
+                nextController.pointer = presentedWallet!.pointer
+            }
         }
 
         hideButtons()
@@ -194,6 +200,7 @@ class ViewController: UIViewController, WalletViewDelegate {
         wallet.balanceLabel.textColor = UIColor.white
         wallet.nameLabel.textColor = UIColor.white
         wallet.QRImageView.isUserInteractionEnabled = true
+        presentedWallet = wallet.wallet
     }
 
     func cardViewDismissed(cardView: CardView) {
@@ -210,6 +217,7 @@ class ViewController: UIViewController, WalletViewDelegate {
             wallet.balanceLabel.textColor = UIColor.white
             wallet.nameLabel.textColor = UIColor.white
         }
+        presentedWallet = nil
     }
 
     @objc func addAccount(_ sender: UIButton) {

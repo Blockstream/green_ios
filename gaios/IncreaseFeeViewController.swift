@@ -28,7 +28,8 @@ class IncreaseFeeViewController: UIViewController {
     @IBAction func increaseFeeClicked(_ sender: Any) {
         if let amount = Double(amountTextField.text!) {
             do {
-                var details = transaction.rawTransaction
+                var details = [String: Any]()
+                details["previous_transaction"] = transaction.rawTransaction
                 details["fee_rate"] = amount * 1024
                 var newTransaction = try getSession().createTransaction(details: details)
                 let factor = try getSession().sendTransaction(details: newTransaction!)
@@ -38,7 +39,9 @@ class IncreaseFeeViewController: UIViewController {
                     let call = try factor.call()
                     let jsonCall = try factor.getStatus()
                     let statusCall = jsonCall!["status"] as! String
-                    print(statusCall)
+                    if(statusCall == "done") {
+                        self.dismiss(animated: true, completion: nil)
+                    }
                 }
                 print(status)
             } catch {

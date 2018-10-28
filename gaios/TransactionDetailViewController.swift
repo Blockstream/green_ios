@@ -12,7 +12,6 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var warniniglabel: UILabel!
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
     @IBOutlet weak var feeButton: UIButton!
-    @IBOutlet weak var bottomLabel: UILabel!
 
     @IBOutlet weak var titlelabel: UILabel!
     @IBOutlet weak var hashTitle: UILabel!
@@ -21,29 +20,24 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var amountTitle: UILabel!
     @IBOutlet weak var memoTitle: UILabel!
 
-    var transaction: TransactionItem? = nil
+    var transaction_g: TransactionItem? = nil
+    var pointer: UInt32 = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        hashLabel.text = transaction?.hash
-        amountLabel.text = transaction?.amount
-        feeLabel.text = feeText(fee: (transaction?.fee)!, size: (transaction?.size)!)
-        memoLabel.text = transaction?.memo
-        dateLabel.text = transaction?.date
+        updateUI()
         feeButton.isHidden = true
-        bottomLabel.isHidden = true
-        if(transaction?.blockheight == 0) {
+        if(transaction_g?.blockheight == 0) {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
-        } else if (AccountStore.shared.getBlockheight() - (transaction?.blockheight)! < 6) {
-            let blocks = AccountStore.shared.getBlockheight() - (transaction?.blockheight)! + 1
+        } else if (AccountStore.shared.getBlockheight() - (transaction_g?.blockheight)! < 6) {
+            let blocks = AccountStore.shared.getBlockheight() - (transaction_g?.blockheight)! + 1
             let localizedConfirmed = NSLocalizedString("id_blocks_confirmed", comment: "")
             warniniglabel.text = String(format: "(%d/6) %@", blocks, localizedConfirmed)
         } else {
             warniniglabel.isHidden = true
         }
-        if(transaction?.canRBF)! {
+        if(transaction_g?.canRBF)! {
             feeButton.isHidden = false
-            bottomLabel.isHidden = false
         }
         titlelabel.text = NSLocalizedString("id_transaction_details", comment: "")
         hashTitle.text = NSLocalizedString("id_hash", comment: "")
@@ -52,11 +46,72 @@ class TransactionDetailViewController: UIViewController {
         amountTitle.text = NSLocalizedString("id_amount", comment: "")
         memoTitle.text = NSLocalizedString("id_memo", comment: "")
         feeButton.setTitle(NSLocalizedString("id_increase_fee", comment: ""), for: .normal)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: "outgoingTX"), object: nil)
+    }
+
+    func updateUI() {
+        hashLabel.text = transaction_g?.hash
+        amountLabel.text = transaction_g?.amount
+        feeLabel.text = feeText(fee: (transaction_g?.fee)!, size: (transaction_g?.size)!)
+        memoLabel.text = transaction_g?.memo
+        dateLabel.text = transaction_g?.date
+    }
+
+    @objc func refreshTransaction(_ notification: NSNotification) {
+        print(notification.userInfo ?? "")
+        if let dict = notification.userInfo as NSDictionary? {
+            if let txhash = dict["txhash"] as? String {
+                AccountStore.shared.GDKQueue.async{
+                    wrap {
+                        try getSession().getTransactions(subaccount: self.pointer, page: 0)
+                        }.done { (transactions: [String : Any]?) in
+                            DispatchQueue.main.async {
+                                let list = transactions!["list"] as! NSArray
+                                for tx in list.reversed() {
+                                    print(tx)
+                                    let transaction = tx as! [String : Any]
+                                    let hash = transaction["txhash"] as! String
+                                    if (hash != txhash) {
+                                        continue
+                                    }
+                                    let satoshi:Int = transaction["satoshi"] as! Int
+                                    let fee = transaction["fee"] as! UInt32
+                                    let size = transaction["transaction_vsize"] as! UInt32
+                                    let blockheight = transaction["block_height"] as! UInt32
+                                    let memo = transaction["memo"] as! String
+
+                                    let dateString = transaction["created_at"] as! String
+                                    let type = transaction["type"] as! String
+                                    let dateFormatter = DateFormatter()
+                                    dateFormatter.dateStyle = .medium
+                                    dateFormatter.timeStyle = .short
+                                    let date = Date.dateFromString(dateString: dateString)
+                                    let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
+                                    let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
+                                    let adressees = transaction["addressees"] as! [String]
+                                    let can_rbf = transaction["can_rbf"] as! Bool
+                                    var counterparty = ""
+                                    if (adressees.count > 0) {
+                                        counterparty = adressees[0]
+                                    }
+                                    let formatedTransactionDate = Date.dayMonthYear(date: date)
+                                    let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date, canRBF: can_rbf, rawTransaction: transaction)
+                                    self.transaction_g = item
+                                    self.updateUI()
+                                }
+                            }
+                            print("success")
+                        }.catch { error in
+                            print("error")
+                    }
+                }
+            }
+        }
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
         let increaseFee = self.storyboard?.instantiateViewController(withIdentifier: "increaseFee") as! IncreaseFeeViewController
-        increaseFee.transaction = transaction!
+        increaseFee.transaction = transaction_g!
         increaseFee.providesPresentationContextTransitionStyle = true
         increaseFee.definesPresentationContext = true
         increaseFee.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext

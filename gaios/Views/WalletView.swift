@@ -94,43 +94,49 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     func updateViewModel(account: Int) {
         items.removeAll(keepingCapacity: true)
-        wrap {
-            try getSession().getTransactions(subaccount: UInt32(account), page: 0)
-        }.done { (transactions: [String : Any]?) in
-            let list = transactions!["list"] as! NSArray
-            for tx in list.reversed() {
-                print(tx)
-                let transaction = tx as! [String : Any]
-                let satoshi:Int = transaction["satoshi"] as! Int
-                let hash = transaction["txhash"] as! String
-                let fee = transaction["fee"] as! UInt32
-                let size = transaction["transaction_vsize"] as! UInt32
-                let blockheight = transaction["block_height"] as! UInt32
-                let memo = transaction["memo"] as! String
+        AccountStore.shared.GDKQueue.async{
+            wrap {
+                try getSession().getTransactions(subaccount: UInt32(account), page: 0)
+                }.done { (transactions: [String : Any]?) in
+                    DispatchQueue.main.async {
+                        let list = transactions!["list"] as! NSArray
+                        for tx in list.reversed() {
+                            print(tx)
+                            let transaction = tx as! [String : Any]
+                            let satoshi:Int = transaction["satoshi"] as! Int
+                            let hash = transaction["txhash"] as! String
+                            let fee = transaction["fee"] as! UInt32
+                            let size = transaction["transaction_vsize"] as! UInt32
+                            let blockheight = transaction["block_height"] as! UInt32
+                            let memo = transaction["memo"] as! String
 
-                let dateString = transaction["created_at"] as! String
-                let type = transaction["type"] as! String
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateStyle = .medium
-                dateFormatter.timeStyle = .short
-                let date = Date.dateFromString(dateString: dateString)
-                let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
-                let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
-                let adressees = transaction["addressees"] as! [String]
-                let can_rbf = transaction["can_rbf"] as! Bool
-                var counterparty = ""
-                if (adressees.count > 0) {
-                    counterparty = adressees[0]
-                }
-                let formatedTransactionDate = Date.dayMonthYear(date: date)
-                let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date, canRBF: can_rbf, rawTransaction: transaction)
-                self.items.append(item)
+                            let dateString = transaction["created_at"] as! String
+                            let type = transaction["type"] as! String
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateStyle = .medium
+                            dateFormatter.timeStyle = .short
+                            let date = Date.dateFromString(dateString: dateString)
+                            let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
+                            let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
+                            let adressees = transaction["addressees"] as! [String]
+                            let can_rbf = transaction["can_rbf"] as! Bool
+                            var counterparty = ""
+                            if (adressees.count > 0) {
+                                counterparty = adressees[0]
+                            }
+                            let formatedTransactionDate = Date.dayMonthYear(date: date)
+                            let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date, canRBF: can_rbf, rawTransaction: transaction)
+                            self.items.append(item)
+                        }
+                    }
+                    print("success")
+                }.ensure {
+                    DispatchQueue.main.async {
+                        self.transactionTableView.reloadData()
+                    }
+                }.catch { error in
+                    print("error")
             }
-            print("success")
-        }.ensure {
-            self.transactionTableView.reloadData()
-        }.catch { error in
-            print("error")
         }
     }
 
@@ -453,6 +459,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         transactionTableView.isUserInteractionEnabled = true
         transactionTableView.separatorColor = UIColor.customTitaniumLight()
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "outgoingTX"), object: nil)
         //prepareWalletHeaderView()
 
     }
@@ -462,7 +469,9 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         if let dict = notification.userInfo as NSDictionary? {
             if let accounts = dict["subaccounts"] as? NSArray {
                 for acc in accounts {
-                    updateViewModel(account: acc as! Int)
+                    if(acc as! UInt32 == presentingWallet?.pointer) {
+                        updateViewModel(account: acc as! Int)
+                    }
                 }
             }
         }
