@@ -39,6 +39,7 @@ class TransactionDetailViewController: UIViewController {
         if(transaction_g?.canRBF)! {
             feeButton.isHidden = false
         }
+
         titlelabel.text = NSLocalizedString("id_transaction_details", comment: "")
         hashTitle.text = NSLocalizedString("id_hash", comment: "")
         dateTitle.text = NSLocalizedString("id_date", comment: "")
@@ -116,7 +117,9 @@ class TransactionDetailViewController: UIViewController {
         increaseFee.definesPresentationContext = true
         increaseFee.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
         increaseFee.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        self.present(increaseFee, animated: true, completion: nil)
+        let navController = UINavigationController(rootViewController: increaseFee)
+        navController.isNavigationBarHidden = true
+        self.present(navController, animated: true, completion: nil)
     }
 
     func feeText(fee: UInt32, size: UInt32) -> String {

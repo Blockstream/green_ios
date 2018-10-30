@@ -5552,7 +5552,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gH6-BH-3RI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="13321.875" y="-897.88732394366195"/>
+            <point key="canvasLocation" x="13367" y="-897"/>
         </scene>
         <!--Increase Fee View Controller-->
         <scene sceneID="2uW-yx-VJr">
@@ -5625,28 +5625,101 @@
                                         <color key="textColor" name="customTitaniumLight"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7dj-e6-BKo" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="14" y="251" width="80" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="vKS-sq-5Xp"/>
+                                            <constraint firstAttribute="width" constant="80" id="vv6-gL-cbT"/>
+                                        </constraints>
+                                        <state key="normal" title="low">
+                                            <color key="titleColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                <real key="value" value="1"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                <color key="value" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="lowButtonClicked:" destination="szn-GP-4PQ" eventType="touchUpInside" id="WdH-JN-gjo"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vlm-jx-gCz" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="104" y="251" width="80" height="30"/>
+                                        <state key="normal" title="medium">
+                                            <color key="titleColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                <real key="value" value="1"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                <color key="value" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="mediumButtonClicked:" destination="szn-GP-4PQ" eventType="touchUpInside" id="2NJ-wW-UMj"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lJV-Ox-1kv" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="194" y="251" width="80" height="30"/>
+                                        <state key="normal" title="high">
+                                            <color key="titleColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                <real key="value" value="1"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                <color key="value" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="highButtonClicked:" destination="szn-GP-4PQ" eventType="touchUpInside" id="Es8-tV-0G4"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Or" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hqk-hX-xrw">
+                                        <rect key="frame" x="134.5" y="200" width="19" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" name="customLowerBar"/>
                                 <constraints>
+                                    <constraint firstItem="lJV-Ox-1kv" firstAttribute="height" secondItem="7dj-e6-BKo" secondAttribute="height" id="0Xy-zK-5eR"/>
+                                    <constraint firstItem="Vlm-jx-gCz" firstAttribute="height" secondItem="7dj-e6-BKo" secondAttribute="height" id="1zw-6g-IuN"/>
                                     <constraint firstItem="en5-A4-E79" firstAttribute="top" secondItem="YEU-iy-hIa" secondAttribute="bottom" constant="16" id="2B4-rS-k6a"/>
                                     <constraint firstAttribute="trailing" secondItem="cNZ-sF-3nr" secondAttribute="trailing" id="2dQ-je-aCP"/>
                                     <constraint firstAttribute="bottom" secondItem="GmH-ux-24Y" secondAttribute="bottom" id="4Ih-8y-QHH"/>
                                     <constraint firstAttribute="trailing" secondItem="GmH-ux-24Y" secondAttribute="trailing" id="6uw-Kx-Dgg"/>
+                                    <constraint firstItem="hqk-hX-xrw" firstAttribute="top" secondItem="en5-A4-E79" secondAttribute="bottom" constant="30" id="92c-9x-bgR"/>
                                     <constraint firstAttribute="trailing" secondItem="YEU-iy-hIa" secondAttribute="trailing" constant="10" id="9L8-ft-idC"/>
                                     <constraint firstItem="fgb-t9-rLf" firstAttribute="top" secondItem="td3-l0-8mW" secondAttribute="top" constant="25" id="COK-rS-KQC"/>
+                                    <constraint firstItem="Vlm-jx-gCz" firstAttribute="centerX" secondItem="td3-l0-8mW" secondAttribute="centerX" id="Dpl-4s-mtI"/>
                                     <constraint firstItem="oSm-ja-Blg" firstAttribute="leading" secondItem="td3-l0-8mW" secondAttribute="leading" id="EuG-4Q-smV"/>
                                     <constraint firstItem="en5-A4-E79" firstAttribute="centerX" secondItem="td3-l0-8mW" secondAttribute="centerX" id="HMC-kM-Z6t"/>
                                     <constraint firstItem="YV3-oP-62T" firstAttribute="leading" secondItem="td3-l0-8mW" secondAttribute="leading" id="J9y-li-FrK"/>
+                                    <constraint firstItem="Vlm-jx-gCz" firstAttribute="centerY" secondItem="7dj-e6-BKo" secondAttribute="centerY" id="JT5-ZA-YT1"/>
                                     <constraint firstItem="cNZ-sF-3nr" firstAttribute="top" secondItem="YV3-oP-62T" secondAttribute="bottom" id="Pv9-ZF-QIc"/>
                                     <constraint firstItem="YEU-iy-hIa" firstAttribute="top" secondItem="fgb-t9-rLf" secondAttribute="bottom" constant="40" id="UPn-ZM-YKA"/>
+                                    <constraint firstItem="hqk-hX-xrw" firstAttribute="centerX" secondItem="td3-l0-8mW" secondAttribute="centerX" id="a47-h4-rEv"/>
+                                    <constraint firstItem="Vlm-jx-gCz" firstAttribute="leading" secondItem="7dj-e6-BKo" secondAttribute="trailing" constant="10" id="aaK-oZ-Teb"/>
+                                    <constraint firstItem="lJV-Ox-1kv" firstAttribute="leading" secondItem="Vlm-jx-gCz" secondAttribute="trailing" constant="10" id="bnl-Yi-kHE"/>
                                     <constraint firstItem="YV3-oP-62T" firstAttribute="top" secondItem="oSm-ja-Blg" secondAttribute="bottom" id="dQC-pY-DwY"/>
                                     <constraint firstItem="GmH-ux-24Y" firstAttribute="top" secondItem="cNZ-sF-3nr" secondAttribute="bottom" id="fRT-MR-Y4y"/>
                                     <constraint firstItem="GmH-ux-24Y" firstAttribute="leading" secondItem="td3-l0-8mW" secondAttribute="leading" id="fUO-df-lJN"/>
+                                    <constraint firstItem="Vlm-jx-gCz" firstAttribute="top" secondItem="hqk-hX-xrw" secondAttribute="bottom" constant="30" id="ftS-7q-Uq5"/>
+                                    <constraint firstItem="lJV-Ox-1kv" firstAttribute="width" secondItem="7dj-e6-BKo" secondAttribute="width" id="ihu-8y-7PL"/>
                                     <constraint firstItem="fgb-t9-rLf" firstAttribute="centerX" secondItem="td3-l0-8mW" secondAttribute="centerX" id="nKf-0m-15N"/>
                                     <constraint firstItem="YEU-iy-hIa" firstAttribute="leading" secondItem="td3-l0-8mW" secondAttribute="leading" constant="10" id="sJf-rF-4Pz"/>
                                     <constraint firstAttribute="trailing" secondItem="YV3-oP-62T" secondAttribute="trailing" id="sah-SY-Zw0"/>
+                                    <constraint firstItem="lJV-Ox-1kv" firstAttribute="centerY" secondItem="7dj-e6-BKo" secondAttribute="centerY" id="t0u-KM-xQ5"/>
                                     <constraint firstAttribute="trailing" secondItem="oSm-ja-Blg" secondAttribute="trailing" id="vNd-fe-giU"/>
                                     <constraint firstAttribute="height" constant="459" id="wzG-jM-jjA"/>
+                                    <constraint firstItem="Vlm-jx-gCz" firstAttribute="width" secondItem="7dj-e6-BKo" secondAttribute="width" id="yfK-s8-Qhz"/>
                                     <constraint firstItem="cNZ-sF-3nr" firstAttribute="leading" secondItem="td3-l0-8mW" secondAttribute="leading" id="zLm-3u-OBz"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
@@ -5668,18 +5741,39 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="vEc-Vj-od3"/>
                     </view>
+                    <navigationItem key="navigationItem" id="iXc-iB-olh"/>
                     <connections>
                         <outlet property="amountTextField" destination="YEU-iy-hIa" id="dfC-uu-h9b"/>
                         <outlet property="backgroundView" destination="L9O-G1-1Mc" id="B6w-bb-eB1"/>
                         <outlet property="cancelButton" destination="GmH-ux-24Y" id="2Ld-Wh-lFI"/>
+                        <outlet property="highButton" destination="lJV-Ox-1kv" id="B6N-Ea-NVm"/>
                         <outlet property="increaseFeeButton" destination="YV3-oP-62T" id="w9i-TX-FOu"/>
+                        <outlet property="lowButton" destination="7dj-e6-BKo" id="Orc-qC-Lga"/>
+                        <outlet property="mediumButton" destination="Vlm-jx-gCz" id="xNT-LA-cDv"/>
                         <outlet property="satoshiLabel" destination="en5-A4-E79" id="teQ-dD-gla"/>
                         <outlet property="titleLabel" destination="fgb-t9-rLf" id="KT9-WH-erT"/>
+                        <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="tox-fL-99F"/>
+                        <segue destination="hgO-EC-JdX" kind="show" identifier="twoFactorSelector" id="i8v-bY-rAr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4E2-d0-RTk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="14145" y="-899"/>
+            <point key="canvasLocation" x="14498" y="-897"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="HiB-bf-1sW">
+            <objects>
+                <navigationController navigationBarHidden="YES" id="2gg-cN-1aw" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="geK-M1-HXM">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="szn-GP-4PQ" kind="relationship" relationship="rootViewController" id="Pgc-eZ-ayu"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9nX-VX-qzF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="15368" y="-1355"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="t8x-zp-zMD">
@@ -6296,6 +6390,7 @@
                         <outlet property="titleLabel" destination="ftO-An-X9M" id="GDf-mE-ZRH"/>
                         <segue destination="U8O-Z4-13N" kind="show" identifier="verifyCode" id="RUz-mH-4gJ"/>
                         <segue destination="hgO-EC-JdX" kind="show" identifier="selectTwoFactor" id="552-x0-S8S"/>
+                        <segue destination="U8O-Z4-13N" kind="show" id="MrW-eR-gMX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WXx-ec-RDp" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -6568,11 +6663,11 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="RUz-mH-4gJ"/>
+        <segue reference="tox-fL-99F"/>
         <segue reference="Sx5-Ok-KDL"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="4QF-E2-lEm"/>
-        <segue reference="552-x0-S8S"/>
+        <segue reference="i8v-bY-rAr"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>

@@ -278,7 +278,7 @@ class SendBtcDetailsViewController: UIViewController {
         feeLabel.textAlignment = .center
         feeLabel.textColor = UIColor.customTitaniumLight()
 
-        let usdValue:Double = AccountStore.shared.satoshiToUSD(amount: fee)
+        let usdValue:Double = AccountStore.shared.satoshiToFiat(amount: fee)
         let size = g_payload!["transaction_vsize"] as! UInt64
         let satoshiPerByte = fee / size
         feeLabel.text = String(format: "~%.2f %@ \n (%d satoshi / byte)", usdValue, SettingsStore.shared.getCurrencyString(), satoshiPerByte)

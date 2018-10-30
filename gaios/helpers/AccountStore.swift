@@ -96,7 +96,7 @@ class AccountStore {
         return dateFormatter.date(from: date)!
     }
 
-    func satoshiToUSD(amount: UInt64) -> Double {
+    func satoshiToFiat(amount: UInt64) -> Double {
         let dict = ["satoshi" : amount]
         var amount: Double = 0
         do {
