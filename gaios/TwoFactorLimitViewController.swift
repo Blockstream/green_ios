@@ -94,6 +94,7 @@ class TwoFactorLimitViewController: UIViewController {
                     let jsonCall = try factor.getStatus()
                     let status = jsonCall!["status"] as! String
                     SettingsStore.shared.setTwoFactorLimit()
+                    self.navigationController?.popViewController(animated: true)
                 }
             } catch {
                 print("couldnt set limit")
