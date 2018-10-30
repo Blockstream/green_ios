@@ -26,6 +26,12 @@ class IncreaseFeeViewController: UIViewController {
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         NotificationCenter.default.addObserver(self, selector: #selector(IncreaseFeeViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        titleLabel.text = NSLocalizedString("id_set_custom_fee", comment: "")
+        increaseFeeButton.setTitle(NSLocalizedString("id_increase_fee", comment: "").capitalized, for: .normal)
+        cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
+        lowButton.setTitle(NSLocalizedString("id_low", comment: ""), for: .normal)
+        mediumButton.setTitle(NSLocalizedString("id_medium", comment: ""), for: .normal)
+        highButton.setTitle(NSLocalizedString("id_high", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {
