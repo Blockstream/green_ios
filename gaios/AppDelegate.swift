@@ -294,6 +294,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func lock() {
         print("locking now")
+        self.window?.endEditing(true)
         let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
         let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
