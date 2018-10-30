@@ -29,7 +29,16 @@ class TwoFactorLimitViewController: UIViewController {
             limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                        attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         } else {
-            limitTextField.text = String(limits.amount)
+            let denomination = SettingsStore.shared.getDenominationSettings()
+            var amount_denominated: Double = 0
+            if(denomination == SettingsStore.shared.denominationPrimary) {
+                amount_denominated = limits.amount
+            } else if (denomination == SettingsStore.shared.denominationMilli) {
+                amount_denominated = limits.amount * 1000
+            } else if (denomination == SettingsStore.shared.denominationMicro){
+                amount_denominated = limits.amount * 1000000
+            }
+            limitTextField.text = String(amount_denominated)
         }
         setButton()
         SettingsStore.shared.setTwoFactorLimit()
@@ -75,7 +84,16 @@ class TwoFactorLimitViewController: UIViewController {
                     details["fiat"] = String(amount)
                 } else {
                     details["is_fiat"] = false
-                    details["satoshi"] = String(amount)
+                    let denomination = SettingsStore.shared.getDenominationSettings()
+                    var amount_denominated: Double = 0
+                    if(denomination == SettingsStore.shared.denominationPrimary) {
+                        amount_denominated = amount * 100000000
+                    } else if (denomination == SettingsStore.shared.denominationMilli) {
+                        amount_denominated = amount * 100000
+                    } else if (denomination == SettingsStore.shared.denominationMicro){
+                        amount_denominated = amount * 100
+                    }
+                    details["satoshi"] = amount_denominated
                 }
                 let factor = try getSession().setTwoFactorLimit(details: details)
                 let status = try factor.getStatus()
