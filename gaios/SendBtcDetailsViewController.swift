@@ -168,7 +168,7 @@ class SendBtcDetailsViewController: UIViewController {
         guard let amount_i = Int(amount) else {
             return
         }
-        fee = UInt64(1024 * amount_i)
+        fee = UInt64(1000 * amount_i)
         updateEstimate()
     }
 
@@ -334,7 +334,7 @@ class SendBtcDetailsViewController: UIViewController {
             let def = SettingsStore.shared.getFeeSettings().0
             if (def == TransactionPriority.Custom) {
                 customFeeTextField.text = String(SettingsStore.shared.getFeeSettings().1)
-                fee = UInt64(SettingsStore.shared.getFeeSettings().1 * 1024)
+                fee = UInt64(SettingsStore.shared.getFeeSettings().1 * 1000)
             }
             customFeeTextField.isHidden = false
             customFeeLabel.isHidden = false

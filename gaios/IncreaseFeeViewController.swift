@@ -137,7 +137,7 @@ class IncreaseFeeViewController: UIViewController {
         feeLabel.textAlignment = .center
         feeLabel.textColor = UIColor.customTitaniumLight()
         let feeRate = getFeeForPriority(p: priority!)
-        let satoshiPerByte: Double = Double(feeRate) / 1024
+        let satoshiPerByte: Double = Double(feeRate) / 1000
         let cost = feeRate * UInt64(transaction.size)
         let usdValue:Double = AccountStore.shared.satoshiToFiat(amount: cost)
         feeLabel.text = String(format: "~%.2f %@ \n (%.0f satoshi / byte)", usdValue, SettingsStore.shared.getCurrencyString(), satoshiPerByte)
@@ -192,7 +192,7 @@ class IncreaseFeeViewController: UIViewController {
             return
         }
         if let amount = Double(amountTextField.text!) {
-            let feeRate = amount * 1024
+            let feeRate = amount * 1000
             increaseFee(feeRate: feeRate)
         }
     }
