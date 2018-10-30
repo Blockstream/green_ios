@@ -8,9 +8,6 @@ class AccountStore {
     var blockHeight: UInt32 = 0
     var isWatchOnly: Bool = false
     public let GDKQueue = DispatchQueue(label: "gdk",attributes: .concurrent)
-    let denominationBTC: Double = 100000000
-    let denominationMilliBTC: Double = 100000
-    let denominationMicroBTC: Double = 100
 
     public func fetchWallets() -> Array<WalletItem> {
         var result = Array<WalletItem>()
