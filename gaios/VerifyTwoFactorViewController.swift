@@ -22,6 +22,7 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
     var labels: Array<UILabel> = Array<UILabel>()
     var indicator: UIView? = nil
     var hideButton = false
+    var popToRoot = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,11 +87,12 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
                                     self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
                                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
                                         self.stopAnimating()
-                                        self.navigationController?.popToRootViewController(animated: true)
-
+                                        self.pop()
                                     }
+                                } else if (action == "cancel_reset" || action == "request_reset") {
+                                    getAppDelegate().lock()
                                 } else {
-                                    self.navigationController?.popToRootViewController(animated: true)
+                                    pop()
                                 }
                             }
                         } else if (call_status == "resolve_code") {
@@ -161,6 +163,14 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
             pinCode.removeLast()
             updateView()
             print(pinCode)
+        }
+    }
+
+    func pop() {
+        if(popToRoot) {
+            self.navigationController?.popToRootViewController(animated: true)
+        } else {
+            self.navigationController?.popViewController(animated: true)
         }
     }
 

@@ -7,6 +7,7 @@ class ViewController: UIViewController, WalletViewDelegate {
     @IBOutlet weak var walletView: WalletView!
     @IBOutlet weak var addWalletButton: UIButton!
     @IBOutlet weak var walletsLabel: UILabel!
+    @IBOutlet weak var warningLabel: UILabel!
 
     @IBOutlet weak var addCardViewButton: UIButton!
     var wallets:Array<WalletItem> = Array<WalletItem>()
@@ -25,6 +26,22 @@ class ViewController: UIViewController, WalletViewDelegate {
         walletView.presentedFooterView.sendButton.addTarget(self, action: #selector(self.sendfromWallet(_:)), for: .touchUpInside)
         walletView.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.resetChanged(_:)), name: NSNotification.Name(rawValue: "twoFactorReset"), object: nil)
+        updateWallet()
+    }
+
+    func updateWallet() {
+        let data = AccountStore.shared.getTwoFactorResetData()
+        if (data.isReset) {
+            warningLabel.text = NSLocalizedString("id_two_factor_reset_in_progress", comment: "")
+            warningLabel.isHidden = false
+        } else {
+            warningLabel.isHidden = true
+        }
+    }
+
+    @objc func resetChanged(_ notification: NSNotification) {
+        updateWallet()
     }
 
     @objc func newAddress(_ notification: NSNotification) {

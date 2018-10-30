@@ -6,32 +6,39 @@ import UIKit
 class GreenAddressService: SessionNotificationDelegate {
 
     func newNotification(dict: [String : Any]) {
-        let event = dict["event"] as! String
-        if (event == "block") {
-            let block = dict["block"] as! [String: Any]
-            let blockHeight = block["block_height"] as! UInt32
-            AccountStore.shared.setBlockHeight(height: blockHeight)
-        } else if (event == "transaction") {
-            let transaction = dict["transaction"] as! [String: Any]
-            let type = transaction["type"] as! String
-            let hash = transaction["txhash"] as! String
-            var subaccounts = Array<Int>()
-            if let accounts = transaction["subaccounts"] as? [Int] {
-                subaccounts.append(contentsOf: accounts)
-            }
-            if let account = transaction["subaccounts"] as? Int {
-                subaccounts.append(account)
-            }
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "transaction"), object: nil, userInfo: ["subaccounts" : subaccounts])
-            if (type == "incoming") {
-                print("incoming transaction")
-                DispatchQueue.main.async {
-                    self.showIncomingNotification()
+        DispatchQueue.main.async {
+            let event = dict["event"] as! String
+            if (event == "block") {
+                let block = dict["block"] as! [String: Any]
+                let blockHeight = block["block_height"] as! UInt32
+                AccountStore.shared.setBlockHeight(height: blockHeight)
+            } else if (event == "transaction") {
+                let transaction = dict["transaction"] as! [String: Any]
+                let type = transaction["type"] as! String
+                let hash = transaction["txhash"] as! String
+                var subaccounts = Array<Int>()
+                if let accounts = transaction["subaccounts"] as? [Int] {
+                    subaccounts.append(contentsOf: accounts)
                 }
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "incomingTX"), object: nil, userInfo: ["subaccounts" : subaccounts])
-            } else if (type == "outgoing"){
-                print("outgoing transaction")
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "outgoingTX"), object: nil, userInfo: ["subaccounts" : subaccounts, "txhash" : hash])
+                if let account = transaction["subaccounts"] as? Int {
+                    subaccounts.append(account)
+                }
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "transaction"), object: nil, userInfo: ["subaccounts" : subaccounts])
+                if (type == "incoming") {
+                    print("incoming transaction")
+                    self.showIncomingNotification()
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "incomingTX"), object: nil, userInfo: ["subaccounts" : subaccounts])
+                } else if (type == "outgoing"){
+                    print("outgoing transaction")
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "outgoingTX"), object: nil, userInfo: ["subaccounts" : subaccounts, "txhash" : hash])
+                }
+            } else if (event == "twofactor_reset") {
+                let data = dict["twofactor_reset"] as! [String: Any]
+                let active = data["is_active"] as! Bool
+                let disputed = data["is_disputed"] as! Bool
+                let days = data["days_remaining"] as! Int
+                AccountStore.shared.setTwoFactorResetData(isReset: active, isDisputed: disputed, days: days)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "twoFactorReset"), object: nil, userInfo: ["twoFactorReset" : dict])
             }
         }
     }
@@ -288,11 +295,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     @objc func lockApplication(_ notification: NSNotification) {
         //check if user is loggedIn
-        connect()
         lock()
     }
 
     func lock() {
+        connect()
         print("locking now")
         self.window?.endEditing(true)
         let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")

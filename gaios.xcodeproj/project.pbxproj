@@ -70,6 +70,7 @@
 		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
 		0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */; };
 		0980B4FE21841BE2007715F4 /* IncreaseFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */; };
+		0980B50021883AD9007715F4 /* DisputeRequestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FF21883AD9007715F4 /* DisputeRequestViewController.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
 		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
@@ -188,6 +189,7 @@
 		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
 		0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
 		0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncreaseFeeViewController.swift; sourceTree = "<group>"; };
+		0980B4FF21883AD9007715F4 /* DisputeRequestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeRequestViewController.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
 		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
@@ -410,6 +412,7 @@
 				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
 				0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */,
 				09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */,
+				0980B4FF21883AD9007715F4 /* DisputeRequestViewController.swift */,
 				09C5B656217AC833001B5002 /* RequestNLockEmails.swift */,
 				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
@@ -790,6 +793,7 @@
 				09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */,
 				09A8991620FADFE000E105EC /* IntroPageViewController.swift in Sources */,
 				09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */,
+				0980B50021883AD9007715F4 /* DisputeRequestViewController.swift in Sources */,
 				09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */,
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,

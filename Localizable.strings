@@ -386,3 +386,5 @@
 "id_your_balance_is_not_confirmed" = "Your balance is not confirmed. Either you have some unconfirmed incoming transactions, or SPV verification has not finished.";
 "id_your_s_btc_sent_to_s_has_been" = "Your %@ BTC sent to %@ has been confirmed";
 "id_your_transaction_threshold_is_1s" = "Your transaction threshold is %1$@.";
+"id_two_factor_reset_is_in_progress" = "Two-Factor reset is in progress, either cancel it using previously set authentication method or start a dispute process(Not recommended)";
+"id_two_factor_reset_in_progress" = "Two-Factor reset in progress, your wallet is currently locked.";

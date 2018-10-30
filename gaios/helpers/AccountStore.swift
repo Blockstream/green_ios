@@ -9,6 +9,20 @@ class AccountStore {
     var isWatchOnly: Bool = false
     public let GDKQueue = DispatchQueue(label: "gdk",attributes: .concurrent)
 
+    var isResetInProgress: Bool = false
+    var isResetDisputed: Bool = false
+    var resetDaysRemaining: Int = 0
+
+    func setTwoFactorResetData(isReset: Bool, isDisputed: Bool, days: Int) {
+        isResetInProgress = isReset
+        isResetDisputed = isDisputed
+        resetDaysRemaining = days
+    }
+
+    func getTwoFactorResetData() -> (isReset: Bool, isDisputed: Bool, days: Int) {
+        return(isResetInProgress, isResetDisputed, resetDaysRemaining)
+    }
+
     public func fetchWallets() -> Array<WalletItem> {
         var result = Array<WalletItem>()
         do {
