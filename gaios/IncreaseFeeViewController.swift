@@ -155,8 +155,10 @@ class IncreaseFeeViewController: UIViewController, TwoFactorCallDelegate {
             details["previous_transaction"] = transaction.rawTransaction
             details["fee_rate"] = feeRate
             let newTransaction = try getSession().createTransaction(details: details)
-            let factor: TwoFactorCallHelper = try getSession().sendTransaction(details: newTransaction!) as! TwoFactorCallHelper
-            try factor.resolve();
+            let factor = try getSession().sendTransaction(details: newTransaction!)
+            let resultHelper = TwoFactorCallHelper(factor)
+            resultHelper.delegate = self
+            try resultHelper.resolve();
         } catch {
             print("increase failed")
         }

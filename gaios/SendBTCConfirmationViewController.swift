@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate{
+class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate{
 
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
@@ -80,45 +80,43 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
                 try getSession().sendTransaction(details: (self.transaction?.data)!)
                 }.done { (result: TwoFactorCall?) in
                     do {
-                        let status = try result?.getStatus()
-                        let parsed = status!["status"] as! String
-                        if(parsed == "request_code") {
-                            //request code
-                            let methods = status!["methods"] as! NSArray
-                            if(methods.count > 1) {
-                                self.stopAnimating()
-                                self.performSegue(withIdentifier: "twoFactorSelector", sender: result)
-                            } else {
-                                let method = methods[0] as! String
-                                let req = try result?.requestCode(method: method)
-                                let status1 = try result?.getStatus()
-                                let parsed1 = status1!["status"] as! String
-                                if(parsed1 == "resolve_code") {
-                                    self.stopAnimating()
-                                    self.performSegue(withIdentifier: "twoFactor", sender: result)
-                                }
-                            }
-
-                        } else if (parsed == "call") {
-                            let json = try result?.call()
-                            self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
-                                self.stopAnimating()
-                                self.navigationController?.popToRootViewController(animated: true)
-                            }
-                        }
+                        let resultHelper = TwoFactorCallHelper(result!)
+                        resultHelper.delegate = self
+                        try resultHelper.resolve()
                     } catch {
                         self.stopAnimating()
-                        print("couldn't call")
+                        print(error)
                     }
                 } .catch { error in
                     self.stopAnimating()
                     print(error)
-                    print("wtf")
             }
         }
     }
 
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.CodePopup(sender)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func onDone(_ sender: TwoFactorCallHelper) {
+        self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+            self.stopAnimating()
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+    }
+    
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        self.stopAnimating()
+        print("wtf")
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             nextController.twoFactor = sender as? TwoFactorCall
