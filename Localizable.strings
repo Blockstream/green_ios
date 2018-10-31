@@ -375,7 +375,7 @@
 "id_you_dont_have_twofactor" = "You don't have Two-Factor authentication!\nPlease go to settings to set it up!";
 "id_you_dont_need_twofactor" = "You don't need Two-Factor authentication for transactions under the selected value";
 "id_you_have_full_control_of_your" = "You have full control of your funds.";
-"id_you_have_received_s_btc" = "You have received %@ BTC";
+"id_you_have_received_s_btc" = "You have received %@";
 "id_you_must_enable_twofactor" = "You must enable Two-Factor Authentication before you can change the threshold.";
 "id_you_must_first_logout_before" = "You must first logout before signing in.";
 "id_you_must_save_this_passphrase" = "You MUST save this passphrase NOW";
@@ -384,7 +384,7 @@
 "id_you_need_to_provide_one_code" = "You need to provide one code from your new Google Authenticator. You can obtain it by scanning the QR code below in the Google Authenticator app.";
 "id_you_only_have_one_twofactor" = "You only have one Two-Factor authentication method set up!\nPlease add another in settings as a backup in case you lose access.";
 "id_your_balance_is_not_confirmed" = "Your balance is not confirmed. Either you have some unconfirmed incoming transactions, or SPV verification has not finished.";
-"id_your_s_btc_sent_to_s_has_been" = "Your %@ BTC sent to %@ has been confirmed";
+"id_your_s_btc_sent_to_s_has_been" = "Your %@ sent to %@ has been confirmed";
 "id_your_transaction_threshold_is_1s" = "Your transaction threshold is %1$@.";
 "id_two_factor_reset_is_in_progress" = "Two-Factor reset is in progress, either cancel it using previously set authentication method or start a dispute process(Not recommended)";
 "id_two_factor_reset_in_progress" = "Two-Factor reset in progress, your wallet is currently locked.";
