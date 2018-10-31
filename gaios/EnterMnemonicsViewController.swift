@@ -457,6 +457,7 @@ extension EnterMnemonicsViewController: AVCaptureMetadataOutputObjectsDelegate {
                             let textField = textFields[index]
                             textField.text = separated[index]
                         }
+                        doneButtonEnable()
                     }
                 }
                 QRCodeReader.removeFromSuperview()
