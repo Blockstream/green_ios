@@ -28,7 +28,7 @@ class TwoFactorLimitViewController: UIViewController {
         if (limits.amount == 0) {
             limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                        attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        } else {
+        } else if (!fiat){
             let denomination = SettingsStore.shared.getDenominationSettings()
             var amount_denominated: Double = 0
             if(denomination == SettingsStore.shared.denominationPrimary) {
@@ -39,6 +39,8 @@ class TwoFactorLimitViewController: UIViewController {
                 amount_denominated = limits.amount * 1000000
             }
             limitTextField.text = String(amount_denominated)
+        } else if (fiat) {
+            limitTextField.text = String(limits.amount)
         }
         setButton()
         SettingsStore.shared.setTwoFactorLimit()
