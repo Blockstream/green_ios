@@ -2,7 +2,7 @@
 import Foundation
 import UIKit
 
-class IncreaseFeeViewController: UIViewController {
+class IncreaseFeeViewController: UIViewController, TwoFactorCallDelegate {
 
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var increaseFeeButton: UIButton!
@@ -137,7 +137,7 @@ class IncreaseFeeViewController: UIViewController {
         feeLabel.textAlignment = .center
         feeLabel.textColor = UIColor.customTitaniumLight()
         let feeRate = getFeeForPriority(p: priority!)
-        let satoshiPerByte: Double = Double(feeRate) / 1024
+        let satoshiPerByte: Double = Double(feeRate) / 1000
         let cost = feeRate * UInt64(transaction.size)
         let usdValue:Double = AccountStore.shared.satoshiToFiat(amount: cost)
         feeLabel.text = String(format: "~%.2f %@ \n (%.0f satoshi / byte)", usdValue, SettingsStore.shared.getCurrencyString(), satoshiPerByte)
@@ -154,37 +154,32 @@ class IncreaseFeeViewController: UIViewController {
             var details = [String: Any]()
             details["previous_transaction"] = transaction.rawTransaction
             details["fee_rate"] = feeRate
-            var newTransaction = try getSession().createTransaction(details: details)
+            let newTransaction = try getSession().createTransaction(details: details)
             let factor = try getSession().sendTransaction(details: newTransaction!)
-            let json = try factor.getStatus()
-            let status = json!["status"] as! String
-            if (status == "call") {
-                let call = try factor.call()
-                let jsonCall = try factor.getStatus()
-                let statusCall = jsonCall!["status"] as! String
-                if(statusCall == "done") {
-                    self.dismiss(animated: true, completion: nil)
-                }
-            } else if(status == "request_code") {
-                let methods = json!["methods"] as! NSArray
-                if(methods.count > 1) {
-                    self.performSegue(withIdentifier: "twoFactorSelector", sender: factor)
-                } else {
-                    let method = methods[0] as! String
-                    let req = try factor.requestCode(method: method)
-                    let status1 = try factor.getStatus()
-                    let parsed1 = status1!["status"] as! String
-                    if(parsed1 == "resolve_code") {
-                        self.performSegue(withIdentifier: "twoFactor", sender: factor)
-                    }
-                }
-            }
-            print(status)
+            let resultHelper = TwoFactorCallHelper(factor)
+            resultHelper.delegate = self
+            try resultHelper.resolve();
         } catch {
             print("increase failed")
         }
     }
-
+    
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        self.performSegue(withIdentifier: "twoFactor", sender: sender)
+    }
+    
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        self.performSegue(withIdentifier: "twoFactorSelector", sender: sender)
+    }
+    
+    func onDone(_ sender: TwoFactorCallHelper) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        print( text )
+    }
+    
     @IBAction func increaseFeeClicked(_ sender: Any) {
         if (priority != nil) {
             let feeRate = getFeeForPriority(p: priority)
@@ -192,7 +187,7 @@ class IncreaseFeeViewController: UIViewController {
             return
         }
         if let amount = Double(amountTextField.text!) {
-            let feeRate = amount * 1024
+            let feeRate = amount * 1000
             increaseFee(feeRate: feeRate)
         }
     }

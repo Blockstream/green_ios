@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate{
+class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate{
 
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
@@ -14,25 +14,19 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     @IBOutlet weak var toTitle: UILabel!
     @IBOutlet weak var myNotesTitle: UILabel!
 
-    var toAddress: String = ""
-    var fiat_amount: Double = 0
-    var btc_amount: Double = 0
-    var satoshi_amount: Int = 0
-    var satoshi_fee: Int = 0
     var walletName: String = ""
     var wallet: WalletItem? = nil
-    var payload: [String : Any]? = nil
     var selectedType: TransactionType? = nil
+    var transaction: TransactionHelper?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         walletNameLabel.text = walletName
-        recepientAddressLabel.text = toAddress
         self.tabBarController?.tabBar.isHidden = true
         walletNameLabel.text = wallet?.name
         hideKeyboardWhenTappedAround()
         slidingButton.delegate = self
-        updateAmountLabel()
+        refresh()
         textView.delegate = self
         textView.text = "Add a note..."
         textView.textColor = UIColor.customTitaniumLight()
@@ -42,18 +36,24 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
     }
 
+    func refresh() {
+        let addressees = transaction?.addresses()
+        let address = addressees![0]["address"] as! String
+        let satoshi = addressees![0]["satoshi"] as! UInt64
+        let btcAmount = Double(satoshi) / 100000000
+        recepientAddressLabel.text = address
+        if (selectedType == TransactionType.BTC) {
+            fiatAmountLabel.text = String(format: "%f BTC (%f USD)", btcAmount, 0)
+        } else if (selectedType == TransactionType.FIAT) {
+            fiatAmountLabel.text = String(format: "%f USD (%f BTC)", 0, btcAmount)
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         textView.textColor = UIColor.customTitaniumLight()
     }
 
-    func updateAmountLabel() {
-        if (selectedType == TransactionType.BTC) {
-            fiatAmountLabel.text = String(format: "%f BTC (%f USD)", btc_amount, fiat_amount)
-        } else if (selectedType == TransactionType.FIAT) {
-            fiatAmountLabel.text = String(format: "%f USD (%f BTC)", fiat_amount, btc_amount)
-        }
-    }
 
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == UIColor.customTitaniumLight() {
@@ -66,6 +66,8 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         if textView.text.isEmpty {
             textView.text = "Add a note..."
             textView.textColor = UIColor.customTitaniumLight()
+        } else {
+            transaction?.data["memo"] = textView.text
         }
     }
 
@@ -74,48 +76,47 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         let size = CGSize(width: 30, height: 30)
         startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
         DispatchQueue.global(qos: .background).async {
-            wrap {try getSession().sendTransaction(details: self.payload!)
+            wrap {
+                try getSession().sendTransaction(details: (self.transaction?.data)!)
                 }.done { (result: TwoFactorCall?) in
                     do {
-                        let status = try result?.getStatus()
-                        let parsed = status!["status"] as! String
-                        if(parsed == "request_code") {
-                            //request code
-                            let methods = status!["methods"] as! NSArray
-                            if(methods.count > 1) {
-                                self.stopAnimating()
-                                self.performSegue(withIdentifier: "twoFactorSelector", sender: result)
-                            } else {
-                                let method = methods[0] as! String
-                                let req = try result?.requestCode(method: method)
-                                let status1 = try result?.getStatus()
-                                let parsed1 = status1!["status"] as! String
-                                if(parsed1 == "resolve_code") {
-                                    self.stopAnimating()
-                                    self.performSegue(withIdentifier: "twoFactor", sender: result)
-                                }
-                            }
-
-                        } else if (parsed == "call") {
-                            let json = try result?.call()
-                            self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
-                                self.stopAnimating()
-                                self.navigationController?.popToRootViewController(animated: true)
-                            }
-                        }
+                        let resultHelper = TwoFactorCallHelper(result!)
+                        resultHelper.delegate = self
+                        try resultHelper.resolve()
                     } catch {
                         self.stopAnimating()
-                        print("couldn't call")
+                        print(error)
                     }
                 } .catch { error in
                     self.stopAnimating()
                     print(error)
-                    print("wtf")
             }
         }
     }
 
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.CodePopup(sender)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func onDone(_ sender: TwoFactorCallHelper) {
+        self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+            self.stopAnimating()
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+    }
+    
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        self.stopAnimating()
+        print("wtf")
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             nextController.twoFactor = sender as? TwoFactorCall
