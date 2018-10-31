@@ -20,7 +20,6 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var sendAllFundsButton: UIButton!
     @IBOutlet weak var minerFeeTitle: UILabel!
 
-    var toAddress: String? = nil
     var feeLabel: UILabel = UILabel()
     var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
@@ -28,8 +27,8 @@ class SendBtcDetailsViewController: UIViewController {
     var btcAmount: Double = 0
     var fee: UInt64 = 1
     var selectedButton : UIButton? = nil
-    var g_payload: [String: Any]? = nil
     var priority: TransactionPriority? = nil
+    var transaction: TransactionHelper?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,22 +36,13 @@ class SendBtcDetailsViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
         self.tabBarController?.tabBar.isHidden = true
-        addressLabel.text = toAddress
+        
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         priority = SettingsStore.shared.getFeeSettings().0
         updatePriorityButtons()
-        if (btcAmount != 0) {
-            if (selectedType == TransactionType.BTC) {
-                let denominated = getDenominated(amount: btcAmount, ofType: DenominationType.BTC)
-                amountTextField.text = String(format: "%f", denominated)
-            } else {
-                let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
-                amountTextField.text = String(format: "%f", fiat)
-            }
-            updateEstimate()
-        }
+        refresh()
         updateMaxAmountLabel()
         setButton()
         customFeeTextField.attributedPlaceholder = NSAttributedString(string: "0",
@@ -70,6 +60,22 @@ class SendBtcDetailsViewController: UIViewController {
         customfeeButton.setTitle(NSLocalizedString("id_custom", comment: ""), for: .normal)
     }
 
+    func refresh() {
+        let addressees = transaction?.addresses()
+        let address = addressees![0]["address"] as! String
+        let satoshi = addressees![0]["satoshi"] as! UInt64
+        addressLabel.text = address
+        btcAmount = Double(satoshi) / 100000000
+        if (btcAmount != 0) {
+            if (selectedType == TransactionType.BTC) {
+                amountTextField.text = String(format: "%f", btcAmount)
+            } else {
+                let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
+                amountTextField.text = String(format: "%f", fiat)
+            }
+        }
+    }
+    
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if (self.view.frame.origin.y == 0 && customFeeTextField.isFirstResponder) {
@@ -122,7 +128,7 @@ class SendBtcDetailsViewController: UIViewController {
         reviewButton.layoutIfNeeded()
         errorLabel.isHidden = true
         reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-        updateButton()
+        updateButton(false)
     }
 
     @IBAction func sendAllFundsClick(_ sender: Any) {
@@ -145,21 +151,9 @@ class SendBtcDetailsViewController: UIViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBTCConfirmationViewController {
-            nextController.toAddress = toAddress!
-            if ( selectedType == TransactionType.FIAT) {
-                let amount = amountTextField.text!
-                nextController.fiat_amount = btcAmount
-                nextController.btc_amount = AccountStore.shared.fiatToBtc(amount: nextController.fiat_amount)
-            } else {
-                let amount = amountTextField.text!
-                nextController.btc_amount = btcAmount
-                nextController.fiat_amount = AccountStore.shared.btcToFiat(amount: nextController.btc_amount)
-            }
             nextController.wallet = wallet
-            nextController.satoshi_fee = Int(fee)
-            nextController.satoshi_amount = Int(btcAmount * 100000000)
-            nextController.payload = g_payload
             nextController.selectedType = selectedType
+            nextController.transaction = transaction
         }
     }
 
@@ -186,40 +180,37 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateEstimate() {
-
+        
         if (btcAmount == 0) {
             setLabel(button: selectedButton!, fee: 0)
-            g_payload = nil
-            updateButton()
+            updateButton(false)
             return
         }
 
-        var details = [String: Any]()
         let satoshi: UInt64 = UInt64(btcAmount * 100000000)
         var toAddress = [String: Any]()
         toAddress["satoshi"] = satoshi
         toAddress["address"] = addressLabel.text
 
-        details["fee_rate"] = fee
-        details["addressees"] = [toAddress]
-        details["change_subaccount"] = wallet?.pointer
-        details["send_all"] = sendAllFundsButton.isSelected
+        transaction?.data["fee_rate"] = fee
+        transaction?.data["addressees"] = [toAddress]
+        transaction?.data["change_subaccount"] = wallet?.pointer
+        transaction?.data["send_all"] = sendAllFundsButton.isSelected
 
         do {
             let unspent = try getSession().getUnspentOutputs(subaccount: (wallet?.pointer)!, num_confs: 1)
-            details["utxos"] = unspent?["array"]
-            if (details.count == 0 || (details["utxos"] as! [Any]).count == 0) {
-                g_payload = nil
-                updateButton()
+            transaction?.data["utxos"] = unspent?["array"]
+            if (transaction?.data.count == 0 || (transaction?.data["utxos"] as! [Any]).count == 0) {
+                updateButton(false)
                 setLabel(button: selectedButton!, fee: 0)
                 return
             }
-            print(details)
-            let payload = try getSession().createTransaction(details: details)
-            let error = payload!["error"] as! String
+            print(transaction?.data)
+            try transaction = TransactionHelper((transaction?.data)!)
+            //let payload = try getSession().createTransaction(details: details)
+            let error = transaction?.data["error"] as! String
             if (error != "") {
-                g_payload = nil
-                updateButton()
+                updateButton(false)
                 errorLabel.isHidden = false
                 errorLabel.text = error
                 setLabel(button: selectedButton!, fee: 0)
@@ -227,21 +218,19 @@ class SendBtcDetailsViewController: UIViewController {
                 return
             }
             errorLabel.isHidden = true
-            g_payload = payload
-            updateButton()
-            let fee = payload!["fee"] as! UInt64
+            updateButton(true)
+            let fee = transaction?.data["fee"] as! UInt64
             setLabel(button: selectedButton!, fee: fee)
             return
         } catch {
-            print("couldn't cteate transcation")
+            print("couldn't create transaction")
         }
-        g_payload = nil
-        updateButton()
+        updateButton(false)
         setLabel(button: selectedButton!, fee: 0)
     }
 
-    func updateButton() {
-        if (g_payload == nil) {
+    func updateButton(_ enable: Bool) {
+        if (enable == false) {
             if (reviewButton.layer.sublayers?.count == 2) {
                 reviewButton.layer.sublayers?.removeFirst()
             }
@@ -281,7 +270,7 @@ class SendBtcDetailsViewController: UIViewController {
         feeLabel.textColor = UIColor.customTitaniumLight()
 
         let usdValue:Double = AccountStore.shared.satoshiToFiat(amount: fee)
-        let size = g_payload!["transaction_vsize"] as! UInt64
+        let size = transaction?.data["transaction_vsize"] as! UInt64
         let satoshiPerByte = fee / size
         feeLabel.text = String(format: "~%.2f %@ \n (%d satoshi / byte)", usdValue, SettingsStore.shared.getCurrencyString(), satoshiPerByte)
         feeLabel.numberOfLines = 2

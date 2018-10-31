@@ -56,7 +56,6 @@ class TransactionHelper {
     // Constructors
     init(_ data: [String: Any]) throws {
         self.data = try getSession().createTransaction(details: data)!
-        deserialize()
     }
     
     init(_ uri: String) throws {
@@ -65,21 +64,23 @@ class TransactionHelper {
         toAddress["address"] = uri
         details["addressees"] = [toAddress]
         self.data = try getSession().createTransaction(details: details)!
-        deserialize()
         let error = self.data["error"] as! String
         if (error == "id_invalid_address") {
             throw GDKError.AddressFormatError(error)
         }
     }
     
-    func deserialize() {
-        if (self.data["addresses"] is NSArray) {
-            var addresses = Array<[String : Any]>()
-            let addrNSArray = self.data["addresses"] as! NSArray
-            for i in 0...addrNSArray.count {
+    func addresses() -> Array<[String : Any]> {
+        var addresses = Array<[String : Any]>()
+        if (self.data["addressees"] is NSArray) {
+            let addrNSArray = self.data["addressees"] as! NSArray
+            for i in 0...addrNSArray.count-1 {
                 let obj = addrNSArray[i] as! NSDictionary
                 addresses.append((obj as? [String : Any])!)
             }
+            return addresses
+        } else {
+            return self.data["addressees"] as! Array<[String : Any]>
         }
     }
 }

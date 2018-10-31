@@ -14,25 +14,19 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     @IBOutlet weak var toTitle: UILabel!
     @IBOutlet weak var myNotesTitle: UILabel!
 
-    var toAddress: String = ""
-    var fiat_amount: Double = 0
-    var btc_amount: Double = 0
-    var satoshi_amount: Int = 0
-    var satoshi_fee: Int = 0
     var walletName: String = ""
     var wallet: WalletItem? = nil
-    var payload: [String : Any]? = nil
     var selectedType: TransactionType? = nil
+    var transaction: TransactionHelper?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         walletNameLabel.text = walletName
-        recepientAddressLabel.text = toAddress
         self.tabBarController?.tabBar.isHidden = true
         walletNameLabel.text = wallet?.name
         hideKeyboardWhenTappedAround()
         slidingButton.delegate = self
-        updateAmountLabel()
+        refresh()
         textView.delegate = self
         textView.text = "Add a note..."
         textView.textColor = UIColor.customTitaniumLight()
@@ -42,18 +36,24 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
     }
 
+    func refresh() {
+        let addressees = transaction?.addresses()
+        let address = addressees![0]["address"] as! String
+        let satoshi = addressees![0]["satoshi"] as! UInt64
+        let btcAmount = Double(satoshi) / 100000000
+        recepientAddressLabel.text = address
+        if (selectedType == TransactionType.BTC) {
+            fiatAmountLabel.text = String(format: "%f BTC (%f USD)", btcAmount, 0)
+        } else if (selectedType == TransactionType.FIAT) {
+            fiatAmountLabel.text = String(format: "%f USD (%f BTC)", 0, btcAmount)
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         textView.textColor = UIColor.customTitaniumLight()
     }
 
-    func updateAmountLabel() {
-        if (selectedType == TransactionType.BTC) {
-            fiatAmountLabel.text = String(format: "%f BTC (%f USD)", btc_amount, fiat_amount)
-        } else if (selectedType == TransactionType.FIAT) {
-            fiatAmountLabel.text = String(format: "%f USD (%f BTC)", fiat_amount, btc_amount)
-        }
-    }
 
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == UIColor.customTitaniumLight() {
@@ -66,6 +66,8 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         if textView.text.isEmpty {
             textView.text = "Add a note..."
             textView.textColor = UIColor.customTitaniumLight()
+        } else {
+            transaction?.data["memo"] = textView.text
         }
     }
 
@@ -74,7 +76,8 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         let size = CGSize(width: 30, height: 30)
         startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
         DispatchQueue.global(qos: .background).async {
-            wrap {try getSession().sendTransaction(details: self.payload!)
+            wrap {
+                try getSession().sendTransaction(details: (self.transaction?.data)!)
                 }.done { (result: TwoFactorCall?) in
                     do {
                         let status = try result?.getStatus()

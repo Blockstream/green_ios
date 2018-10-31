@@ -166,11 +166,8 @@ class SendBtcViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcDetailsViewController {
             nextController.wallet = wallet
-            nextController.toAddress = textfield.text
-            nextController.btcAmount = prefillAmount
             nextController.selectedType = TransactionType.BTC
-            // TODO: use transaction to move data
-            // nextController.transaction = transaction
+            nextController.transaction = transaction
         }
     }
 
