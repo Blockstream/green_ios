@@ -19,6 +19,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var liquidSelector: DesignableView!
     var network: Network = Network.TestNet
     var delegate: NetworkDelegate?
+    var keyboardShown = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,6 +43,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         portTextField.text = networkSettings.portNumber
         torSwitch.isOn = networkSettings.torEnabled
         updatebuttons()
+        hideKeyboardWhenTappedAround()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -104,7 +106,10 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
 
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-
+            if (keyboardShown) {
+                return
+            }
+            keyboardShown = true
             let animations = { [weak self] in
                 self?.topConstraint.constant -= keyboardSize.height
                 self?.topConstraint.constant -= 1
@@ -117,6 +122,10 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
 
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if (!keyboardShown) {
+                return
+            }
+            keyboardShown = false
             let animations = { [weak self] in
                 self?.topConstraint.constant = 200
                 self?.topConstraint.constant = 200
