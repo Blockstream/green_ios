@@ -217,14 +217,13 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func updateView() {
-        var index = 0
-        for char in pinCode {
-            labels[index].text = String(char)
-            labels[index].isHidden = false
-            index += 1
+        let count = min(labels.count, pinCode.count)
+        for (i, c) in zip(0..<count, pinCode) {
+            labels[i].text = String(c)
+            labels[i].isHidden = false
         }
         createIndicator(position: pinCode.count)
-        for i in index..<labels.count {
+        for i in count..<labels.count {
             labels[i].isHidden = true
         }
     }
