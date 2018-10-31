@@ -1,5 +1,5 @@
 //
-//  Transaction.swift
+//  GDKHelper
 //  gaios
 //
 //  Created by luca on 31/10/2018.
@@ -50,10 +50,18 @@ class TwoFactorCallHelper {
     }
     
     static func CodePopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
-        let alert = UIAlertController(title: "Resolve", message: "Insert code of two-factor", preferredStyle: .alert)
+        let alert = UIAlertDefaultStyleController(title: "Insert Code", message: "Insert two factor code")
         alert.addTextField { (textField) in
-                textField.text = "code"
+            textField.text = ""
+            textField.textColor = UIColor.white
+            textField.tintColor = UIColor.customTitaniumDark()
+            textField.borderColor = UIColor.customTitaniumLight()
+            textField.backgroundColor = UIColor.customTitaniumDark()
         }
+        alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel, handler: { [weak alert] (_) in
+            sender.delegate?.onError(sender, text: "")
+            alert?.dismiss(animated: true, completion: nil)
+        }))
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
             let textField = alert!.textFields![0]
             print("Text field: \(textField.text)")
@@ -68,10 +76,7 @@ class TwoFactorCallHelper {
     }
     
     static func MethodPopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
-        let alert = UIAlertController(title: "Selector", message: "Select two factor", preferredStyle: .alert)
-        alert.addTextField { (textField) in
-            textField.text = "code"
-        }
+        let alert = UIAlertDefaultStyleController(title: "Selector", message: "Select two factor method")
         let json = try! sender.caller.getStatus()
         let methods = json!["methods"] as! NSArray
         for index in 0..<methods.count {
@@ -87,6 +92,23 @@ class TwoFactorCallHelper {
             }))
         }
         return alert
+    }
+    
+    static func UIAlertDefaultStyleController(title: String, message: String) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let subview = (alert.view.subviews.first?.subviews.first?.subviews.first!)! as UIView
+        subview.backgroundColor = UIColor.black
+        subview.tintColor = UIColor.white
+        alert.view.backgroundColor = UIColor.black
+        alert.view.tintColor = UIColor.white
+        alert.view.borderColor = UIColor.darkGray
+        alert.view.borderWidth = CGFloat(1.0)
+        
+        let attributedTitle = NSAttributedString(string: title, attributes: [ NSAttributedStringKey.foregroundColor : UIColor.white ])
+        let attributedMessage = NSAttributedString(string: message, attributes: [ NSAttributedStringKey.foregroundColor : UIColor.lightGray ])
+        alert.setValue(attributedTitle, forKey: "attributedTitle")
+        alert.setValue(attributedMessage, forKey: "attributedMessage")
+        return alert;
     }
 }
 
