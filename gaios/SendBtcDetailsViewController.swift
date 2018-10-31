@@ -36,7 +36,7 @@ class SendBtcDetailsViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
         self.tabBarController?.tabBar.isHidden = true
-        
+
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
@@ -74,7 +74,7 @@ class SendBtcDetailsViewController: UIViewController {
             }
         }
     }
-    
+
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if (self.view.frame.origin.y == 0 && customFeeTextField.isFirstResponder) {
@@ -134,7 +134,7 @@ class SendBtcDetailsViewController: UIViewController {
     @IBAction func sendAllFundsClick(_ sender: Any) {
         sendAllFundsButton.isSelected = !sendAllFundsButton.isSelected;
     }
-    
+
     @IBAction func nextButtonClicked(_ sender: UIButton) {
         self.performSegue(withIdentifier: "confirm", sender: self)
     }
@@ -180,7 +180,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateEstimate() {
-        
+
         if (btcAmount == 0) {
             setLabel(button: selectedButton!, fee: 0)
             updateButton(false)

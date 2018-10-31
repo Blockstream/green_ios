@@ -209,17 +209,17 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
         }
         //captureSession.stopRunning()
     }
-    
+
     func parseBitcoinUri(_ text: String) -> Bool {
         let scheme = "bitcoin:";
         let uri : String
-        
+
         if (!text.starts(with: scheme)) {
             uri = scheme + text
         } else {
             uri = text
         }
-        
+
         do {
             transaction = try TransactionHelper(uri)
             return true;

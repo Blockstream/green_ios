@@ -19,7 +19,7 @@ protocol TwoFactorCallDelegate: class {
 class TwoFactorCallHelper {
     var caller: TwoFactorCall
     var delegate: TwoFactorCallDelegate?
-    
+
     init(_ caller: TwoFactorCall) {
         self.caller = caller
     }
@@ -48,7 +48,7 @@ class TwoFactorCallHelper {
             }
         }
     }
-    
+
     static func CodePopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
         let alert = UIAlertDefaultStyleController(title: "Insert Code", message: "Insert two factor code")
         alert.addTextField { (textField) in
@@ -74,7 +74,7 @@ class TwoFactorCallHelper {
         }))
         return alert
     }
-    
+
     static func MethodPopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
         let alert = UIAlertDefaultStyleController(title: "Selector", message: "Select two factor method")
         let json = try! sender.caller.getStatus()
@@ -88,12 +88,12 @@ class TwoFactorCallHelper {
                 } catch {
                     sender.delegate?.onError(sender, text: "")
                 }
-                
+
             }))
         }
         return alert
     }
-    
+
     static func UIAlertDefaultStyleController(title: String, message: String) -> UIAlertController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let subview = (alert.view.subviews.first?.subviews.first?.subviews.first!)! as UIView
@@ -103,7 +103,7 @@ class TwoFactorCallHelper {
         alert.view.tintColor = UIColor.white
         alert.view.borderColor = UIColor.darkGray
         alert.view.borderWidth = CGFloat(1.0)
-        
+
         let attributedTitle = NSAttributedString(string: title, attributes: [ NSAttributedStringKey.foregroundColor : UIColor.white ])
         let attributedMessage = NSAttributedString(string: message, attributes: [ NSAttributedStringKey.foregroundColor : UIColor.lightGray ])
         alert.setValue(attributedTitle, forKey: "attributedTitle")
@@ -115,16 +115,16 @@ class TwoFactorCallHelper {
 class TransactionHelper {
     // Common variable
     public var data: [String: Any]
-    
+
     enum GDKError: Error {
         case AddressFormatError(String)
     }
-    
+
     // Constructors
     init(_ data: [String: Any]) throws {
         self.data = try getSession().createTransaction(details: data)!
     }
-    
+
     init(_ uri: String) throws {
         var details = [String: Any]()
         var toAddress = [String: Any]()
@@ -136,7 +136,7 @@ class TransactionHelper {
             throw GDKError.AddressFormatError(error)
         }
     }
-    
+
     func addresses() -> Array<[String : Any]> {
         var addresses = Array<[String : Any]>()
         if (self.data["addressees"] is NSArray) {

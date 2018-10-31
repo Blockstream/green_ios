@@ -48,7 +48,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
             fiatAmountLabel.text = String(format: "%f USD (%f BTC)", 0, btcAmount)
         }
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         textView.textColor = UIColor.customTitaniumLight()
@@ -98,12 +98,12 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         let alert = TwoFactorCallHelper.CodePopup(sender)
         self.present(alert, animated: true, completion: nil)
     }
-    
+
     func onRequest(_ sender: TwoFactorCallHelper) {
         let alert = TwoFactorCallHelper.MethodPopup(sender)
         self.present(alert, animated: true, completion: nil)
     }
-    
+
     func onDone(_ sender: TwoFactorCallHelper) {
         self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
@@ -111,12 +111,12 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
             self.navigationController?.popToRootViewController(animated: true)
         }
     }
-    
+
     func onError(_ sender: TwoFactorCallHelper, text: String) {
         self.stopAnimating()
         print("wtf")
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? VerifyTwoFactorViewController {
             nextController.twoFactor = sender as? TwoFactorCall

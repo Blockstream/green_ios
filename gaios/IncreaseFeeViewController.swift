@@ -163,23 +163,23 @@ class IncreaseFeeViewController: UIViewController, TwoFactorCallDelegate {
             print("increase failed")
         }
     }
-    
+
     func onResolve(_ sender: TwoFactorCallHelper) {
         self.performSegue(withIdentifier: "twoFactor", sender: sender)
     }
-    
+
     func onRequest(_ sender: TwoFactorCallHelper) {
         self.performSegue(withIdentifier: "twoFactorSelector", sender: sender)
     }
-    
+
     func onDone(_ sender: TwoFactorCallHelper) {
         self.dismiss(animated: true, completion: nil)
     }
-    
+
     func onError(_ sender: TwoFactorCallHelper, text: String) {
         print( text )
     }
-    
+
     @IBAction func increaseFeeClicked(_ sender: Any) {
         if (priority != nil) {
             let feeRate = getFeeForPriority(p: priority)

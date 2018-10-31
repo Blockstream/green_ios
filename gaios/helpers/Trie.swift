@@ -14,7 +14,7 @@ class TrieNode<T: Hashable> {
         self.value = value
         self.parentNode = parentNode
     }
-    
+
     func add(value: T) {
         guard children[value] == nil else {
             return
@@ -37,13 +37,13 @@ class Trie: NSObject, NSCoding {
     }
     fileprivate let root: Node
     fileprivate var wordCount: Int
-    
+
     override init() {
         root = Node()
         wordCount = 0
         super.init()
     }
-    
+
     required convenience init?(coder decoder: NSCoder) {
         self.init()
         let words = decoder.decodeObject(forKey: "words") as? [String]
@@ -75,7 +75,7 @@ class Trie: NSObject, NSCoding {
         wordCount += 1
         currentNode.isTerminating = true
     }
-    
+
     private func findLastNodeOf(word: String) -> Node? {
         var currentNode = root
         for character in word.lowercased() {
@@ -86,7 +86,7 @@ class Trie: NSObject, NSCoding {
         }
         return currentNode
     }
-    
+
     func findWordsWithPrefix(prefix: String) -> [String] {
         var words = [String]()
         let prefixLowerCased = prefix.lowercased()
@@ -101,7 +101,7 @@ class Trie: NSObject, NSCoding {
         }
         return words
     }
-    
+
     fileprivate func wordsInSubtrie(rootNode: Node, partialWord: String) -> [String] {
         var subtrieWords = [String]()
         var previousLetters = partialWord
