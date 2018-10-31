@@ -28,11 +28,13 @@ namespace sdk {
             const std::string txhash = utxo.at("txhash");
             const auto txid = bytes_from_hex_rev(txhash);
             const uint32_t index = utxo.at("pt_idx");
-            const uint32_t sequence = session.is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
             const auto type = script_type(utxo.at("script_type"));
             const bool low_r = session.get_signer().supports_low_r();
             const uint32_t dummy_sig_type = low_r ? WALLY_TX_DUMMY_SIG_LOW_R : WALLY_TX_DUMMY_SIG;
             const bool external = !json_get_value(utxo, "private_key").empty();
+            const uint32_t sequence = session.is_rbf_enabled() ? 0xFFFFFFFD : 0xFFFFFFFE;
+
+            utxo["sequence"] = sequence;
 
             if (external) {
                 tx_add_raw_input(tx, txid, index, sequence,
@@ -215,9 +217,18 @@ namespace sdk {
             return std::make_pair(is_rbf, is_cpfp);
         }
 
-        void create_ga_transaction_impl(session& session, const network_parameters& net_params, nlohmann::json& result)
+        static void set_tx_error(nlohmann::json& result, const std::string& error)
         {
-            result["error"] = std::string(); // Clear any previous error
+            if (json_get_value(result, "error").empty()) {
+                result["error"] = error;
+            }
+        }
+
+        static void create_ga_transaction_impl(
+            session& session, const network_parameters& net_params, nlohmann::json& result)
+        {
+            auto& error = result["error"];
+            error = std::string(); // Clear any previous error
             result["user_signed"] = false;
             result["server_signed"] = false;
 
@@ -242,35 +253,43 @@ namespace sdk {
             }
             result["is_redeposit"] = is_redeposit;
 
-            bool is_sweep = false;
-            if (result.find("private_key") != result.end()) {
-                // create sweep transaction
-                if (result.find("utxos") != result.end()) {
-                    // check for sweep related keys
-                    for (const auto& utxo : result.at("utxos")) {
-                        GA_SDK_RUNTIME_ASSERT(!json_get_value(utxo, "private_key").empty());
-                    }
-                } else {
-                    result["utxos"] = session.get_unspent_outputs_for_private_key(
-                        result["private_key"], json_get_value(result, "passphrase"), 0);
-                }
-                if (result["utxos"].empty()) {
-                    result["error"] = res::id_no_utxos_found;
-                    return;
-                }
-                result["send_all"] = true;
-                GA_SDK_RUNTIME_ASSERT(result.find("addressees") == result.end());
-                const auto address = session.get_receive_address(current_subaccount).at("address");
-                std::vector<nlohmann::json> addressees;
-                addressees.emplace_back(nlohmann::json({ { "address", address }, { "satoshi", 0 } }));
-                result["addressees"] = addressees;
-                is_sweep = true;
-            }
+            const bool is_sweep = result.find("private_key") != result.end();
 
             // Let the caller know if addressees should not be modified
             result["addressees_read_only"] = is_redeposit || is_rbf || is_cpfp || is_sweep;
 
-            if (result.find("utxos") == result.end()) {
+            auto addressees_p = result.find("addressees");
+            if (is_sweep) {
+                // create sweep transaction
+                if (result.find("utxos") != result.end()) {
+                    // check for sweep related keys
+                    GA_SDK_RUNTIME_ASSERT(!result["utxos"].empty());
+                    for (const auto& utxo : result["utxos"]) {
+                        GA_SDK_RUNTIME_ASSERT(!json_get_value(utxo, "private_key").empty());
+                    }
+                } else {
+                    nlohmann::json utxos = session.get_unspent_outputs_for_private_key(
+                        result["private_key"], json_get_value(result, "passphrase"), 0);
+                    result["utxos"] = utxos;
+                    if (utxos.empty())
+                        set_tx_error(result, res::id_no_utxos_found); // No UTXOs found
+                }
+                result["send_all"] = true;
+                if (addressees_p != result.end()) {
+                    // Use the provided address
+                    GA_SDK_RUNTIME_ASSERT(addressees_p->size() == 1u);
+                    addressees_p->at(0)["satoshi"] = 0;
+                } else {
+                    // Send to an address in the current subaccount
+                    const auto address = session.get_receive_address(current_subaccount).at("address");
+                    std::vector<nlohmann::json> addressees;
+                    addressees.emplace_back(nlohmann::json({ { "address", address }, { "satoshi", 0 } }));
+                    result["addressees"] = addressees;
+                    addressees_p = result.find("addressees");
+                }
+            }
+
+            if (!is_sweep && result.find("utxos") == result.end()) {
                 // Fetch the users utxos from the current subaccount.
                 // Always spend utxos with 1 confirmation, unless we are in testnet.
                 // Even in testnet, if RBFing, require 1 confirmation.
@@ -280,6 +299,11 @@ namespace sdk {
             }
 
             const bool send_all = json_add_if_missing(result, "send_all", false);
+            // For now, the amount can't be directly edited for the below actions
+            // One we expose coin control, the amount will auto update as utxos are
+            // selected/deselected
+            result["amount_read_only"] = send_all || is_redeposit || is_rbf || is_cpfp || is_sweep;
+
             const std::string strategy = json_add_if_missing(result, "utxo_strategy", UTXO_SEL_DEFAULT);
             const bool manual_selection = strategy == UTXO_SEL_MANUAL;
             GA_SDK_RUNTIME_ASSERT(strategy == UTXO_SEL_DEFAULT || manual_selection);
@@ -289,24 +313,26 @@ namespace sdk {
             }
 
             // We must have addressees to send to, and if sending everything, only one
-            auto& addressees = result.at("addressees");
-            if (addressees.empty()) {
-                result["error"] = res::id_no_outputs; // No outputs
-                return;
+            // Note that this error is set unconditionally and so overrides any others,
+            // Since addressing transactions is normally done first by users
+            size_t num_addressees = 0;
+            if (addressees_p == result.end() || addressees_p->empty()) {
+                set_tx_error(result, res::id_no_outputs); // No outputs
+            } else {
+                num_addressees = addressees_p->size();
             }
 
             // Send all should not be visible/set when RBFing
             GA_SDK_RUNTIME_ASSERT(!is_rbf || !send_all);
 
-            if (send_all && addressees.size() > 1) {
-                result["error"] = res::id_send_all_requires_a_single; // Send all requires a single output
-                return;
+            if (send_all && num_addressees > 1) {
+                set_tx_error(result, res::id_send_all_requires_a_single); // Send all requires a single output
             }
 
             auto& utxos = result.at("utxos");
             const uint32_t current_block_height = session.get_block_height();
             const uint32_t num_extra_utxos = is_rbf ? result.at("old_used_utxos").size() : 0;
-            wally_tx_ptr tx = tx_init(current_block_height, utxos.size() + num_extra_utxos, addressees.size() + 1);
+            wally_tx_ptr tx = tx_init(current_block_height, utxos.size() + num_extra_utxos, num_addressees + 1);
             if (!is_rbf) {
                 set_anti_snipe_locktime(tx, current_block_height);
             }
@@ -314,8 +340,10 @@ namespace sdk {
             // Add all outputs and compute the total amount of satoshi to be sent
             amount required_total{ 0 };
 
-            for (auto& addressee : addressees) {
-                required_total += add_tx_addressee(session, net_params, tx, addressee);
+            if (num_addressees) {
+                for (auto& addressee : *addressees_p) {
+                    required_total += add_tx_addressee(session, net_params, result, tx, addressee);
+                }
             }
 
             std::vector<uint32_t> used_utxos;
@@ -368,7 +396,7 @@ namespace sdk {
             if (is_rbf) {
                 have_change = result.value("have_change", false);
                 if (have_change) {
-                    add_tx_output(net_params, tx, result.at("change_address"));
+                    add_tx_output(net_params, result, tx, result.at("change_address"));
                     change_index = tx->num_outputs - 1;
                 }
             }
@@ -389,17 +417,25 @@ namespace sdk {
                 const amount fee_increment = fee - old_fee + network_fee;
                 fee += network_fee;
 
+                amount am;
                 if (send_all) {
+                    if (total < fee + min_change) {
+                        set_tx_error(result, res::id_insufficient_funds); // Insufficient funds
+                        goto leave_loop;
+                    }
                     required_total = total - fee - min_change;
                     tx->outputs[0].satoshi = required_total.value();
+                    if (num_addressees == 1u) {
+                        addressees_p->at(0)["satoshi"] = required_total.value();
+                    }
                 }
 
-                const amount am = required_total + fee + min_change;
+                am = required_total + fee + min_change;
                 if (total < am) {
                     if (manual_selection || used_utxos.size() == utxos.size()) {
                         // Used all inputs and do not have enough funds
-                        result["error"] = res::id_insufficient_funds; // Insufficient funds
-                        return;
+                        set_tx_error(result, res::id_insufficient_funds); // Insufficient funds
+                        goto leave_loop;
                     }
 
                     // FIXME: Use our strategy here when non-default implemented
@@ -410,6 +446,7 @@ namespace sdk {
                 }
 
                 if (total == am || have_change) {
+                leave_loop:
                     result["fee"] = fee.value();
                     result["fee_increment"] = fee_increment.value();
                     result["network_fee"] = network_fee.value();
@@ -429,7 +466,7 @@ namespace sdk {
                     result["change_subaccount"] = change_subaccount;
                     result["change_address"] = change_address;
                 }
-                add_tx_output(net_params, tx, change_address);
+                add_tx_output(net_params, result, tx, change_address);
                 have_change = true;
                 change_index = tx->num_outputs - 1;
             }
@@ -454,11 +491,13 @@ namespace sdk {
             result["change_amount"] = change_amount;
             result["change_index"] = change_index;
 
-            if (user_fee_rate < min_fee_rate) {
-                result["error"] = res::id_fee_rate_is_below_minimum; // Fee rate is below minimum accepted fee rate
+            if (required_total == 0) {
+                set_tx_error(result, res::id_no_amount_specified); // // No amount specified
+            } else if (user_fee_rate < min_fee_rate) {
+                set_tx_error(result, res::id_fee_rate_is_below_minimum); // Fee rate is below minimum accepted fee rate
             }
             update_tx_info(tx, result);
-        }
+        } // namespace
     } // namespace
 
     nlohmann::json create_ga_transaction(
@@ -473,9 +512,7 @@ namespace sdk {
             // fixes each error
             create_ga_transaction_impl(session, net_params, result);
         } catch (const std::exception& e) {
-            if (result.value("error", "").empty()) {
-                result["error"] = e.what();
-            }
+            set_tx_error(result, e.what());
         }
         return result;
     }
@@ -543,9 +580,9 @@ namespace sdk {
 
     nlohmann::json sign_ga_transaction(session& session, const nlohmann::json& details)
     {
-        auto tx = tx_from_hex(details.at("transaction"));
-
         const auto inputs = get_ga_signing_inputs(details);
+        const auto tx = tx_from_hex(details.at("transaction"));
+
         size_t i = 0;
         for (const auto& utxo : inputs) {
             sign_input(session, tx, i, utxo);

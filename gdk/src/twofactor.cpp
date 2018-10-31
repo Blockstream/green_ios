@@ -322,6 +322,7 @@ GA_sign_transaction_call::GA_sign_transaction_call(
     m_twofactor_data["signing_address_types"] = std::vector<std::string>(addr_types.begin(), addr_types.end());
     m_twofactor_data["signing_inputs"] = signing_inputs;
     m_twofactor_data["signing_transactions"] = prev_txs;
+    m_twofactor_data["transaction_outputs"] = tx_details["transaction_outputs"];
 }
 
 GA_twofactor_call::state_type GA_sign_transaction_call::call_impl()

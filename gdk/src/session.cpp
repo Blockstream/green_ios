@@ -409,6 +409,12 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->convert_amount(amount_json); });
     }
 
+    nlohmann::json session::convert_amount_nocatch(const nlohmann::json& amount_json)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return m_impl->convert_amount(amount_json);
+    }
+
     nlohmann::json session::encrypt(const nlohmann::json& input_json)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);

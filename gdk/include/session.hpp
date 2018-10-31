@@ -118,6 +118,7 @@ namespace sdk {
         void ack_system_message(const std::string& system_message);
 
         nlohmann::json convert_amount(const nlohmann::json& amount_json);
+        nlohmann::json convert_amount_nocatch(const nlohmann::json& amount_json);
         nlohmann::json encrypt(const nlohmann::json& input_json);
         nlohmann::json decrypt(const nlohmann::json& input_json);
 

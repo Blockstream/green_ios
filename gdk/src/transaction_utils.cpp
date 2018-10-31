@@ -71,7 +71,7 @@ namespace sdk {
         __builtin_unreachable();
     }
 
-    std::vector<unsigned char> output_script_for_address(
+    static std::vector<unsigned char> output_script_for_address(
         const network_parameters& net_params, const std::string& address)
     {
         if (boost::starts_with(address, net_params.bech32_prefix())) {
@@ -88,8 +88,7 @@ namespace sdk {
             } else if (addr_bytes.front() == net_params.btc_version()) {
                 return scriptpubkey_p2pkh_from_hash160(script_hash);
             } else {
-                GA_SDK_RUNTIME_ASSERT(false); // Unknown address version
-                __builtin_unreachable();
+                return std::vector<unsigned char>(); // Unknown address version
             }
         }
     }
@@ -208,71 +207,85 @@ namespace sdk {
         return amount(rounded_fee);
     }
 
-    amount add_tx_output(
-        const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi)
+    amount add_tx_output(const network_parameters& net_params, nlohmann::json& result, wally_tx_ptr& tx,
+        const std::string& address, amount::value_type satoshi)
     {
         // FIXME: Support OP_RETURN outputs
         std::vector<unsigned char> script;
         try {
             script = output_script_for_address(net_params, address);
         } catch (const std::exception& e) {
-            throw user_error(res::id_invalid_address);
         }
+        if (script.empty()) {
+            // Overwite any existing error in the transaction as addressees
+            // are entered and should be corrected first.
+            result["error"] = res::id_invalid_address;
+            // Create a dummy script so that the caller gets back a reasonable
+            // estimate of the tx size/fee etc when the address is corrected.
+            script.resize(HASH160_LEN);
+        }
+
         tx_add_raw_output(tx, satoshi, script);
         return amount(satoshi);
     }
 
-    auto get_addressee_amount(session& session, const nlohmann::json& addressee)
+    amount add_tx_addressee(session& session, const network_parameters& net_params, nlohmann::json& result,
+        wally_tx_ptr& tx, nlohmann::json& addressee)
     {
-        const auto params = addressee.find("bip21-params");
-        if (params != addressee.end()) {
-            const auto payment_uri_amount = params->find("amount");
-            if (payment_uri_amount != params->end()) {
-                const auto amount_uri = session.convert_amount({ { "btc", payment_uri_amount->get<std::string>() } });
+        std::string address = addressee.at("address"); // Assume its a standard address
 
-                // fail if the amount is also specified in the addressee and it is different
-                bool conflicting_amount = false;
-                try {
-                    const auto amount_addressee = session.convert_amount(addressee);
-                    conflicting_amount = amount_addressee["satoshi"] != amount_uri["satoshi"];
-                } catch (const user_error&) {
-                    // no amount in addressee
-                }
-                if (conflicting_amount) {
-                    throw user_error(res::id_conflicting_amount_in_payment);
-                }
-                return amount_uri;
+        nlohmann::json uri_params = parse_bitcoin_uri(address);
+        if (!uri_params.is_null()) {
+            // Address is a BIP21 style payment URI
+            address = uri_params.at("address");
+            addressee["address"] = address;
+            const auto& bip21_params = uri_params["bip21-params"];
+            addressee["bip21-params"] = bip21_params;
+            const auto uri_amount_p = bip21_params.find("amount");
+            if (uri_amount_p != bip21_params.end()) {
+                // Use the amount specified in the URI
+                const nlohmann::json uri_amount = { { "btc", uri_amount_p->get<std::string>() } };
+                addressee["satoshi"] = session.convert_amount_nocatch(uri_amount)["satoshi"];
+                amount::strip_non_satoshi_keys(addressee);
             }
         }
 
-        // payment uri does not contain an amount
-        // amount must be in addressee - fail if it's not
-        return session.convert_amount(addressee);
-    }
-
-    amount add_tx_addressee(
-        session& session, const network_parameters& net_params, wally_tx_ptr& tx, nlohmann::json& addressee)
-    {
-        // address may be a literal address or a bip21-style payment uri
-        std::string address = addressee.at("address");
-        nlohmann::json payment_uri_params = parse_bitcoin_uri(address);
-        if (!payment_uri_params.is_null()) {
-            address = payment_uri_params.at("address");
-            addressee["address"] = address;
-            addressee["bip21-params"] = payment_uri_params["bip21-params"];
+        // Convert the users entered value into satoshi
+        amount satoshi;
+        try {
+            satoshi = session.convert_amount_nocatch(addressee)["satoshi"].get<amount::value_type>();
+        } catch (const std::exception&) {
+            // Note the error, and create a 0 satoshi output
+            result["error"] = res::id_invalid_amount;
         }
-        const auto amount = get_addressee_amount(session, addressee);
-        addressee.update(amount);
-        return add_tx_output(net_params, tx, address, amount["satoshi"]);
+        amount::strip_non_satoshi_keys(addressee);
+        addressee["satoshi"] = satoshi.value(); // Sets to 0 if not present
+
+        return add_tx_output(net_params, result, tx, address, satoshi.value());
     }
 
     void update_tx_info(const wally_tx_ptr& tx, nlohmann::json& result)
     {
-        result["transaction"] = hex_from_bytes(tx_to_bytes(tx));
+        const bool valid = tx->num_inputs && tx->num_outputs;
+        result["transaction"] = valid ? hex_from_bytes(tx_to_bytes(tx)) : std::string();
         const auto weight = tx_get_weight(tx);
-        result["transaction_size"] = tx_get_length(tx, WALLY_TX_FLAG_USE_WITNESS);
-        result["transaction_weight"] = weight;
-        result["transaction_vsize"] = tx_vsize_from_weight(weight);
+        result["transaction_size"] = valid ? tx_get_length(tx, WALLY_TX_FLAG_USE_WITNESS) : 0;
+        result["transaction_weight"] = valid ? weight : 0;
+        result["transaction_vsize"] = valid ? tx_vsize_from_weight(weight) : 0;
+        result["transaction_version"] = tx->version;
+        result["transaction_locktime"] = tx->locktime;
+        // Note that outputs may be empty if the constructed tx is incomplete
+        std::vector<nlohmann::json> outputs;
+        outputs.reserve(tx->num_outputs);
+        const bool have_change = result.value("have_change", false);
+        const uint32_t change_index = have_change ? result.at("change_index").get<uint32_t>() : 0xffffffff;
+        for (size_t i = 0; i < tx->num_outputs; ++i) {
+            const auto& o = tx->outputs[i];
+            const auto script_hex = hex_from_bytes(gsl::make_span(o.script, o.script_len));
+            outputs.emplace_back(nlohmann::json{
+                { "satoshi", o.satoshi }, { "script", script_hex }, { "is_change", i == change_index } });
+        }
+        result["transaction_outputs"] = outputs;
     }
 
     void set_anti_snipe_locktime(const wally_tx_ptr& tx, uint32_t current_block_height)

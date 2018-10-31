@@ -12,16 +12,14 @@ def create_tx(session, details):
     tx.update(details)
     return session.create_transaction(tx)
 
+
 def create_tx_and_sign(session, details):
     return session.sign_transaction(create_tx(session, details))
 
-def fund(address, amount):
-    sendtomany(address, amount)
-    generate(1)
-    time.sleep(10) # FIXME
 
 def sweep_private_key(session, private_key, passphrase=None):
     details = {
+    #    'addressees' : [{ 'address': session.get_receive_address(0) }],
         'private_key': private_key,
         'fee_rate': 1000
     }
@@ -29,8 +27,7 @@ def sweep_private_key(session, private_key, passphrase=None):
         details.update({'passphrase': passphrase})
     tx = create_tx_and_sign(session, details)
     sendrawtransaction(tx['transaction'])
-    generate(1)
-    time.sleep(10) # FIXME
+
 
 def do_test(network, debug):
 
@@ -47,14 +44,16 @@ def do_test(network, debug):
                  "mzfd8oGMaaVA3ErcTZehLTDkNgySScWDsT"]
 
     # WIF
-    fund(addresses, [0.2, 0.1])
+    sendtomany(addresses, [0.2, 0.1])
 
     # sweep keys
-    for private_key in private_keys:
+    for private_key in [private_keys[0]]:
         sweep_private_key(session, private_key)
+    generate(1)
+    time.sleep(30) # FIXME
 
     # BIP38
-    fund(addresses, [0.2, 0.1])
+    sendtomany(addresses, [0.2, 0.1])
 
     private_key = "6PYTh1Jgj3caimSrFjsfR5wJ8zUgWNDiPoNVZapSy8BwkF4NaKa1R32CaN" # compressed bip38
     sweep_private_key(session, private_key, 'passphrase')

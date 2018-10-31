@@ -39,9 +39,6 @@ namespace sdk {
     std::string get_address_from_script(
         const network_parameters& net_params, byte_span_t script, const std::string& addr_type);
 
-    std::vector<unsigned char> output_script_for_address(
-        const network_parameters& net_params, const std::string& address);
-
     std::vector<unsigned char> output_script(ga_pubkeys& pubkeys, ga_user_pubkeys& user_pubkeys,
         ga_user_pubkeys& recovery_pubkeys, const nlohmann::json& data);
 
@@ -65,12 +62,12 @@ namespace sdk {
     amount get_tx_fee(const wally_tx_ptr& tx, amount min_fee_rate, amount fee_rate);
 
     // Add an output to a tx given its address
-    amount add_tx_output(
-        const network_parameters& net_params, wally_tx_ptr& tx, const std::string& address, uint32_t satoshi = 0);
+    amount add_tx_output(const network_parameters& net_params, nlohmann::json& result, wally_tx_ptr& tx,
+        const std::string& address, amount::value_type satoshi = 0);
 
     // Add an output from a JSON addressee
-    amount add_tx_addressee(
-        session& session, const network_parameters& net_params, wally_tx_ptr& tx, nlohmann::json& addressee);
+    amount add_tx_addressee(session& session, const network_parameters& net_params, nlohmann::json& result,
+        wally_tx_ptr& tx, nlohmann::json& addressee);
 
     // Update the json tx representation with info from tx
     void update_tx_info(const wally_tx_ptr& tx, nlohmann::json& result);

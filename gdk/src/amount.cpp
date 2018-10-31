@@ -24,6 +24,8 @@ namespace sdk {
         static const conversion_type COIN_VALUE_DECIMAL("100000000");
         static const conversion_type COIN_VALUE_DECIMAL_MBTC("100000");
         static const conversion_type COIN_VALUE_DECIMAL_UBTC("100");
+        static const std::vector<std::string> NON_SATOSHI_KEYS{ "btc", "mbtc", "ubtc", "bits", "fiat", "fiat_currency",
+            "fiat_rate" };
 
         template <typename T> static std::string fmt(const T& fiat, size_t dp = 2)
         {
@@ -93,6 +95,13 @@ namespace sdk {
         // country code and return it so the caller can do locale aware formatting
         return { { "satoshi", satoshi }, { "btc", btc }, { "mbtc", mbtc }, { "ubtc", ubtc }, { "bits", ubtc },
             { "fiat", fmt(fiat_type(fiat_decimal)) }, { "fiat_currency", fiat_currency }, { "fiat_rate", fr_str } };
+    }
+
+    void amount::strip_non_satoshi_keys(nlohmann::json& amount_json)
+    {
+        for (const auto& key : NON_SATOSHI_KEYS) {
+            amount_json.erase(key);
+        }
     }
 
     nlohmann::json amount::convert_fiat_cents(
