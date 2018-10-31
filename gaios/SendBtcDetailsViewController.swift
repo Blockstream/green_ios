@@ -42,7 +42,6 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         priority = SettingsStore.shared.getFeeSettings().0
         updatePriorityButtons()
-        refresh()
         updateMaxAmountLabel()
         setButton()
         customFeeTextField.attributedPlaceholder = NSAttributedString(string: "0",
@@ -128,7 +127,8 @@ class SendBtcDetailsViewController: UIViewController {
         reviewButton.layoutIfNeeded()
         errorLabel.isHidden = true
         reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-        updateButton(false)
+        refresh()
+        updateEstimate()
     }
 
     @IBAction func sendAllFundsClick(_ sender: Any) {
@@ -198,13 +198,6 @@ class SendBtcDetailsViewController: UIViewController {
         transaction?.data["send_all"] = sendAllFundsButton.isSelected
 
         do {
-            let unspent = try getSession().getUnspentOutputs(subaccount: (wallet?.pointer)!, num_confs: 1)
-            transaction?.data["utxos"] = unspent?["array"]
-            if (transaction?.data.count == 0 || (transaction?.data["utxos"] as! [Any]).count == 0) {
-                updateButton(false)
-                setLabel(button: selectedButton!, fee: 0)
-                return
-            }
             print(transaction?.data)
             try transaction = TransactionHelper((transaction?.data)!)
             //let payload = try getSession().createTransaction(details: details)
