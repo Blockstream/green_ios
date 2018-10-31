@@ -65,21 +65,22 @@ class TwoFactorSlectorViewController: UIViewController {
         }
     }
 
+    //FIXME: comapring title is bad
     @IBAction func buttonClicked(_ sender: Any) {
         let button = sender as! UIButton
         print("button " + String(button.tag) + " clicked")
         do {
         var method = ""
-        if(button.title(for: .normal) == "Email") {
+        if(button.title(for: .normal) == NSLocalizedString("id_email", comment: "")) {
             try twoFactor?.requestCode(method: "email")
             method = "email"
-        } else if (button.title(for: .normal) == "SMS") {
+        } else if (button.title(for: .normal) == NSLocalizedString("id_sms", comment: "")) {
             try twoFactor?.requestCode(method: "sms")
             method = "sms"
-        } else if (button.title(for: .normal) == "Google Authenticator") {
+        } else if (button.title(for: .normal) == NSLocalizedString("id_google_auth", comment: "")) {
             try twoFactor?.requestCode(method: "gauth")
             method = "gauth"
-        } else if (button.title(for: .normal) == "Phone Call") {
+        } else if (button.title(for: .normal) == NSLocalizedString("id_call", comment: "")) {
             try twoFactor?.requestCode(method: "phone")
             method = "phone"
         }
