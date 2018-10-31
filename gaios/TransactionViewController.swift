@@ -42,7 +42,7 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
     {
         let item = items[indexPath.row]
         let widthContraint = self.tableView.frame.size.width - 84
-        let height = item.text.heightWithConstrainedWidth(width: widthContraint, font: UIFont.systemFont(ofSize: 12, weight: .light))
+        let height = textForNotification(notification: item).heightWithConstrainedWidth(width: widthContraint, font: UIFont.systemFont(ofSize: 12, weight: .light))
         let total = 88 + height + 40
         return total
     }
@@ -51,17 +51,54 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
         return items.count
     }
 
+    func textForNotification(notification: NotificationItem) -> String {
+        if (notification.type == "warning") {
+            if (notification.id == "warninghash1") {
+                return NotificationStore.shared.warrningNoTwoFactor
+            } else {
+                return NotificationStore.shared.warrningOneTwoFactor
+            }
+        } else if (notification.type == "incoming") {
+            let denominatedAmount = getDenominated(amount: Double(notification.satoshi), ofType: DenominationType.Satoshi)
+            let localized = NSLocalizedString("id_you_have_received_s_btc", comment: "")
+            let amountString = String(format: "%f %@", denominatedAmount, SettingsStore.shared.getDenominationSettings().rawValue)
+            let formatted = String(format: localized, amountString)
+            return formatted
+        } else if (notification.type == "outgoing") {
+            let denominatedAmount = getDenominated(amount: Double(notification.satoshi), ofType: DenominationType.Satoshi)
+            let amountString = String(format: "%f %@", denominatedAmount, SettingsStore.shared.getDenominationSettings().rawValue)
+            let localized = NSLocalizedString("id_your_s_btc_sent_to_s_has_been", comment: "")
+            return  String(format: localized, amountString, notification.address)
+        } else if (notification.type == "welcome") {
+            return NSLocalizedString("id_thank_you_for_downloading_green", comment: "")
+        }
+        return ""
+    }
+
+    func titleForNotification(notification: NotificationItem) -> String {
+        if (notification.type == "warning") {
+            return NSLocalizedString("id_warning", comment: "")
+        } else if (notification.type == "incoming") {
+            return NSLocalizedString("id_deposit", comment: "")
+        } else if (notification.type == "outgoing") {
+            return NSLocalizedString("id_confirmation", comment: "")
+        } else if (notification.type == "welcome") {
+            return NSLocalizedString("id_welcome", comment: "")
+        }
+        return ""
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCell(withIdentifier: "NotificationCell", for: indexPath) as! NotificationTableCell
         let item: NotificationItem = items.reversed()[indexPath.row]
-        cell.mainText.text = item.text
+        cell.mainText.text = textForNotification(notification: item)
         if(item.isWarning) {
             cell.title.textColor = UIColor.red
         } else {
             cell.title.textColor = UIColor.white
         }
-        cell.title.text = item.title
+        cell.title.text = titleForNotification(notification: item)
         cell.date.text = NotificationStore.shared.dateToText(date: item.date)
         cell.date.sizeToFit()
         cell.title.sizeToFit()

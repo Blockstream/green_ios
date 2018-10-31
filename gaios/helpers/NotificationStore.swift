@@ -33,12 +33,15 @@ class NotificationStore {
                             let dateString = transaction["created_at"] as! String
                             let date = Date.dateFromString(dateString: dateString)
                             let type = transaction["type"] as! String
+                            if (type == "redeposit") {
+                                return
+                            }
                             let adressees = transaction["addressees"] as! [String]
                             var counterparty = ""
                             if (adressees.count > 0) {
                                 counterparty = adressees[0]
                             }
-                            let note: NotificationItem = self.createNotification(date: date, hash: hash, amount: satoshi, counterparty: counterparty, type: type)
+                            let note: NotificationItem = NotificationItem(date: date, id: hash, seen: false, isWarning: false, satoshi: satoshi, type: type, address: counterparty)
                             if (self.allNotifications[hash] == nil) {
                                 self.allNotifications[hash] = note
                                 self.newNotificationCount += 1
@@ -88,7 +91,7 @@ class NotificationStore {
     }
 
     func getNotifications() -> Array<NotificationItem> {
-        return Array(allNotifications.values).sorted(by: { $0.timestamp < ($1.timestamp) })
+        return Array(allNotifications.values).sorted(by: { $0.date.timeIntervalSince1970 < ($1.date.timeIntervalSince1970) })
     }
 
     func dateToText(date: Date) -> String {
@@ -126,7 +129,7 @@ class NotificationStore {
         let date = Date()
         let localizedTitle = NSLocalizedString("id_welcome", comment: "")
         let localizedMessage = NSLocalizedString("id_thank_you_for_downloading_green", comment: "")
-        return NotificationItem(date: date, title: localizedTitle, text: localizedMessage, id: "welcomehash", seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
+        return NotificationItem(date: date, id: "welcomehash", seen: false, isWarning: false, satoshi: 0, type: "welcome", address: "")
     }
 
     func createWarningNotification() -> NotificationItem? {
@@ -134,9 +137,9 @@ class NotificationStore {
         let twoFactorSettings = SettingsStore.shared.getTwoFactorWarning()
         let localizedWarning = NSLocalizedString("id_warning", comment: "")
         if (!AccountStore.shared.isTwoFactorEnabled() && twoFactorSettings.0) {
-            return NotificationItem(date: date, title: localizedWarning, text: warrningNoTwoFactor, id: "warninghash1", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+            return NotificationItem(date: date.addingTimeInterval(date.timeIntervalSince1970), id: "warninghash1", seen: false, isWarning: true, satoshi: 0, type: "warning", address: "")
         } else if (AccountStore.shared.twoFactorsEnabledCount() == 1 &&  twoFactorSettings.1) {
-            return NotificationItem(date: date, title: localizedWarning, text: warrningOneTwoFactor, id: "warninghash2", seen: false, timestamp: 2*date.timeIntervalSince1970, isWarning: true)
+            return NotificationItem(date: date.addingTimeInterval(date.timeIntervalSince1970), id: "warninghash2", seen: false, isWarning: true, satoshi: 0, type: "warning", address: "")
         }
         return nil
     }
@@ -165,23 +168,6 @@ class NotificationStore {
 
     func hasNewNotifications() -> Bool{
         return newNotificationCount > 0
-    }
-
-    func createNotification(date: Date, hash: String, amount: Int, counterparty: String, type: String) -> NotificationItem {
-        var title: String = ""
-        var bodyText = ""
-        let amountText = String.satoshiToBTC(satoshi: abs(amount))
-        if(type != "outgoing") {
-            title = NSLocalizedString("id_deposit", comment: "")
-            let localized = NSLocalizedString("id_you_have_received_s_btc", comment: "")
-            bodyText = String(format: localized, amountText)
-        } else {
-            title = NSLocalizedString("id_confirmation", comment: "")
-            let localized = NSLocalizedString("id_your_s_btc_sent_to_s_has_been", comment: "")
-            bodyText = String(format: localized, amountText, counterparty)
-        }
-
-        return NotificationItem(date: date, title: title, text: bodyText, id: hash, seen: false, timestamp: date.timeIntervalSince1970, isWarning: false)
     }
 
     func initializeNotificationStore() {
@@ -222,22 +208,22 @@ class NotificationStore {
 
 
 class NotificationItem: Codable{
-    var title: String
-    var text: String
     var date: Date
-    var timestamp: Double
     var id: String
     var seen: Bool
     var isWarning: Bool
+    var satoshi: Int
+    var type: String
+    var address: String
 
-    init(date: Date, title: String, text: String, id: String, seen: Bool, timestamp: Double, isWarning: Bool) {
-        self.title = title
-        self.text = text
+    init(date: Date, id: String, seen: Bool, isWarning: Bool, satoshi: Int, type: String, address: String) {
         self.date = date
         self.id = id
         self.seen = seen
-        self.timestamp = timestamp
         self.isWarning = isWarning
+        self.satoshi = satoshi
+        self.type = type
+        self.address = address
     }
 }
 
