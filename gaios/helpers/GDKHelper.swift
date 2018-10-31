@@ -44,3 +44,42 @@ class TwoFactorCallHelper : TwoFactorCall {
         }
     }
 }
+
+class TransactionHelper {
+    // Common variable
+    public var data: [String: Any]
+    
+    enum GDKError: Error {
+        case AddressFormatError(String)
+    }
+    
+    // Constructors
+    init(_ data: [String: Any]) throws {
+        self.data = try getSession().createTransaction(details: data)!
+        deserialize()
+    }
+    
+    init(_ uri: String) throws {
+        var details = [String: Any]()
+        var toAddress = [String: Any]()
+        toAddress["address"] = uri
+        details["addressees"] = [toAddress]
+        self.data = try getSession().createTransaction(details: details)!
+        deserialize()
+        let error = self.data["error"] as! String
+        if (error == "id_invalid_address") {
+            throw GDKError.AddressFormatError(error)
+        }
+    }
+    
+    func deserialize() {
+        if (self.data["addresses"] is NSArray) {
+            var addresses = Array<[String : Any]>()
+            let addrNSArray = self.data["addresses"] as! NSArray
+            for i in 0...addrNSArray.count {
+                let obj = addrNSArray[i] as! NSDictionary
+                addresses.append((obj as? [String : Any])!)
+            }
+        }
+    }
+}

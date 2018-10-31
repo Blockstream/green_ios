@@ -15,6 +15,7 @@ class SendBtcViewController: UIViewController {
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
     var qrCodeFrameView: UIView?
     var wallet:WalletItem? = nil
+    var transaction: TransactionHelper?
     private let supportedCodeTypes = [AVMetadataObject.ObjectType.upce,
                                       AVMetadataObject.ObjectType.code39,
                                       AVMetadataObject.ObjectType.code39Mod43,
@@ -157,7 +158,9 @@ class SendBtcViewController: UIViewController {
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
-        self.performSegue(withIdentifier: "next", sender: self)
+        if (parseBitcoinUri(textfield.text!)) {
+            self.performSegue(withIdentifier: "next", sender: self)
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -166,6 +169,8 @@ class SendBtcViewController: UIViewController {
             nextController.toAddress = textfield.text
             nextController.btcAmount = prefillAmount
             nextController.selectedType = TransactionType.BTC
+            // TODO: use transaction to move data
+            // nextController.transaction = transaction
         }
     }
 
@@ -208,46 +213,22 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
         //captureSession.stopRunning()
     }
     
-    func parseBitcoinUri(_ uri: String) -> Bool {
-        let blockchainInfoScheme = "bitcoin://";
-        let correctScheme = "bitcoin:";
-        var schemeSpecific: String?
-        var amount : Double?
-        var address : String?
+    func parseBitcoinUri(_ text: String) -> Bool {
+        let scheme = "bitcoin:";
+        let uri : String
         
-        if (uri.starts(with: blockchainInfoScheme)) {
-            schemeSpecific = String(uri.suffix(uri.count - blockchainInfoScheme.count))
-        } else if (uri.starts(with: correctScheme)) {
-            schemeSpecific = String(uri.suffix(uri.count - correctScheme.count))
+        if (!text.starts(with: scheme)) {
+            uri = scheme + text
         } else {
-            address = uri
+            uri = text
         }
         
-        if ((schemeSpecific) != nil) {
-            var splitted = schemeSpecific?.components(separatedBy: "?")
-            if (splitted?.count == 0) {
-                return false
-            }
-            address = splitted![0]
-            if ((splitted?.count)! > 1) {
-                let params = splitted![1].components(separatedBy: "&")
-                for param in params {
-                    let keyvalue = param.components(separatedBy: "=")
-                    if (keyvalue.count > 0 && keyvalue[0] == "amount") {
-                        amount = Double(keyvalue[1])
-                    }
-                }
-            }
+        do {
+            transaction = try TransactionHelper(uri)
+            return true;
+        } catch {
+            print (error)
+            return false;
         }
-        // check if address is valid before copy to global vars with lib Wally
-        if (address == nil) {
-            return false
-        }
-        self.textfield.text = address
-        if (amount != nil) {
-            self.prefillAmount = amount!
-        }
-        return true
     }
-
 }
