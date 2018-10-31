@@ -1,10 +1,3 @@
-//
-//  GDKHelper
-//  gaios
-//
-//  Created by luca on 31/10/2018.
-//  Copyright © 2018 Goncalo Carvalho. All rights reserved.
-//
 
 import Foundation
 import UIKit

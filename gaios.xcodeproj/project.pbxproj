@@ -532,7 +532,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0900;
 				LastUpgradeCheck = 0900;
-				ORGANIZATIONNAME = "Goncalo Carvalho";
+				ORGANIZATIONNAME = "Blockstream Corporation";
 				TargetAttributes = {
 					676FCF1B1F9D0CF800354E93 = {
 						CreatedOnToolsVersion = 9.0.1;
