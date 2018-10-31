@@ -78,7 +78,7 @@ class ViewController: UIViewController, WalletViewDelegate {
             let denomination = SettingsStore.shared.getDenominationSettings()
             let balance = String.satoshiToBTC(satoshi: item.balance)
             cardView.wallet = item
-            cardView.balanceLabel.text = String(format: "%@ %@", balance, denomination)
+            cardView.balanceLabel.text = String(format: "%@ %@", balance, denomination.rawValue)
             cardView.addressLabel.text = item.address
             cardView.nameLabel.text = item.name
             cardView.index = index

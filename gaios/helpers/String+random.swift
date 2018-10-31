@@ -22,11 +22,11 @@ extension String {
         let satoshi: Double = Double(satoshi)!
         let dSettings = SettingsStore.shared.getDenominationSettings()
         var div: Double = 100000000
-        if (dSettings == SettingsStore.shared.denominationPrimary) {
+        if (dSettings == DenominationType.BTC) {
             div = 100000000
-        } else if (dSettings == SettingsStore.shared.denominationMilli) {
+        } else if (dSettings == DenominationType.MilliBTC) {
             div = 100000
-        } else if (dSettings == SettingsStore.shared.denominationMicro) {
+        } else if (dSettings == DenominationType.MicroBTC) {
             div = 100
         }
         let btc = satoshi / div
@@ -48,11 +48,11 @@ extension String {
         let satoshi: Double = Double(satoshi)
         let dSettings = SettingsStore.shared.getDenominationSettings()
         var div: Double = 100000000
-        if (dSettings == SettingsStore.shared.denominationPrimary) {
+        if (dSettings == DenominationType.BTC) {
             div = 100000000
-        } else if (dSettings == SettingsStore.shared.denominationMilli) {
+        } else if (dSettings == DenominationType.MilliBTC) {
             div = 100000
-        } else if (dSettings == SettingsStore.shared.denominationMicro) {
+        } else if (dSettings == DenominationType.MicroBTC) {
             div = 100
         }
         let btc = satoshi / div

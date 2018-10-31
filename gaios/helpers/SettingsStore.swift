@@ -52,10 +52,6 @@ class SettingsStore {
     let privacyPolicyURL = "https://greenaddress.it/en/privacy"
     let supportURL = "https://greenaddress.it/en/support"
 
-    let denominationPrimary = "BTC"
-    let denominationMilli = "mBTC"
-    let denominationMicro = "uBTC"
-
     let feeMedium = "Medium"
 
     let screenLockSettingsValueDefault = "None"
@@ -80,7 +76,7 @@ class SettingsStore {
     }
 
     func setDenominationSettings(denomination: String) {
-        if (denomination != denominationPrimary && denomination != denominationMilli && denomination != denominationMicro) {
+        if (denomination != DenominationType.BTC.rawValue && denomination != DenominationType.MilliBTC.rawValue && denomination != DenominationType.MicroBTC.rawValue) {
             return
         }
         let denominationProperty = [settingsDenomination: denomination]
@@ -227,10 +223,10 @@ class SettingsStore {
         return property == "true"
     }
 
-    func getDenominationSettings() -> String {
+    func getDenominationSettings() -> DenominationType {
         let denomination = allSettings[settingsDenomination]
         let setting = denomination?.settingsProperty[settingsDenomination]
-        return (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!
+        return DenominationType(rawValue: (allSettings[settingsDenomination]?.settingsProperty[settingsDenomination])!)!
     }
 
     func getCurrencySettings() -> SettingsItem? {
@@ -283,8 +279,8 @@ class SettingsStore {
     }
 
     func defaultDenominationSettings() -> SettingsItem {
-        let denominationProperty = [settingsDenomination: denominationPrimary]
-        return SettingsItem(settingsName: settingsDenomination, property: denominationProperty, text: accountDenomination, secondaryText: denominationPrimary)
+        let denominationProperty = [settingsDenomination: DenominationType.BTC.rawValue]
+        return SettingsItem(settingsName: settingsDenomination, property: denominationProperty, text: accountDenomination, secondaryText: DenominationType.BTC.rawValue)
     }
 
     func defaultCurrencySettings() -> SettingsItem {
@@ -511,6 +507,32 @@ public enum TransactionPriority: String {
     case Medium = "Medium"
     case High = "High"
     case Custom = "Custom"
+}
+
+public enum DenominationType: String {
+    case BTC = "BTC"
+    case MilliBTC = "mBTC"
+    case MicroBTC = "uBTC"
+    case Satoshi = "Satoshi"
+}
+
+public func satoshiPerDenominationType(type: DenominationType) -> Double{
+    if (type == DenominationType.BTC) {
+        return 100000000
+    } else if (type == DenominationType.MilliBTC) {
+        return 100000
+    } else if (type == DenominationType.MicroBTC) {
+        return 100
+    } else if (type == DenominationType.Satoshi) {
+        return 1
+    }
+    return 0
+}
+
+public func getDenominated(amount: Double, ofType: DenominationType) -> Double {
+    let denomination = SettingsStore.shared.getDenominationSettings()
+    let denominatedAmount = amount * satoshiPerDenominationType(type: ofType) / satoshiPerDenominationType(type: denomination)
+    return denominatedAmount
 }
 
 public enum AutoLock: String {

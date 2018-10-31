@@ -85,7 +85,7 @@ class ReceiveBtcViewController: UIViewController {
 
     func setButton() {
         if (selectedType == TransactionType.BTC) {
-            fiatSwitchButton.setTitle(SettingsStore.shared.getDenominationSettings(), for: UIControlState.normal)
+            fiatSwitchButton.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)
             fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
             fiatSwitchButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         } else {
@@ -97,7 +97,7 @@ class ReceiveBtcViewController: UIViewController {
 
     func updateType() {
         if (selectedType == TransactionType.BTC) {
-            typeLabel.text = SettingsStore.shared.getDenominationSettings()
+            typeLabel.text = SettingsStore.shared.getDenominationSettings().rawValue
         } else {
             typeLabel.text = SettingsStore.shared.getCurrencyString()
         }
@@ -110,7 +110,7 @@ class ReceiveBtcViewController: UIViewController {
             if (selectedType == TransactionType.BTC) {
                 estimateLabel.text = "~0.00 " + SettingsStore.shared.getCurrencyString()
             } else {
-                estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings()
+                estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings().rawValue
             }
             amount_g = 0
             updateQRCode(amount: 0)
@@ -120,11 +120,11 @@ class ReceiveBtcViewController: UIViewController {
         if (selectedType == TransactionType.BTC) {
             let denomination = SettingsStore.shared.getDenominationSettings()
             var amount_denominated: Double = 0
-            if(denomination == SettingsStore.shared.denominationPrimary) {
+            if(denomination == DenominationType.BTC) {
                 amount_denominated = amount_double
-            } else if (denomination == SettingsStore.shared.denominationMilli) {
+            } else if (denomination == DenominationType.MilliBTC) {
                 amount_denominated = amount_double / 1000
-            } else if (denomination == SettingsStore.shared.denominationMicro){
+            } else if (denomination == DenominationType.MicroBTC){
                 amount_denominated = amount_double / 1000000
             }
             let converted = AccountStore.shared.btcToFiat(amount: amount_denominated)
@@ -135,7 +135,7 @@ class ReceiveBtcViewController: UIViewController {
             let converted = AccountStore.shared.fiatToBtc(amount: amount_double)
             amount_g = converted
             updateQRCode(amount: converted)
-            estimateLabel.text = String(format: "~%f %@", converted, SettingsStore.shared.getDenominationSettings())
+            estimateLabel.text = String(format: "~%f %@", converted, SettingsStore.shared.getDenominationSettings().rawValue)
         }
     }
 

@@ -45,7 +45,8 @@ class SendBtcDetailsViewController: UIViewController {
         updatePriorityButtons()
         if (btcAmount != 0) {
             if (selectedType == TransactionType.BTC) {
-                amountTextField.text = String(format: "%f", btcAmount)
+                let denominated = getDenominated(amount: btcAmount, ofType: DenominationType.BTC)
+                amountTextField.text = String(format: "%f", denominated)
             } else {
                 let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
                 amountTextField.text = String(format: "%f", fiat)
@@ -92,7 +93,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     func setButton() {
         if (selectedType == TransactionType.BTC) {
-            currencySwitch.setTitle(SettingsStore.shared.getDenominationSettings(), for: UIControlState.normal)
+            currencySwitch.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)
             currencySwitch.backgroundColor = UIColor.customMatrixGreen()
             currencySwitch.setTitleColor(UIColor.white, for: UIControlState.normal)
         } else {
@@ -106,7 +107,8 @@ class SendBtcDetailsViewController: UIViewController {
         if (selectedType == TransactionType.BTC) {
             guard let amount = wallet?.balance else { return }
             maxAmountBTC = Double(amount)! / 100000000
-            maxAmountLabel.text = String(format: "%f %@", maxAmountBTC, SettingsStore.shared.getDenominationSettings())
+            let denominated = getDenominated(amount: Double(amount)!, ofType: DenominationType.Satoshi)
+            maxAmountLabel.text = String(format: "%f %@", denominated, SettingsStore.shared.getDenominationSettings().rawValue)
         } else {
             let maxFiat = maxAmountBTC //FIXME
            //maxFiat = AccountStore.shared.btcToFiat(amount: wallet?.balance)
@@ -176,7 +178,7 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
         if (selectedType == TransactionType.BTC) {
-            btcAmount = getDenominatedAmount(amount: amount_d)
+            btcAmount = getBTCFromDenominatedAmount(amount: amount_d)
         } else if (selectedType == TransactionType.FIAT) {
             btcAmount = AccountStore.shared.fiatToBtc(amount: amount_d)
         }
@@ -256,14 +258,14 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.resignFirstResponder()
     }
 
-    func getDenominatedAmount(amount: Double) -> Double{
+    func getBTCFromDenominatedAmount(amount: Double) -> Double{
         let denomination = SettingsStore.shared.getDenominationSettings()
         var amount_denominated: Double = 0
-        if(denomination == SettingsStore.shared.denominationPrimary) {
+        if(denomination == DenominationType.BTC) {
             amount_denominated = amount
-        } else if (denomination == SettingsStore.shared.denominationMilli) {
+        } else if (denomination == DenominationType.MilliBTC) {
             amount_denominated = amount / 1000
-        } else if (denomination == SettingsStore.shared.denominationMicro){
+        } else if (denomination == DenominationType.MicroBTC){
             amount_denominated = amount / 1000000
         }
         return amount_denominated

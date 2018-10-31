@@ -117,7 +117,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                             dateFormatter.timeStyle = .short
                             let date = Date.dateFromString(dateString: dateString)
                             let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
-                            let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings())
+                            let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings().rawValue)
                             let adressees = transaction["addressees"] as! [String]
                             let can_rbf = transaction["can_rbf"] as! Bool
                             var counterparty = ""
@@ -341,7 +341,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             if(wallet.wallet?.pointer == UInt32(forCardview)) {
                 let denomination = SettingsStore.shared.getDenominationSettings()
                 let balance = String.satoshiToBTC(satoshi: sat)
-                wallet.balanceLabel.text = String(format: "%@ %@", balance, denomination)
+                wallet.balanceLabel.text = String(format: "%@ %@", balance, denomination.rawValue)
                 return
             }
         }

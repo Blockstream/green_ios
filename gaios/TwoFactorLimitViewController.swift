@@ -31,11 +31,11 @@ class TwoFactorLimitViewController: UIViewController {
         } else if (!fiat){
             let denomination = SettingsStore.shared.getDenominationSettings()
             var amount_denominated: Double = 0
-            if(denomination == SettingsStore.shared.denominationPrimary) {
+            if(denomination == DenominationType.BTC) {
                 amount_denominated = limits.amount
-            } else if (denomination == SettingsStore.shared.denominationMilli) {
+            } else if (denomination == DenominationType.MilliBTC) {
                 amount_denominated = limits.amount * 1000
-            } else if (denomination == SettingsStore.shared.denominationMicro){
+            } else if (denomination == DenominationType.MicroBTC){
                 amount_denominated = limits.amount * 1000000
             }
             limitTextField.text = String(amount_denominated)
@@ -88,11 +88,11 @@ class TwoFactorLimitViewController: UIViewController {
                     details["is_fiat"] = false
                     let denomination = SettingsStore.shared.getDenominationSettings()
                     var amount_denominated: Double = 0
-                    if(denomination == SettingsStore.shared.denominationPrimary) {
+                    if(denomination == DenominationType.BTC) {
                         amount_denominated = amount * 100000000
-                    } else if (denomination == SettingsStore.shared.denominationMilli) {
+                    } else if (denomination == DenominationType.MilliBTC) {
                         amount_denominated = amount * 100000
-                    } else if (denomination == SettingsStore.shared.denominationMicro){
+                    } else if (denomination == DenominationType.MicroBTC){
                         amount_denominated = amount * 100
                     }
                     details["satoshi"] = amount_denominated
@@ -138,7 +138,7 @@ class TwoFactorLimitViewController: UIViewController {
             fiatButton.backgroundColor = UIColor.clear
             fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         } else {
-            fiatButton.setTitle(SettingsStore.shared.getDenominationSettings(), for: UIControlState.normal)
+            fiatButton.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)
             fiatButton.backgroundColor = UIColor.customMatrixGreen()
             fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }

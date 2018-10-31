@@ -4,7 +4,7 @@ import UIKit
 class DenominationSelectorViewController : UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
-    let denominations: [String] = [SettingsStore.shared.denominationPrimary, SettingsStore.shared.denominationMilli, SettingsStore.shared.denominationMicro]
+    let denominations: [String] = [DenominationType.BTC.rawValue, DenominationType.MilliBTC.rawValue, DenominationType.MicroBTC.rawValue]
     @IBOutlet weak var topLabel: UILabel!
 
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ class DenominationSelectorViewController : UIViewController, UITableViewDelegate
         let cell = tableView.dequeueReusableCell(withIdentifier: "CurrencyCell", for: indexPath) as! DenominationCell
         let currency = denominations[indexPath.row]
         cell.leftLabel.text = currency
-        if (currency == SettingsStore.shared.getDenominationSettings()) {
+        if (currency == SettingsStore.shared.getDenominationSettings().rawValue) {
             cell.rightImageView.isHidden = false
         } else {
             cell.rightImageView.isHidden = true
