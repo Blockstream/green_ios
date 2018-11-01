@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate{
+class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate {
 
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
@@ -95,13 +95,15 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     }
 
     func onResolve(_ sender: TwoFactorCallHelper) {
+        self.stopAnimating()
         let alert = TwoFactorCallHelper.CodePopup(sender)
         self.present(alert, animated: true, completion: nil)
     }
 
     func onRequest(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender)
-        self.present(alert, animated: true, completion: nil)
+        self.stopAnimating()
+        let selector = TwoFactorCallHelper.MethodPopup(sender)
+        self.present(selector, animated: true, completion: nil)
     }
 
     func onDone(_ sender: TwoFactorCallHelper) {
@@ -115,15 +117,6 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     func onError(_ sender: TwoFactorCallHelper, text: String) {
         self.stopAnimating()
         print("wtf")
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

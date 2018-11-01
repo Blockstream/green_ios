@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 
-class TwoFactorSlectorViewController: UIViewController {
+class TwoFactorSlectorViewController: UIViewController, TwoFactorCallDelegate {
 
+    var factorHelper: TwoFactorCallHelper? = nil
     var twoFactor: TwoFactorCall? = nil
     @IBOutlet weak var firstButton: UIButton!
     @IBOutlet weak var secondButton: UIButton!
@@ -27,7 +28,7 @@ class TwoFactorSlectorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            let json = try twoFactor?.getStatus()
+            let json = try factorHelper?.caller.getStatus()
             let methods = json!["methods"] as! NSArray
             for index in 0..<methods.count {
                 let method = methods[index] as! String
@@ -57,45 +58,46 @@ class TwoFactorSlectorViewController: UIViewController {
         backButton.isHidden = hideButton
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            let pair = sender as! (TwoFactorCall, String)
-            nextController.twoFactor = pair.0
-            nextController.hideButton = true
-        }
-    }
-
     //FIXME: comapring title is bad
     @IBAction func buttonClicked(_ sender: Any) {
         let button = sender as! UIButton
         print("button " + String(button.tag) + " clicked")
         do {
-        var method = ""
         if(button.title(for: .normal) == NSLocalizedString("id_email", comment: "")) {
-            try twoFactor?.requestCode(method: "email")
-            method = "email"
+            try factorHelper?.caller.requestCode(method: "email")
         } else if (button.title(for: .normal) == NSLocalizedString("id_sms", comment: "")) {
-            try twoFactor?.requestCode(method: "sms")
-            method = "sms"
+            try factorHelper?.caller.requestCode(method: "sms")
         } else if (button.title(for: .normal) == NSLocalizedString("id_google_auth", comment: "")) {
-            try twoFactor?.requestCode(method: "gauth")
-            method = "gauth"
+            try factorHelper?.caller.requestCode(method: "gauth")
         } else if (button.title(for: .normal) == NSLocalizedString("id_call", comment: "")) {
-            try twoFactor?.requestCode(method: "phone")
-            method = "phone"
+            try factorHelper?.caller.requestCode(method: "phone")
         }
-            let status = try twoFactor?.getStatus()
-            let parsed = status!["status"] as! String
-            if(parsed == "resolve_code") {
-                self.performSegue(withIdentifier: "twoFactor", sender: (twoFactor, method))
-            }
+        try factorHelper?.resolve()
         } catch {
-            print("couldn't get status")
+            factorHelper?.delegate?.onError(factorHelper!, text: "")
         }
     }
 
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.CodePopup(sender)
+        self.dismiss(animated: false, completion: nil)
+        self.presentingViewController?.present(alert, animated: true, completion: nil)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        //alredy here
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper) {
+        self.dismiss(animated: true, completion: nil)
+    }
+
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        self.dismiss(animated: true, completion: nil)
+    }
+
     @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        self.dismiss(animated: false, completion: nil)
     }
 
 }
