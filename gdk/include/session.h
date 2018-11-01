@@ -173,6 +173,9 @@ GASDK_API int GA_remove_account(struct GA_session* session, struct GA_twofactor_
  */
 GASDK_API int GA_create_subaccount(struct GA_session* session, const GA_json* details, GA_json** subaccount);
 
+GASDK_API int GA_create_subaccount_with_hardware(
+    struct GA_session* session, const GA_json* hw_device, const GA_json* details, struct GA_twofactor_call** call);
+
 /**
  * Get the user's subaccount details.
  *
@@ -185,6 +188,7 @@ GASDK_API int GA_get_subaccounts(struct GA_session* session, GA_json** subaccoun
 
 /**
  * Set the pricing source for a user's GreenAddress wallet.
+ * DEPRECATED: Prefer GA_change_settings
  *
  * @session The server session to use.
  * @currency The currency to use.
@@ -480,6 +484,40 @@ GASDK_API int GA_encrypt(struct GA_session* session, const GA_json* input, GA_js
  * GA_ERROR if the data cannot be decrypted.
  */
 GASDK_API int GA_decrypt(struct GA_session* session, const GA_json* input, GA_json** output);
+
+/*
+ * Change settings
+ *
+ * @session The server session to use.
+ * @settings The new settings values.
+ *
+ * The following settings are supported:
+ *
+ * notifications.email_incoming: Boolean
+ *     If True the server sends an email notification (with attached nlocktimes if relevant) whenever an
+ *     incoming transaction arrives.
+ * notifications.email_outgoing: Boolean
+ *     If True the server sends an email notification (with attached nlocktimes if relevant) whenever an
+ *     outgoing transaction is sent.
+ *
+ * pricing.currency: String
+ *     The currency to use for fiat pricing
+ * pricing.exchange: String
+ *     The exchange to use for fiat pricing conversion rates
+ *
+ * GA_ERROR if the settings cannot be changed.
+ */
+GASDK_API int GA_change_settings(struct GA_session* session, const GA_json* settings, struct GA_twofactor_call** call);
+
+/*
+ * Get settings
+ *
+ * @session The server session to use.
+ * @settings The current settings. See GA_change_settings for full description.
+ *
+ * GA_ERROR if the settings cannot be returned.
+ */
+GASDK_API int GA_get_settings(struct GA_session* session, GA_json** settings);
 
 #ifndef SWIG
 /*

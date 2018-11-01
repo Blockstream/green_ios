@@ -56,6 +56,9 @@ namespace sdk {
 
     std::vector<unsigned char> dummy_external_input_script(const signer& user_signer, byte_span_t pub_key);
 
+    void sign_input(
+        session& session, const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u, const std::string& der_hex);
+
     std::vector<unsigned char> witness_script(const std::vector<unsigned char>& script);
 
     // Compute the fee for a tx

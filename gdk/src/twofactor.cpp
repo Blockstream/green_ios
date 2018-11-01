@@ -284,6 +284,22 @@ void GA_login_call::set_data(const std::string& action)
 }
 
 //
+// Create subaccount
+//
+GA_create_subaccount_call::GA_create_subaccount_call(
+    ga::sdk::session& session, const nlohmann::json& hw_details, const nlohmann::json& details)
+    : GA_twofactor_call(session, "create_subaccount", hw_details)
+    , m_details(details)
+{
+}
+
+GA_twofactor_call::state_type GA_create_subaccount_call::call_impl()
+{
+    // FIXME
+    return state_type::done;
+}
+
+//
 // Sign tx
 //
 GA_sign_transaction_call::GA_sign_transaction_call(
@@ -327,7 +343,34 @@ GA_sign_transaction_call::GA_sign_transaction_call(
 
 GA_twofactor_call::state_type GA_sign_transaction_call::call_impl()
 {
-    // FIXME: sign
+    const nlohmann::json args = nlohmann::json::parse(m_code);
+    const auto& xpubs = args.at("signatures");
+    const auto& inputs = m_twofactor_data["signing_inputs"];
+    const auto tx = ga::sdk::tx_from_hex(m_twofactor_data["transaction"].at("transaction"));
+
+    GA_SDK_RUNTIME_ASSERT(xpubs.is_array() && xpubs.size() == inputs.size());
+
+    size_t i = 0;
+    for (const auto& utxo : inputs) {
+        ga::sdk::sign_input(m_session, tx, i, utxo, xpubs[i]);
+        ++i;
+    }
+
+    std::swap(m_result, m_twofactor_data["transaction"]);
+    m_result["user_signed"] = true;
+    ga::sdk::update_tx_info(tx, m_result);
+    return state_type::done;
+}
+
+GA_change_settings_call::GA_change_settings_call(ga::sdk::session& session, const nlohmann::json& settings)
+    : GA_twofactor_call(session, std::string()) // TODO: action empty string because 2FA not yet implemented
+    , m_settings(settings)
+{
+}
+
+GA_twofactor_call::state_type GA_change_settings_call::call_impl()
+{
+    m_session.change_settings(m_settings); // TODO: May require twofactor in future
     return state_type::done;
 }
 

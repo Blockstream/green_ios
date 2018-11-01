@@ -141,6 +141,10 @@ class Session(object):
     def create_subaccount(self, details):
         return json.loads(create_subaccount(self.session_obj, self._to_json(details)))
 
+    def create_subaccount_with_hardware(self, hw_device, details):
+        return Call(create_subaccount_with_hardware(self.session_obj, self._to_json(hw_device),
+                                                    self._to_json(details)))
+
     def get_subaccounts(self):
         return json.loads(get_subaccounts(self.session_obj))
 
@@ -209,6 +213,12 @@ class Session(object):
 
     def change_settings_twofactor(self, method, details):
         return Call(change_settings_twofactor(self.session_obj, method, self._to_json(details)))
+
+    def get_settings(self):
+        return json.loads(get_settings(self.session_obj))
+
+    def change_settings(self, settings):
+        return Call(change_settings(self.session_obj, self._to_json(settings)))
 
     def twofactor_reset(self, email, is_dispute):
         return Call(twofactor_reset(self.session_obj, email, is_dispute))

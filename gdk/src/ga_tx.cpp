@@ -88,9 +88,9 @@ namespace sdk {
             // returned from the get_transactions call
             const auto& prev_tx = result["previous_transaction"];
             bool is_rbf = false, is_cpfp = false;
-            if (prev_tx.value("can_rbf", false)) {
+            if (json_get_value(prev_tx, "can_rbf", false)) {
                 is_rbf = true;
-            } else if (prev_tx.value("can_cpfp", false)) {
+            } else if (json_get_value(prev_tx, "can_cpfp", false)) {
                 is_cpfp = true;
             } else {
                 // Transaction is confirmed or marked non-RBF
@@ -143,7 +143,7 @@ namespace sdk {
                 addressees.reserve(prev_tx.at("outputs").size());
                 uint32_t i = 0, change_index = NO_CHANGE_INDEX;
                 for (const auto& output : prev_tx["outputs"]) {
-                    if (output.value("is_relevant", false) && change_index == NO_CHANGE_INDEX) {
+                    if (json_get_value(output, "is_relevant", false) && change_index == NO_CHANGE_INDEX) {
                         // Change output. If there is already one we treat it as a regular output
                         change_index = i;
                         result["change_address"] = output.at("address");
@@ -169,7 +169,7 @@ namespace sdk {
                     // Create 'fake' utxos for the existing inputs
                     std::map<uint32_t, nlohmann::json> used_utxos_map;
                     for (const auto& input : prev_tx.at("inputs")) {
-                        GA_SDK_RUNTIME_ASSERT(input.value("is_relevant", false));
+                        GA_SDK_RUNTIME_ASSERT(json_get_value(input, "is_relevant", false));
                         nlohmann::json utxo(input);
                         // Note pt_idx on endpoints is the index within the tx, not the previous tx!
                         const uint32_t i = input.at("pt_idx");
@@ -202,7 +202,7 @@ namespace sdk {
                     // Add a single output from the old tx as our new tx input
                     std::vector<nlohmann::json> utxos;
                     for (const auto& output : prev_tx.at("outputs")) {
-                        if (output.value("is_relevant", false)) {
+                        if (json_get_value(output, "is_relevant", false)) {
                             // First output paying to us, use it as the new tx input
                             nlohmann::json utxo(output);
                             utxo["txhash"] = prev_tx.at("txhash");
@@ -238,7 +238,7 @@ namespace sdk {
             bool is_rbf, is_cpfp;
             std::tie(is_rbf, is_cpfp) = check_bump_tx(session, result, current_subaccount);
 
-            const bool is_redeposit = result.value("is_redeposit", false);
+            const bool is_redeposit = json_get_value(result, "is_redeposit", false);
 
             if (is_redeposit) {
                 if (result.find("addressees") == result.end()) {
@@ -254,6 +254,7 @@ namespace sdk {
             result["is_redeposit"] = is_redeposit;
 
             const bool is_sweep = result.find("private_key") != result.end();
+            result["is_sweep"] = is_redeposit;
 
             // Let the caller know if addressees should not be modified
             result["addressees_read_only"] = is_redeposit || is_rbf || is_cpfp || is_sweep;
@@ -394,7 +395,7 @@ namespace sdk {
             bool have_change = false;
             uint32_t change_index = NO_CHANGE_INDEX;
             if (is_rbf) {
-                have_change = result.value("have_change", false);
+                have_change = json_get_value(result, "have_change", false);
                 if (have_change) {
                     add_tx_output(net_params, result, tx, result.at("change_address"));
                     change_index = tx->num_outputs - 1;
@@ -551,6 +552,28 @@ namespace sdk {
             } else {
                 tx_set_input_script(tx, index, input_script(session.get_signer(), script, user_sig));
             }
+        }
+    }
+
+    void sign_input(
+        session& session, const wally_tx_ptr& tx, uint32_t index, const nlohmann::json& u, const std::string& der_hex)
+    {
+        GA_SDK_RUNTIME_ASSERT(json_get_value(u, "private_key").empty());
+
+        const auto type = script_type(u.at("script_type"));
+        const auto script = bytes_from_hex(u.at("prevout_script"));
+        auto der = bytes_from_hex(der_hex);
+
+        if (is_segwit_script_type(type)) {
+            // See above re: spending using the users key only
+            auto wit = tx_witness_stack_init(1);
+            tx_witness_stack_add(wit, der);
+            tx_set_input_witness(tx, index, wit);
+            tx_set_input_script(tx, index, witness_script(script));
+        } else {
+            // FIXME: strip sighash_all, convert der to ec sig type tx_set_input_script(tx, index,
+            // input_script(session.get_signer(), script, user_sig));
+            (void)session;
         }
     }
 

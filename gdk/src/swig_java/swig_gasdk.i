@@ -97,13 +97,13 @@ LOCALFUNC unsigned char* malloc_or_throw(JNIEnv *jenv, size_t len) {
     return p;
 }
 
-LOCALFUNC int check_result(JNIEnv *jenv, int result)
+LOCALFUNC int check_result(JNIEnv *jenv, int result, const char* msg)
 {
     switch (result) {
     case GA_OK:
         break;
     default: /* GA_ERROR */
-        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, "Failed");
+        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, msg);
         break;
     }
     return result;
@@ -124,17 +124,19 @@ LOCALFUNC jobject create_json(JNIEnv *jenv, void *p) {
     if (!g_jvm)
         return NULL;
 
-    if (GA_convert_json_to_string((GA_json *)p, &json_cstring) != GA_OK) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "GA_json");
-        return NULL;
-    }
+    if (!(*jenv)->ExceptionOccurred(jenv)) {
+        if (GA_convert_json_to_string((GA_json *)p, &json_cstring) != GA_OK) {
+            SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "GA_json");
+            return NULL;
+        }
 
-    json_string = (*jenv)->NewStringUTF(jenv, json_cstring);
-    GA_destroy_string(json_cstring);
-    if (!(*jenv)->ExceptionOccurred(jenv) && json_string) {
-        json_obj = (*jenv)->CallStaticObjectMethod(jenv, g_gasdk, g_gasdk_toJSONObject, json_string);
-        if ((*jenv)->ExceptionOccurred(jenv))
-            (*jenv)->ExceptionDescribe(jenv);
+        json_string = (*jenv)->NewStringUTF(jenv, json_cstring);
+        GA_destroy_string(json_cstring);
+        if (!(*jenv)->ExceptionOccurred(jenv) && json_string) {
+            json_obj = (*jenv)->CallStaticObjectMethod(jenv, g_gasdk, g_gasdk_toJSONObject, json_string);
+            if ((*jenv)->ExceptionOccurred(jenv))
+                (*jenv)->ExceptionDescribe(jenv);
+        }
     }
 
     GA_destroy_json((GA_json *)p);
@@ -342,7 +344,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 /* Raise an exception whenever a function fails */
 %exception {
     $action
-    check_result(jenv, result);
+    check_result(jenv, result, "$name call failed");
 }
 
 /* Don't use our int return value except for exception checking */
@@ -353,7 +355,10 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 }
 %typemap(argout, noblock=1) (char** output) {
     if ($1) {
-        $result = (*jenv)->NewStringUTF(jenv, *$1);
+        if (!(*jenv)->ExceptionOccurred(jenv))
+            $result = (*jenv)->NewStringUTF(jenv, *$1);
+        else
+            $result = NULL;
         GA_destroy_string(*$1);
     } else {
         $result = NULL;
@@ -365,7 +370,10 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 }
 %typemap(argout,noblock=1) (char **) {
     if ($1) {
-        $result = (*jenv)->NewStringUTF(jenv, *$1);
+        if (!(*jenv)->ExceptionOccurred(jenv))
+            $result = (*jenv)->NewStringUTF(jenv, *$1);
+        else
+            $result = NULL;
         GA_destroy_string(*$1);
     } else
         $result = NULL;
@@ -454,7 +462,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
     }
     if (!skip) {
         $action
-        if (check_result(jenv, result) == GA_OK && !jarg ## ARRAYARG) {
+        if (check_result(jenv, result, "$name call failed") == GA_OK && !jarg ## ARRAYARG) {
             jresult = create_array(jenv, arg ## ARRAYARG, LEN);
         }
         if (!jarg ## ARRAYARG) {
@@ -479,6 +487,7 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 %returns_struct(GA_create_session, GA_session)
 %returns_struct(GA_create_transaction, GA_json)
 %returns_struct(GA_create_subaccount, GA_json)
+%returns_struct(GA_create_subaccount_with_hardware, GA_twofactor_call)
 %returns_struct(GA_decrypt, GA_json)
 %returns_void__(GA_destroy_session)
 %returns_void__(GA_destroy_twofactor_call)
@@ -522,6 +531,8 @@ LOCALFUNC jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t l
 %returns_struct(GA_twofactor_change_limits, GA_twofactor_call)
 %returns_struct(GA_change_settings_twofactor, GA_twofactor_call)
 %returns_struct(GA_twofactor_get_status, GA_json)
+%returns_struct(GA_change_settings, GA_twofactor_call)
+%returns_struct(GA_get_settings, GA_json)
 %returns_void__(GA_twofactor_request_code)
 %returns_void__(GA_twofactor_resolve_code)
 %returns_void__(GA_validate_mnemonic)

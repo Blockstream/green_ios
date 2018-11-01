@@ -77,6 +77,9 @@ namespace sdk {
         void set_current_subaccount(uint32_t subaccount);
         std::string get_default_address_type();
 
+        nlohmann::json get_settings();
+        void change_settings(const nlohmann::json& settings);
+
         nlohmann::json get_twofactor_config(bool reset_cached = false);
         std::vector<std::string> get_all_twofactor_methods();
         std::vector<std::string> get_enabled_twofactor_methods();

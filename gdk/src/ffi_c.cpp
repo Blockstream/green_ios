@@ -48,6 +48,7 @@ template <typename F, typename... Args> static auto c_invoke(F&& f, Args&&... ar
     } catch (const std::exception& e) {
         return GA_ERROR;
     }
+    __builtin_unreachable();
 }
 
 static char* to_c_string(const std::string& s)
@@ -156,7 +157,7 @@ int GA_destroy_json(GA_json* json)
 }
 
 GA_SDK_DEFINE_C_FUNCTION_3(GA_connect, struct GA_session*, session, const char*, network, uint32_t, debug,
-    { return GA_connect_with_proxy(session, network, "", GA_NO_TOR, debug); })
+    { session->connect(network, "", false, debug); })
 
 GA_SDK_DEFINE_C_FUNCTION_5(GA_connect_with_proxy, struct GA_session*, session, const char*, network, const char*,
     proxy_uri, uint32_t, use_tor, uint32_t, debug,
@@ -233,6 +234,10 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_remove_account, struct GA_session*, session, struc
 GA_SDK_DEFINE_C_FUNCTION_3(GA_create_subaccount, struct GA_session*, session, const GA_json*, details, GA_json**,
     subaccount, { *json_cast(subaccount) = new nlohmann::json(session->create_subaccount(*json_cast(details))); })
 
+GA_SDK_DEFINE_C_FUNCTION_4(GA_create_subaccount_with_hardware, struct GA_session*, session, const GA_json*, hw_device,
+    const GA_json*, details, struct GA_twofactor_call**, call,
+    { *call = new GA_create_subaccount_call(*session, *json_cast(hw_device), *json_cast(details)); })
+
 GA_SDK_DEFINE_C_FUNCTION_2(GA_get_subaccounts, struct GA_session*, session, GA_json**, subaccounts,
     { *json_cast(subaccounts) = new nlohmann::json(session->get_subaccounts()); })
 
@@ -307,6 +312,12 @@ GA_SDK_DEFINE_C_FUNCTION_2(GA_twofactor_get_status, struct GA_twofactor_call*, c
     { *json_cast(output) = new nlohmann::json(call->get_status()); });
 
 GA_SDK_DEFINE_C_FUNCTION_1(GA_destroy_twofactor_call, struct GA_twofactor_call*, call, { delete call; });
+
+GA_SDK_DEFINE_C_FUNCTION_2(GA_get_settings, struct GA_session*, session, struct GA_json**, settings,
+    { *json_cast(settings) = new nlohmann::json(session->get_settings()); })
+
+GA_SDK_DEFINE_C_FUNCTION_3(GA_change_settings, struct GA_session*, session, const GA_json*, settings,
+    struct GA_twofactor_call**, call, { *call = new GA_change_settings_call(*session, *json_cast(settings)); })
 
 GA_SDK_DEFINE_C_FUNCTION_4(GA_change_settings_twofactor, struct GA_session*, session, const char*, method,
     const GA_json*, details, struct GA_twofactor_call**, call,

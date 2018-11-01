@@ -1,6 +1,7 @@
 #include <mutex>
 
 #include "assertion.hpp"
+#include "containers.hpp"
 #include "include/network_parameters.hpp"
 
 // TODO: Use std::string_view when its fully supported
@@ -68,7 +69,7 @@ emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
 static std::map<std::string, std::shared_ptr<nlohmann::json>> registered_networks = {
     { "localtest",
         std::make_shared<nlohmann::json>(nlohmann::json({ { "name", "Local regtest" }, { "network", "localtest" },
-            { "wamp_url", "ws://localhost:8080/v2/ws" }, { "wamp_onion_url", std::string() },
+            { "wamp_url", "ws://192.168.2.161:8080/v2/ws" }, { "wamp_onion_url", std::string() },
             { "wamp_cert_pins", nlohmann::json::array() }, { "wamp_cert_roots", nlohmann::json::array() },
             { "address_explorer_url", std::string() }, { "tx_explorer_url", std::string() },
             { "service_pubkey", "036307e560072ed6ce0aa5465534fb5c258a2ccfbc257f369e8e7a181b16d897b3" },
@@ -138,7 +139,7 @@ namespace sdk {
         , m_bech32_prefix{ details.at("bech32_prefix").get<std::string>() }
         , m_btc_version{ details.at("p2pkh_version") }
         , m_btc_p2sh_version{ details.at("p2sh_version") }
-        , m_main_net{ details.value("mainnet", false) }
+        , m_main_net{ json_get_value(details, "mainnet", false) }
     {
     }
 

@@ -92,6 +92,9 @@ namespace sdk {
         std::vector<std::string> get_all_twofactor_methods();
         std::vector<std::string> get_enabled_twofactor_methods();
 
+        nlohmann::json get_settings();
+        void change_settings(const nlohmann::json& settings);
+
         void set_email(const std::string& email, const nlohmann::json& twofactor_data);
         void activate_email(const std::string& code);
         void init_enable_twofactor(
@@ -152,6 +155,7 @@ namespace sdk {
         ga_user_pubkeys& get_recovery_pubkeys();
 
     private:
+        void push_appearance_to_server() const;
         void set_enabled_twofactor_methods(nlohmann::json& config);
         void update_login_data(nlohmann::json&& login_data, bool watch_only);
         void update_fiat_rate(const std::string& rate_str) const;
@@ -226,7 +230,10 @@ namespace sdk {
         const std::string m_proxy;
         const bool m_use_tor;
 
-        boost::asio::io_service m_io;
+        // FIXME: leaks so we won't linger on dns resolution in case of
+        // no network connectivity.
+        // this is a limited case so is fixable in principle.
+        boost::asio::io_context* m_io;
         boost::variant<std::unique_ptr<client>, std::unique_ptr<client_tls>> m_client;
         transport_t m_transport;
         wamp_session_ptr m_session;

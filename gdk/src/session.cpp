@@ -162,6 +162,18 @@ namespace sdk {
         return exception_wrapper([&] { return m_impl->get_subaccounts(); });
     }
 
+    nlohmann::json session::get_settings()
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { return m_impl->get_settings(); });
+    }
+
+    void session::change_settings(const nlohmann::json& settings)
+    {
+        GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);
+        return exception_wrapper([&] { m_impl->change_settings(settings); });
+    }
+
     void session::change_settings_limits(const nlohmann::json& details, const nlohmann::json& twofactor_data)
     {
         GA_SDK_RUNTIME_ASSERT(m_impl != nullptr);

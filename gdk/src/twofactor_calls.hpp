@@ -29,6 +29,17 @@ private:
     std::string m_challenge;
 };
 
+class GA_create_subaccount_call : public GA_twofactor_call {
+public:
+    GA_create_subaccount_call(
+        ga::sdk::session& session, const nlohmann::json& hw_details, const nlohmann::json& details);
+
+private:
+    state_type call_impl() override;
+
+    nlohmann::json m_details;
+};
+
 class GA_sign_transaction_call : public GA_twofactor_call {
 public:
     GA_sign_transaction_call(
@@ -38,6 +49,16 @@ private:
     state_type call_impl() override;
 
     nlohmann::json m_tx_details;
+};
+
+class GA_change_settings_call : public GA_twofactor_call {
+public:
+    GA_change_settings_call(ga::sdk::session& session, const nlohmann::json& settings);
+
+private:
+    state_type call_impl() override;
+
+    nlohmann::json m_settings;
 };
 
 class GA_change_settings_twofactor_call : public GA_twofactor_call {

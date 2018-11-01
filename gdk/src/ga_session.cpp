@@ -228,7 +228,8 @@ namespace sdk {
         : m_net_params(net_params)
         , m_proxy(proxy)
         , m_use_tor(use_tor)
-        , m_controller(m_io)
+        , m_io(new boost::asio::io_context)
+        , m_controller(*m_io)
         , m_notification_handler(nullptr)
         , m_notification_context(nullptr)
         , m_min_fee_rate(DEFAULT_MIN_FEE)
@@ -252,7 +253,7 @@ namespace sdk {
     ga_session::~ga_session()
     {
         reset();
-        m_io.stop();
+        m_io->stop();
     }
 
     void ga_session::unsubscribe()
@@ -270,7 +271,7 @@ namespace sdk {
 
     void ga_session::connect()
     {
-        m_session = std::make_shared<autobahn::wamp_session>(m_io, m_debug);
+        m_session = std::make_shared<autobahn::wamp_session>(*m_io, m_debug);
 
         const bool tls = connect_with_tls();
         tls ? make_transport<transport_tls>() : make_transport<transport>();
@@ -289,7 +290,7 @@ namespace sdk {
     template <typename T> void ga_session::make_client()
     {
         m_client = std::make_unique<T>();
-        boost::get<std::unique_ptr<T>>(m_client)->init_asio(&m_io);
+        boost::get<std::unique_ptr<T>>(m_client)->init_asio(m_io);
         set_tls_init_handler<T>();
     }
 
@@ -511,7 +512,7 @@ namespace sdk {
             const std::string recovery_pub_key = json_get_value(sa, "2of3_backup_pubkey");
 
             insert_subaccount(subaccount, sa["name"], sa["receiving_id"], recovery_pub_key, recovery_chain_code, type,
-                satoshi, sa.value("has_txs", false));
+                satoshi, json_get_value(sa, "has_txs", false));
             if (subaccount > m_next_subaccount)
                 m_next_subaccount = subaccount;
         }
@@ -520,17 +521,17 @@ namespace sdk {
         // Insert the main account so callers can treat all accounts equally
         const std::string satoshi_str = login_data["satoshi"];
         const amount satoshi{ strtoul(satoshi_str.c_str(), NULL, 10) };
-        const bool has_txs = m_login_data.value("has_txs", false);
+        const bool has_txs = json_get_value(m_login_data, "has_txs", false);
         insert_subaccount(
             0, std::string(), m_login_data["receiving_id"], std::string(), std::string(), "2of2", satoshi, has_txs);
 
-        m_system_message_id = m_login_data.value("next_system_message_id", 0);
+        m_system_message_id = json_get_value(m_login_data, "next_system_message_id", 0);
         m_system_message_ack_id = 0;
         m_system_message_ack = std::string();
         m_watch_only = watch_only;
         // FIXME: Assert we aren't locked in all calls that should be disabled
         // (the server prevents these calls but its faster to reject them locally)
-        m_is_locked = login_data.value("reset_2fa_active", false);
+        m_is_locked = json_get_value(login_data, "reset_2fa_active", false);
 
         const auto p = m_login_data.find("limits");
         update_spending_limits(p == m_login_data.end() ? nlohmann::json() : *p);
@@ -679,6 +680,14 @@ namespace sdk {
         login(password.empty() ? mnemonic : decrypt_mnemonic(mnemonic, password), user_agent);
     }
 
+    void ga_session::push_appearance_to_server() const
+    {
+        bool r;
+        wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
+            "com.greenaddress.login.set_appearance", as_messagepack(m_login_data["appearance"]).get());
+        GA_SDK_RUNTIME_ASSERT(r);
+    }
+
     void ga_session::authenticate(const std::string& sig_der_hex, const std::string& path_hex,
         const std::string& device_id, const std::string& user_agent, const nlohmann::json& hw_device)
     {
@@ -705,15 +714,11 @@ namespace sdk {
         m_subscriptions.emplace_back(subscribe("com.greenaddress.fee_estimates",
             [this](const autobahn::wamp_event& event) { on_new_fees(set_fee_estimates(get_fees_as_json(event))); }));
 
-        if (m_login_data.value("segwit_server", true)
+        if (json_get_value(m_login_data, "segwit_server", true)
             && !json_get_value(m_login_data["appearance"], "use_segwit", false)) {
             // Enable segwit
             m_login_data["appearance"]["use_segwit"] = true;
-
-            bool r;
-            wamp_call([&r](wamp_call_result result) { r = result.get().argument<bool>(0); },
-                "com.greenaddress.login.set_appearance", as_messagepack(m_login_data["appearance"]).get());
-            GA_SDK_RUNTIME_ASSERT(r);
+            push_appearance_to_server();
         }
     }
 
@@ -739,6 +744,34 @@ namespace sdk {
         m_mnemonic = mnemonic;
 
         authenticate(hexder_path.first, hexder_path.second, std::string(), user_agent);
+    }
+
+    nlohmann::json ga_session::get_settings()
+    {
+        nlohmann::json settings;
+
+        settings["notifications"] = m_login_data["appearance"]["notifications_settings"];
+
+        settings["pricing"]["currency"] = m_fiat_currency;
+        settings["pricing"]["exchange"] = m_fiat_source;
+
+        return settings;
+    }
+
+    void ga_session::change_settings(const nlohmann::json& settings)
+    {
+        const auto notifications_p = settings.find("notifications");
+        if (notifications_p != settings.end()) {
+            m_login_data["appearance"]["notifications_settings"] = *notifications_p;
+        }
+        push_appearance_to_server();
+
+        const auto pricing_p = settings.find("pricing");
+        if (pricing_p != settings.end()) {
+            const std::string currency = pricing_p->value("currency", m_fiat_currency);
+            const std::string exchange = pricing_p->value("exchange", m_fiat_source);
+            change_settings_pricing_source(currency, exchange);
+        }
     }
 
     void ga_session::login_with_pin(
@@ -884,7 +917,7 @@ namespace sdk {
         nlohmann::json details;
         nlohmann::json balance;
 
-        if (p->second.value("is_dirty", true)) {
+        if (json_get_value(p->second, "is_dirty", true)) {
             balance = get_balance(subaccount, 0); // Update the details
             details = m_subaccounts.at(subaccount);
         } else {
@@ -1113,8 +1146,8 @@ namespace sdk {
                     ep.erase("is_credit");
                 }
 
-                const bool is_tx_output = ep.value("is_output", false);
-                const bool is_relevant = ep.value("is_relevant", false);
+                const bool is_tx_output = json_get_value(ep, "is_output", false);
+                const bool is_relevant = json_get_value(ep, "is_relevant", false);
 
                 if (is_relevant) {
                     // Compute the effect of the input/output on the wallets balance
@@ -1153,7 +1186,7 @@ namespace sdk {
             if (net_positive) {
                 for (auto& ep : tx_details["inputs"]) {
                     std::string addressee;
-                    if (!ep.value("is_relevant", false)) {
+                    if (!json_get_value(ep, "is_relevant", false)) {
                         // Add unique addressees that aren't ourselves
                         addressee = json_get_value(ep, "social_source");
                         if (addressee.empty()) {
@@ -1172,7 +1205,7 @@ namespace sdk {
             } else {
                 for (auto& ep : tx_details["outputs"]) {
                     std::string addressee;
-                    if (!ep.value("is_relevant", false)) {
+                    if (!json_get_value(ep, "is_relevant", false)) {
                         // Add unique addressees that aren't ourselves
                         const auto& social_destination = ep.find("social_destination");
                         if (social_destination != ep.end()) {
@@ -1193,7 +1226,7 @@ namespace sdk {
                     }
                 }
                 tx_details["type"] = addressees.empty() ? "redeposit" : "outgoing";
-                tx_details["can_rbf"] = !is_confirmed && tx_details.value("rbf_optin", false);
+                tx_details["can_rbf"] = !is_confirmed && json_get_value(tx_details, "rbf_optin", false);
                 tx_details["can_cpfp"] = false;
             }
 
@@ -1370,7 +1403,7 @@ namespace sdk {
             // See if we can return our cached value
             const auto p = m_subaccounts.find(subaccount);
             GA_SDK_RUNTIME_ASSERT_MSG(p != m_subaccounts.end(), "Unknown subaccount");
-            if (!p->second.value("is_dirty", true)) {
+            if (!json_get_value(p->second, "is_dirty", true)) {
                 satoshi = p->second["satoshi"];
                 use_cached = true;
             }
@@ -1413,7 +1446,7 @@ namespace sdk {
 #else
     bool ga_session::is_rbf_enabled() const
     {
-        return m_login_data["rbf"] && m_login_data["appearance"].value("replace_by_fee", false);
+        return m_login_data["rbf"] && json_get_value(m_login_data["appearance"], "replace_by_fee", false);
     }
 #endif
 
@@ -1435,9 +1468,9 @@ namespace sdk {
     const std::string& ga_session::get_default_address_type() const
     {
         const auto& appearance = m_login_data["appearance"];
-        if (appearance.value("use_csv", false))
+        if (json_get_value(appearance, "use_csv", false))
             return address_type::csv;
-        if (appearance.value("use_segwit", false))
+        if (json_get_value(appearance, "use_segwit", false))
             return address_type::p2wsh;
         return address_type::p2sh;
     }
@@ -1486,7 +1519,7 @@ namespace sdk {
         std::vector<std::string> enabled_methods;
         enabled_methods.reserve(ALL_2FA_METHODS.size());
         for (const auto& m : ALL_2FA_METHODS) {
-            if (config[m].value("enabled", false)) {
+            if (json_get_value(config[m], "enabled", false)) {
                 enabled_methods.emplace_back(m);
             }
         }
@@ -1697,7 +1730,7 @@ namespace sdk {
 
         // We must have a tx and it must be signed by the user
         GA_SDK_RUNTIME_ASSERT(result.find("transaction") != result.end());
-        GA_SDK_RUNTIME_ASSERT(result.value("user_signed", false));
+        GA_SDK_RUNTIME_ASSERT(json_get_value(result, "user_signed", false));
 
         // FIXME: test weight and return error in create_transaction, not here
         const std::string tx_hex = result.at("transaction");
