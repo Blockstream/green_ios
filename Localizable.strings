@@ -388,3 +388,4 @@
 "id_your_transaction_threshold_is_1s" = "Your transaction threshold is %1$@.";
 "id_two_factor_reset_is_in_progress" = "Two-Factor reset is in progress, either cancel it using previously set authentication method or start a dispute process(Not recommended)";
 "id_two_factor_reset_in_progress" = "Two-Factor reset in progress, your wallet is currently locked.";
+"id_you_need_email_address_enabled" = "You need email address enabled to request NLockTime transaction.";
