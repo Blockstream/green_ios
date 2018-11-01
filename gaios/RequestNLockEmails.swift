@@ -13,6 +13,10 @@ class RequestNLockEmails : UIViewController, NVActivityIndicatorViewable {
         titleLabel.text = NSLocalizedString("id_request_nlocktime", comment: "")
         descriptionLabel.text = NSLocalizedString("id_request_will_send_nlocktimezip", comment: "")
         requestButton.setTitle(NSLocalizedString("id_request", comment: ""), for: .normal)
+        if (!AccountStore.shared.isEmailEnabled()) {
+            requestButton.isHidden = true
+            descriptionLabel.text = NSLocalizedString("id_you_need_email_address_enabled", comment: "")
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
