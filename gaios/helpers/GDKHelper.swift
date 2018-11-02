@@ -33,7 +33,7 @@ class TwoFactorCallHelper {
         } else if(status == "request_code") {
             let methods = json!["methods"] as! NSArray
             if(methods.count > 1) {
-                delegate?.onRequest(self)
+                delegate?.onResolve(self)
             } else {
                 let method = methods[0] as! String
                 try caller.requestCode(method: method)
@@ -42,37 +42,66 @@ class TwoFactorCallHelper {
         }
     }
 
-    func getAction() -> String? {
-        do {
-            let json = try caller.getStatus()
-            let status = json!["status"] as! String
-            let action = json!["action"] as! String
-            return action
-        } catch {
-            return nil
+    static func CodePopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
+        let alert = UIAlertDefaultStyleController(title: "Insert Code", message: "Insert two factor code")
+        alert.addTextField { (textField) in
+            textField.text = ""
+            textField.textColor = UIColor.white
+            textField.tintColor = UIColor.customTitaniumDark()
+            textField.borderColor = UIColor.customTitaniumLight()
+            textField.backgroundColor = UIColor.customTitaniumDark()
         }
+        alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel, handler: { [weak alert] (_) in
+            sender.delegate?.onError(sender, text: "")
+            alert?.dismiss(animated: true, completion: nil)
+        }))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            let textField = alert!.textFields![0]
+            print("Text field: \(textField.text)")
+            do {
+                try sender.caller.resolveCode(code: textField.text)
+                try sender.resolve()
+            } catch {
+                sender.delegate?.onError(sender, text: "")
+            }
+        }))
+        return alert
     }
 
-    static func CodePopup(_ sender: TwoFactorCallHelper) -> VerifyTwoFactorViewController {
-        let verify = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "verifyTwoFactor") as! VerifyTwoFactorViewController
-        verify.factorHelper = sender
-        verify.factorHelper?.delegate = verify
-        verify.providesPresentationContextTransitionStyle = true
-        verify.definesPresentationContext = true
-        verify.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-        verify.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        return verify
+    static func MethodPopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
+        let alert = UIAlertDefaultStyleController(title: "Selector", message: "Select two factor method")
+        let json = try! sender.caller.getStatus()
+        let methods = json!["methods"] as! NSArray
+        for index in 0..<methods.count {
+            let method = methods[index] as! String
+            alert.addAction(UIAlertAction(title: method, style: .default, handler: { (action) in
+                do {
+                    try sender.caller.requestCode(method: method)
+                    try sender.resolve()
+                } catch {
+                    sender.delegate?.onError(sender, text: "")
+                }
+
+            }))
+        }
+        return alert
     }
 
-    static func MethodPopup(_ sender: TwoFactorCallHelper) -> TwoFactorSlectorViewController {
-        let selector = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "twoFactorSelector") as! TwoFactorSlectorViewController
-        selector.factorHelper = sender
-        selector.factorHelper?.delegate = selector
-        selector.providesPresentationContextTransitionStyle = true
-        selector.definesPresentationContext = true
-        selector.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-        selector.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        return selector
+    static func UIAlertDefaultStyleController(title: String, message: String) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let subview = (alert.view.subviews.first?.subviews.first?.subviews.first!)! as UIView
+        subview.backgroundColor = UIColor.black
+        subview.tintColor = UIColor.white
+        alert.view.backgroundColor = UIColor.black
+        alert.view.tintColor = UIColor.white
+        alert.view.borderColor = UIColor.darkGray
+        alert.view.borderWidth = CGFloat(1.0)
+
+        let attributedTitle = NSAttributedString(string: title, attributes: [ NSAttributedStringKey.foregroundColor : UIColor.white ])
+        let attributedMessage = NSAttributedString(string: message, attributes: [ NSAttributedStringKey.foregroundColor : UIColor.lightGray ])
+        alert.setValue(attributedTitle, forKey: "attributedTitle")
+        alert.setValue(attributedMessage, forKey: "attributedMessage")
+        return alert;
     }
 }
 

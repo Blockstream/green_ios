@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewable {
 
-    var factorHelper: TwoFactorCallHelper? = nil
+
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var label0: UILabel!
     @IBOutlet weak var label1: UILabel!
@@ -14,6 +14,7 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
     @IBOutlet weak var label5: UILabel!
     @IBOutlet weak var backButton: UIButton!
 
+    var twoFactor: TwoFactorCall? = nil
     var onboarding = false
     var pinCode: String = ""
 
@@ -39,7 +40,7 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
 
     func setTitle() {
         do{
-            if let json = try factorHelper?.caller.getStatus() {
+            if let json = try twoFactor?.getStatus() {
                 let method = json["method"] as! String
                 if (method == "sms") {
                     topLabel.text = NSLocalizedString(TitleText.sms.rawValue, comment: "")
@@ -66,10 +67,55 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
         updateView()
         if (pinCode.count == 6) {
             do {
-                try factorHelper?.caller.resolveCode(code: pinCode)
-                try factorHelper?.resolve()
+                let json = try twoFactor?.getStatus()
+                let status = json!["status"] as!  String
+                if(status == "resolve_code") {
+                    try twoFactor?.resolveCode(code: pinCode)
+                    let resolve_json = try twoFactor?.getStatus()
+                    let resolve_status = resolve_json!["status"] as! String
+                    if(resolve_status == "call") {
+                        try twoFactor?.call()
+                        let call_json = try twoFactor?.getStatus()
+                        let call_status = call_json!["status"] as! String
+                        if (call_status == "done") {
+                            //show hud success
+                            if(onboarding) {
+                                self.performSegue(withIdentifier: "mainMenu", sender: nil)
+                            } else {
+                                let action = call_json!["action"] as! String
+                                if(action == "send_raw_tx") {
+                                    self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+                                        self.stopAnimating()
+                                        self.pop()
+                                    }
+                                } else if (action == "cancel_reset" || action == "request_reset") {
+                                    getAppDelegate().lock()
+                                } else {
+                                    pop()
+                                }
+                            }
+                        } else if (call_status == "resolve_code") {
+                            pinCode = ""
+                            updateView()
+                            setTitle()
+                            //now confirm your new 2fa
+                        } else {
+                            print("wrong pin")
+                            //show hud failure
+                            self.navigationController?.popViewController(animated: true)
+                            return
+                        }
+                        print(call_status)
+                        print("hello2")
+                    } else {
+                        print("do not call ?")
+                    }
+                    //if success show success and go back to root view controller
+                    //if fail show fail and go back to root view controller
+                }
             } catch {
-                print("resolve failed")
+
             }
         }
     }
@@ -121,58 +167,15 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func pop() {
-        let presenting = self.presentingViewController?.childViewControllers.last
-        self.dismiss(animated: false, completion: {
-            if (self.popToRoot) {
-                presenting?.navigationController?.popToRootViewController(animated: true)
-            }
-        })
-    }
-
-    @IBAction func backButtonClicked(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.CodePopup(sender)
-        let presenting = self.presentingViewController?.childViewControllers.last
-        self.dismiss(animated: false, completion: {
-            presenting?.present(alert, animated: true, completion: nil)
-        })
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender)
-        let presenting = self.presentingViewController?.childViewControllers.last
-        self.dismiss(animated: false, completion: {
-            presenting?.present(alert, animated: true, completion: nil)
-        })
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper) {
-        if(onboarding) {
-            self.performSegue(withIdentifier: "mainMenu", sender: nil)
+        if(popToRoot) {
+            self.navigationController?.popToRootViewController(animated: true)
         } else {
-            if let action = factorHelper?.getAction() {
-                if(action == "send_raw_tx") {
-                    self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
-                        self.stopAnimating()
-                        self.pop()
-                    }
-                } else if (action == "cancel_reset" || action == "request_reset") {
-                    getAppDelegate().lock()
-                } else {
-                    pop()
-                }
-            } else {
-                pop()
-            }
+            self.navigationController?.popViewController(animated: true)
         }
     }
 
-    func onError(_ sender: TwoFactorCallHelper, text: String) {
-        pop()
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
     }
 
 }

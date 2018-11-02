@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class RequestTwoFactorReset : UIViewController, TwoFactorCallDelegate {
+class RequestTwoFactorReset : UIViewController {
 
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var titleLabel: UILabel!
@@ -58,58 +58,51 @@ class RequestTwoFactorReset : UIViewController, TwoFactorCallDelegate {
 
     @IBAction func requestClicked(_ sender: Any) {
         if (isReset) {
-            DispatchQueue.global(qos: .background).async {
-                wrap {
-                     try getSession().cancelTwoFactorReset()
-                    }.done { (result: TwoFactorCall?) in
-                        do {
-                            let resultHelper = TwoFactorCallHelper(result!)
-                            resultHelper.delegate = self
-                            try resultHelper.resolve()
-                        } catch {
-                            print(error)
-                        }
-                    } .catch { error in
-                        print(error)
+            do {
+                let factor = try getSession().cancelTwoFactorReset()
+                let json = try factor.getStatus()
+                let status = json!["status"] as! String
+                if (status == "request_code") {
+                    let methods = json!["methods"] as! NSArray
+                    if (methods.count == 1) {
+                        let met = methods[0] as! String
+                        let request = try factor.requestCode(method: met)
+                        self.performSegue(withIdentifier: "verifyCode", sender: factor)
+                    } else {
+                        self.performSegue(withIdentifier: "selectTwoFactor", sender: factor)
+                    }
                 }
+            } catch {
             }
         } else {
             if let email = emailTextField.text {
-                DispatchQueue.global(qos: .background).async {
-                    wrap {
-                        try getSession().resetTwoFactor(email: email, isDispute: false)
-                        }.done { (result: TwoFactorCall?) in
-                            do {
-                                let resultHelper = TwoFactorCallHelper(result!)
-                                resultHelper.delegate = self
-                                try resultHelper.resolve()
-                            } catch {
-                                print(error)
-                            }
-                        } .catch { error in
-                            print(error)
+                do {
+                    let factor =  try getSession().resetTwoFactor(email: email, isDispute: false)
+                    let json = try factor.getStatus()
+                    let status = json!["status"] as! String
+                    if (status == "call") {
+                        let call = try factor.call()
+                        let json_call = try factor.getStatus()
+                        let status_call = json_call!["status"] as! String
+                        if (status_call == "resolve_code") {
+                            self.performSegue(withIdentifier: "verifyCode", sender: factor)
+                        }
                     }
+                } catch {
+                    print("something went wrong")
                 }
             }
         }
     }
 
-    func onResolve(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.CodePopup(sender)
-        alert.onboarding = false
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper) {
-        let selector = TwoFactorCallHelper.MethodPopup(sender)
-        self.present(selector, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper) {
-        self.navigationController?.popViewController(animated: true)
-    }
-
-    func onError(_ sender: TwoFactorCallHelper, text: String) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.twoFactor = sender as? TwoFactorCall
+            nextController.popToRoot = false
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
+            nextController.twoFactor = sender as? TwoFactorCall
+        }
     }
 
 }

@@ -1,15 +1,15 @@
 import Foundation
 import UIKit
 
-class SetPhoneViewController: UIViewController, TwoFactorCallDelegate {
+class SetPhoneViewController: UIViewController {
 
     @IBOutlet weak var textField: SearchTextField!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
     @IBOutlet weak var getCodeButton: UIButton!
-    @IBOutlet weak var titleLabel: UILabel!
     var sms = false
     var phoneCall = false
     var onboarding = true
+    @IBOutlet weak var titleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,23 +34,37 @@ class SetPhoneViewController: UIViewController, TwoFactorCallDelegate {
 
     @IBAction func getCodeClicked(_ sender: Any) {
         var twoFactor: TwoFactorCall? = nil
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                if (self.sms == true) {
-                     return AccountStore.shared.enableSMSTwoFactor(phoneNumber: self.textField.text!)
-                } else {
-                     return AccountStore.shared.enablePhoneCallTwoFactor(phoneNumber: self.textField.text!)
-                }
-                }.done { (result: TwoFactorCall?) in
-                    do {
-                        let resultHelper = TwoFactorCallHelper(result!)
-                        resultHelper.delegate = self
-                        try resultHelper.resolve()
-                    } catch {
-                        print(error)
+        if (sms == true) {
+            twoFactor = AccountStore.shared.enableSMSTwoFactor(phoneNumber: self.textField.text!)
+        } else {
+            twoFactor = AccountStore.shared.enablePhoneCallTwoFactor(phoneNumber: self.textField.text!)
+        }
+
+        if (twoFactor != nil) {
+            wrap { try twoFactor?.getStatus()}.done{ (json: [String: Any]?) in
+                let status = json!["status"] as! String
+                if (status == "call") {
+                    wrap { try twoFactor?.call()}.done{ _ in
+                        self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                        }.catch { error in
+                            print("could't call two factor")
                     }
-                } .catch { error in
-                    print(error)
+                } else if (status == "request_code") {
+                    let methods = json!["methods"] as! NSArray
+                    if(methods.count > 1) {
+                        self.performSegue(withIdentifier: "twoFactorSelector", sender: twoFactor)
+                    } else {
+                        let method = methods[0] as! String
+                        let req = try twoFactor?.requestCode(method: method)
+                        let status1 = try twoFactor?.getStatus()
+                        let parsed1 = status1!["status"] as! String
+                        if(parsed1 == "resolve_code") {
+                            self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                        }
+                    }
+                }
+                }.catch { error in
+                    print("could get two factor status")
             }
         }
     }
@@ -81,26 +95,18 @@ class SetPhoneViewController: UIViewController, TwoFactorCallDelegate {
         }
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.onboarding = onboarding
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+    }
+
     @IBAction func backButtonClicked(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.CodePopup(sender)
-        alert.onboarding = onboarding
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper) {
-        let selector = TwoFactorCallHelper.MethodPopup(sender)
-        self.present(selector, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper) {
-        print("done")
-    }
-
-    func onError(_ sender: TwoFactorCallHelper, text: String) {
     }
 
 }

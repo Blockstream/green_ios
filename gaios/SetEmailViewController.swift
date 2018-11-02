@@ -2,13 +2,12 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var getCodeButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleLabel: UILabel!
-    var onboarding = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,21 +35,32 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
     }
 
     @IBAction func getCodeClicked(_ sender: Any) {
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                 AccountStore.shared.enableEmailTwoFactor(email: self.textField.text!)
-                }.done { (result: TwoFactorCall?) in
-                    do {
-                        let resultHelper = TwoFactorCallHelper(result!)
-                        resultHelper.delegate = self
-                        try resultHelper.resolve()
-                    } catch {
-                        self.stopAnimating()
-                        print(error)
+        let twoFactor = AccountStore.shared.enableEmailTwoFactor(email: self.textField.text!)
+        if (twoFactor != nil) {
+            wrap { try twoFactor?.getStatus()}.done{ (json: [String: Any]?) in
+                let status = json!["status"] as! String
+                if (status == "call") {
+                    wrap { try twoFactor?.call()}.done{ _ in
+                        self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                        }.catch { error in
+                            print("could't call two factor")
                     }
-                } .catch { error in
-                    self.stopAnimating()
-                    print(error)
+                } else if (status == "request_code") {
+                    let methods = json!["methods"] as! NSArray
+                    if(methods.count > 1) {
+                        self.performSegue(withIdentifier: "twoFactorSelector", sender: twoFactor)
+                    } else {
+                        let method = methods[0] as! String
+                        let req = try twoFactor?.requestCode(method: method)
+                        let status1 = try twoFactor?.getStatus()
+                        let parsed1 = status1!["status"] as! String
+                        if(parsed1 == "resolve_code") {
+                            self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
+                        }
+                    }
+                }
+            }.catch { error in
+                print("could get two factor status")
             }
         }
     }
@@ -77,6 +87,16 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
         }
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? VerifyTwoFactorViewController {
+            nextController.onboarding = true
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+        if let nextController = segue.destination as? TwoFactorSlectorViewController {
+            nextController.twoFactor = sender as! TwoFactorCall
+        }
+    }
+
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y != 0{
@@ -89,26 +109,4 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
             }
         }
     }
-
-    func onResolve(_ sender: TwoFactorCallHelper) {
-        self.stopAnimating()
-        let alert = TwoFactorCallHelper.CodePopup(sender)
-        alert.onboarding = onboarding
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper) {
-        self.stopAnimating()
-        let selector = TwoFactorCallHelper.MethodPopup(sender)
-        self.present(selector, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper) {
-        print("done")
-    }
-
-    func onError(_ sender: TwoFactorCallHelper, text: String) {
-        failureMessage()
-    }
-
 }
