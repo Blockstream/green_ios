@@ -67,8 +67,7 @@ class SendBtcDetailsViewController: UIViewController {
         btcAmount = Double(satoshi) / 100000000
         if (btcAmount != 0) {
             if (selectedType == TransactionType.BTC) {
-                let denominated = getDenominated(amount: btcAmount, ofType: DenominationType.BTC)
-                amountTextField.text = String(format: "%f", denominated)
+                amountTextField.text = String(format: "%f", btcAmount)
             } else {
                 let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
                 amountTextField.text = String(format: "%f", fiat)
@@ -206,7 +205,7 @@ class SendBtcDetailsViewController: UIViewController {
             if (error != "") {
                 updateButton(false)
                 errorLabel.isHidden = false
-                errorLabel.text = NSLocalizedString(error, comment: "")
+                errorLabel.text = error
                 setLabel(button: selectedButton!, fee: 0)
                 //update error message
                 return
