@@ -21,7 +21,6 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
     var labels: Array<UILabel> = Array<UILabel>()
     var indicator: UIView? = nil
     var hideButton = false
-    var popToRoot = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,15 +117,6 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
             updateView()
             print(pinCode)
         }
-    }
-
-    func pop() {
-        let presenting = self.presentingViewController?.childViewControllers.last
-        self.dismiss(animated: false, completion: {
-            if (self.popToRoot) {
-                presenting?.navigationController?.popToRootViewController(animated: true)
-            }
-        })
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
