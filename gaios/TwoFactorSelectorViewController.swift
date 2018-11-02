@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class TwoFactorSlectorViewController: UIViewController {
+class TwoFactorSlectorViewController: UIViewController, TwoFactorCallDelegate {
 
     var factorHelper: TwoFactorCallHelper? = nil
     var twoFactor: TwoFactorCall? = nil
@@ -76,6 +76,24 @@ class TwoFactorSlectorViewController: UIViewController {
         } catch {
             factorHelper?.delegate?.onError(factorHelper!, text: "")
         }
+    }
+
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.CodePopup(sender)
+        self.dismiss(animated: false, completion: nil)
+        self.presentingViewController?.present(alert, animated: true, completion: nil)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        //alredy here
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper) {
+        self.dismiss(animated: true, completion: nil)
+    }
+
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

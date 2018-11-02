@@ -10,7 +10,6 @@ class TwoFactorLimitViewController: UIViewController, TwoFactorCallDelegate {
     var fiat: Bool = true
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
-    var twoFactorController: UIViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -139,38 +138,19 @@ class TwoFactorLimitViewController: UIViewController, TwoFactorCallDelegate {
 
     func onResolve(_ sender: TwoFactorCallHelper) {
         let alert = TwoFactorCallHelper.CodePopup(sender)
-        presetTwoFactorController(c: alert)
+        alert.onboarding = false
+        self.present(alert, animated: true, completion: nil)
     }
 
     func onRequest(_ sender: TwoFactorCallHelper) {
         let selector = TwoFactorCallHelper.MethodPopup(sender)
-        presetTwoFactorController(c: selector)
-    }
-
-    func presetTwoFactorController(c: UIViewController) {
-        if (twoFactorController != nil) {
-            twoFactorController?.dismiss(animated: false, completion: {
-                self.twoFactorController = c
-                self.present(c, animated: true, completion: nil)
-            })
-        } else {
-            twoFactorController = c
-            self.present(c, animated: true, completion: nil)
-        }
+        self.present(selector, animated: true, completion: nil)
     }
 
     func onDone(_ sender: TwoFactorCallHelper) {
-        if (twoFactorController != nil) {
-            twoFactorController?.dismiss(animated: false, completion: nil)
-        }
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
-            self.navigationController?.popToRootViewController(animated: true)
-        }
+        self.navigationController?.popViewController(animated: true)
     }
 
     func onError(_ sender: TwoFactorCallHelper, text: String) {
-        if (twoFactorController != nil) {
-            twoFactorController?.dismiss(animated: false, completion: nil)
-        }
     }
 }

@@ -19,8 +19,6 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     var selectedType: TransactionType? = nil
     var transaction: TransactionHelper?
 
-    var twoFactorController: UIViewController? = nil
-
     override func viewDidLoad() {
         super.viewDidLoad()
         walletNameLabel.text = walletName
@@ -99,31 +97,16 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     func onResolve(_ sender: TwoFactorCallHelper) {
         self.stopAnimating()
         let alert = TwoFactorCallHelper.CodePopup(sender)
-        presetTwoFactorController(c: alert)
+        self.present(alert, animated: true, completion: nil)
     }
 
     func onRequest(_ sender: TwoFactorCallHelper) {
         self.stopAnimating()
         let selector = TwoFactorCallHelper.MethodPopup(sender)
-        presetTwoFactorController(c: selector)
-    }
-
-    func presetTwoFactorController(c: UIViewController) {
-        if (twoFactorController != nil) {
-            twoFactorController?.dismiss(animated: false, completion: {
-                self.twoFactorController = c
-                self.present(c, animated: true, completion: nil)
-            })
-        } else {
-            twoFactorController = c
-            self.present(c, animated: true, completion: nil)
-        }
+        self.present(selector, animated: true, completion: nil)
     }
 
     func onDone(_ sender: TwoFactorCallHelper) {
-        if (twoFactorController != nil) {
-            twoFactorController?.dismiss(animated: false, completion: nil)
-        }
         self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
@@ -132,10 +115,8 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     }
 
     func onError(_ sender: TwoFactorCallHelper, text: String) {
-        if (twoFactorController != nil) {
-            twoFactorController?.dismiss(animated: false, completion: nil)
-        }
         self.stopAnimating()
+        print("wtf")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
