@@ -58,7 +58,7 @@ extension String {
         let btc = satoshi / div
         let formatter = NumberFormatter()
         formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 6
+        formatter.maximumFractionDigits = 8
         var result: String = formatter.string(from: NSNumber(value: btc))!
         if (btc < 1 && btc > 0) {
             result = "0" + result
