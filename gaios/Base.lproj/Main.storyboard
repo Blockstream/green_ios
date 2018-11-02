@@ -3294,6 +3294,7 @@
                         <outlet property="titleLabel" destination="xwY-fv-1qe" id="hVn-9j-sKI"/>
                         <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="Oir-Oa-Fhf"/>
                         <segue destination="hgO-EC-JdX" kind="show" identifier="twoFactorSelector" id="QDj-e2-Si9"/>
+                        <segue destination="iqZ-ST-Be8" kind="show" identifier="mainMenu" id="C7m-k9-Z80"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0hh-lv-EsQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3389,6 +3390,7 @@
                         <outlet property="titleLabel" destination="nJ4-Ft-9Ea" id="9nG-Qy-9IT"/>
                         <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="oJr-DX-JrD"/>
                         <segue destination="hgO-EC-JdX" kind="show" identifier="twoFactorSelector" id="mQx-0x-IZx"/>
+                        <segue destination="iqZ-ST-Be8" kind="show" identifier="mainMenu" id="C61-Bc-RkX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LeC-5w-MHG" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3478,6 +3480,7 @@
                         <outlet property="titleLabel" destination="EtY-hm-i0g" id="cxj-Jg-jh3"/>
                         <segue destination="U8O-Z4-13N" kind="show" identifier="twoFactor" id="hpa-7Q-TAx"/>
                         <segue destination="hgO-EC-JdX" kind="show" identifier="twoFactorSelector" id="c22-Au-VAX"/>
+                        <segue destination="iqZ-ST-Be8" kind="show" identifier="mainMenu" id="1pj-Jg-kKY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pdB-Nu-ruw" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3487,7 +3490,7 @@
         <!--Two Factor Slector View Controller-->
         <scene sceneID="3Gc-D7-agD">
             <objects>
-                <viewController id="hgO-EC-JdX" customClass="TwoFactorSlectorViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="twoFactorSelector" useStoryboardIdentifierAsRestorationIdentifier="YES" id="hgO-EC-JdX" customClass="TwoFactorSlectorViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3Vo-by-Sp3">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -3905,13 +3908,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KFn-tp-Pa3">
-                                <rect key="frame" x="0.0" y="175" width="320" height="750"/>
+                                <rect key="frame" x="0.0" y="175" width="320" height="323"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="north" translatesAutoresizingMaskIntoConstraints="NO" id="oiR-TU-EwA">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="750"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="323"/>
                                     </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="scan" translatesAutoresizingMaskIntoConstraints="NO" id="5lz-vU-al3">
-                                        <rect key="frame" x="95.5" y="310" width="130.5" height="130"/>
+                                        <rect key="frame" x="95.5" y="96.5" width="130.5" height="130"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="5lz-vU-al3" secondAttribute="height" multiplier="1:1" id="AWm-9I-SNf"/>
                                             <constraint firstAttribute="height" constant="130" id="Vp5-N8-uST"/>
@@ -3977,7 +3980,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owv-rr-Wjs">
-                                <rect key="frame" x="0.0" y="925" width="320" height="106"/>
+                                <rect key="frame" x="0.0" y="498" width="320" height="106"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yKw-zw-wMj">
                                         <rect key="frame" x="16" y="16" width="288" height="42"/>
@@ -4100,7 +4103,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="474" width="288" height="20.5"/>
+                                <rect key="frame" x="16" y="474" width="288" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -6803,11 +6806,11 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ugK-YA-J7C"/>
-        <segue reference="Sx5-Ok-KDL"/>
+        <segue reference="hpa-7Q-TAx"/>
+        <segue reference="1pj-Jg-kKY"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="4QF-E2-lEm"/>
-        <segue reference="5hk-TQ-qTI"/>
+        <segue reference="c22-Au-VAX"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>

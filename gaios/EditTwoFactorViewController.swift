@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class EditTwoFactorViewController: UIViewController {
+class EditTwoFactorViewController: UIViewController, TwoFactorCallDelegate {
 
     @IBOutlet weak var emailSwitch: UISwitch!
     @IBOutlet weak var smsSwitch: UISwitch!
@@ -12,6 +12,7 @@ class EditTwoFactorViewController: UIViewController {
     @IBOutlet weak var smsLabel: UILabel!
     @IBOutlet weak var phoneCallLabel: UILabel!
     @IBOutlet weak var gauthLabel: UILabel!
+    var twoFactorController: UIViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,25 +73,15 @@ class EditTwoFactorViewController: UIViewController {
     }
 
     func requestCode(twoFactor: TwoFactorCall?) {
+        if (twoFactor == nil) {
+            return
+        }
         do {
-            let json = try twoFactor?.getStatus()
-            let status = json!["status"] as! String
-            if(status == "request_code") {
-                let methods = json!["methods"] as! NSArray
-                if(methods.count > 1) {
-                    self.performSegue(withIdentifier: "selectTwoFactor", sender: twoFactor)
-                } else {
-                    let method = methods[0] as! String
-                    let req = try twoFactor?.requestCode(method: method)
-                    let status1 = try twoFactor?.getStatus()
-                    let parsed1 = status1!["status"] as! String
-                    if(parsed1 == "resolve_code") {
-                        self.performSegue(withIdentifier: "verifyCode", sender: twoFactor)
-                    }
-                }
-            }
+            let resultHelper = TwoFactorCallHelper(twoFactor!)
+            resultHelper.delegate = self
+            try resultHelper.resolve()
         } catch {
-            print("couldn't get status ")
+            print(error)
         }
     }
 
@@ -108,10 +99,45 @@ class EditTwoFactorViewController: UIViewController {
                 nextController.phoneCall = true
             }
             nextController.onboarding = false
-        } else if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as! TwoFactorCall
+        } else if let nextController = segue.destination as? SetEmailViewController {
+            nextController.onboarding = false
+        } else if let nextController = segue.destination as? SetGauthViewController {
             nextController.onboarding = false
         }
     }
 
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.CodePopup(sender)
+        presetTwoFactorController(c: alert)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        let selector = TwoFactorCallHelper.MethodPopup(sender)
+        presetTwoFactorController(c: selector)
+    }
+
+    func presetTwoFactorController(c: UIViewController) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: {
+                self.twoFactorController = c
+                self.present(c, animated: true, completion: nil)
+            })
+        } else {
+            twoFactorController = c
+            self.present(c, animated: true, completion: nil)
+        }
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
+    }
 }

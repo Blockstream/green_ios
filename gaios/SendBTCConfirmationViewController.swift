@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate{
+class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate {
 
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
@@ -18,6 +18,8 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     var wallet: WalletItem? = nil
     var selectedType: TransactionType? = nil
     var transaction: TransactionHelper?
+
+    var twoFactorController: UIViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,16 +97,33 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     }
 
     func onResolve(_ sender: TwoFactorCallHelper) {
+        self.stopAnimating()
         let alert = TwoFactorCallHelper.CodePopup(sender)
-        self.present(alert, animated: true, completion: nil)
+        presetTwoFactorController(c: alert)
     }
 
     func onRequest(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender)
-        self.present(alert, animated: true, completion: nil)
+        self.stopAnimating()
+        let selector = TwoFactorCallHelper.MethodPopup(sender)
+        presetTwoFactorController(c: selector)
+    }
+
+    func presetTwoFactorController(c: UIViewController) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: {
+                self.twoFactorController = c
+                self.present(c, animated: true, completion: nil)
+            })
+        } else {
+            twoFactorController = c
+            self.present(c, animated: true, completion: nil)
+        }
     }
 
     func onDone(_ sender: TwoFactorCallHelper) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
         self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
@@ -113,17 +132,10 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     }
 
     func onError(_ sender: TwoFactorCallHelper, text: String) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
         self.stopAnimating()
-        print("wtf")
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

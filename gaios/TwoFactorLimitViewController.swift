@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class TwoFactorLimitViewController: UIViewController {
+class TwoFactorLimitViewController: UIViewController, TwoFactorCallDelegate {
 
     @IBOutlet weak var limitTextField: UITextField!
     @IBOutlet weak var setLimitButton: UIButton!
@@ -10,6 +10,7 @@ class TwoFactorLimitViewController: UIViewController {
     var fiat: Bool = true
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
+    var twoFactorController: UIViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,56 +80,38 @@ class TwoFactorLimitViewController: UIViewController {
 
     @IBAction func setLimitClicked(_ sender: Any) {
         if let amount = Double(limitTextField.text!) {
-            do {
-                var details = [String:Any]()
-                if(fiat) {
-                    details["is_fiat"] = true
-                    details["fiat"] = String(amount)
-                } else {
-                    details["is_fiat"] = false
-                    let denomination = SettingsStore.shared.getDenominationSettings()
-                    var amount_denominated: Double = 0
-                    if(denomination == DenominationType.BTC) {
-                        amount_denominated = amount * 100000000
-                    } else if (denomination == DenominationType.MilliBTC) {
-                        amount_denominated = amount * 100000
-                    } else if (denomination == DenominationType.MicroBTC){
-                        amount_denominated = amount * 100
-                    }
-                    details["satoshi"] = amount_denominated
+            var details = [String:Any]()
+            if(fiat) {
+                details["is_fiat"] = true
+                details["fiat"] = String(amount)
+            } else {
+                details["is_fiat"] = false
+                let denomination = SettingsStore.shared.getDenominationSettings()
+                var amount_denominated: Double = 0
+                if(denomination == DenominationType.BTC) {
+                    amount_denominated = amount * 100000000
+                } else if (denomination == DenominationType.MilliBTC) {
+                    amount_denominated = amount * 100000
+                } else if (denomination == DenominationType.MicroBTC){
+                    amount_denominated = amount * 100
                 }
-                let factor = try getSession().setTwoFactorLimit(details: details)
-                let status = try factor.getStatus()
-                let statusString = status!["status"] as! String
-                if (statusString == "request_code") {
-                    let methods = status!["methods"] as! NSArray
-                    if (methods.count == 1) {
-                        let met = methods[0] as! String
-                        let request = try factor.requestCode(method: met)
-                        self.performSegue(withIdentifier: "verifyCode", sender: factor)
-                    } else {
-                        self.performSegue(withIdentifier: "selectTwoFactor", sender: factor)
-                    }
-                } else if (statusString == "call") {
-                    let call = try factor.call()
-                    let jsonCall = try factor.getStatus()
-                    let status = jsonCall!["status"] as! String
-                    SettingsStore.shared.setTwoFactorLimit()
-                    self.navigationController?.popViewController(animated: true)
-                }
-            } catch {
-                print("couldnt set limit")
+                details["satoshi"] = amount_denominated
             }
-        }
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-            nextController.hideButton = true
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
+            DispatchQueue.global(qos: .background).async {
+                wrap {
+                    try getSession().setTwoFactorLimit(details: details)
+                    }.done { (result: TwoFactorCall?) in
+                        do {
+                            let resultHelper = TwoFactorCallHelper(result!)
+                            resultHelper.delegate = self
+                            try resultHelper.resolve()
+                        } catch {
+                            print(error)
+                        }
+                    } .catch { error in
+                        print(error)
+                }
+            }
         }
     }
 
@@ -151,6 +134,43 @@ class TwoFactorLimitViewController: UIViewController {
         } else {
             fiat = !fiat
             setButton()
+        }
+    }
+
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.CodePopup(sender)
+        presetTwoFactorController(c: alert)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        let selector = TwoFactorCallHelper.MethodPopup(sender)
+        presetTwoFactorController(c: selector)
+    }
+
+    func presetTwoFactorController(c: UIViewController) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: {
+                self.twoFactorController = c
+                self.present(c, animated: true, completion: nil)
+            })
+        } else {
+            twoFactorController = c
+            self.present(c, animated: true, completion: nil)
+        }
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+    }
+
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
         }
     }
 }

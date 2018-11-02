@@ -1,13 +1,14 @@
 import Foundation
 import UIKit
 
-class DisputeRequestViewController : UIViewController {
+class DisputeRequestViewController : UIViewController, TwoFactorCallDelegate {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var disputeButton: UIButton!
+    var twoFactorController: UIViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,20 +22,20 @@ class DisputeRequestViewController : UIViewController {
 
     @IBAction func disputeButtonClicked(_ sender: Any) {
         if let email = emailTextField.text {
-            do {
-                let factor =  try getSession().resetTwoFactor(email: email, isDispute: true)
-                let json = try factor.getStatus()
-                let status = json!["status"] as! String
-                if (status == "call") {
-                    let call = try factor.call()
-                    let json_call = try factor.getStatus()
-                    let status_call = json_call!["status"] as! String
-                    if (status_call == "resolve_code") {
-                        self.performSegue(withIdentifier: "verifyCode", sender: factor)
-                    }
+            DispatchQueue.global(qos: .background).async {
+                wrap {
+                    try getSession().resetTwoFactor(email: email, isDispute: true)
+                    }.done { (result: TwoFactorCall?) in
+                        do {
+                            let resultHelper = TwoFactorCallHelper(result!)
+                            resultHelper.delegate = self
+                            try resultHelper.resolve()
+                        } catch {
+                            print(error)
+                        }
+                    } .catch { error in
+                        print(error)
                 }
-            } catch {
-                print("something went wrong")
             }
         }
     }
@@ -43,13 +44,40 @@ class DisputeRequestViewController : UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
+    func onResolve(_ sender: TwoFactorCallHelper) {
+        let alert = TwoFactorCallHelper.CodePopup(sender)
+        presetTwoFactorController(c: alert)
+    }
 
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
+    func onRequest(_ sender: TwoFactorCallHelper) {
+        let selector = TwoFactorCallHelper.MethodPopup(sender)
+        presetTwoFactorController(c: selector)
+    }
+
+    func presetTwoFactorController(c: UIViewController) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: {
+                self.twoFactorController = c
+                self.present(c, animated: true, completion: nil)
+            })
+        } else {
+            twoFactorController = c
+            self.present(c, animated: true, completion: nil)
+        }
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+    }
+
+    func onError(_ sender: TwoFactorCallHelper, text: String) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
         }
     }
 
