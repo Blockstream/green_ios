@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewable {
 
     var factorHelper: TwoFactorCallHelper? = nil
     @IBOutlet weak var topLabel: UILabel!
@@ -132,49 +132,6 @@ class VerifyTwoFactorViewController: UIViewController, NVActivityIndicatorViewab
     @IBAction func backButtonClicked(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
-
-    func onResolve(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.CodePopup(sender)
-        let presenting = self.presentingViewController?.childViewControllers.last
-        self.dismiss(animated: false, completion: {
-            presenting?.present(alert, animated: true, completion: nil)
-        })
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender)
-        let presenting = self.presentingViewController?.childViewControllers.last
-        self.dismiss(animated: false, completion: {
-            presenting?.present(alert, animated: true, completion: nil)
-        })
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper) {
-        if(onboarding) {
-            self.performSegue(withIdentifier: "mainMenu", sender: nil)
-        } else {
-            if let action = factorHelper?.getAction() {
-                if(action == "send_raw_tx") {
-                    self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
-                        self.stopAnimating()
-                        self.pop()
-                    }
-                } else if (action == "cancel_reset" || action == "request_reset") {
-                    getAppDelegate().lock()
-                } else {
-                    pop()
-                }
-            } else {
-                pop()
-            }
-        }
-    }
-
-    func onError(_ sender: TwoFactorCallHelper, text: String) {
-        pop()
-    }
-
 }
 
 public enum TitleText: String {

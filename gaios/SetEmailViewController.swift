@@ -9,6 +9,7 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleLabel: UILabel!
     var onboarding = true
+    var twoFactorController: UIViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,23 +92,42 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
     }
 
     func onResolve(_ sender: TwoFactorCallHelper) {
-        self.stopAnimating()
         let alert = TwoFactorCallHelper.CodePopup(sender)
-        alert.onboarding = onboarding
-        self.present(alert, animated: true, completion: nil)
+        presetTwoFactorController(c: alert)
     }
 
     func onRequest(_ sender: TwoFactorCallHelper) {
-        self.stopAnimating()
         let selector = TwoFactorCallHelper.MethodPopup(sender)
-        self.present(selector, animated: true, completion: nil)
+        presetTwoFactorController(c: selector)
+    }
+
+    func presetTwoFactorController(c: UIViewController) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: {
+                self.twoFactorController = c
+                self.present(c, animated: true, completion: nil)
+            })
+        } else {
+            twoFactorController = c
+            self.present(c, animated: true, completion: nil)
+        }
     }
 
     func onDone(_ sender: TwoFactorCallHelper) {
-        print("done")
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
+        if(onboarding) {
+            self.performSegue(withIdentifier: "mainMenu", sender: nil)
+        } else {
+            self.navigationController?.popToRootViewController(animated: true)
+        }
     }
 
     func onError(_ sender: TwoFactorCallHelper, text: String) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
         failureMessage()
     }
 

@@ -10,6 +10,8 @@ class RequestTwoFactorReset : UIViewController, TwoFactorCallDelegate {
     @IBOutlet weak var requestButton: UIButton!
     @IBOutlet weak var disputeButton: UIButton!
     var isReset = false
+    var twoFactorController: UIViewController? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
         emailTextField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
@@ -96,20 +98,38 @@ class RequestTwoFactorReset : UIViewController, TwoFactorCallDelegate {
 
     func onResolve(_ sender: TwoFactorCallHelper) {
         let alert = TwoFactorCallHelper.CodePopup(sender)
-        alert.onboarding = false
-        self.present(alert, animated: true, completion: nil)
+        presetTwoFactorController(c: alert)
     }
 
     func onRequest(_ sender: TwoFactorCallHelper) {
         let selector = TwoFactorCallHelper.MethodPopup(sender)
-        self.present(selector, animated: true, completion: nil)
+        presetTwoFactorController(c: selector)
+    }
+
+    func presetTwoFactorController(c: UIViewController) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: {
+                self.twoFactorController = c
+                self.present(c, animated: true, completion: nil)
+            })
+        } else {
+            twoFactorController = c
+            self.present(c, animated: true, completion: nil)
+        }
     }
 
     func onDone(_ sender: TwoFactorCallHelper) {
-        self.navigationController?.popViewController(animated: true)
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+            self.navigationController?.popToRootViewController(animated: true)
+        }
     }
 
     func onError(_ sender: TwoFactorCallHelper, text: String) {
+        if (twoFactorController != nil) {
+            twoFactorController?.dismiss(animated: false, completion: nil)
+        }
     }
-
 }

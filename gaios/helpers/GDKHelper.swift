@@ -56,7 +56,6 @@ class TwoFactorCallHelper {
     static func CodePopup(_ sender: TwoFactorCallHelper) -> VerifyTwoFactorViewController {
         let verify = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "verifyTwoFactor") as! VerifyTwoFactorViewController
         verify.factorHelper = sender
-        verify.factorHelper?.delegate = verify
         verify.providesPresentationContextTransitionStyle = true
         verify.definesPresentationContext = true
         verify.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
@@ -67,7 +66,6 @@ class TwoFactorCallHelper {
     static func MethodPopup(_ sender: TwoFactorCallHelper) -> TwoFactorSlectorViewController {
         let selector = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "twoFactorSelector") as! TwoFactorSlectorViewController
         selector.factorHelper = sender
-        selector.factorHelper?.delegate = selector
         selector.providesPresentationContextTransitionStyle = true
         selector.definesPresentationContext = true
         selector.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
