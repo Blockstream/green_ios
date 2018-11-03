@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
+class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var getCodeButton: UIButton!
@@ -35,39 +35,45 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     @IBAction func getCodeClicked(_ sender: Any) {
-        let twoFactor = AccountStore.shared.enableEmailTwoFactor(email: self.textField.text!)
-        if (twoFactor != nil) {
-            wrap { try twoFactor?.getStatus()}.done{ (json: [String: Any]?) in
-                let status = json!["status"] as! String
-                if (status == "call") {
-                    wrap { try twoFactor?.call()}.done{ _ in
-                        self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
-                        }.catch { error in
-                            print("could't call two factor")
-                    }
-                } else if (status == "request_code") {
-                    let methods = json!["methods"] as! NSArray
-                    if(methods.count > 1) {
-                        self.performSegue(withIdentifier: "twoFactorSelector", sender: twoFactor)
-                    } else {
-                        let method = methods[0] as! String
-                        let req = try twoFactor?.requestCode(method: method)
-                        let status1 = try twoFactor?.getStatus()
-                        let parsed1 = status1!["status"] as! String
-                        if(parsed1 == "resolve_code") {
-                            self.performSegue(withIdentifier: "twoFactor", sender: twoFactor)
-                        }
-                    }
-                }
+        self.startAnimating(CGSize(width: 30, height: 30),
+                            type: NVActivityIndicatorType.ballRotateChase)
+        let dict = ["enabled": true, "confirmed": true, "data": self.textField.text!] as [String : Any]
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                try getSession().changeSettingsTwoFactor(method: "email", details: dict)
+            }.done { (result: TwoFactorCall) in
+                try TwoFactorCallHelper(result, delegate: self).resolve()
             }.catch { error in
-                print("could get two factor status")
+                DispatchQueue.main.async {
+                    self.onError(nil, text: error.localizedDescription)
+                }
             }
         }
     }
 
+    func onResolve(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.CodePopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper?) {
+        self.stopAnimating()
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    func onError(_ sender: TwoFactorCallHelper?, text: String) {
+        self.stopAnimating()
+        failureMessage()
+    }
+
     func failureMessage() {
         DispatchQueue.main.async {
-            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+            NVActivityIndicatorPresenter.sharedInstance.setMessage("Failure")
         }
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.stopAnimating()
@@ -84,16 +90,6 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable {
                 }
                 buttonConstraint.constant += keyboardHeight
             }
-        }
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.onboarding = true
-            nextController.twoFactor = sender as! TwoFactorCall
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as! TwoFactorCall
         }
     }
 
