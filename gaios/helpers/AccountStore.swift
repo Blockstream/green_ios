@@ -207,30 +207,17 @@ class AccountStore {
         return nil
     }
 
-    func enableGauthTwoFactor() -> TwoFactorCall? {
-        let config = getTwoFactorConfig()
-        if (config == nil) {
-            return nil
-        }
+    func enableGauthTwoFactor() throws -> TwoFactorCall? {
+        let config = try getSession().getTwoFactorConfig()
         let gauth = config!["gauth"] as! [String: Any]
         let gauthdata = gauth["data"] as! String
         let dict = ["enabled": true, "confirmed": true, "data": gauthdata] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
     }
 
-    func disableGauthTwoFactor() -> TwoFactorCall? {
+    func disableGauthTwoFactor() throws -> TwoFactorCall? {
         let dict = ["enabled": false] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
     }
 
     func getGauthSecret() -> String? {

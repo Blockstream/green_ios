@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class SetGauthViewController: UIViewController {
+class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var qrCodeImageView: UIImageView!
     @IBOutlet weak var secretLabel: UILabel!
@@ -15,7 +16,7 @@ class SetGauthViewController: UIViewController {
         secret = AccountStore.shared.getGauthSecret()
         otp = AccountStore.shared.getGauthOTP()
         if (secret == nil) {
-            print("something went wrong gauth")
+            self.onError(nil, text: "something went wrong gauth")
             return
         }
         qrCodeImageView.image = QRImageGenerator.imageForText(text: otp!, frame: qrCodeImageView.frame)
@@ -29,47 +30,45 @@ class SetGauthViewController: UIViewController {
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        if !self.isAnimating {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
-        let factor = AccountStore.shared.enableGauthTwoFactor()
-        do {
-            let json = try factor?.getStatus()
-            let status = json!["status"] as! String
-            if (status == "call") {
-                try factor?.call()
-                let json_call = try factor?.getStatus()
-                let status_call = json_call!["status"] as! String
-                if(status_call == "resolve_code") {
-                    self.performSegue(withIdentifier: "twoFactor", sender: factor)
-                }
-            } else if (status == "request_code") {
-                let methods = json!["methods"] as! NSArray
-                if(methods.count > 1) {
-                    self.performSegue(withIdentifier: "twoFactorSelector", sender: factor)
-                } else {
-                    let method = methods[0] as! String
-                    let req = try factor?.requestCode(method: method)
-                    let status1 = try factor?.getStatus()
-                    let parsed1 = status1!["status"] as! String
-                    if(parsed1 == "resolve_code") {
-                        self.performSegue(withIdentifier: "twoFactor", sender: factor)
-                    }
+        if self.isAnimating {
+            return
+        }
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                try AccountStore.shared.enableGauthTwoFactor()!
+            }.done { (result: TwoFactorCall) in
+                try TwoFactorCallHelper(result, delegate: self).resolve()
+            }.catch { error in
+                DispatchQueue.main.async {
+                    self.onError(nil, text: error.localizedDescription)
                 }
             }
-        } catch {
-            print("something went wrong")
         }
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.onboarding = true
-            nextController.twoFactor = sender as! TwoFactorCall
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as! TwoFactorCall
-        }
+    func onResolve(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.CodePopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper?) {
+        self.stopAnimating()
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    func onError(_ sender: TwoFactorCallHelper?, text: String) {
+        self.stopAnimating()
+        print(text)
     }
 }

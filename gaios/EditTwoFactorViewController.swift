@@ -66,7 +66,7 @@ class EditTwoFactorViewController: UIViewController {
         if (switcher.isOn) {
             self.performSegue(withIdentifier: "gauth", sender: nil)
         } else {
-            let call = AccountStore.shared.disableGauthTwoFactor()
+            let call = try! AccountStore.shared.disableGauthTwoFactor()
             requestCode(twoFactor: call)
         }
     }
