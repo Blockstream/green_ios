@@ -3,10 +3,10 @@ import Foundation
 import UIKit
 
 protocol TwoFactorCallDelegate: class {
-    func onResolve(_ sender: TwoFactorCallHelper)
-    func onRequest(_ sender: TwoFactorCallHelper)
-    func onDone(_ sender: TwoFactorCallHelper)
-    func onError(_ sender: TwoFactorCallHelper, text: String)
+    func onResolve(_ sender: TwoFactorCallHelper?)
+    func onRequest(_ sender: TwoFactorCallHelper?)
+    func onDone(_ sender: TwoFactorCallHelper?)
+    func onError(_ sender: TwoFactorCallHelper?, text: String)
 }
 
 class TwoFactorCallHelper {
@@ -16,7 +16,14 @@ class TwoFactorCallHelper {
     init(_ caller: TwoFactorCall) {
         self.caller = caller
     }
+
+    init(_ caller: TwoFactorCall, delegate: TwoFactorCallDelegate) {
+        self.caller = caller
+        self.delegate = delegate
+    }
+
     func resolve() throws {
+        // should be called in a not ui/main thread
         let json = try caller.getStatus()
         let status = json!["status"] as! String
         print( status )
@@ -24,16 +31,24 @@ class TwoFactorCallHelper {
             try caller.call()
             try resolve()
         } else if(status == "done") {
-            delegate?.onDone(self)
+            DispatchQueue.main.async {
+                self.delegate?.onDone(self)
+            }
         } else if (status == "error") {
             let error = json!["error"] as! String
-            delegate?.onError(self, text: error)
+            DispatchQueue.main.async {
+                self.delegate?.onError(self, text: error)
+            }
         } else if(status == "resolve_code") {
-            delegate?.onResolve(self)
+            DispatchQueue.main.async {
+                self.delegate?.onResolve(self)
+            }
         } else if(status == "request_code") {
             let methods = json!["methods"] as! NSArray
             if(methods.count > 1) {
-                delegate?.onResolve(self)
+                DispatchQueue.main.async {
+                    self.delegate?.onRequest(self)
+                }
             } else {
                 let method = methods[0] as! String
                 try caller.requestCode(method: method)
@@ -58,11 +73,16 @@ class TwoFactorCallHelper {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
             let textField = alert!.textFields![0]
             print("Text field: \(textField.text)")
-            do {
-                try sender.caller.resolveCode(code: textField.text)
-                try sender.resolve()
-            } catch {
-                sender.delegate?.onError(sender, text: "")
+            // Perform action on separate thread
+            DispatchQueue.global(qos: .default).async {
+                do {
+                    try sender.caller.resolveCode(code: textField.text)
+                    try sender.resolve()
+                } catch {
+                    DispatchQueue.main.async {
+                        sender.delegate?.onError(sender, text: "")
+                    }
+                }
             }
         }))
         return alert
@@ -75,13 +95,17 @@ class TwoFactorCallHelper {
         for index in 0..<methods.count {
             let method = methods[index] as! String
             alert.addAction(UIAlertAction(title: method, style: .default, handler: { (action) in
-                do {
-                    try sender.caller.requestCode(method: method)
-                    try sender.resolve()
-                } catch {
-                    sender.delegate?.onError(sender, text: "")
+                // Perform action on separate thread
+                DispatchQueue.global(qos: .default).async {
+                    do {
+                        try sender.caller.requestCode(method: method)
+                        try sender.resolve()
+                    } catch {
+                        DispatchQueue.main.async {
+                            sender.delegate?.onError(sender, text: "")
+                        }
+                    }
                 }
-
             }))
         }
         return alert

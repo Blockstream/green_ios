@@ -164,19 +164,19 @@ class IncreaseFeeViewController: UIViewController, TwoFactorCallDelegate {
         }
     }
 
-    func onResolve(_ sender: TwoFactorCallHelper) {
-        self.performSegue(withIdentifier: "twoFactor", sender: sender)
+    func onResolve(_ sender: TwoFactorCallHelper?) {
+        self.performSegue(withIdentifier: "twoFactor", sender: sender!)
     }
 
-    func onRequest(_ sender: TwoFactorCallHelper) {
-        self.performSegue(withIdentifier: "twoFactorSelector", sender: sender)
+    func onRequest(_ sender: TwoFactorCallHelper?) {
+        self.performSegue(withIdentifier: "twoFactorSelector", sender: sender!)
     }
 
-    func onDone(_ sender: TwoFactorCallHelper) {
+    func onDone(_ sender: TwoFactorCallHelper?) {
         self.dismiss(animated: true, completion: nil)
     }
 
-    func onError(_ sender: TwoFactorCallHelper, text: String) {
+    func onError(_ sender: TwoFactorCallHelper?, text: String) {
         print( text )
     }
 

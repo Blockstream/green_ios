@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate{
+class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate {
 
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
@@ -82,8 +82,9 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
                 }.done {
                     self.executeOnDone()
                 } .catch { error in
-                    self.stopAnimating()
-                    print(error)
+                    DispatchQueue.main.async {
+                        self.onError(nil, text: error.localizedDescription)
+                    }
                 }
             }
         }
@@ -91,48 +92,44 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
             DispatchQueue.global(qos: .background).async {
                 wrap {
                     try getSession().sendTransaction(details: (self.transaction?.data)!)
-                }.done { (result: TwoFactorCall?) in
-                    do {
-                        let resultHelper = TwoFactorCallHelper(result!)
-                        resultHelper.delegate = self
-                        try resultHelper.resolve()
-                    } catch {
-                        self.stopAnimating()
-                        print(error)
-                    }
+                }.done { (result: TwoFactorCall) in
+                    try TwoFactorCallHelper(result, delegate: self).resolve()
                 } .catch { error in
-                    self.stopAnimating()
-                    print(error)
+                    DispatchQueue.main.async {
+                        self.onError(nil, text: error.localizedDescription)
+                    }
                 }
             }
         }
     }
 
-    func onResolve(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.CodePopup(sender)
+    func onResolve(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.CodePopup(sender!)
         self.present(alert, animated: true, completion: nil)
     }
 
-    func onRequest(_ sender: TwoFactorCallHelper) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender)
+    func onRequest(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender!)
         self.present(alert, animated: true, completion: nil)
     }
 
     func executeOnDone() {
         self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
+        NVActivityIndicatorPresenter.sharedInstance.setMessage("Transaction Sent")
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
             self.navigationController?.popToRootViewController(animated: true)
         }
     }
 
-    func onDone(_ sender: TwoFactorCallHelper) {
+    func onDone(_ sender: TwoFactorCallHelper?) {
         executeOnDone()
     }
 
-    func onError(_ sender: TwoFactorCallHelper, text: String) {
+    func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
-        print("wtf")
+        slidingButton.reset()
+        print(text)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
