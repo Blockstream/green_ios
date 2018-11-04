@@ -6,6 +6,9 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
+    @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var qrButton: UIButton!
+
     var textFields: Array<UITextField> = []
     var box:UIView = UIView()
     var constraint: NSLayoutConstraint? = nil
@@ -35,9 +38,11 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
     var captureSession = AVCaptureSession()
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
+    var adaptToSmallScreen = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        adaptToSmallScreen = self.view.frame.height == 568
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         createUI()
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -252,24 +257,41 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
             suggestionView.layoutIfNeeded()
             pasteView.layoutIfNeeded()
             isKeyboardShown = true
-            print("showing keyboard")
-
-            let boxBottom = box.frame.origin.y + box.frame.height
-            let suggestionTop = suggestionView.frame.origin.y
-            if(boxBottom > suggestionTop){
-                let suggestedConstraint = constraint!.constant - (boxBottom - suggestionTop)
-                for index in 0..<textFields.count {
-                    if (textFields[index].isFirstResponder) {
-                        constraint?.isActive = false
-                        constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: suggestedConstraint)
-                        constraint?.isActive = true
+            if (adaptToSmallScreen) {
+                let boxBottom = box.frame.origin.y + box.frame.height
+                let suggestionTop = suggestionView.frame.origin.y
+                if(boxBottom > suggestionTop){
+                    let suggestedConstraint = constraint!.constant - (boxBottom - suggestionTop)
+                    for index in 0..<textFields.count {
+                        if (textFields[index].isFirstResponder) {
+                            if (index > 15) {
+                                constraint?.isActive = false
+                                constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: suggestedConstraint)
+                                constraint?.isActive = true
+                                topLabel.isHidden = true
+                                backButton.isHidden = true
+                                qrButton.isHidden = true
+                            }
+                        }
                     }
+                }
+            } else {
+                let boxBottom = box.frame.origin.y + box.frame.height
+                let suggestionTop = suggestionView.frame.origin.y
+                if(boxBottom > suggestionTop){
+                    let suggestedConstraint = constraint!.constant - (boxBottom - suggestionTop)
+                    constraint?.isActive = false
+                    constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: suggestedConstraint)
+                    constraint?.isActive = true
                 }
             }
         }
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
+        topLabel.isHidden = false
+        backButton.isHidden = false
+        qrButton.isHidden = false
         constraint?.isActive = false
         constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: topLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 18)
         constraint?.isActive = true
@@ -347,7 +369,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         let blockWidth = (view.frame.width - 32) / 4
         box.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
         box.translatesAutoresizingMaskIntoConstraints = false
-        let height = 360
+        let rowMargin = adaptToSmallScreen ? 45 : 60
+        let height = rowMargin * 6
         view.addSubview(box)
         NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.width, multiplier: 0, constant: view.frame.width).isActive = true
         NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: CGFloat(height)).isActive = true
@@ -361,7 +384,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
             box.addSubview(block)
 
             let leadingConstant:CGFloat = CGFloat(16 + CGFloat(index % 4) * blockWidth)
-            let topConstant:CGFloat = CGFloat(row * 60)
+
+            let topConstant:CGFloat = CGFloat(row * rowMargin)
 
             NSLayoutConstraint(item: block, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 0, constant: blockWidth).isActive = true
             NSLayoutConstraint(item: block, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 45).isActive = true

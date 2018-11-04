@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -2044,7 +2042,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-KU-8DT">
-                                <rect key="frame" x="16" y="121" width="162" height="21"/>
+                                <rect key="frame" x="16" y="121" width="161" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -2077,7 +2075,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallet Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J9b-kK-iA4">
-                                <rect key="frame" x="56" y="206" width="97" height="21"/>
+                                <rect key="frame" x="56" y="205.5" width="97" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -2114,7 +2112,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Itr-BV-GH4">
-                                <rect key="frame" x="54" y="293" width="250" height="21"/>
+                                <rect key="frame" x="54" y="292.5" width="250" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -3511,7 +3509,7 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="forwardArrow" translatesAutoresizingMaskIntoConstraints="NO" id="q1k-X9-m97">
-                                <rect key="frame" x="277" y="142" width="27" height="16"/>
+                                <rect key="frame" x="277" y="142.5" width="27" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="27" id="ICj-vt-SUq"/>
                                     <constraint firstAttribute="height" constant="16" id="b90-Fg-hDe"/>
@@ -3715,8 +3713,6 @@
                                 <state key="normal" image="backarrow"/>
                                 <connections>
                                     <action selector="backButtonClicked:" destination="o6l-5o-Ocm" eventType="touchUpInside" id="Ad3-sN-ui4"/>
-                                    <action selector="backButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="T1P-iv-Rct"/>
-                                    <action selector="backButtonClicked:" destination="S7A-ZA-0zR" eventType="touchUpInside" id="nge-me-6xJ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="alH-2k-1ag">
@@ -3733,11 +3729,9 @@
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
-                            <constraint firstItem="sFk-uw-kin" firstAttribute="width" secondItem="sFk-uw-kin" secondAttribute="height" multiplier="27:27" id="9ZG-hi-E63"/>
                             <constraint firstItem="6Ka-HY-djy" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" constant="16" id="CXP-gV-zbK"/>
                             <constraint firstItem="t2r-7e-jNo" firstAttribute="trailing" secondItem="alH-2k-1ag" secondAttribute="trailing" constant="16" id="EQC-lw-7Pf"/>
                             <constraint firstItem="WZL-Fg-xk4" firstAttribute="centerX" secondItem="5FT-sb-MH7" secondAttribute="centerX" id="EUq-CC-YRu"/>
-                            <constraint firstItem="sFk-uw-kin" firstAttribute="width" secondItem="sFk-uw-kin" secondAttribute="height" multiplier="27:27" id="EkZ-ZB-idf"/>
                             <constraint firstItem="sFk-uw-kin" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" constant="16" id="HGp-rF-O7r"/>
                             <constraint firstItem="sFk-uw-kin" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="16" id="Sqp-nw-3zM"/>
                             <constraint firstItem="WZL-Fg-xk4" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="16" id="hhl-yu-dpF"/>
@@ -3748,7 +3742,9 @@
                         <viewLayoutGuide key="safeArea" id="t2r-7e-jNo"/>
                     </view>
                     <connections>
+                        <outlet property="backButton" destination="sFk-uw-kin" id="s2f-rw-ZIA"/>
                         <outlet property="doneButton" destination="6Ka-HY-djy" id="tPz-pP-59Y"/>
+                        <outlet property="qrButton" destination="alH-2k-1ag" id="G5h-0I-0FU"/>
                         <outlet property="topLabel" destination="WZL-Fg-xk4" id="t9y-F2-vWH"/>
                         <segue destination="mQJ-kl-M0B" kind="show" identifier="next" id="z3Q-3P-P3d"/>
                     </connections>
@@ -3911,7 +3907,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="750"/>
                                     </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="scan" translatesAutoresizingMaskIntoConstraints="NO" id="5lz-vU-al3">
-                                        <rect key="frame" x="95.5" y="310" width="130.5" height="130"/>
+                                        <rect key="frame" x="95" y="310" width="130" height="130"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="5lz-vU-al3" secondAttribute="height" multiplier="1:1" id="AWm-9I-SNf"/>
                                             <constraint firstAttribute="height" constant="130" id="Vp5-N8-uST"/>
@@ -4272,7 +4268,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="satoshi / byte" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SKW-ay-YvK">
-                                <rect key="frame" x="40" y="448" width="81.5" height="16"/>
+                                <rect key="frame" x="40" y="447.5" width="81.5" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
@@ -4494,7 +4490,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="~0.0 USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2aZ-Zn-588">
-                                <rect key="frame" x="16" y="371" width="62.5" height="17"/>
+                                <rect key="frame" x="16" y="371" width="62" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="17" id="Aai-Rk-zlU"/>
                                 </constraints>
@@ -5401,7 +5397,7 @@
                                 <color key="backgroundColor" red="0.027526069432497025" green="0.0031129433773458004" blue="0.003540748031809926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9xM-Sq-1oZ">
-                                <rect key="frame" x="16" y="38.5" width="288" height="490"/>
+                                <rect key="frame" x="16" y="39" width="288" height="490"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="B9S-Kz-a7A">
                                         <rect key="frame" x="74" y="57" width="140" height="140"/>
@@ -5579,7 +5575,7 @@
                                 <color key="backgroundColor" red="0.027526069430000001" green="0.0031129433770000002" blue="0.0035407480320000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="td3-l0-8mW">
-                                <rect key="frame" x="16" y="54" width="288" height="459"/>
+                                <rect key="frame" x="16" y="54.5" width="288" height="459"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GmH-ux-24Y">
                                         <rect key="frame" x="0.0" y="407" width="288" height="52"/>
@@ -5800,7 +5796,7 @@
                                 <color key="backgroundColor" red="0.027526069430000001" green="0.0031129433770000002" blue="0.0035407480320000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AuO-B2-PsF">
-                                <rect key="frame" x="16" y="54" width="288" height="459"/>
+                                <rect key="frame" x="16" y="54.5" width="288" height="459"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4aP-c5-FHp">
                                         <rect key="frame" x="0.0" y="407" width="288" height="52"/>
@@ -6786,7 +6782,7 @@
         <image name="wallet2" width="108" height="108"/>
         <image name="world" width="100" height="103"/>
         <namedColor name="customLowerBar">
-            <color red="0.086274509799999996" green="0.1137254902" blue="0.1450980392" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.086274509803921567" green="0.11372549019607843" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -6798,7 +6794,7 @@
             <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumMedium">
-            <color red="0.2156862745" green="0.2470588235" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.21568627450980393" green="0.24705882352941178" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customVeryDark">
             <color red="0.10196078431372549" green="0.11764705882352941" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
