@@ -25,7 +25,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.done {
             AccountStore.shared.isWatchOnly = false
             getAppDelegate().connect()
-            self.performSegue(withIdentifier: "logout", sender: nil)
+            self.performSegue(withIdentifier: "intro", sender: nil)
         }.catch { error in
             print("problem while logging out")
         }
