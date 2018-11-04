@@ -57,15 +57,19 @@ class ReceiveBtcViewController: UIViewController {
         }
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let addressDetail = segue.destination as? AddressDetailViewController {
+            addressDetail.wallet = wallet
+            addressDetail.amount = amount_g
+            addressDetail.providesPresentationContextTransitionStyle = true
+            addressDetail.definesPresentationContext = true
+            addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+            addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        }
+    }
+
     @objc func zoomQR(recognizer: UITapGestureRecognizer) {
-        let addressDetail = self.storyboard?.instantiateViewController(withIdentifier: "addressDetail") as! AddressDetailViewController
-        addressDetail.wallet = wallet
-        addressDetail.amount = amount_g
-        addressDetail.providesPresentationContextTransitionStyle = true
-        addressDetail.definesPresentationContext = true
-        addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-        addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        self.present(addressDetail, animated: true, completion: nil)
+        self.performSegue(withIdentifier: "address", sender: self)
     }
 
     @IBAction func switchButtonClicked(_ sender: Any) {
@@ -154,7 +158,6 @@ class ReceiveBtcViewController: UIViewController {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
-        let btc_amount: String = textField.text!
         updateEstimate()
     }
 

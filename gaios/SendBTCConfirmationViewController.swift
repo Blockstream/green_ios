@@ -21,9 +21,8 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        walletNameLabel.text = walletName
         self.tabBarController?.tabBar.isHidden = true
-        walletNameLabel.text = wallet?.name
+        walletNameLabel.text = (transaction?.data["is_sweep"] as! Bool) ? "Paper Wallet" : wallet?.name
         hideKeyboardWhenTappedAround()
         slidingButton.delegate = self
         refresh()
@@ -39,7 +38,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     func refresh() {
         let addressees = transaction?.addresses()
         let address = addressees![0]["address"] as! String
-        let satoshi = addressees![0]["satoshi"] as! UInt64
+        let satoshi = transaction?.data["satoshi"] as! UInt64
         let btcAmount = Double(satoshi) / 100000000
         recepientAddressLabel.text = address
         if (selectedType == TransactionType.BTC) {
@@ -75,9 +74,23 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         print("send now!")
         let size = CGSize(width: 30, height: 30)
         startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                try getSession().sendTransaction(details: (self.transaction?.data)!)
+        if self.transaction?.data["is_sweep"] as! Bool {
+            DispatchQueue.global(qos: .background).async {
+                wrap {
+                    let tx = try getSession().signTransaction(details: self.transaction!.data)!
+                    _ = try getSession().broadcastTransaction(tx_hex: tx["transaction"] as! String)
+                }.done {
+                    self.executeOnDone()
+                } .catch { error in
+                    self.stopAnimating()
+                    print(error)
+                }
+            }
+        }
+        else {
+            DispatchQueue.global(qos: .background).async {
+                wrap {
+                    try getSession().sendTransaction(details: (self.transaction?.data)!)
                 }.done { (result: TwoFactorCall?) in
                     do {
                         let resultHelper = TwoFactorCallHelper(result!)
@@ -90,6 +103,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
                 } .catch { error in
                     self.stopAnimating()
                     print(error)
+                }
             }
         }
     }
@@ -104,12 +118,16 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         self.present(alert, animated: true, completion: nil)
     }
 
-    func onDone(_ sender: TwoFactorCallHelper) {
+    func executeOnDone() {
         self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
             self.navigationController?.popToRootViewController(animated: true)
         }
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper) {
+        executeOnDone()
     }
 
     func onError(_ sender: TwoFactorCallHelper, text: String) {

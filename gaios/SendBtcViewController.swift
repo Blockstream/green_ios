@@ -15,6 +15,7 @@ class SendBtcViewController: UIViewController {
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
     var qrCodeFrameView: UIView?
     var wallet:WalletItem? = nil
+    var sweepTransaction: Bool = false
     var transaction: TransactionHelper?
     private let supportedCodeTypes = [AVMetadataObject.ObjectType.upce,
                                       AVMetadataObject.ObjectType.code39,
@@ -40,14 +41,15 @@ class SendBtcViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        let nib = UINib(nibName: "WalletCard", bundle: nil)
+        _ = UINib(nibName: "WalletCard", bundle: nil)
         let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = topImage.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         topImage.addSubview(blurEffectView)
-        textfield.attributedPlaceholder = NSAttributedString(string: "Enter Bitcoin Address",
-                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        textfield.attributedPlaceholder =
+            NSAttributedString(string: sweepTransaction ? "Enter Private Key" : "Enter Bitcoin Address",
+                               attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always
         self.tabBarController?.tabBar.isHidden = true
@@ -57,7 +59,7 @@ class SendBtcViewController: UIViewController {
         navigationController?.navigationBar.tintColor = UIColor.white
         hideKeyboardWhenTappedAround()
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        bottomButton.setTitle(NSLocalizedString("id_add_amount", comment: ""), for: .normal)
+        bottomButton.setTitle(sweepTransaction ? "Sweep" : NSLocalizedString("id_add_amount", comment: ""), for: .normal)
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -104,7 +106,7 @@ class SendBtcViewController: UIViewController {
                     //access allowed
                     self.startScan()
                 } else {
-                    print("fuck")
+                    print("failed")
                     //Send user to settings to allow camera
                 }
             })
@@ -158,7 +160,8 @@ class SendBtcViewController: UIViewController {
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
-        if (parseBitcoinUri(textfield.text!)) {
+        if ((sweepTransaction && createSweepTransaction(private_key: textfield.text!)) ||
+            parseBitcoinUri(textfield.text!)) {
             self.performSegue(withIdentifier: "next", sender: self)
         }
     }
@@ -174,7 +177,6 @@ class SendBtcViewController: UIViewController {
     @IBAction func backButtonClicked(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
-
 }
 
 extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
@@ -196,18 +198,40 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
 
             if metadataObj.stringValue != nil {
                 let uri = metadataObj.stringValue
-                print(uri)
-                if (!parseBitcoinUri(uri!)) {
-                    print("something went wrong tryign to print payload")
-                    return;
+                var createdTx: Bool = false
+                if sweepTransaction {
+                    createdTx = createSweepTransaction(private_key: uri!)
+                }
+                else {
+                    createdTx = parseBitcoinUri(uri!)
                 }
                 self.captureSession.stopRunning()
                 self.videoPreviewLayer?.removeFromSuperlayer()
                 self.qrCodeFrameView?.frame = CGRect.zero
-                self.performSegue(withIdentifier: "next", sender: self)
+                if createdTx {
+                    self.performSegue(withIdentifier: "next", sender: self)
+                }
             }
         }
         //captureSession.stopRunning()
+    }
+
+    func createSweepTransaction(private_key pk: String) -> Bool {
+        let details: [String: Any] = [
+            "addressees" : [["address" : wallet?.address]],
+            "fee_rate": AccountStore.shared.getFeeRateMedium(),
+            "private_key": pk
+        ]
+        do {
+            transaction = try TransactionHelper(details)
+            let error = transaction?.data["error"] as? String
+            if error == nil || error! == "" { // JSON needs to be fixed
+                return true
+            }
+            return false
+        } catch {
+            return false
+        }
     }
 
     func parseBitcoinUri(_ text: String) -> Bool {

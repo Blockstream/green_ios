@@ -62,7 +62,14 @@ class SendBtcDetailsViewController: UIViewController {
     func refresh() {
         let addressees = transaction?.addresses()
         let address = addressees![0]["address"] as! String
-        let satoshi = addressees![0]["satoshi"] as! UInt64
+        var satoshi: UInt64
+        // FIXME: satoshi doesn't appear to be populated but probably should
+        if transaction?.data["is_sweep"] as! Bool {
+            satoshi = transaction?.data["satoshi"] as! UInt64
+        }
+        else {
+            satoshi = addressees![0]["satoshi"] as! UInt64
+        }
         addressLabel.text = address
         btcAmount = Double(satoshi) / 100000000
         if (btcAmount != 0) {
@@ -73,6 +80,9 @@ class SendBtcDetailsViewController: UIViewController {
                 amountTextField.text = String(format: "%f", fiat)
             }
         }
+        let readOnly = transaction?.data["addressees_read_only"] as! Bool
+        amountTextField.isUserInteractionEnabled = !readOnly
+        sendAllFundsButton.isUserInteractionEnabled = !readOnly
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -187,15 +197,17 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
 
-        let satoshi: UInt64 = UInt64(btcAmount * 100000000)
-        var toAddress = [String: Any]()
-        toAddress["satoshi"] = satoshi
-        toAddress["address"] = addressLabel.text
-
         transaction?.data["fee_rate"] = fee
-        transaction?.data["addressees"] = [toAddress]
-        transaction?.data["change_subaccount"] = wallet?.pointer
-        transaction?.data["send_all"] = sendAllFundsButton.isSelected
+
+        if !(transaction!.data["addressees_read_only"] as! Bool) {
+            let satoshi: UInt64 = UInt64(btcAmount * 100000000)
+            var toAddress = [String: Any]()
+            toAddress["satoshi"] = satoshi
+            toAddress["address"] = addressLabel.text
+            transaction?.data["addressees"] = [toAddress]
+            transaction?.data["change_subaccount"] = wallet?.pointer
+            transaction?.data["send_all"] = sendAllFundsButton.isSelected
+        }
 
         do {
             print(transaction?.data)

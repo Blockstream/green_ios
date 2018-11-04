@@ -4552,6 +4552,7 @@
                         <outlet property="typeLabel" destination="P4c-iC-p2c" id="MGe-57-hso"/>
                         <outlet property="walletAddressLabel" destination="9Go-uJ-SYf" id="Haz-aH-8Os"/>
                         <outlet property="walletQRCode" destination="CTl-Qj-jvB" id="eJC-Nw-ORB"/>
+                        <segue destination="nfu-fJ-eh9" kind="show" identifier="address" id="qOR-xW-NTO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wnh-7l-reh" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -5558,6 +5559,7 @@
                         <outlet property="qrImageView" destination="B9S-Kz-a7A" id="NXH-zW-x9f"/>
                         <outlet property="receiveAddressLabel" destination="lF7-D6-vdH" id="0tU-wR-u3t"/>
                         <outlet property="titleLabel" destination="t9G-2E-byY" id="Bkc-cr-qXo"/>
+                        <segue destination="6PL-t1-BTP" kind="show" identifier="sweep" id="6du-SE-lGn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gH6-BH-3RI" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -6804,6 +6806,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="ugK-YA-J7C"/>
+        <segue reference="6du-SE-lGn"/>
         <segue reference="Sx5-Ok-KDL"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="4QF-E2-lEm"/>
