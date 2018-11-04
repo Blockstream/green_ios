@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class EditTwoFactorViewController: UIViewController {
+class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var emailSwitch: UISwitch!
     @IBOutlet weak var smsSwitch: UISwitch!
@@ -30,15 +31,54 @@ class EditTwoFactorViewController: UIViewController {
         gauth.isOn = AccountStore.shared.isGauthEnabled()
     }
 
+    func disable(_ method: String) {
+        if self.isAnimating {
+            return
+        }
+        self.startAnimating(CGSize(width: 30, height: 30),
+                            type: NVActivityIndicatorType.ballRotateChase)
+        let dict = ["enabled": false] as [String : Any]
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                try getSession().changeSettingsTwoFactor(method: method, details: dict)
+            }.done { (result: TwoFactorCall) in
+                try TwoFactorCallHelper(result, delegate: self).resolve()
+            }.catch { error in
+                DispatchQueue.main.async {
+                    self.onError(nil, text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func onResolve(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.CodePopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper?) {
+        self.stopAnimating()
+        viewWillAppear(false)
+    }
+
+    func onError(_ sender: TwoFactorCallHelper?, text: String) {
+        self.stopAnimating()
+        print(text)
+        viewWillAppear(false)
+    }
+
     @IBAction func emailSwitched(_ sender: Any) {
         let switcher = sender as! UISwitch
         if (switcher.isOn) {
             self.performSegue(withIdentifier: "email", sender: nil)
         } else {
-            let call = AccountStore.shared.disableEmailTwoFactor()
-            requestCode(twoFactor: call)
+            disable("email")
         }
-
     }
 
     @IBAction func smsSwitched(_ sender: Any) {
@@ -46,8 +86,7 @@ class EditTwoFactorViewController: UIViewController {
         if (switcher.isOn) {
             self.performSegue(withIdentifier: "phone", sender: "sms")
         } else {
-            let call = AccountStore.shared.disableSMSTwoFactor()
-            requestCode(twoFactor: call)
+            disable("sms")
         }
     }
 
@@ -56,8 +95,7 @@ class EditTwoFactorViewController: UIViewController {
         if (switcher.isOn) {
             self.performSegue(withIdentifier: "phone", sender: "phone")
         } else {
-            let call = AccountStore.shared.disablePhoneCallTwoFactor()
-            requestCode(twoFactor: call)
+            disable("phone")
         }
     }
 
@@ -66,50 +104,23 @@ class EditTwoFactorViewController: UIViewController {
         if (switcher.isOn) {
             self.performSegue(withIdentifier: "gauth", sender: nil)
         } else {
-            let call = try! AccountStore.shared.disableGauthTwoFactor()
-            requestCode(twoFactor: call)
-        }
-    }
-
-    func requestCode(twoFactor: TwoFactorCall?) {
-        do {
-            let json = try twoFactor?.getStatus()
-            let status = json!["status"] as! String
-            if(status == "request_code") {
-                let methods = json!["methods"] as! NSArray
-                if(methods.count > 1) {
-                    self.performSegue(withIdentifier: "selectTwoFactor", sender: twoFactor)
-                } else {
-                    let method = methods[0] as! String
-                    let req = try twoFactor?.requestCode(method: method)
-                    let status1 = try twoFactor?.getStatus()
-                    let parsed1 = status1!["status"] as! String
-                    if(parsed1 == "resolve_code") {
-                        self.performSegue(withIdentifier: "verifyCode", sender: twoFactor)
-                    }
-                }
-            }
-        } catch {
-            print("couldn't get status ")
+            disable("gauth")
         }
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        if !self.isAnimating {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
-
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as! TwoFactorCall
-        } else if let nextController = segue.destination as? SetPhoneViewController {
+        if let nextController = segue.destination as? SetPhoneViewController {
             if (sender as! String == "sms") {
                 nextController.sms = true
             } else {
                 nextController.phoneCall = true
             }
-            nextController.onboarding = false
-        } else if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as! TwoFactorCall
             nextController.onboarding = false
         }
     }

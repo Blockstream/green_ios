@@ -145,66 +145,36 @@ class AccountStore {
         return amount
     }
 
-    func enableEmailTwoFactor(email: String) -> TwoFactorCall? {
+    func enableEmailTwoFactor(email: String) throws -> TwoFactorCall? {
         //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
         let dict = ["enabled": true, "confirmed": true, "data": email] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "email", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "email", details: dict)
     }
 
-    func disableEmailTwoFactor() -> TwoFactorCall? {
+    func disableEmailTwoFactor() throws -> TwoFactorCall? {
         let dict = ["enabled": false] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "email", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "email", details: dict)
     }
 
-    func enableSMSTwoFactor(phoneNumber: String) -> TwoFactorCall? {
+    func enableSMSTwoFactor(phoneNumber: String) throws -> TwoFactorCall? {
         //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
         let dict = ["enabled": true, "confirmed": true, "data": phoneNumber] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "sms", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "sms", details: dict)
     }
 
-    func disableSMSTwoFactor() -> TwoFactorCall? {
+    func disableSMSTwoFactor() throws -> TwoFactorCall? {
         let dict = ["enabled": false] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "sms", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "sms", details: dict)
     }
 
-    func enablePhoneCallTwoFactor(phoneNumber: String) -> TwoFactorCall? {
+    func enablePhoneCallTwoFactor(phoneNumber: String) throws -> TwoFactorCall? {
         let dict = ["enabled": true, "confirmed": true, "data": phoneNumber] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
     }
 
-    func disablePhoneCallTwoFactor() -> TwoFactorCall? {
+    func disablePhoneCallTwoFactor() throws -> TwoFactorCall? {
         let dict = ["enabled": false] as [String : Any]
-        do {
-            return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
-        } catch {
-            print("couldn't change settings")
-        }
-        return nil
+        return try getSession().changeSettingsTwoFactor(method: "phone", details: dict)
     }
 
     func enableGauthTwoFactor() throws -> TwoFactorCall? {
