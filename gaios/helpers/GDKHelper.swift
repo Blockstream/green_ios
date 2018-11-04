@@ -58,14 +58,19 @@ class TwoFactorCallHelper {
     }
 
     static func CodePopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
-        let alert = UIAlertDefaultStyleController(title: "Insert Code", message: "Insert two factor code")
+        let json = try! sender.caller.getStatus()
+        let method = json!["method"] as! String
+        let alert = UIAlertDefaultStyleController(title: "Please provide your \(method) code", message: "")
+        // set input text
         alert.addTextField { (textField) in
             textField.text = ""
             textField.textColor = UIColor.white
             textField.tintColor = UIColor.customTitaniumDark()
             textField.borderColor = UIColor.customTitaniumLight()
             textField.backgroundColor = UIColor.customTitaniumDark()
+            textField.keyboardType = .numberPad
         }
+        // set actions with style
         alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel, handler: { [weak alert] (_) in
             sender.delegate?.onError(sender, text: "")
             alert?.dismiss(animated: true, completion: nil)
@@ -89,7 +94,7 @@ class TwoFactorCallHelper {
     }
 
     static func MethodPopup(_ sender: TwoFactorCallHelper) -> UIAlertController {
-        let alert = UIAlertDefaultStyleController(title: "Selector", message: "Select two factor method")
+        let alert = UIAlertDefaultStyleController(title: "Choose Two-Factor Authentication method", message: "")
         let json = try! sender.caller.getStatus()
         let methods = json!["methods"] as! NSArray
         for index in 0..<methods.count {
@@ -108,6 +113,11 @@ class TwoFactorCallHelper {
                 }
             }))
         }
+        // set cancel action
+        alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel, handler: { [weak alert] (_) in
+            sender.delegate?.onError(sender, text: "")
+            alert?.dismiss(animated: true, completion: nil)
+        }))
         return alert
     }
 
