@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class RequestTwoFactorReset : UIViewController {
+class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var titleLabel: UILabel!
@@ -49,60 +50,60 @@ class RequestTwoFactorReset : UIViewController {
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        if !self.isAnimating {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     @IBAction func disputeButtonClicekd(_ sender: Any) {
-        self.performSegue(withIdentifier: "disputeRequest", sender: nil)
+        if !self.isAnimating {
+            self.performSegue(withIdentifier: "disputeRequest", sender: nil)
+        }
     }
 
     @IBAction func requestClicked(_ sender: Any) {
-        if (isReset) {
-            do {
-                let factor = try getSession().cancelTwoFactorReset()
-                let json = try factor.getStatus()
-                let status = json!["status"] as! String
-                if (status == "request_code") {
-                    let methods = json!["methods"] as! NSArray
-                    if (methods.count == 1) {
-                        let met = methods[0] as! String
-                        let request = try factor.requestCode(method: met)
-                        self.performSegue(withIdentifier: "verifyCode", sender: factor)
-                    } else {
-                        self.performSegue(withIdentifier: "selectTwoFactor", sender: factor)
-                    }
+        if self.isAnimating {
+            return
+        }
+        self.startAnimating(CGSize(width: 30, height: 30),
+                            type: NVActivityIndicatorType.ballRotateChase)
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                if self.isReset {
+                    return try getSession().cancelTwoFactorReset()
+                } else if let email = self.emailTextField.text {
+                    return try getSession().resetTwoFactor(email: email, isDispute: false)
+                } else {
+                    throw GaError.GenericError
                 }
-            } catch {
-            }
-        } else {
-            if let email = emailTextField.text {
-                do {
-                    let factor =  try getSession().resetTwoFactor(email: email, isDispute: false)
-                    let json = try factor.getStatus()
-                    let status = json!["status"] as! String
-                    if (status == "call") {
-                        let call = try factor.call()
-                        let json_call = try factor.getStatus()
-                        let status_call = json_call!["status"] as! String
-                        if (status_call == "resolve_code") {
-                            self.performSegue(withIdentifier: "verifyCode", sender: factor)
-                        }
-                    }
-                } catch {
-                    print("something went wrong")
+            }.done { (result: TwoFactorCall) in
+                try TwoFactorCallHelper(result, delegate: self).resolve()
+            }.catch { error in
+                DispatchQueue.main.async {
+                    self.onError(nil, text: error.localizedDescription)
                 }
             }
         }
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-            nextController.popToRoot = false
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
+    func onResolve(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.CodePopup(sender!)
+        self.present(alert, animated: true, completion: nil)
     }
 
+    func onRequest(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper?) {
+        self.stopAnimating()
+        updateUI()
+    }
+
+    func onError(_ sender: TwoFactorCallHelper?, text: String) {
+        self.stopAnimating()
+        print(text)
+        updateUI()
+    }
 }
