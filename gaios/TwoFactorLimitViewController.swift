@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class TwoFactorLimitViewController: UIViewController {
+class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var limitTextField: UITextField!
     @IBOutlet weak var setLimitButton: UIButton!
@@ -74,10 +75,15 @@ class TwoFactorLimitViewController: UIViewController {
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        if !self.isAnimating {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     @IBAction func setLimitClicked(_ sender: Any) {
+        if self.isAnimating {
+            return
+        }
         if let amount = Double(limitTextField.text!) {
             do {
                 var details = [String:Any]()
@@ -97,39 +103,42 @@ class TwoFactorLimitViewController: UIViewController {
                     }
                     details["satoshi"] = amount_denominated
                 }
-                let factor = try getSession().setTwoFactorLimit(details: details)
-                let status = try factor.getStatus()
-                let statusString = status!["status"] as! String
-                if (statusString == "request_code") {
-                    let methods = status!["methods"] as! NSArray
-                    if (methods.count == 1) {
-                        let met = methods[0] as! String
-                        let request = try factor.requestCode(method: met)
-                        self.performSegue(withIdentifier: "verifyCode", sender: factor)
-                    } else {
-                        self.performSegue(withIdentifier: "selectTwoFactor", sender: factor)
+                self.startAnimating(CGSize(width: 30, height: 30),
+                                    type: NVActivityIndicatorType.ballRotateChase)
+                DispatchQueue.global(qos: .background).async {
+                    wrap {
+                        try getSession().setTwoFactorLimit(details: details)
+                    }.done { (result: TwoFactorCall) in
+                        try TwoFactorCallHelper(result, delegate: self).resolve()
+                    }.catch { error in
+                        DispatchQueue.main.async {
+                            self.onError(nil, text: error.localizedDescription)
+                        }
                     }
-                } else if (statusString == "call") {
-                    let call = try factor.call()
-                    let jsonCall = try factor.getStatus()
-                    let status = jsonCall!["status"] as! String
-                    SettingsStore.shared.setTwoFactorLimit()
-                    self.navigationController?.popViewController(animated: true)
                 }
-            } catch {
-                print("couldnt set limit")
             }
         }
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-            nextController.hideButton = true
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
+    func onResolve(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.CodePopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onRequest(_ sender: TwoFactorCallHelper?) {
+        let alert = TwoFactorCallHelper.MethodPopup(sender!)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onDone(_ sender: TwoFactorCallHelper?) {
+        self.stopAnimating()
+        SettingsStore.shared.setTwoFactorLimit()
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    func onError(_ sender: TwoFactorCallHelper?, text: String) {
+        self.stopAnimating()
+        print(text)
     }
 
     func setButton() {
