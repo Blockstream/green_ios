@@ -85,7 +85,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     @IBAction func saveButtonClicked(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
         setAllNetworkSettings(net: network, ip: ipTextField.text!, port: portTextField.text!, tor: torSwitch.isOn)
-        getAppDelegate().connect()
+        getAppDelegate().lock()
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
