@@ -42,7 +42,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         if (setPinMode == true) {
             topLabel.text = NSLocalizedString("id_set_a_new_pin", comment: "")
         } else if (loginMode){
-            if let data = KeychainHelper.loadPassword(service: "pinData", account: "user") {
+            let network = getNetworkSettings().network
+            if let data = KeychainHelper.loadPassword(service: "pinData", account: network) {
                 pinData = data
             }
         } else {
@@ -197,7 +198,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             //show confirm pin
             topLabel.text = "Confirm PIN"
         } else if (removePinMode == true) {
-            let pass = KeychainHelper.loadPassword(service: "pinPassword", account: "user")
+            let network = getNetworkSettings().network
+            let pass = KeychainHelper.loadPassword(service: "pinPassword", account: network)
             if (pass == pinCode) {
                 AppDelegate.removePinKeychainData()
                 let settings = SettingsStore.shared.getScreenLockSetting()

@@ -91,8 +91,9 @@ class EditScreenLockSettings: UIViewController {
                                     }
                                 }
                             }
-                            KeychainHelper.savePassword(service: "bioPassword", account: "user", data: password)
-                            KeychainHelper.savePassword(service: "bioData", account: "user", data: result!)
+                            let network = getNetworkSettings().network
+                            KeychainHelper.savePassword(service: "bioPassword", account: network, data: password)
+                            KeychainHelper.savePassword(service: "bioData", account: network, data: result!)
                         }.catch { error in
                             print("setPin failed")
                     }
