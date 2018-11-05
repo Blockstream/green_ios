@@ -12,11 +12,9 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var mainnetIndicator: UIView!
     @IBOutlet weak var testnetIndicator: UIView!
-    @IBOutlet weak var liquidIndicator: UIView!
 
     @IBOutlet weak var mainnetSelector: DesignableView!
     @IBOutlet weak var testnetSelector: DesignableView!
-    @IBOutlet weak var liquidSelector: DesignableView!
     var network: Network = Network.TestNet
     var delegate: NetworkDelegate?
     var keyboardShown = false
@@ -35,8 +33,6 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         mainnetSelector.addGestureRecognizer(gesture)
         let gesture1 = UITapGestureRecognizer(target: self, action:  #selector (self.testnetSelected (_:)))
         testnetSelector.addGestureRecognizer(gesture1)
-        let gesture2 = UITapGestureRecognizer(target: self, action:  #selector (self.liquidSelected (_:)))
-        liquidSelector.addGestureRecognizer(gesture2)
         network = getNetwork()
         let networkSettings = getNetworkSettings()
         ipTextField.text = networkSettings.ipAddress
@@ -67,23 +63,16 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         updatebuttons()
     }
 
-    @objc func liquidSelected(_ sender:UITapGestureRecognizer) {
-        updatebuttons()
-    }
-
     func updatebuttons() {
         if (network == Network.TestNet) {
             mainnetIndicator.isHidden = true
             testnetIndicator.isHidden = false
-            liquidIndicator.isHidden = true
         } else if (network == Network.MainNet) {
             mainnetIndicator.isHidden = false
             testnetIndicator.isHidden = true
-            liquidIndicator.isHidden = true
         } else if (network == Network.LocalTest) {
             mainnetIndicator.isHidden = true
             testnetIndicator.isHidden = true
-            liquidIndicator.isHidden = false
         }
     }
 
@@ -96,7 +85,7 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     @IBAction func saveButtonClicked(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
         setAllNetworkSettings(net: network, ip: ipTextField.text!, port: portTextField.text!, tor: torSwitch.isOn)
-        getAppDelegate().connect()
+        getAppDelegate().lock()
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
