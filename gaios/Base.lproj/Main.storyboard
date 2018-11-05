@@ -6282,8 +6282,8 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="right" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ab7-yZ-oZi">
-                                <rect key="frame" x="127" y="139" width="33" height="57"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ab7-yZ-oZi">
+                                <rect key="frame" x="16" y="139" width="144" height="57"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="57" id="SUP-Mu-I4M"/>
                                 </constraints>
@@ -6344,6 +6344,7 @@
                             <constraint firstItem="ftO-An-X9M" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="9B0-44-2zq"/>
                             <constraint firstItem="hhI-p9-F4W" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="BTp-if-epg"/>
                             <constraint firstItem="55a-8O-c7N" firstAttribute="bottom" secondItem="dqu-Ig-IY5" secondAttribute="bottom" constant="-20" id="Cuv-Dm-lMX"/>
+                            <constraint firstItem="ab7-yZ-oZi" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="Ejj-vZ-EPX"/>
                             <constraint firstItem="LXf-em-GWL" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="PDf-Qs-ZtK"/>
                             <constraint firstItem="hhI-p9-F4W" firstAttribute="top" secondItem="55a-8O-c7N" secondAttribute="top" constant="16" id="POj-50-eZ0"/>
                             <constraint firstItem="ab7-yZ-oZi" firstAttribute="trailing" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="VTY-qe-q0r"/>
@@ -6766,12 +6767,12 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ugK-YA-J7C"/>
+        <segue reference="MrW-eR-gMX"/>
         <segue reference="6du-SE-lGn"/>
         <segue reference="tsy-FK-IUP"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="4QF-E2-lEm"/>
-        <segue reference="5hk-TQ-qTI"/>
+        <segue reference="552-x0-S8S"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>

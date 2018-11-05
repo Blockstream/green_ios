@@ -38,9 +38,9 @@ class TwoFactorLimitViewController: UIViewController {
             } else if (denomination == DenominationType.MicroBTC){
                 amount_denominated = limits.amount * 1000000
             }
-            limitTextField.text = String(amount_denominated)
+            limitTextField.text = String(format: "%@", amount_denominated.clean)
         } else if (fiat) {
-            limitTextField.text = String(limits.amount)
+            limitTextField.text = String(format: "%f", limits.amount)
         }
         setButton()
         SettingsStore.shared.setTwoFactorLimit()

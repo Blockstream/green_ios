@@ -103,3 +103,13 @@ extension URL {
             }) ?? [:]
     }
 }
+
+extension Double {
+    var clean: String {
+        var number = String(format: "%.8f", self)
+        while (number.last == "0") {
+            number.removeLast()
+        }
+        return number
+    }
+}
