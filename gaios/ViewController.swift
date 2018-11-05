@@ -218,6 +218,11 @@ class ViewController: UIViewController, WalletViewDelegate {
         wallet.nameLabel.textColor = UIColor.white
         wallet.QRImageView.isUserInteractionEnabled = true
         presentedWallet = wallet.wallet
+        wrap {
+            try getSession().setCurrentSubaccount(subaccount: (self.presentedWallet?.pointer)!)
+        }.catch {_ in
+            print("error on set subaccount")
+        }
     }
 
     func cardViewDismissed(cardView: CardView) {
