@@ -340,7 +340,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             let wallet = insertedCardViews[index] as! ColoredCardView
             if(wallet.wallet?.pointer == UInt32(forCardview)) {
                 let denomination = SettingsStore.shared.getDenominationSettings()
-                let balance = String.satoshiToBTC(satoshi: sat)
+                let balance = String.satoshiToBTCDenominated(satoshi: sat, type: denomination)
                 wallet.balanceLabel.text = String(format: "%@ %@", balance, denomination.rawValue)
                 return
             }

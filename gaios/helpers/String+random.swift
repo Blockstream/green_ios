@@ -18,30 +18,39 @@ extension String {
         return String(partial)
     }
 
-    static func satoshiToBTC(satoshi: String) -> String {
-        let satoshi: Double = Double(satoshi)!
-        let dSettings = SettingsStore.shared.getDenominationSettings()
-        var div: Double = 100000000
-        if (dSettings == DenominationType.BTC) {
-            div = 100000000
-        } else if (dSettings == DenominationType.MilliBTC) {
-            div = 100000
-        } else if (dSettings == DenominationType.MicroBTC) {
-            div = 100
+    var clean: String {
+        var tmp = self
+        while ((tmp.last == "0" || tmp.last == ".") && tmp.count != 1) {
+            tmp.removeLast()
         }
-        let btc = satoshi / div
-        let formatter = NumberFormatter()
-        formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 6
-        var result: String = formatter.string(from: NSNumber(value: btc))!
-        if (btc < 1 && btc > 0) {
-            result = "0" + result
-        } else if (btc < 0 && btc > -1) {
-            result = "-0" + String(result.dropFirst())
-        } else if ( btc == 0) {
-            result = "0"
+        return tmp
+    }
+
+    static func satoshiToBTC(satoshi: String) -> (BTC: String, MBTC: String, UBTC: String)  {
+        do {
+            let dict = ["satoshi" : Int(satoshi)]
+            let json = try getSession().convertAmount(input: dict)
+            let btc = json!["btc"] as! String
+            let mbtc = json!["mbtc"] as! String
+            let ubtc = json!["ubtc"] as! String
+            return (btc.clean, mbtc.clean, ubtc.clean)
+        } catch {
+            print("something went wrong")
+            return ("", "", "")
         }
-        return result
+    }
+
+    static func satoshiToBTCDenominated(satoshi: String, type: DenominationType) -> String {
+        let result = satoshiToBTC(satoshi: satoshi)
+        if(type == .BTC) {
+            return result.BTC
+        } else if (type == .MilliBTC) {
+            return result.MBTC
+        } else if (type ==  .MicroBTC) {
+            return result.UBTC
+        } else {
+            return satoshi
+        }
     }
 
     static func satoshiToBTC(satoshi: Int) -> String {
