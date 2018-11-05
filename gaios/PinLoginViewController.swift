@@ -168,8 +168,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                                 } else if (settings == ScreenLock.FaceID || settings == ScreenLock.TouchID) {
                                     SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
                                 }
-                                KeychainHelper.savePassword(service: "pinPassword", account: "user", data: self.pinCode)
-                                KeychainHelper.savePassword(service: "pinData", account: "user", data: result!)
+                                let network = getNetworkSettings().network
+                                KeychainHelper.savePassword(service: "pinData", account: network, data: result!)
                                 if(self.editPinMode == true) {
                                     self.navigationController?.popViewController(animated: true)
                                 } else if (self.restoreMode == true) {
