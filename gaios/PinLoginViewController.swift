@@ -169,7 +169,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                                     SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
                                 }
                                 let network = getNetworkSettings().network
-                                KeychainHelper.savePassword(service: "bioPassword", account: network, data: self.password)
+                                KeychainHelper.savePassword(service: "bioPassword", account: network, data: password)
                                 KeychainHelper.savePassword(service: "bioData", account: network, data: result!)
 
                                 if(self.editPinMode == true) {
