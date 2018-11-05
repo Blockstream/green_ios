@@ -18,14 +18,6 @@ extension String {
         return String(partial)
     }
 
-    var clean: String {
-        var tmp = self
-        while ((tmp.last == "0" || tmp.last == ".") && tmp.count != 1) {
-            tmp.removeLast()
-        }
-        return tmp
-    }
-
     static func satoshiToBTC(satoshi: String) -> (BTC: String, MBTC: String, UBTC: String)  {
         do {
             let dict = ["satoshi" : Int(satoshi)]
@@ -33,7 +25,7 @@ extension String {
             let btc = json!["btc"] as! String
             let mbtc = json!["mbtc"] as! String
             let ubtc = json!["ubtc"] as! String
-            return (btc.clean, mbtc.clean, ubtc.clean)
+            return (btc, mbtc, ubtc)
         } catch {
             print("something went wrong")
             return ("", "", "")
