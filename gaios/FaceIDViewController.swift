@@ -7,10 +7,16 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
     var password: String = ""
     var pinData: String = ""
     let bioID = BiometricIDAuth()
+    @IBOutlet weak var networkIndicator: UIImageView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //customize
+        let net = getNetwork()
+        if (net == Network.MainNet) {
+            networkIndicator.image = UIImage(named: "mainnet")
+        } else if (net == Network.TestNet) {
+            networkIndicator.image = UIImage(named: "testnet")
+        }
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

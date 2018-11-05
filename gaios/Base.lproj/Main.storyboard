@@ -1502,15 +1502,25 @@
                                     <action selector="backButtonClicked:" destination="rrT-db-w5X" eventType="touchUpInside" id="GA8-98-cpp"/>
                                 </connections>
                             </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mainnet" translatesAutoresizingMaskIntoConstraints="NO" id="Vmf-hK-nqn">
+                                <rect key="frame" x="259" y="31" width="45" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="45" id="qMA-w0-6rT"/>
+                                    <constraint firstAttribute="height" constant="45" id="sVl-XM-6np"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" name="customMatrixGreen"/>
                         <constraints>
+                            <constraint firstItem="Vmf-hK-nqn" firstAttribute="centerY" secondItem="qIv-y2-Dp0" secondAttribute="centerY" id="5Tb-1L-EEi"/>
+                            <constraint firstItem="Wbr-s9-QTB" firstAttribute="trailing" secondItem="Vmf-hK-nqn" secondAttribute="trailing" constant="16" id="gBb-Ie-r2d"/>
                             <constraint firstItem="qIv-y2-Dp0" firstAttribute="top" secondItem="Wbr-s9-QTB" secondAttribute="top" constant="16" id="jZN-vA-9MF"/>
                             <constraint firstItem="qIv-y2-Dp0" firstAttribute="leading" secondItem="Wbr-s9-QTB" secondAttribute="leading" constant="16" id="tWK-bA-aoQ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Wbr-s9-QTB"/>
                     </view>
                     <connections>
+                        <outlet property="networkIndicator" destination="Vmf-hK-nqn" id="HTW-gb-u5A"/>
                         <segue destination="iqZ-ST-Be8" kind="showDetail" identifier="mainMenu" id="ONi-mI-cUv"/>
                         <segue destination="B5O-7h-VGM" kind="showDetail" identifier="entrance" id="4Ug-fi-57N"/>
                         <segue destination="KCm-9R-mRR" kind="show" identifier="improveSecurity" id="6a8-Ma-qhv"/>
@@ -1786,6 +1796,13 @@
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mainnet" translatesAutoresizingMaskIntoConstraints="NO" id="gaK-co-ndf">
+                                <rect key="frame" x="259" y="31" width="45" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="UDo-bY-S3n"/>
+                                    <constraint firstAttribute="width" constant="45" id="Ukf-9t-uLY"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
@@ -1810,6 +1827,7 @@
                             <constraint firstItem="Saf-Kg-du6" firstAttribute="leading" secondItem="tP3-hE-v6d" secondAttribute="leading" constant="50" id="IXr-sA-kDu"/>
                             <constraint firstItem="LKU-Ca-t8y" firstAttribute="top" secondItem="tP3-hE-v6d" secondAttribute="top" constant="16" id="JnL-V5-Ze5"/>
                             <constraint firstItem="uNt-3S-2HX" firstAttribute="top" secondItem="Ycw-s2-OGf" secondAttribute="bottom" constant="30" id="Kpw-b6-hc4"/>
+                            <constraint firstItem="gaK-co-ndf" firstAttribute="centerY" secondItem="LKU-Ca-t8y" secondAttribute="centerY" id="Kw3-U6-hB3"/>
                             <constraint firstItem="rVM-q4-BcU" firstAttribute="width" secondItem="MSk-Nj-l66" secondAttribute="width" id="LPH-is-Roa"/>
                             <constraint firstItem="Saf-Kg-du6" firstAttribute="top" secondItem="rVM-q4-BcU" secondAttribute="bottom" constant="30" id="Lxj-zf-HnB"/>
                             <constraint firstItem="R4W-Vu-M0I" firstAttribute="top" secondItem="xdv-zG-7sw" secondAttribute="bottom" constant="32" id="NJr-Be-Z4G"/>
@@ -1823,6 +1841,7 @@
                             <constraint firstItem="aKO-ZR-RcG" firstAttribute="height" secondItem="MSk-Nj-l66" secondAttribute="height" id="V2w-HW-YvD"/>
                             <constraint firstItem="R4W-Vu-M0I" firstAttribute="width" secondItem="MSk-Nj-l66" secondAttribute="width" id="VZb-dh-lht"/>
                             <constraint firstItem="fOZ-XR-ZFl" firstAttribute="centerY" secondItem="wAQ-ww-ueo" secondAttribute="centerY" id="W4Q-iW-6Zm"/>
+                            <constraint firstItem="tP3-hE-v6d" firstAttribute="trailing" secondItem="gaK-co-ndf" secondAttribute="trailing" constant="16" id="WZ8-pG-4TS"/>
                             <constraint firstItem="aKO-ZR-RcG" firstAttribute="centerX" secondItem="guG-L1-uhG" secondAttribute="centerX" id="Wrt-aU-wj3"/>
                             <constraint firstItem="b3S-ai-VOC" firstAttribute="centerY" secondItem="ogq-GW-yOJ" secondAttribute="centerY" id="XYa-sC-vwO"/>
                             <constraint firstItem="ePR-sN-MuW" firstAttribute="centerX" secondItem="guG-L1-uhG" secondAttribute="centerX" id="Xgb-De-SNj"/>
@@ -1873,6 +1892,7 @@
                         <outlet property="label3" destination="Ga6-cB-PfW" id="N82-79-hYr"/>
                         <outlet property="label4" destination="65h-S3-6KZ" id="vWb-V7-NG1"/>
                         <outlet property="label5" destination="dRf-g8-ALy" id="m0w-Kk-HiA"/>
+                        <outlet property="networkIndicator" destination="gaK-co-ndf" id="7Ur-p7-SaO"/>
                         <outlet property="topLabel" destination="K4c-66-w2Z" id="tbY-aS-F6b"/>
                         <segue destination="B5O-7h-VGM" kind="showDetail" identifier="entrance" id="ho6-WN-AfT"/>
                         <segue destination="KCm-9R-mRR" kind="show" identifier="improveSecurity" id="t6L-Yh-lPv"/>
@@ -1881,7 +1901,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7V0-pH-DYl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3911" y="69"/>
+            <point key="canvasLocation" x="3909.375" y="68.661971830985919"/>
         </scene>
         <!--Item-->
         <scene sceneID="PG8-93-POn">
@@ -6748,14 +6768,14 @@
     <inferredMetricsTieBreakers>
         <segue reference="ugK-YA-J7C"/>
         <segue reference="6du-SE-lGn"/>
-        <segue reference="4R3-tx-xh9"/>
-        <segue reference="XOQ-Gh-RFa"/>
+        <segue reference="tsy-FK-IUP"/>
+        <segue reference="ho6-WN-AfT"/>
         <segue reference="4QF-E2-lEm"/>
         <segue reference="5hk-TQ-qTI"/>
         <segue reference="Urb-Nk-GEO"/>
         <segue reference="dtp-RI-Fbe"/>
         <segue reference="ONE-Lh-9HX"/>
-        <segue reference="ZM7-6x-yYR"/>
+        <segue reference="t6L-Yh-lPv"/>
         <segue reference="Ssh-xP-Hwg"/>
     </inferredMetricsTieBreakers>
 </document>

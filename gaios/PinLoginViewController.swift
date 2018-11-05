@@ -13,6 +13,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var label4: UILabel!
     @IBOutlet weak var label5: UILabel!
     @IBOutlet weak var attempts: UILabel!
+    @IBOutlet weak var networkIndicator: UIImageView!
 
     var pinCode: String = ""
     var pinData: String = ""
@@ -52,6 +53,12 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             label.isHidden = true
         }
         attempts.isHidden = true
+        let net = getNetwork()
+        if (net == Network.MainNet) {
+            networkIndicator.image = UIImage(named: "mainnet")
+        } else if (net == Network.TestNet) {
+            networkIndicator.image = UIImage(named: "testnet")
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
