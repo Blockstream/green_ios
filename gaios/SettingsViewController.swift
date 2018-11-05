@@ -9,6 +9,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var fotterView: UIView!
 
     var sections: Array<SettingsSection> = Array<SettingsSection>()
+    var anyEnabled: Bool = false
+    var isResetData = AccountStore.shared.getTwoFactorResetData()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +38,20 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         SettingsStore.shared.refreshTwoFactorSettings()
         sections = SettingsStore.shared.getAllSections()
         tableView.reloadData()
+        // Load 2fa from gdk
+        DispatchQueue.global(qos: .userInteractive).async {
+            wrap() {
+                try! getSession().getTwoFactorConfig()!
+            }.done { (result: [String: Any]) in
+                self.anyEnabled = result["any_enabled"] as! Bool
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }.catch {_ in
+                print("error")
+            }
+        }
+        isResetData = AccountStore.shared.getTwoFactorResetData()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -100,16 +116,22 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     self.performSegue(withIdentifier: "screenLock", sender: nil)
                 } else if (indexPath.row == 2) {
                     pager?.hideButtons()
-                    self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
+                    if !isResetData.isReset && !isResetData.isDisputed {
+                        self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
+                    }
                 } else if (indexPath.row == 3) {
                     pager?.hideButtons()
                     self.performSegue(withIdentifier: "twoFactorWarning", sender: nil)
                 } else if (indexPath.row == 4) {
                     pager?.hideButtons()
-                    self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
+                    if anyEnabled  && !isResetData.isReset && !isResetData.isDisputed {
+                        self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
+                    }
                 } else if (indexPath.row == 5) {
                     pager?.hideButtons()
-                    self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
+                    if anyEnabled {
+                        self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
+                    }
                 } else if (indexPath.row == 6) {
                     pager?.hideButtons()
                     self.performSegue(withIdentifier: "autolock", sender: nil)
