@@ -98,7 +98,8 @@ class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, Two
 
     func onDone(_ sender: TwoFactorCallHelper?) {
         self.stopAnimating()
-        updateUI()
+        //updateUI()
+        getAppDelegate().logout()
     }
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {

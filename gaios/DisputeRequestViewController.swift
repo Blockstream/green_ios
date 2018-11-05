@@ -53,7 +53,8 @@ class DisputeRequestViewController : UIViewController, NVActivityIndicatorViewab
 
     func onDone(_ sender: TwoFactorCallHelper?) {
         self.stopAnimating()
-        self.navigationController?.popViewController(animated: true)
+        //self.navigationController?.popViewController(animated: true)
+        getAppDelegate().logout()
     }
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {

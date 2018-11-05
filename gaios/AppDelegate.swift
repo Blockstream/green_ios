@@ -340,6 +340,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    func logout() {
+        wrap {
+            try getSession().disconnect()
+        }.done {
+            AccountStore.shared.isWatchOnly = false
+        }.catch { error in
+            print("problem while logging out")
+        }
+        lock()
+    }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         //AppDelegate.removeKeychainData()
