@@ -302,10 +302,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         connect()
         print("locking now")
         self.window?.endEditing(true)
-        let network = getNetworkSettings().network
-        let bioData = KeychainHelper.loadPassword(service: "bioData", account: network)
-        let pinData = KeychainHelper.loadPassword(service: "pinData", account: network)
-        let password = KeychainHelper.loadPassword(service: "bioPassword", account: network)
+        let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
+        let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
+        let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
         if (bioData != nil && pinData != nil && password != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
@@ -350,10 +349,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         connect()
 
-        let network = getNetworkSettings().network
-        let bioData = KeychainHelper.loadPassword(service: "bioData", account: network)
-        let pinData = KeychainHelper.loadPassword(service: "pinData", account: network)
-        let password = KeychainHelper.loadPassword(service: "bioPassword", account: network)
+        let bioData = KeychainHelper.loadPassword(service: "bioData", account: "user")
+        let pinData = KeychainHelper.loadPassword(service: "pinData", account: "user")
+        let password = KeychainHelper.loadPassword(service: "bioPassword", account: "user")
         if (bioData != nil && pinData != nil && password != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
@@ -422,3 +420,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
+
