@@ -142,13 +142,10 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         } else if (setPinMode == true) {
             if (confirmPin == true) {
                 //set pin
-                print("olla1")
-
                 if(pinCode != pinConfirm) {
                     topLabel.text = "Set a new PIN"
                     resetEverything()
                     updatePinMissmatch()
-                    print("olla2")
                     return
                 }
                 let mnemonics = getAppDelegate().getMnemonicWordsString()
