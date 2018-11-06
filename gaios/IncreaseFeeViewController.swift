@@ -1,8 +1,9 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
-class IncreaseFeeViewController: UIViewController, TwoFactorCallDelegate {
+class IncreaseFeeViewController: UIViewController, NVActivityIndicatorViewable,  TwoFactorCallDelegate {
 
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var increaseFeeButton: UIButton!
@@ -40,33 +41,41 @@ class IncreaseFeeViewController: UIViewController, TwoFactorCallDelegate {
     }
 
     func increaseFee(feeRate: Double) {
-        do {
-            var details = [String: Any]()
-            details["previous_transaction"] = transaction.rawTransaction
-            details["fee_rate"] = feeRate
-            let newTransaction = try getSession().createTransaction(details: details)
-            let factor = try getSession().sendTransaction(details: newTransaction!)
-            let resultHelper = TwoFactorCallHelper(factor)
-            resultHelper.delegate = self
-            try resultHelper.resolve();
-        } catch {
-            print("increase failed")
+        startAnimating()
+        DispatchQueue.global(qos: .background).async {
+            wrap {
+                var details = [String: Any]()
+                details["previous_transaction"] = self.transaction.rawTransaction
+                details["fee_rate"] = feeRate
+                let newTransaction = try getSession().createTransaction(details: details)
+                return try getSession().sendTransaction(details: newTransaction!)
+            }.done { (result: TwoFactorCall) in
+                 try TwoFactorCallHelper(result, delegate: self).resolve()
+            }.catch { error in
+                DispatchQueue.main.async {
+                    self.onError(nil, text: error.localizedDescription)
+                }
+            }
         }
     }
 
     func onResolve(_ sender: TwoFactorCallHelper?) {
-        self.performSegue(withIdentifier: "twoFactor", sender: sender!)
+        let alert = TwoFactorCallHelper.CodePopup(sender!)
+        self.present(alert, animated: true, completion: nil)
     }
 
     func onRequest(_ sender: TwoFactorCallHelper?) {
-        self.performSegue(withIdentifier: "twoFactorSelector", sender: sender!)
+        let alert = TwoFactorCallHelper.MethodPopup(sender!)
+        self.present(alert, animated: true, completion: nil)
     }
 
     func onDone(_ sender: TwoFactorCallHelper?) {
+        stopAnimating()
         self.dismiss(animated: true, completion: nil)
     }
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
+        stopAnimating()
         print( text )
     }
 
@@ -74,15 +83,6 @@ class IncreaseFeeViewController: UIViewController, TwoFactorCallDelegate {
         if let amount = Double(amountTextField.text!) {
             let feeRate = amount * 1000
             increaseFee(feeRate: feeRate)
-        }
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
         }
     }
 
