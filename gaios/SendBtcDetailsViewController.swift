@@ -29,6 +29,7 @@ class SendBtcDetailsViewController: UIViewController {
     var selectedButton : UIButton? = nil
     var priority: TransactionPriority? = nil
     var transaction: TransactionHelper?
+    let blockTime = ["~ 2 Hours", "~ 1 Hour", "~ 10-20 Minutes", "Unknown (custom)"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -272,18 +273,35 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
         feeLabel = UILabel(frame: CGRect(x: button.center.x, y: button.center.y + button.frame.size.height / 2 + 21, width: 150, height: 21))
-        feeLabel.textAlignment = .center
         feeLabel.textColor = UIColor.customTitaniumLight()
 
-        let usdValue:Double = AccountStore.shared.satoshiToFiat(amount: fee)
+        let fiatValue:Double = AccountStore.shared.satoshiToFiat(amount: fee)
         let size = transaction?.data["transaction_vsize"] as! UInt64
         let satoshiPerByte = fee / size
-        feeLabel.text = String(format: "~%.2f %@ \n (%d satoshi / byte)", usdValue, SettingsStore.shared.getCurrencyString(), satoshiPerByte)
-        feeLabel.numberOfLines = 2
-        feeLabel.font = feeLabel.font.withSize(13)
+        var timeEstimate = ""
         feeLabel.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(feeLabel)
-        NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        if(button == lowFeeButton) {
+            timeEstimate = blockTime[0]
+            feeLabel.textAlignment = .left
+            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
+        } else if (button == mediumFeeButton) {
+            timeEstimate = blockTime[1]
+            feeLabel.textAlignment = .center
+            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        } else if (button == highFeeButton) {
+            timeEstimate = blockTime[2]
+            feeLabel.textAlignment = .center
+            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        } else {
+            timeEstimate = blockTime[3]
+            feeLabel.textAlignment = .right
+            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 0).isActive = true
+        }
+        feeLabel.text = String(format: "%d satoshi / byte \nTime: %@\nFee: %d satoshi / ~%.2f %@", satoshiPerByte, timeEstimate, fee, fiatValue, SettingsStore.shared.getCurrencyString())
+        feeLabel.numberOfLines = 3
+        feeLabel.font = feeLabel.font.withSize(13)
+
         NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 10).isActive = true
     }
 
@@ -370,6 +388,13 @@ class SendBtcDetailsViewController: UIViewController {
         priority = TransactionPriority.Custom
         customFeeTextField.becomeFirstResponder()
         updatePriorityButtons()
+        let amount: String = customFeeTextField.text!
+        guard let amount_i = Int(amount) else {
+            setLabel(button: customfeeButton, fee: 0)
+            return
+        }
+        fee = UInt64(1000 * amount_i)
+        updateEstimate()
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
