@@ -122,6 +122,19 @@ class TransactionDetailViewController: UIViewController {
         self.present(navController, animated: true, completion: nil)
     }
 
+    @IBAction func viewInExplorerClicked(_ sender: Any) {
+        do {
+            let currentNetwork: String = getNetwork().rawValue.lowercased()
+            let config = try getGdkNetwork(currentNetwork)
+            let baseUrl = config!["tx_explorer_url"] as! String
+            if let url = URL(string: baseUrl + (transaction_g?.hash)! ) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        } catch {
+            print("error to retrieve the url")
+        }
+    }
+
     func feeText(fee: UInt32, size: UInt32) -> String {
         let perbyte = Double(fee/size)
         return String(format: "Transaction fee is %d satoshi, %.2f satoshi per byte", fee, perbyte)

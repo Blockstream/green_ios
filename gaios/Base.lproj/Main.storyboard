@@ -4614,7 +4614,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HLV-va-6KG">
-                                <rect key="frame" x="16" y="510" width="288" height="42"/>
+                                <rect key="frame" x="16" y="452" width="288" height="42"/>
                                 <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="Gf3-7h-bim"/>
@@ -4624,15 +4624,27 @@
                                 </state>
                                 <connections>
                                     <action selector="increaseFeeClicked:" destination="zxH-Uq-pPW" eventType="touchUpInside" id="uKo-r1-OwW"/>
-                                    <action selector="shareButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="QAE-i1-uok"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WFY-RQ-Fod">
+                                <rect key="frame" x="16" y="510" width="288" height="42"/>
+                                <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="rx9-yy-jlC"/>
+                                </constraints>
+                                <state key="normal" title="View in Explorer">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="viewInExplorerClicked:" destination="zxH-Uq-pPW" eventType="touchUpInside" id="UlK-un-RB0"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="aYU-Xd-5Mx" secondAttribute="trailing" constant="16" id="0JM-Pr-3SR"/>
+                            <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="WFY-RQ-Fod" secondAttribute="trailing" constant="16" id="0nK-rT-atJ"/>
                             <constraint firstItem="urc-Ok-Tuj" firstAttribute="top" secondItem="bMU-X1-kBn" secondAttribute="bottom" constant="12" id="2c3-Eq-eTy"/>
-                            <constraint firstItem="rFE-l7-ht6" firstAttribute="bottom" secondItem="HLV-va-6KG" secondAttribute="bottom" constant="16" id="3ep-Iz-1Wt"/>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="6Z7-4H-g0M" secondAttribute="trailing" constant="16" id="6tR-08-lTp"/>
                             <constraint firstItem="6Z7-4H-g0M" firstAttribute="leading" secondItem="Bkr-Xa-WKw" secondAttribute="leading" constant="16" id="7C3-di-dpB"/>
                             <constraint firstItem="FfF-vK-F6g" firstAttribute="leading" secondItem="Rpi-Zd-6ud" secondAttribute="leading" constant="16" id="7TR-y7-IMf"/>
@@ -4640,10 +4652,13 @@
                             <constraint firstItem="gkK-nf-Uhp" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="ENL-Kb-Qkb"/>
                             <constraint firstItem="FfF-vK-F6g" firstAttribute="top" secondItem="Rpi-Zd-6ud" secondAttribute="bottom" constant="12" id="ERc-0O-Yqc"/>
                             <constraint firstItem="HLV-va-6KG" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="FFw-Jg-V8W"/>
+                            <constraint firstItem="WFY-RQ-Fod" firstAttribute="top" secondItem="HLV-va-6KG" secondAttribute="bottom" constant="16" id="FT9-kJ-dEA"/>
                             <constraint firstItem="gkK-nf-Uhp" firstAttribute="width" secondItem="gkK-nf-Uhp" secondAttribute="height" multiplier="27:27" id="Hpj-g0-sUE"/>
                             <constraint firstItem="bMU-X1-kBn" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="JSn-lI-bkV"/>
+                            <constraint firstItem="rFE-l7-ht6" firstAttribute="bottom" secondItem="WFY-RQ-Fod" secondAttribute="bottom" constant="16" id="LLS-Gk-vxF"/>
                             <constraint firstItem="aYU-Xd-5Mx" firstAttribute="leading" secondItem="mu9-t1-UPb" secondAttribute="leading" constant="16" id="RIu-Mr-Hml"/>
                             <constraint firstItem="dOP-aH-DRY" firstAttribute="centerX" secondItem="vZy-33-xla" secondAttribute="centerX" id="Vg5-P2-07d"/>
+                            <constraint firstItem="WFY-RQ-Fod" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="WXh-NN-8kG"/>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="HLV-va-6KG" secondAttribute="trailing" constant="16" id="XFR-Gg-ssF"/>
                             <constraint firstItem="3wN-a1-Hrx" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="16" id="XNR-4A-Pe7"/>
                             <constraint firstItem="bMU-X1-kBn" firstAttribute="top" secondItem="gkK-nf-Uhp" secondAttribute="bottom" constant="50" id="YMO-Oc-7VU"/>
@@ -6642,35 +6657,35 @@
         </scene>
     </scenes>
     <resources>
-        <image name="backarrow" width="60" height="96"/>
-        <image name="blockstreamGreen" width="280" height="114"/>
-        <image name="digital" width="100" height="129"/>
-        <image name="downArrow" width="50" height="25"/>
-        <image name="email" width="100" height="100"/>
-        <image name="erase" width="75" height="49"/>
-        <image name="forwardArrow" width="100" height="61"/>
-        <image name="gauth" width="100" height="100"/>
-        <image name="graphic" width="750" height="485"/>
-        <image name="mainnet" width="200" height="200"/>
-        <image name="matrix404" width="781" height="692"/>
-        <image name="matrixSquares" width="693" height="484"/>
-        <image name="north" width="1000" height="750"/>
-        <image name="page1" width="314" height="708"/>
-        <image name="page2" width="283" height="518"/>
-        <image name="paper" width="100" height="111"/>
-        <image name="phoneCall" width="100" height="104"/>
-        <image name="plus" width="48" height="48"/>
-        <image name="scan" width="283" height="281"/>
-        <image name="search" width="75" height="75"/>
-        <image name="sendWhite" width="48" height="48"/>
-        <image name="sms" width="100" height="141"/>
+        <image name="backarrow" width="120" height="192"/>
+        <image name="blockstreamGreen" width="560" height="229"/>
+        <image name="digital" width="200" height="258"/>
+        <image name="downArrow" width="100" height="50"/>
+        <image name="email" width="200" height="200"/>
+        <image name="erase" width="150" height="98"/>
+        <image name="forwardArrow" width="200" height="122"/>
+        <image name="gauth" width="200" height="200"/>
+        <image name="graphic" width="1500" height="970"/>
+        <image name="mainnet" width="400" height="400"/>
+        <image name="matrix404" width="1563" height="1384"/>
+        <image name="matrixSquares" width="346.75" height="242.25"/>
+        <image name="north" width="2000" height="1500"/>
+        <image name="page1" width="629" height="1417"/>
+        <image name="page2" width="567" height="1037"/>
+        <image name="paper" width="200" height="223"/>
+        <image name="phoneCall" width="200" height="208"/>
+        <image name="plus" width="96" height="96"/>
+        <image name="scan" width="567" height="563"/>
+        <image name="search" width="150" height="150"/>
+        <image name="sendWhite" width="24.25" height="24.25"/>
+        <image name="sms" width="200" height="283"/>
         <image name="stepIndicator" width="18" height="18"/>
-        <image name="testnet" width="200" height="200"/>
-        <image name="transactions" width="24" height="17"/>
-        <image name="user" width="66" height="66"/>
+        <image name="testnet" width="400" height="400"/>
+        <image name="transactions" width="72" height="52"/>
+        <image name="user" width="133" height="133"/>
         <image name="wallet" width="31" height="31"/>
-        <image name="wallet2" width="108" height="108"/>
-        <image name="world" width="100" height="103"/>
+        <image name="wallet2" width="216" height="216"/>
+        <image name="world" width="200" height="207"/>
         <namedColor name="customLowerBar">
             <color red="0.086274509803921567" green="0.11372549019607843" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -6691,8 +6706,8 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="tox-fL-99F"/>
-        <segue reference="6du-SE-lGn"/>
+        <segue reference="MrW-eR-gMX"/>
+        <segue reference="wWN-mn-bga"/>
         <segue reference="tsy-FK-IUP"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="4QF-E2-lEm"/>

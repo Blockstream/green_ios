@@ -143,6 +143,14 @@ func getNetworkSettings() -> NetworkSettings {
     return NetworkSettings(network: getNetwork().rawValue, ipAddress:proxyIp, portNumber: proxyPort, torEnabled: torEnabled)
 }
 
+func getGdkNetwork(_ network: String) throws -> [String: Any]? {
+    var result = try! getNetworks()
+    if (!(result?.keys.contains(network))!) {
+        throw GaError.GenericError
+    }
+    return result![network] as? [String: Any]
+}
+
 func setDefaultNetworkSetings() {
     setNetwork(net: Network.TestNet)
     proxyPort = ""
