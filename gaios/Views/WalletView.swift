@@ -101,6 +101,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                     DispatchQueue.main.async {
                         let list = transactions!["list"] as! NSArray
                         for tx in list.reversed() {
+                            print(tx)
                             let transaction = tx as! [String : Any]
                             let satoshi:Int = transaction["satoshi"] as! Int
                             let hash = transaction["txhash"] as! String
@@ -127,12 +128,11 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                             let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date, canRBF: can_rbf, rawTransaction: transaction)
                             self.items.append(item)
                         }
-                        print("success")
                     }
+                    print("success")
                 }.ensure {
                     DispatchQueue.main.async {
                         self.transactionTableView.reloadData()
-                        self.animateTableView()
                     }
                 }.catch { error in
                     print("error")
@@ -993,16 +993,8 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             self?.presentedFooterView.layer.opacity = 1
         }
 
-        let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
-        UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: {
-            _ in
-            self.animateTableView()
-        })
-    }
-
-    func animateTableView() {
         let animations1 = { [weak self] in
-            if (self?.items.count == 0 || self?.transactionTableView.layer.opacity == 1) {
+            if (self?.items.count == 0) {
                 return
             }
 
@@ -1014,9 +1006,13 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
             self?.transactionTableView.frame = CGRect(origin: origin!, size: size!)
             self?.transactionTableView.layer.opacity = 1
         }
+
         let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
-        UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion:{ _ in
-            self.transactionTableView.layer.zPosition = 3
+        UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations, completion: {
+            _ in
+            UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: options, animations: animations1, completion:{ _ in
+                self.transactionTableView.layer.zPosition = 3
+            })
         })
     }
 
