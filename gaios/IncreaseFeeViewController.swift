@@ -25,6 +25,11 @@ class IncreaseFeeViewController: UIViewController, NVActivityIndicatorViewable, 
         titleLabel.text = NSLocalizedString("id_set_custom_fee", comment: "")
         increaseFeeButton.setTitle(NSLocalizedString("id_increase_fee", comment: "").capitalized, for: .normal)
         cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
+
+        // Set custom rate to 1 satoshi higher than the old rate
+        let prevFeeRate = transaction.rawTransaction["fee_rate"] as! Double
+        let hintFeeRate = (prevFeeRate + 1) / 1000
+        amountTextField.attributedPlaceholder = NSAttributedString(string: String(format: "%0.3f", hintFeeRate), attributes:    [NSAttributedStringKey.foregroundColor : UIColor.gray])
     }
 
     override func viewWillAppear(_ animated: Bool) {
