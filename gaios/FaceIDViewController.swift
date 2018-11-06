@@ -52,7 +52,7 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
                     }
                 }
             } else {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.4) {
                     if (self.isViewLoaded && (self.view.window != nil)) {
                         self.authenticate()
                     }
