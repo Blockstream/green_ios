@@ -10,8 +10,8 @@ class Storage {
         }
     }
 
-    static func wipeSettings() {
-        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("settings.json") else {
+    static func wipeSettings(path: String) {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent(path) else {
             return
         }
         do {
@@ -21,19 +21,35 @@ class Storage {
         }
     }
 
-    static func wipeNotifications() {
-        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("notifications.json") else {
+    static func wipeNotifications(path: String) {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent(path) else {
             return
         }
         do {
             try FileManager.default.removeItem(at: url)
         } catch let error as NSError {
             print("Error: \(error.domain)")
+        }
+    }
+
+    static func getSettingsPath() -> String {
+        if(getNetwork() == .MainNet) {
+            return "settings_mainnet.json"
+        } else {
+            return "settings_testnet.json"
+        }
+    }
+
+    static func getNotificationPath() -> String {
+        if(getNetwork() == .MainNet) {
+            return "notification_mainnet.json"
+        } else {
+            return "notification_testnet.json"
         }
     }
 
     static func wipeAll() {
-        wipeSettings()
-        wipeNotifications()
+        wipeSettings(path: getSettingsPath())
+        wipeNotifications(path: getNotificationPath())
     }
 }
