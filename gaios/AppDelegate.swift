@@ -219,6 +219,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let service = GreenAddressService()
     var startTime = DispatchTime.now()
     var endTime = DispatchTime.now()
+    var finishedConnecting: Bool = false
 
     var mnemonicWords: [String]? = nil
 
@@ -270,6 +271,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func connect() {
+        finishedConnecting = false
         DispatchQueue.global(qos: .background).async {
             wrap {
                 let netset = getNetworkSettings()
@@ -281,6 +283,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }.done {
                 print("Connected")
+                self.finishedConnecting = true
             }.catch { error in
                 DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
                     self.connect()

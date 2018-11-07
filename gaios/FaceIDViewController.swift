@@ -30,33 +30,41 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func authenticate() {
-        bioID.authenticateUser { (message) in
-            if(message == nil) {
-                let size = CGSize(width: 30, height: 30)
-                self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-                DispatchQueue.global(qos: .background).async {
-                    wrap { return try getSession().loginWithPin(pin: self.password, pin_data: self.pinData) }.done { _ in
-                        DispatchQueue.main.async {
-                            self.stopAnimating()
-                            AccountStore.shared.initializeAccountStore()
-                            self.performSegue(withIdentifier: "mainMenu", sender: self)
-                        }
-                        }.catch { error in
-                            print("incorrect PIN ", error)
+        if(!getAppDelegate().finishedConnecting) {
+            retryAuthLater(time: 0.5)
+        } else {
+            bioID.authenticateUser { (message) in
+                if(message == nil) {
+                    let size = CGSize(width: 30, height: 30)
+                    self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+                    DispatchQueue.global(qos: .background).async {
+                        wrap { return try getSession().loginWithPin(pin: self.password, pin_data: self.pinData) }.done { _ in
                             DispatchQueue.main.async {
-                                NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
                                 self.stopAnimating()
+                                AccountStore.shared.initializeAccountStore()
+                                self.performSegue(withIdentifier: "mainMenu", sender: self)
                             }
+                            }.catch { error in
+                                print("incorrect PIN ", error)
+                                DispatchQueue.main.async {
+                                    NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                    self.stopAnimating()
+                                }
+                        }
                     }
+                } else {
+                    self.retryAuthLater(time: 1.4)
                 }
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.4) {
-                    if (self.isViewLoaded && (self.view.window != nil)) {
-                        self.authenticate()
-                    }
-                }
+            }
+        }
+    }
+
+    func retryAuthLater(time: Double) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
+            if (self.isViewLoaded && (self.view.window != nil)) {
+                self.authenticate()
             }
         }
     }
