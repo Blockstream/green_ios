@@ -49,9 +49,9 @@ class EditScreenLockSettings: UIViewController {
         if (!sender.isOn) {
             bioID.authenticateUser { (message) in
                 if(message == nil) {
-                    SettingsStore.shared.setScreenLockSettings()
                     //remove keychaindata
                     AppDelegate.removeBioKeychainData()
+                    SettingsStore.shared.setScreenLockSettings()
                     self.updateValues()
                 } else {
                     print("error authenticating")
@@ -68,10 +68,10 @@ class EditScreenLockSettings: UIViewController {
                             guard result != nil else {
                                 return
                             }
-                            SettingsStore.shared.setScreenLockSettings()
                             let network = getNetworkSettings().network
                             KeychainHelper.savePassword(service: "bioPassword", account: network, data: password)
                             KeychainHelper.savePassword(service: "bioData", account: network, data: result!)
+                            SettingsStore.shared.setScreenLockSettings()
                         }.catch { error in
                             print("setPin failed")
                     }
