@@ -160,9 +160,11 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             }
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                SettingsStore.shared.getScreenLockSetting()
+                                SettingsStore.shared.setScreenLockSettings()
                                 let network = getNetworkSettings().network
                                 KeychainHelper.savePassword(service: "pinData", account: network, data: result!)
+                                //pinPassword used when removing the pin, not used for login(user input is used)
+                                KeychainHelper.savePassword(service: "pinPassword", account: network, data: self.pinCode)
                                 if(self.editPinMode == true) {
                                     self.navigationController?.popViewController(animated: true)
                                 } else if (self.restoreMode == true) {
@@ -194,7 +196,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             let pass = KeychainHelper.loadPassword(service: "pinPassword", account: network)
             if (pass == pinCode) {
                 AppDelegate.removePinKeychainData()
-                SettingsStore.shared.getScreenLockSetting()
+                SettingsStore.shared.setScreenLockSettings()
             }
             self.navigationController?.popViewController(animated: true)
             return
