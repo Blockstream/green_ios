@@ -56,13 +56,7 @@ class WelcomeBackViewController: UIViewController {
                         guard result != nil else {
                             return
                         }
-                        if(self.bioID.canEvaluatePolicy()) {
-                            if(self.bioID.biometricType() == BiometricType.faceID) {
-                                SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.FaceID)
-                            } else if (self.bioID.biometricType() == BiometricType.touchID) {
-                                SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
-                            }
-                        }
+                        SettingsStore.shared.setScreenLockSettings()
                         let network = getNetworkSettings().network
                         KeychainHelper.savePassword(service: "bioPassword", account: network, data: password)
                         KeychainHelper.savePassword(service: "bioData", account: network, data: result!)

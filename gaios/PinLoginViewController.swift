@@ -160,12 +160,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             }
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                let settings = SettingsStore.shared.getScreenLockSetting()
-                                if (settings == ScreenLock.None) {
-                                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
-                                } else if (settings == ScreenLock.FaceID || settings == ScreenLock.TouchID) {
-                                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
-                                }
+                                SettingsStore.shared.getScreenLockSetting()
                                 let network = getNetworkSettings().network
                                 KeychainHelper.savePassword(service: "pinData", account: network, data: result!)
                                 if(self.editPinMode == true) {
@@ -199,17 +194,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             let pass = KeychainHelper.loadPassword(service: "pinPassword", account: network)
             if (pass == pinCode) {
                 AppDelegate.removePinKeychainData()
-                let settings = SettingsStore.shared.getScreenLockSetting()
-                if (settings == ScreenLock.Pin) {
-                    SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.None)
-                } else if (settings == ScreenLock.all) {
-                    let bioID = BiometricIDAuth()
-                    if (bioID.biometricType() == BiometricType.faceID) {
-                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.FaceID)
-                    } else if (bioID.biometricType() == BiometricType.touchID) {
-                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
-                    }
-                }
+                SettingsStore.shared.getScreenLockSetting()
             }
             self.navigationController?.popViewController(animated: true)
             return

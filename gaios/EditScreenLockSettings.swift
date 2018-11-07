@@ -49,12 +49,7 @@ class EditScreenLockSettings: UIViewController {
         if (!sender.isOn) {
             bioID.authenticateUser { (message) in
                 if(message == nil) {
-                    let settings = SettingsStore.shared.getScreenLockSetting()
-                    if(settings == ScreenLock.FaceID || settings == ScreenLock.TouchID) {
-                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.None)
-                    } else if (settings == ScreenLock.all) {
-                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.Pin)
-                    }
+                    SettingsStore.shared.setScreenLockSettings()
                     //remove keychaindata
                     AppDelegate.removeBioKeychainData()
                     self.updateValues()
@@ -73,24 +68,7 @@ class EditScreenLockSettings: UIViewController {
                             guard result != nil else {
                                 return
                             }
-                            if(self.bioID.canEvaluatePolicy()) {
-                                if(self.bioID.biometricType() == BiometricType.faceID) {
-                                    let settings = SettingsStore.shared.getScreenLockSetting()
-                                    if(settings == ScreenLock.None) {
-                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.FaceID)
-                                    } else if (settings == ScreenLock.Pin) {
-                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
-
-                                    }
-                                } else if (self.bioID.biometricType() == BiometricType.touchID) {
-                                    let settings = SettingsStore.shared.getScreenLockSetting()
-                                    if(settings == ScreenLock.None) {
-                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.TouchID)
-                                    } else if (settings == ScreenLock.Pin) {
-                                        SettingsStore.shared.setScreenLockSettings(screenLock: ScreenLock.all)
-                                    }
-                                }
-                            }
+                            SettingsStore.shared.setScreenLockSettings()
                             let network = getNetworkSettings().network
                             KeychainHelper.savePassword(service: "bioPassword", account: network, data: password)
                             KeychainHelper.savePassword(service: "bioData", account: network, data: result!)

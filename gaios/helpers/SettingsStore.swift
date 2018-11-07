@@ -100,10 +100,8 @@ class SettingsStore {
         return ""
     }
 
-    func setScreenLockSettings(screenLock: ScreenLock) {
-        let screenLockProperty = [settingsScreenLock: String(screenLock.rawValue)]
-        let setting = SettingsItem(settingsName: settingsScreenLock, property: screenLockProperty, text: securityScreenLock, secondaryText: stringForScreenLockSettings(screenLock: screenLock))
-        allSettings[settingsScreenLock] = setting
+    func setScreenLockSettings() {
+        allSettings[settingsScreenLock] = defaultScreenLock()
         loadAllSections()
         writeSettingsToDisk()
     }
@@ -297,7 +295,31 @@ class SettingsStore {
     }
 
     func defaultScreenLock() -> SettingsItem {
-        return SettingsItem(settingsName: settingsScreenLock, property:[settingsScreenLock : String(ScreenLock.None.rawValue)], text: securityScreenLock, secondaryText: stringForScreenLockSettings(screenLock: ScreenLock.None))
+        let bioID = BiometricIDAuth()
+        let network = getNetworkSettings().network
+        let bioData = KeychainHelper.loadPassword(service: "bioData", account: network)
+        let pinData = KeychainHelper.loadPassword(service: "pinData", account: network)
+        let password = KeychainHelper.loadPassword(service: "bioPassword", account: network)
+        var property = [String:String]()
+        var secText = ""
+        if (bioData != nil && password != nil && pinData == nil) {
+            property = [settingsScreenLock : String(ScreenLock.FaceID.rawValue)]
+            if (bioID.biometricType() == .faceID) {
+                secText = stringForScreenLockSettings(screenLock: ScreenLock.FaceID)
+            } else {
+                secText = stringForScreenLockSettings(screenLock: ScreenLock.TouchID)
+            }
+        } else if (pinData != nil && (bioData == nil || password == nil)) {
+            property = [settingsScreenLock : String(ScreenLock.Pin.rawValue)]
+            secText = stringForScreenLockSettings(screenLock: ScreenLock.Pin)
+        } else if (pinData != nil && bioData != nil && password != nil) {
+            property = [settingsScreenLock : String(ScreenLock.all.rawValue)]
+            secText = stringForScreenLockSettings(screenLock: ScreenLock.all)
+        } else {
+            property = [settingsScreenLock : String(ScreenLock.None.rawValue)]
+            secText = stringForScreenLockSettings(screenLock: ScreenLock.None)
+        }
+        return SettingsItem(settingsName: settingsScreenLock, property:property, text: securityScreenLock, secondaryText: secText)
     }
 
     func defaultTwoFactor() -> SettingsItem {
@@ -352,7 +374,7 @@ class SettingsStore {
     func createSecuritySection() -> SettingsSection {
         var securitySettings = Array<SettingsItem>()
         let recovery = allSettings[settingsRecovery] == nil ? defaultRecoverySeed() : allSettings[settingsRecovery]
-        let screenLock = allSettings[settingsScreenLock] == nil ? defaultScreenLock() : allSettings[settingsScreenLock]
+        let screenLock = defaultScreenLock()
         let twoFactor = defaultTwoFactor()
         let twoFactorWarning = allSettings[settingsTwoFactorWarning] == nil ? defaultTwoFactorWarning() : allSettings[settingsTwoFactorWarning]
         let twoFactorLimit = allSettings[settingsTwoFactorLimit] == nil ? defaultTwoFactorLimit() : allSettings[settingsTwoFactorLimit]
@@ -361,7 +383,7 @@ class SettingsStore {
         let support = allSettings[settingsSupport] == nil ? defaultSupport() : allSettings[settingsSupport]
 
         securitySettings.append(recovery!)
-        securitySettings.append(screenLock!)
+        securitySettings.append(screenLock)
         securitySettings.append(twoFactor)
         securitySettings.append(twoFactorWarning!)
         securitySettings.append(twoFactorLimit!)
@@ -412,14 +434,10 @@ class SettingsStore {
     }
 
     func loadSettingsFromDisk() ->  [String: SettingsItem]? {
-        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("settings.json") else {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent(Storage.getSettingsPath()) else {
             return nil //initialize settings defaults?
         }
-       /* do {
-            try FileManager.default.removeItem(at: url)
-        } catch let error as NSError {
-            print("Error: \(error.domain)")
-        }*/
+
         let decoder = JSONDecoder()
         do {
             // 2. Retrieve the data on the file in this path (if there is any)
@@ -433,7 +451,7 @@ class SettingsStore {
     }
 
     func writeSettingsToDisk() {
-        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("settings.json") else {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent(Storage.getSettingsPath()) else {
             return
         }
         let encoder = JSONEncoder()
@@ -458,7 +476,13 @@ class SettingsStore {
         }
     }
 
+    func clearSettings() {
+        allSections = Array<SettingsSection>()
+        allSettings = [String : SettingsItem]()
+    }
+
     func initSettingsStore() {
+        clearSettings()
         guard let all = loadSettingsFromDisk() else {
             //loadDefaultSettings()
             loadAllSections()
