@@ -60,7 +60,7 @@ class NotificationStore {
     }
 
     func writeNotificationsToDisk() {
-        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("notifications.json") else {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent(Storage.getNotificationPath()) else {
             return
         }
         let encoder = JSONEncoder()
@@ -75,7 +75,7 @@ class NotificationStore {
     }
 
     func loadNotificationsFromDisk() -> [String: NotificationItem] {
-        guard let url = Storage.getDocumentsURL()?.appendingPathComponent("notifications.json") else {
+        guard let url = Storage.getDocumentsURL()?.appendingPathComponent(Storage.getNotificationPath()) else {
             return [String: NotificationItem]()
         }
         let decoder = JSONDecoder()
