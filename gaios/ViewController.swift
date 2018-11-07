@@ -128,15 +128,8 @@ class ViewController: UIViewController, WalletViewDelegate {
             return
         }
         if let tag = recognizer.view?.tag {
-            let addressDetail = self.storyboard?.instantiateViewController(withIdentifier: "addressDetail") as! AddressDetailViewController
             let item = wallets[tag]
-            addressDetail.wallet = item
-            addressDetail.providesPresentationContextTransitionStyle = true
-            addressDetail.definesPresentationContext = true
-            addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-            addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-            hideButtons()
-            self.present(addressDetail, animated: true, completion: nil)
+            self.performSegue(withIdentifier: "address", sender: item)
         }
     }
 
@@ -190,6 +183,13 @@ class ViewController: UIViewController, WalletViewDelegate {
             if presentedWallet != nil {
                 nextController.pointer = presentedWallet!.pointer
             }
+        }
+        if let addressDetail = segue.destination as? AddressDetailViewController {
+            addressDetail.wallet = sender as! WalletItem
+            addressDetail.providesPresentationContextTransitionStyle = true
+            addressDetail.definesPresentationContext = true
+            addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+            addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
         }
 
         hideButtons()

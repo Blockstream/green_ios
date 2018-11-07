@@ -69,6 +69,6 @@ class AddressDetailViewController: UIViewController {
     }
 
     @objc func dismiss(recognizer: UITapGestureRecognizer) {
-        self.navigationController?.popViewController(animated: true)
+        self.dismiss(animated: true, completion: nil)
     }
 }
