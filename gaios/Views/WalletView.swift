@@ -102,7 +102,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                         let list = transactions!["list"] as! NSArray
                         for tx in list.reversed() {
                             let transaction = tx as! [String : Any]
-                            let satoshi:Int = transaction["satoshi"] as! Int
+                            let satoshi:UInt64 = transaction["satoshi"] as! UInt64
                             let hash = transaction["txhash"] as! String
                             let fee = transaction["fee"] as! UInt32
                             let size = transaction["transaction_vsize"] as! UInt32
@@ -115,8 +115,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                             dateFormatter.dateStyle = .medium
                             dateFormatter.timeStyle = .short
                             let date = Date.dateFromString(dateString: dateString)
-                            let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
-                            let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings().rawValue)
+                            let formattedBalance: String = String.formatBtc(satoshi: satoshi)
                             let adressees = transaction["addressees"] as! [String]
                             let can_rbf = transaction["can_rbf"] as! Bool
                             var counterparty = ""
@@ -339,9 +338,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         for index in 0..<insertedCardViews.count {
             let wallet = insertedCardViews[index] as! ColoredCardView
             if(wallet.wallet?.pointer == UInt32(forCardview)) {
-                let denomination = SettingsStore.shared.getDenominationSettings()
-                let balance = String.satoshiToBTCDenominated(satoshi: sat, type: denomination)
-                wallet.balanceLabel.text = String(format: "%@ %@", balance, denomination.rawValue)
+                wallet.balanceLabel.text = String.formatBtc(satoshi: UInt64(sat)!)
                 return
             }
         }

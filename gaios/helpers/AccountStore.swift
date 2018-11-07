@@ -107,44 +107,6 @@ class AccountStore {
         return dateFormatter.date(from: date)!
     }
 
-    func satoshiToFiat(amount: UInt64) -> Double {
-        let dict = ["satoshi" : amount]
-        var amount: Double = 0
-        do {
-            let json = try getSession().convertAmount(input: dict)
-            amount = Double(json!["fiat"] as! String)!
-        } catch {
-            print("something went wrong")
-        }
-        return amount
-    }
-
-    func btcToFiat(amount: Double) -> Double {
-        let dict = ["btc" : String(amount)]
-        var amount: Double = 0
-        do {
-            let json = try getSession().convertAmount(input: dict)
-            amount = Double(json!["fiat"] as! String)!
-        } catch {
-            print("something went wrong")
-        }
-
-        return amount
-    }
-
-    func fiatToBtc(amount: Double) -> Double {
-        let dict = ["fiat" : String(amount)]
-        var amount: Double = 0
-        do {
-            let json = try getSession().convertAmount(input: dict)
-            amount = Double(json!["btc"] as! String)!
-        } catch {
-            print("something went wrong")
-        }
-
-        return amount
-    }
-
     func enableEmailTwoFactor(email: String) throws -> TwoFactorCall? {
         //nlohmann::json subconfig = { { "enabled", true }, { "confirmed", true }, { "data", data } };
         let dict = ["enabled": true, "confirmed": true, "data": email] as [String : Any]
@@ -278,15 +240,15 @@ class AccountStore {
         return enabled
     }
 
-    func getTwoFactorLimit() -> (isFiat: Bool, amount: Double) {
+    func getTwoFactorLimit() -> (isFiat: Bool, amount: String) {
         if let config = getTwoFactorConfig() {
             let limits = config["limits"] as! [String: Any]
             let isFiat = limits["is_fiat"] as! Bool
             let btcString = limits["btc"] as! String
             let fiatString = limits["fiat"] as! String
-            return isFiat ? (isFiat, Double(fiatString)!) : (isFiat, Double(btcString)!)
+            return isFiat ? (isFiat, fiatString) : (isFiat, btcString)
         } else {
-            return (false, 0)
+            return (false, "0")
         }
     }
 

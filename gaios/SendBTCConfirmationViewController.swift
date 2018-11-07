@@ -39,13 +39,10 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         let addressees = transaction?.addresses()
         let address = addressees![0]["address"] as! String
         let satoshi = transaction?.data["satoshi"] as! UInt64
-        let btcAmount = Double(satoshi) / 100000000
         recepientAddressLabel.text = address
-        if (selectedType == TransactionType.BTC) {
-            fiatAmountLabel.text = String(format: "%f BTC (%f USD)", btcAmount, 0)
-        } else if (selectedType == TransactionType.FIAT) {
-            fiatAmountLabel.text = String(format: "%f USD (%f BTC)", 0, btcAmount)
-        }
+        let btcAmount = String.formatBtc(satoshi: satoshi)
+        let fiatAmount = String.formatFiat(satoshi: satoshi)
+        fiatAmountLabel.text = String(format: "%@ ( %@ )", btcAmount, fiatAmount)
     }
 
     override func viewDidAppear(_ animated: Bool) {

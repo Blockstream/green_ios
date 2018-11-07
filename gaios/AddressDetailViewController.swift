@@ -51,7 +51,7 @@ class AddressDetailViewController: UIViewController {
             let uri = bip21Helper.btcURIforAddress(address: (wallet?.address)!)
             qrImageView.image = QRImageGenerator.imageForTextWhite(text: uri, frame: qrImageView.frame)
         } else {
-            let uri = bip21Helper.btcURIforAmnount(address:(wallet?.address)!, amount: amount)
+            let uri = bip21Helper.btcURIforAmount(address:(wallet?.address)!, amount: amount)
             qrImageView.image = QRImageGenerator.imageForTextWhite(text: uri, frame: qrImageView.frame)
         }
     }

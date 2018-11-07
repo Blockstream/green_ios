@@ -28,7 +28,7 @@ class NotificationStore {
                             if (AccountStore.shared.getBlockheight() - blockHeight < 1) {
                                 continue
                             }
-                            let satoshi:Int = transaction["satoshi"] as! Int
+                            let satoshi:UInt64 = transaction["satoshi"] as! UInt64
                             let hash = transaction["txhash"] as! String
                             let dateString = transaction["created_at"] as! String
                             let date = Date.dateFromString(dateString: dateString)
@@ -212,11 +212,11 @@ class NotificationItem: Codable{
     var id: String
     var seen: Bool
     var isWarning: Bool
-    var satoshi: Int
+    var satoshi: UInt64
     var type: String
     var address: String
 
-    init(date: Date, id: String, seen: Bool, isWarning: Bool, satoshi: Int, type: String, address: String) {
+    init(date: Date, id: String, seen: Bool, isWarning: Bool, satoshi: UInt64, type: String, address: String) {
         self.date = date
         self.id = id
         self.seen = seen

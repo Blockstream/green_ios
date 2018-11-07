@@ -26,20 +26,12 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
         setLimitButton.setTitle(NSLocalizedString("id_set_limit", comment: ""), for: .normal)
         let limits = AccountStore.shared.getTwoFactorLimit()
         fiat = limits.isFiat
-        if (limits.amount == 0) {
+        if (limits.amount.isEmpty || Double(limits.amount) == 0) {
             limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                        attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         } else if (!fiat){
-            let denomination = SettingsStore.shared.getDenominationSettings()
-            var amount_denominated: Double = 0
-            if(denomination == DenominationType.BTC) {
-                amount_denominated = limits.amount
-            } else if (denomination == DenominationType.MilliBTC) {
-                amount_denominated = limits.amount * 1000
-            } else if (denomination == DenominationType.MicroBTC){
-                amount_denominated = limits.amount * 1000000
-            }
-            limitTextField.text = String(format: "%@", amount_denominated.clean)
+            let coin: String = String.toBtc(value: limits.amount, fromType: SettingsStore.shared.getDenominationSettings())!
+            limitTextField.text = String(format: "%@", coin)
         } else if (fiat) {
             limitTextField.text = String(format: "%f", limits.amount)
         }

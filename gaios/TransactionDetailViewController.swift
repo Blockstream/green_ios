@@ -75,7 +75,7 @@ class TransactionDetailViewController: UIViewController {
                                     if (hash != txhash) {
                                         continue
                                     }
-                                    let satoshi:Int = transaction["satoshi"] as! Int
+                                    let satoshi:UInt64 = transaction["satoshi"] as! UInt64
                                     let fee = transaction["fee"] as! UInt32
                                     let size = transaction["transaction_vsize"] as! UInt32
                                     let blockheight = transaction["block_height"] as! UInt32
@@ -87,8 +87,7 @@ class TransactionDetailViewController: UIViewController {
                                     dateFormatter.dateStyle = .medium
                                     dateFormatter.timeStyle = .short
                                     let date = Date.dateFromString(dateString: dateString)
-                                    let btcFormatted = String.satoshiToBTC(satoshi: satoshi)
-                                    let formattedBalance: String = String(format: "%@ %@", btcFormatted, SettingsStore.shared.getDenominationSettings().rawValue)
+                                    let formattedBalance: String = String.formatBtc(satoshi: satoshi)
                                     let adressees = transaction["addressees"] as! [String]
                                     let can_rbf = transaction["can_rbf"] as! Bool
                                     var counterparty = ""

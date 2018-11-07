@@ -187,7 +187,7 @@ class SettingsStore {
 
     func setTwoFactorLimit() {
         let limits = AccountStore.shared.getTwoFactorLimit()
-        let enabled = limits.amount != 0
+        let enabled = Double(limits.amount) != 0
         let secondaryText = enabled ? "Enabled" : "Disabled"
         let setting = SettingsItem(settingsName: settingsTwoFactorLimit, property: [String:String](), text: securityTwoFactorLimit, secondaryText: secondaryText)
         allSettings[settingsTwoFactorLimit] = setting
@@ -270,7 +270,7 @@ class SettingsStore {
 
     func defaultTwoFactorLimit() -> SettingsItem {
         let limits = AccountStore.shared.getTwoFactorLimit()
-        let enabled = limits.amount != 0
+        let enabled = Double(limits.amount) != 0
         let val = enabled ? "true" : "false"
         let text = enabled ? "Enabled" : "Disabled"
         return SettingsItem(settingsName: settingsTwoFactorLimit, property: ["enabled" : val], text: securityTwoFactorLimit, secondaryText: text)
@@ -540,23 +540,10 @@ public enum DenominationType: String {
     case Satoshi = "Satoshi"
 }
 
-public func satoshiPerDenominationType(type: DenominationType) -> Double{
-    if (type == DenominationType.BTC) {
-        return 100000000
-    } else if (type == DenominationType.MilliBTC) {
-        return 100000
-    } else if (type == DenominationType.MicroBTC) {
-        return 100
-    } else if (type == DenominationType.Satoshi) {
-        return 1
-    }
-    return 0
-}
-
-public func getDenominated(amount: Double, ofType: DenominationType) -> Double {
-    let denomination = SettingsStore.shared.getDenominationSettings()
-    let denominatedAmount = amount * satoshiPerDenominationType(type: ofType) / satoshiPerDenominationType(type: denomination)
-    return denominatedAmount
+public func getDenominationKey(_ type: DenominationType?) -> String {
+    return type != nil ?
+        type!.rawValue.lowercased() :
+        SettingsStore.shared.getDenominationSettings().rawValue.lowercased()
 }
 
 public enum AutoLock: String {

@@ -25,7 +25,7 @@ class ReceiveBtcViewController: UIViewController {
         //walletAddressLabel.text = receiveAddress
         walletAddressLabel.text = wallet?.address
         receiveAddress = wallet?.address
-        updateQRCode(amount: 0)
+        updateQRCode()
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
 
@@ -51,7 +51,7 @@ class ReceiveBtcViewController: UIViewController {
                 if(pointer == Int(wallet!.pointer)) {
                     receiveAddress = wallet?.address
                     walletAddressLabel.text = wallet?.address
-                    updateQRCode(amount: amount_g)
+                    updateQRCode()
                 }
             }
         }
@@ -108,47 +108,29 @@ class ReceiveBtcViewController: UIViewController {
     }
 
     func updateEstimate() {
-        let amount: String = amountTextfield.text!
-
-        guard let amount_double = Double(amount) else {
-            if (selectedType == TransactionType.BTC) {
-                estimateLabel.text = "~0.00 " + SettingsStore.shared.getCurrencyString()
-            } else {
-                estimateLabel.text = "~0.00 " + SettingsStore.shared.getDenominationSettings().rawValue
-            }
-            amount_g = 0
-            updateQRCode(amount: 0)
-            return
+        let denomination = SettingsStore.shared.getDenominationSettings()
+        var amount: String = amountTextfield.text!
+        if (amount.isEmpty || Double(amount) == nil) {
+            amount = "0"
         }
-
         if (selectedType == TransactionType.BTC) {
-            let denomination = SettingsStore.shared.getDenominationSettings()
-            var amount_denominated: Double = 0
-            if(denomination == DenominationType.BTC) {
-                amount_denominated = amount_double
-            } else if (denomination == DenominationType.MilliBTC) {
-                amount_denominated = amount_double / 1000
-            } else if (denomination == DenominationType.MicroBTC){
-                amount_denominated = amount_double / 1000000
-            }
-            let converted = AccountStore.shared.btcToFiat(amount: amount_denominated)
-            estimateLabel.text = String(format: "~%.2f %@", converted, SettingsStore.shared.getCurrencyString())
-            amount_g = amount_denominated
-            updateQRCode(amount: amount_denominated)
+            let fiat = String.toFiat(value: amount, fromType: denomination)
+            amount_g = Double(String.toBtc(value: amount, fromType: denomination, toType: DenominationType.BTC)!)!
+            estimateLabel.text = "~" + String.formatFiat(fiat: fiat)
         } else {
-            let converted = AccountStore.shared.fiatToBtc(amount: amount_double)
-            amount_g = converted
-            updateQRCode(amount: converted)
-            estimateLabel.text = String(format: "~%f %@", converted, SettingsStore.shared.getDenominationSettings().rawValue)
+            let amount: String = String.toBtc(fiat: amount, toType: DenominationType.BTC)!
+            amount_g = Double(amount)!
+            estimateLabel.text = "~" + String.formatBtc(value: amount, fromType: DenominationType.BTC, toType: denomination)
         }
+        updateQRCode()
     }
 
-    func updateQRCode(amount: Double) {
-        if (amount == 0) {
+    func updateQRCode() {
+        if (amount_g == 0) {
             let uri = bip21Helper.btcURIforAddress(address: receiveAddress!)
             walletQRCode.image = QRImageGenerator.imageForTextDark(text: uri, frame: walletQRCode.frame)
         } else {
-            walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmnount(address:self.receiveAddress!, amount: amount), frame: walletQRCode.frame)
+            walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmount(address:self.receiveAddress!, amount: amount_g), frame: walletQRCode.frame)
         }
     }
 
@@ -162,7 +144,11 @@ class ReceiveBtcViewController: UIViewController {
     }
 
     @IBAction func shareButtonClicked(_ sender: Any) {
-        let activityViewController = UIActivityViewController(activityItems: [receiveAddress!] , applicationActivities: nil)
+        var uri: String = receiveAddress!
+        if (amount_g > 0) {
+            uri = bip21Helper.btcURIforAmount(address:self.receiveAddress!, amount: amount_g)
+        }
+        let activityViewController = UIActivityViewController(activityItems: [uri] , applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self.view
         self.present(activityViewController, animated: true, completion: nil)
     }

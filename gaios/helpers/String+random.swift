@@ -18,57 +18,36 @@ extension String {
         return String(partial)
     }
 
-    static func satoshiToBTC(satoshi: String) -> (BTC: String, MBTC: String, UBTC: String)  {
-        do {
-            let dict = ["satoshi" : Int(satoshi)]
-            let json = try getSession().convertAmount(input: dict)
-            let btc = json!["btc"] as! String
-            let mbtc = json!["mbtc"] as! String
-            let ubtc = json!["ubtc"] as! String
-            return (btc, mbtc, ubtc)
-        } catch {
-            print("something went wrong")
-            return ("", "", "")
-        }
+    static func toBtc(satoshi: UInt64? = nil, value: String? = nil, fiat: String? = nil, fiatCurrency: String? = nil, fromType: DenominationType? = nil, toType: DenominationType? = nil) -> String? {
+        var dict = [String: Any]()
+        if (satoshi != nil) { dict["satoshi"] = satoshi }
+        if (fiat != nil) { dict["fiat"] = fiat }
+        if (fiatCurrency != nil) { dict["fiat_currency"] = fiatCurrency }
+        if (value != nil) { dict[getDenominationKey(fromType)] = value }
+        let res = try! getSession().convertAmount(input: dict)
+        if (toType != nil) { return res![getDenominationKey(toType)] as? String }
+        return String(format: "%d", res!["satoshi"] as! Int)
     }
 
-    static func satoshiToBTCDenominated(satoshi: String, type: DenominationType) -> String {
-        let result = satoshiToBTC(satoshi: satoshi)
-        if(type == .BTC) {
-            return result.BTC
-        } else if (type == .MilliBTC) {
-            return result.MBTC
-        } else if (type ==  .MicroBTC) {
-            return result.UBTC
-        } else {
-            return satoshi
-        }
+    static func toFiat(satoshi: UInt64? = nil, value: String? = nil, fromType: DenominationType? = nil) -> String? {
+        var dict = [String: Any]()
+        if (satoshi != nil) { dict["satoshi"] = satoshi }
+        if (value != nil) { dict[getDenominationKey(fromType)] = value }
+        let res = try! getSession().convertAmount(input: dict)
+        return res!["fiat"] as? String
     }
 
-    static func satoshiToBTC(satoshi: Int) -> String {
-        let satoshi: Double = Double(satoshi)
-        let dSettings = SettingsStore.shared.getDenominationSettings()
-        var div: Double = 100000000
-        if (dSettings == DenominationType.BTC) {
-            div = 100000000
-        } else if (dSettings == DenominationType.MilliBTC) {
-            div = 100000
-        } else if (dSettings == DenominationType.MicroBTC) {
-            div = 100
-        }
-        let btc = satoshi / div
-        let formatter = NumberFormatter()
-        formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 8
-        var result: String = formatter.string(from: NSNumber(value: btc))!
-        if (btc < 1 && btc > 0) {
-            result = "0" + result
-        } else if (btc < 0 && btc > -1) {
-            result = "-0" + String(result.dropFirst())
-        } else if ( btc == 0) {
-            result = "0"
-        }
-        return result
+    static func formatBtc(satoshi: UInt64? = nil, value: String? = nil, fromType: DenominationType? = nil, toType: DenominationType? = nil) -> String {
+        let fType = fromType ?? SettingsStore.shared.getDenominationSettings()
+        let tType = toType ?? SettingsStore.shared.getDenominationSettings()
+        let text: String = toBtc(satoshi: satoshi, value: value, fromType: fType, toType: tType)!
+        return String(format: "%@ %@", text, tType.rawValue)
+    }
+
+    static func formatFiat(satoshi: UInt64? = nil, fiat: String? = nil, fiatCurrency: String? = nil) -> String {
+        let currency = fiatCurrency ?? SettingsStore.shared.getCurrencyString()
+        let value = fiat ?? toFiat(satoshi: satoshi, value: fiatCurrency)!
+        return String(format: "%@ %@", value, currency)
     }
 
     func heightWithConstrainedWidth(width: CGFloat, font: UIFont) -> CGFloat {
@@ -102,15 +81,5 @@ extension URL {
                 params[item.name] = item.value
                 return params
             }) ?? [:]
-    }
-}
-
-extension Double {
-    var clean: String {
-        var number = String(format: "%.8f", self)
-        while (number.last == "0") {
-            number.removeLast()
-        }
-        return number
     }
 }

@@ -23,8 +23,6 @@ class SendBtcDetailsViewController: UIViewController {
     var feeLabel: UILabel = UILabel()
     var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
-    var maxAmountBTC: Double = 0
-    var btcAmount: Double = 0
     var fee: UInt64 = 1
     var selectedButton : UIButton? = nil
     var priority: TransactionPriority? = nil
@@ -72,14 +70,11 @@ class SendBtcDetailsViewController: UIViewController {
             satoshi = addressees![0]["satoshi"] as! UInt64
         }
         addressLabel.text = address
-        btcAmount = Double(satoshi) / 100000000
-        if (btcAmount != 0) {
+        if (satoshi != 0) {
             if (selectedType == TransactionType.BTC) {
-                let denominated = getDenominated(amount: btcAmount, ofType: DenominationType.BTC)
-                amountTextField.text = String(format: "%f", denominated)
+                amountTextField.text = String.toBtc(satoshi: satoshi, toType: SettingsStore.shared.getDenominationSettings())
             } else {
-                let fiat = AccountStore.shared.btcToFiat(amount: btcAmount)
-                amountTextField.text = String(format: "%f", fiat)
+                amountTextField.text = String.toFiat(satoshi: satoshi)
             }
         }
         let readOnly = transaction?.data["addressees_read_only"] as! Bool
@@ -121,16 +116,11 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateMaxAmountLabel() {
+        guard let amount: UInt64 = UInt64((wallet?.balance)!) else { return }
         if (selectedType == TransactionType.BTC) {
-            guard let amount = wallet?.balance else { return }
-            maxAmountBTC = Double(amount)! / 100000000
-            let denominated = getDenominated(amount: Double(amount)!, ofType: DenominationType.Satoshi)
-            maxAmountLabel.text = String(format: "%f %@", denominated, SettingsStore.shared.getDenominationSettings().rawValue)
+            maxAmountLabel.text = String.formatBtc(satoshi: amount)
         } else {
-            let maxFiat = maxAmountBTC //FIXME
-           //maxFiat = AccountStore.shared.btcToFiat(amount: wallet?.balance)
-            maxAmountLabel.text = String(format: "%f %@", maxFiat, SettingsStore.shared.getCurrencyString())
-
+            maxAmountLabel.text = String.formatBtc(satoshi: amount)
         }
     }
 
@@ -159,6 +149,7 @@ class SendBtcDetailsViewController: UIViewController {
         }
         setButton()
         updateMaxAmountLabel()
+        updateEstimate()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -179,21 +170,20 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
-        let amount: String = textField.text!
-        guard let amount_d = Double(amount) else {
-            return
-        }
-        if (selectedType == TransactionType.BTC) {
-            btcAmount = getBTCFromDenominatedAmount(amount: amount_d)
-        } else if (selectedType == TransactionType.FIAT) {
-            btcAmount = AccountStore.shared.fiatToBtc(amount: amount_d)
-        }
         updateEstimate()
     }
 
     func updateEstimate() {
-
-        if (btcAmount == 0) {
+        let amount: String = amountTextField.text!
+        var satoshi: UInt64 = 0
+        if (amount.isEmpty || Double(amount) == nil) {
+            return
+        } else if (selectedType == TransactionType.BTC) {
+            satoshi = UInt64(String.toBtc(value: amount)!)!
+        } else if (selectedType == TransactionType.FIAT) {
+            satoshi = UInt64(String.toBtc(fiat: amount)!)!
+        }
+        if (satoshi == 0) {
             setLabel(button: selectedButton!, fee: 0)
             updateButton(false)
             return
@@ -202,7 +192,7 @@ class SendBtcDetailsViewController: UIViewController {
         transaction?.data["fee_rate"] = fee
 
         if !(transaction!.data["addressees_read_only"] as! Bool) {
-            let satoshi: UInt64 = UInt64(btcAmount * 100000000)
+            let satoshi: UInt64 = satoshi
             var toAddress = [String: Any]()
             toAddress["satoshi"] = satoshi
             toAddress["address"] = addressLabel.text
@@ -254,19 +244,6 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.resignFirstResponder()
     }
 
-    func getBTCFromDenominatedAmount(amount: Double) -> Double{
-        let denomination = SettingsStore.shared.getDenominationSettings()
-        var amount_denominated: Double = 0
-        if(denomination == DenominationType.BTC) {
-            amount_denominated = amount
-        } else if (denomination == DenominationType.MilliBTC) {
-            amount_denominated = amount / 1000
-        } else if (denomination == DenominationType.MicroBTC){
-            amount_denominated = amount / 1000000
-        }
-        return amount_denominated
-    }
-
     func setLabel(button: UIButton, fee: UInt64) {
         feeLabel.removeFromSuperview()
         if(fee == 0) {
@@ -275,7 +252,8 @@ class SendBtcDetailsViewController: UIViewController {
         feeLabel = UILabel(frame: CGRect(x: button.center.x, y: button.center.y + button.frame.size.height / 2 + 21, width: 150, height: 21))
         feeLabel.textColor = UIColor.customTitaniumLight()
 
-        let fiatValue:Double = AccountStore.shared.satoshiToFiat(amount: fee)
+        
+        let fiatValue: Double = Double(String.toFiat(satoshi: UInt64(fee))!)!
         let size = transaction?.data["transaction_vsize"] as! UInt64
         let satoshiPerByte = fee / size
         var timeEstimate = ""

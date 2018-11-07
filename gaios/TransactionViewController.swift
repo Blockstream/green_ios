@@ -59,16 +59,11 @@ class TransactionViewController: UIViewController, UITableViewDelegate, UITableV
                 return NotificationStore.shared.warrningOneTwoFactor
             }
         } else if (notification.type == "incoming") {
-            let denominatedAmount = getDenominated(amount: Double(notification.satoshi), ofType: DenominationType.Satoshi)
             let localized = NSLocalizedString("id_you_have_received_s_btc", comment: "")
-            let amountString = String(format: "%f %@", denominatedAmount, SettingsStore.shared.getDenominationSettings().rawValue)
-            let formatted = String(format: localized, amountString)
-            return formatted
+            return String(format: localized, String.formatBtc(satoshi: notification.satoshi))
         } else if (notification.type == "outgoing") {
-            let denominatedAmount = getDenominated(amount: Double(notification.satoshi), ofType: DenominationType.Satoshi)
-            let amountString = String(format: "%f %@", denominatedAmount, SettingsStore.shared.getDenominationSettings().rawValue)
             let localized = NSLocalizedString("id_your_s_btc_sent_to_s_has_been", comment: "")
-            return  String(format: localized, amountString, notification.address)
+            return String(format: localized, String.formatBtc(satoshi: notification.satoshi), notification.address)
         } else if (notification.type == "welcome") {
             return NSLocalizedString("id_thank_you_for_downloading_green", comment: "")
         }
