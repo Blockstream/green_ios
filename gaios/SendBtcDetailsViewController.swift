@@ -128,7 +128,6 @@ class SendBtcDetailsViewController: UIViewController {
         super.viewDidAppear(animated)
         reviewButton.layoutIfNeeded()
         errorLabel.isHidden = true
-        reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         refresh()
         updateEstimate()
     }
@@ -177,7 +176,7 @@ class SendBtcDetailsViewController: UIViewController {
         let amount: String = amountTextField.text!
         var satoshi: UInt64 = 0
         if (amount.isEmpty || Double(amount) == nil) {
-            return
+            satoshi = 0
         } else if (selectedType == TransactionType.BTC) {
             satoshi = UInt64(String.toBtc(value: amount)!)!
         } else if (selectedType == TransactionType.FIAT) {
@@ -227,17 +226,18 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateButton(_ enable: Bool) {
-        if (enable == false) {
-            if (reviewButton.layer.sublayers?.count == 2) {
-                reviewButton.layer.sublayers?.removeFirst()
+       if (enable == false) {
+                if (self.reviewButton.layer.sublayers?.count == 2) {
+                    self.reviewButton.layer.sublayers?.removeFirst()
+                }
+                self.reviewButton.isUserInteractionEnabled = false
+                self.reviewButton.backgroundColor = UIColor.lightGray
+                //self.reviewButton.applyGradient(colours: [UIColor.lightGray, UIColor.lightGray])
+            } else {
+                self.reviewButton.isUserInteractionEnabled = true
+                self.reviewButton.backgroundColor = UIColor.customMatrixGreen()
+                //self.reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
             }
-            reviewButton.isUserInteractionEnabled = false
-            reviewButton.backgroundColor = UIColor.lightGray
-        } else {
-            reviewButton.isUserInteractionEnabled = true
-            reviewButton.backgroundColor = UIColor.customMatrixGreen()
-            reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-        }
     }
 
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
@@ -249,7 +249,7 @@ class SendBtcDetailsViewController: UIViewController {
         if(fee == 0) {
             return
         }
-        feeLabel = UILabel(frame: CGRect(x: button.center.x, y: button.center.y + button.frame.size.height / 2 + 21, width: 150, height: 21))
+        feeLabel = UILabel(frame: CGRect(x: button.center.x, y: button.center.y + button.frame.size.height / 2 + 10, width: 150, height: 21))
         feeLabel.textColor = UIColor.customTitaniumLight()
 
         

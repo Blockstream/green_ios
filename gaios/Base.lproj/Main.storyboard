@@ -4028,7 +4028,20 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vUj-gj-dgv">
                                 <rect key="frame" x="0.0" y="70" width="320" height="428"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xzb-1K-uYN">
+                                        <rect key="frame" x="0.0" y="386" width="320" height="5"/>
+                                        <color key="backgroundColor" name="customVeryDark"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="5" id="Pi5-jm-7My"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="Xzb-1K-uYN" secondAttribute="trailing" id="2Cd-ve-rMY"/>
+                                    <constraint firstItem="Xzb-1K-uYN" firstAttribute="leading" secondItem="vUj-gj-dgv" secondAttribute="leading" id="pgf-Ms-Bbv"/>
+                                </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DJq-8p-LLO">
                                 <rect key="frame" x="0.0" y="498" width="320" height="106"/>
@@ -4063,7 +4076,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="474" width="288" height="20.5"/>
+                                <rect key="frame" x="16" y="477" width="288" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -4089,7 +4102,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0.00" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="G2d-3m-rN6">
-                                <rect key="frame" x="17" y="185" width="67.5" height="36"/>
+                                <rect key="frame" x="17" y="185" width="211" height="36"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="lKg-Ih-rnt"/>
                                 </constraints>
@@ -4202,7 +4215,7 @@
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="58s-b5-mtc">
-                                <rect key="frame" x="19" y="447" width="13" height="17"/>
+                                <rect key="frame" x="19" y="512" width="195.5" height="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
@@ -4229,13 +4242,13 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Custom" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oo3-JD-y28">
-                                <rect key="frame" x="16" y="416" width="60" height="21"/>
+                                <rect key="frame" x="16" y="481" width="60" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="satoshi / byte" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SKW-ay-YvK">
-                                <rect key="frame" x="40" y="447.5" width="81.5" height="16"/>
+                                <rect key="frame" x="222.5" y="512.5" width="81.5" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
@@ -4281,15 +4294,18 @@
                             <constraint firstItem="DJq-8p-LLO" firstAttribute="bottom" secondItem="x2K-bM-Wig" secondAttribute="bottom" constant="36" id="OEd-Gj-fBK"/>
                             <constraint firstItem="Iyz-82-YFW" firstAttribute="leading" secondItem="GfR-el-e3B" secondAttribute="trailing" constant="10" id="PHX-0l-6gF"/>
                             <constraint firstItem="Iyz-82-YFW" firstAttribute="width" secondItem="IaS-5u-88S" secondAttribute="width" id="Peb-rc-gPF"/>
+                            <constraint firstItem="jMM-OK-XgU" firstAttribute="leading" secondItem="G2d-3m-rN6" secondAttribute="trailing" constant="16" id="QNj-wO-fs3"/>
                             <constraint firstItem="x2K-bM-Wig" firstAttribute="trailing" secondItem="rKw-yW-cT6" secondAttribute="trailing" constant="17" id="QTK-be-f6e"/>
                             <constraint firstItem="GfR-el-e3B" firstAttribute="centerY" secondItem="IaS-5u-88S" secondAttribute="centerY" id="TmX-NB-B1R"/>
                             <constraint firstItem="Hyi-6X-1XR" firstAttribute="top" secondItem="zCl-qx-s75" secondAttribute="bottom" constant="45" id="Uc5-1B-58w"/>
                             <constraint firstItem="Dhv-KP-hgk" firstAttribute="centerY" secondItem="IaS-5u-88S" secondAttribute="centerY" id="Vc3-0f-FJp"/>
+                            <constraint firstItem="Oo3-JD-y28" firstAttribute="top" secondItem="Xzb-1K-uYN" secondAttribute="bottom" constant="20" id="WS3-Lw-gFe"/>
                             <constraint firstItem="rKw-yW-cT6" firstAttribute="centerY" secondItem="nGg-K9-ra6" secondAttribute="centerY" id="WcV-RE-XfP"/>
                             <constraint firstItem="eOW-xp-thT" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" id="Y3z-kE-dRC"/>
                             <constraint firstItem="Rxk-tH-zwh" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="16" id="Y4a-sv-n9Z"/>
                             <constraint firstItem="nGg-K9-ra6" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="17" id="YCe-fQ-CqD"/>
                             <constraint firstItem="jMM-OK-XgU" firstAttribute="centerY" secondItem="G2d-3m-rN6" secondAttribute="centerY" id="YIz-dI-wsh"/>
+                            <constraint firstItem="GsR-Wi-UP6" firstAttribute="top" secondItem="pC8-6B-pnO" secondAttribute="bottom" constant="16" id="YL2-Q6-mRk"/>
                             <constraint firstItem="Rxk-tH-zwh" firstAttribute="width" secondItem="Rxk-tH-zwh" secondAttribute="height" multiplier="27:27" id="Yfu-bc-Qx4"/>
                             <constraint firstItem="GEh-rg-b8E" firstAttribute="top" secondItem="G2d-3m-rN6" secondAttribute="bottom" constant="30" id="a0A-Hx-lMp"/>
                             <constraint firstItem="Iyz-82-YFW" firstAttribute="leading" secondItem="zHX-qb-iAe" secondAttribute="centerX" constant="5" id="fEx-xJ-lpV"/>
@@ -4299,9 +4315,8 @@
                             <constraint firstItem="eOW-xp-thT" firstAttribute="top" secondItem="zCl-qx-s75" secondAttribute="bottom" constant="20" id="jxb-si-PpN"/>
                             <constraint firstItem="Rxk-tH-zwh" firstAttribute="top" secondItem="x2K-bM-Wig" secondAttribute="top" constant="16" id="k7o-Ol-nGZ"/>
                             <constraint firstItem="IaS-5u-88S" firstAttribute="top" secondItem="Hyi-6X-1XR" secondAttribute="bottom" constant="15" id="kTf-wI-mto"/>
-                            <constraint firstItem="Oo3-JD-y28" firstAttribute="top" secondItem="IaS-5u-88S" secondAttribute="bottom" constant="30" id="lFR-RH-eHF"/>
+                            <constraint firstItem="Oo3-JD-y28" firstAttribute="top" secondItem="IaS-5u-88S" secondAttribute="bottom" constant="95" id="lFR-RH-eHF"/>
                             <constraint firstAttribute="trailing" secondItem="vUj-gj-dgv" secondAttribute="trailing" id="lep-Ze-aky"/>
-                            <constraint firstItem="58s-b5-mtc" firstAttribute="bottom" secondItem="pC8-6B-pnO" secondAttribute="top" constant="-10" id="lpU-PF-c2d"/>
                             <constraint firstItem="x2K-bM-Wig" firstAttribute="trailing" secondItem="jMM-OK-XgU" secondAttribute="trailing" constant="16" id="mF2-rB-i9M"/>
                             <constraint firstItem="Oo3-JD-y28" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="16" id="mfM-oo-rxP"/>
                             <constraint firstItem="58s-b5-mtc" firstAttribute="top" secondItem="Oo3-JD-y28" secondAttribute="bottom" constant="10" id="muR-Ke-Oqp"/>
@@ -4309,6 +4324,7 @@
                             <constraint firstItem="GEh-rg-b8E" firstAttribute="leading" secondItem="x2K-bM-Wig" secondAttribute="leading" constant="16" id="oOT-00-WYa"/>
                             <constraint firstItem="Dhv-KP-hgk" firstAttribute="height" secondItem="IaS-5u-88S" secondAttribute="height" id="pff-4T-1W8"/>
                             <constraint firstItem="nGg-K9-ra6" firstAttribute="top" secondItem="gHm-CC-0OT" secondAttribute="bottom" constant="10" id="plD-Ot-kdF"/>
+                            <constraint firstItem="x2K-bM-Wig" firstAttribute="trailing" secondItem="SKW-ay-YvK" secondAttribute="trailing" constant="16" id="qEZ-ye-iRr"/>
                             <constraint firstItem="vUj-gj-dgv" firstAttribute="top" secondItem="x2K-bM-Wig" secondAttribute="top" constant="50" id="qNF-4O-dsG"/>
                             <constraint firstItem="GfR-el-e3B" firstAttribute="height" secondItem="IaS-5u-88S" secondAttribute="height" id="qoa-dM-G5x"/>
                             <constraint firstItem="Iyz-82-YFW" firstAttribute="centerY" secondItem="IaS-5u-88S" secondAttribute="centerY" id="rQ3-ty-sY8"/>
@@ -6658,35 +6674,35 @@
         </scene>
     </scenes>
     <resources>
-        <image name="backarrow" width="60" height="96"/>
-        <image name="blockstreamGreen" width="280" height="114"/>
-        <image name="digital" width="100" height="129"/>
-        <image name="downArrow" width="50" height="25"/>
-        <image name="email" width="100" height="100"/>
-        <image name="erase" width="75" height="49"/>
-        <image name="forwardArrow" width="100" height="61"/>
-        <image name="gauth" width="100" height="100"/>
-        <image name="graphic" width="750" height="485"/>
-        <image name="mainnet" width="200" height="200"/>
-        <image name="matrix404" width="781" height="692"/>
-        <image name="matrixSquares" width="693" height="484"/>
-        <image name="north" width="1000" height="750"/>
-        <image name="page1" width="314" height="708"/>
-        <image name="page2" width="283" height="518"/>
-        <image name="paper" width="100" height="111"/>
-        <image name="phoneCall" width="100" height="104"/>
-        <image name="plus" width="48" height="48"/>
-        <image name="scan" width="283" height="281"/>
-        <image name="search" width="75" height="75"/>
-        <image name="sendWhite" width="48" height="48"/>
-        <image name="sms" width="100" height="141"/>
+        <image name="backarrow" width="120" height="192"/>
+        <image name="blockstreamGreen" width="560" height="229"/>
+        <image name="digital" width="200" height="258"/>
+        <image name="downArrow" width="100" height="50"/>
+        <image name="email" width="200" height="200"/>
+        <image name="erase" width="150" height="98"/>
+        <image name="forwardArrow" width="200" height="122"/>
+        <image name="gauth" width="200" height="200"/>
+        <image name="graphic" width="1500" height="970"/>
+        <image name="mainnet" width="400" height="400"/>
+        <image name="matrix404" width="1563" height="1384"/>
+        <image name="matrixSquares" width="346.75" height="242.25"/>
+        <image name="north" width="2000" height="1500"/>
+        <image name="page1" width="629" height="1417"/>
+        <image name="page2" width="567" height="1037"/>
+        <image name="paper" width="200" height="223"/>
+        <image name="phoneCall" width="200" height="208"/>
+        <image name="plus" width="96" height="96"/>
+        <image name="scan" width="567" height="563"/>
+        <image name="search" width="150" height="150"/>
+        <image name="sendWhite" width="24.25" height="24.25"/>
+        <image name="sms" width="200" height="283"/>
         <image name="stepIndicator" width="18" height="18"/>
-        <image name="testnet" width="200" height="200"/>
-        <image name="transactions" width="24" height="17"/>
-        <image name="user" width="66" height="66"/>
+        <image name="testnet" width="400" height="400"/>
+        <image name="transactions" width="72" height="52"/>
+        <image name="user" width="133" height="133"/>
         <image name="wallet" width="31" height="31"/>
-        <image name="wallet2" width="108" height="108"/>
-        <image name="world" width="100" height="103"/>
+        <image name="wallet2" width="216" height="216"/>
+        <image name="world" width="200" height="207"/>
         <namedColor name="customLowerBar">
             <color red="0.086274509803921567" green="0.11372549019607843" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
