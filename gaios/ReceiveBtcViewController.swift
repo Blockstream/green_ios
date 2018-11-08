@@ -77,10 +77,17 @@ class ReceiveBtcViewController: UIViewController {
     }
 
     func changeType() {
+        let denomination = SettingsStore.shared.getDenominationSettings()
+        var amount: String = amountTextfield.text!
+        if (amount.isEmpty || Double(amount) == nil) {
+            amount = "0"
+        }
         if (selectedType == TransactionType.BTC) {
             selectedType = TransactionType.FIAT
+            amountTextfield.text = String.toFiat(value: amount, fromType: denomination)
         } else {
             selectedType = TransactionType.BTC
+            amountTextfield.text = String.toBtc(fiat: amount, toType: denomination)
         }
         setButton()
         updateType()
