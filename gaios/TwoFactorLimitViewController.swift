@@ -24,19 +24,29 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
         titleLabel.text = NSLocalizedString("id_twofactor_treshold", comment: "")
         descriptionLabel.text = NSLocalizedString("id_you_dont_need_twofactor", comment: "")
         setLimitButton.setTitle(NSLocalizedString("id_set_limit", comment: ""), for: .normal)
-        let limits = AccountStore.shared.getTwoFactorLimit()
-        fiat = limits.isFiat
-        if (limits.amount.isEmpty || Double(limits.amount) == 0) {
-            limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                                       attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        } else if (!fiat){
-            let coin: String = String.toBtc(satoshi: UInt64(limits.amount), toType: SettingsStore.shared.getDenominationSettings())!
-            limitTextField.text = String(format: "%@", coin)
-        } else if (fiat) {
-            limitTextField.text = String(format: "%f", limits.amount)
-        }
+        refesh()
         setButton()
         SettingsStore.shared.setTwoFactorLimit()
+    }
+
+    func refesh() {
+        if let config = try! getSession().getTwoFactorConfig() {
+            let limits = config["limits"] as! [String: Any]
+            let isFiat = limits["is_fiat"] as! Bool
+            let denomination = getDenominationKey(SettingsStore.shared.getDenominationSettings())
+            var amount = ""
+            if !isFiat {
+                amount = limits[denomination] as! String
+            } else {
+                amount = limits["fiat"] as! String
+            }
+            limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
+                                                                      attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+            if !amount.isEmpty {
+                limitTextField.text = amount
+            }
+            fiat = isFiat
+        }
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -76,7 +86,8 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
         if self.isAnimating {
             return
         }
-        if let amount = Double(limitTextField.text!) {
+        let amount = limitTextField.text!
+        if Double(amount) != nil {
             do {
                 var details = [String:Any]()
                 if(fiat) {
@@ -84,16 +95,8 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
                     details["fiat"] = String(amount)
                 } else {
                     details["is_fiat"] = false
-                    let denomination = SettingsStore.shared.getDenominationSettings()
-                    var amount_denominated: Double = 0
-                    if(denomination == DenominationType.BTC) {
-                        amount_denominated = amount * 100000000
-                    } else if (denomination == DenominationType.MilliBTC) {
-                        amount_denominated = amount * 100000
-                    } else if (denomination == DenominationType.MicroBTC){
-                        amount_denominated = amount * 100
-                    }
-                    details["satoshi"] = amount_denominated
+                    let denomination = getDenominationKey(SettingsStore.shared.getDenominationSettings())
+                    details[denomination] = limitTextField.text!
                 }
                 self.startAnimating(CGSize(width: 30, height: 30),
                                     type: NVActivityIndicatorType.ballRotateChase)
