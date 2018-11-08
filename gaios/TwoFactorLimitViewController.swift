@@ -30,7 +30,7 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
             limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                        attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         } else if (!fiat){
-            let coin: String = String.toBtc(value: limits.amount, fromType: SettingsStore.shared.getDenominationSettings())!
+            let coin: String = String.toBtc(satoshi: UInt64(limits.amount), toType: SettingsStore.shared.getDenominationSettings())!
             limitTextField.text = String(format: "%@", coin)
         } else if (fiat) {
             limitTextField.text = String(format: "%f", limits.amount)
