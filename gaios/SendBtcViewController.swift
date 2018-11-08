@@ -175,7 +175,11 @@ class SendBtcViewController: UIViewController {
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        if (self.navigationController != nil) {
+            self.navigationController?.popViewController(animated: true)
+        } else {
+            self.dismiss(animated: false, completion: nil)
+        }
     }
 }
 
