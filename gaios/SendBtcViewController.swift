@@ -53,9 +53,6 @@ class SendBtcViewController: UIViewController {
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always
         self.tabBarController?.tabBar.isHidden = true
-        let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
-        self.QRCodeReader.addGestureRecognizer(gesture)
-        QRCodeReader.isUserInteractionEnabled = true
         navigationController?.navigationBar.tintColor = UIColor.white
         hideKeyboardWhenTappedAround()
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
@@ -88,7 +85,9 @@ class SendBtcViewController: UIViewController {
         bottomButton.layoutIfNeeded()
         updateButton()
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        //scan()
+        let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
+        self.QRCodeReader.addGestureRecognizer(gesture)
+        QRCodeReader.isUserInteractionEnabled = true
     }
 
     @objc func someAction(_ sender:UITapGestureRecognizer) {
