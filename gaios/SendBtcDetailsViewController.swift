@@ -71,17 +71,25 @@ class SendBtcDetailsViewController: UIViewController {
             satoshi = addressees![0]["satoshi"] as! UInt64
         }
         addressLabel.text = address
-        if (satoshi != 0) {
+        let readOnly = transaction?.data["addressees_read_only"] as! Bool
+        amountTextField.isUserInteractionEnabled = !readOnly
+        sendAllFundsButton.isUserInteractionEnabled = !readOnly
+        currencySwitch.isUserInteractionEnabled = !readOnly
+        // check satoshi changed before update ui
+        var textAmount: String
+        if (amountTextField.text == nil || amountTextField.text!.isEmpty) {
+            textAmount = "0"
+        } else {
+            textAmount = amountTextField.text!
+        }
+        let changed = UInt64(String.toBtc(value: textAmount, fromType: SettingsStore.shared.getDenominationSettings())!) == satoshi
+        if (satoshi != 0 && !changed) {
             if (selectedType == TransactionType.BTC) {
                 amountTextField.text = String.toBtc(satoshi: satoshi, toType: SettingsStore.shared.getDenominationSettings())
             } else {
                 amountTextField.text = String.toFiat(satoshi: satoshi)
             }
         }
-        let readOnly = transaction?.data["addressees_read_only"] as! Bool
-        amountTextField.isUserInteractionEnabled = !readOnly
-        sendAllFundsButton.isUserInteractionEnabled = !readOnly
-        currencySwitch.isUserInteractionEnabled = !readOnly
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -181,14 +189,14 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateEstimate() {
-        let amount: String = amountTextField.text!
+        let amount: String? = amountTextField.text
         var satoshi: UInt64 = 0
-        if (amount.isEmpty || amount == "All" || Double(amount) == nil) {
+        if (amount == nil || amount!.isEmpty || amount! == "All" || Double(amount!) == nil) {
             satoshi = 0
         } else if (selectedType == TransactionType.BTC) {
-            satoshi = UInt64(String.toBtc(value: amount)!)!
+            satoshi = UInt64(String.toBtc(value: amount!)!)!
         } else if (selectedType == TransactionType.FIAT) {
-            satoshi = UInt64(String.toBtc(fiat: amount)!)!
+            satoshi = UInt64(String.toBtc(fiat: amount!)!)!
         }
         if (satoshi == 0 && !sendAllFundsButton.isSelected) {
             setLabel(button: selectedButton!, fee: 0)
@@ -221,6 +229,7 @@ class SendBtcDetailsViewController: UIViewController {
                 //update error message
                 return
             }
+            refresh()
             errorLabel.isHidden = true
             updateButton(true)
             let fee = transaction?.data["fee"] as! UInt64
