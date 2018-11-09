@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 import AVFoundation
+import NVActivityIndicatorView
 
-class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
+class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var topLabel: UILabel!
@@ -203,6 +204,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
+        checkTextfield(textField: textField)
         if((textField.text?.count)! > 0) {
             pasteView.isHidden = true
             updateSuggestions(prefix: textField.text!)
@@ -225,20 +227,51 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate {
         //print(trimmedUserProvidedMnemonic)
         //let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "current tomato armed onion able case donkey summer shrimp ridge into keen motion parent twin mobile paper member satisfy gather crane soft genuine produce".trimmingCharacters(in: .whitespacesAndNewlines)
         //let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive spike pond industry time hero trim verb mammal asthma".trimmingCharacters(in: .whitespacesAndNewlines)
-        retry(session: getSession(), network: getNetwork()) {
-            wrap { return try getSession().login(mnemonic: trimmedUserProvidedMnemonic) }
-            }.done { _ in
-                Storage.wipeAll()
-                let array = getAppDelegate().getMnemonicsArray(mnemonics: trimmedUserProvidedMnemonic)
-                getAppDelegate().setMnemonicWords(array!)
-                AppDelegate.removeKeychainData()
-                AccountStore.shared.initializeAccountStore()
-                self.performSegue(withIdentifier: "next", sender: self)
-            }.catch { error in
-                print("Login failed")
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let errorViewController = storyboard.instantiateViewController(withIdentifier: "error") as! NoInternetViewController
-                self.navigationController?.pushViewController(errorViewController, animated: true)
+        wrap {
+            try validateMnemonic(mnemonic: trimmedUserProvidedMnemonic)
+        }.done { (result: Bool) in
+            if (result) {
+                wrap {
+                    return try getSession().login(mnemonic: trimmedUserProvidedMnemonic)
+                    }.done { _ in
+                        Storage.wipeAll()
+                        let array = getAppDelegate().getMnemonicsArray(mnemonics: trimmedUserProvidedMnemonic)
+                        getAppDelegate().setMnemonicWords(array!)
+                        AppDelegate.removeKeychainData()
+                        AccountStore.shared.initializeAccountStore()
+                        self.performSegue(withIdentifier: "next", sender: self)
+                    }.catch { error in
+                        print("Login failed ", error)
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let errorViewController = storyboard.instantiateViewController(withIdentifier: "error") as! NoInternetViewController
+                        self.navigationController?.pushViewController(errorViewController, animated: true)
+                }
+            } else {
+                let size = CGSize(width: 30, height: 30)
+                let message = "Invalid Mnemonics"
+                self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
+                    self.stopAnimating()
+                    self.checkMnemonics()
+                }
+            }
+        }.catch { error in
+
+        }
+    }
+
+    func checkTextfield(textField: UITextField) {
+        let mnemonic = Bip39helper.shared.searchForBIP39Words(prefix: textField.text!)
+        if(mnemonic?.count == 0 || mnemonic == nil) {
+            textField.textColor = UIColor.red
+        } else {
+            textField.textColor = UIColor.white
+        }
+    }
+
+    func checkMnemonics() {
+        for textField in textFields {
+            checkTextfield(textField: textField)
         }
     }
 
