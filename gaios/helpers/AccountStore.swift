@@ -101,6 +101,18 @@ class AccountStore {
         return 0
     }
 
+    func getFeeRateMin() -> UInt64 {
+        do {
+            let json = try getSession().getFeeEstimates()
+            let estimates = json!["fees"] as! NSArray
+            let result = estimates[0] as! UInt64
+            return result
+        } catch {
+            print("something went wrong")
+        }
+        return 0
+    }
+
     func dateFromTimestamp(date: String) -> Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
