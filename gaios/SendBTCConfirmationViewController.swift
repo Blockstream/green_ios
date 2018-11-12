@@ -14,6 +14,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     @IBOutlet weak var toTitle: UILabel!
     @IBOutlet weak var myNotesTitle: UILabel!
 
+    var uiErrorLabel: UIErrorLabel!
     var walletName: String = ""
     var wallet: WalletItem? = nil
     var selectedType: TransactionType? = nil
@@ -25,6 +26,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         walletNameLabel.text = (transaction?.data["is_sweep"] as! Bool) ? "Paper Wallet" : wallet?.name
         hideKeyboardWhenTappedAround()
         slidingButton.delegate = self
+        uiErrorLabel = UIErrorLabel(self.view)
         refresh()
         textView.delegate = self
         textView.text = "Add a note..."
@@ -70,6 +72,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     func completed(slidingButton: SlidingButton) {
         print("send now!")
         let size = CGSize(width: 30, height: 30)
+        uiErrorLabel.isHidden = true
         startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
         if self.transaction?.data["is_sweep"] as! Bool {
             DispatchQueue.global(qos: .background).async {
@@ -126,7 +129,8 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
         slidingButton.reset()
-        print(text)
+        uiErrorLabel.isHidden = false
+        uiErrorLabel.text = NSLocalizedString(text, comment: "")
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

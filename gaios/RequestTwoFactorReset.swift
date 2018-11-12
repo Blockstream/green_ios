@@ -11,6 +11,8 @@ class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, Two
     @IBOutlet weak var requestButton: UIButton!
     @IBOutlet weak var disputeButton: UIButton!
     var isReset = false
+    var errorLabel: UIErrorLabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         emailTextField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
@@ -21,6 +23,7 @@ class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, Two
         warningLabel.text = NSLocalizedString("id_warning_resetting_twofactor", comment: "")
         requestButton.setTitle(NSLocalizedString("id_request", comment: ""), for: .normal)
         NotificationCenter.default.addObserver(self, selector: #selector(self.resetChanged(_:)), name: NSNotification.Name(rawValue: "twoFactorReset"), object: nil)
+        errorLabel = UIErrorLabel(self.view)
     }
 
     func updateUI() {
@@ -65,6 +68,7 @@ class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, Two
         if self.isAnimating {
             return
         }
+        errorLabel.isHidden = true
         self.startAnimating(CGSize(width: 30, height: 30),
                             type: NVActivityIndicatorType.ballRotateChase)
         DispatchQueue.global(qos: .background).async {
@@ -98,13 +102,13 @@ class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, Two
 
     func onDone(_ sender: TwoFactorCallHelper?) {
         self.stopAnimating()
-        //updateUI()
         getAppDelegate().logout()
     }
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
-        print(text)
+        errorLabel.isHidden = false
+        errorLabel.text = NSLocalizedString(text, comment: "")
         updateUI()
     }
 }

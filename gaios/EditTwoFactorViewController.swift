@@ -13,6 +13,7 @@ class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable
     @IBOutlet weak var smsLabel: UILabel!
     @IBOutlet weak var phoneCallLabel: UILabel!
     @IBOutlet weak var gauthLabel: UILabel!
+    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,7 @@ class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable
         smsLabel.text = NSLocalizedString("id_sms", comment: "")
         phoneCallLabel.text = NSLocalizedString("id_phone_call", comment: "")
         gauthLabel.text = NSLocalizedString("id_google_authenticator", comment: "")
+        errorLabel = UIErrorLabel(self.view)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -35,6 +37,7 @@ class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable
         if self.isAnimating {
             return
         }
+        errorLabel.isHidden = true
         self.startAnimating(CGSize(width: 30, height: 30),
                             type: NVActivityIndicatorType.ballRotateChase)
         let dict = ["enabled": false] as [String : Any]
@@ -68,7 +71,8 @@ class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
-        print(text)
+        errorLabel.isHidden = false
+        errorLabel.text = NSLocalizedString(text, comment: "")
         viewWillAppear(false)
     }
 

@@ -8,6 +8,7 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
     @IBOutlet weak var getCodeButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleLabel: UILabel!
+    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,6 +18,7 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         getCodeButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         titleLabel.text = NSLocalizedString("id_enter_your_email_address", comment: "")
+        errorLabel = UIErrorLabel(self.view)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -35,6 +37,7 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
     }
 
     @IBAction func getCodeClicked(_ sender: Any) {
+        errorLabel.isHidden = true
         self.startAnimating(CGSize(width: 30, height: 30),
                             type: NVActivityIndicatorType.ballRotateChase)
         let dict = ["enabled": true, "confirmed": true, "data": self.textField.text!] as [String : Any]
@@ -68,18 +71,10 @@ class SetEmailViewController: UIViewController, NVActivityIndicatorViewable, Two
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
-        failureMessage()
+        errorLabel.isHidden = false
+        errorLabel.text = NSLocalizedString(text, comment: "")
     }
-
-    func failureMessage() {
-        DispatchQueue.main.async {
-            NVActivityIndicatorPresenter.sharedInstance.setMessage("Failure")
-        }
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-            self.stopAnimating()
-        }
-    }
-
+    
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             var keyboardHeight = keyboardSize.height

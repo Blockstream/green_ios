@@ -9,6 +9,7 @@ class DisputeRequestViewController : UIViewController, NVActivityIndicatorViewab
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var disputeButton: UIButton!
+    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,12 +19,14 @@ class DisputeRequestViewController : UIViewController, NVActivityIndicatorViewab
         emailTextField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         hideKeyboardWhenTappedAround()
+        errorLabel = UIErrorLabel(self.view)
     }
 
     @IBAction func disputeButtonClicked(_ sender: Any) {
         if self.isAnimating {
             return
         }
+        errorLabel.isHidden = true
         if let email = emailTextField.text {
             self.startAnimating(CGSize(width: 30, height: 30),
                                 type: NVActivityIndicatorType.ballRotateChase)
@@ -59,7 +62,8 @@ class DisputeRequestViewController : UIViewController, NVActivityIndicatorViewab
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
-        print(text)
+        errorLabel.isHidden = false
+        errorLabel.text = NSLocalizedString(text, comment: "")
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {

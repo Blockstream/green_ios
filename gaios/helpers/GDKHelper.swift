@@ -143,10 +143,6 @@ class TransactionHelper {
     // Common variable
     public var data: [String: Any]
 
-    enum GDKError: Error {
-        case AddressFormatError(String)
-    }
-
     // Constructors
     init(_ data: [String: Any]) throws {
         self.data = try getSession().createTransaction(details: data)!
@@ -158,10 +154,6 @@ class TransactionHelper {
         toAddress["address"] = uri
         details["addressees"] = [toAddress]
         self.data = try getSession().createTransaction(details: details)!
-        let error = self.data["error"] as! String
-        if (error == "id_invalid_address") {
-            throw GDKError.AddressFormatError(error)
-        }
     }
 
     func addresses() -> Array<[String : Any]> {

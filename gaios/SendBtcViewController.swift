@@ -10,6 +10,7 @@ class SendBtcViewController: UIViewController {
     var prefillAmount:Double = 0
     @IBOutlet weak var bottomButton: UIButton!
 
+    var uiErrorLabel: UIErrorLabel!
     var captureSession = AVCaptureSession()
     var wallets:Array<WalletItem> = Array<WalletItem>()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
@@ -57,6 +58,7 @@ class SendBtcViewController: UIViewController {
         hideKeyboardWhenTappedAround()
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         bottomButton.setTitle(sweepTransaction ? "Sweep" : NSLocalizedString("id_add_amount", comment: ""), for: .normal)
+        uiErrorLabel = UIErrorLabel(self.view)
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -213,10 +215,11 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
                 self.qrCodeFrameView?.frame = CGRect.zero
                 if createdTx {
                     self.performSegue(withIdentifier: "next", sender: self)
+                    return
                 }
             }
         }
-        //captureSession.stopRunning()
+        captureSession.startRunning()
     }
 
     func createSweepTransaction(private_key pk: String) -> Bool {
@@ -228,11 +231,15 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
         do {
             transaction = try TransactionHelper(details)
             let error = transaction?.data["error"] as? String
-            if error == nil || error! == "" { // JSON needs to be fixed
-                return true
+            if (error != nil && !error!.isEmpty) {
+                uiErrorLabel.text = NSLocalizedString(error!, comment: "")
+                uiErrorLabel.isHidden = false
+                return false
             }
-            return false
+            return true
         } catch {
+            uiErrorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
+            uiErrorLabel.isHidden = false
             return false
         }
     }
@@ -249,10 +256,15 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
 
         do {
             transaction = try TransactionHelper(uri)
-            return true;
+            let error = transaction?.data["error"] as? String
+            if (error != nil && !error!.isEmpty && error != "id_invalid_amount") {
+                uiErrorLabel.text = NSLocalizedString(error!, comment: "")
+                uiErrorLabel.isHidden = false
+                return false
+            }
+            return true
         } catch {
-            print (error)
-            return false;
+            return false
         }
     }
 }

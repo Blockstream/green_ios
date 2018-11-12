@@ -10,6 +10,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, Two
     var secret: String? = ""
     var otp: String? = ""
     @IBOutlet weak var titleLabel: UILabel!
+    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +24,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, Two
         secretLabel.text = secret
         nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
         titleLabel.text = NSLocalizedString("id_google_authenticator_qrcode", comment: "")
+        errorLabel = UIErrorLabel(self.view)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -39,6 +41,9 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, Two
         if self.isAnimating {
             return
         }
+        errorLabel.isHidden = true
+        self.startAnimating(CGSize(width: 30, height: 30),
+                            type: NVActivityIndicatorType.ballRotateChase)
         DispatchQueue.global(qos: .background).async {
             wrap {
                 try AccountStore.shared.enableGauthTwoFactor()!
@@ -69,6 +74,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, Two
 
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
-        print(text)
+        errorLabel.isHidden = false
+        errorLabel.text = NSLocalizedString(text, comment: "")
     }
 }

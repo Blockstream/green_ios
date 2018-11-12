@@ -11,6 +11,7 @@ class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, Two
     var phoneCall = false
     var onboarding = true
     @IBOutlet weak var titleLabel: UILabel!
+    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,7 @@ class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, Two
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         getCodeButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         titleLabel.text = NSLocalizedString("id_enter_phone_number", comment: "")
+        errorLabel = UIErrorLabel(self.view)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -37,6 +39,7 @@ class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, Two
         if self.isAnimating {
             return;
         }
+        errorLabel.isHidden = true
         self.startAnimating(CGSize(width: 30, height: 30),
                             type: NVActivityIndicatorType.ballRotateChase)
         let dict = ["enabled": true, "confirmed": true, "data": self.textField.text!] as [String : Any]
@@ -74,7 +77,8 @@ class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, Two
     
     func onError(_ sender: TwoFactorCallHelper?, text: String) {
         self.stopAnimating()
-        print(text)
+        errorLabel.isHidden = false
+        errorLabel.text = NSLocalizedString(text, comment: "")
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {

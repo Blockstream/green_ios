@@ -21,6 +21,7 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var minerFeeTitle: UILabel!
 
     var feeLabel: UILabel = UILabel()
+    var uiErrorLabel: UIErrorLabel!
     var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
     var fee: UInt64 = 1
@@ -35,7 +36,8 @@ class SendBtcDetailsViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
         self.tabBarController?.tabBar.isHidden = true
-
+        uiErrorLabel = UIErrorLabel(self.view)
+        errorLabel.isHidden = true
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
@@ -142,7 +144,7 @@ class SendBtcDetailsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reviewButton.layoutIfNeeded()
-        errorLabel.isHidden = true
+        uiErrorLabel.isHidden = true
         refresh()
         updateEstimate()
     }
@@ -228,14 +230,14 @@ class SendBtcDetailsViewController: UIViewController {
             let error = transaction?.data["error"] as! String
             if (error != "") {
                 updateButton(false)
-                errorLabel.isHidden = false
-                errorLabel.text = NSLocalizedString(error, comment: "")
+                uiErrorLabel.isHidden = false
+                uiErrorLabel.text = NSLocalizedString(error, comment: "")
                 setLabel(button: selectedButton!, fee: 0)
                 //update error message
                 return
             }
             refresh()
-            errorLabel.isHidden = true
+            uiErrorLabel.isHidden = true
             updateButton(true)
             let fee = transaction?.data["fee"] as! UInt64
             setLabel(button: selectedButton!, fee: fee)
@@ -405,5 +407,4 @@ class SendBtcDetailsViewController: UIViewController {
             self.dismiss(animated: false, completion: nil)
         }
     }
-
 }
