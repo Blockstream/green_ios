@@ -105,6 +105,7 @@
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
+		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
 		81310C452189D10F00563B91 /* GDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* GDKHelper.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 /* End PBXBuildFile section */
@@ -236,6 +237,7 @@
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
+		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* GDKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GDKHelper.swift; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -306,6 +308,7 @@
 		092E1EAE20CF98AF00362253 /* helpers */ = {
 			isa = PBXGroup;
 			children = (
+				811006E02199C5BF00D14414 /* UIErrorLabel.swift */,
 				81310C442189D10F00563B91 /* GDKHelper.swift */,
 				092E1EAF20CF993700362253 /* UIColor+Hex.swift */,
 				0926C14721178FEE0008F94A /* TextField.swift */,
@@ -804,6 +807,7 @@
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
+				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				092A84D5211CDCA00062F0B2 /* VerifyTwoFactorViewController.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,

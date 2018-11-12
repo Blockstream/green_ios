@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 class UIErrorLabel : UILabel {
-    
+
     init() {
         super.init(frame: CGRect(x: 0, y: 0, width: 150, height: 21))
     }
-    
+
     init(_ view: UIView) {
         super.init(frame: CGRect(x: 0, y: 0, width: 150, height: 21))
         setup(view)
