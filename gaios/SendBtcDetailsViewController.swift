@@ -298,6 +298,7 @@ class SendBtcDetailsViewController: UIViewController {
         feeLabel.font = feeLabel.font.withSize(13)
 
         NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 10).isActive = true
+        feeLabel.layoutIfNeeded()
     }
 
     func updatePriorityButtons() {
