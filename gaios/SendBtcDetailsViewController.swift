@@ -76,6 +76,11 @@ class SendBtcDetailsViewController: UIViewController {
         sendAllFundsButton.isUserInteractionEnabled = !readOnly
         currencySwitch.isUserInteractionEnabled = !readOnly
         // check satoshi changed before update ui
+        let sendAll = transaction?.data["send_all"] as! Bool
+        if (sendAll) {
+            amountTextField.text = "All"
+            return
+        }
         var textAmount: String
         if (amountTextField.text == nil || amountTextField.text!.isEmpty) {
             textAmount = "0"
