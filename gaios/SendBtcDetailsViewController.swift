@@ -205,7 +205,7 @@ class SendBtcDetailsViewController: UIViewController {
         } else if (selectedType == TransactionType.FIAT) {
             satoshi = UInt64(String.toBtc(fiat: amount!)!)!
         }
-        if (satoshi == 0 && !sendAllFundsButton.isSelected) {
+        if (satoshi == 0 && amount! != "All") {
             setLabel(button: selectedButton!, fee: 0)
             updateButton(false)
             return
@@ -224,7 +224,6 @@ class SendBtcDetailsViewController: UIViewController {
         }
 
         do {
-            print(transaction?.data)
             try transaction = TransactionHelper((transaction?.data)!)
             //let payload = try getSession().createTransaction(details: details)
             let error = transaction?.data["error"] as! String
