@@ -79,28 +79,17 @@ class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, Two
 
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0{
-                var keyboardHeight = keyboardSize.height
-                if #available(iOS 11.0, *) {
-                    let bottomInset = view.safeAreaInsets.bottom
-                    keyboardHeight -= bottomInset
-                }
-                buttonConstraint.constant += keyboardHeight
+            var keyboardHeight = keyboardSize.height
+            if #available(iOS 11.0, *) {
+                let bottomInset = view.safeAreaInsets.bottom
+                keyboardHeight -= bottomInset
             }
+            buttonConstraint.constant = keyboardHeight
         }
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0{
-                var keyboardHeight = keyboardSize.height
-                if #available(iOS 11.0, *) {
-                    let bottomInset = view.safeAreaInsets.bottom
-                    keyboardHeight -= bottomInset
-                }
-                buttonConstraint.constant -= keyboardHeight
-            }
-        }
+        buttonConstraint.constant = 0
     }
 
     @IBAction func backButtonClicked(_ sender: Any) {
