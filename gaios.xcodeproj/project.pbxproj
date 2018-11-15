@@ -1024,22 +1024,21 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
-					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"$(inherited)",
 					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
 				);
-				"OTHER_LDFLAGS[arch=*]" = (
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
-					"-lc++",
 					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";
+				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include";
+				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1058,22 +1057,21 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
 					"-lc++",
-					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"$(inherited)",
 					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
 				);
-				"OTHER_LDFLAGS[arch=*]" = (
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphone/src",
-					"-L$(SRCROOT)/gdk/build-clang-ios-iphonesim/src",
-					"-lc++",
 					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";
+				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/libwally-core/build/include";
+				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/libwally-core/build/include";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
