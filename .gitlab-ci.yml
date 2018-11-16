@@ -1,0 +1,7 @@
+test_osx_clang:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - git clone --depth 1 --single-branch --branch master https://$GITHUB_READONLY@github.com/Blockstream/gdk.git
+    - cd gdk
