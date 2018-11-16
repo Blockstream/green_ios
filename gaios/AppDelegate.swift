@@ -5,7 +5,10 @@ import UIKit
 
 class GreenAddressService: SessionNotificationDelegate {
 
-    func newNotification(dict: [String : Any]) {
+    func newNotification(notification: [String : Any]?) {
+        guard let dict = notification else {
+            return
+        }
         DispatchQueue.main.async {
             let event = dict["event"] as! String
             if (event == "block") {

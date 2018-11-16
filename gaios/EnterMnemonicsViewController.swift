@@ -10,6 +10,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var qrButton: UIButton!
 
+    let WL: [String] = getBIP39WordList()
+
     var textFields: Array<UITextField> = []
     var box:UIView = UIView()
     var constraint: NSLayoutConstraint? = nil
@@ -149,7 +151,6 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
 
     @objc func suggestionTapped(sender:UITapGestureRecognizer) {
         let label = sender.view as! UILabel
-        print(label.text)
         for index in 0..<textFields.count {
             let textField = textFields[index]
             if textField.isFirstResponder {
@@ -158,6 +159,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
                     let next = textFields[index+1]
                     next.becomeFirstResponder()
                 }
+                suggestionView.isHidden = true
                 break
             }
         }
@@ -176,26 +178,17 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         return result.lowercased()
     }
 
+    func getSuggestions(prefix: String) -> [String] {
+        return WL.filter { $0.hasPrefix(prefix) }
+    }
+
     func updateSuggestions(prefix: String) {
-        if let suggestions = Bip39helper.shared.searchForBIP39Words(prefix: prefix) {
-            if (suggestions.count > 0) {
-                for index in 0..<suggestions.count {
-                    if(index == 3) {
-                        break
-                    } else if (index == suggestions.count-1) {
-                        for kindex in index..<3 {
-                            labels[kindex].text = ""
-                        }
-                    }
-                    labels[index].text = suggestions[index]
-                }
-                suggestionView.isHidden = false
-            } else {
-                suggestionView.isHidden = true
-            }
-        } else {
-            suggestionView.isHidden = true
+        let upTo = 3 // FIXME: only shows up to 3 suggestions. requires scrollview.
+        let suggestions = getSuggestions(prefix: prefix)
+        for i in 0..<upTo {
+            labels[i].text = i < suggestions.count ? suggestions[i] : String()
         }
+        suggestionView.isHidden = suggestions.isEmpty || suggestions.count > upTo
     }
 
     func doneButtonEnable() {
@@ -205,17 +198,17 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
 
     @objc func textFieldDidChange(_ textField: UITextField) {
         checkTextfield(textField: textField)
-        if((textField.text?.count)! > 0) {
+        if (textField.text?.count)! > 0 {
             pasteView.isHidden = true
             updateSuggestions(prefix: textField.text!)
         } else {
             suggestionView.isHidden = true
-            if(mnemonic != nil) {
+            if mnemonic != nil {
                 pasteView.isHidden = false
             }
         }
         for field in textFields {
-            if(field.text == nil || field.text == "") {
+            if field.text == nil || field.text == "" {
                 return
             }
         }
@@ -224,9 +217,6 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
 
     @IBAction func doneButtonClicked(_ sender: Any) {
         let trimmedUserProvidedMnemonic = mergeTextFields()
-        //print(trimmedUserProvidedMnemonic)
-        //let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "current tomato armed onion able case donkey summer shrimp ridge into keen motion parent twin mobile paper member satisfy gather crane soft genuine produce".trimmingCharacters(in: .whitespacesAndNewlines)
-        //let trimmedUserProvidedMnemonic = getNetwork() == Network.LocalTest ? "cotton slot artwork now grace assume syrup route moment crisp cargo sock wrap duty craft joy adult typical nut mad way autumn comic silent".trimmingCharacters(in: .whitespacesAndNewlines) : "ignore roast anger enrich income beef snap busy final dutch banner lobster bird unhappy naive spike pond industry time hero trim verb mammal asthma".trimmingCharacters(in: .whitespacesAndNewlines)
         wrap {
             try validateMnemonic(mnemonic: trimmedUserProvidedMnemonic)
         }.done { (result: Bool) in
@@ -261,12 +251,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
     }
 
     func checkTextfield(textField: UITextField) {
-        let mnemonic = Bip39helper.shared.searchForBIP39Words(prefix: textField.text!)
-        if(mnemonic?.count == 0 || mnemonic == nil) {
-            textField.textColor = UIColor.red
-        } else {
-            textField.textColor = UIColor.white
-        }
+        let suggestions = getSuggestions(prefix: textField.text!)
+        textField.textColor = suggestions.isEmpty ? UIColor.red : UIColor.white
     }
 
     func checkMnemonics() {
@@ -373,6 +359,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         textField.borderStyle = .none
         textField.textColor = UIColor.white
         textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.spellCheckingType = .no
         textField.adjustsFontSizeToFitWidth = true
         textField.delegate = self
         textField.returnKeyType = UIReturnKeyType.done

@@ -23,7 +23,7 @@ class WelcomeBackViewController: UIViewController {
                 topButton.layoutIfNeeded()
                 topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
             } else if (bioID.biometricType() == BiometricType.touchID) {
-                topButton.setTitle("Enabe Touch ID", for: UIControlState.normal)
+                topButton.setTitle("Enable Touch ID", for: UIControlState.normal)
                 topButton.layoutIfNeeded()
                 topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
             } else {
