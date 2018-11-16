@@ -23,6 +23,7 @@ class AddressDetailViewController: UIViewController {
         updateQRCode()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         backgroundView.addGestureRecognizer(tap)
+        self.navigationController?.isToolbarHidden = true
     }
 
     @IBAction func sweepButtonClicked(_ sender: Any) {
@@ -69,6 +70,6 @@ class AddressDetailViewController: UIViewController {
     }
 
     @objc func dismiss(recognizer: UITapGestureRecognizer) {
-        self.dismiss(animated: true, completion: nil)
+        navigationController?.popViewController(animated: true)
     }
 }

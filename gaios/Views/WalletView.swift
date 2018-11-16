@@ -149,9 +149,9 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     open func present(cardView: CardView, animated: Bool, completion: LayoutCompletion? = nil) {
         let walletView = cardView as! ColoredCardView
         self.presentingWallet = walletView.wallet
-        updateViewModel(account: Int((walletView.wallet?.pointer)!))
+        //updateViewModel(account: Int((walletView.wallet?.pointer)!))
         delegate?.cardViewPresented(cardView: cardView)
-        present(cardView: cardView, animated: animated, animationDuration: animated ? WalletView.presentingAnimationSpeed : nil, completion: completion)
+        //present(cardView: cardView, animated: animated, animationDuration: animated ? WalletView.presentingAnimationSpeed : nil, completion: completion)
 
     }
 
@@ -168,7 +168,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
                 return
             }
             self.delegate?.cardViewDismissed(cardView: self.presentedCardView!)
-            self.dismissPresentedCardView(animated: animated, animationDuration: animated ? WalletView.dismissingAnimationSpeed : nil, completion: completion)
+            //self.dismissPresentedCardView(animated: animated, animationDuration: animated ? WalletView.dismissingAnimationSpeed : nil, completion: completion)
         }
     }
 
@@ -447,7 +447,7 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     func prepareWalletView() {
 
         prepareScrollView()
-        let nib = UINib(nibName: "TransactionCell", bundle: nil)
+        let nib = UINib(nibName: "TransactionTableCell", bundle: nil)
         transactionTableView.delegate = self
         transactionTableView.dataSource = self
         transactionTableView.tableFooterView = UIView()

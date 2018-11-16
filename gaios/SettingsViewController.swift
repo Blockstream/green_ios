@@ -5,7 +5,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     @IBOutlet weak var tableView: UITableView!
     let settingsIcon:[UIImage] = [#imageLiteral(resourceName: "account"),#imageLiteral(resourceName: "security"),#imageLiteral(resourceName: "advanced"),#imageLiteral(resourceName: "about")]
-    var pager: MainMenuPageViewController? = nil
     @IBOutlet weak var fotterView: UIView!
 
     var sections: Array<SettingsSection> = Array<SettingsSection>()
@@ -34,7 +33,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        pager?.showButtons()
         SettingsStore.shared.refreshTwoFactorSettings()
         sections = SettingsStore.shared.getAllSections()
         tableView.reloadData()
@@ -95,45 +93,34 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         } else {
             if(indexPath.section == 0) {
                 if (indexPath.row == 0) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "currency", sender: nil)
                 } else if (indexPath.row == 1) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "denomination", sender: nil)
                 } else if (indexPath.row == 2) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "transactionFee", sender: nil)
                 } else if (indexPath.row == 3) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "watchOnly", sender: nil)
                 }
             } else if (indexPath.section == 1) {
                 if (indexPath.row == 0) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "recovery", sender: nil)
                 } else if (indexPath.row == 1) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "screenLock", sender: nil)
                 } else if (indexPath.row == 2) {
-                    pager?.hideButtons()
                     if !isResetData.isReset && !isResetData.isDisputed {
                         self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
                     }
                 } else if (indexPath.row == 3) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "twoFactorWarning", sender: nil)
                 } else if (indexPath.row == 4) {
-                    pager?.hideButtons()
                     if anyEnabled  && !isResetData.isReset && !isResetData.isDisputed {
                         self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
                     }
                 } else if (indexPath.row == 5) {
-                    pager?.hideButtons()
                     if anyEnabled {
                         self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
                     }
                 } else if (indexPath.row == 6) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "autolock", sender: nil)
                 } else if (indexPath.row == 7) {
                     if let url = URL(string: SettingsStore.shared.supportURL) {
@@ -142,10 +129,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             } else if (indexPath.section == 2) {
                 if (indexPath.row == 0) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "switch", sender: sections[indexPath.section].settingsInSection[indexPath.row])
                 } else if (indexPath.row == 1) {
-                    pager?.hideButtons()
                     self.performSegue(withIdentifier: "requestNlock", sender: nil)
                 }
             } else if (indexPath.section == 3) {
@@ -165,9 +150,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? ToggleSettingsViewController {
             nextController.settings = sender as? SettingsItem
-        }
-        if let nextController = segue.destination as? PinLoginViewController {
-            nextController.loginMode = true
         }
     }
 

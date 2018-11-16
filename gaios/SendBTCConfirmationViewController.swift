@@ -118,7 +118,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         NVActivityIndicatorPresenter.sharedInstance.setMessage("Transaction Sent")
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
-            self.navigationController?.popToRootViewController(animated: true)
+            self.popBack(toControllerType: TransactionsController.self)
         }
     }
 
@@ -133,20 +133,16 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         uiErrorLabel.text = NSLocalizedString(text, comment: "")
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? VerifyTwoFactorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
-        if let nextController = segue.destination as? TwoFactorSlectorViewController {
-            nextController.twoFactor = sender as? TwoFactorCall
-        }
-    }
-
-    @IBAction func backButtonClicked(_ sender: Any) {
-        if (self.navigationController != nil) {
-            self.navigationController?.popViewController(animated: true)
-        } else {
-            self.dismiss(animated: false, completion: nil)
+    /// pop back to specific viewcontroller
+    func popBack<T: UIViewController>(toControllerType: T.Type) {
+        if var viewControllers: [UIViewController] = self.navigationController?.viewControllers {
+            viewControllers = viewControllers.reversed()
+            for currentViewController in viewControllers {
+                if currentViewController .isKind(of: toControllerType) {
+                    self.navigationController?.popToViewController(currentViewController, animated: true)
+                    break
+                }
+            }
         }
     }
 }

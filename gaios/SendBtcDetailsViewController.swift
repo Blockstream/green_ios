@@ -398,12 +398,4 @@ class SendBtcDetailsViewController: UIViewController {
         fee = UInt64(1000 * amount_i)
         updateEstimate()
     }
-
-    @IBAction func backButtonClicked(_ sender: Any) {
-        if (self.navigationController != nil) {
-            self.navigationController?.popViewController(animated: true)
-        } else {
-            self.dismiss(animated: false, completion: nil)
-        }
-    }
 }

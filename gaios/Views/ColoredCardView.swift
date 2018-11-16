@@ -15,13 +15,14 @@ class ColoredCardView: CardView {
     lazy var depresentedCardViewColor:   UIColor = UIColor.customTitaniumMedium()
 
 
-     override func awakeFromNib() {
-
-        contentView.layer.cornerRadius  = 10
-        contentView.layer.masksToBounds = true
-
-        presentedDidUpdate()
-
+    override func awakeFromNib() {
+        if contentView == nil {
+            Bundle.main.loadNibNamed("ColoredCardView", owner: self, options: nil)
+        } else {
+            contentView.layer.cornerRadius  = 10
+            contentView.layer.masksToBounds = true
+            presentedDidUpdate()
+        }
     }
 
     override var presented: Bool { didSet { presentedDidUpdate() } }
@@ -29,7 +30,6 @@ class ColoredCardView: CardView {
     func presentedDidUpdate() {
         contentView.backgroundColor = presented ? presentedCardViewColor : depresentedCardViewColor
         contentView.addTransitionFade()
-
     }
 
 }

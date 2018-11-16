@@ -10,10 +10,8 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var feeLabel: UILabel!
     @IBOutlet weak var memoLabel: UILabel!
     @IBOutlet weak var warniniglabel: UILabel!
-    @IBOutlet weak var topConstraint: NSLayoutConstraint!
     @IBOutlet weak var feeButton: UIButton!
 
-    @IBOutlet weak var titlelabel: UILabel!
     @IBOutlet weak var hashTitle: UILabel!
     @IBOutlet weak var dateTitle: UILabel!
     @IBOutlet weak var feeTitle: UILabel!
@@ -40,7 +38,6 @@ class TransactionDetailViewController: UIViewController {
             feeButton.isHidden = false
         }
 
-        titlelabel.text = NSLocalizedString("id_transaction_details", comment: "")
         hashTitle.text = NSLocalizedString("id_hash", comment: "")
         dateTitle.text = NSLocalizedString("id_date", comment: "")
         feeTitle.text = NSLocalizedString("id_fee", comment: "")
@@ -143,9 +140,5 @@ class TransactionDetailViewController: UIViewController {
         super.viewWillAppear(animated)
         feeButton.layoutIfNeeded()
         feeButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-    }
-
-    @IBAction func backButtonClicked(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
     }
 }

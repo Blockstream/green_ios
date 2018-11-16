@@ -12,7 +12,6 @@ class ReceiveBtcViewController: UIViewController {
     @IBOutlet weak var fiatSwitchButton: UIButton!
     @IBOutlet weak var typeLabel: UILabel!
     @IBOutlet weak var amountLabel: UILabel!
-    @IBOutlet weak var receiveLabel: UILabel!
 
     var receiveAddress: String? = nil
     var wallet: WalletItem? = nil
@@ -39,7 +38,7 @@ class ReceiveBtcViewController: UIViewController {
         walletQRCode.isUserInteractionEnabled = true
         walletQRCode.addGestureRecognizer(tap)
         NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
-        receiveLabel.text = NSLocalizedString("id_receive", comment: "")
+        //receiveLabel.text = NSLocalizedString("id_receive", comment: "")
         amountLabel.text = NSLocalizedString("id_amount", comment: "")
         shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
     }
@@ -164,9 +163,6 @@ class ReceiveBtcViewController: UIViewController {
         UIPasteboard.general.string = receiveAddress
     }
 
-    @IBAction func backButtonClicked(_ sender: Any) {
-        _ = navigationController?.popViewController(animated: true)
-    }
 }
 
 public enum TransactionType: UInt32 {

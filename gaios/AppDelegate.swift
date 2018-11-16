@@ -322,7 +322,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let bioData = KeychainHelper.loadPassword(service: "bioData", account: network)
         let pinData = KeychainHelper.loadPassword(service: "pinData", account: network)
         let password = KeychainHelper.loadPassword(service: "bioPassword", account: network)
-        if (bioData != nil && pinData != nil && password != nil) {
+        /*if (bioData != nil && pinData != nil && password != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
             firstVC.pinData = pinData!
@@ -341,11 +341,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.window?.rootViewController = firstVC
             self.window?.makeKeyAndVisible()
             return
-        } else if (pinData != nil) {
+        } else */
+        if (pinData != nil) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-            firstVC.pinData = pinData!
-            firstVC.loginMode = true
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginNavigationController") as! UINavigationController
             self.window?.rootViewController = firstVC
             self.window?.makeKeyAndVisible()
             return
@@ -369,48 +368,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        setupNavigationColor()
         // Override point for customization after application launch.
         //AppDelegate.removeKeychainData()
         loadNetworkSettings()
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: "autolock"), object: nil)
 
-        connect()
-
-        let network = getNetworkSettings().network
-        let bioData = KeychainHelper.loadPassword(service: "bioData", account: network)
-        let pinData = KeychainHelper.loadPassword(service: "pinData", account: network)
-        let password = KeychainHelper.loadPassword(service: "bioPassword", account: network)
-        if (bioData != nil && pinData != nil && password != nil) {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-            firstVC.pinData = pinData!
-            firstVC.loginMode = true
-            firstVC.bioData = bioData!
-            firstVC.password = password!
-            firstVC.bioAuth = true
-            self.window?.rootViewController = firstVC
-            return true
-        } else if(bioData != nil && password != nil) {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
-            firstVC.password = password!
-            firstVC.pinData = bioData!
-            self.window?.rootViewController = firstVC
-            return true
-        } else if(pinData != nil) {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-            firstVC.pinData = pinData!
-            firstVC.loginMode = true
-            self.window?.rootViewController = firstVC
-            return true
-        }
-
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
-        self.window?.rootViewController = firstVC
-
+        lock()
         return true
     }
 
@@ -446,6 +411,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
+    func setupNavigationColor() {
+        UINavigationBar.appearance().barTintColor = UIColor.customTitaniumDark()
+        UINavigationBar.appearance().tintColor = UIColor.white
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().isTranslucent = false
+    }
 }
 

@@ -4,8 +4,6 @@ import NVActivityIndicatorView
 
 class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
-
-    @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var label0: UILabel!
     @IBOutlet weak var label1: UILabel!
     @IBOutlet weak var label2: UILabel!
@@ -13,7 +11,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var label4: UILabel!
     @IBOutlet weak var label5: UILabel!
     @IBOutlet weak var attempts: UILabel!
-    @IBOutlet weak var networkIndicator: UIImageView!
 
     var pinCode: String = ""
     var pinData: String = ""
@@ -23,7 +20,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     var setPinMode: Bool = false
     var editPinMode: Bool = false
-    var loginMode: Bool = false
     var removePinMode: Bool = false
     var restoreMode: Bool = false
 
@@ -39,27 +35,35 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // show title
         if (setPinMode == true) {
-            topLabel.text = NSLocalizedString("id_set_a_new_pin", comment: "")
-        } else if (loginMode){
-            let network = getNetworkSettings().network
-            if let data = KeychainHelper.loadPassword(service: "pinData", account: network) {
-                pinData = data
-            }
+            title = NSLocalizedString("id_set_a_new_pin", comment: "")
         } else {
-            topLabel.text = NSLocalizedString("id_enter_pin", comment: "")
+            title = NSLocalizedString("id_enter_pin", comment: "")
         }
+
+        // load data
+        let network = getNetwork()
+        if let data = KeychainHelper.loadPassword(service: "pinData", account: network.rawValue) {
+            pinData = data
+        }
+
+        // show pin label
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
         for label in labels {
             label.isHidden = true
         }
         attempts.isHidden = true
-        let net = getNetwork()
-        if (net == Network.MainNet) {
-            networkIndicator.image = UIImage(named: "mainnet")
-        } else if (net == Network.TestNet) {
-            networkIndicator.image = UIImage(named: "testnet")
-        }
+
+        // customize network image
+        let networkBarItem = UIBarButtonItem(image: network == Network.MainNet ? UIImage(named: "mainnet")! : UIImage(named: "testnet")!, style: .plain, target: self, action: nil)
+        navigationItem.rightBarButtonItem = networkBarItem
+
+        // customize back button
+        self.navigationItem.hidesBackButton = true
+        let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(PinLoginViewController.back(sender:)))
+        self.navigationItem.leftBarButtonItem = newBackButton
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -75,7 +79,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                             DispatchQueue.main.async {
                                 self.stopAnimating()
                                 AccountStore.shared.initializeAccountStore()
-                                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                                self.performSegue(withIdentifier: "main", sender: self)
                             }
                             }.catch { error in
                                 print("incorrect PIN ", error)
@@ -111,39 +115,11 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             return
         }
 
-        if (loginMode == true) {
-            let size = CGSize(width: 30, height: 30)
-            startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-            DispatchQueue.global(qos: .background).async {
-                wrap { return try getSession().loginWithPin(pin: self.pinCode, pin_data: self.pinData) }.done { _ in
-                    DispatchQueue.main.async {
-                        self.stopAnimating()
-                        AccountStore.shared.initializeAccountStore()
-                        self.performSegue(withIdentifier: "mainMenu", sender: self)
-                    }
-                    }.catch { error in
-                        print("incorrect PIN ", error)
-                        self.attemptsCount -= 1
-                        if(self.attemptsCount == 0) {
-                            AppDelegate.removeKeychainData()
-                            self.performSegue(withIdentifier: "entrance", sender: nil)
-                        }
-                        self.updateAttemptsLabel()
-                        DispatchQueue.main.async {
-                            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                            self.stopAnimating()
-                            self.resetEverything()
-                        }
-
-                }
-            }
-        } else if (setPinMode == true) {
+        if (setPinMode == true) {
             if (confirmPin == true) {
                 //set pin
                 if(pinCode != pinConfirm) {
-                    topLabel.text = "Set a new PIN"
+                    title = "Set a new PIN"
                     resetEverything()
                     updatePinMissmatch()
                     return
@@ -168,9 +144,9 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                                 if(self.editPinMode == true) {
                                     self.navigationController?.popViewController(animated: true)
                                 } else if (self.restoreMode == true) {
-                                    self.performSegue(withIdentifier: "mainMenu", sender: nil)
+                                    self.performSegue(withIdentifier: "main", sender: nil)
                                 } else {
-                                    self.performSegue(withIdentifier: "improveSecurity", sender: self)
+                                    self.performSegue(withIdentifier: "congrats", sender: self)
                                 }
                             }
                         }.catch { error in
@@ -190,7 +166,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             pinCode = ""
             updateView()
             //show confirm pin
-            topLabel.text = "Confirm PIN"
+            title = "Confirm PIN"
         } else if (removePinMode == true) {
             let network = getNetworkSettings().network
             let pass = KeychainHelper.loadPassword(service: "pinPassword", account: network)
@@ -200,6 +176,34 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             }
             self.navigationController?.popViewController(animated: true)
             return
+        } else {
+            let size = CGSize(width: 30, height: 30)
+            startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            DispatchQueue.global(qos: .background).async {
+                wrap { return try getSession().loginWithPin(pin: self.pinCode, pin_data: self.pinData) }.done { _ in
+                    DispatchQueue.main.async {
+                        self.stopAnimating()
+                        AccountStore.shared.initializeAccountStore()
+                        self.performSegue(withIdentifier: "main", sender: self)
+                    }
+                    }.catch { error in
+                        print("incorrect PIN ", error)
+                        self.attemptsCount -= 1
+                        if(self.attemptsCount == 0) {
+                            AppDelegate.removeKeychainData()
+                            self.performSegue(withIdentifier: "entrance", sender: nil)
+                        }
+                        self.updateAttemptsLabel()
+                        DispatchQueue.main.async {
+                            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            self.stopAnimating()
+                            self.resetEverything()
+                        }
+
+                }
+            }
         }
     }
 
@@ -254,7 +258,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
 
-    @IBAction func backButtonClicked(_ sender: Any) {
+    @objc func back(sender: UIBarButtonItem) {
         if(setPinMode || editPinMode) {
             self.navigationController?.popViewController(animated: true)
         } else {

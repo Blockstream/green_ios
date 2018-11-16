@@ -42,7 +42,7 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
                             DispatchQueue.main.async {
                                 self.stopAnimating()
                                 AccountStore.shared.initializeAccountStore()
-                                self.performSegue(withIdentifier: "mainMenu", sender: self)
+                                self.performSegue(withIdentifier: "main", sender: self)
                             }
                             }.catch { error in
                                 print("incorrect PIN ", error)
