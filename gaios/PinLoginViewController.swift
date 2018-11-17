@@ -12,11 +12,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var label5: UILabel!
     @IBOutlet weak var attempts: UILabel!
 
-    var pinCode: String = ""
-    var pinData: String = ""
-    var pinConfirm: String = ""
-    var bioData: String = ""
-    var password: String = ""
+    var pinCode = String()
+    var pinConfirm = String()
 
     var setPinMode: Bool = false
     var editPinMode: Bool = false
@@ -25,7 +22,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     var confirmPin: Bool = false
     var bioAuth: Bool = false
-    let bioID = BiometricIDAuth()
+    let bioID = BiometricAuthentication()
 
 
     var views: Array<UIView> = Array<UIView>()
@@ -45,9 +42,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
         // load data
         let network = getNetwork()
-        if let data = KeychainHelper.loadPassword(service: "pinData", account: network.rawValue) {
-            pinData = data
-        }
 
         // show pin label
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
@@ -69,31 +63,32 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateView()
-        if (bioAuth) {
-            bioID.authenticateUser { (message) in
-                if(message == nil) {
-                    let size = CGSize(width: 30, height: 30)
-                    self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-                    DispatchQueue.global(qos: .background).async {
-                        wrap { return try getSession().loginWithPin(pin: self.password, pin_data: self.bioData) }.done { _ in
+        if bioAuth {
+            let size = CGSize(width: 30, height: 30)
+            self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            DispatchQueue.global(qos: .background).async {
+                defer {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                        self.stopAnimating()
+                    }
+                }
+                let network = getNetworkSettings().network
+                let bioData = KeychainHelper.getAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
+                guard bioData != nil else {
+                    return
+                }
+                getGAService().loginWithPin(pin: bioData!["plaintext_biometric"] as! String, pinData: bioData!,
+                    completionHandler: completion(
+                        onResult: { _ in
                             DispatchQueue.main.async {
-                                self.stopAnimating()
                                 AccountStore.shared.initializeAccountStore()
                                 self.performSegue(withIdentifier: "main", sender: self)
                             }
-                            }.catch { error in
-                                print("incorrect PIN ", error)
-                                DispatchQueue.main.async {
-                                    NVActivityIndicatorPresenter.sharedInstance.setMessage("Bio Login Failed")
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                                    self.stopAnimating()
-                                }
-                        }
-                    }
-                } else {
-                    //error
-                }
+                        }, onError: { _ in
+                            DispatchQueue.main.async {
+                                NVActivityIndicatorPresenter.sharedInstance.setMessage("Bio Login Failed")
+                            }
+                        }))
             }
         }
     }
@@ -129,27 +124,28 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 startAnimating(size, message: "Setting pin...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
                 DispatchQueue.global(qos: .background).async {
                     wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 10)) }
-                        .done { (result: String?) in
-                            guard result != nil else {
-                                self.stopAnimating()
+                    .done { result in
+                        guard result != nil else {
+                            self.stopAnimating()
+                            return
+                        }
+                        DispatchQueue.main.async {
+                            self.stopAnimating()
+                            let network = getNetworkSettings().network
+                            let succeeded = KeychainHelper.addPIN(data: result!, forNetwork: network)
+                            guard succeeded else {
                                 return
                             }
-                            DispatchQueue.main.async {
-                                self.stopAnimating()
-                                let network = getNetworkSettings().network
-                                KeychainHelper.savePassword(service: "pinData", account: network, data: result!)
-                                //pinPassword used when removing the pin, not used for login(user input is used)
-                                KeychainHelper.savePassword(service: "pinPassword", account: network, data: self.pinCode)
-                                SettingsStore.shared.setScreenLockSettings()
-                                if(self.editPinMode == true) {
-                                    self.navigationController?.popViewController(animated: true)
-                                } else if (self.restoreMode == true) {
-                                    self.performSegue(withIdentifier: "main", sender: nil)
-                                } else {
-                                    self.performSegue(withIdentifier: "congrats", sender: self)
-                                }
+                            SettingsStore.shared.setScreenLockSettings()
+                            if(self.editPinMode == true) {
+                                self.navigationController?.popViewController(animated: true)
+                            } else if (self.restoreMode == true) {
+                                self.performSegue(withIdentifier: "main", sender: nil)
+                            } else {
+                                self.performSegue(withIdentifier: "congrats", sender: self)
                             }
-                        }.catch { error in
+                        }
+                    }.catch { error in
                             print("setPin failed")
                             DispatchQueue.main.async {
                                 NVActivityIndicatorPresenter.sharedInstance.setMessage("Setting pin failed")
@@ -168,41 +164,36 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             //show confirm pin
             title = "Confirm PIN"
         } else if (removePinMode == true) {
-            let network = getNetworkSettings().network
-            let pass = KeychainHelper.loadPassword(service: "pinPassword", account: network)
-            if (pass == pinCode) {
-                AppDelegate.removePinKeychainData()
-                SettingsStore.shared.setScreenLockSettings()
-            }
-            self.navigationController?.popViewController(animated: true)
-            return
         } else {
             let size = CGSize(width: 30, height: 30)
             startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
             DispatchQueue.global(qos: .background).async {
-                wrap { return try getSession().loginWithPin(pin: self.pinCode, pin_data: self.pinData) }.done { _ in
-                    DispatchQueue.main.async {
-                        self.stopAnimating()
-                        AccountStore.shared.initializeAccountStore()
-                        self.performSegue(withIdentifier: "main", sender: self)
-                    }
-                    }.catch { error in
-                        print("incorrect PIN ", error)
-                        self.attemptsCount -= 1
-                        if(self.attemptsCount == 0) {
-                            AppDelegate.removeKeychainData()
-                            self.performSegue(withIdentifier: "entrance", sender: nil)
-                        }
-                        self.updateAttemptsLabel()
-                        DispatchQueue.main.async {
-                            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                            self.stopAnimating()
-                            self.resetEverything()
-                        }
-
-                }
+                let network = getNetworkSettings().network
+                let pinData = KeychainHelper.getAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+                getGAService().loginWithPin(pin: self.pinCode, pinData: pinData!,
+                                            completionHandler: completion(
+                                                onResult: { _ in
+                                                    DispatchQueue.main.async {
+                                                        self.stopAnimating()
+                                                        AccountStore.shared.initializeAccountStore()
+                                                        self.performSegue(withIdentifier: "main", sender: self)
+                                                    }
+                                            }, onError: { error in
+                                                print("incorrect PIN ", error)
+                                                self.attemptsCount -= 1
+                                                if self.attemptsCount == 0 {
+                                                    AppDelegate.removeKeychainData()
+                                                    self.performSegue(withIdentifier: "entrance", sender: nil)
+                                                }
+                                                self.updateAttemptsLabel()
+                                                DispatchQueue.main.async {
+                                                    NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+                                                }
+                                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                                    self.stopAnimating()
+                                                    self.resetEverything()
+                                                }
+                                            }))
             }
         }
     }

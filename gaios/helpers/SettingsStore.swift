@@ -295,24 +295,23 @@ class SettingsStore {
     }
 
     func defaultScreenLock() -> SettingsItem {
-        let bioID = BiometricIDAuth()
+        let bioAuth = BiometricAuthentication()
         let network = getNetworkSettings().network
-        let bioData = KeychainHelper.loadPassword(service: "bioData", account: network)
-        let pinData = KeychainHelper.loadPassword(service: "pinData", account: network)
-        let password = KeychainHelper.loadPassword(service: "bioPassword", account: network)
+        let bioData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
+        let pinData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
         var property = [String:String]()
         var secText = ""
-        if (bioData != nil && password != nil && pinData == nil) {
+        if bioData && !pinData {
             property = [settingsScreenLock : String(ScreenLock.FaceID.rawValue)]
-            if (bioID.biometricType() == .faceID) {
+            if bioAuth.biometricType() == .faceID {
                 secText = stringForScreenLockSettings(screenLock: ScreenLock.FaceID)
-            } else {
+            } else if bioAuth.biometricType() == .touchID {
                 secText = stringForScreenLockSettings(screenLock: ScreenLock.TouchID)
             }
-        } else if (pinData != nil && (bioData == nil || password == nil)) {
+        } else if pinData && !bioData {
             property = [settingsScreenLock : String(ScreenLock.Pin.rawValue)]
             secText = stringForScreenLockSettings(screenLock: ScreenLock.Pin)
-        } else if (pinData != nil && bioData != nil && password != nil) {
+        } else if pinData && bioData {
             property = [settingsScreenLock : String(ScreenLock.all.rawValue)]
             secText = stringForScreenLockSettings(screenLock: ScreenLock.all)
         } else {

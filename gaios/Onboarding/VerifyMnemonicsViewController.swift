@@ -3,7 +3,7 @@ import UIKit
 import NVActivityIndicatorView
 
 class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewable {
-    var wordNumbers: [UInt8] = [UInt8](repeating: 0, count: 4)
+    var wordNumbers: [Int] = [Int](repeating: 0, count: 4)
     var mnemonics:[String] = []
     var questionCounter: Int = 0
     var questionPosition: Int = 0
@@ -15,16 +15,15 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     let numberOfSteps: Int = 4
     @IBOutlet weak var bottomText: UILabel!
 
-    lazy var buttonsArray: Array<UIButton> = [button0, button1, button2, button3]
+    lazy var buttonsArray: [UIButton] = [button0, button1, button2, button3]
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
         generateRandomWordNumbers()
-        wordNumbers.sort { $0 < $1 }
         mnemonics = getAppDelegate().getMnemonicWords()!
         //createButtons()
-        questionPosition = Int(wordNumbers[Int(arc4random_uniform(UInt32(wordNumbers.count)))])
+        questionPosition = wordNumbers[getIndexFromUniformUInt32(count: wordNumbers.count)]
         title = String(format: "What is the word at position %d ?", questionPosition + 1)
         //Customization by coding:
         self.stepIndicatorView.numberOfSteps = numberOfSteps
@@ -43,22 +42,13 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         setSelector()
     }
 
-    func generateWordNumber(_ bottom: UInt8, _ top: UInt8) -> UInt8 {
-        let range: UInt8 = (top - bottom) + 1
-        let discard: UInt8 = 255 - 255 % range
-        var randomWord: UInt8 = discard
-        while randomWord >= discard {
-            withUnsafeMutablePointer(to: &randomWord) { (pointer) -> Void in
-                _ = SecRandomCopyBytes(kSecRandomDefault, 1, pointer)
-            }
-        }
-        randomWord = randomWord % range
-        return randomWord + bottom
+    func getIndexFromUniformUInt32(count: Int) -> Int {
+        return Int(try! getUniformUInt32(upper_bound: UInt32(count)))
     }
 
     func generateRandomWordNumbers() {
         repeat {
-            wordNumbers = wordNumbers.map { (_) -> UInt8 in generateWordNumber(0, 23) }
+            wordNumbers = wordNumbers.map { (_) -> Int in getIndexFromUniformUInt32(count: 23) }
         } while Set(wordNumbers).count != 4
     }
 
@@ -69,12 +59,11 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func updateButtons() {
-        var counter = 0
-        for button in buttonsArray {
-            button.setTitle(mnemonics[Int(wordNumbers[counter])], for: .normal)
-            button.tag = Int(wordNumbers[counter])
-            counter += 1
+        buttonsArray.enumerated().forEach { (offset, element) in
+            element.setTitle(mnemonics[wordNumbers[offset]], for: .normal)
+            element.tag = wordNumbers[offset]
         }
+
         //questionPosition
         var rangeStart = 0
         var rangeEnd = 0
@@ -126,7 +115,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                         .done { _ in
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                AppDelegate.removeKeychainData()
                                 Storage.wipeAll()
                                 AccountStore.shared.initializeAccountStore()
                                 self.performSegue(withIdentifier: "pin", sender: self)
@@ -157,20 +145,18 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     @objc func buttonClicked(_ sender: UIButton) {
-       print("sender is ", sender.titleLabel?.text, " correct answer is ", mnemonics[questionPosition])
         if(sender.titleLabel?.text == mnemonics[questionPosition]) {
             if(questionCounter == numberOfSteps - 1) {
                 guard let mnemonicWords = getAppDelegate().getMnemonicWords() else {
                     return
                 }
                 let stringRepresentation = mnemonicWords.joined(separator: " ") // space separated mnemonic list
-                print(stringRepresentation)
                 registerAndLogin(mnemonics: stringRepresentation)
             } else {
                 questionCounter += 1
                 stepIndicatorView.currentStep = questionCounter
                 generateRandomWordNumbers()
-                questionPosition = Int(wordNumbers[Int(arc4random_uniform(UInt32(wordNumbers.count)))])
+                questionPosition = wordNumbers[getIndexFromUniformUInt32(count: wordNumbers.count)]
                 updateButtons()
                 updateLabels()
             }

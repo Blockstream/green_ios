@@ -5,15 +5,18 @@ class EditScreenLockSettings: UIViewController {
     @IBOutlet weak var bioAuthLabel: UILabel!
     @IBOutlet weak var bioSwitch: UISwitch!
     @IBOutlet weak var pinSwitch: UISwitch!
-    let bioID = BiometricIDAuth()
+    let bioAuth = BiometricAuthentication()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if(self.bioID.canEvaluatePolicy()) {
-            if(self.bioID.biometricType() == BiometricType.faceID) {
+        if bioAuth.canEvaluatePolicy() {
+            if bioAuth.biometricType() == .faceID {
                 bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
-            } else if (self.bioID.biometricType() == BiometricType.touchID) {
-                bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
+            } else if bioAuth.biometricType() == .touchID {
+                bioAuthLabel.text = NSLocalizedString("id_touch_id", comment: "")
+            } else {
+                bioAuthLabel.text = NSLocalizedString("id_touchface_id_not_available", comment: "")
+                bioSwitch.isUserInteractionEnabled = false
             }
         } else {
             bioAuthLabel.text = NSLocalizedString("id_touchface_id_not_available", comment: "")
@@ -46,39 +49,29 @@ class EditScreenLockSettings: UIViewController {
 
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
         if (!sender.isOn) {
-            bioID.authenticateUser { (message) in
-                if(message == nil) {
-                    //remove keychaindata
-                    AppDelegate.removeBioKeychainData()
-                    SettingsStore.shared.setScreenLockSettings()
-                    self.updateValues()
-                } else {
-                    print("error authenticating")
-                }
-            }
+            try! AppDelegate.removeBioKeychainData()
+            SettingsStore.shared.setScreenLockSettings()
+            self.updateValues()
         } else {
-            bioID.authenticateUser { (message) in
-                if(message == nil) {
-                    let password = String.random(length: 14)
-                    let deviceid = String.random(length: 14)
-                    let mnemonics = getAppDelegate().getMnemonicWordsString()
-                    wrap { return try getSession().setPin(mnemonic: mnemonics!, pin: password, device: deviceid) }
-                        .done { (result: String?) in
-                            guard result != nil else {
-                                return
-                            }
-                            let network = getNetworkSettings().network
-                            KeychainHelper.savePassword(service: "bioPassword", account: network, data: password)
-                            KeychainHelper.savePassword(service: "bioData", account: network, data: result!)
-                            SettingsStore.shared.setScreenLockSettings()
-                        }.catch { error in
-                            print("setPin failed")
-                    }
-                } else {
-                    //here?
+            let password = String.random(length: 14)
+            let deviceid = String.random(length: 14)
+            let mnemonics = getAppDelegate().getMnemonicWordsString()
+            wrap {
+                try getSession().setPin(mnemonic: mnemonics!, pin: password, device: deviceid) }
+            .done { result in
+                guard let result = result else {
+                    return
                 }
+                let network = getNetworkSettings().network
+                let succeeded = KeychainHelper.addBiometryType(data: result, extraData: password, forNetwork: network)
+                guard succeeded else {
+                    return
+                }
+                SettingsStore.shared.setScreenLockSettings()
+            }.catch { error in
+                print("setPin failed")
             }
-        }
+          }
     }
 
     @IBAction func pinSwitched(_ sender: UISwitch) {

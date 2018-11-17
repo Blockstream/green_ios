@@ -212,7 +212,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
     @IBAction func doneButtonClicked(_ sender: Any) {
         let trimmedUserProvidedMnemonic = mergeTextFields()
         wrap {
-            try validateMnemonic(mnemonic: trimmedUserProvidedMnemonic)
+            validateMnemonic(mnemonic: trimmedUserProvidedMnemonic)
         }.done { (result: Bool) in
             if (result) {
                 wrap {
@@ -221,7 +221,6 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
                         Storage.wipeAll()
                         let array = getAppDelegate().getMnemonicsArray(mnemonics: trimmedUserProvidedMnemonic)
                         getAppDelegate().setMnemonicWords(array!)
-                        AppDelegate.removeKeychainData()
                         AccountStore.shared.initializeAccountStore()
                         self.performSegue(withIdentifier: "next", sender: self)
                     }.catch { error in

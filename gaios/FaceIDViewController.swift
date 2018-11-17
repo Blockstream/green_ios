@@ -4,9 +4,9 @@ import NVActivityIndicatorView
 
 class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
 
-    var password: String = ""
-    var pinData: String = ""
-    let bioID = BiometricIDAuth()
+    var password = String()
+    var pinData = [String: Any]()
+    let bioAuth = BiometricAuthentication()
     @IBOutlet weak var networkIndicator: UIImageView!
 
     override func viewDidLoad() {
@@ -33,30 +33,26 @@ class FaceIDViewController: UIViewController, NVActivityIndicatorViewable {
         if(!getAppDelegate().finishedConnecting) {
             retryAuthLater(time: 0.5)
         } else {
-            bioID.authenticateUser { (message) in
-                if(message == nil) {
-                    let size = CGSize(width: 30, height: 30)
-                    self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-                    DispatchQueue.global(qos: .background).async {
-                        wrap { return try getSession().loginWithPin(pin: self.password, pin_data: self.pinData) }.done { _ in
+            let size = CGSize(width: 30, height: 30)
+            self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            DispatchQueue.global(qos: .background).async {
+                getGAService().loginWithPin(pin: self.password, pinData: self.pinData,
+                    completionHandler: completion(
+                        onResult: { _ in
                             DispatchQueue.main.async {
                                 self.stopAnimating()
                                 AccountStore.shared.initializeAccountStore()
                                 self.performSegue(withIdentifier: "main", sender: self)
                             }
-                            }.catch { error in
-                                print("incorrect PIN ", error)
-                                DispatchQueue.main.async {
-                                    NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                                    self.stopAnimating()
-                                }
-                        }
-                    }
-                } else {
-                    self.retryAuthLater(time: 1.4)
-                }
+                        }, onError: { error in
+                            print("incorrect PIN ", error)
+                            DispatchQueue.main.async {
+                                NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                self.stopAnimating()
+                            }
+                        }))
             }
         }
     }

@@ -73,14 +73,19 @@ class GreenAddressService: SessionNotificationDelegate {
 
     var session: Session = try! Session()
 
-    var loginData: [String: Any]? = nil
-
     func getSession() -> Session {
         return self.session
     }
 
-    func getConfirmationPriority() -> String {
-        return [3: "High", 6: "Normal", 12: "Low", 24: "Economy"][(loginData!["appearance"] as! [String: Any])["required_num_blocks"] as? Int ?? 24]!
+    func loginWithPin(pin: String, pinData: [String: Any], completionHandler: @escaping (Bool?, Error?) -> Void) {
+        wrap {
+            let data = try JSONSerialization.data(withJSONObject: pinData)
+            try self.session.loginWithPin(pin: pin, pin_data: String(data: data, encoding: .utf8)!)
+        }.done {
+            completionHandler(true, nil)
+        }.catch { error in
+            completionHandler(nil, error)
+        }
     }
 }
 
@@ -129,10 +134,10 @@ func setAllNetworkSettings(net: Network, ip: String, port: String, tor: Bool) {
 }
 
 class NetworkSettings: Codable {
-    var network: String
-    var ipAddress: String
-    var portNumber: String
-    var torEnabled: Bool
+    let network: String
+    let ipAddress: String
+    let portNumber: String
+    let torEnabled: Bool
 
     init(network: String, ipAddress: String, portNumber: String, torEnabled: Bool) {
         self.network = network
@@ -257,20 +262,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     static func removeKeychainData() {
-        removeBioKeychainData()
-        removePinKeychainData()
-    }
+        let network = getNetworkSettings().network
+        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
+        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+     }
 
     static func removeBioKeychainData() {
         let network = getNetworkSettings().network
-        KeychainHelper.removePassword(service: "bioData", account: network)
-        KeychainHelper.removePassword(service: "bioPassword", account: network)
+        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
     }
 
     static func removePinKeychainData() {
         let network = getNetworkSettings().network
-        KeychainHelper.removePassword(service: "pinData", account: network)
-        KeychainHelper.removePassword(service: "pinPassword", account: network)
+        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
     }
 
     func connect() {
@@ -319,30 +323,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("locking now")
         self.window?.endEditing(true)
         let network = getNetworkSettings().network
-        let bioData = KeychainHelper.loadPassword(service: "bioData", account: network)
-        let pinData = KeychainHelper.loadPassword(service: "pinData", account: network)
-        let password = KeychainHelper.loadPassword(service: "bioPassword", account: network)
-        /*if (bioData != nil && pinData != nil && password != nil) {
+        let bioData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
+        let pinData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+        if bioData && pinData {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginViewController") as! PinLoginViewController
-            firstVC.pinData = pinData!
-            firstVC.loginMode = true
-            firstVC.bioData = bioData!
-            firstVC.password = password!
-            firstVC.bioAuth = true
+            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginNavigationController") as! UINavigationController
+            //firstVC.bioAuth = true
             self.window?.rootViewController = firstVC
             self.window?.makeKeyAndVisible()
             return
-        } else if(bioData != nil && password != nil) {
+        } else if bioData {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
-            firstVC.password = password!
-            firstVC.pinData = bioData!
             self.window?.rootViewController = firstVC
             self.window?.makeKeyAndVisible()
             return
-        } else */
-        if (pinData != nil) {
+        } else if pinData {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginNavigationController") as! UINavigationController
             self.window?.rootViewController = firstVC
@@ -370,8 +366,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         setupNavigationColor()
         // Override point for customization after application launch.
-        //AppDelegate.removeKeychainData()
         loadNetworkSettings()
+
+        let network = getNetworkSettings().network
+
+        // Generate a keypair to encrypt user data
+        let initKey = network + "FirstInitialization"
+        if !UserDefaults.standard.bool(forKey: initKey) {
+            let _ = KeychainHelper.generatePrivateKey(network: network)
+            AppDelegate.removeKeychainData()
+            UserDefaults.standard.set(true, forKey: initKey)
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: "autolock"), object: nil)
 
