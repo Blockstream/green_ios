@@ -972,12 +972,6 @@
                                     <constraint firstAttribute="width" constant="220" id="imA-F6-Qi6"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bitcoin's most secure wallet." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="foO-sh-acY">
-                                <rect key="frame" x="57" y="298" width="206" height="20"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uis-0X-sLw">
                                 <rect key="frame" x="113" y="528" width="94" height="28"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
@@ -1011,7 +1005,6 @@
                             <constraint firstItem="53d-UR-mMD" firstAttribute="leading" secondItem="uis-0X-sLw" secondAttribute="trailing" constant="2" id="4iy-jh-KoL"/>
                             <constraint firstItem="53d-UR-mMD" firstAttribute="centerY" secondItem="uis-0X-sLw" secondAttribute="centerY" id="5GV-rm-Acd"/>
                             <constraint firstItem="7hx-b0-XCa" firstAttribute="bottom" secondItem="Nct-Hm-9xI" secondAttribute="bottom" constant="50" id="8dF-Y4-9Yr"/>
-                            <constraint firstItem="foO-sh-acY" firstAttribute="centerX" secondItem="soW-Tu-XRH" secondAttribute="centerX" id="D42-Qr-Kfg"/>
                             <constraint firstItem="Nct-Hm-9xI" firstAttribute="leading" secondItem="7hx-b0-XCa" secondAttribute="leading" constant="20" id="Gs3-lR-0HI"/>
                             <constraint firstItem="lbd-hr-xkm" firstAttribute="leading" secondItem="7hx-b0-XCa" secondAttribute="leading" constant="20" id="HNF-EH-w9C"/>
                             <constraint firstItem="7hx-b0-XCa" firstAttribute="trailing" secondItem="lbd-hr-xkm" secondAttribute="trailing" constant="20" id="LTS-2J-ZSO"/>
@@ -1019,7 +1012,6 @@
                             <constraint firstItem="Nct-Hm-9xI" firstAttribute="top" secondItem="lbd-hr-xkm" secondAttribute="bottom" constant="20" id="MhV-wQ-FLU"/>
                             <constraint firstItem="qi9-Hk-q1Y" firstAttribute="top" secondItem="7hx-b0-XCa" secondAttribute="top" constant="120" id="eUW-rI-kgg"/>
                             <constraint firstItem="uis-0X-sLw" firstAttribute="centerX" secondItem="soW-Tu-XRH" secondAttribute="centerX" id="ii1-ql-GTO"/>
-                            <constraint firstItem="foO-sh-acY" firstAttribute="top" secondItem="qi9-Hk-q1Y" secondAttribute="bottom" constant="30" id="mIH-Vj-LGM"/>
                             <constraint firstItem="7hx-b0-XCa" firstAttribute="trailing" secondItem="Nct-Hm-9xI" secondAttribute="trailing" constant="20" id="mZ2-os-Eyw"/>
                             <constraint firstItem="7hx-b0-XCa" firstAttribute="trailing" secondItem="hzi-tC-PfU" secondAttribute="trailing" constant="16" id="nfI-7Z-EiX"/>
                             <constraint firstItem="hzi-tC-PfU" firstAttribute="top" secondItem="7hx-b0-XCa" secondAttribute="top" constant="16" id="pwb-db-dCp"/>
@@ -1033,7 +1025,6 @@
                     <connections>
                         <outlet property="networkButton" destination="uis-0X-sLw" id="jKr-jh-qKr"/>
                         <outlet property="restoreWalletbutton" destination="Nct-Hm-9xI" id="h8e-e4-Gr1"/>
-                        <outlet property="titleLabel" destination="foO-sh-acY" id="rpP-KK-FMI"/>
                         <outlet property="topButton" destination="lbd-hr-xkm" id="4Ij-L1-qjT"/>
                     </connections>
                 </viewController>
