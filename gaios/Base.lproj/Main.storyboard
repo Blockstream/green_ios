@@ -2817,7 +2817,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="doneButtonClicked:" destination="o6l-5o-Ocm" eventType="touchUpInside" id="Orj-oT-FWa"/>
+                                    <action selector="doneButtonClicked:" destination="o6l-5o-Ocm" eventType="touchUpInside" id="inu-nQ-ulD"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -2838,8 +2838,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="doneButton" destination="6Ka-HY-djy" id="tPz-pP-59Y"/>
-                        <segue destination="mQJ-kl-M0B" kind="show" identifier="next" id="z3Q-3P-P3d"/>
+                        <outlet property="doneButton" destination="6Ka-HY-djy" id="aUc-q0-ZyF"/>
+                        <outlet property="scanBarButton" destination="9FH-fh-RD8" id="9iv-iB-0Aq"/>
+                        <segue destination="kWT-Yh-qgi" kind="show" identifier="next" id="rZR-ak-fSt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="peA-Kf-YoL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -4298,82 +4299,6 @@
             </objects>
             <point key="canvasLocation" x="16365" y="-1355.2816901408451"/>
         </scene>
-        <!--Welcome Back View Controller-->
-        <scene sceneID="2VX-q4-ks6">
-            <objects>
-                <viewController id="mQJ-kl-M0B" customClass="WelcomeBackViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="qjB-BT-M7K">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FxU-28-C3U">
-                                <rect key="frame" x="16" y="414" width="288" height="42"/>
-                                <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="8oa-50-cXt"/>
-                                </constraints>
-                                <state key="normal" title="Enable Face ID">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="bioAuthenticateClicked:" destination="mQJ-kl-M0B" eventType="touchUpInside" id="7eb-Wd-S2k"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="keb-Y3-E1o">
-                                <rect key="frame" x="16" y="476" width="288" height="42"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="k8b-bG-AuP"/>
-                                </constraints>
-                                <state key="normal" title="Set PIN">
-                                    <color key="titleColor" name="customMatrixGreen"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="setPinClicked:" destination="mQJ-kl-M0B" eventType="touchUpInside" id="UPR-Ky-j2x"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome back to your bitcoin wallet! " lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rdl-rz-FFn">
-                                <rect key="frame" x="30" y="104" width="260" height="158"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="44"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <constraints>
-                            <constraint firstItem="72c-Oz-4s2" firstAttribute="trailing" secondItem="keb-Y3-E1o" secondAttribute="trailing" constant="16" id="7IX-Rj-K7m"/>
-                            <constraint firstItem="72c-Oz-4s2" firstAttribute="trailing" secondItem="FxU-28-C3U" secondAttribute="trailing" constant="16" id="EK3-zc-Ahc"/>
-                            <constraint firstItem="FxU-28-C3U" firstAttribute="leading" secondItem="72c-Oz-4s2" secondAttribute="leading" constant="16" id="Mtt-wZ-97f"/>
-                            <constraint firstItem="keb-Y3-E1o" firstAttribute="leading" secondItem="72c-Oz-4s2" secondAttribute="leading" constant="16" id="Vgo-5m-GLW"/>
-                            <constraint firstItem="rdl-rz-FFn" firstAttribute="top" secondItem="72c-Oz-4s2" secondAttribute="top" constant="40" id="aEn-9A-dKd"/>
-                            <constraint firstItem="rdl-rz-FFn" firstAttribute="leading" secondItem="72c-Oz-4s2" secondAttribute="leading" constant="30" id="akA-I6-XlV"/>
-                            <constraint firstItem="72c-Oz-4s2" firstAttribute="trailing" secondItem="rdl-rz-FFn" secondAttribute="trailing" constant="30" id="oUX-2g-Ejq"/>
-                            <constraint firstItem="keb-Y3-E1o" firstAttribute="top" secondItem="FxU-28-C3U" secondAttribute="bottom" constant="20" id="tWE-Bz-99i"/>
-                            <constraint firstItem="72c-Oz-4s2" firstAttribute="bottom" secondItem="keb-Y3-E1o" secondAttribute="bottom" constant="50" id="wbd-Dp-hKV"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="72c-Oz-4s2"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="xLY-JC-KVm">
-                        <barButtonItem key="backBarButtonItem" title=" " id="c4A-Um-edA"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="bottomButon" destination="keb-Y3-E1o" id="raF-Oj-ymQ"/>
-                        <outlet property="topButton" destination="FxU-28-C3U" id="PJc-lA-zgq"/>
-                        <outlet property="welcomeLabel" destination="rdl-rz-FFn" id="mKN-r7-oLN"/>
-                        <segue destination="lvA-Oh-Rjc" kind="show" identifier="pin" id="wGg-ef-t0T"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="O9x-P2-kr0" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="392" y="753"/>
-        </scene>
         <!--Transaction Fee-->
         <scene sceneID="Cw0-YH-0iB">
             <objects>
@@ -5086,11 +5011,11 @@
         <segue reference="NmU-wd-kgf"/>
         <segue reference="qOR-xW-NTO"/>
         <segue reference="N3b-0p-Evi"/>
-        <segue reference="ho6-WN-AfT"/>
+        <segue reference="4Ug-fi-57N"/>
         <segue reference="W5q-up-0wY"/>
         <segue reference="saa-dB-vMn"/>
         <segue reference="J3A-P7-WsW"/>
         <segue reference="JAa-xy-EZp"/>
-        <segue reference="Kqq-cQ-hZv"/>
+        <segue reference="rZR-ak-fSt"/>
     </inferredMetricsTieBreakers>
 </document>

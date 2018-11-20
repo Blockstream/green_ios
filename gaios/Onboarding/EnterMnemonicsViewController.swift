@@ -6,6 +6,7 @@ import NVActivityIndicatorView
 class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var doneButton: UIButton!
+    @IBOutlet weak var scanBarButton: UIBarButtonItem!
 
     let WL: [String] = getBIP39WordList()
 
@@ -39,6 +40,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
     var adaptToSmallScreen = false
+    var isScannerVisible = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -241,6 +243,13 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         }
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let pinController = segue.destination as? PinLoginViewController {
+            pinController.setPinMode = true
+            pinController.restoreMode = true
+        }
+    }
+
     func checkTextfield(textField: UITextField) {
         let suggestions = getSuggestions(prefix: textField.text!)
         textField.textColor = suggestions.isEmpty ? UIColor.red : UIColor.white
@@ -401,8 +410,12 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         }
     }
 
-    @IBAction func startQRScan(_ sender: Any) {
-        startScan()
+    @IBAction func startQRScan(_ sender: UIBarButtonItem) {
+        if !isScannerVisible {
+            startScan()
+        } else {
+            stopScan(sender: nil)
+        } 
     }
 
     func startScan() {
@@ -451,15 +464,20 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
             QRCodeReader.addSubview(qrCodeFrameView)
             QRCodeReader.bringSubview(toFront: qrCodeFrameView)
         }
+        // set title bar
+        isScannerVisible = true
+        scanBarButton.image = UIImage(named: "stepIndicator")
     }
 
-    @objc func stopScan(sender:UITapGestureRecognizer) {
+    @objc func stopScan(sender:UITapGestureRecognizer?) {
         QRCodeReader.removeFromSuperview()
         self.captureSession.stopRunning()
         self.videoPreviewLayer?.removeFromSuperlayer()
         self.qrCodeFrameView?.frame = CGRect.zero
+        // set titlebar
+        isScannerVisible = false
+        scanBarButton.image = UIImage(named: "scan")
     }
-
 }
 
 extension EnterMnemonicsViewController: AVCaptureMetadataOutputObjectsDelegate {
@@ -490,13 +508,9 @@ extension EnterMnemonicsViewController: AVCaptureMetadataOutputObjectsDelegate {
                         doneButtonEnable()
                     }
                 }
-                QRCodeReader.removeFromSuperview()
-                self.captureSession.stopRunning()
-                self.videoPreviewLayer?.removeFromSuperlayer()
-                self.qrCodeFrameView?.frame = CGRect.zero
+                stopScan(sender: nil)
             }
         }
-        //captureSession.stopRunning()
     }
 }
 
