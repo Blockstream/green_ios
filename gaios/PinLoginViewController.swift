@@ -110,7 +110,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     @IBAction func numberClicked(_ sender: UIButton) {
         pinCode += (sender.titleLabel?.text)!
-        updateView()
+        pinAppend()
         if (pinCode.count < 6) {
             return
         }
@@ -216,13 +216,24 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     func updateView() {
         let count = min(labels.count, pinCode.count)
         for (i, c) in zip(0..<count, pinCode) {
-            labels[i].text = String(c)
+            labels[i].text = "*"
             labels[i].isHidden = false
         }
         createIndicator(position: pinCode.count)
         for i in count..<labels.count {
             labels[i].isHidden = true
         }
+    }
+
+    func pinAppend() {
+        let count = self.pinCode.count
+        labels[count - 1].text = String(pinCode.last!)
+        labels[count - 1].isHidden = false
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
+            self.labels[count - 1].text = "*"
+            self.labels[count - 1].sizeToFit()
+        }
+        createIndicator(position: pinCode.count)
     }
 
     func createIndicator(position: Int) {
