@@ -1,14 +1,6 @@
 #/usr/bin/env bash
 set -e
 
-if [ ! -d gdk ]; then
-    git clone git@gl.blockstream.io:greenaddress/gdk.git
-fi
-
-if [ ! -d Pods ]; then
-    pod install
-fi
-
 GETOPT='/usr/local/opt/gnu-getopt/bin/getopt'
 
 if (($# < 1)); then
@@ -20,16 +12,29 @@ TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case $1 in
-        --iphone) SDK=iphone; shift ;;
-        --iphonesim) SDK=iphonesim; shift ;;
+        --iphone) DEVICE=iphoneos; TARGET=iphone; shift ;;
+        --iphonesim) DEVICE=iphonesim; TARGET=iphonesim; shift ;;
         -- ) break ;;
     esac
 done
 
-if [ -d gdk ]; then
+if [ ! -d gdk ]; then
+    git clone https://github.com/Blockstream/gdk.git
+else
     cd gdk
-    ./tools/build.sh $@
+    git init
+    git remote add origin https://github.com/Blockstream/gdk
+    git fetch
+    git checkout master
+    ./tools/build.sh --$TARGET static
     cd ..
 fi
 
-xcodebuild -sdk $(xcodebuild -showsdks | grep $SDK | tr -s ' ' | cut -d ' ' -f 6-) -workspace gaios.xcworkspace -scheme gaios
+if [ ! -d Pods ]; then
+    pod update
+    pod install
+fi
+
+SDK=$(xcodebuild -showsdks | grep $DEVICE | tr -s ' ' | tr -d '\-' | cut -f 3-)
+xcodebuild CODE_SIGN_STYLE="Manual" PROVISIONING_PROFILE="67cbf94c-5e0b-4f49-bf7f-418ec3a17b58" DEVELOPMENT_TEAM="D9W37S9468" CODE_SIGN_IDENTITY="iPhone Distribution" -$SDK -workspace gaios.xcworkspace -scheme gaios clean archive -configuration release -archivePath ./build/Green.xcarchive
+xcodebuild -exportArchive -archivePath ./build/Green.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build/Green.ipa
