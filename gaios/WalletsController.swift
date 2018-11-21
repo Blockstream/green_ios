@@ -207,7 +207,8 @@ extension WalletsController: CustomAlertViewInputDelegate {
     func okButtonTapped(selectedOption: String, textFieldValue: String) {
         let dict = ["type": "2of2", "name": textFieldValue]
         do {
-            try getSession().createSubaccount(details: dict)
+            let call = try getSession().createSubaccount(details: dict)
+            try DummyResolve(call: call)
             refreshWallets()
         } catch {
             print("something went worng with creating subAccount")

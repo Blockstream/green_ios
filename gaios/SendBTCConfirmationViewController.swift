@@ -77,8 +77,11 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         if self.transaction?.data["is_sweep"] as! Bool {
             DispatchQueue.global(qos: .background).async {
                 wrap {
-                    let tx = try getSession().signTransaction(details: self.transaction!.data)!
-                    _ = try getSession().broadcastTransaction(tx_hex: tx["transaction"] as! String)
+                    let call = try getSession().signTransaction(details: self.transaction!.data)
+                    let result_dict = try DummyResolve(call: call)
+                    let result = result_dict["result"] as! [String : Any]
+                    let tx_hex = result["transaction"] as! String
+                    _ = try getSession().broadcastTransaction(tx_hex: tx_hex)
                 }.done {
                     self.executeOnDone()
                 } .catch { error in

@@ -216,7 +216,8 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         }.done { (result: Bool) in
             if (result) {
                 wrap {
-                    return try getSession().login(mnemonic: trimmedUserProvidedMnemonic)
+                    let call = try getSession().login(mnemonic: trimmedUserProvidedMnemonic)
+                    try DummyResolve(call: call)
                     }.done { _ in
                         Storage.wipeAll()
                         let array = getAppDelegate().getMnemonicsArray(mnemonics: trimmedUserProvidedMnemonic)

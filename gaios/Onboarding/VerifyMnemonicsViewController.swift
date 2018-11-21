@@ -109,10 +109,14 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         let size = CGSize(width: 30, height: 30)
         startAnimating(size, message: "Registering...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
         DispatchQueue.global(qos: .background).async {
-            wrap { return try getSession().registerUser(mnemonic: mnemonics) }
-                .done { _ in
-                    wrap { return try getSession().login(mnemonic: mnemonics) }
-                        .done { _ in
+            wrap {
+                    let call = try getSession().registerUser(mnemonic: mnemonics)
+                    try DummyResolve(call: call)
+                }.done { _ in
+                    wrap {
+                            let call = try getSession().login(mnemonic: mnemonics)
+                            try DummyResolve(call: call)
+                        }.done { _ in
                             DispatchQueue.main.async {
                                 self.stopAnimating()
                                 Storage.wipeAll()
