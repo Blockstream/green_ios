@@ -7,7 +7,6 @@ class WalletsController: UIViewController, WalletViewDelegate {
     @IBOutlet weak var warningLabel: UILabel!
 
     var wallets:Array<WalletItem> = Array<WalletItem>()
-    var zoomView: UIView? = nil
     var presented: Bool = false
     var presentedWallet: WalletItem? = nil
 
@@ -83,10 +82,6 @@ class WalletsController: UIViewController, WalletViewDelegate {
             cardView.presentedDidUpdate()
             let uri = bip21Helper.btcURIforAddress(address: item.address)
             cardView.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: cardView.QRImageView.frame)
-            let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
-            cardView.QRImageView.isUserInteractionEnabled = false
-            cardView.QRImageView.addGestureRecognizer(tap)
-            cardView.QRImageView.tag = index
             coloredCardViews.append(cardView)
         }
 
@@ -103,16 +98,6 @@ class WalletsController: UIViewController, WalletViewDelegate {
                 self.refreshBalance()
             }
         }
-    }
-
-    @objc func zoomQR(recognizer: UITapGestureRecognizer) {
-        /*if(!presented) {
-            return
-        }
-        if let tag = recognizer.view?.tag {
-            let item = wallets[tag]
-            self.performSegue(withIdentifier: "address", sender: item)
-        }*/
     }
 
     func refreshWallets() {
