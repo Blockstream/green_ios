@@ -4892,7 +4892,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="VnM-9c-bim">
             <objects>
-                <tabBarController id="YV9-qz-m5y" customClass="TabBarController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController id="YV9-qz-m5y" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" barStyle="black" translucent="NO" itemPositioning="fill" id="xM0-zh-2KN">
                         <rect key="frame" x="0.0" y="975" width="768" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>

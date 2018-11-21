@@ -92,7 +92,6 @@
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
-		811EE259219E2BF800684AD8 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EE258219E2BF800684AD8 /* TabBarController.swift */; };
 		811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EE25C219EC17800684AD8 /* TransactionsViewController.swift */; };
 		81310C452189D10F00563B91 /* GDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* GDKHelper.swift */; };
 		81F22333219EE91D005E65D4 /* WalletCardHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81F22332219EE91D005E65D4 /* WalletCardHeader.xib */; };
@@ -214,7 +213,6 @@
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
-		811EE258219E2BF800684AD8 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		811EE25C219EC17800684AD8 /* TransactionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsViewController.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* GDKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GDKHelper.swift; sourceTree = "<group>"; };
 		81F22332219EE91D005E65D4 /* WalletCardHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCardHeader.xib; sourceTree = "<group>"; };
@@ -379,7 +377,6 @@
 				09358BD52106A57D00D1066F /* CustomAletView.swift */,
 				097D20C9218068850089C379 /* AddressDetailViewController.swift */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
-				811EE258219E2BF800684AD8 /* TabBarController.swift */,
 				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
 				092C7BC820D238BD00F90DF2 /* WalletsController.swift */,
 				811EE25C219EC17800684AD8 /* TransactionsViewController.swift */,
@@ -800,7 +797,6 @@
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
-				811EE259219E2BF800684AD8 /* TabBarController.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
