@@ -10,16 +10,14 @@ import Foundation
 import UIKit
 
 class WalletCardHeader : CardView {
-    @IBOutlet weak var qrImageView: UIImageView!
-
-    @IBOutlet weak var nameLabel: UILabel!
-
-    @IBOutlet weak var addressLabel: UILabel!
-    @IBOutlet weak var balanceLabel: UILabel!
     var index: Int = 0
     var wallet: WalletItem? = nil
 
-    @IBOutlet weak var sendButton: UIButton!
-    @IBOutlet weak var receiveButton: UIButton!
-    
+    @IBOutlet weak var qrImageView: UIImageView!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var addressLabel: UILabel!
+    @IBOutlet weak var balanceLabel: UILabel!
+    @IBOutlet weak var sendView: UIView!
+    @IBOutlet weak var dividerView: UIView!
+    @IBOutlet weak var receiveView: UIView!
 }

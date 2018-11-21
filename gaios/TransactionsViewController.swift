@@ -149,13 +149,12 @@ class TransactionsController: UITableViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
         view.qrImageView.isUserInteractionEnabled = true
         view.qrImageView.addGestureRecognizer(tap)
-
-        view.receiveButton.addTarget(self, action: #selector(self.receiveToWallet(_:)), for: .touchUpInside)
-        view.sendButton.addTarget(self, action: #selector(self.sendfromWallet(_:)), for: .touchUpInside)
-
+        view.sendView.isHidden = AccountStore.shared.isWatchOnly
+        view.dividerView.isHidden = AccountStore.shared.isWatchOnly
+        view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.receiveToWallet)))
+        view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.self.sendfromWallet)))
         return view
     }
-
 
     @objc func sendfromWallet(_ sender: UIButton) {
         self.performSegue(withIdentifier: "send", sender: self)

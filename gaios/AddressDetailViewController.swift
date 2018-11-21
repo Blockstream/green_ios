@@ -8,22 +8,22 @@ class AddressDetailViewController: UIViewController {
     var wallet: WalletItem? = nil
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var qrImageView: UIImageView!
-    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var receiveAddressLabel: UILabel!
-    var amount: Double = 0
+    @IBOutlet weak var sweepButton: UIButton!
 
+    var amount: Double = 0
     var qrCodeFrameView: UIView?
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = NSLocalizedString("id_address", comment: "")
+        title = NSLocalizedString("id_address", comment: "")
         receiveAddressLabel.text = wallet?.address
         updateQRCode()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         backgroundView.addGestureRecognizer(tap)
-        self.navigationController?.isToolbarHidden = true
+        sweepButton.isHidden = AccountStore.shared.isWatchOnly
     }
 
     @IBAction func sweepButtonClicked(_ sender: Any) {
