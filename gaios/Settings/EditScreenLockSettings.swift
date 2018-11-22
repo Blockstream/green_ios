@@ -5,19 +5,15 @@ class EditScreenLockSettings: UIViewController {
     @IBOutlet weak var bioAuthLabel: UILabel!
     @IBOutlet weak var bioSwitch: UISwitch!
     @IBOutlet weak var pinSwitch: UISwitch!
-    let bioAuth = BiometricAuthentication()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if bioAuth.canEvaluatePolicy() {
-            if bioAuth.biometricType() == .faceID {
-                bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
-            } else if bioAuth.biometricType() == .touchID {
-                bioAuthLabel.text = NSLocalizedString("id_touch_id", comment: "")
-            } else {
-                bioAuthLabel.text = NSLocalizedString("id_touchface_id_not_available", comment: "")
-                bioSwitch.isUserInteractionEnabled = false
-            }
+
+        let biometryType = KeychainHelper.biometryType
+        if biometryType == .faceID {
+            bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
+        } else if biometryType == .touchID {
+            bioAuthLabel.text = NSLocalizedString("id_touch_id", comment: "")
         } else {
             bioAuthLabel.text = NSLocalizedString("id_touchface_id_not_available", comment: "")
             bioSwitch.isUserInteractionEnabled = false

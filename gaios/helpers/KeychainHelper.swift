@@ -1,4 +1,5 @@
 import Foundation
+import LocalAuthentication
 import Security
 
 class KeychainHelper {
@@ -10,6 +11,20 @@ class KeychainHelper {
     static let ECCEncryptionType = SecKeyAlgorithm.eciesEncryptionCofactorX963SHA256AESGCM
     static let ECCKeyType = kSecAttrKeyTypeECSECPrimeRandom
     static let ECCKeySizeInBits = 256
+
+    static var biometryType: LABiometryType? {
+        let context = LAContext()
+
+        var error: NSError?
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
+            return nil
+        }
+        return context.biometryType
+    }
+
+    static public func supportsBiometricAuthentication() -> Bool {
+        return biometryType != nil
+    }
 
     fileprivate static func describeKeychainError(_ status: OSStatus) -> OSStatus {
         if status != errSecSuccess && status != errSecDuplicateItem {

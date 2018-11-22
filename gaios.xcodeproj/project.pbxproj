@@ -85,7 +85,6 @@
 		09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */; };
 		09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B656217AC833001B5002 /* RequestNLockEmails.swift */; };
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
-		09DA612820E73C4E00C3EA03 /* BiometricAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612720E73C4E00C3EA03 /* BiometricAuthentication.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */; };
@@ -200,7 +199,6 @@
 		09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestTwoFactorReset.swift; sourceTree = "<group>"; };
 		09C5B656217AC833001B5002 /* RequestNLockEmails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestNLockEmails.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
-		09DA612720E73C4E00C3EA03 /* BiometricAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuthentication.swift; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -308,7 +306,6 @@
 				0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */,
 				09DA612520E73A2300C3EA03 /* String+random.swift */,
 				0992F87320E6E40B00F6AAAB /* KeychainHelper.swift */,
-				09DA612720E73C4E00C3EA03 /* BiometricAuthentication.swift */,
 				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
 				092D05AE2123E27A00B9B7CD /* NotificationStore.swift */,
 				09309F1B212FB55000DE093B /* SettingsStore.swift */,
@@ -806,7 +803,6 @@
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
-				09DA612820E73C4E00C3EA03 /* BiometricAuthentication.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
 				09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */,

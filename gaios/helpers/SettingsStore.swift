@@ -302,17 +302,17 @@ class SettingsStore {
     }
 
     func defaultScreenLock() -> SettingsItem {
-        let bioAuth = BiometricAuthentication()
         let network = getNetworkSettings().network
         let bioData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
         let pinData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
         var property = [String:String]()
         var secText = ""
         if bioData && !pinData {
+            let biometryType = KeychainHelper.biometryType
             property = [settingsScreenLock : String(ScreenLock.FaceID.rawValue)]
-            if bioAuth.biometricType() == .faceID {
+            if biometryType == .faceID {
                 secText = stringForScreenLockSettings(screenLock: ScreenLock.FaceID)
-            } else if bioAuth.biometricType() == .touchID {
+            } else if biometryType == .touchID {
                 secText = stringForScreenLockSettings(screenLock: ScreenLock.TouchID)
             }
         } else if pinData && !bioData {

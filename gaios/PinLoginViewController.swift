@@ -20,9 +20,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var restoreMode: Bool = false
 
     var confirmPin: Bool = false
-    var bioAuth: Bool = false
-    let bioID = BiometricAuthentication()
-
 
     var views: Array<UIView> = Array<UIView>()
     var labels: Array<UILabel> = Array<UILabel>()
@@ -39,10 +36,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             title = NSLocalizedString("id_enter_pin", comment: "")
         }
 
-        // load data
-        let network = getNetworkSettings().network
-        bioAuth = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
-
         // show pin label
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
         for label in labels {
@@ -51,6 +44,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         attempts.isHidden = true
 
         // customize network image
+        let network = getNetworkSettings().network
         let networkBarItem = UIBarButtonItem(image: UIImage(named: network)!, style: .plain, target: self, action: nil)
         navigationItem.rightBarButtonItem = networkBarItem
 
@@ -66,6 +60,9 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         if setPinMode || confirmPin {
             return
         }
+
+        let network = getNetworkSettings().network
+        let bioAuth = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
         if bioAuth {
             let size = CGSize(width: 30, height: 30)
             self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
