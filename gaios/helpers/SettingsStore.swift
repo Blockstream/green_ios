@@ -71,10 +71,10 @@ class SettingsStore {
         let ccy_exchange = ["currency": currency, "exchange": exchange]
         return wrap {
             let call = try getSession().changeSettings(details: ["pricing": ccy_exchange])
-            // FIXME: Surrently no settings require 2fa so a dummy call will work,
+            // FIXME: Currently no settings require 2fa so a dummy call will work,
             // but this should allow for 2fa request/resolve once the other callers
             // do too.
-            try DummyResolve(call: call)
+            _ = try DummyResolve(call: call)
         }.done {
             self.allSettings[self.settingsCurrency] = SettingsItem(settingsName: self.settingsCurrency, property: ccy_exchange, text: self.accountCurrency, secondaryText: currency)
             self.loadAllSections()
@@ -202,15 +202,15 @@ class SettingsStore {
         writeSettingsToDisk()
     }
 
-    func getTwoFactorLimit() -> (enabled: Bool, treshold: Double, fiat: Bool) {
+    func getTwoFactorLimit() -> (enabled: Bool, threshold: Double, fiat: Bool) {
         let set =  allSettings[settingsTwoFactorLimit]
         let enabled = set?.settingsProperty["enabled"] == "true" ? true : false
-        if (!enabled) {
-            return(false, 0, false)
+        if !enabled {
+            return (false, 0, false)
         }
         let fiat = set?.settingsProperty["fiat"] == "true" ? true : false
-        let treshold = Double(set!.settingsProperty["enabled"]!)!
-        return (enabled, treshold, fiat)
+        let threshold = Double(set!.settingsProperty["enabled"]!)!
+        return (enabled, threshold, fiat)
     }
 
     func setNLocktimeEmailsEnabled(enabled: Bool) {
@@ -303,12 +303,12 @@ class SettingsStore {
 
     func defaultScreenLock() -> SettingsItem {
         let network = getNetworkSettings().network
-        let bioData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
-        let pinData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+        let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+        let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
         var property = [String:String]()
         var secText = ""
         if bioData && !pinData {
-            let biometryType = KeychainHelper.biometryType
+            let biometryType = AuthenticationTypeHandler.biometryType
             property = [settingsScreenLock : String(ScreenLock.FaceID.rawValue)]
             if biometryType == .faceID {
                 secText = stringForScreenLockSettings(screenLock: ScreenLock.FaceID)

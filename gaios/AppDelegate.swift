@@ -263,18 +263,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     static func removeKeychainData() {
         let network = getNetworkSettings().network
-        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
-        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
      }
 
     static func removeBioKeychainData() {
         let network = getNetworkSettings().network
-        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
     }
 
     static func removePinKeychainData() {
         let network = getNetworkSettings().network
-        _ = KeychainHelper.removeAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
     }
 
     func connect() {
@@ -323,8 +323,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("locking now")
         self.window?.endEditing(true)
         let network = getNetworkSettings().network
-        let bioData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
-        let pinData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+        let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+        let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
         if pinData || bioData {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginNavigationController") as! UINavigationController
@@ -360,7 +360,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Generate a keypair to encrypt user data
         let initKey = network + "FirstInitialization"
         if !UserDefaults.standard.bool(forKey: initKey) {
-            let _ = KeychainHelper.generatePrivateKey(network: network)
+            let _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
             AppDelegate.removeKeychainData()
             UserDefaults.standard.set(true, forKey: initKey)
         }

@@ -2,7 +2,7 @@ import Foundation
 import LocalAuthentication
 import Security
 
-class KeychainHelper {
+class AuthenticationTypeHandler {
     static let AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
     static let AuthKeyPIN = "com.blockstream.green.auth_key_pin"
 
@@ -23,7 +23,10 @@ class KeychainHelper {
     }
 
     static public func supportsBiometricAuthentication() -> Bool {
-        return biometryType != nil
+        guard let biometryType = biometryType else {
+            return false
+        }
+        return biometryType == LABiometryType.faceID || biometryType == LABiometryType.touchID
     }
 
     fileprivate static func describeKeychainError(_ status: OSStatus) -> OSStatus {
@@ -36,6 +39,11 @@ class KeychainHelper {
             }
         }
         return status
+    }
+
+    fileprivate static func describeSecurityError(_ error: Unmanaged<CFError>) {
+        let err = CFErrorCopyDescription(error.takeRetainedValue())
+        NSLog("Operation failed: \(String(describing: err))")
     }
 
     fileprivate static func callWrapper(fun call: @autoclosure () -> Int32) -> OSStatus {
@@ -58,7 +66,7 @@ class KeychainHelper {
         return access
     }
 
-    public static func generatePrivateKey(network: String) -> Bool {
+    public static func generateBiometricPrivateKey(network: String) -> Bool {
         let acl = getACL()
         guard acl != nil else {
             return false

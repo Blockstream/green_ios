@@ -9,7 +9,7 @@ class EditScreenLockSettings: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let biometryType = KeychainHelper.biometryType
+        let biometryType = AuthenticationTypeHandler.biometryType
         if biometryType == .faceID {
             bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
         } else if biometryType == .touchID {
@@ -67,7 +67,7 @@ class EditScreenLockSettings: UIViewController {
                     return
                 }
                 let network = getNetworkSettings().network
-                let succeeded = KeychainHelper.addBiometryType(data: result, extraData: password, forNetwork: network)
+                let succeeded = AuthenticationTypeHandler.addBiometryType(data: result, extraData: password, forNetwork: network)
                 guard succeeded else {
                     return
                 }

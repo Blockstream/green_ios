@@ -62,7 +62,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         }
 
         let network = getNetworkSettings().network
-        let bioAuth = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
+        let bioAuth = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
         if bioAuth {
             let size = CGSize(width: 30, height: 30)
             self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
@@ -73,7 +73,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                     }
                 }
                 let network = getNetworkSettings().network
-                let bioData = KeychainHelper.getAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
+                let bioData = AuthenticationTypeHandler.getAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
                 guard bioData != nil else {
                     return
                 }
@@ -132,7 +132,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                         DispatchQueue.main.async {
                             self.stopAnimating()
                             let network = getNetworkSettings().network
-                            let succeeded = KeychainHelper.addPIN(data: result!, forNetwork: network)
+                            let succeeded = AuthenticationTypeHandler.addPIN(data: result!, forNetwork: network)
                             guard succeeded else {
                                 return
                             }
@@ -168,7 +168,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
             DispatchQueue.global(qos: .background).async {
                 let network = getNetworkSettings().network
-                let pinData = KeychainHelper.getAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+                let pinData = AuthenticationTypeHandler.getAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
                 guard pinData != nil else {
                     self.stopAnimating()
                     return
