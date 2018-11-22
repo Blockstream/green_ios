@@ -16,7 +16,7 @@ class EditScreenLockSettings: UIViewController {
             bioAuthLabel.text = NSLocalizedString("id_touch_id", comment: "")
         } else {
             bioAuthLabel.text = NSLocalizedString("id_touchface_id_not_available", comment: "")
-            bioSwitch.isUserInteractionEnabled = false
+            bioSwitch.isEnabled = false
         }
         title = NSLocalizedString("id_screen_lock", comment: "")
     }
@@ -28,18 +28,26 @@ class EditScreenLockSettings: UIViewController {
 
     func updateValues() {
         let settings = SettingsStore.shared.getScreenLockSetting()
-        if(settings == ScreenLock.None) {
+        if settings == ScreenLock.None {
             bioSwitch.isOn = false
+            bioSwitch.isEnabled = true
             pinSwitch.isOn = false
-        } else if (settings == ScreenLock.all) {
+            pinSwitch.isEnabled = true
+        } else if settings == ScreenLock.all {
             bioSwitch.isOn = true
+            bioSwitch.isEnabled = false
             pinSwitch.isOn = true
-        } else if (settings == ScreenLock.FaceID || settings == ScreenLock.TouchID) {
+            pinSwitch.isEnabled = false
+        } else if settings == ScreenLock.FaceID || settings == ScreenLock.TouchID {
             bioSwitch.isOn = true
+            bioSwitch.isEnabled = false
             pinSwitch.isOn = false
-        } else if (settings == ScreenLock.Pin) {
+            pinSwitch.isEnabled = true
+        } else if settings == ScreenLock.Pin {
             bioSwitch.isOn = false
+            bioSwitch.isEnabled = true
             pinSwitch.isOn = true
+            pinSwitch.isEnabled = false
         }
     }
 
