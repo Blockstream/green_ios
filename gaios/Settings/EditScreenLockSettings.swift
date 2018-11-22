@@ -49,7 +49,7 @@ class EditScreenLockSettings: UIViewController {
 
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
         if (!sender.isOn) {
-            try! AppDelegate.removeBioKeychainData()
+            AppDelegate.removeBioKeychainData()
             SettingsStore.shared.setScreenLockSettings()
             self.updateValues()
         } else {
@@ -85,10 +85,7 @@ class EditScreenLockSettings: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? PinLoginViewController {
             let todo = sender as! String
-            if (todo == "remove") {
-                nextController.removePinMode = true
-                nextController.editPinMode = true
-            } else if (todo == "set") {
+            if (todo == "set") {
                 nextController.editPinMode = true
                 nextController.setPinMode = true
             }

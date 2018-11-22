@@ -325,20 +325,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let network = getNetworkSettings().network
         let bioData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
         let pinData = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
-        if bioData && pinData {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginNavigationController") as! UINavigationController
-            //firstVC.bioAuth = true
-            self.window?.rootViewController = firstVC
-            self.window?.makeKeyAndVisible()
-            return
-        } else if bioData {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "FaceIDViewController") as! FaceIDViewController
-            self.window?.rootViewController = firstVC
-            self.window?.makeKeyAndVisible()
-            return
-        } else if pinData {
+        if pinData || bioData {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginNavigationController") as! UINavigationController
             self.window?.rootViewController = firstVC

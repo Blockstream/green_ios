@@ -86,7 +86,6 @@
 		09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B656217AC833001B5002 /* RequestNLockEmails.swift */; };
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
 		09DA612820E73C4E00C3EA03 /* BiometricAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612720E73C4E00C3EA03 /* BiometricAuthentication.swift */; };
-		09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */; };
@@ -202,7 +201,6 @@
 		09C5B656217AC833001B5002 /* RequestNLockEmails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestNLockEmails.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
 		09DA612720E73C4E00C3EA03 /* BiometricAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuthentication.swift; sourceTree = "<group>"; };
-		09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDViewController.swift; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -382,7 +380,6 @@
 				098192822176D05500D8434F /* CustomApplication.swift */,
 				097D20CB218161B10089C379 /* WatchOnlySignIn.swift */,
 				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
-				09DA612920E81D6A00C3EA03 /* FaceIDViewController.swift */,
 				09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */,
 				0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */,
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
@@ -767,7 +764,6 @@
 			files = (
 				0933A599210716EC00C43838 /* GreenAddress.swift in Sources */,
 				09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */,
-				09DA612A20E81D6A00C3EA03 /* FaceIDViewController.swift in Sources */,
 				0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */,
 				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,

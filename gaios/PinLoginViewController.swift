@@ -17,7 +17,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     var setPinMode: Bool = false
     var editPinMode: Bool = false
-    var removePinMode: Bool = false
     var restoreMode: Bool = false
 
     var confirmPin: Bool = false
@@ -41,7 +40,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         }
 
         // load data
-        let network = getNetwork()
+        let network = getNetworkSettings().network
+        bioAuth = KeychainHelper.findAuth(method: KeychainHelper.AuthKeyBiometric, forNetwork: network)
 
         // show pin label
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
@@ -51,7 +51,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         attempts.isHidden = true
 
         // customize network image
-        let networkBarItem = UIBarButtonItem(image: network == Network.MainNet ? UIImage(named: "mainnet")! : UIImage(named: "testnet")!, style: .plain, target: self, action: nil)
+        let networkBarItem = UIBarButtonItem(image: UIImage(named: network)!, style: .plain, target: self, action: nil)
         navigationItem.rightBarButtonItem = networkBarItem
 
         // customize back button
@@ -63,6 +63,9 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateView()
+        if setPinMode || confirmPin {
+            return
+        }
         if bioAuth {
             let size = CGSize(width: 30, height: 30)
             self.startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
@@ -163,13 +166,16 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             updateView()
             //show confirm pin
             title = "Confirm PIN"
-        } else if (removePinMode == true) {
         } else {
             let size = CGSize(width: 30, height: 30)
             startAnimating(size, message: "Logging in...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
             DispatchQueue.global(qos: .background).async {
                 let network = getNetworkSettings().network
                 let pinData = KeychainHelper.getAuth(method: KeychainHelper.AuthKeyPIN, forNetwork: network)
+                guard pinData != nil else {
+                    self.stopAnimating()
+                    return
+                }
                 getGAService().loginWithPin(pin: self.pinCode, pinData: pinData!,
                                             completionHandler: completion(
                                                 onResult: { _ in
@@ -205,14 +211,13 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func updateView() {
-        let count = min(labels.count, pinCode.count)
-        for (i, c) in zip(0..<count, pinCode) {
-            labels[i].text = "*"
-            labels[i].isHidden = false
+        for label in labels {
+            label.text = "*"
+            label.isHidden = false
         }
         createIndicator(position: pinCode.count)
-        for i in count..<labels.count {
-            labels[i].isHidden = true
+        for label in labels {
+            label.isHidden = true
         }
     }
 

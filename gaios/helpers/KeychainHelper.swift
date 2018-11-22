@@ -156,7 +156,7 @@ class KeychainHelper {
         var status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         if status == errSecDuplicateItem {
             status = callWrapper(fun: SecItemDelete(q as CFDictionary))
-            status = callWrapper(fun: SecItemAdd(q as CFDictionary, nil))
+            status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         }
         return status
     }
@@ -180,7 +180,8 @@ class KeychainHelper {
             return nil
         }
         var extended = data
-        if toDecrypt && method == AuthKeyBiometric {
+        if toDecrypt {
+            precondition(method == AuthKeyBiometric)
             guard let decoded = Data(base64Encoded: data["encrypted_biometric"] as! String),
                 let plaintext = decrypt(base64Encoded: decoded, forNetwork: forNetwork) else {
                     return nil
@@ -191,7 +192,7 @@ class KeychainHelper {
     }
 
     public static func getAuth(method: String, forNetwork: String) -> [String: Any]? {
-        return get(method: method, toDecrypt: true, forNetwork: forNetwork)
+        return get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
     }
 
     public static func findAuth(method: String, forNetwork: String) -> Bool {
@@ -210,17 +211,11 @@ class KeychainHelper {
         var extended = data
         extended["encrypted_biometric"] = encrypted
         let status = set(method: AuthKeyBiometric, data: extended, forNetwork: forNetwork)
-        guard status == errSecSuccess else {
-            return true
-        }
-        return false
+        return status == errSecSuccess
     }
 
     public static func addPIN(data: [String: Any], forNetwork: String) -> Bool {
         let status = set(method: AuthKeyPIN, data: data, forNetwork: forNetwork)
-        guard status == errSecSuccess else {
-            return false
-        }
-        return true
+        return status == errSecSuccess
     }
 }
