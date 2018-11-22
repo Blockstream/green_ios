@@ -39,9 +39,6 @@
 		09309F272136888C00DE093B /* DenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F262136888C00DE093B /* DenominationCell.swift */; };
 		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
 		0933A599210716EC00C43838 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0933A598210716EC00C43838 /* GreenAddress.swift */; };
-		09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */; };
-		09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD120FD671A009DCDEA /* AnnularLayer.swift */; };
-		09342FD420FD671F009DCDEA /* LineLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD320FD671E009DCDEA /* LineLayer.swift */; };
 		09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD721001A5E009DCDEA /* SettingsViewController.swift */; };
 		09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD921003961009DCDEA /* SettingsCell.swift */; };
 		09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FDB21004309009DCDEA /* CustomAlertInputView.swift */; };
@@ -153,9 +150,6 @@
 		09309F262136888C00DE093B /* DenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationCell.swift; sourceTree = "<group>"; };
 		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0933A598210716EC00C43838 /* GreenAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = gdk/src/swift/GreenAddress/Sources/GreenAddress/GreenAddress.swift; sourceTree = "<group>"; };
-		09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepIndicatorView.swift; sourceTree = "<group>"; };
-		09342FD120FD671A009DCDEA /* AnnularLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnnularLayer.swift; sourceTree = "<group>"; };
-		09342FD320FD671E009DCDEA /* LineLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineLayer.swift; sourceTree = "<group>"; };
 		09342FD721001A5E009DCDEA /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		09342FD921003961009DCDEA /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		09342FDB21004309009DCDEA /* CustomAlertInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertInputView.swift; sourceTree = "<group>"; };
@@ -260,9 +254,6 @@
 		092C7BC620D2381700F90DF2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				09342FCF20FD6714009DCDEA /* StepIndicatorView.swift */,
-				09342FD120FD671A009DCDEA /* AnnularLayer.swift */,
-				09342FD320FD671E009DCDEA /* LineLayer.swift */,
 				092C7BCF20D23DBD00F90DF2 /* CardView.swift */,
 				092C7BD020D23DBD00F90DF2 /* WalletView.swift */,
 				092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */,
@@ -793,7 +784,6 @@
 				09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */,
 				09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */,
 				0980B50021883AD9007715F4 /* DisputeRequestViewController.swift in Sources */,
-				09342FD020FD6714009DCDEA /* StepIndicatorView.swift in Sources */,
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
 				09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */,
@@ -813,7 +803,6 @@
 				811EE259219E2BF800684AD8 /* TabBarController.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
-				09342FD220FD671A009DCDEA /* AnnularLayer.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
 				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
@@ -822,7 +811,6 @@
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
 				092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */,
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
-				09342FD420FD671F009DCDEA /* LineLayer.swift in Sources */,
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
 				092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,

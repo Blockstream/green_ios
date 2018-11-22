@@ -2212,16 +2212,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BCZ-4S-HMT" customClass="StepIndicatorView" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="115" y="91.5" width="90" height="12"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="90" id="m3k-tV-F8z"/>
-                                    <constraint firstAttribute="height" constant="12" id="nZq-ZD-pBh"/>
-                                </constraints>
-                            </view>
                             <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8l0-Vs-wHx" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="462.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="423" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55" id="PtR-vI-9Km"/>
                                 </constraints>
@@ -2248,7 +2240,7 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rpD-pK-Vgo" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="320.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="281" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55" id="HTS-xC-Qzk"/>
                                 </constraints>
@@ -2275,7 +2267,7 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ihj-Me-kJe" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="249.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="210" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="6zW-L5-4bU"/>
                                     <constraint firstAttribute="height" constant="55" id="jkp-XF-VhE"/>
@@ -2303,13 +2295,13 @@
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="some word go in here" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ueP-Wq-fNm">
-                                <rect key="frame" x="95" y="143.5" width="130.5" height="16"/>
+                                <rect key="frame" x="95" y="104" width="130.5" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c3W-43-Qov" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="100" y="391.5" width="120" height="55"/>
+                                <rect key="frame" x="100" y="352" width="120" height="55"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55" id="m8q-Ew-Bt5"/>
                                 </constraints>
@@ -2341,15 +2333,13 @@
                             <constraint firstItem="c3W-43-Qov" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="25J-Cl-rtP"/>
                             <constraint firstItem="ihj-Me-kJe" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="3hg-d1-5Pr"/>
                             <constraint firstItem="c3W-43-Qov" firstAttribute="width" secondItem="ihj-Me-kJe" secondAttribute="width" id="C1S-kU-Jd8"/>
+                            <constraint firstItem="ueP-Wq-fNm" firstAttribute="top" secondItem="ysd-3L-I4w" secondAttribute="top" constant="40" id="Db0-nR-olQ"/>
                             <constraint firstItem="rpD-pK-Vgo" firstAttribute="width" secondItem="ihj-Me-kJe" secondAttribute="width" id="Vdh-Yo-lQZ"/>
                             <constraint firstItem="8l0-Vs-wHx" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="WOv-oU-Z6k"/>
                             <constraint firstItem="rpD-pK-Vgo" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="YoW-Aj-8Ie"/>
                             <constraint firstItem="ihj-Me-kJe" firstAttribute="top" secondItem="ueP-Wq-fNm" secondAttribute="bottom" constant="90" id="ZGm-Hz-CBQ"/>
                             <constraint firstItem="8l0-Vs-wHx" firstAttribute="width" secondItem="ihj-Me-kJe" secondAttribute="width" id="ZVe-HA-wyo"/>
-                            <constraint firstItem="ysd-3L-I4w" firstAttribute="top" secondItem="BCZ-4S-HMT" secondAttribute="bottom" constant="-39.5" id="eK8-3p-q4J"/>
                             <constraint firstItem="c3W-43-Qov" firstAttribute="top" secondItem="rpD-pK-Vgo" secondAttribute="bottom" constant="16" id="iu6-No-gP3"/>
-                            <constraint firstItem="ueP-Wq-fNm" firstAttribute="top" secondItem="BCZ-4S-HMT" secondAttribute="bottom" constant="40" id="jh1-5Y-UWD"/>
-                            <constraint firstItem="BCZ-4S-HMT" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="tBA-g0-az0"/>
                             <constraint firstItem="rpD-pK-Vgo" firstAttribute="top" secondItem="ihj-Me-kJe" secondAttribute="bottom" constant="16" id="uNB-dt-sna"/>
                             <constraint firstItem="ueP-Wq-fNm" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="uQX-6W-CFF"/>
                             <constraint firstItem="8l0-Vs-wHx" firstAttribute="top" secondItem="c3W-43-Qov" secondAttribute="bottom" constant="16" id="yXX-Qn-Ml3"/>
@@ -2365,7 +2355,6 @@
                         <outlet property="button1" destination="rpD-pK-Vgo" id="i65-mt-8IP"/>
                         <outlet property="button2" destination="c3W-43-Qov" id="NQG-WC-gWf"/>
                         <outlet property="button3" destination="8l0-Vs-wHx" id="H0G-Dq-fnE"/>
-                        <outlet property="stepIndicatorView" destination="BCZ-4S-HMT" id="HOO-5a-ZN8"/>
                         <segue destination="kWT-Yh-qgi" kind="show" identifier="pin" id="Kqq-cQ-hZv"/>
                     </connections>
                 </viewController>
@@ -3164,7 +3153,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="477" width="288" height="21"/>
+                                <rect key="frame" x="16" y="477.5" width="288" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -5007,6 +4996,6 @@
         <segue reference="saa-dB-vMn"/>
         <segue reference="J3A-P7-WsW"/>
         <segue reference="JAa-xy-EZp"/>
-        <segue reference="rZR-ak-fSt"/>
+        <segue reference="Kqq-cQ-hZv"/>
     </inferredMetricsTieBreakers>
 </document>

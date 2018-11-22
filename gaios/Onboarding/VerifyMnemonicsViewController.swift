@@ -7,7 +7,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     var mnemonics:[String] = []
     var questionCounter: Int = 0
     var questionPosition: Int = 0
-    @IBOutlet weak var stepIndicatorView: StepIndicatorView!
     @IBOutlet weak var button0: DesignableButton!
     @IBOutlet weak var button1: DesignableButton!
     @IBOutlet weak var button2: DesignableButton!
@@ -22,22 +21,8 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         super.viewDidLoad()
         generateRandomWordNumbers()
         mnemonics = getAppDelegate().getMnemonicWords()!
-        //createButtons()
         questionPosition = wordNumbers[getIndexFromUniformUInt32(count: wordNumbers.count)]
         title = String(format: "What is the word at position %d ?", questionPosition + 1)
-        //Customization by coding:
-        self.stepIndicatorView.numberOfSteps = numberOfSteps
-        self.stepIndicatorView.currentStep = 0
-        self.stepIndicatorView.circleColor = UIColor(red: 179.0/255.0, green: 189.0/255.0, blue: 194.0/255.0, alpha: 1.0)
-        self.stepIndicatorView.circleTintColor = UIColor(red: 0.0/255.0, green: 180.0/255.0, blue: 124.0/255.0, alpha: 1.0)
-        self.stepIndicatorView.circleStrokeWidth = 1.0
-        self.stepIndicatorView.circleRadius = 5.0
-        self.stepIndicatorView.lineColor = self.stepIndicatorView.circleColor
-        self.stepIndicatorView.lineTintColor = self.stepIndicatorView.circleTintColor
-        self.stepIndicatorView.lineMargin = 12.0
-        self.stepIndicatorView.lineStrokeWidth = 1.0
-        self.stepIndicatorView.displayNumbers = false //indicates if it displays numbers at the center instead of the core circle
-        self.stepIndicatorView.direction = .leftToRight
         updateButtons()
         setSelector()
     }
@@ -158,7 +143,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                 registerAndLogin(mnemonics: stringRepresentation)
             } else {
                 questionCounter += 1
-                stepIndicatorView.currentStep = questionCounter
                 generateRandomWordNumbers()
                 questionPosition = wordNumbers[getIndexFromUniformUInt32(count: wordNumbers.count)]
                 updateButtons()
