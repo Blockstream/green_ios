@@ -68,11 +68,18 @@ class SettingsStore {
     private init() { }
 
     func setCurrency(currency: String, exchange: String) -> Promise<Void> {
-       return wrap{ try getSession().changeSettingsPricingSource(currency: currency, exchange: exchange)}.done {
-        self.allSettings[self.settingsCurrency] = SettingsItem(settingsName: self.settingsCurrency, property: ["currency": currency, "exchange": exchange], text: self.accountCurrency, secondaryText: currency)
+        let ccy_exchange = ["currency": currency, "exchange": exchange]
+        return wrap {
+            let call = try getSession().changeSettings(details: ["pricing": ccy_exchange])
+            // FIXME: Surrently no settings require 2fa so a dummy call will work,
+            // but this should allow for 2fa request/resolve once the other callers
+            // do too.
+            try DummyResolve(call: call)
+        }.done {
+            self.allSettings[self.settingsCurrency] = SettingsItem(settingsName: self.settingsCurrency, property: ccy_exchange, text: self.accountCurrency, secondaryText: currency)
             self.loadAllSections()
             self.writeSettingsToDisk()
-            }
+        }
     }
 
     func setDenominationSettings(denomination: String) {
