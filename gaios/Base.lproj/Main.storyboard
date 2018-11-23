@@ -2968,13 +2968,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KFn-tp-Pa3">
-                                <rect key="frame" x="0.0" y="169" width="320" height="293"/>
+                                <rect key="frame" x="0.0" y="169" width="320" height="325"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="north" translatesAutoresizingMaskIntoConstraints="NO" id="oiR-TU-EwA">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="293"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="north" translatesAutoresizingMaskIntoConstraints="NO" id="oiR-TU-EwA">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="325"/>
                                     </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="scan" translatesAutoresizingMaskIntoConstraints="NO" id="5lz-vU-al3">
-                                        <rect key="frame" x="95" y="81.5" width="130" height="130"/>
+                                        <rect key="frame" x="95" y="97.5" width="130" height="130"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="5lz-vU-al3" secondAttribute="height" multiplier="1:1" id="AWm-9I-SNf"/>
                                             <constraint firstAttribute="height" constant="130" id="Vp5-N8-uST"/>
@@ -3039,7 +3039,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owv-rr-Wjs">
-                                <rect key="frame" x="0.0" y="462" width="320" height="106"/>
+                                <rect key="frame" x="0.0" y="494" width="320" height="74"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yKw-zw-wMj">
                                         <rect key="frame" x="16" y="16" width="288" height="42"/>
@@ -3058,8 +3058,8 @@
                                 </subviews>
                                 <color key="backgroundColor" name="customLowerBar"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="106" id="IJv-vh-tUZ"/>
                                     <constraint firstItem="yKw-zw-wMj" firstAttribute="top" secondItem="owv-rr-Wjs" secondAttribute="top" constant="16" id="LdL-c5-Mj4"/>
+                                    <constraint firstAttribute="bottom" secondItem="yKw-zw-wMj" secondAttribute="bottom" constant="16" id="NwQ-lQ-Pmt"/>
                                     <constraint firstAttribute="trailing" secondItem="yKw-zw-wMj" secondAttribute="trailing" constant="16" id="p1D-YR-BMx"/>
                                     <constraint firstItem="yKw-zw-wMj" firstAttribute="leading" secondItem="owv-rr-Wjs" secondAttribute="leading" constant="16" id="tzc-Bq-bIt"/>
                                 </constraints>

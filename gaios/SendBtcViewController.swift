@@ -2,14 +2,14 @@ import Foundation
 import UIKit
 import AVFoundation
 
-class SendBtcViewController: UIViewController {
+class SendBtcViewController: KeyboardViewController {
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var QRCodeReader: UIView!
     @IBOutlet weak var topImage: UIImageView!
-    var prefillAmount:Double = 0
     @IBOutlet weak var bottomButton: UIButton!
 
+    var prefillAmount:Double = 0
     var uiErrorLabel: UIErrorLabel!
     var captureSession = AVCaptureSession()
     var wallets:Array<WalletItem> = Array<WalletItem>()
@@ -32,33 +32,35 @@ class SendBtcViewController: UIViewController {
                                       AVMetadataObject.ObjectType.interleaved2of5,
                                       AVMetadataObject.ObjectType.qr]
 
-    @IBAction func pasteButtonClicked(_ sender: UIButton) {
-        let pasteboardString: String? = UIPasteboard.general.string
-        if let theString = pasteboardString {
-            print("String is \(theString)")
-            textfield.text = theString
-        }
-
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        _ = UINib(nibName: "WalletCard", bundle: nil)
+        // setup scanner placeholder
         let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = topImage.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         topImage.addSubview(blurEffectView)
+        // setup address textedit
         textfield.attributedPlaceholder =
-            NSAttributedString(string: sweepTransaction ? "Enter Private Key" : "Enter Bitcoin Address",
-                               attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+            NSAttributedString(string: sweepTransaction ?
+                "Enter Private Key" : NSLocalizedString("id_enter_the_address", comment: ""),
+                attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always
-        self.tabBarController?.tabBar.isHidden = true
-        navigationController?.navigationBar.tintColor = UIColor.white
-        hideKeyboardWhenTappedAround()
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        bottomButton.setTitle(sweepTransaction ? "Sweep" : NSLocalizedString("id_add_amount", comment: ""), for: .normal)
+        // setup button and error message
+        bottomButton.setTitle(sweepTransaction ? NSLocalizedString("id_sweep", comment: "") : NSLocalizedString("id_add_amount", comment: ""), for: .normal)
         uiErrorLabel = UIErrorLabel(self.view)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // add tap gesture to qr scanner
+        let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
+        QRCodeReader.addGestureRecognizer(gesture)
+        QRCodeReader.isUserInteractionEnabled = true
+        // set next button
+        updateButton()
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -67,48 +69,31 @@ class SendBtcViewController: UIViewController {
 
     func updateButton() {
         if(textfield.text != nil && textfield.text != "") {
-            //bottomButton.layer.sublayers?.removeFirst()
-            if ((bottomButton.layer.sublayers?.count)! == 1) {
-                bottomButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-            }
+            bottomButton.backgroundColor = UIColor.customMatrixGreen()
             bottomButton.isUserInteractionEnabled = true
         } else {
-            if ((bottomButton.layer.sublayers?.count)! > 1) {
-               bottomButton.layer.sublayers?.removeFirst()
-            }
             bottomButton.backgroundColor = UIColor.customTitaniumLight()
             bottomButton.isUserInteractionEnabled = false
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = true
-        bottomButton.layoutIfNeeded()
-        updateButton()
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
-        self.QRCodeReader.addGestureRecognizer(gesture)
-        QRCodeReader.isUserInteractionEnabled = true
-    }
-
     @objc func someAction(_ sender:UITapGestureRecognizer) {
-        scan()
         sender.isEnabled = false
-    }
-
-    func scan() {
         if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
-            //already authorized
+            // already authorized
             startScan()
         } else {
             AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
                 if granted {
-                    //access allowed
+                    // access allowed
                     self.startScan()
                 } else {
-                    print("failed")
                     //Send user to settings to allow camera
+                    if let url = URL(string:UIApplicationOpenSettingsURLString) {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                        }
+                    }
                 }
             })
         }
@@ -121,7 +106,6 @@ class SendBtcViewController: UIViewController {
         guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
             return
         }
-
         captureSession = AVCaptureSession()
         if captureSession.canAddInput(captureDeviceInput) {
             captureSession.addInput(captureDeviceInput)
@@ -129,10 +113,7 @@ class SendBtcViewController: UIViewController {
         else {
             return
         }
-
         let captureMetadataOutput = AVCaptureMetadataOutput()
-
-
         if captureSession.canAddOutput(captureMetadataOutput) {
             captureSession.addOutput(captureMetadataOutput)
             captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
@@ -146,12 +127,10 @@ class SendBtcViewController: UIViewController {
         videoPreviewLayer?.frame = QRCodeReader.layer.bounds
         videoPreviewLayer?.videoGravity = .resizeAspectFill
         QRCodeReader.layer.addSublayer(videoPreviewLayer!)
-
         captureSession.startRunning()
 
         // Initialize QR Code Frame to highlight the QR code
         qrCodeFrameView = UIView()
-
         if let qrCodeFrameView = qrCodeFrameView {
             qrCodeFrameView.layer.borderColor = UIColor.red.cgColor
             qrCodeFrameView.layer.borderWidth = 4

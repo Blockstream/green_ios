@@ -93,6 +93,7 @@
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
 		811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EE25C219EC17800684AD8 /* TransactionsViewController.swift */; };
+		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
 		81310C452189D10F00563B91 /* GDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* GDKHelper.swift */; };
 		81F22333219EE91D005E65D4 /* WalletCardHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81F22332219EE91D005E65D4 /* WalletCardHeader.xib */; };
 		81F22335219EFF9F005E65D4 /* WalletCardHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F22334219EFF9F005E65D4 /* WalletCardHeader.swift */; };
@@ -214,6 +215,7 @@
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
 		811EE25C219EC17800684AD8 /* TransactionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsViewController.swift; sourceTree = "<group>"; };
+		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* GDKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GDKHelper.swift; sourceTree = "<group>"; };
 		81F22332219EE91D005E65D4 /* WalletCardHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCardHeader.xib; sourceTree = "<group>"; };
 		81F22334219EFF9F005E65D4 /* WalletCardHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCardHeader.swift; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
 				092D05B02125623800B9B7CD /* Storage.swift */,
+				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
 			);
 			path = helpers;
 			sourceTree = "<group>";
@@ -758,6 +761,7 @@
 				09377B702178409E00C4E347 /* TwoFactorWarningSettings.swift in Sources */,
 				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
 				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
+				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
 				811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */,
