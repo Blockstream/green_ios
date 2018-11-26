@@ -19,6 +19,7 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var memoTitle: UILabel!
 
     var transaction_g: TransactionItem? = nil
+    var bumpTransaction: [String:Any]?
     var pointer: UInt32 = 0
 
     override func viewDidLoad() {
@@ -107,15 +108,30 @@ class TransactionDetailViewController: UIViewController {
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
-        let increaseFee = self.storyboard?.instantiateViewController(withIdentifier: "increaseFee") as! IncreaseFeeViewController
-        increaseFee.transaction = transaction_g!
-        increaseFee.providesPresentationContextTransitionStyle = true
-        increaseFee.definesPresentationContext = true
-        increaseFee.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-        increaseFee.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        let navController = UINavigationController(rootViewController: increaseFee)
-        navController.isNavigationBarHidden = true
-        self.present(navController, animated: true, completion: nil)
+        do {
+            let txhash = transaction_g?.hash
+            let rawTx = try getSession().getTransactionDetails(txhash: txhash!)
+            var details = [String: Any]()
+            details["previous_transaction"] = rawTx
+            details["fee_rate"] = rawTx!["fee_rate"]
+            bumpTransaction = try getSession().createTransaction(details: details)
+            self.performSegue(withIdentifier: "next", sender: self)
+        } catch {
+            print("something went worng with creating subAccount")
+            bumpTransaction = nil
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? SendBtcDetailsViewController {
+            nextController.wallet = nil
+            nextController.selectedType = TransactionType.BTC
+            do {
+                nextController.transaction = try TransactionHelper(bumpTransaction!)
+            } catch {
+                print("something went worng with creating subAccount")
+            }
+        }
     }
 
     @IBAction func viewInExplorerClicked(_ sender: Any) {

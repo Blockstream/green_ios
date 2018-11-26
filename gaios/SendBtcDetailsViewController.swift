@@ -13,9 +13,6 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var reviewButton: UIButton!
     @IBOutlet weak var currencySwitch: UIButton!
     @IBOutlet weak var errorLabel: UILabel!
-    @IBOutlet weak var customFeeTextField: UITextField!
-    @IBOutlet weak var customFeeLabel: UILabel!
-    @IBOutlet weak var customFeeUnitLabel: UILabel!
     @IBOutlet weak var recipientTitle: UILabel!
     @IBOutlet weak var sendAllFundsButton: UIButton!
     @IBOutlet weak var minerFeeTitle: UILabel!
@@ -45,13 +42,6 @@ class SendBtcDetailsViewController: UIViewController {
         updatePriorityButtons()
         updateMaxAmountLabel()
         setButton()
-        let minFee = String(format: "%d", AccountStore.shared.getFeeRateMin() / 1000)
-        customFeeTextField.attributedPlaceholder = NSAttributedString(string: minFee,
-                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        customFeeTextField.addTarget(self, action: #selector(customFeeDidChange(_:)), for: .editingChanged)
-        hideKeyboardWhenTappedAround()
-        NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SendBtcDetailsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         reviewButton.setTitle(NSLocalizedString("id_review", comment: ""), for: .normal)
         recipientTitle.text = NSLocalizedString("id_recipient", comment: "")
         minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "")
@@ -308,9 +298,6 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updatePriorityButtons() {
-        customFeeLabel.isHidden = true
-        customFeeUnitLabel.isHidden = true
-        customFeeTextField.isHidden = true
         if (priority == TransactionPriority.Low) {
             selectedButton = lowFeeButton
             fee = AccountStore.shared.getFeeRateLow()
@@ -346,14 +333,6 @@ class SendBtcDetailsViewController: UIViewController {
             mediumFeeButton.layer.borderWidth = 1
         } else if (priority == TransactionPriority.Custom) {
             selectedButton = customfeeButton
-            let def = SettingsStore.shared.getFeeSettings().0
-            if (def == TransactionPriority.Custom) {
-                customFeeTextField.text = String(SettingsStore.shared.getFeeSettings().1)
-                fee = UInt64(SettingsStore.shared.getFeeSettings().1 * 1000)
-            }
-            customFeeTextField.isHidden = false
-            customFeeLabel.isHidden = false
-            customFeeUnitLabel.isHidden = false
             lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
@@ -365,37 +344,50 @@ class SendBtcDetailsViewController: UIViewController {
         }
     }
 
+    func showCustomFeePopup() {
+        let alert = UIAlertController(title: "Custom fee rate", message: "satoshi / byte", preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            let minFee = String(format: "%d", AccountStore.shared.getFeeRateMin() / 1000)
+            textField.keyboardType = .numberPad
+            textField.attributedPlaceholder = NSAttributedString(string: minFee,
+                                                                          attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        }
+        alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel, handler: { [weak alert] (_) in
+            alert?.dismiss(animated: true, completion: nil)
+        }))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            let amount:String = alert!.textFields![0].text!
+            guard let amount_i = Int(amount) else {
+                self.setLabel(button: self.customfeeButton, fee: 0)
+                return
+            }
+            self.fee = UInt64(1000 * amount_i)
+            self.updateEstimate()
+            self.updatePriorityButtons()
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+
     @IBAction func lowFeeClicked(_ sender: Any) {
         priority = TransactionPriority.Low
         updatePriorityButtons()
         updateEstimate()
-        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
         priority = TransactionPriority.Medium
         updatePriorityButtons()
         updateEstimate()
-        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
         priority = TransactionPriority.High
         updatePriorityButtons()
         updateEstimate()
-        customFeeTextField.resignFirstResponder()
     }
 
     @IBAction func customFeeClicked(_ sender: Any) {
         priority = TransactionPriority.Custom
-        customFeeTextField.becomeFirstResponder()
-        updatePriorityButtons()
-        let amount: String = customFeeTextField.text!
-        guard let amount_i = Int(amount) else {
-            setLabel(button: customfeeButton, fee: 0)
-            return
-        }
-        fee = UInt64(1000 * amount_i)
-        updateEstimate()
+        showCustomFeePopup()
     }
 }
