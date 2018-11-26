@@ -10,7 +10,6 @@ class ReceiveBtcViewController: UIViewController {
     @IBOutlet weak var estimateLabel: UILabel!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var fiatSwitchButton: UIButton!
-    @IBOutlet weak var typeLabel: UILabel!
     @IBOutlet weak var amountLabel: UILabel!
 
     var receiveAddress: String? = nil
@@ -32,7 +31,6 @@ class ReceiveBtcViewController: UIViewController {
 
         self.hideKeyboardWhenTappedAround()
         setButton()
-        updateType()
         updateEstimate()
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
         walletQRCode.isUserInteractionEnabled = true
@@ -89,7 +87,6 @@ class ReceiveBtcViewController: UIViewController {
             amountTextfield.text = String.toBtc(fiat: amount, toType: denomination)
         }
         setButton()
-        updateType()
         updateEstimate()
     }
 
@@ -102,14 +99,6 @@ class ReceiveBtcViewController: UIViewController {
             fiatSwitchButton.setTitle(SettingsStore.shared.getCurrencyString(), for: UIControlState.normal)
             fiatSwitchButton.backgroundColor = UIColor.clear
             fiatSwitchButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-        }
-    }
-
-    func updateType() {
-        if (selectedType == TransactionType.BTC) {
-            typeLabel.text = SettingsStore.shared.getDenominationSettings().rawValue
-        } else {
-            typeLabel.text = SettingsStore.shared.getCurrencyString()
         }
     }
 

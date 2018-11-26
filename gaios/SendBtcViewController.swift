@@ -78,6 +78,10 @@ class SendBtcViewController: KeyboardViewController {
     }
 
     @objc func someAction(_ sender:UITapGestureRecognizer) {
+        if keyboardDismissGesture != nil {
+            dismissKeyboard()
+            return
+        }
         sender.isEnabled = false
         if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
             // already authorized

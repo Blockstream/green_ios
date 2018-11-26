@@ -3540,12 +3540,6 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BTC" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P4c-iC-p2c">
-                                <rect key="frame" x="88.5" y="386.5" width="33" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="~0.0 USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2aZ-Zn-588">
                                 <rect key="frame" x="16" y="415" width="62" height="17"/>
                                 <constraints>
@@ -3574,23 +3568,22 @@
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="Hzc-Uv-9ws" secondAttribute="trailing" constant="17" id="3lQ-31-Q7I"/>
                             <constraint firstItem="eBg-Hb-Ejr" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" id="6Tq-qI-put"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="bottom" secondItem="Hzc-Uv-9ws" secondAttribute="bottom" constant="17" id="BdX-hG-wDT"/>
-                            <constraint firstItem="TCo-xL-xoX" firstAttribute="centerY" secondItem="P4c-iC-p2c" secondAttribute="centerY" id="EKf-Zc-LUs"/>
                             <constraint firstItem="flj-QC-HKf" firstAttribute="top" secondItem="PyK-Y4-Zyi" secondAttribute="top" id="Ijq-Ka-6Jh"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="flj-QC-HKf" secondAttribute="trailing" id="LTg-mT-Nca"/>
                             <constraint firstItem="gLm-OG-5hq" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="16" id="LUz-1d-f0Y"/>
+                            <constraint firstItem="TCo-xL-xoX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Lu5-Gv-g6o" secondAttribute="trailing" constant="20" id="Sb1-8n-DGd"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="TCo-xL-xoX" secondAttribute="trailing" constant="16" id="TEH-05-dVf"/>
                             <constraint firstItem="Lu5-Gv-g6o" firstAttribute="top" secondItem="gLm-OG-5hq" secondAttribute="bottom" constant="8" id="V0n-Zt-nEq"/>
+                            <constraint firstItem="TCo-xL-xoX" firstAttribute="centerY" secondItem="Lu5-Gv-g6o" secondAttribute="centerY" id="VP1-Qg-lGT"/>
                             <constraint firstItem="Lu5-Gv-g6o" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="16" id="WlT-PJ-T6v"/>
                             <constraint firstItem="eBg-Hb-Ejr" firstAttribute="top" secondItem="flj-QC-HKf" secondAttribute="bottom" id="XVJ-3x-gLH"/>
                             <constraint firstItem="gLm-OG-5hq" firstAttribute="top" secondItem="flj-QC-HKf" secondAttribute="bottom" constant="26" id="Z0O-kJ-Tha"/>
-                            <constraint firstItem="P4c-iC-p2c" firstAttribute="leading" secondItem="Lu5-Gv-g6o" secondAttribute="trailing" constant="5" id="dRT-1W-GhV"/>
                             <constraint firstItem="Hzc-Uv-9ws" firstAttribute="top" secondItem="eBg-Hb-Ejr" secondAttribute="bottom" constant="17" id="es9-v7-GgB"/>
                             <constraint firstItem="2aZ-Zn-588" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="16" id="hGi-OB-uYk"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="eBg-Hb-Ejr" secondAttribute="trailing" id="iu8-cl-5Sx"/>
                             <constraint firstItem="2aZ-Zn-588" firstAttribute="top" secondItem="Lu5-Gv-g6o" secondAttribute="bottom" id="kZL-r5-eVT"/>
                             <constraint firstItem="Hzc-Uv-9ws" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="17" id="kjX-1L-DDp"/>
                             <constraint firstItem="flj-QC-HKf" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" id="wIs-iV-DFX"/>
-                            <constraint firstItem="P4c-iC-p2c" firstAttribute="centerY" secondItem="Lu5-Gv-g6o" secondAttribute="centerY" id="za9-L3-EqE"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="PyK-Y4-Zyi"/>
                     </view>
@@ -3603,7 +3596,6 @@
                         <outlet property="estimateLabel" destination="2aZ-Zn-588" id="sdX-v5-imF"/>
                         <outlet property="fiatSwitchButton" destination="TCo-xL-xoX" id="VcI-M6-ERr"/>
                         <outlet property="shareButton" destination="Hzc-Uv-9ws" id="9bD-eO-ukm"/>
-                        <outlet property="typeLabel" destination="P4c-iC-p2c" id="MGe-57-hso"/>
                         <outlet property="walletAddressLabel" destination="9Go-uJ-SYf" id="Haz-aH-8Os"/>
                         <outlet property="walletQRCode" destination="CTl-Qj-jvB" id="eJC-Nw-ORB"/>
                         <segue destination="nfu-fJ-eh9" kind="show" identifier="address" id="qOR-xW-NTO"/>
@@ -4557,7 +4549,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dqu-Ig-IY5">
-                                <rect key="frame" x="0.0" y="546" width="320" height="42"/>
+                                <rect key="frame" x="0.0" y="526" width="320" height="42"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="zHb-Qp-UPh"/>
@@ -4577,7 +4569,7 @@
                             <constraint firstItem="dqu-Ig-IY5" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" id="3D7-Qb-6A9"/>
                             <constraint firstItem="Gyd-mo-6vL" firstAttribute="centerY" secondItem="ab7-yZ-oZi" secondAttribute="centerY" id="4RK-b0-lej"/>
                             <constraint firstItem="Gyd-mo-6vL" firstAttribute="leading" secondItem="ab7-yZ-oZi" secondAttribute="trailing" constant="25" id="5bL-AJ-B8y"/>
-                            <constraint firstItem="55a-8O-c7N" firstAttribute="bottom" secondItem="dqu-Ig-IY5" secondAttribute="bottom" constant="-20" id="Cuv-Dm-lMX"/>
+                            <constraint firstItem="55a-8O-c7N" firstAttribute="bottom" secondItem="dqu-Ig-IY5" secondAttribute="bottom" id="Cuv-Dm-lMX"/>
                             <constraint firstItem="ab7-yZ-oZi" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="Ejj-vZ-EPX"/>
                             <constraint firstItem="LXf-em-GWL" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="PDf-Qs-ZtK"/>
                             <constraint firstItem="ab7-yZ-oZi" firstAttribute="trailing" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="VTY-qe-q0r"/>
