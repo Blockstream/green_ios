@@ -13,6 +13,7 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
     @IBOutlet weak var fromTitle: UILabel!
     @IBOutlet weak var toTitle: UILabel!
     @IBOutlet weak var myNotesTitle: UILabel!
+    @IBOutlet weak var scrollView: UIScrollView!
 
     var uiErrorLabel: UIErrorLabel!
     var walletName: String = ""
@@ -134,6 +135,27 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         slidingButton.reset()
         uiErrorLabel.isHidden = false
         uiErrorLabel.text = NSLocalizedString(text, comment: "")
+    }
+
+    override func keyboardWillShow(notification: NSNotification) {
+        super.keyboardWillShow(notification: notification)
+        if let kbSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
+            scrollView.contentInset = contentInsets;
+            scrollView.scrollIndicatorInsets = contentInsets;
+            var aRect = self.view.frame;
+            aRect.size.height -= kbSize.height;
+            if (!aRect.contains(textView.frame.origin) ) {
+                scrollView.scrollRectToVisible(aRect, animated: true)
+            }
+        }
+    }
+
+    override func keyboardWillHide(notification: NSNotification) {
+        super.keyboardWillHide(notification: notification)
+        let contentInsets = UIEdgeInsets.zero;
+        scrollView.contentInset = contentInsets;
+        scrollView.scrollIndicatorInsets = contentInsets;
     }
 
     /// pop back to specific viewcontroller
