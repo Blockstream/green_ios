@@ -20,7 +20,7 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
             setLimitButton.isEnabled = false
             descriptionLabel.text = NSLocalizedString("id_you_need_to_enable_twofactor", comment: "")
         }
-        title = NSLocalizedString("id_twofactor_treshold", comment: "")
+        title = NSLocalizedString("id_twofactor_threshold", comment: "")
         descriptionLabel.text = NSLocalizedString("id_you_dont_need_twofactor", comment: "")
         setLimitButton.setTitle(NSLocalizedString("id_set_limit", comment: ""), for: .normal)
         refesh()
