@@ -76,17 +76,6 @@ class GreenAddressService: SessionNotificationDelegate {
     func getSession() -> Session {
         return self.session
     }
-
-    func loginWithPin(pin: String, pinData: [String: Any], completionHandler: @escaping (Bool?, Error?) -> Void) {
-        wrap {
-            let data = try JSONSerialization.data(withJSONObject: pinData)
-            try self.session.loginWithPin(pin: pin, pin_data: String(data: data, encoding: .utf8)!)
-        }.done {
-            completionHandler(true, nil)
-        }.catch { error in
-            completionHandler(nil, error)
-        }
-    }
 }
 
 func getAppDelegate() -> AppDelegate {

@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import AVFoundation
 import NVActivityIndicatorView
+import PromiseKit
 
 class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
 
@@ -163,13 +164,10 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         }
     }
 
-    func mergeTextFields() -> String {
-        var result = ""
-        for textfield in textFields {
-            result += textfield.text! + " "
+    func getMnemonicString() -> Promise<String> {
+        return Promise { seal in
+            seal.fulfill(textFields.compactMap { $0.text! }.joined(separator: " ").lowercased())
         }
-        result = String(result.dropLast())
-        return result.lowercased()
     }
 
     func getSuggestions(prefix: String) -> [String] {
@@ -209,38 +207,41 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         doneButtonEnable()
     }
 
-    @IBAction func doneButtonClicked(_ sender: Any) {
-        let trimmedUserProvidedMnemonic = mergeTextFields()
-        wrap {
-            validateMnemonic(mnemonic: trimmedUserProvidedMnemonic)
-        }.done { (result: Bool) in
-            if (result) {
-                wrap {
-                    let call = try getSession().login(mnemonic: trimmedUserProvidedMnemonic)
-                    try DummyResolve(call: call)
-                    }.done { _ in
-                        Storage.wipeAll()
-                        let array = getAppDelegate().getMnemonicsArray(mnemonics: trimmedUserProvidedMnemonic)
-                        getAppDelegate().setMnemonicWords(array!)
-                        AccountStore.shared.initializeAccountStore()
-                        self.performSegue(withIdentifier: "next", sender: self)
-                    }.catch { error in
-                        print("Login failed ", error)
-                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        let errorViewController = storyboard.instantiateViewController(withIdentifier: "error") as! NoInternetViewController
-                }
-            } else {
-                let size = CGSize(width: 30, height: 30)
-                let message = "Invalid Mnemonics"
-                self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
-                    self.stopAnimating()
-                    self.checkMnemonics()
-                }
-            }
-        }.catch { error in
-
+    fileprivate func login() {
+        enum LoginError: Error {
+            case InvalidMnemonic
         }
+
+        let bgq = DispatchQueue.global(qos: .background)
+
+        firstly {
+            getMnemonicString()
+        }.get { (mnemonic: String) in
+            guard validateMnemonic(mnemonic: mnemonic) else {
+                throw LoginError.InvalidMnemonic
+            }
+        }.compactMap(on: bgq) {
+            let resolver = try getSession().login(mnemonic: $0)
+            let _ = try DummyResolve(call: resolver)
+        }.done { _ in
+            Storage.wipeAll()
+            AccountStore.shared.initializeAccountStore()
+            self.performSegue(withIdentifier: "next", sender: self)
+        }.catch { error in
+            var message = "Login Failed"
+            if let _ = error as? LoginError {
+                message = "Invalid Mnemonic"
+            }
+            let size = CGSize(width: 30, height: 30)
+            self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
+                self.stopAnimating()
+            }
+        }
+    }
+
+    @IBAction func doneButtonClicked(_ sender: Any) {
+        login()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

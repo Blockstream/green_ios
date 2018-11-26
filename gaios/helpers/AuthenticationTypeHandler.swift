@@ -3,6 +3,11 @@ import LocalAuthentication
 import Security
 
 class AuthenticationTypeHandler {
+    public enum AuthError: Error {
+        case CanceledByUser
+        case ServiceNotAvailable
+    }
+
     static let AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
     static let AuthKeyPIN = "com.blockstream.green.auth_key_pin"
 
@@ -112,7 +117,7 @@ class AuthenticationTypeHandler {
         return SecKeyCopyPublicKey(privateKey!)
     }
 
-    fileprivate static func decrypt(base64Encoded: Data, forNetwork: String) -> String? {
+    fileprivate static func decrypt(base64Encoded: Data, forNetwork: String) throws -> String? {
         let privateKey = getPrivateKey(forNetwork: forNetwork)
         guard privateKey != nil else {
             return nil
@@ -127,8 +132,8 @@ class AuthenticationTypeHandler {
         let decrypted = SecKeyCreateDecryptedData(privateKey!, ECCEncryptionType, base64Encoded as CFData, &error)
         guard error == nil else {
             let err = CFErrorCopyDescription(error!.takeRetainedValue())
-            NSLog("Operation failed: \(String(describing: err))")
-            return nil
+            NSLog("Operation failed: \(err!)")
+            throw AuthError.CanceledByUser
         }
         return String(data: decrypted! as Data, encoding: .utf8)
     }
@@ -169,10 +174,10 @@ class AuthenticationTypeHandler {
                         .merging([kSecReturnData: kCFBooleanTrue]) { (current, _) in current }
     }
 
-    fileprivate static func set(method: String, data: [String: Any], forNetwork: String) -> OSStatus {
+    fileprivate static func set(method: String, data: [String: Any], forNetwork: String) throws {
         let data = try? JSONSerialization.data(withJSONObject: data)
         guard data != nil else {
-            return errSecServiceNotAvailable
+            throw AuthError.ServiceNotAvailable
         }
         let q = queryFor(method: method, forNetwork: forNetwork)
         let qAdd = q.merging([kSecValueData: data!]) { (current, _) in current }
@@ -181,7 +186,6 @@ class AuthenticationTypeHandler {
             status = callWrapper(fun: SecItemDelete(q as CFDictionary))
             status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         }
-        return status
     }
 
     fileprivate static func get_(method: String, forNetwork: String) -> [String: Any]? {
@@ -198,7 +202,7 @@ class AuthenticationTypeHandler {
         return (data! as! [String: Any])
     }
 
-    fileprivate static func get(method: String, toDecrypt: Bool, forNetwork: String) -> [String: Any]? {
+    fileprivate static func get(method: String, toDecrypt: Bool, forNetwork: String) throws -> [String: Any]? {
         guard let data = get_(method: method, forNetwork: forNetwork) else {
             return nil
         }
@@ -206,7 +210,7 @@ class AuthenticationTypeHandler {
         if toDecrypt {
             precondition(method == AuthKeyBiometric)
             guard let decoded = Data(base64Encoded: data["encrypted_biometric"] as! String),
-                let plaintext = decrypt(base64Encoded: decoded, forNetwork: forNetwork) else {
+                let plaintext = try decrypt(base64Encoded: decoded, forNetwork: forNetwork) else {
                     return nil
             }
             extended["plaintext_biometric"] = plaintext
@@ -214,8 +218,8 @@ class AuthenticationTypeHandler {
         return extended
     }
 
-    public static func getAuth(method: String, forNetwork: String) -> [String: Any]? {
-        return get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
+    public static func getAuth(method: String, forNetwork: String) throws -> [String: Any]? {
+        return try get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
     }
 
     public static func findAuth(method: String, forNetwork: String) -> Bool {
@@ -227,18 +231,16 @@ class AuthenticationTypeHandler {
         return callWrapper(fun: SecItemDelete(q as CFDictionary)) == errSecSuccess
     }
 
-    public static func addBiometryType(data: [String: Any], extraData: String, forNetwork: String) -> Bool {
+    public static func addBiometryType(data: [String: Any], extraData: String, forNetwork: String) throws {
         guard let encrypted = encrypt(plaintext: extraData, forNetwork: forNetwork) else {
-            return false
+            throw AuthError.ServiceNotAvailable
         }
         var extended = data
         extended["encrypted_biometric"] = encrypted
-        let status = set(method: AuthKeyBiometric, data: extended, forNetwork: forNetwork)
-        return status == errSecSuccess
+        try set(method: AuthKeyBiometric, data: extended, forNetwork: forNetwork)
     }
 
-    public static func addPIN(data: [String: Any], forNetwork: String) -> Bool {
-        let status = set(method: AuthKeyPIN, data: data, forNetwork: forNetwork)
-        return status == errSecSuccess
+    public static func addPIN(data: [String: Any], forNetwork: String) throws {
+        try set(method: AuthKeyPIN, data: data, forNetwork: forNetwork)
     }
 }
