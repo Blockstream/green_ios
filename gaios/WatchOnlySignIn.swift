@@ -18,7 +18,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
         rememberTitle.text = NSLocalizedString("id_remember_username", comment: "")
         forgotButton.setTitle(NSLocalizedString("id_i_forgot_my_password", comment: ""), for: .normal)
         loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
-        titlelabel.text = NSLocalizedString("id_log_in_to_receive_funds__check", comment: "")
+        titlelabel.text = NSLocalizedString("id_log_in_to_receive_funds_and", comment: "")
         usernameTextField.attributedPlaceholder = NSAttributedString(string: "Username",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         passwordTextField.attributedPlaceholder = NSAttributedString(string: "Password",
@@ -32,7 +32,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
 
     @IBAction func loginButtonClicked(_ sender: Any) {
         let size = CGSize(width: 30, height: 30)
-        let message = NSLocalizedString("id_logging_in_please_wait", comment: "")
+        let message = NSLocalizedString("id_logging_in", comment: "")
         startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
 
         let username = usernameTextField.text
@@ -60,7 +60,7 @@ class WatchOnlySignIn: UIViewController, NVActivityIndicatorViewable {
 
     @IBAction func forgotMyPasswordClicked(_ sender: Any) {
         DispatchQueue.main.async{
-            let message = NSLocalizedString("id_log_in_using_seed", comment: "")
+            let message = NSLocalizedString("id_log_in_using_mnemonic", comment: "")
             let size = CGSize(width: 30, height: 30)
             self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
         }

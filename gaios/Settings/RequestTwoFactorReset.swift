@@ -30,7 +30,7 @@ class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, Two
         if (data.isReset) {
             isReset = true
             disputeButton.isHidden = false
-            warningLabel.text = NSLocalizedString("id_two_factor_reset_is_in_progress", comment: "")
+            warningLabel.text = NSLocalizedString("id_twofactor_reset_in_progress", comment: "")
             disputeButton.setTitle(NSLocalizedString("id_dispute_twofactor_reset", comment: ""), for: .normal)
             requestButton.setTitle(NSLocalizedString("id_cancel_twofactor_reset", comment: ""), for: .normal)
             emailLabel.isHidden = true

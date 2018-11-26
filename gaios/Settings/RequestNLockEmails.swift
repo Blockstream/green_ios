@@ -14,7 +14,7 @@ class RequestNLockEmails : UIViewController, NVActivityIndicatorViewable {
         requestButton.setTitle(NSLocalizedString("id_request", comment: ""), for: .normal)
         if (!AccountStore.shared.isEmailEnabled()) {
             requestButton.isHidden = true
-            descriptionLabel.text = NSLocalizedString("id_you_need_email_address_enabled", comment: "")
+            descriptionLabel.text = NSLocalizedString("id_you_need_to_set_an_email", comment: "")
         }
     }
     override func viewWillAppear(_ animated: Bool) {

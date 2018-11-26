@@ -24,7 +24,7 @@ class WalletsController: UIViewController, WalletViewDelegate {
     func updateWallet() {
         let data = AccountStore.shared.getTwoFactorResetData()
         if (data.isReset) {
-            warningLabel.text = NSLocalizedString("id_two_factor_reset_in_progress", comment: "")
+            warningLabel.text = NSLocalizedString("id_twofactor_reset_in_progress", comment: "")
             warningLabel.isHidden = false
         } else {
             warningLabel.isHidden = true

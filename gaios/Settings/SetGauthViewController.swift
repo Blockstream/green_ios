@@ -22,7 +22,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, Two
         qrCodeImageView.image = QRImageGenerator.imageForText(text: otp!, frame: qrCodeImageView.frame)
         secretLabel.text = secret
         nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
-        title = NSLocalizedString("id_google_authenticator_qrcode", comment: "")
+        title = NSLocalizedString("id_google_authenticator_qr_code", comment: "")
         errorLabel = UIErrorLabel(self.view)
     }
 

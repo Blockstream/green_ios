@@ -55,10 +55,10 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
                 return NotificationStore.shared.warrningOneTwoFactor
             }
         } else if (notification.type == "incoming") {
-            let localized = NSLocalizedString("id_you_have_received_s_btc", comment: "")
+            let localized = NSLocalizedString("id_you_have_received_s", comment: "")
             return String(format: localized, String.formatBtc(satoshi: notification.satoshi))
         } else if (notification.type == "outgoing") {
-            let localized = NSLocalizedString("id_your_s_btc_sent_to_s_has_been", comment: "")
+            let localized = NSLocalizedString("id_your_s_sent_to_s_has_been", comment: "")
             return String(format: localized, String.formatBtc(satoshi: notification.satoshi), notification.address)
         } else if (notification.type == "welcome") {
             return NSLocalizedString("id_thank_you_for_downloading_green", comment: "")

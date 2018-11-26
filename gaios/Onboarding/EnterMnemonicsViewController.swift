@@ -49,7 +49,7 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         hideKeyboardWhenTappedAround()
-        title = NSLocalizedString("id_enter_your_wallet_recovery_seed", comment: "")
+        title = NSLocalizedString("id_enter_your_wallet_mnemonic", comment: "")
         doneButton.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
         createSuggestionView()
     }

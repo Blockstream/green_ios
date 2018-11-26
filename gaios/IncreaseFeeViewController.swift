@@ -22,7 +22,7 @@ class IncreaseFeeViewController: UIViewController, NVActivityIndicatorViewable, 
         hideKeyboardWhenTappedAround()
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        titleLabel.text = NSLocalizedString("id_set_custom_fee", comment: "")
+        titleLabel.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")
         increaseFeeButton.setTitle(NSLocalizedString("id_increase_fee", comment: "").capitalized, for: .normal)
         cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
 
