@@ -1,3 +1,7 @@
+/* Modified slightly for use in Green from the public release at
+ * https://github.com/maail/MMSlidingButton
+ */
+
 import Foundation
 import UIKit
 
