@@ -14,13 +14,8 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
     override func viewDidLoad() {
         super.viewDidLoad()
         setButton()
-        if(!AccountStore.shared.isTwoFactorEnabled()) {
-            setLimitButton.isEnabled = false
-            descriptionLabel.text = NSLocalizedString("id_you_need_to_enable_twofactor", comment: "")
-        }
         title = NSLocalizedString("id_twofactor_threshold", comment: "")
-        descriptionLabel.text = NSLocalizedString("id_you_dont_need_twofactor", comment: "")
-        setLimitButton.setTitle(NSLocalizedString("id_set_limit", comment: ""), for: .normal)
+        setLimitButton.setTitle(NSLocalizedString("id_set_twofactor_threshold", comment: ""), for: .normal)
         refesh()
         setButton()
         SettingsStore.shared.setTwoFactorLimit()
@@ -32,15 +27,25 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
             let isFiat = limits["is_fiat"] as! Bool
             let denomination = getDenominationKey(SettingsStore.shared.getDenominationSettings())
             var amount = ""
-            if !isFiat {
-                amount = limits[denomination] as! String
-            } else {
+            if isFiat {
                 amount = limits["fiat"] as! String
+            } else {
+                amount = limits[denomination] as! String
             }
             limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                       attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+
             if !amount.isEmpty {
                 limitTextField.text = amount
+                var localized = NSLocalizedString("id_your_transaction_threshold_is_s", comment: "")
+                localized = String(format: localized, amount) + " "
+                if isFiat {
+                    localized = localized + denomination;
+                } else {
+                    let ccy = limits["fiat_currency"] as! String
+                    localized = localized + ccy;
+                }
+                descriptionLabel.text = localized
             }
             fiat = isFiat
         }

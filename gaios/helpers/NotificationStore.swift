@@ -12,7 +12,7 @@ class NotificationStore {
     var localNotification: [String: NotificationItem] = [String: NotificationItem]()
     var allNotifications: [String: NotificationItem] = [String: NotificationItem]()
     var newNotificationCount = 0
-    let warrningNoTwoFactor = NSLocalizedString("id_you_dont_have_twofactor", comment: "")
+    let warrningNoTwoFactor = NSLocalizedString("id_your_wallet_is_not_yet_fully", comment: "")
     let warrningOneTwoFactor = NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
 
     func getTransactions() {

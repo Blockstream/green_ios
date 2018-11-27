@@ -149,13 +149,9 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                 updateLabels()
             }
         } else {
-            let size = CGSize(width: 30, height: 30)
-            let message = NSLocalizedString("id_wrong_answer_try_again", comment: "")
-            startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
-                self.stopAnimating()
-                self.navigationController?.popViewController(animated: true)
-            }
+            // FIXME: This control should have a next button to follow androids style
+            self.stopAnimating()
+            self.navigationController?.popViewController(animated: true)
         }
     }
 
