@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class WatchOnlySettings: UIViewController, NVActivityIndicatorViewable {
+class WatchOnlySettings: KeyboardViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
@@ -21,7 +21,6 @@ class WatchOnlySettings: UIViewController, NVActivityIndicatorViewable {
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
         saveButton.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
-        hideKeyboardWhenTappedAround()
     }
 
     @IBAction func saveClicked(_ sender: Any) {

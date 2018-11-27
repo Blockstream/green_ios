@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-class ReceiveBtcViewController: UIViewController {
+class ReceiveBtcViewController: KeyboardViewController {
 
     @IBOutlet weak var walletAddressLabel: UILabel!
     @IBOutlet weak var walletQRCode: UIImageView!
@@ -28,8 +28,6 @@ class ReceiveBtcViewController: UIViewController {
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
 
         amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-
-        self.hideKeyboardWhenTappedAround()
         setButton()
         updateEstimate()
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))

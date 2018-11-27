@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class TransactionFeeViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+class TransactionFeeViewController : KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     let priorities: [TransactionPriority] = [TransactionPriority.Low, TransactionPriority.Medium, TransactionPriority.High, TransactionPriority.Custom]
@@ -15,7 +15,6 @@ class TransactionFeeViewController : UIViewController, UITableViewDelegate, UITa
         tableView.tableFooterView = UIView()
         unitTextField.delegate = self
         updateUnitUI()
-        hideKeyboardWhenTappedAround()
         title = NSLocalizedString("", comment: "")
     }
 

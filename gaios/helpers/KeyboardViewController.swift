@@ -29,7 +29,7 @@ class KeyboardViewController : UIViewController {
         }
     }
 
-    @objc override func dismissKeyboard() {
+    @objc func dismissKeyboard() {
         view.endEditing(true)
     }
 }

@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class IncreaseFeeViewController: UIViewController, NVActivityIndicatorViewable,  TwoFactorCallDelegate {
+class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorViewable,  TwoFactorCallDelegate {
 
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var increaseFeeButton: UIButton!
@@ -19,7 +19,6 @@ class IncreaseFeeViewController: UIViewController, NVActivityIndicatorViewable, 
         super.viewDidLoad()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         backgroundView.addGestureRecognizer(tap)
-        hideKeyboardWhenTappedAround()
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         titleLabel.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")

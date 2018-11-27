@@ -4,7 +4,7 @@ import AVFoundation
 import NVActivityIndicatorView
 import PromiseKit
 
-class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
+class EnterMnemonicsViewController: KeyboardViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var scanBarButton: UIBarButtonItem!
@@ -14,7 +14,6 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
     var textFields: Array<UITextField> = []
     var box:UIView = UIView()
     var constraint: NSLayoutConstraint? = nil
-    var isKeyboardShown = false
     var suggestionView = UIView()
     var pasteView = UIView()
     var suggestion1 = UILabel()
@@ -47,9 +46,6 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
         super.viewDidLoad()
         adaptToSmallScreen = self.view.frame.height == 568
         createUI()
-        NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(EnterMnemonicsViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        hideKeyboardWhenTappedAround()
         title = NSLocalizedString("id_enter_your_wallet_mnemonic", comment: "")
         doneButton.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
         createSuggestionView()
@@ -259,69 +255,6 @@ class EnterMnemonicsViewController: UIViewController, UITextFieldDelegate, NVAct
     func checkMnemonics() {
         for textField in textFields {
             checkTextfield(textField: textField)
-        }
-    }
-
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if(isKeyboardShown) {
-                return
-            }
-
-            var frame = suggestionView.frame
-            frame.origin.y = self.view.frame.height - keyboardSize.height - frame.height
-            var frameP = pasteView.frame
-            frameP.origin.y = self.view.frame.height - keyboardSize.height - frameP.height
-            suggestionView.frame = frame
-            pasteView.frame = frameP
-            suggestionView.layoutIfNeeded()
-            pasteView.layoutIfNeeded()
-            isKeyboardShown = true
-            if (adaptToSmallScreen) {
-                let boxBottom = box.frame.origin.y + box.frame.height
-                let suggestionTop = suggestionView.frame.origin.y
-                if(boxBottom > suggestionTop){
-                    let suggestedConstraint = constraint!.constant - (boxBottom - suggestionTop)
-                    for index in 0..<textFields.count {
-                        if (textFields[index].isFirstResponder) {
-                            if (index > 15) {
-                                constraint?.isActive = false
-                                constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.top, multiplier: 1, constant: suggestedConstraint)
-                                constraint?.isActive = true
-                            }
-                        }
-                    }
-                }
-            } else {
-                let boxBottom = box.frame.origin.y + box.frame.height
-                let suggestionTop = suggestionView.frame.origin.y
-                if(boxBottom > suggestionTop){
-                    let suggestedConstraint = constraint!.constant - (boxBottom - suggestionTop)
-                    constraint?.isActive = false
-                    constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.top, multiplier: 1, constant: suggestedConstraint)
-                    constraint?.isActive = true
-                }
-            }
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        constraint?.isActive = false
-        constraint = NSLayoutConstraint(item: box, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.top, multiplier: 1, constant: 18)
-        constraint?.isActive = true
-        if(!isKeyboardShown) {
-            return
-        }
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            var frame = suggestionView.frame
-            frame.origin.y = self.view.frame.height
-            var frameP = pasteView.frame
-            frameP.origin.y = self.view.frame.height
-            suggestionView.frame = frame
-            pasteView.frame = frameP
-            isKeyboardShown = false
-            print("hiding keyboard")
-
         }
     }
 

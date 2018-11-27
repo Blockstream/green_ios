@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class CustomAlertInputView: UIViewController {
+class CustomAlertInputView: KeyboardViewController {
 
 
     @IBOutlet weak var titleLabel: UILabel!
@@ -17,7 +17,6 @@ class CustomAlertInputView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         textField.becomeFirstResponder()
-        hideKeyboardWhenTappedAround()
     }
 
     override func viewWillAppear(_ animated: Bool) {

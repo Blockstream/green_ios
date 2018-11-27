@@ -2,7 +2,7 @@ import Foundation
 import Foundation
 import UIKit
 
-class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+class AutolockSettingsViewController : KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
 
     @IBOutlet weak var tableView: UITableView!
@@ -18,7 +18,6 @@ class AutolockSettingsViewController : UIViewController, UITableViewDelegate, UI
         tableView.tableFooterView = UIView()
         unitTextField.delegate = self
         updateUnitUI()
-        hideKeyboardWhenTappedAround()
         warningLabel.isHidden = true
         title = NSLocalizedString("id_autolock_after", comment: "")
         unitLabel.text = NSLocalizedString("id_seconds", comment: "")

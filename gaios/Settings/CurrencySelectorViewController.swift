@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+class CurrencySelectorViewController : KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     var currencyList: Array<CurrencyItem> = Array<CurrencyItem>()
@@ -17,7 +17,6 @@ class CurrencySelectorViewController : UIViewController, UITableViewDelegate, UI
         tableView.tableFooterView = UIView()
         tableView.separatorColor = UIColor.customTitaniumLight()
         getAvailableCurrencies()
-        hideKeyboardWhenTappedAround()
         textField.delegate = self
         let localizedSearch = NSLocalizedString("id_search", comment: "")
         textField.attributedPlaceholder = NSAttributedString(string: localizedSearch,

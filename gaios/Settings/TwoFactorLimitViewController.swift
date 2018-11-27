@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var limitTextField: UITextField!
     @IBOutlet weak var setLimitButton: UIButton!
@@ -13,8 +13,6 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(TwoFactorLimitViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(TwoFactorLimitViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         setButton()
         if(!AccountStore.shared.isTwoFactorEnabled()) {
             setLimitButton.isEnabled = false
@@ -45,24 +43,6 @@ class TwoFactorLimitViewController: UIViewController, NVActivityIndicatorViewabl
                 limitTextField.text = amount
             }
             fiat = isFiat
-        }
-    }
-
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            let position =  self.view.frame.height - keyboardSize.height - setLimitButton.frame.height
-            var keyboardHeight = keyboardSize.height
-            if #available(iOS 11.0, *) {
-                let bottomInset = view.safeAreaInsets.bottom
-                keyboardHeight -= bottomInset
-            }
-            limitButtonConstraint.constant = keyboardHeight
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            limitButtonConstraint.constant = 0
         }
     }
 

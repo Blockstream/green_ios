@@ -89,27 +89,6 @@ class SendBtcDetailsViewController: UIViewController {
         }
     }
 
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if (self.view.frame.origin.y == 0 && customFeeTextField.isFirstResponder) {
-                let textfieldPosition = customFeeTextField.frame.origin.y
-                let height = self.view.frame.height
-                let keyboardtop = height - keyboardSize.height // y point keyboard top
-                let target = keyboardtop - 130
-                let diff = textfieldPosition - target
-                self.view.frame.origin.y -= diff
-            }
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0 {
-                self.view.frame.origin.y = 0
-            }
-        }
-    }
-
     func setButton() {
         if (selectedType == TransactionType.BTC) {
             currencySwitch.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)

@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class RequestTwoFactorReset : KeyboardViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var emailLabel: UILabel!
@@ -16,7 +16,6 @@ class RequestTwoFactorReset : UIViewController, NVActivityIndicatorViewable, Two
         super.viewDidLoad()
         emailTextField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        hideKeyboardWhenTappedAround()
         title = NSLocalizedString("id_request_twofactor_reset", comment: "")
         emailLabel.text = NSLocalizedString("id_enter_new_email", comment: "")
         warningLabel.text = NSLocalizedString("id_warning_resetting_twofactor", comment: "")

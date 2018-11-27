@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate {
+class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate {
 
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
@@ -25,7 +25,6 @@ class SendBTCConfirmationViewController: UIViewController, SlideButtonDelegate, 
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
         walletNameLabel.text = (transaction?.data["is_sweep"] as! Bool) ? "Paper Wallet" : wallet?.name
-        hideKeyboardWhenTappedAround()
         slidingButton.delegate = self
         uiErrorLabel = UIErrorLabel(self.view)
         refresh()

@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class DisputeRequestViewController : UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class DisputeRequestViewController : KeyboardViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var emailTextField: UITextField!
@@ -17,7 +17,6 @@ class DisputeRequestViewController : UIViewController, NVActivityIndicatorViewab
         disputeButton.setTitle(NSLocalizedString("id_dispute_twofactor_reset", comment: ""), for: .normal)
         emailTextField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        hideKeyboardWhenTappedAround()
         errorLabel = UIErrorLabel(self.view)
     }
 

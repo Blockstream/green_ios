@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
-class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class SetPhoneViewController: KeyboardViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
 
     @IBOutlet weak var textField: SearchTextField!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
@@ -14,9 +14,6 @@ class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, Two
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        hideKeyboardWhenTappedAround()
-        NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SetEmailViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         textField.attributedPlaceholder = NSAttributedString(string: "+1 123456789",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         getCodeButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
@@ -78,20 +75,5 @@ class SetPhoneViewController: UIViewController, NVActivityIndicatorViewable, Two
         self.stopAnimating()
         errorLabel.isHidden = false
         errorLabel.text = NSLocalizedString(text, comment: "")
-    }
-
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            var keyboardHeight = keyboardSize.height
-            if #available(iOS 11.0, *) {
-                let bottomInset = view.safeAreaInsets.bottom
-                keyboardHeight -= bottomInset
-            }
-            buttonConstraint.constant = keyboardHeight
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        buttonConstraint.constant = 0
     }
 }

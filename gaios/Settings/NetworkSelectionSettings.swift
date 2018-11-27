@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
+class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate {
 
 
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
@@ -17,14 +17,11 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var testnetSelector: DesignableView!
     var network: Network = Network.TestNet
     var delegate: NetworkDelegate?
-    var keyboardShown = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         ipTextField.delegate = self
         portTextField.delegate = self
-        NotificationCenter.default.addObserver(self, selector: #selector(NetworkSelectionSettings.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(NetworkSelectionSettings.keyboardWillHide), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
         ipTextField.attributedPlaceholder = NSAttributedString(string: "IP address",
                                                                attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         portTextField.attributedPlaceholder = NSAttributedString(string: "Port number",
@@ -39,7 +36,6 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
         portTextField.text = networkSettings.portNumber
         torSwitch.isOn = networkSettings.torEnabled
         updatebuttons()
-        hideKeyboardWhenTappedAround()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -91,38 +87,6 @@ class NetworkSelectionSettings: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
-    }
-
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if (keyboardShown) {
-                return
-            }
-            keyboardShown = true
-            let animations = { [weak self] in
-                self?.topConstraint.constant -= keyboardSize.height
-                self?.topConstraint.constant -= 1
-            }
-            let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
-            UIView.animateKeyframes(withDuration: 0.5, delay: 0, options: options, animations: animations, completion: nil)
-
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if (!keyboardShown) {
-                return
-            }
-            keyboardShown = false
-            let animations = { [weak self] in
-                self?.topConstraint.constant = 200
-                self?.topConstraint.constant = 200
-
-            }
-            let options = UIViewKeyframeAnimationOptions.beginFromCurrentState
-            UIView.animateKeyframes(withDuration: 0.5, delay: 0, options: options, animations: animations, completion: nil)
-        }
     }
 
     func setupView() {
