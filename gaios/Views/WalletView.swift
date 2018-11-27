@@ -4,54 +4,11 @@ import PromiseKit
 /**
  The WalletView class manages an ordered collection of card view and presents them.
  */
-open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
+open class WalletView: UIView, UITableViewDelegate {
 
     var items = [TransactionItem]()
     var delegate: WalletViewDelegate?
     var presentingWallet: WalletItem? = nil
-
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
-    }
-
-    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 65
-    }
-
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell", for: indexPath) as! TransactionTableCell
-        let item: TransactionItem = items.reversed()[indexPath.row]
-        cell.amount.text = item.amount
-        if(item.type == "incoming" || item.type == "redeposit") {
-            cell.address.text = presentingWallet?.name
-            cell.amount.textColor = UIColor.customMatrixGreen()
-        } else {
-            cell.address.text = item.address
-            cell.amount.textColor = UIColor.white
-        }
-
-        if(item.blockheight == 0) {
-            cell.status.text = NSLocalizedString("id_unconfirmed", comment: "")
-            cell.status.textColor = UIColor.red
-        } else if (AccountStore.shared.getBlockheight() - item.blockheight < 6) {
-            let confirmCount = AccountStore.shared.getBlockheight() - item.blockheight + 1
-            cell.status.text = String(format: "(%d/6)", confirmCount)
-            cell.status.textColor = UIColor.red
-        } else {
-            cell.status.text = NSLocalizedString("id_completed", comment: "")
-            cell.status.textColor = UIColor.customTitaniumLight()
-        }
-        cell.selectionStyle = .none
-        cell.date.text = item.date
-        cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0)
-        return cell;
-    }
-
-    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item: TransactionItem = items.reversed()[indexPath.row]
-        delegate?.showTransaction(tx: item)
-    }
-
 
     // MARK: Public methods
 
@@ -90,53 +47,6 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         insert(cardViews: cardViews)
         calculateLayoutValues()
 
-    }
-
-    func updateViewModel(account: Int) {
-        items.removeAll(keepingCapacity: true)
-        AccountStore.shared.GDKQueue.async{
-            wrap {
-                try getSession().getTransactions(subaccount: UInt32(account), page: 0)
-                }.done { (transactions: [String : Any]?) in
-                    DispatchQueue.main.async {
-                        let list = transactions!["list"] as! NSArray
-                        for tx in list.reversed() {
-                            let transaction = tx as! [String : Any]
-                            let satoshi:UInt64 = transaction["satoshi"] as! UInt64
-                            let hash = transaction["txhash"] as! String
-                            let fee = transaction["fee"] as! UInt32
-                            let size = transaction["transaction_vsize"] as! UInt32
-                            let blockheight = transaction["block_height"] as! UInt32
-                            let memo = transaction["memo"] as! String
-
-                            let dateString = transaction["created_at"] as! String
-                            let type = transaction["type"] as! String
-                            let dateFormatter = DateFormatter()
-                            dateFormatter.dateStyle = .medium
-                            dateFormatter.timeStyle = .short
-                            let date = Date.dateFromString(dateString: dateString)
-                            let formattedBalance: String = String.formatBtc(satoshi: satoshi)
-                            let adressees = transaction["addressees"] as! [String]
-                            let can_rbf = transaction["can_rbf"] as! Bool
-                            var counterparty = ""
-                            if (adressees.count > 0) {
-                                counterparty = adressees[0]
-                            }
-                            let formatedTransactionDate = Date.dayMonthYear(date: date)
-                            let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date, canRBF: can_rbf, rawTransaction: transaction)
-                            self.items.append(item)
-                        }
-                        print("success")
-                    }
-                }.ensure {
-                    DispatchQueue.main.async {
-                        self.transactionTableView.reloadData()
-                        self.animateTableView()
-                    }
-                }.catch { error in
-                    print("error")
-            }
-        }
     }
 
     /**
@@ -447,6 +357,8 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
     func prepareWalletView() {
 
         prepareScrollView()
+
+        /*
         let nib = UINib(nibName: "TransactionTableCell", bundle: nil)
         transactionTableView.delegate = self
         transactionTableView.dataSource = self
@@ -458,20 +370,8 @@ open class WalletView: UIView, UITableViewDelegate, UITableViewDataSource {
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "outgoingTX"), object: nil)
         //prepareWalletHeaderView()
+        */
 
-    }
-
-    @objc func refreshTransactions(_ notification: NSNotification) {
-        print(notification.userInfo ?? "")
-        if let dict = notification.userInfo as NSDictionary? {
-            if let accounts = dict["subaccounts"] as? NSArray {
-                for acc in accounts {
-                    if(acc as! UInt32 == presentingWallet?.pointer) {
-                        updateViewModel(account: acc as! Int)
-                    }
-                }
-            }
-        }
     }
 
     func insert(cardViews: [CardView]) {

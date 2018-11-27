@@ -103,39 +103,3 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.reloadData()
     }
 }
-
-class TransactionItem {
-    var timestamp: String
-    var address: String
-    var amount: String
-    var fiatAmount: String
-    var date: String
-    var btc_amount: Double
-    var type: String
-    var hash: String
-    var blockheight: UInt32
-    var fee: UInt32
-    var size: UInt32
-    var memo: String
-    var dateRaw: Date
-    var canRBF: Bool
-    var rawTransaction: [String: Any]
-
-    init(timestamp: String, address: String, amount: String, fiatAmount: String, date: String, btc: Double, type: String, hash: String, blockheight: UInt32, fee: UInt32, size: UInt32, memo: String, dateRaw: Date, canRBF: Bool, rawTransaction: [String: Any]) {
-        self.timestamp = timestamp
-        self.address = address
-        self.amount = amount
-        self.fiatAmount = fiatAmount
-        self.date = date
-        self.btc_amount = btc
-        self.type = type
-        self.hash = hash
-        self.blockheight = blockheight
-        self.fee = fee
-        self.size = size
-        self.memo = memo
-        self.dateRaw = dateRaw
-        self.canRBF = canRBF
-        self.rawTransaction = rawTransaction
-    }
-}

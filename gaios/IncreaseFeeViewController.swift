@@ -26,7 +26,7 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
         cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
 
         // Set custom rate to 1 satoshi higher than the old rate
-        let prevFeeRate = transaction.rawTransaction["fee_rate"] as! Double
+        let prevFeeRate = transaction.feeRate
         let hintFeeRate = (prevFeeRate + 1) / 1000
         amountTextField.attributedPlaceholder = NSAttributedString(string: String(format: "%0.3f", hintFeeRate), attributes:    [NSAttributedStringKey.foregroundColor : UIColor.gray])
     }
@@ -49,7 +49,8 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
         DispatchQueue.global(qos: .background).async {
             wrap {
                 var details = [String: Any]()
-                details["previous_transaction"] = self.transaction.rawTransaction
+                let jsonData = try JSONEncoder().encode(self.transaction)
+                details["previous_transaction"] = String(data: jsonData, encoding: .utf8)
                 details["fee_rate"] = feeRate
                 let newTransaction = try getSession().createTransaction(details: details)
                 return try getSession().sendTransaction(details: newTransaction!)

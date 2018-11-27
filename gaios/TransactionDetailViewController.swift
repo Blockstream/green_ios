@@ -26,10 +26,10 @@ class TransactionDetailViewController: UIViewController {
         super.viewDidLoad()
         updateUI()
         feeButton.isHidden = true
-        if(transaction_g?.blockheight == 0) {
+        if(transaction_g?.blockHeight == 0) {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
-        } else if (AccountStore.shared.getBlockheight() - (transaction_g?.blockheight)! < 6) {
-            let blocks = AccountStore.shared.getBlockheight() - (transaction_g?.blockheight)! + 1
+        } else if (AccountStore.shared.getBlockheight() - (transaction_g?.blockHeight)! < 6) {
+            let blocks = AccountStore.shared.getBlockheight() - (transaction_g?.blockHeight)! + 1
             let localizedConfirmed = NSLocalizedString("id_blocks_confirmed", comment: "")
             warniniglabel.text = String(format: "(%d/6) %@", blocks, localizedConfirmed)
         } else {
@@ -50,61 +50,17 @@ class TransactionDetailViewController: UIViewController {
 
     func updateUI() {
         hashLabel.text = transaction_g?.hash
-        amountLabel.text = transaction_g?.amount
+        amountLabel.text = transaction_g?.amount()
         feeLabel.text = feeText(fee: (transaction_g?.fee)!, size: (transaction_g?.size)!)
         memoLabel.text = transaction_g?.memo
-        dateLabel.text = transaction_g?.date
+        dateLabel.text = transaction_g?.date()
     }
 
     @objc func refreshTransaction(_ notification: NSNotification) {
-        print(notification.userInfo ?? "")
-        if let dict = notification.userInfo as NSDictionary? {
-            if let txhash = dict["txhash"] as? String {
-                AccountStore.shared.GDKQueue.async{
-                    wrap {
-                        try getSession().getTransactions(subaccount: self.pointer, page: 0)
-                        }.done { (transactions: [String : Any]?) in
-                            DispatchQueue.main.async {
-                                let list = transactions!["list"] as! NSArray
-                                for tx in list.reversed() {
-                                    print(tx)
-                                    let transaction = tx as! [String : Any]
-                                    let hash = transaction["txhash"] as! String
-                                    if (hash != txhash) {
-                                        continue
-                                    }
-                                    let satoshi:UInt64 = transaction["satoshi"] as! UInt64
-                                    let fee = transaction["fee"] as! UInt32
-                                    let size = transaction["transaction_vsize"] as! UInt32
-                                    let blockheight = transaction["block_height"] as! UInt32
-                                    let memo = transaction["memo"] as! String
-
-                                    let dateString = transaction["created_at"] as! String
-                                    let type = transaction["type"] as! String
-                                    let dateFormatter = DateFormatter()
-                                    dateFormatter.dateStyle = .medium
-                                    dateFormatter.timeStyle = .short
-                                    let date = Date.dateFromString(dateString: dateString)
-                                    let formattedBalance: String = String.formatBtc(satoshi: satoshi)
-                                    let adressees = transaction["addressees"] as! [String]
-                                    let can_rbf = transaction["can_rbf"] as! Bool
-                                    var counterparty = ""
-                                    if (adressees.count > 0) {
-                                        counterparty = adressees[0]
-                                    }
-                                    let formatedTransactionDate = Date.dayMonthYear(date: date)
-                                    let item = TransactionItem(timestamp: dateString, address: counterparty, amount: formattedBalance, fiatAmount: "", date: formatedTransactionDate, btc: Double(satoshi), type: type, hash: hash, blockheight: blockheight, fee: fee, size: size, memo: memo, dateRaw: date, canRBF: can_rbf, rawTransaction: transaction)
-                                    self.transaction_g = item
-                                    self.updateUI()
-                                }
-                            }
-                            print("success")
-                        }.catch { error in
-                            print("error")
-                    }
-                }
-            }
-        }
+        // FIXME: this code appears to think that hash, amount, fee or date can change on
+        // an outgoing transaction. Probably needs to be extended to include actual pertinent
+        // information in the case of an RBF but can be argued this controller shouldn't
+        // be listening for notifications on behalf of the parent.
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
