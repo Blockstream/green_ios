@@ -134,11 +134,9 @@ class NotificationStore {
 
     func createWarningNotification() -> NotificationItem? {
         let date = Date()
-        let twoFactorSettings = SettingsStore.shared.getTwoFactorWarning()
-        let localizedWarning = NSLocalizedString("id_warning", comment: "")
-        if (!AccountStore.shared.isTwoFactorEnabled() && twoFactorSettings.0) {
+        if (!AccountStore.shared.isTwoFactorEnabled()) {
             return NotificationItem(date: date.addingTimeInterval(date.timeIntervalSince1970), id: "warninghash1", seen: false, isWarning: true, satoshi: 0, type: "warning", address: "")
-        } else if (AccountStore.shared.twoFactorsEnabledCount() == 1 &&  twoFactorSettings.1) {
+        } else if (AccountStore.shared.twoFactorsEnabledCount() == 1) {
             return NotificationItem(date: date.addingTimeInterval(date.timeIntervalSince1970), id: "warninghash2", seen: false, isWarning: true, satoshi: 0, type: "warning", address: "")
         }
         return nil
@@ -176,30 +174,6 @@ class NotificationStore {
         maybeAddWarningNotification()
         refreshNotifications?()
         getTransactions()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.warningChanged(_:)), name: NSNotification.Name(rawValue: "twoFactorWarningChanged"), object: nil)
-    }
-
-    func refreshWarning() {
-        let settings = SettingsStore.shared.getTwoFactorWarning()
-        let twoFactorCount = AccountStore.shared.twoFactorsEnabledCount()
-        if(twoFactorCount > 1) {
-            allNotifications.removeValue(forKey: "warninghash2")
-            allNotifications.removeValue(forKey: "warninghash1")
-            writeNotificationsToDisk()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationChanged"), object: nil, userInfo: nil)
-        }
-        if(!settings.0) {
-            allNotifications.removeValue(forKey: "warninghash1")
-            writeNotificationsToDisk()
-        } else if (!settings.1) {
-            allNotifications.removeValue(forKey: "warninghash2")
-            writeNotificationsToDisk()
-        }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationChanged"), object: nil, userInfo: nil)
-    }
-
-    @objc func warningChanged(_ notification: NSNotification) {
-        refreshWarning()
     }
 
     let walletTransactions: [UInt32: Array<NotificationItem>] =  [UInt32: Array<NotificationItem>]()

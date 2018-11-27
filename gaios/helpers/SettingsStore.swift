@@ -14,7 +14,6 @@ class SettingsStore {
         let securityRecovery = "Show Recovery Seed"
         let securityScreenLock = "Screen Lock"
         let securityTwoFactor = "Two-Factor Authentication"
-        let securityTwoFactorWarning = "Two-Factor Warnings"
         let securityTwoFactorLimit = "Two-Factor Treshold"
         let securityTwoFactorReset = "Request Two-Factor Reset"
         let securitySupport = "Support"
@@ -40,7 +39,6 @@ class SettingsStore {
     let settingsTwoFactor = "settingsTwoFactor"
     let settingsAutolock = "settingsAutolock"
     let settingsSupport = "settingsSupport"
-    let settingsTwoFactorWarning = "settingsTwoFactorWarning"
     let settingsNLockTime = "settingsNLockTime"
     let settingsTwoFactorLimit = "settingsTwoFactorLimit"
 
@@ -167,27 +165,9 @@ class SettingsStore {
         return ScreenLock(rawValue: raw!)!
     }
 
-    //returns if warning for nofactor and one factor are enabled (NoFactor, OneFactor)
-    func getTwoFactorWarning() -> (Bool, Bool) {
-        let setting = allSettings[settingsTwoFactorWarning]
-        let noFactor = setting?.settingsProperty["noFactor"]
-        let oneFactor = setting?.settingsProperty["oneFactor"]
-        return (noFactor == "true", oneFactor == "true")
-    }
-
     func refreshTwoFactorSettings() {
         let setting = defaultTwoFactor()
         allSettings[settingsTwoFactor] = setting
-        loadAllSections()
-        writeSettingsToDisk()
-    }
-
-    func setTwoFactorWarning(noFactor: Bool, oneFactor: Bool) {
-        let enabledText = noFactor || oneFactor ? "Enabled" : "Disabled"
-        let noFactorText = noFactor ? "true" : "false"
-        let oneFactorText = oneFactor ? "true" : "false"
-        let setting = SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": noFactorText, "oneFactor" : oneFactorText], text: securityTwoFactorWarning, secondaryText: enabledText)
-        allSettings[settingsTwoFactorWarning] = setting
         loadAllSections()
         writeSettingsToDisk()
     }
@@ -269,10 +249,6 @@ class SettingsStore {
 
     func defaultRequestNlockTime() -> SettingsItem {
         return SettingsItem(settingsName: advancedRequestNLocktime, property:[String:String](), text: advancedRequestNLocktime, secondaryText: "")
-    }
-
-    func defaultTwoFactorWarning() -> SettingsItem {
-        return SettingsItem(settingsName: settingsTwoFactorWarning, property: ["noFactor": "true", "oneFactor" : "true"], text: securityTwoFactorWarning, secondaryText: "Enabled")
     }
 
     func defaultTwoFactorLimit() -> SettingsItem {
@@ -382,7 +358,6 @@ class SettingsStore {
         let recovery = allSettings[settingsRecovery] == nil ? defaultRecoverySeed() : allSettings[settingsRecovery]
         let screenLock = defaultScreenLock()
         let twoFactor = defaultTwoFactor()
-        let twoFactorWarning = allSettings[settingsTwoFactorWarning] == nil ? defaultTwoFactorWarning() : allSettings[settingsTwoFactorWarning]
         let twoFactorLimit = allSettings[settingsTwoFactorLimit] == nil ? defaultTwoFactorLimit() : allSettings[settingsTwoFactorLimit]
         let twoFactorReset = defaultTwoFactorReset()
         let autolock = allSettings[settingsAutolock] == nil ? defaultAutolockSettings() : allSettings[settingsAutolock]
@@ -391,7 +366,6 @@ class SettingsStore {
         securitySettings.append(recovery!)
         securitySettings.append(screenLock)
         securitySettings.append(twoFactor)
-        securitySettings.append(twoFactorWarning!)
         securitySettings.append(twoFactorLimit!)
         securitySettings.append(twoFactorReset)
         securitySettings.append(autolock!)
@@ -401,7 +375,6 @@ class SettingsStore {
         allSettings[settingsTwoFactor] = twoFactor
         allSettings[settingsTwoFactorLimit] = twoFactorLimit
         allSettings[securityTwoFactorReset] = twoFactorReset
-        allSettings[settingsTwoFactorWarning] = twoFactorWarning
         allSettings[settingsSupport] = support
         allSettings[settingsAutolock] = autolock
         let section = SettingsSection(sectionName: sectionSecurity, settingsInSection: securitySettings)

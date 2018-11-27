@@ -148,7 +148,6 @@
                         <segue destination="80V-46-g4d" kind="show" identifier="screenLock" id="xcl-Dg-JhF"/>
                         <segue destination="npE-4D-Ee3" kind="show" identifier="transactionFee" id="yP2-yJ-Lxy"/>
                         <segue destination="tbc-8o-t8J" kind="show" identifier="autolock" id="a42-4h-VXc"/>
-                        <segue destination="4u7-GI-Irj" kind="show" identifier="twoFactorWarning" id="HGk-IF-JfZ"/>
                         <segue destination="jB7-Eo-Pwf" kind="show" identifier="twoFactorLimit" id="3Us-TD-UHA"/>
                         <segue destination="Ms9-tQ-5eg" kind="show" identifier="requestNlock" id="uWa-8N-mMS"/>
                         <segue destination="QMk-gQ-Hbn" kind="show" identifier="twoFactorReset" id="azf-Vv-sq5"/>
@@ -3185,7 +3184,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="477.5" width="288" height="20.5"/>
+                                <rect key="frame" x="16" y="477" width="288" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -4449,63 +4448,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gEL-uU-eCc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="9855" y="-3543"/>
-        </scene>
-        <!--Two Factor Warning-->
-        <scene sceneID="knO-iI-gtb">
-            <objects>
-                <viewController title="Two Factor Warning" hidesBottomBarWhenPushed="YES" id="4u7-GI-Irj" customClass="TwoFactorWarningSettings" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="xU1-bc-GGI">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Two Factor Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wud-ct-Ks3">
-                                <rect key="frame" x="16" y="84" width="177" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jEq-0H-yuS">
-                                <rect key="frame" x="255" y="79" width="51" height="31"/>
-                                <connections>
-                                    <action selector="noFactorSwitched:" destination="4u7-GI-Irj" eventType="valueChanged" id="lar-KW-UEI"/>
-                                </connections>
-                            </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Only One Two-Factor Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OD0-eF-ySY">
-                                <rect key="frame" x="16" y="135" width="229" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I1F-Vl-RpS">
-                                <rect key="frame" x="255" y="130" width="51" height="31"/>
-                                <connections>
-                                    <action selector="oneFactorSwitch:" destination="4u7-GI-Irj" eventType="valueChanged" id="eET-65-5wK"/>
-                                </connections>
-                            </switch>
-                        </subviews>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <constraints>
-                            <constraint firstItem="I1F-Vl-RpS" firstAttribute="centerY" secondItem="OD0-eF-ySY" secondAttribute="centerY" id="BB1-m4-GEV"/>
-                            <constraint firstItem="OD0-eF-ySY" firstAttribute="leading" secondItem="6No-Qw-mbz" secondAttribute="leading" constant="16" id="FhC-F0-jRp"/>
-                            <constraint firstItem="OD0-eF-ySY" firstAttribute="top" secondItem="wud-ct-Ks3" secondAttribute="bottom" constant="30" id="Hh9-1F-XqQ"/>
-                            <constraint firstItem="jEq-0H-yuS" firstAttribute="centerY" secondItem="wud-ct-Ks3" secondAttribute="centerY" id="Vg1-V1-idx"/>
-                            <constraint firstItem="6No-Qw-mbz" firstAttribute="trailing" secondItem="I1F-Vl-RpS" secondAttribute="trailing" constant="16" id="d8R-QE-IGM"/>
-                            <constraint firstItem="wud-ct-Ks3" firstAttribute="leading" secondItem="6No-Qw-mbz" secondAttribute="leading" constant="16" id="ovU-uG-vVW"/>
-                            <constraint firstItem="wud-ct-Ks3" firstAttribute="top" secondItem="6No-Qw-mbz" secondAttribute="top" constant="20" id="p7E-yd-d0k"/>
-                            <constraint firstItem="6No-Qw-mbz" firstAttribute="trailing" secondItem="jEq-0H-yuS" secondAttribute="trailing" constant="16" id="yGr-KA-OKM"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="6No-Qw-mbz"/>
-                    </view>
-                    <connections>
-                        <outlet property="noFactorLabel" destination="wud-ct-Ks3" id="QnM-Qu-S5W"/>
-                        <outlet property="noFactorSwitch" destination="jEq-0H-yuS" id="SaT-Ws-lRf"/>
-                        <outlet property="oneFactorLabel" destination="OD0-eF-ySY" id="lWd-0H-khI"/>
-                        <outlet property="oneFactorSwitch" destination="I1F-Vl-RpS" id="Uyb-eg-vDe"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6QP-Yh-DSD" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10744" y="-3544"/>
         </scene>
         <!--Two-Factor treshold-->
         <scene sceneID="qcc-Ge-SXC">

@@ -27,7 +27,6 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
             self.updateViewModel()
         }
         NotificationCenter.default.addObserver(self, selector: #selector(self.notificationChanged(_:)), name: NSNotification.Name(rawValue: "notificationChanged"), object: nil)
-        NotificationStore.shared.refreshWarning()
     }
 
     @objc func notificationChanged(_ notification: NSNotification) {

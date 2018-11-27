@@ -111,18 +111,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                         self.performSegue(withIdentifier: "editTwoFactor", sender: nil)
                     }
                 } else if (indexPath.row == 3) {
-                    self.performSegue(withIdentifier: "twoFactorWarning", sender: nil)
-                } else if (indexPath.row == 4) {
                     if anyEnabled  && !isResetData.isReset && !isResetData.isDisputed {
                         self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
                     }
-                } else if (indexPath.row == 5) {
+                } else if (indexPath.row == 4) {
                     if anyEnabled {
                         self.performSegue(withIdentifier: "twoFactorReset", sender: nil)
                     }
-                } else if (indexPath.row == 6) {
+                } else if (indexPath.row == 5) {
                     self.performSegue(withIdentifier: "autolock", sender: nil)
-                } else if (indexPath.row == 7) {
+                } else if (indexPath.row == 6) {
                     if let url = URL(string: SettingsStore.shared.supportURL) {
                         UIApplication.shared.open(url, options: [:])
                     }
