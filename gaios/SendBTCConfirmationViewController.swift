@@ -137,6 +137,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     }
 
     override func keyboardWillShow(notification: NSNotification) {
+        // Modified slightly for use in Green from the public release at "Managing the Keyboard" from Text Programming Guide for iOS
         super.keyboardWillShow(notification: notification)
         if let kbSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
