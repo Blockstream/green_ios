@@ -95,6 +95,7 @@
 		81310C452189D10F00563B91 /* GDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* GDKHelper.swift */; };
 		81F22333219EE91D005E65D4 /* WalletCardHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81F22332219EE91D005E65D4 /* WalletCardHeader.xib */; };
 		81F22335219EFF9F005E65D4 /* WalletCardHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F22334219EFF9F005E65D4 /* WalletCardHeader.swift */; };
+		81FABC2D21AEEFF000AE2ECD /* CongratsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FABC2C21AEEFF000AE2ECD /* CongratsViewController.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -215,6 +216,7 @@
 		81310C442189D10F00563B91 /* GDKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GDKHelper.swift; sourceTree = "<group>"; };
 		81F22332219EE91D005E65D4 /* WalletCardHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCardHeader.xib; sourceTree = "<group>"; };
 		81F22334219EFF9F005E65D4 /* WalletCardHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCardHeader.swift; sourceTree = "<group>"; };
+		81FABC2C21AEEFF000AE2ECD /* CongratsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongratsViewController.swift; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -438,6 +440,7 @@
 				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
 				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
 				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
+				81FABC2C21AEEFF000AE2ECD /* CongratsViewController.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -774,6 +777,7 @@
 				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,
 				092C7BCC20D238BE00F90DF2 /* WalletsController.swift in Sources */,
 				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
+				81FABC2D21AEEFF000AE2ECD /* CongratsViewController.swift in Sources */,
 				09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */,
 				09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */,
 				0980B50021883AD9007715F4 /* DisputeRequestViewController.swift in Sources */,

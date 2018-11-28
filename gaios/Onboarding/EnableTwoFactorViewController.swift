@@ -4,8 +4,12 @@ import UIKit
 class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableview: UITableView!
-    var factors: [String] = []
-    var images: [UIImage] = []
+    struct FactorItem {
+        var name: String
+        var image: UIImage
+        var enabled: Bool
+    }
+    var factors: [FactorItem] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,8 +25,9 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
         let cell =
             tableview.dequeueReusableCell(withIdentifier: "cell",
                                           for: indexPath as IndexPath)
-        cell.textLabel?.text = self.factors[indexPath.row]
-        cell.imageView?.image = self.images[indexPath.row]
+        cell.textLabel?.text = self.factors[indexPath.row].name
+        cell.imageView?.image = self.factors[indexPath.row].image
+        cell.accessoryType = (self.factors[indexPath.row].enabled) ? .checkmark : .disclosureIndicator
         return cell
     }
 
@@ -33,7 +38,11 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch self.factors[indexPath.row] {
+        let selectedFactor: FactorItem = self.factors[indexPath.row]
+        if (selectedFactor.enabled) {
+            return
+        }
+        switch selectedFactor.name {
         case NSLocalizedString("id_email", comment: "") :
             self.performSegue(withIdentifier: "email", sender: nil)
             break
@@ -54,22 +63,18 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         factors.removeAll()
-        images.removeAll()
-        if !AccountStore.shared.isEmailEnabled() {
-            factors.append(NSLocalizedString("id_email", comment: ""))
-            images.append(UIImage.init(named: "email")!)
+        guard let config = AccountStore.shared.getTwoFactorConfig() else { return }
+        if let email = config["email"] as? [String: Any] {
+            factors.append(FactorItem(name: NSLocalizedString("id_email", comment: ""), image: UIImage.init(named: "email")!, enabled: email["enabled"] as! Int == 1 && email["confirmed"] as! Int == 1))
         }
-        if !AccountStore.shared.isSMSEnabled() {
-            factors.append(NSLocalizedString("id_sms", comment: ""))
-            images.append(UIImage.init(named: "sms")!)
+        if let sms = config["sms"] as? [String: Any] {
+            factors.append(FactorItem(name: NSLocalizedString("id_sms", comment: ""), image: UIImage.init(named: "sms")!, enabled: sms["enabled"] as! Int == 1 && sms["confirmed"] as! Int == 1))
         }
-        if !AccountStore.shared.isPhoneEnabled() {
-            factors.append(NSLocalizedString("id_call", comment: ""))
-            images.append(UIImage.init(named: "phoneCall")!)
+        if let phone = config["phone"] as? [String: Any] {
+            factors.append(FactorItem(name: NSLocalizedString("id_call", comment: ""), image: UIImage.init(named: "phoneCall")!, enabled: phone["enabled"] as! Int == 1 && phone["confirmed"] as! Int == 1))
         }
-        if !AccountStore.shared.isGauthEnabled() {
-            factors.append(NSLocalizedString("id_google_auth", comment: ""))
-            images.append(UIImage.init(named: "gauth")!)
+        if let gauth = config["gauth"] as? [String: Any] {
+            factors.append(FactorItem(name: NSLocalizedString("id_google_auth", comment: ""), image: UIImage.init(named: "gauth")!, enabled: gauth["enabled"] as! Int == 1 && gauth["confirmed"] as! Int == 1))
         }
         tableview.reloadData()
     }

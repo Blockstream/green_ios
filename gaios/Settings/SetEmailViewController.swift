@@ -18,8 +18,8 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
         errorLabel = UIErrorLabel(self.view)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         getCodeButton.backgroundColor = UIColor.customTitaniumLight()
         textField.becomeFirstResponder()
     }

@@ -3,91 +3,94 @@ import UIKit
 import NVActivityIndicatorView
 
 class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewable {
-    var wordNumbers: [Int] = [Int](repeating: 0, count: 4)
+
+    var selectionWordNumbers: [Int] = [Int](repeating: 0, count:4)
+    var expectedWordNumbers: [Int] = [Int](repeating: 0, count:4)
     var mnemonics:[String] = []
     var questionCounter: Int = 0
     var questionPosition: Int = 0
+    let numberOfSteps: Int = 4
+
+    @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var button0: DesignableButton!
     @IBOutlet weak var button1: DesignableButton!
     @IBOutlet weak var button2: DesignableButton!
     @IBOutlet weak var button3: DesignableButton!
-    let numberOfSteps: Int = 4
     @IBOutlet weak var bottomText: UILabel!
-
     lazy var buttonsArray: [UIButton] = [button0, button1, button2, button3]
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        generateRandomWordNumbers()
+        expectedWordNumbers = generateRandomWordNumbers()
         mnemonics = getAppDelegate().getMnemonicWords()!
-        questionPosition = wordNumbers[getIndexFromUniformUInt32(count: wordNumbers.count)]
-        title = String(format: "What is the word at position %d ?", questionPosition + 1)
-        updateButtons()
-        setSelector()
+        newRandomWords()
+        update()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        for button in buttonsArray {
+            button.addTarget(self, action:#selector(self.buttonClicked), for: .touchUpInside)
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        for button in buttonsArray {
+            button.removeTarget(self, action: #selector(self.buttonClicked), for: .touchUpInside)
+        }
+    }
+
+    func newRandomWords() {
+        questionPosition = expectedWordNumbers[questionCounter]
+        selectionWordNumbers = generateRandomWordNumbers()
+        if !selectionWordNumbers.contains(questionPosition) {
+            selectionWordNumbers[getIndexFromUniformUInt32(count: 3)] = questionPosition
+        }
     }
 
     func getIndexFromUniformUInt32(count: Int) -> Int {
         return Int(try! getUniformUInt32(upper_bound: UInt32(count)))
     }
 
-    func generateRandomWordNumbers() {
+    func generateRandomWordNumbers() -> [Int] {
+        var words: [Int] = [Int](repeating: 0, count:4)
         repeat {
-            wordNumbers = wordNumbers.map { (_) -> Int in getIndexFromUniformUInt32(count: 23) }
-        } while Set(wordNumbers).count != 4
+            words = words.map { (_) -> Int in getIndexFromUniformUInt32(count: 23) }
+        } while Set(words).count != 4
+        return words
     }
 
-    func setSelector() {
-        for button in buttonsArray {
-            button.addTarget(self, action:#selector(self.buttonClicked), for: .touchUpInside)
-        }
-    }
-
-    func updateButtons() {
-        buttonsArray.enumerated().forEach { (offset, element) in
-            element.setTitle(mnemonics[wordNumbers[offset]], for: .normal)
-            element.tag = wordNumbers[offset]
-        }
-
-        //questionPosition
-        var rangeStart = 0
-        var rangeEnd = 0
-        if(questionPosition < 2) {
-            rangeStart = 0
-            rangeEnd = 5
-        } else if (questionPosition >= 2 && questionPosition <= 21){
-            rangeStart = questionPosition - 2
-            rangeEnd = questionPosition + 3
-        } else if (questionPosition > 21) {
-            rangeEnd = 24
-            rangeStart = 24 - 5
-        }
-
-        var placeHolder:String = ""
-        for index in rangeStart..<rangeEnd {
-            if(index == questionPosition) {
-                placeHolder += "  ______   "
-            } else {
-                placeHolder += mnemonics[index] + " "
-            }
-
-        }
-        let attributedString = NSMutableAttributedString(string: placeHolder)
-        attributedString.setColor(color: UIColor.customMatrixGreen(), forText: "______")
-        bottomText.attributedText = attributedString
-    }
-
-    func updateLabels() {
+    func update() {
+        // update title
         let localized = NSLocalizedString("id_select_word_number_d", comment: "")
         title = String(format: localized, questionPosition + 1)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    @IBAction func touchedButton(_ sender: UIButton) {
-        print(sender.tag)
+        // update buttons
+        buttonsArray.enumerated().forEach { (offset, element) in
+            element.setTitle(mnemonics[selectionWordNumbers[offset]], for: .normal)
+            element.isSelected = false
+        }
+        // update subtitle
+        let rangeStart: Int
+        let rangeEnd: Int
+        if questionPosition == 0 {
+            rangeStart = 0
+            rangeEnd = 2
+        } else if questionPosition == 23 {
+            rangeStart = 21
+            rangeEnd = 23
+        } else {
+            rangeStart = questionPosition - 1
+            rangeEnd = questionPosition + 1
+        }
+        let question = "  ______   "
+        let placeHolder = mnemonics[rangeStart...rangeEnd].joined(separator: " ").replacingOccurrences(of: mnemonics[questionPosition], with: question)
+        let attributedString = NSMutableAttributedString(string: placeHolder)
+        attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
+        bottomText.attributedText = attributedString
+        // disable next button
+        nextButton.backgroundColor = UIColor.customTitaniumLight()
+        nextButton.isEnabled = false
+        nextButton.layer.sublayers?.removeFirst()
     }
 
     func registerAndLogin(mnemonics: String) {
@@ -134,25 +137,36 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     @objc func buttonClicked(_ sender: UIButton) {
-        if(sender.titleLabel?.text == mnemonics[questionPosition]) {
+        for button in buttonsArray {
+            button.isSelected = false
+        }
+        sender.isSelected = true
+        nextButton.isEnabled = true
+        nextButton.backgroundColor = UIColor.customMatrixGreen()
+        nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+    }
+
+    @IBAction func nextClicked(_ sender: UIButton) {
+        var selectedWord: String?
+        for button in buttonsArray {
+            if button.isSelected {
+                selectedWord = button.titleLabel?.text
+            }
+        }
+        if selectedWord == nil {
+            return
+        }
+        if selectedWord == mnemonics[questionPosition] {
             if(questionCounter == numberOfSteps - 1) {
-                guard let mnemonicWords = getAppDelegate().getMnemonicWords() else {
-                    return
-                }
-                let stringRepresentation = mnemonicWords.joined(separator: " ") // space separated mnemonic list
+                let stringRepresentation = mnemonics.joined(separator: " ")
                 registerAndLogin(mnemonics: stringRepresentation)
             } else {
                 questionCounter += 1
-                generateRandomWordNumbers()
-                questionPosition = wordNumbers[getIndexFromUniformUInt32(count: wordNumbers.count)]
-                updateButtons()
-                updateLabels()
+                newRandomWords()
+                update()
             }
         } else {
-            // FIXME: This control should have a next button to follow androids style
-            self.stopAnimating()
             self.navigationController?.popViewController(animated: true)
         }
     }
-
 }
