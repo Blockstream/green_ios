@@ -13,7 +13,7 @@ class InitialViewController: UIViewController, NetworkDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         topButton.setTitle(NSLocalizedString("id_create_wallet", comment: ""), for: .normal)
-        restoreWalletbutton.setTitle(NSLocalizedString("id_restore_an_existing_wallet", comment: ""), for: .normal)
+        restoreWalletbutton.setTitle(NSLocalizedString("id_restore_existing_wallet", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {
