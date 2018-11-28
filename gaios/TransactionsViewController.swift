@@ -83,6 +83,7 @@ class TransactionsController: UITableViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "outgoingTX"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
 
         loadTransactions()
     }
@@ -95,6 +96,21 @@ class TransactionsController: UITableViewController {
                         loadTransactions()
                     }
                 }
+            }
+        }
+    }
+
+    @objc func newAddress(_ notification: NSNotification) {
+        if let dict = notification.userInfo as NSDictionary? {
+            let pointer = dict["pointer"] as! UInt32
+            if presentingWallet?.pointer == pointer {
+                guard let wallet = tableView.tableHeaderView as? WalletCardHeader else {
+                    return
+                }
+                let address = presentingWallet?.getAddress()
+                wallet.addressLabel.text = address
+                let uri = bip21Helper.btcURIforAddress(address: address!)
+                wallet.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: wallet.qrImageView.frame)
             }
         }
     }
