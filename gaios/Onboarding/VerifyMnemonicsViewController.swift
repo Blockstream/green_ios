@@ -78,7 +78,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func updateLabels() {
-        let localized = NSLocalizedString("id_choose_word_number_d_from_the", comment: "")
+        let localized = NSLocalizedString("id_select_word_number_d", comment: "")
         title = String(format: localized, questionPosition + 1)
     }
 
