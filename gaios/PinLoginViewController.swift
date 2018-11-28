@@ -12,6 +12,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var label4: UILabel!
     @IBOutlet weak var label5: UILabel!
     @IBOutlet weak var attempts: UILabel!
+    @IBOutlet weak var skipButton: UIButton!
 
     var pinCode = String()
     var pinConfirm = String()
@@ -53,6 +54,11 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         self.navigationItem.hidesBackButton = true
         let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(PinLoginViewController.back(sender:)))
         self.navigationItem.leftBarButtonItem = newBackButton
+
+        // show skip button
+        if setPinMode || restoreMode {
+            skipButton.isHidden = false
+        }
     }
 
     fileprivate func startAnimation(message: String) -> Promise<Void> {
@@ -151,6 +157,14 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         attempts.isHidden = false
     }
 
+    @IBAction func skipButtonClicked(_ sender: UIButton) {
+        if self.restoreMode {
+            self.performSegue(withIdentifier: "main", sender: nil)
+        } else {
+            self.performSegue(withIdentifier: "congrats", sender: self)
+        }
+    }
+
     @IBAction func numberClicked(_ sender: UIButton) {
         pinCode += (sender.titleLabel?.text)!
         pinAppend()
@@ -165,6 +179,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                     title = "Set a new PIN"
                     resetEverything()
                     updatePinMismatch()
+                    skipButton.isHidden = true
                     return
                 }
                 setPin()

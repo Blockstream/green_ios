@@ -1551,6 +1551,15 @@
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CqK-zx-qF0">
+                                <rect key="frame" x="145" y="196" width="30" height="30"/>
+                                <state key="normal" title="Skip">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="skipButtonClicked:" destination="kWT-Yh-qgi" eventType="touchUpInside" id="tyi-Hl-fOp"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
@@ -1578,6 +1587,7 @@
                             <constraint firstItem="Saf-Kg-du6" firstAttribute="top" secondItem="rVM-q4-BcU" secondAttribute="bottom" constant="30" id="Lxj-zf-HnB"/>
                             <constraint firstItem="R4W-Vu-M0I" firstAttribute="top" secondItem="xdv-zG-7sw" secondAttribute="bottom" constant="32" id="NJr-Be-Z4G"/>
                             <constraint firstItem="Saf-Kg-du6" firstAttribute="height" secondItem="MSk-Nj-l66" secondAttribute="height" id="RS4-yY-DQL"/>
+                            <constraint firstItem="CqK-zx-qF0" firstAttribute="centerX" secondItem="tP3-hE-v6d" secondAttribute="centerX" id="Rih-mH-Nh3"/>
                             <constraint firstItem="xdv-zG-7sw" firstAttribute="leading" secondItem="tP3-hE-v6d" secondAttribute="leading" id="Rrz-FZ-Yc4"/>
                             <constraint firstItem="vtm-sf-X7J" firstAttribute="leading" secondItem="xgD-ud-BiJ" secondAttribute="trailing" constant="16" id="S1K-4m-wid"/>
                             <constraint firstItem="Xbm-bG-wv6" firstAttribute="trailing" secondItem="DDp-YV-A2x" secondAttribute="centerX" constant="-8" id="Sf2-kr-5D9"/>
@@ -1618,6 +1628,7 @@
                             <constraint firstItem="R4W-Vu-M0I" firstAttribute="height" secondItem="MSk-Nj-l66" secondAttribute="height" id="rXF-Pg-5M8"/>
                             <constraint firstItem="aKO-ZR-RcG" firstAttribute="width" secondItem="MSk-Nj-l66" secondAttribute="width" id="rfl-PW-Wrl"/>
                             <constraint firstItem="fOZ-XR-ZFl" firstAttribute="leading" secondItem="wAQ-ww-ueo" secondAttribute="trailing" constant="16" id="sP7-4g-iH7"/>
+                            <constraint firstItem="xdv-zG-7sw" firstAttribute="top" secondItem="CqK-zx-qF0" secondAttribute="bottom" constant="8" id="t0U-z0-F7t"/>
                             <constraint firstItem="Xbm-bG-wv6" firstAttribute="leading" secondItem="fOZ-XR-ZFl" secondAttribute="trailing" constant="16" id="tQP-gU-4aQ"/>
                             <constraint firstItem="uNt-3S-2HX" firstAttribute="height" secondItem="MSk-Nj-l66" secondAttribute="height" id="xol-p8-Zpc"/>
                             <constraint firstItem="Ycw-s2-OGf" firstAttribute="top" secondItem="4Rc-4w-Qrq" secondAttribute="bottom" constant="30" id="yyX-nf-4SM"/>
@@ -1637,6 +1648,7 @@
                         <outlet property="label3" destination="Ga6-cB-PfW" id="N82-79-hYr"/>
                         <outlet property="label4" destination="65h-S3-6KZ" id="vWb-V7-NG1"/>
                         <outlet property="label5" destination="dRf-g8-ALy" id="m0w-Kk-HiA"/>
+                        <outlet property="skipButton" destination="CqK-zx-qF0" id="MaV-Ie-7fh"/>
                         <segue destination="B5O-7h-VGM" kind="showDetail" identifier="entrance" id="ho6-WN-AfT"/>
                         <segue destination="YV9-qz-m5y" kind="showDetail" identifier="main" id="NmU-wd-kgf"/>
                         <segue destination="EvG-OO-UNI" kind="show" identifier="congrats" id="8ap-7n-SAS"/>
@@ -1644,7 +1656,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7V0-pH-DYl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4582.5" y="43.309859154929576"/>
+            <point key="canvasLocation" x="4418" y="150"/>
         </scene>
         <!--Notifications-->
         <scene sceneID="PG8-93-POn">
@@ -1697,13 +1709,13 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="320" height="94"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SENDING" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kqu-cj-tFb">
-                                                        <rect key="frame" x="20" y="20" width="280" height="21.5"/>
+                                                        <rect key="frame" x="20" y="20" width="280" height="21"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-KU-8DT">
-                                                        <rect key="frame" x="20" y="53.5" width="280" height="20.5"/>
+                                                        <rect key="frame" x="20" y="53" width="280" height="21"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -1731,26 +1743,26 @@
                                                 <rect key="frame" x="0.0" y="99" width="320" height="158"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FROM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Uh-v7-6xz">
-                                                        <rect key="frame" x="20" y="20" width="280" height="21.5"/>
+                                                        <rect key="frame" x="20" y="20" width="280" height="21"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wallet2" translatesAutoresizingMaskIntoConstraints="NO" id="D4c-Vx-Xpe">
-                                                        <rect key="frame" x="20" y="49.5" width="26" height="26"/>
+                                                        <rect key="frame" x="20" y="49" width="26" height="26"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="26" id="E91-dp-Pdh"/>
                                                             <constraint firstAttribute="height" constant="26" id="pJf-VU-RaF"/>
                                                         </constraints>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallet Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J9b-kK-iA4">
-                                                        <rect key="frame" x="54" y="52.5" width="258" height="20.5"/>
+                                                        <rect key="frame" x="54" y="51.5" width="258" height="21"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TO" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KZI-ZL-OZK">
-                                                        <rect key="frame" x="20" y="83.5" width="292" height="20.5"/>
+                                                        <rect key="frame" x="20" y="83" width="292" height="21"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -1763,7 +1775,7 @@
                                                         </constraints>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Itr-BV-GH4">
-                                                        <rect key="frame" x="54" y="115" width="258" height="20.5"/>
+                                                        <rect key="frame" x="54" y="114.5" width="258" height="21"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -4966,14 +4978,14 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Ssh-xP-Hwg"/>
-        <segue reference="S0G-tL-SMV"/>
+        <segue reference="NmU-wd-kgf"/>
         <segue reference="qOR-xW-NTO"/>
         <segue reference="6du-SE-lGn"/>
-        <segue reference="XOQ-Gh-RFa"/>
+        <segue reference="ho6-WN-AfT"/>
         <segue reference="W5q-up-0wY"/>
         <segue reference="saa-dB-vMn"/>
         <segue reference="J3A-P7-WsW"/>
         <segue reference="JAa-xy-EZp"/>
-        <segue reference="Kqq-cQ-hZv"/>
+        <segue reference="qmH-aQ-bII"/>
     </inferredMetricsTieBreakers>
 </document>
