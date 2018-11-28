@@ -50,7 +50,7 @@ class CreateWalletViewController: UIViewController {
     }
 
     func loadWords() {
-        progressView.progress = Float(pageCounter) / 4
+        progressView.progress = Float(pageCounter + 1) / 4
         let start = pageCounter * 6
         let end = start + 6
         for index in start..<end {

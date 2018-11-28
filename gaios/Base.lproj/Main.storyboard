@@ -2199,8 +2199,8 @@
                             </label>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="29L-yk-Cxz">
                                 <rect key="frame" x="16" y="104" width="288" height="10"/>
-                                <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="tintColor" name="customMatrixGreen"/>
+                                <color key="backgroundColor" name="customTitaniumMedium"/>
+                                <color key="tintColor" name="customMatrixGreenDark"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="10" id="0ou-08-7Gd"/>
                                 </constraints>
@@ -4962,6 +4962,9 @@
         </namedColor>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customMatrixGreenDark">
+            <color red="0.10588235294117647" green="0.46666666666666667" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
