@@ -102,7 +102,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateMaxAmountLabel() {
-        guard let amount: UInt64 = UInt64((wallet?.balance)!) else { return }
+        guard let amount = wallet?.satoshi else { return }
         if (selectedType == TransactionType.BTC) {
             maxAmountLabel.text = String.formatBtc(satoshi: amount)
         } else {

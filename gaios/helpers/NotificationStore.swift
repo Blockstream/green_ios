@@ -15,8 +15,9 @@ class NotificationStore {
     let warrningNoTwoFactor = NSLocalizedString("id_your_wallet_is_not_yet_fully", comment: "")
     let warrningOneTwoFactor = NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
 
+    // FIXME: delete this code or coalesce into existing one
     func getTransactions() {
-        AccountStore.shared.getWallets(cached: true).done { (wallets: Array<WalletItem>) in
+        AccountStore.shared.getWallets(cached: true).done { wallets in
             for wallet in wallets {
                 wrap{ try getSession().getTransactions(subaccount: wallet.pointer, page: 0)
                     }.done { (transactions: [String: Any]?) in
@@ -54,8 +55,6 @@ class NotificationStore {
                         print("error getting transaction")
                 }
             }
-        }.catch{ error in
-            print("error getting wallets")
         }
     }
 

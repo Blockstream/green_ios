@@ -118,7 +118,7 @@ class TransactionsController: UITableViewController {
         let item = items.list[indexPath.row]
         cell.amount.text = item.amount()
         if(item.type == "incoming" || item.type == "redeposit") {
-            cell.address.text = presentingWallet?.name
+            cell.address.text = presentingWallet?.localizedName()
             cell.amount.textColor = UIColor.customMatrixGreen()
         } else {
             cell.address.text = item.address() ?? String()
@@ -174,14 +174,14 @@ class TransactionsController: UITableViewController {
 
         let view: WalletCardHeader = ((Bundle.main.loadNibNamed("WalletCardHeader", owner: self, options: nil)![0] as? WalletCardHeader)!)
 
-        view.balanceLabel.text = String.formatBtc(satoshi: UInt64(wallet.balance)!)
-        view.addressLabel.text = wallet.address
-        view.nameLabel.text = wallet.name
+        view.balanceLabel.text = String.formatBtc(satoshi: wallet.satoshi)
+        view.addressLabel.text = wallet.getAddress()
+        view.nameLabel.text = wallet.localizedName()
         view.index = Int(wallet.pointer)
         view.wallet = wallet
         view.balanceLabel.textColor = UIColor.white
         view.nameLabel.textColor = UIColor.white
-        let uri = bip21Helper.btcURIforAddress(address: wallet.address)
+        let uri = bip21Helper.btcURIforAddress(address: wallet.getAddress())
         view.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: view.qrImageView.frame)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
@@ -214,7 +214,7 @@ class TransactionsController: UITableViewController {
         if let nextController = segue.destination as? SendBtcViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? ReceiveBtcViewController {
-            nextController.receiveAddress = presentingWallet?.address
+            nextController.receiveAddress = presentingWallet?.getAddress()
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? TransactionDetailViewController {
             nextController.transaction_g = sender as? TransactionItem

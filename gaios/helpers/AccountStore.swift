@@ -1,10 +1,63 @@
 import Foundation
 import PromiseKit
 
+class WalletItem : Codable {
+
+    enum CodingKeys: String, CodingKey {
+        case bits
+        case btc
+        case fiat
+        case fiatCurrency = "fiat_currency"
+        case fiatRate = "fiat_rate"
+        case mbtc
+        case name
+        case pointer
+        case receiveAddress
+        case receivingId = "receiving_id"
+        case satoshi
+        case type
+        case ubtc
+    }
+
+    let bits: String
+    let btc: String
+    let fiat: String
+    let fiatCurrency: String
+    let fiatRate: String
+    let mbtc: String
+    private let name: String
+    let pointer: UInt32
+    var receiveAddress: String?
+    let receivingId: String
+    var satoshi: UInt64
+    let type: String
+    let ubtc: String
+
+    func localizedName() -> String {
+        return pointer == 0 ? NSLocalizedString("id_main", comment: "") : name
+    }
+
+    func generateNewAddress() -> String? {
+        return try? getSession().getReceiveAddress(subaccount: self.pointer)
+     }
+
+    func getAddress() -> String {
+        if let address = receiveAddress {
+            return address
+        }
+        receiveAddress = generateNewAddress()
+        return receiveAddress ?? String()
+    }
+}
+
+class Wallets : Codable {
+    let array: [WalletItem]
+}
+
 class AccountStore {
 
     static let shared = AccountStore()
-    var m_wallets:Array<WalletItem> = Array()
+    var wallets = [WalletItem]()
     var blockHeight: UInt32 = 0
     var isWatchOnly: Bool = false
     public let GDKQueue = DispatchQueue(label: "gdk",attributes: .concurrent)
@@ -23,38 +76,26 @@ class AccountStore {
         return(isResetInProgress, isResetDisputed, resetDaysRemaining)
     }
 
-    public func fetchWallets() -> Array<WalletItem> {
-        var result = Array<WalletItem>()
-        do {
-            let json = try getSession().getSubaccounts()
-            let subacounts = json!["array"] as! NSArray
-            for element in subacounts{
-                let account = (element as? [String: Any])!
-                let pointer = account["pointer"] as! UInt32
-                let address = try getSession().getReceiveAddress(subaccount: pointer)
-                let balance = try getSession().getBalance(subaccount: pointer, numConfs: 0)
-                let satoshi = balance!["satoshi"] as! UInt32
-                let name = pointer == 0 ? NSLocalizedString("id_main", comment: "") : account["name"] as! String
-                let currency = balance!["fiat_currency"] as! String
-                let wallet: WalletItem = WalletItem(name: name, address: address, balance: String(satoshi), currency: currency, pointer: pointer)
-                result.append(wallet)
-            }
-        } catch {
-            print("something went wrong trying to get subbacounts")
+    func getSubaccounts() -> Promise<[WalletItem]> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().compactMap(on: bgq) {
+            try getSession().getSubaccounts()
+        }.compactMap(on: bgq) { data in
+            let jsonData = try JSONSerialization.data(withJSONObject: data)
+            let accounts = try JSONDecoder().decode(Wallets.self, from: jsonData)
+            self.wallets = accounts.array
+            return self.wallets
         }
-        m_wallets = result
-        return m_wallets
     }
 
-    private init() { }
-
-    func getWallets(cached: Bool) -> Promise<Array<WalletItem>> {
-        if(m_wallets.count > 0 && cached == false) {
-            return Promise<Array<WalletItem>> { seal in
-                seal.fulfill(m_wallets)
+    func getWallets(cached: Bool) -> Promise<[WalletItem]> {
+        // FIXME: should this be cached == true?
+        if wallets.count > 0 && cached == false {
+            return Promise<[WalletItem]> { seal in
+                seal.fulfill(wallets)
             }
         }
-        return wrap {self.fetchWallets()}
+        return getSubaccounts()
     }
 
     func getBlockheight() -> UInt32 {
@@ -264,10 +305,6 @@ class AccountStore {
         }
     }
 
-    func getWalletForSubAccount(pointer: Int) -> WalletItem {
-        return m_wallets[pointer]
-    }
-
     func twoFactorsEnabledCount() -> Int {
         if let config = getTwoFactorConfig() {
             let methods = config["enabled_methods"] as! NSArray
@@ -289,7 +326,8 @@ class AccountStore {
                             try getSession().getReceiveAddress(subaccount: p)
                         }.done { address in
                             DispatchQueue.main.async {
-                                self.m_wallets[pointer].address = address
+                                // FIXME: out of bounds access
+                                self.wallets[pointer].receiveAddress = address
                                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "addressChanged"), object: nil, userInfo: ["pointer" : pointer])
                             }
                         }
@@ -303,21 +341,5 @@ class AccountStore {
         SettingsStore.shared.initSettingsStore()
         NotificationStore.shared.initializeNotificationStore()
         NotificationCenter.default.addObserver(self, selector: #selector(self.incomingTransaction(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
-    }
-}
-
-class WalletItem {
-    var name: String
-    var address: String
-    var balance: String
-    var currency: String
-    var pointer: UInt32
-
-    init(name: String, address: String, balance: String, currency: String, pointer: UInt32) {
-        self.name = name
-        self.address = address
-        self.balance = balance
-        self.currency = currency
-        self.pointer = pointer
     }
 }

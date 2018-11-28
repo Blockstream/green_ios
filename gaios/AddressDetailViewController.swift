@@ -19,7 +19,7 @@ class AddressDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_address", comment: "")
-        receiveAddressLabel.text = wallet?.address
+        receiveAddressLabel.text = wallet?.getAddress()
         updateQRCode()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         backgroundView.addGestureRecognizer(tap)
@@ -38,7 +38,7 @@ class AddressDetailViewController: UIViewController {
     }
 
     @IBAction func shareButtonClicked(_ sender: Any) {
-        let activityViewController = UIActivityViewController(activityItems: [wallet?.address] , applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [wallet?.getAddress()] , applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self.view
         self.present(activityViewController, animated: true, completion: nil)
     }
@@ -49,10 +49,10 @@ class AddressDetailViewController: UIViewController {
 
     func updateQRCode() {
         if (amount == 0) {
-            let uri = bip21Helper.btcURIforAddress(address: (wallet?.address)!)
+            let uri = bip21Helper.btcURIforAddress(address: (wallet?.getAddress())!)
             qrImageView.image = QRImageGenerator.imageForTextWhite(text: uri, frame: qrImageView.frame)
         } else {
-            let uri = bip21Helper.btcURIforAmount(address:(wallet?.address)!, amount: amount)
+            let uri = bip21Helper.btcURIforAmount(address: (wallet?.getAddress())!, amount: amount)
             qrImageView.image = QRImageGenerator.imageForTextWhite(text: uri, frame: qrImageView.frame)
         }
     }
@@ -60,8 +60,8 @@ class AddressDetailViewController: UIViewController {
     @IBAction func generateNewAddress(_ sender: Any) {
         do {
             let address = try getSession().getReceiveAddress(subaccount: (wallet?.pointer)!)
-            wallet?.address = address
-            receiveAddressLabel.text = wallet?.address
+            wallet?.receiveAddress = address
+            receiveAddressLabel.text = wallet?.getAddress()
             updateQRCode()
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "addressChanged"), object: nil, userInfo: ["pointer" : wallet?.pointer])
         } catch {

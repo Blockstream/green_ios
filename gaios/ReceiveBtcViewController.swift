@@ -21,8 +21,9 @@ class ReceiveBtcViewController: KeyboardViewController {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
         //walletAddressLabel.text = receiveAddress
-        walletAddressLabel.text = wallet?.address
-        receiveAddress = wallet?.address
+        let address = wallet?.getAddress()
+        walletAddressLabel.text = address
+        receiveAddress = address
         updateQRCode()
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
@@ -44,8 +45,9 @@ class ReceiveBtcViewController: KeyboardViewController {
         if let dict = notification.userInfo as NSDictionary? {
             if let pointer = dict["pointer"] as? Int {
                 if(pointer == Int(wallet!.pointer)) {
-                    receiveAddress = wallet?.address
-                    walletAddressLabel.text = wallet?.address
+                    let address = wallet?.getAddress()
+                    receiveAddress = address
+                    walletAddressLabel.text = address
                     updateQRCode()
                 }
             }

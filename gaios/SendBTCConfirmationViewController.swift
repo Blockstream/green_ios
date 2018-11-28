@@ -24,7 +24,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
-        walletNameLabel.text = (transaction?.data["is_sweep"] as! Bool) ? "Paper Wallet" : wallet?.name
+        walletNameLabel.text = (transaction?.data["is_sweep"] as! Bool) ? "Paper Wallet" : wallet?.localizedName()
         slidingButton.delegate = self
         uiErrorLabel = UIErrorLabel(self.view)
         refresh()

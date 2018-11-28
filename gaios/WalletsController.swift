@@ -64,11 +64,12 @@ class WalletsController: UIViewController, WalletViewDelegate {
         var coloredCardViews = [ColoredCardView]()
         for index in 0..<wallets.count {
             let item = wallets[index]
+            let address = item.getAddress()
             let cardView = ColoredCardView.nibForClass()
             cardView.wallet = item
-            cardView.balanceLabel.text = String.formatBtc(satoshi: UInt64(item.balance)!)
-            cardView.addressLabel.text = item.address
-            cardView.nameLabel.text = item.name
+            cardView.balanceLabel.text = String.formatBtc(satoshi: item.satoshi)
+            cardView.addressLabel.text = address
+            cardView.nameLabel.text = item.localizedName()
             cardView.index = index
             if(index < wallets.count - 1) {
                 cardView.balanceLabel.textColor = UIColor.customTitaniumLight()
@@ -80,7 +81,7 @@ class WalletsController: UIViewController, WalletViewDelegate {
             cardView.presentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.depresentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.presentedDidUpdate()
-            let uri = bip21Helper.btcURIforAddress(address: item.address)
+            let uri = bip21Helper.btcURIforAddress(address: address)
             cardView.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: cardView.QRImageView.frame)
             coloredCardViews.append(cardView)
         }
@@ -101,14 +102,15 @@ class WalletsController: UIViewController, WalletViewDelegate {
     }
 
     func refreshWallets() {
-        AccountStore.shared.getWallets(cached: true).done { (accs:Array<WalletItem>) in
+        AccountStore.shared.getWallets(cached: true).done { accounts in
+            guard !accounts.isEmpty else {
+                return
+            }
+
             DispatchQueue.main.async {
-                if(accs.count == 0) {
-                    return
-                }
                 // Run UI Updates or call completion block
                 self.walletView.remove(cardViews: self.walletView.insertedCardViews)
-                self.wallets = accs.reversed()
+                self.wallets = accounts.reversed()
                 self.reloadWallets()
             }
         }
@@ -120,8 +122,8 @@ class WalletsController: UIViewController, WalletViewDelegate {
                 do {
                     let balance = try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
                     DispatchQueue.main.async {
-                        let satoshi = balance!["satoshi"] as! UInt32
-                        wallet.balance = String(satoshi)
+                        let satoshi = balance!["satoshi"] as! UInt64
+                        wallet.satoshi = satoshi
                         self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: String(satoshi))
                     }
                 } catch {

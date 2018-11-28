@@ -199,7 +199,7 @@ extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
 
     func createSweepTransaction(private_key pk: String) -> Bool {
         let details: [String: Any] = [
-            "addressees" : [["address" : wallet?.address]],
+            "addressees" : [["address" : wallet?.getAddress()]],
             "fee_rate": AccountStore.shared.getFeeRateMedium(),
             "private_key": pk
         ]

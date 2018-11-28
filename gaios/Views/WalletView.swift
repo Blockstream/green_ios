@@ -258,8 +258,8 @@ open class WalletView: UIView, UITableViewDelegate {
         for index in 0..<insertedCardViews.count {
             let wallet = insertedCardViews[index] as! ColoredCardView
             if(wallet.wallet?.pointer == UInt32(forCardview)) {
-                wallet.addressLabel.text = wallet.wallet?.address
-                let uri = bip21Helper.btcURIforAddress(address: (wallet.wallet?.address)!)
+                wallet.addressLabel.text = wallet.wallet?.getAddress()
+                let uri = bip21Helper.btcURIforAddress(address: (wallet.wallet?.getAddress())!)
                 wallet.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: wallet.QRImageView.frame)
             }
         }
