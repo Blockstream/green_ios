@@ -89,6 +89,7 @@
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
+		67B11D5421B0467E00D65B58 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
 		811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EE25C219EC17800684AD8 /* TransactionsViewController.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
@@ -209,6 +210,7 @@
 		676FCF411F9D0CF800354E93 /* gaiosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gaiosUITests.swift; sourceTree = "<group>"; };
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
+		67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
 		811EE25C219EC17800684AD8 /* TransactionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsViewController.swift; sourceTree = "<group>"; };
@@ -384,6 +386,7 @@
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
 				0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */,
+				67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */,
 			);
 			path = gaios;
 			sourceTree = "<group>";
@@ -801,6 +804,7 @@
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
+				67B11D5421B0467E00D65B58 /* QRCodeReaderViewController.swift in Sources */,
 				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,

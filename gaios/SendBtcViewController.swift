@@ -1,36 +1,21 @@
 import Foundation
+import PromiseKit
 import UIKit
 import AVFoundation
 
-class SendBtcViewController: KeyboardViewController {
+class SendBtcViewController: QRCodeReaderViewController {
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var QRCodeReader: UIView!
     @IBOutlet weak var topImage: UIImageView!
     @IBOutlet weak var bottomButton: UIButton!
 
-    var prefillAmount:Double = 0
     var uiErrorLabel: UIErrorLabel!
-    var captureSession = AVCaptureSession()
-    var wallets:Array<WalletItem> = Array<WalletItem>()
-    var videoPreviewLayer: AVCaptureVideoPreviewLayer?
+    var wallets = [WalletItem]()
     var qrCodeFrameView: UIView?
     var wallet:WalletItem? = nil
     var sweepTransaction: Bool = false
-    var transaction: TransactionHelper?
-    private let supportedCodeTypes = [AVMetadataObject.ObjectType.upce,
-                                      AVMetadataObject.ObjectType.code39,
-                                      AVMetadataObject.ObjectType.code39Mod43,
-                                      AVMetadataObject.ObjectType.code93,
-                                      AVMetadataObject.ObjectType.code128,
-                                      AVMetadataObject.ObjectType.ean8,
-                                      AVMetadataObject.ObjectType.ean13,
-                                      AVMetadataObject.ObjectType.aztec,
-                                      AVMetadataObject.ObjectType.pdf417,
-                                      AVMetadataObject.ObjectType.itf14,
-                                      AVMetadataObject.ObjectType.dataMatrix,
-                                      AVMetadataObject.ObjectType.interleaved2of5,
-                                      AVMetadataObject.ObjectType.qr]
+    var transaction: Transaction?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,60 +62,21 @@ class SendBtcViewController: KeyboardViewController {
         }
     }
 
-    @objc func someAction(_ sender:UITapGestureRecognizer) {
+    @objc func someAction(_ sender: UITapGestureRecognizer) {
         if keyboardDismissGesture != nil {
             dismissKeyboard()
             return
         }
         sender.isEnabled = false
-        if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
-            // already authorized
+        if requestVideoAccess() ==  .authorized {
             startScan()
-        } else {
-            AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
-                if granted {
-                    // access allowed
-                    self.startScan()
-                } else {
-                    //Send user to settings to allow camera
-                    if let url = URL(string:UIApplicationOpenSettingsURLString) {
-                        if UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                        }
-                    }
-                }
-            })
         }
     }
 
-    func startScan() {
-        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
-            return
-        }
-        guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
-            return
-        }
-        captureSession = AVCaptureSession()
-        if captureSession.canAddInput(captureDeviceInput) {
-            captureSession.addInput(captureDeviceInput)
-        }
-        else {
-            return
-        }
-        let captureMetadataOutput = AVCaptureMetadataOutput()
-        if captureSession.canAddOutput(captureMetadataOutput) {
-            captureSession.addOutput(captureMetadataOutput)
-            captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-            captureMetadataOutput.metadataObjectTypes = supportedCodeTypes
-        }
-        else {
-            return
-        }
+    override func startScan() {
         QRCodeReader.layoutIfNeeded()
-        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        videoPreviewLayer?.frame = QRCodeReader.layer.bounds
-        videoPreviewLayer?.videoGravity = .resizeAspectFill
-        QRCodeReader.layer.addSublayer(videoPreviewLayer!)
+        previewLayer.frame = QRCodeReader.layer.bounds
+        QRCodeReader.layer.addSublayer(previewLayer)
         captureSession.startRunning()
 
         // Initialize QR Code Frame to highlight the QR code
@@ -144,10 +90,7 @@ class SendBtcViewController: KeyboardViewController {
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
-        if ((sweepTransaction && createSweepTransaction(private_key: textfield.text!)) ||
-            parseBitcoinUri(textfield.text!)) {
-            self.performSegue(withIdentifier: "next", sender: self)
-        }
+        createTransaction(userInput: textfield.text!)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -157,89 +100,33 @@ class SendBtcViewController: KeyboardViewController {
             nextController.transaction = transaction
         }
     }
-}
 
-extension SendBtcViewController: AVCaptureMetadataOutputObjectsDelegate {
-
-    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-        // Check if the metadataObjects array is not nil and it contains at least one object.
-        if metadataObjects.count == 0 {
-            qrCodeFrameView?.frame = CGRect.zero
-            return
-        }
-
-        // Get the metadata object.
-        let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
-
-        if supportedCodeTypes.contains(metadataObj.type) {
-            // If the found metadata is equal to the QR code metadata (or barcode) then update the status label's text and set the bounds
-            let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
-            qrCodeFrameView?.frame = barCodeObject!.bounds
-
-            if metadataObj.stringValue != nil {
-                let uri = metadataObj.stringValue
-                var createdTx: Bool = false
-                if sweepTransaction {
-                    createdTx = createSweepTransaction(private_key: uri!)
-                }
-                else {
-                    createdTx = parseBitcoinUri(uri!)
-                }
-                self.captureSession.stopRunning()
-                self.videoPreviewLayer?.removeFromSuperlayer()
-                self.qrCodeFrameView?.frame = CGRect.zero
-                if createdTx {
-                    self.performSegue(withIdentifier: "next", sender: self)
-                    return
-                }
+    func createTransaction(userInput: String) {
+        let details: [String: Any] = sweepTransaction ? ["private_key": userInput] : ["addressees": [["address": userInput]]]
+        gaios.createTransaction(details: details).done { tx in
+            if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
+                throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-        }
-        captureSession.startRunning()
-    }
-
-    func createSweepTransaction(private_key pk: String) -> Bool {
-        let details: [String: Any] = [
-            "addressees" : [["address" : wallet?.getAddress()]],
-            "fee_rate": AccountStore.shared.getFeeRateMedium(),
-            "private_key": pk
-        ]
-        do {
-            transaction = try TransactionHelper(details)
-            let error = transaction?.data["error"] as? String
-            if (error != nil && !error!.isEmpty) {
-                uiErrorLabel.text = NSLocalizedString(error!, comment: "")
-                uiErrorLabel.isHidden = false
-                return false
+            self.transaction = tx
+            self.performSegue(withIdentifier: "next", sender: self)
+        }.catch { error in
+            if let txError = (error as? TransactionError) {
+                switch txError {
+                case .invalid(let localizedDescription):
+                    self.uiErrorLabel.text = localizedDescription
+                }
+            } else {
+                self.uiErrorLabel.text = error.localizedDescription
             }
-            return true
-        } catch {
-            uiErrorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
-            uiErrorLabel.isHidden = false
-            return false
+            self.uiErrorLabel.isHidden = false
         }
     }
 
-    func parseBitcoinUri(_ text: String) -> Bool {
-        let scheme = "bitcoin:";
-        let uri : String
+    override func onQRCodeReadSuccess(result: String) {
+        self.captureSession.stopRunning()
+        self.previewLayer.removeFromSuperlayer()
+        self.qrCodeFrameView?.frame = CGRect.zero
 
-        if (!text.starts(with: scheme)) {
-            uri = scheme + text
-        } else {
-            uri = text
-        }
-
-        do {
-            transaction = try TransactionHelper(uri)
-            let error = transaction?.data["error"] as? String
-            if (error != nil && !error!.isEmpty && error != "id_invalid_amount") {
-                uiErrorLabel.text = NSLocalizedString(error!, comment: "")
-                uiErrorLabel.isHidden = false
-                return false
-            }
-            return true
-        } catch {
-            return false
-        }
+        createTransaction(userInput: result)
     }
 }

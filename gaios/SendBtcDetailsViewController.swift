@@ -24,7 +24,7 @@ class SendBtcDetailsViewController: UIViewController {
     var fee: UInt64 = 1
     var selectedButton : UIButton? = nil
     var priority: TransactionPriority? = nil
-    var transaction: TransactionHelper?
+    var transaction: Transaction!
     let blockTime = ["~ 2 Hours", "~ 1 Hour", "~ 10-20 Minutes", "Unknown (custom)"]
 
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ class SendBtcDetailsViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
-        self.tabBarController?.tabBar.isHidden = true
+
         uiErrorLabel = UIErrorLabel(self.view)
         errorLabel.isHidden = true
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
@@ -52,27 +52,22 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func refresh() {
-        let addressees = transaction?.addresses()
-        let address = addressees![0]["address"] as! String
-        var satoshi: UInt64
-        // FIXME: satoshi doesn't appear to be populated but probably should
-        if transaction?.data["is_sweep"] as! Bool {
-            satoshi = transaction?.data["satoshi"] as! UInt64
-        }
-        else {
-            satoshi = addressees![0]["satoshi"] as! UInt64
-        }
+        let address = transaction.addressees[0].address
+        let satoshi = transaction.addressees[0].satoshi
+        let addresseesReadOnly = transaction.addresseesReadOnly
+        let sendAll = transaction.sendAll
+
         addressLabel.text = address
-        let readOnly = transaction?.data["addressees_read_only"] as! Bool
-        amountTextField.isUserInteractionEnabled = !readOnly
-        sendAllFundsButton.isUserInteractionEnabled = !readOnly
-        currencySwitch.isUserInteractionEnabled = !readOnly
-        // check satoshi changed before update ui
-        let sendAll = transaction?.data["send_all"] as! Bool
-        if (sendAll) {
+
+        amountTextField.isUserInteractionEnabled = !addresseesReadOnly
+        sendAllFundsButton.isUserInteractionEnabled = !addresseesReadOnly
+        currencySwitch.isUserInteractionEnabled = !addresseesReadOnly
+
+        if sendAll {
             amountTextField.text = "All"
             return
         }
+
         var textAmount: String
         if (amountTextField.text == nil || amountTextField.text!.isEmpty) {
             textAmount = "0"
@@ -146,7 +141,6 @@ class SendBtcDetailsViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBTCConfirmationViewController {
             nextController.wallet = wallet
-            nextController.selectedType = selectedType
             nextController.transaction = transaction
         }
     }
@@ -180,56 +174,49 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
 
-        transaction?.data["fee_rate"] = fee
+        transaction.feeRate = fee
 
-        if !(transaction!.data["addressees_read_only"] as! Bool) {
-            let satoshi: UInt64 = satoshi
-            var toAddress = [String: Any]()
-            toAddress["satoshi"] = satoshi
-            toAddress["address"] = addressLabel.text
-            transaction?.data["addressees"] = [toAddress]
-            transaction?.data["change_subaccount"] = wallet?.pointer
-            transaction?.data["send_all"] = sendAllFundsButton.isSelected
+        if !transaction.addresseesReadOnly {
+            let addressee = Addressee(address: addressLabel.text!, satoshi: satoshi)
+            transaction.addressees = [addressee]
+            transaction.sendAll = sendAllFundsButton.isSelected
         }
 
-        do {
-            try transaction = TransactionHelper((transaction?.data)!)
-            //let payload = try getSession().createTransaction(details: details)
-            let error = transaction?.data["error"] as! String
-            if (error != "") {
-                updateButton(false)
-                uiErrorLabel.isHidden = false
-                uiErrorLabel.text = NSLocalizedString(error, comment: "")
-                setLabel(button: selectedButton!, fee: 0)
-                //update error message
-                return
+        gaios.createTransaction(transaction: transaction).done { tx in
+            if !tx.error.isEmpty {
+                throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            refresh()
-            uiErrorLabel.isHidden = true
-            updateButton(true)
-            let fee = transaction?.data["fee"] as! UInt64
-            setLabel(button: selectedButton!, fee: fee)
-            return
-        } catch {
-            print("couldn't create transaction")
+            self.transaction = tx
+            self.refresh()
+            self.uiErrorLabel.isHidden = true
+            self.updateButton(true)
+            self.setLabel(button: self.selectedButton!, fee: tx.fee)
+        }.catch { error in
+            if let txError = (error as? TransactionError) {
+                switch txError {
+                case .invalid(let localizedDescription):
+                    self.uiErrorLabel.text = localizedDescription
+                }
+            } else {
+                self.uiErrorLabel.text = error.localizedDescription
+            }
+            self.updateButton(false)
+            self.uiErrorLabel.isHidden = false
+            self.setLabel(button: self.selectedButton!, fee: 0)
         }
-        updateButton(false)
-        setLabel(button: selectedButton!, fee: 0)
     }
 
     func updateButton(_ enable: Bool) {
-       if (enable == false) {
-                if (self.reviewButton.layer.sublayers?.count == 2) {
-                    self.reviewButton.layer.sublayers?.removeFirst()
-                }
-                self.reviewButton.isUserInteractionEnabled = false
-                self.reviewButton.backgroundColor = UIColor.lightGray
-                //self.reviewButton.applyGradient(colours: [UIColor.lightGray, UIColor.lightGray])
-            } else {
-                self.reviewButton.isUserInteractionEnabled = true
-                self.reviewButton.backgroundColor = UIColor.customMatrixGreen()
-                //self.reviewButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+       if !enable {
+            if (self.reviewButton.layer.sublayers?.count == 2) {
+                self.reviewButton.layer.sublayers?.removeFirst()
             }
+            self.reviewButton.isUserInteractionEnabled = false
+            self.reviewButton.backgroundColor = UIColor.lightGray
+        } else {
+            self.reviewButton.isUserInteractionEnabled = true
+            self.reviewButton.backgroundColor = UIColor.customMatrixGreen()
+        }
     }
 
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
@@ -246,7 +233,7 @@ class SendBtcDetailsViewController: UIViewController {
 
         
         let fiatValue: Double = Double(String.toFiat(satoshi: UInt64(fee))!)!
-        let size = transaction?.data["transaction_vsize"] as! UInt64
+        let size = transaction.transactionSize
         let satoshiPerByte = fee / size
         var timeEstimate = ""
         feeLabel.translatesAutoresizingMaskIntoConstraints = false

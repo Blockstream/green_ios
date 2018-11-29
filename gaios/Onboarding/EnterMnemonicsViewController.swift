@@ -4,7 +4,7 @@ import AVFoundation
 import NVActivityIndicatorView
 import PromiseKit
 
-class EnterMnemonicsViewController: KeyboardViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
+class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var scanBarButton: UIBarButtonItem!
@@ -21,22 +21,7 @@ class EnterMnemonicsViewController: KeyboardViewController, UITextFieldDelegate,
     var suggestion3 = UILabel()
     lazy var labels = [suggestion1, suggestion2, suggestion3]
     var mnemonic: [String]? = nil
-    private let supportedCodeTypes = [AVMetadataObject.ObjectType.upce,
-                                      AVMetadataObject.ObjectType.code39,
-                                      AVMetadataObject.ObjectType.code39Mod43,
-                                      AVMetadataObject.ObjectType.code93,
-                                      AVMetadataObject.ObjectType.code128,
-                                      AVMetadataObject.ObjectType.ean8,
-                                      AVMetadataObject.ObjectType.ean13,
-                                      AVMetadataObject.ObjectType.aztec,
-                                      AVMetadataObject.ObjectType.pdf417,
-                                      AVMetadataObject.ObjectType.itf14,
-                                      AVMetadataObject.ObjectType.dataMatrix,
-                                      AVMetadataObject.ObjectType.interleaved2of5,
-                                      AVMetadataObject.ObjectType.qr]
     var qrCodeFrameView: UIView?
-    var videoPreviewLayer: AVCaptureVideoPreviewLayer?
-    var captureSession = AVCaptureSession()
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
     var adaptToSmallScreen = false
@@ -348,46 +333,20 @@ class EnterMnemonicsViewController: KeyboardViewController, UITextFieldDelegate,
         if !isScannerVisible {
             startScan()
         } else {
-            stopScan(sender: nil)
+            stopScan()
         } 
     }
 
-    func startScan() {
-        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
-            return
-        }
-        guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
-            return
-        }
+    override func startScan() {
+        super.startScan()
 
-        captureSession = AVCaptureSession()
-        if captureSession.canAddInput(captureDeviceInput) {
-            captureSession.addInput(captureDeviceInput)
-        }
-        else {
-            return
-        }
-
-        let captureMetadataOutput = AVCaptureMetadataOutput()
-
-        if captureSession.canAddOutput(captureMetadataOutput) {
-            captureSession.addOutput(captureMetadataOutput)
-            captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-            captureMetadataOutput.metadataObjectTypes = supportedCodeTypes
-        }
-        else {
-            return
-        }
         QRCodeReader.layoutIfNeeded()
         QRCodeReader.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         self.view.addSubview(QRCodeReader)
-        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        videoPreviewLayer?.frame = QRCodeReader.layer.bounds
-        videoPreviewLayer?.videoGravity = .resizeAspectFill
-        QRCodeReader.layer.addSublayer(videoPreviewLayer!)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(stopScan))
+        previewLayer.frame = QRCodeReader.layer.bounds
+        QRCodeReader.layer.addSublayer(previewLayer)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onTap))
         QRCodeReader.addGestureRecognizer(tap)
-        captureSession.startRunning()
 
         // Initialize QR Code Frame to highlight the QR code
         qrCodeFrameView = UIView()
@@ -403,48 +362,32 @@ class EnterMnemonicsViewController: KeyboardViewController, UITextFieldDelegate,
         scanBarButton.image = UIImage(named: "stepIndicator")
     }
 
-    @objc func stopScan(sender:UITapGestureRecognizer?) {
+    override func stopScan() {
         QRCodeReader.removeFromSuperview()
-        self.captureSession.stopRunning()
-        self.videoPreviewLayer?.removeFromSuperlayer()
-        self.qrCodeFrameView?.frame = CGRect.zero
-        // set titlebar
+        previewLayer.removeFromSuperlayer()
+        qrCodeFrameView?.frame = CGRect.zero
+
         isScannerVisible = false
         scanBarButton.image = UIImage(named: "scan")
+
+        super.stopScan()
     }
-}
 
-extension EnterMnemonicsViewController: AVCaptureMetadataOutputObjectsDelegate {
+    @objc func onTap(sender: UITapGestureRecognizer?) {
+        stopScan()
+    }
 
-    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-        // Check if the metadataObjects array is not nil and it contains at least one object.
-        if metadataObjects.count == 0 {
-            qrCodeFrameView?.frame = CGRect.zero
+    override func onQRCodeReadSuccess(result: String) {
+        let words = result.split(separator: " ")
+        guard words.count == textFields.count else {
             return
         }
 
-        // Get the metadata object.
-        let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
-
-        if supportedCodeTypes.contains(metadataObj.type) {
-            // If the found metadata is equal to the QR code metadata (or barcode) then update the status label's text and set the bounds
-            let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
-            qrCodeFrameView?.frame = barCodeObject!.bounds
-
-            if metadataObj.stringValue != nil {
-                if let scanned = metadataObj.stringValue {
-                    let separated = scanned.components(separatedBy: " ")
-                    if(separated.count == 24) {
-                        for index in 0..<textFields.count {
-                            let textField = textFields[index]
-                            textField.text = separated[index]
-                        }
-                        doneButtonEnable()
-                    }
-                }
-                stopScan(sender: nil)
-            }
+        for (word, field) in zip(words, textFields) {
+            field.text = String(word)
         }
+
+        doneButtonEnable()
+        stopScan()
     }
 }
-

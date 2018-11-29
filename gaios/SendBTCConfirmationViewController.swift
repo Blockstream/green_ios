@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
 class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate {
 
@@ -18,13 +19,12 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     var uiErrorLabel: UIErrorLabel!
     var walletName: String = ""
     var wallet: WalletItem? = nil
-    var selectedType: TransactionType? = nil
-    var transaction: TransactionHelper?
+    var transaction: Transaction!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
-        walletNameLabel.text = (transaction?.data["is_sweep"] as! Bool) ? "Paper Wallet" : wallet?.localizedName()
+        walletNameLabel.text = transaction.isSweep ? "Paper Wallet" : wallet?.localizedName()
         slidingButton.delegate = self
         uiErrorLabel = UIErrorLabel(self.view)
         refresh()
@@ -38,9 +38,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     }
 
     func refresh() {
-        let addressees = transaction?.addresses()
-        let address = addressees![0]["address"] as! String
-        let satoshi = transaction?.data["satoshi"] as! UInt64
+        let address = transaction.addressees.first!.address
+        let satoshi = transaction.addressees.first!.satoshi
         recepientAddressLabel.text = address
         let btcAmount = String.formatBtc(satoshi: satoshi)
         let fiatAmount = String.formatFiat(satoshi: satoshi)
@@ -65,43 +64,36 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             textView.text = "Add a note..."
             textView.textColor = UIColor.customTitaniumLight()
         } else {
-            transaction?.data["memo"] = textView.text
+            transaction.memo = textView.text
         }
     }
 
     func completed(slidingButton: SlidingButton) {
-        print("send now!")
-        let size = CGSize(width: 30, height: 30)
-        uiErrorLabel.isHidden = true
-        startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
-        if self.transaction?.data["is_sweep"] as! Bool {
-            DispatchQueue.global(qos: .background).async {
-                wrap {
-                    let call = try getSession().signTransaction(details: self.transaction!.data)
-                    let result_dict = try DummyResolve(call: call)
-                    let result = result_dict["result"] as! [String : Any]
-                    let tx_hex = result["transaction"] as! String
-                    _ = try getSession().broadcastTransaction(tx_hex: tx_hex)
-                }.done {
-                    self.executeOnDone()
-                } .catch { error in
-                    DispatchQueue.main.async {
-                        self.onError(nil, text: error.localizedDescription)
-                    }
-                }
+        let bgq = DispatchQueue.global(qos: .background)
+
+        firstly {
+            let size = CGSize(width: 30, height: 30)
+            uiErrorLabel.isHidden = true
+            startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            return Guarantee()
+        }.then {
+            signTransaction(transaction: self.transaction)
+        }.compactMap(on: bgq) { call in
+            try DummyResolve(call: call)
+        }.compactMap(on: bgq) { result_dict in
+            let result = result_dict["result"] as! [String: Any]
+            if self.transaction.isSweep {
+                _ = try getSession().broadcastTransaction(tx_hex: result["transaction"] as! String)
+            } else {
+                let call = try getSession().sendTransaction(details: result)
+                // FIXME: 2FA
+                _ = try DummyResolve(call: call)
             }
-        }
-        else {
-            DispatchQueue.global(qos: .background).async {
-                wrap {
-                    try getSession().sendTransaction(details: (self.transaction?.data)!)
-                }.done { (result: TwoFactorCall) in
-                    try TwoFactorCallHelper(result, delegate: self).resolve()
-                } .catch { error in
-                    DispatchQueue.main.async {
-                        self.onError(nil, text: error.localizedDescription)
-                    }
-                }
+        }.done { _ in
+            self.executeOnDone()
+        }.catch { error in
+            DispatchQueue.main.async {
+                self.onError(nil, text: error.localizedDescription)
             }
         }
     }

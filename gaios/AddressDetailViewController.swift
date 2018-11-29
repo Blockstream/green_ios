@@ -38,7 +38,7 @@ class AddressDetailViewController: UIViewController {
     }
 
     @IBAction func shareButtonClicked(_ sender: Any) {
-        let activityViewController = UIActivityViewController(activityItems: [wallet?.getAddress()] , applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [wallet?.getAddress() as Any] , applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self.view
         self.present(activityViewController, animated: true, completion: nil)
     }
