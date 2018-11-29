@@ -11,7 +11,7 @@ class ImproveSecurityViewController: UIViewController {
         skipButton.contentHorizontalAlignment = .left
         twoFactorButton.contentHorizontalAlignment = .left
         skipButton.setTitle(NSLocalizedString("id_skip_not_recommended", comment: ""), for: .normal)
-        twoFactorButton.setTitle(NSLocalizedString("id_add_twofactor_authentication", comment: ""), for: .normal)
+        twoFactorButton.setTitle(NSLocalizedString("id_set_up_twofactor_authentication", comment: ""), for: .normal)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
