@@ -77,14 +77,19 @@ class TransactionsController: UITableViewController {
         super.viewDidLoad()
 
         let nib = UINib(nibName: "TransactionTableCell", bundle: nil)
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        self.tableView.tableFooterView = UIView()
-        self.tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
-        self.tableView.allowsSelection = true
-        self.tableView.isUserInteractionEnabled = true
-        self.tableView.separatorColor = UIColor.customTitaniumLight()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.tableFooterView = UIView()
+        tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
+        tableView.allowsSelection = true
+        tableView.isUserInteractionEnabled = true
+        tableView.separatorColor = UIColor.customTitaniumLight()
         tableView.tableHeaderView = getWalletCardView()
+        tableView.refreshControl = UIRefreshControl()
+        tableView.bounces = true
+        tableView.alwaysBounceVertical = true
+
+        tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "outgoingTX"), object: nil)
@@ -180,17 +185,24 @@ class TransactionsController: UITableViewController {
         return 0
     }
 
+    @objc func handleRefresh(_ sender: UIRefreshControl) {
+        self.loadTransactions()
+    }
+
     func loadTransactions() {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap(on: bgq) {
             try getSession().getTransactions(subaccount: (self.presentingWallet?.pointer)!, page: 0)
-        }.compactMap(on: bgq) { data in
+        }.compactMap(on: bgq) { data -> Transactions in
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             return try JSONDecoder().decode(Transactions.self, from: jsonData)
-        }.done { txs in
+        }.done { txs -> Void in
             self.items = txs
-        }.ensure {
             self.tableView.reloadData()
+        }.ensure {
+            if self.tableView.refreshControl!.isRefreshing {
+                self.tableView.refreshControl!.endRefreshing()
+            }
         }.catch { _ in
         }
     }
