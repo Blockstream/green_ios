@@ -76,7 +76,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             uiErrorLabel.isHidden = true
             startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
-        }.then {
+        }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
         }.compactMap(on: bgq) { call in
             try DummyResolve(call: call)

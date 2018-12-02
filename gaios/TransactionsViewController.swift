@@ -31,7 +31,12 @@ struct TransactionItem : Codable {
     let type: String
 
     func amount() -> String {
-        return String.formatBtc(satoshi: satoshi)
+        let satoshi = String.formatBtc(satoshi: self.satoshi)
+        if type == "outgoing" || type == "redeposit" {
+            return "-" + satoshi
+        } else {
+            return satoshi
+        }
     }
 
     func address() -> String? {
@@ -131,10 +136,15 @@ class TransactionsController: UITableViewController {
         guard let items = self.items, indexPath.row < items.list.count else {
             return cell
         }
+
         let item = items.list[indexPath.row]
+
         cell.amount.text = item.amount()
-        if(item.type == "incoming" || item.type == "redeposit") {
-            cell.address.text = presentingWallet?.localizedName()
+        if item.type == "redeposit" {
+            cell.address.text = NSLocalizedString("id_redeposited", comment: String())
+            cell.amount.textColor = UIColor.white
+        } else if item.type == "incoming" {
+            cell.address.text = NSLocalizedString("id_received", comment: String())
             cell.amount.textColor = UIColor.customMatrixGreen()
         } else {
             cell.address.text = item.address() ?? String()
@@ -193,10 +203,10 @@ class TransactionsController: UITableViewController {
         view.balanceLabel.text = String.formatBtc(satoshi: wallet.satoshi)
         view.addressLabel.text = wallet.getAddress()
         view.nameLabel.text = wallet.localizedName()
+        view.nameLabel.textColor = UIColor.customMatrixGreen()
         view.index = Int(wallet.pointer)
         view.wallet = wallet
         view.balanceLabel.textColor = UIColor.white
-        view.nameLabel.textColor = UIColor.white
         let uri = bip21Helper.btcURIforAddress(address: wallet.getAddress())
         view.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: view.qrImageView.frame)
 

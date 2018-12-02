@@ -64,25 +64,17 @@ class WalletsController: UIViewController, WalletViewDelegate {
         var coloredCardViews = [ColoredCardView]()
         for index in 0..<wallets.count {
             let item = wallets[index]
-            let address = item.getAddress()
             let cardView = ColoredCardView.nibForClass()
             cardView.wallet = item
             cardView.balanceLabel.text = String.formatBtc(satoshi: item.satoshi)
-            cardView.addressLabel.text = address
+            cardView.addressLabel.text = String()
             cardView.nameLabel.text = item.localizedName()
+            cardView.nameLabel.textColor = UIColor.customMatrixGreen()
             cardView.index = index
-            if(index < wallets.count - 1) {
-                cardView.balanceLabel.textColor = UIColor.customTitaniumLight()
-                cardView.nameLabel.textColor = UIColor.customTitaniumLight()
-            } else {
-                cardView.balanceLabel.textColor = UIColor.white
-                cardView.nameLabel.textColor = UIColor.white
-            }
+            cardView.balanceLabel.textColor = UIColor.white
             cardView.presentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.depresentedCardViewColor = UIColor.customTitaniumMedium()
             cardView.presentedDidUpdate()
-            let uri = bip21Helper.btcURIforAddress(address: address)
-            cardView.QRImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: cardView.QRImageView.frame)
             coloredCardViews.append(cardView)
         }
 
@@ -110,9 +102,10 @@ class WalletsController: UIViewController, WalletViewDelegate {
             DispatchQueue.main.async {
                 // Run UI Updates or call completion block
                 self.walletView.remove(cardViews: self.walletView.insertedCardViews)
-                self.wallets = accounts.reversed()
+                self.wallets = accounts
                 self.reloadWallets()
             }
+        }.catch { _ in
         }
     }
 
@@ -149,7 +142,7 @@ class WalletsController: UIViewController, WalletViewDelegate {
         presented = true
         let wallet = cardView as! ColoredCardView
         wallet.balanceLabel.textColor = UIColor.white
-        wallet.nameLabel.textColor = UIColor.white
+        wallet.nameLabel.textColor = UIColor.customMatrixGreen()
         wallet.QRImageView.isUserInteractionEnabled = true
         presentedWallet = wallet.wallet
         try! getSession().setCurrentSubaccount(subaccount: (presentedWallet!.pointer))
@@ -159,13 +152,8 @@ class WalletsController: UIViewController, WalletViewDelegate {
         presented = false
         let wallet = cardView as! ColoredCardView
         wallet.QRImageView.isUserInteractionEnabled = false
-        if(wallet.index < wallets.count - 1) {
-            wallet.balanceLabel.textColor = UIColor.customTitaniumLight()
-            wallet.nameLabel.textColor = UIColor.customTitaniumLight()
-        } else {
-            wallet.balanceLabel.textColor = UIColor.white
-            wallet.nameLabel.textColor = UIColor.white
-        }
+        wallet.nameLabel.textColor = UIColor.customMatrixGreen()
+        wallet.balanceLabel.textColor = UIColor.white
         presentedWallet = nil
     }
 
