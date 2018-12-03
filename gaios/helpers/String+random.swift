@@ -24,9 +24,11 @@ extension String {
         if (fiat != nil) { dict["fiat"] = fiat }
         if (fiatCurrency != nil) { dict["fiat_currency"] = fiatCurrency }
         if (value != nil) { dict[getDenominationKey(fromType)] = value }
-        let res = try! getSession().convertAmount(input: dict)
+        guard let res = try? getSession().convertAmount(input: dict) else {
+            return nil
+        }
         if (toType != nil) { return res![getDenominationKey(toType)] as? String }
-        return String(format: "%d", res!["satoshi"] as! Int)
+        return String(res!["satoshi"] as! UInt64)
     }
 
     static func toFiat(satoshi: UInt64? = nil, value: String? = nil, fromType: DenominationType? = nil) -> String? {

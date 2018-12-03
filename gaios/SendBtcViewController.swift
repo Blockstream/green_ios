@@ -3,7 +3,7 @@ import PromiseKit
 import UIKit
 import AVFoundation
 
-class SendBtcViewController: QRCodeReaderViewController {
+class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var QRCodeReader: UIView!
@@ -25,7 +25,8 @@ class SendBtcViewController: QRCodeReaderViewController {
         blurEffectView.frame = topImage.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         topImage.addSubview(blurEffectView)
-        // setup address textedit
+
+        textfield.delegate = self
         textfield.attributedPlaceholder =
             NSAttributedString(string: sweepTransaction ?
                 "Enter Private Key" : NSLocalizedString("id_enter_the_address", comment: ""),
@@ -52,12 +53,18 @@ class SendBtcViewController: QRCodeReaderViewController {
         updateButton()
     }
 
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        updateButton()
+        return true
+    }
+
     func updateButton() {
         if(textfield.text != nil && textfield.text != "") {
-            bottomButton.backgroundColor = UIColor.customMatrixGreen()
+            bottomButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
             bottomButton.isUserInteractionEnabled = true
         } else {
-            bottomButton.backgroundColor = UIColor.customTitaniumLight()
+            bottomButton.applyHorizontalGradient(colours: [UIColor.customTitaniumMedium(), UIColor.customTitaniumLight()])
             bottomButton.isUserInteractionEnabled = false
         }
     }
@@ -103,11 +110,12 @@ class SendBtcViewController: QRCodeReaderViewController {
 
     func createTransaction(userInput: String) {
         let details: [String: Any] = sweepTransaction ? ["private_key": userInput] : ["addressees": [["address": userInput]]]
-        gaios.createTransaction(details: details).done { tx in
+        gaios.createTransaction(details: details).get { tx in
+            self.transaction = tx
+        }.done { tx in
             if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            self.transaction = tx
             self.performSegue(withIdentifier: "next", sender: self)
         }.catch { error in
             if let txError = (error as? TransactionError) {

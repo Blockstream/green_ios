@@ -136,7 +136,7 @@ struct Transaction : TransactionView {
     }
 
     var feeRate: UInt64 {
-        get { return get("feeRate" ) ?? 0 }
+        get { return get("fee_rate" ) ?? 0 }
         set { details["fee_rate"] = newValue }
     }
 
@@ -234,4 +234,11 @@ func createTransaction(transaction: Transaction) -> Promise<Transaction> {
 
 func signTransaction(transaction: Transaction) -> Promise<TwoFactorCall> {
     return signTransaction(details: transaction.details)
+}
+
+func convertAmount(details: [String: Any]) -> [String: Any]? {
+    guard let conversion = try? getSession().convertAmount(input: details) else {
+        return nil
+    }
+    return conversion
 }

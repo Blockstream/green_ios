@@ -111,4 +111,15 @@ extension UIView {
         gradient.endPoint = CGPoint(x: 0, y: 0)
         self.layer.insertSublayer(gradient, at: 0)
     }
+
+    func applyHorizontalGradient(colours: [UIColor]) -> Void {
+        let gradient: CAGradientLayer = CAGradientLayer()
+        gradient.frame = self.bounds
+        gradient.colors = colours.map { $0.cgColor }
+        gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
+        gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
+        self.layer.sublayers?[0].removeFromSuperlayer()
+        self.layer.insertSublayer(gradient, at: 0)
+        self.setNeedsDisplay()
+    }
 }

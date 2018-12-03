@@ -25,7 +25,8 @@ class SendBtcDetailsViewController: UIViewController {
     var selectedButton : UIButton? = nil
     var priority: TransactionPriority? = nil
     var transaction: Transaction!
-    let blockTime = ["~ 2 Hours", "~ 1 Hour", "~ 10-20 Minutes", "Unknown (custom)"]
+    let blockTime = [NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1_hour", comment: ""), NSLocalizedString("id_1020_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
+    var amountData: [String: Any]? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,12 +47,12 @@ class SendBtcDetailsViewController: UIViewController {
         recipientTitle.text = NSLocalizedString("id_recipient", comment: "")
         minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "")
         lowFeeButton.setTitle(NSLocalizedString("id_low", comment: ""), for: .normal)
-        mediumFeeButton.setTitle(NSLocalizedString("id_normal", comment: ""), for: .normal)
+        mediumFeeButton.setTitle(NSLocalizedString("id_medium", comment: ""), for: .normal)
         highFeeButton.setTitle(NSLocalizedString("id_high", comment: ""), for: .normal)
         customfeeButton.setTitle(NSLocalizedString("id_custom", comment: ""), for: .normal)
     }
 
-    func refresh() {
+    func refresh(_ forceUpdate: Bool) {
         let address = transaction.addressees[0].address
         let satoshi = transaction.addressees[0].satoshi
         let addresseesReadOnly = transaction.addresseesReadOnly
@@ -68,24 +69,15 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
 
-        var textAmount: String
-        if (amountTextField.text == nil || amountTextField.text!.isEmpty) {
-            textAmount = "0"
-        } else {
-            textAmount = amountTextField.text!
-        }
-        let changed = UInt64(String.toBtc(value: textAmount, fromType: SettingsStore.shared.getDenominationSettings())!) == satoshi
-        if (satoshi != 0 && !changed) {
-            if (selectedType == TransactionType.BTC) {
-                amountTextField.text = String.toBtc(satoshi: satoshi, toType: SettingsStore.shared.getDenominationSettings())
-            } else {
-                amountTextField.text = String.toFiat(satoshi: satoshi)
-            }
+        let textAmount = amountData?[selectedType == TransactionType.BTC ? SettingsStore.shared.getDenominationSettings().rawValue.lowercased() : "fiat"] as? String ?? String()
+
+        if satoshi != amountData?["satoshi"] as? UInt64 ?? 0 || forceUpdate {
+            amountTextField.text = textAmount
         }
     }
 
     func setButton() {
-        if (selectedType == TransactionType.BTC) {
+        if selectedType == TransactionType.BTC {
             currencySwitch.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)
             currencySwitch.backgroundColor = UIColor.customMatrixGreen()
             currencySwitch.setTitleColor(UIColor.white, for: UIControlState.normal)
@@ -109,7 +101,7 @@ class SendBtcDetailsViewController: UIViewController {
         super.viewDidAppear(animated)
         reviewButton.layoutIfNeeded()
         uiErrorLabel.isHidden = true
-        refresh()
+        refresh(false)
         updateEstimate()
     }
 
@@ -134,6 +126,7 @@ class SendBtcDetailsViewController: UIViewController {
             selectedType = TransactionType.BTC
         }
         setButton()
+        refresh(true)
         updateMaxAmountLabel()
         updateEstimate()
     }
@@ -155,39 +148,31 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
+        let amount = !amountTextField.text!.isEmpty ? amountTextField.text! : amountTextField.placeholder!
+        let conversionKey = selectedType == TransactionType.BTC ? SettingsStore.shared.getDenominationSettings().rawValue.lowercased() : "fiat"
+        amountData = convertAmount(details: [conversionKey : amount])
         updateEstimate()
     }
 
     func updateEstimate() {
-        let amount: String? = amountTextField.text
-        var satoshi: UInt64 = 0
-        if (amount == nil || amount!.isEmpty || amount! == "All" || Double(amount!) == nil) {
-            satoshi = 0
-        } else if (selectedType == TransactionType.BTC) {
-            satoshi = UInt64(String.toBtc(value: amount!)!)!
-        } else if (selectedType == TransactionType.FIAT) {
-            satoshi = UInt64(String.toBtc(fiat: amount!)!)!
-        }
-        if (satoshi == 0 && amount! != "All") {
-            setLabel(button: selectedButton!, fee: 0)
-            updateButton(false)
-            return
-        }
+        reviewButton.isUserInteractionEnabled = false
 
-        transaction.feeRate = fee
+        let satoshi = amountData?["satoshi"] as? UInt64 ?? 0
 
         if !transaction.addresseesReadOnly {
             let addressee = Addressee(address: addressLabel.text!, satoshi: satoshi)
             transaction.addressees = [addressee]
             transaction.sendAll = sendAllFundsButton.isSelected
         }
+        transaction.feeRate = fee
 
-        gaios.createTransaction(transaction: transaction).done { tx in
+        gaios.createTransaction(transaction: transaction).get { tx in
+            self.transaction = tx
+        }.done { tx in
             if !tx.error.isEmpty {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            self.transaction = tx
-            self.refresh()
+            self.refresh(false)
             self.uiErrorLabel.isHidden = true
             self.updateButton(true)
             self.setLabel(button: self.selectedButton!, fee: tx.fee)
@@ -232,81 +217,61 @@ class SendBtcDetailsViewController: UIViewController {
         feeLabel.textColor = UIColor.customTitaniumLight()
 
         
-        let fiatValue: Double = Double(String.toFiat(satoshi: UInt64(fee))!)!
-        let size = transaction.transactionSize
-        let satoshiPerByte = fee / size
+        let fiatValue = String.toFiat(satoshi: fee)!
+        let feeInBTC = String.toBtc(satoshi: fee, toType: SettingsStore.shared.getDenominationSettings())!
+        let satoshiPerVByte = Double(transaction.feeRate) / 1000.0
         var timeEstimate = ""
         feeLabel.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(feeLabel)
-        if(button == lowFeeButton) {
+        feeLabel.textAlignment = .left
+        NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: lowFeeButton, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
+
+        if button == lowFeeButton {
             timeEstimate = blockTime[0]
-            feeLabel.textAlignment = .left
-            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
-        } else if (button == mediumFeeButton) {
+        } else if button == mediumFeeButton {
             timeEstimate = blockTime[1]
-            feeLabel.textAlignment = .center
-            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-        } else if (button == highFeeButton) {
+        } else if button == highFeeButton {
             timeEstimate = blockTime[2]
-            feeLabel.textAlignment = .center
-            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
         } else {
             timeEstimate = blockTime[3]
-            feeLabel.textAlignment = .right
-            NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 0).isActive = true
         }
-        feeLabel.text = String(format: "%d satoshi / byte \nTime: %@\nFee: %d satoshi / ~%.2f %@", satoshiPerByte, timeEstimate, fee, fiatValue, SettingsStore.shared.getCurrencyString())
+        feeLabel.text = String(format: "%.1f satoshi / vbyte \nTime: %@\nFee: %@ %@ / ~%@ %@", satoshiPerVByte, timeEstimate, feeInBTC, SettingsStore.shared.getDenominationSettings().rawValue, fiatValue, SettingsStore.shared.getCurrencyString())
         feeLabel.numberOfLines = 3
         feeLabel.font = feeLabel.font.withSize(13)
 
-        NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: button, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 10).isActive = true
+        NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: lowFeeButton, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 10).isActive = true
         feeLabel.layoutIfNeeded()
     }
 
     func updatePriorityButtons() {
-        if (priority == TransactionPriority.Low) {
+        lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        lowFeeButton.layer.borderWidth = 1
+        highFeeButton.layer.borderWidth = 1
+        customfeeButton.layer.borderWidth = 1
+        mediumFeeButton.layer.borderWidth = 1
+
+        if priority == TransactionPriority.Low {
             selectedButton = lowFeeButton
             fee = AccountStore.shared.getFeeRateLow()
             lowFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             lowFeeButton.layer.borderWidth = 2
-            highFeeButton.layer.borderWidth = 1
-            customfeeButton.layer.borderWidth = 1
-            mediumFeeButton.layer.borderWidth = 1
-        } else if (priority == TransactionPriority.Medium) {
+        } else if priority == TransactionPriority.Medium {
             selectedButton = mediumFeeButton
             fee = AccountStore.shared.getFeeRateMedium()
             mediumFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            lowFeeButton.layer.borderWidth = 1
-            highFeeButton.layer.borderWidth = 1
-            customfeeButton.layer.borderWidth = 1
             mediumFeeButton.layer.borderWidth = 2
-        } else if (priority == TransactionPriority.High) {
+        } else if priority == TransactionPriority.High {
             selectedButton = highFeeButton
             fee = AccountStore.shared.getFeeRateHigh()
-            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             highFeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-            customfeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            lowFeeButton.layer.borderWidth = 1
             highFeeButton.layer.borderWidth = 2
-            customfeeButton.layer.borderWidth = 1
-            mediumFeeButton.layer.borderWidth = 1
-        } else if (priority == TransactionPriority.Custom) {
+        } else if priority == TransactionPriority.Custom {
             selectedButton = customfeeButton
-            lowFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            mediumFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-            highFeeButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
             customfeeButton.layer.borderColor = UIColor.customMatrixGreen().cgColor
-            lowFeeButton.layer.borderWidth = 1
-            highFeeButton.layer.borderWidth = 1
             customfeeButton.layer.borderWidth = 2
-            mediumFeeButton.layer.borderWidth = 1
         }
     }
 
@@ -318,10 +283,10 @@ class SendBtcDetailsViewController: UIViewController {
             textField.attributedPlaceholder = NSAttributedString(string: minFee,
                                                                           attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         }
-        alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel, handler: { [weak alert] (_) in
+        alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel) { [weak alert] (_) in
             alert?.dismiss(animated: true, completion: nil)
-        }))
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+        })
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] (_) in
             let amount:String = alert!.textFields![0].text!
             guard let amount_i = Int(amount) else {
                 self.setLabel(button: self.customfeeButton, fee: 0)
@@ -330,7 +295,7 @@ class SendBtcDetailsViewController: UIViewController {
             self.fee = UInt64(1000 * amount_i)
             self.updateEstimate()
             self.updatePriorityButtons()
-        }))
+        })
         self.present(alert, animated: true, completion: nil)
     }
 

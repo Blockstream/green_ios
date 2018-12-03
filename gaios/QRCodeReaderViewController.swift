@@ -37,7 +37,7 @@ class QRCodeReaderViewController : KeyboardViewController, AVCaptureMetadataOutp
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        captureSession.stopRunning()
+        captureSession?.stopRunning()
 
         super.viewWillDisappear(animated)
     }
