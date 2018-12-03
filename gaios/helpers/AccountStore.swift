@@ -1,59 +1,6 @@
 import Foundation
 import PromiseKit
 
-class WalletItem : Codable {
-
-    enum CodingKeys: String, CodingKey {
-        case bits
-        case btc
-        case fiat
-        case fiatCurrency = "fiat_currency"
-        case fiatRate = "fiat_rate"
-        case mbtc
-        case name
-        case pointer
-        case receiveAddress
-        case receivingId = "receiving_id"
-        case satoshi
-        case type
-        case ubtc
-    }
-
-    let bits: String
-    let btc: String
-    let fiat: String
-    let fiatCurrency: String
-    let fiatRate: String
-    let mbtc: String
-    private let name: String
-    let pointer: UInt32
-    var receiveAddress: String?
-    let receivingId: String
-    var satoshi: UInt64
-    let type: String
-    let ubtc: String
-
-    func localizedName() -> String {
-        return pointer == 0 ? NSLocalizedString("id_main", comment: "") : name
-    }
-
-    func generateNewAddress() -> String? {
-        return try? getSession().getReceiveAddress(subaccount: self.pointer)
-     }
-
-    func getAddress() -> String {
-        if let address = receiveAddress {
-            return address
-        }
-        receiveAddress = generateNewAddress()
-        return receiveAddress ?? String()
-    }
-}
-
-class Wallets : Codable {
-    let array: [WalletItem]
-}
-
 class AccountStore {
 
     static let shared = AccountStore()
