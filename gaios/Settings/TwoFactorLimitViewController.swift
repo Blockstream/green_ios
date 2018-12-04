@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
-class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var limitTextField: UITextField!
     @IBOutlet weak var setLimitButton: UIButton!
@@ -67,57 +68,33 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
     }
 
     @IBAction func setLimitClicked(_ sender: Any) {
-        if self.isAnimating {
-            return
+        guard let amount = Double(limitTextField.text!) else { return }
+        var details = [String:Any]()
+        if(fiat) {
+            details["is_fiat"] = true
+            details["fiat"] = String(amount)
+        } else {
+            details["is_fiat"] = false
+            let denomination = getDenominationKey(SettingsStore.shared.getDenominationSettings())
+            details[denomination] = limitTextField.text!
         }
-        let amount = limitTextField.text!
-        if Double(amount) != nil {
-            do {
-                var details = [String:Any]()
-                if(fiat) {
-                    details["is_fiat"] = true
-                    details["fiat"] = String(amount)
-                } else {
-                    details["is_fiat"] = false
-                    let denomination = getDenominationKey(SettingsStore.shared.getDenominationSettings())
-                    details[denomination] = limitTextField.text!
-                }
-                self.startAnimating(CGSize(width: 30, height: 30),
-                                    type: NVActivityIndicatorType.ballRotateChase)
-                DispatchQueue.global(qos: .background).async {
-                    wrap {
-                        try getSession().setTwoFactorLimit(details: details)
-                    }.done { (result: TwoFactorCall) in
-                        try TwoFactorCallHelper(result, delegate: self).resolve()
-                    }.catch { error in
-                        DispatchQueue.main.async {
-                            self.onError(nil, text: error.localizedDescription)
-                        }
-                    }
-                }
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            return Guarantee()
+        }.then(on: bgq) {
+            return Guarantee().compactMap(on: bgq) {
+                try getSession().setTwoFactorLimit(details: details)
             }
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.done { _ in
+            self.stopAnimating()
+            SettingsStore.shared.setTwoFactorLimit()
+            self.navigationController?.popViewController(animated: true)
+        }.catch { error in
+            self.stopAnimating()
         }
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.CodePopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper?) {
-        self.stopAnimating()
-        SettingsStore.shared.setTwoFactorLimit()
-        self.navigationController?.popViewController(animated: true)
-    }
-
-    func onError(_ sender: TwoFactorCallHelper?, text: String) {
-        self.stopAnimating()
-        print(text)
     }
 
     func setButton() {

@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
-class DisputeRequestViewController : KeyboardViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class DisputeRequestViewController : KeyboardViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var emailTextField: UITextField!
@@ -21,46 +22,25 @@ class DisputeRequestViewController : KeyboardViewController, NVActivityIndicator
     }
 
     @IBAction func disputeButtonClicked(_ sender: Any) {
-        if self.isAnimating {
-            return
-        }
-        errorLabel.isHidden = true
-        if let email = emailTextField.text {
-            self.startAnimating(CGSize(width: 30, height: 30),
-                                type: NVActivityIndicatorType.ballRotateChase)
-            DispatchQueue.global(qos: .background).async {
-                wrap {
-                    try getSession().resetTwoFactor(email: email, isDispute: true)
-                }.done { (result: TwoFactorCall) in
-                    try TwoFactorCallHelper(result, delegate: self).resolve()
-                }.catch { error in
-                    DispatchQueue.main.async {
-                        self.onError(nil, text: error.localizedDescription)
-                    }
-                }
+        guard let email = emailTextField.text else { return }
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.errorLabel.isHidden = true
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            return Guarantee()
+        }.then(on: bgq) {
+            return Guarantee().compactMap(on: bgq) {
+                try getSession().resetTwoFactor(email: email, isDispute: true)
             }
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.done { _ in
+            self.stopAnimating()
+            getAppDelegate().logout()
+        }.catch { error in
+            self.stopAnimating()
+            self.errorLabel.isHidden = false
+            self.errorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
         }
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.CodePopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper?) {
-        self.stopAnimating()
-        //self.navigationController?.popViewController(animated: true)
-        getAppDelegate().logout()
-    }
-
-    func onError(_ sender: TwoFactorCallHelper?, text: String) {
-        self.stopAnimating()
-        errorLabel.isHidden = false
-        errorLabel.text = NSLocalizedString(text, comment: "")
     }
 }

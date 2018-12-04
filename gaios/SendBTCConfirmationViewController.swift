@@ -3,7 +3,7 @@ import UIKit
 import NVActivityIndicatorView
 import PromiseKit
 
-class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate, TwoFactorCallDelegate {
+class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDelegate, NVActivityIndicatorViewable, UITextViewDelegate {
 
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
@@ -78,34 +78,25 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             return Guarantee()
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
-        }.compactMap(on: bgq) { call in
-            try DummyResolve(call: call)
+        }.then(on: bgq) { call in
+            try call.resolve(self)
         }.compactMap(on: bgq) { result_dict in
-            let result = result_dict["result"] as! [String: Any]
+            let result = result_dict!["result"] as! [String: Any]
             if self.transaction.isSweep {
                 _ = try getSession().broadcastTransaction(tx_hex: result["transaction"] as! String)
             } else {
                 let call = try getSession().sendTransaction(details: result)
                 // FIXME: 2FA
-                _ = try DummyResolve(call: call)
+                _ = try call.resolve(self)
             }
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
-            DispatchQueue.main.async {
-                self.onError(nil, text: error.localizedDescription)
-            }
+            self.stopAnimating()
+            slidingButton.reset()
+            self.uiErrorLabel.isHidden = false
+            self.uiErrorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
         }
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.CodePopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender!)
-        self.present(alert, animated: true, completion: nil)
     }
 
     func executeOnDone() {
@@ -115,17 +106,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             self.stopAnimating()
             self.popBack(toControllerType: TransactionsController.self)
         }
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper?) {
-        executeOnDone()
-    }
-
-    func onError(_ sender: TwoFactorCallHelper?, text: String) {
-        self.stopAnimating()
-        slidingButton.reset()
-        uiErrorLabel.isHidden = false
-        uiErrorLabel.text = NSLocalizedString(text, comment: "")
     }
 
     override func keyboardWillShow(notification: NSNotification) {

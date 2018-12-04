@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
-class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var qrCodeImageView: UIImageView!
     @IBOutlet weak var secretLabel: UILabel!
@@ -16,7 +17,8 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, Two
         secret = AccountStore.shared.getGauthSecret()
         otp = AccountStore.shared.getGauthOTP()
         if (secret == nil) {
-            self.onError(nil, text: "something went wrong gauth")
+            self.errorLabel.isHidden = false
+            self.errorLabel.text = "something went wrong gauth"
             return
         }
         qrCodeImageView.image = QRImageGenerator.imageForText(text: otp!, frame: qrCodeImageView.frame)
@@ -31,43 +33,30 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable, Two
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
-        if self.isAnimating {
-            return
-        }
-        errorLabel.isHidden = true
-        self.startAnimating(CGSize(width: 30, height: 30),
-                            type: NVActivityIndicatorType.ballRotateChase)
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                try AccountStore.shared.enableGauthTwoFactor()!
-            }.done { (result: TwoFactorCall) in
-                try TwoFactorCallHelper(result, delegate: self).resolve()
-            }.catch { error in
-                DispatchQueue.main.async {
-                    self.onError(nil, text: error.localizedDescription)
-                }
+
+        let config = try! getSession().getTwoFactorConfig()
+        let gauth = config!["gauth"] as! [String: Any]
+        let gauthdata = gauth["data"] as! String
+        let dict = ["enabled": true, "confirmed": true, "data": gauthdata] as [String : Any]
+
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.errorLabel.isHidden = true
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            return Guarantee()
+        }.then(on: bgq) {
+            return Guarantee().compactMap(on: bgq) {
+                try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
             }
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.done { _ in
+            self.stopAnimating()
+            self.navigationController?.popViewController(animated: true)
+        }.catch { error in
+            self.stopAnimating()
+            self.errorLabel.isHidden = false
+            self.errorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
         }
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.CodePopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper?) {
-        self.stopAnimating()
-        self.navigationController?.popViewController(animated: true)
-    }
-
-    func onError(_ sender: TwoFactorCallHelper?, text: String) {
-        self.stopAnimating()
-        errorLabel.isHidden = false
-        errorLabel.text = NSLocalizedString(text, comment: "")
     }
 }

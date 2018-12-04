@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
-class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var emailSwitch: UISwitch!
     @IBOutlet weak var smsSwitch: UISwitch!
@@ -33,46 +34,27 @@ class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable
     }
 
     func disable(_ method: String) {
-        if self.isAnimating {
-            return
-        }
-        errorLabel.isHidden = true
-        self.startAnimating(CGSize(width: 30, height: 30),
-                            type: NVActivityIndicatorType.ballRotateChase)
+        let bgq = DispatchQueue.global(qos: .background)
         let dict = ["enabled": false] as [String : Any]
-        DispatchQueue.global(qos: .background).async {
-            wrap {
+        firstly {
+            self.errorLabel.isHidden = true
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            return Guarantee()
+        }.then(on: bgq) {
+            return Guarantee().compactMap(on: bgq) {
                 try getSession().changeSettingsTwoFactor(method: method, details: dict)
-            }.done { (result: TwoFactorCall) in
-                try TwoFactorCallHelper(result, delegate: self).resolve()
-            }.catch { error in
-                DispatchQueue.main.async {
-                    self.onError(nil, text: error.localizedDescription)
-                }
             }
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.done { _ in
+            self.stopAnimating()
+            self.viewWillAppear(false)
+        }.catch { error in
+            self.stopAnimating()
+            self.errorLabel.isHidden = false
+            self.errorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
+            self.viewWillAppear(false)
         }
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.CodePopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper?) {
-        self.stopAnimating()
-        viewWillAppear(false)
-    }
-
-    func onError(_ sender: TwoFactorCallHelper?, text: String) {
-        self.stopAnimating()
-        errorLabel.isHidden = false
-        errorLabel.text = NSLocalizedString(text, comment: "")
-        viewWillAppear(false)
     }
 
     @IBAction func emailSwitched(_ sender: Any) {

@@ -2,8 +2,9 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
-class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorViewable,  TwoFactorCallDelegate {
+class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var increaseFeeButton: UIButton!
@@ -45,43 +46,32 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
     }
 
     func increaseFee(feeRate: Double) {
-        startAnimating()
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                var details = [String: Any]()
-                let jsonData = try JSONEncoder().encode(self.transaction)
-                details["previous_transaction"] = String(data: jsonData, encoding: .utf8)
-                details["fee_rate"] = feeRate
-                let newTransaction = try getSession().createTransaction(details: details)
-                return try getSession().sendTransaction(details: newTransaction!)
-            }.done { (result: TwoFactorCall) in
-                 try TwoFactorCallHelper(result, delegate: self).resolve()
-            }.catch { error in
-                DispatchQueue.main.async {
-                    self.onError(nil, text: error.localizedDescription)
-                }
-            }
+        let bgq = DispatchQueue.global(qos: .background)
+        var details = [String: Any]()
+        let jsonData = try! JSONEncoder().encode(self.transaction)
+        details["previous_transaction"] = String(data: jsonData, encoding: .utf8)
+        details["fee_rate"] = feeRate
+
+        firstly {
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            return Guarantee()
+        }.then(on: bgq) {
+            createTransaction(details: details)
+        }.then(on: bgq) { transaction in
+            signTransaction(transaction: transaction)
+        }.then(on: bgq) { call in
+            try call.resolve(self)
+        }.compactMap(on: bgq) { result_dict in
+            let result = result_dict!["result"] as! [String: Any]
+            return try getSession().sendTransaction(details: result)
+        }.compactMap(on: bgq) { call in
+            try DummyResolve(call: call)
+        }.done { result in
+            self.stopAnimating()
+            self.dismiss(animated: true, completion: nil)
+        }.catch { error in
+            self.stopAnimating()
         }
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.CodePopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper?) {
-        stopAnimating()
-        self.dismiss(animated: true, completion: nil)
-    }
-
-    func onError(_ sender: TwoFactorCallHelper?, text: String) {
-        stopAnimating()
-        print( text )
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {

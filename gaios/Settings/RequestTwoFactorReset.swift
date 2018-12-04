@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
-class RequestTwoFactorReset : KeyboardViewController, NVActivityIndicatorViewable, TwoFactorCallDelegate {
+class RequestTwoFactorReset : KeyboardViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var emailLabel: UILabel!
@@ -57,50 +58,33 @@ class RequestTwoFactorReset : KeyboardViewController, NVActivityIndicatorViewabl
     }
 
     @IBAction func requestClicked(_ sender: Any) {
-        if self.isAnimating {
-            return
+        var email: String = ""
+        if !self.isReset {
+            email = emailTextField.text!
         }
-        errorLabel.isHidden = true
-        self.startAnimating(CGSize(width: 30, height: 30),
-                            type: NVActivityIndicatorType.ballRotateChase)
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                if self.isReset {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.errorLabel.isHidden = true
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            return Guarantee()
+        }.then(on: bgq) {
+            return (self.isReset == true) ?
+                Guarantee().compactMap(on: bgq) {
                     return try getSession().cancelTwoFactorReset()
-                } else if let email = self.emailTextField.text {
+                } :
+                Guarantee().compactMap(on: bgq) {
                     return try getSession().resetTwoFactor(email: email, isDispute: false)
-                } else {
-                    throw GaError.GenericError
                 }
-            }.done { (result: TwoFactorCall) in
-                try TwoFactorCallHelper(result, delegate: self).resolve()
-            }.catch { error in
-                DispatchQueue.main.async {
-                    self.onError(nil, text: error.localizedDescription)
-                }
-            }
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.done { _ in
+            self.stopAnimating()
+            getAppDelegate().logout()
+        }.catch { error in
+            self.stopAnimating()
+            self.errorLabel.isHidden = false
+            self.errorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
+            self.updateUI()
         }
-    }
-
-    func onResolve(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.CodePopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onRequest(_ sender: TwoFactorCallHelper?) {
-        let alert = TwoFactorCallHelper.MethodPopup(sender!)
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func onDone(_ sender: TwoFactorCallHelper?) {
-        self.stopAnimating()
-        getAppDelegate().logout()
-    }
-
-    func onError(_ sender: TwoFactorCallHelper?, text: String) {
-        self.stopAnimating()
-        errorLabel.isHidden = false
-        errorLabel.text = NSLocalizedString(text, comment: "")
-        updateUI()
     }
 }
