@@ -15,11 +15,15 @@ extension TwoFactorCall {
                     try self.call().wait()
                 } else if status == "request_code" {
                     let methods: [String] = json["methods"] as! [String]
-                    try PopupMethodResolver(sender)
-                        .method(methods)
-                        .then { method in
-                            return try! self.requestCode(method: method)
-                        }.wait()
+                    if methods.count > 1 {
+                        try PopupMethodResolver(sender)
+                            .method(methods)
+                            .then { method in
+                                return try! self.requestCode(method: method)
+                            }.wait()
+                    } else {
+                        try! self.requestCode(method: methods[0])
+                    }
                 } else if status == "resolve_code" {
                     let method: String = json["method"] as! String
                     try PopupCodeResolver(sender)
@@ -31,12 +35,7 @@ extension TwoFactorCall {
             }
             // Return a promise
             if status == "done" {
-                if (json["result"] is NSNull) {
-                    seal.fulfill(nil)
-                } else if (json["result"] is NSArray) {
-                    let result: [String:Any]? = json["result"] as! [String:Any]?
-                    seal.fulfill(result)
-                }
+                seal.fulfill(json)
             } else if status == "error"{
                 //let result: String = json["error"] as! String
                 seal.reject(GaError.GenericError)
