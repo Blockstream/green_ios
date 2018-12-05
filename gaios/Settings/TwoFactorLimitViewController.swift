@@ -9,8 +9,9 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
     @IBOutlet weak var setLimitButton: UIButton!
     @IBOutlet weak var fiatButton: UIButton!
     @IBOutlet weak var limitButtonConstraint: NSLayoutConstraint!
-    var fiat: Bool = true
     @IBOutlet weak var descriptionLabel: UILabel!
+    var fiat: Bool = true
+    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +21,7 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
         refesh()
         setButton()
         SettingsStore.shared.setTwoFactorLimit()
+        errorLabel = UIErrorLabel(self.view)
     }
 
     func refesh() {
@@ -80,6 +82,7 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
         }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
+            self.errorLabel.isHidden = true
             startAnimating(type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
         }.then(on: bgq) {
@@ -94,7 +97,15 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
             SettingsStore.shared.setTwoFactorLimit()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
-            print (error)
+            self.errorLabel.isHidden = false
+            if let twofaError = error as? TwoFactorCallError {
+                switch twofaError {
+                case .failure(let localizedDescription):
+                    self.errorLabel.text = localizedDescription
+                }
+            } else {
+                self.errorLabel.text = error.localizedDescription
+            }
         }
     }
 

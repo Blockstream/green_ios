@@ -83,7 +83,14 @@ class RequestTwoFactorReset : KeyboardViewController, NVActivityIndicatorViewabl
             getAppDelegate().logout()
         }.catch { error in
             self.errorLabel.isHidden = false
-            self.errorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
+            if let twofaError = error as? TwoFactorCallError {
+                switch twofaError {
+                case .failure(let localizedDescription):
+                    self.errorLabel.text = localizedDescription
+                }
+            } else {
+                self.errorLabel.text = error.localizedDescription
+            }
             self.updateUI()
         }
     }

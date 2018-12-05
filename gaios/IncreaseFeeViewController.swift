@@ -15,6 +15,7 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
     var transaction: TransactionItem!
     var feeLabel: UILabel = UILabel()
     var firstTime: Bool = true
+    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +26,7 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
         titleLabel.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")
         increaseFeeButton.setTitle(NSLocalizedString("id_increase_fee", comment: "").capitalized, for: .normal)
         cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
+        errorLabel.isHidden = false
 
         // Set custom rate to 1 satoshi higher than the old rate
         let prevFeeRate = transaction.feeRate
@@ -53,6 +55,7 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
         details["fee_rate"] = feeRate
 
         firstly {
+            self.errorLabel.isHidden = true
             startAnimating(type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
         }.then(on: bgq) {
@@ -71,6 +74,15 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
         }.done { result in
             self.dismiss(animated: true, completion: nil)
         }.catch { error in
+            self.errorLabel.isHidden = false
+            if let twofaError = error as? TwoFactorCallError {
+                switch twofaError {
+                case .failure(let localizedDescription):
+                    self.errorLabel.text = localizedDescription
+                }
+            } else {
+                self.errorLabel.text = error.localizedDescription
+            }
         }
     }
 

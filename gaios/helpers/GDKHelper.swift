@@ -3,6 +3,10 @@ import Foundation
 import UIKit
 import PromiseKit
 
+enum TwoFactorCallError : Error {
+    case failure(localizedDescription: String)
+}
+
 extension TwoFactorCall {
     func resolve(_ sender: UIViewController) throws -> [String:Any]? {
         var status = ""
@@ -35,8 +39,8 @@ extension TwoFactorCall {
         if status == "done" {
             return json
         } else if status == "error"{
-            //let result: String = json["error"] as! String
-            throw GaError.GenericError
+            let error: String = json["error"] as! String
+            throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
         }
         return nil
     }

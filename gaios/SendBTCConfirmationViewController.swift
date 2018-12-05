@@ -93,9 +93,16 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             self.executeOnDone()
         }.catch { error in
             self.stopAnimating()
-            slidingButton.reset()
+            self.slidingButton.reset()
             self.uiErrorLabel.isHidden = false
-            self.uiErrorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
+            if let twofaError = error as? TwoFactorCallError {
+                switch twofaError {
+                case .failure(let localizedDescription):
+                    self.uiErrorLabel.text = localizedDescription
+                }
+            } else {
+                self.uiErrorLabel.text = error.localizedDescription
+            }
         }
     }
 
