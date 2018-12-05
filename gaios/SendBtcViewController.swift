@@ -109,11 +109,12 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
     }
 
     func createTransaction(userInput: String) {
-        let details: [String: Any] = sweepTransaction ? ["private_key": userInput] : ["addressees": [["address": userInput]]]
+        let feeRate =  SettingsStore.shared.getFeeSettings().1
+        let details: [String: Any] = sweepTransaction ? ["private_key": userInput, "fee_rate":  feeRate] : ["addressees": [["address": userInput]], "fee_rate":  feeRate]
         gaios.createTransaction(details: details).get { tx in
             self.transaction = tx
         }.done { tx in
-            if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
+            if !tx.error.isEmpty && tx.error != "id_invalid_amount" && tx.error != "id_insufficient_funds" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
             self.performSegue(withIdentifier: "next", sender: self)

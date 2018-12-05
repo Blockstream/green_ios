@@ -23,26 +23,30 @@ class SendBtcDetailsViewController: UIViewController {
     var selectedType = TransactionType.FIAT
     var fee: UInt64 = 1
     var selectedButton : UIButton? = nil
-    var priority: TransactionPriority? = nil
+    var priority = SettingsStore.shared.getFeeSettings().0
     var transaction: Transaction!
     let blockTime = [NSLocalizedString("id_4_hours", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
     var amountData: [String: Any]? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         self.tabBarController?.tabBar.isHidden = true
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
 
         uiErrorLabel = UIErrorLabel(self.view)
         errorLabel.isHidden = true
+
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        priority = SettingsStore.shared.getFeeSettings().0
+
         updatePriorityButtons()
         updateMaxAmountLabel()
         setButton()
+
         reviewButton.setTitle(NSLocalizedString("id_review", comment: ""), for: .normal)
         recipientTitle.text = NSLocalizedString("id_recipient", comment: "")
         minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "")
@@ -50,6 +54,15 @@ class SendBtcDetailsViewController: UIViewController {
         mediumFeeButton.setTitle(NSLocalizedString("id_medium", comment: ""), for: .normal)
         highFeeButton.setTitle(NSLocalizedString("id_high", comment: ""), for: .normal)
         customfeeButton.setTitle(NSLocalizedString("id_custom", comment: ""), for: .normal)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        reviewButton.layoutIfNeeded()
+
+        refresh(false)
+        updateEstimate()
     }
 
     func refresh(_ forceUpdate: Bool) {
@@ -69,9 +82,15 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
 
-        let textAmount = amountData?[selectedType == TransactionType.BTC ? SettingsStore.shared.getDenominationSettings().rawValue.lowercased() : "fiat"] as? String ?? String()
+        var update = forceUpdate
+        if satoshi != amountData?["satoshi"] as? UInt64 ?? 0 {
+            precondition(amountData == nil)
+            amountData = convertAmount(details: ["satoshi": satoshi])
+            update = true
+        }
 
-        if satoshi != amountData?["satoshi"] as? UInt64 ?? 0 || forceUpdate {
+        if update {
+            let textAmount = amountData?[selectedType == TransactionType.BTC ? SettingsStore.shared.getDenominationSettings().rawValue.lowercased() : "fiat"] as? String ?? String()
             amountTextField.text = textAmount
         }
     }
@@ -95,14 +114,6 @@ class SendBtcDetailsViewController: UIViewController {
         } else {
             maxAmountLabel.text = String.formatBtc(satoshi: amount)
         }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        reviewButton.layoutIfNeeded()
-        uiErrorLabel.isHidden = true
-        refresh(false)
-        updateEstimate()
     }
 
     @IBAction func sendAllFundsClick(_ sender: Any) {
