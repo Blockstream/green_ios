@@ -88,12 +88,13 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
             }
         }.compactMap(on: bgq) { call in
             try call.resolve(self)
-        }.done { _ in
+        }.ensure {
             self.stopAnimating()
+        }.done { _ in
             SettingsStore.shared.setTwoFactorLimit()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
-            self.stopAnimating()
+            print (error)
         }
     }
 

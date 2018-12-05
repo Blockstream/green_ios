@@ -46,14 +46,13 @@ class EditTwoFactorViewController: UIViewController, NVActivityIndicatorViewable
             }
         }.compactMap(on: bgq) { call in
             try call.resolve(self)
-        }.done { _ in
+        }.ensure {
             self.stopAnimating()
             self.viewWillAppear(false)
+        }.done {
         }.catch { error in
-            self.stopAnimating()
             self.errorLabel.isHidden = false
             self.errorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
-            self.viewWillAppear(false)
         }
     }
 

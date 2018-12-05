@@ -77,11 +77,11 @@ class RequestTwoFactorReset : KeyboardViewController, NVActivityIndicatorViewabl
                 }
         }.compactMap(on: bgq) { call in
             try call.resolve(self)
-        }.done { _ in
+        }.ensure {
             self.stopAnimating()
+        }.done { _ in
             getAppDelegate().logout()
         }.catch { error in
-            self.stopAnimating()
             self.errorLabel.isHidden = false
             self.errorLabel.text = NSLocalizedString(error.localizedDescription, comment: "")
             self.updateUI()

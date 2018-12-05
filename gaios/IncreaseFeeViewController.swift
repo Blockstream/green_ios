@@ -64,13 +64,13 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
         }.compactMap(on: bgq) { result_dict in
             let result = result_dict["result"] as! [String: Any]
             return try getSession().sendTransaction(details: result)
-        }.compactMap(on: bgq) { call in
-            try DummyResolve(call: call)
-        }.done { result in
+        }.compactMap(on: bgq) { (call:TwoFactorCall) in
+            try call.resolve(self)
+        }.ensure {
             self.stopAnimating()
+        }.done { result in
             self.dismiss(animated: true, completion: nil)
         }.catch { error in
-            self.stopAnimating()
         }
     }
 

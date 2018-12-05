@@ -21,7 +21,7 @@ extension TwoFactorCall {
                             return try! self.requestCode(method: method)
                         }.wait()
                 } else {
-                    try! self.requestCode(method: methods[0])
+                    try! self.requestCode(method: methods[0]).wait()
                 }
             } else if status == "resolve_code" {
                 let method: String = json["method"] as! String
