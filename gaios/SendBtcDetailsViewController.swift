@@ -54,12 +54,13 @@ class SendBtcDetailsViewController: UIViewController {
         mediumFeeButton.setTitle(NSLocalizedString("id_medium", comment: ""), for: .normal)
         highFeeButton.setTitle(NSLocalizedString("id_high", comment: ""), for: .normal)
         customfeeButton.setTitle(NSLocalizedString("id_custom", comment: ""), for: .normal)
+        sendAllFundsButton.setTitle(NSLocalizedString(("id_send_all_funds"), comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        reviewButton.layoutIfNeeded()
+        updateButton(false)
 
         refresh(false)
         updateEstimate()
@@ -149,15 +150,6 @@ class SendBtcDetailsViewController: UIViewController {
         }
     }
 
-    @objc func customFeeDidChange(_ textField: UITextField) {
-        let amount: String = textField.text!
-        guard let amount_i = Int(amount) else {
-            return
-        }
-        fee = UInt64(1000 * amount_i)
-        updateEstimate()
-    }
-
     @objc func textFieldDidChange(_ textField: UITextField) {
         let amount = !amountTextField.text!.isEmpty ? amountTextField.text! : amountTextField.placeholder!
         let conversionKey = selectedType == TransactionType.BTC ? SettingsStore.shared.getDenominationSettings().rawValue.lowercased() : "fiat"
@@ -204,14 +196,11 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updateButton(_ enable: Bool) {
        if !enable {
-            if (self.reviewButton.layer.sublayers?.count == 2) {
-                self.reviewButton.layer.sublayers?.removeFirst()
-            }
+            self.reviewButton.applyHorizontalGradient(colours: [UIColor.customTitaniumMedium(), UIColor.customTitaniumLight()])
             self.reviewButton.isUserInteractionEnabled = false
-            self.reviewButton.backgroundColor = UIColor.lightGray
         } else {
+            self.reviewButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
             self.reviewButton.isUserInteractionEnabled = true
-            self.reviewButton.backgroundColor = UIColor.customMatrixGreen()
         }
     }
 

@@ -97,6 +97,7 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
+        bottomButton.isUserInteractionEnabled = false
         createTransaction(userInput: textfield.text!)
     }
 
@@ -128,6 +129,7 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
                 self.uiErrorLabel.text = error.localizedDescription
             }
             self.uiErrorLabel.isHidden = false
+            self.bottomButton.isUserInteractionEnabled = true
         }
     }
 
