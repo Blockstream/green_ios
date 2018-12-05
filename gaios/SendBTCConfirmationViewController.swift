@@ -78,10 +78,10 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             return Guarantee()
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
-        }.then(on: bgq) { call in
+        }.compactMap(on: bgq) { call in
             try call.resolve(self)
         }.compactMap(on: bgq) { result_dict in
-            let result = result_dict!["result"] as! [String: Any]
+            let result = result_dict["result"] as! [String: Any]
             if self.transaction.isSweep {
                 _ = try getSession().broadcastTransaction(tx_hex: result["transaction"] as! String)
             } else {

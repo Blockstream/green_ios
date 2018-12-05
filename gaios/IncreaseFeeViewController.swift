@@ -59,10 +59,10 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
             createTransaction(details: details)
         }.then(on: bgq) { transaction in
             signTransaction(transaction: transaction)
-        }.then(on: bgq) { call in
+        }.compactMap(on: bgq) { call in
             try call.resolve(self)
         }.compactMap(on: bgq) { result_dict in
-            let result = result_dict!["result"] as! [String: Any]
+            let result = result_dict["result"] as! [String: Any]
             return try getSession().sendTransaction(details: result)
         }.compactMap(on: bgq) { call in
             try DummyResolve(call: call)

@@ -4,43 +4,41 @@ import UIKit
 import PromiseKit
 
 extension TwoFactorCall {
-    func resolve(_ sender: UIViewController) throws -> Promise<[String:Any]?> {
-        return Promise<[String:Any]?> { seal in
-            var status = ""
-            var json: [String:Any] = [:]
-            while status != "error" && status != "done" {
-                json = try self.getStatus()!
-                status = json["status"] as! String
-                if status == "call" {
-                    try self.call().wait()
-                } else if status == "request_code" {
-                    let methods: [String] = json["methods"] as! [String]
-                    if methods.count > 1 {
-                        try PopupMethodResolver(sender)
-                            .method(methods)
-                            .then { method in
-                                return try! self.requestCode(method: method)
-                            }.wait()
-                    } else {
-                        try! self.requestCode(method: methods[0])
-                    }
-                } else if status == "resolve_code" {
-                    let method: String = json["method"] as! String
-                    try PopupCodeResolver(sender)
-                        .code(method)
-                        .then { code in
-                            return try! self.resolveCode(code: code)
+    func resolve(_ sender: UIViewController) throws -> [String:Any]? {
+        var status = ""
+        var json: [String:Any] = [:]
+        while status != "error" && status != "done" {
+            json = try self.getStatus()!
+            status = json["status"] as! String
+            if status == "call" {
+                try self.call().wait()
+            } else if status == "request_code" {
+                let methods: [String] = json["methods"] as! [String]
+                if methods.count > 1 {
+                    try PopupMethodResolver(sender)
+                        .method(methods)
+                        .then { method in
+                            return try! self.requestCode(method: method)
                         }.wait()
+                } else {
+                    try! self.requestCode(method: methods[0])
                 }
-            }
-            // Return a promise
-            if status == "done" {
-                seal.fulfill(json)
-            } else if status == "error"{
-                //let result: String = json["error"] as! String
-                seal.reject(GaError.GenericError)
+            } else if status == "resolve_code" {
+                let method: String = json["method"] as! String
+                try PopupCodeResolver(sender)
+                    .code(method)
+                    .then { code in
+                        return try! self.resolveCode(code: code)
+                    }.wait()
             }
         }
+        if status == "done" {
+            return json
+        } else if status == "error"{
+            //let result: String = json["error"] as! String
+            throw GaError.GenericError
+        }
+        return nil
     }
 }
 
