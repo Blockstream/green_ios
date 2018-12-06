@@ -82,19 +82,7 @@ struct Addressee : Codable {
     }
 }
 
-protocol TransactionView {
-    var addressees: [Addressee] { set get }
-    var addresseesReadOnly: Bool { get }
-    var error: String { get }
-    var fee: UInt64 { get }
-    var feeRate: UInt64 { set get }
-    var isSweep: Bool { get }
-    var memo: String { set get }
-    var sendAll: Bool { set get }
-    var transactionSize: UInt64 { get }
-}
-
-struct Transaction : TransactionView {
+struct Transaction {
     var details: [String: Any]
 
     private func get<T>(_ key: String) -> T? {
@@ -147,6 +135,10 @@ struct Transaction : TransactionView {
     var memo: String {
         get { return get("memo") ?? String() }
         set { details["memo"] = newValue }
+    }
+
+    var satoshi: UInt64 {
+        get { return get("satoshi") ?? 0 }
     }
 
     var sendAll: Bool {

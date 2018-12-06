@@ -81,12 +81,6 @@ class TransactionDetailViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcDetailsViewController {
             nextController.wallet = nil
-            nextController.selectedType = TransactionType.BTC
-            //do {
-            //    nextController.transaction = try TransactionHelper(bumpTransaction!)
-            //} catch {
-            //    print("something went worng with creating subAccount")
-            //}
         }
     }
 

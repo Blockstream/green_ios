@@ -104,7 +104,6 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcDetailsViewController {
             nextController.wallet = wallet
-            nextController.selectedType = TransactionType.BTC
             nextController.transaction = transaction
         }
     }
