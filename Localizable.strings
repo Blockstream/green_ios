@@ -1,13 +1,14 @@
-"id_1020_minutes" = "~ 10-20 Minutes";
-"id_1_hour" = "~ 1 Hour";
+"id_1030_minutes" = "~ 10-30 Minutes";
 "id_1d_2s_ago" = "%1$d %2$@ ago";
 "id_1d_minutes" = "%1$d minutes";
 "id_1s_blocks_left_2d" = "%1$@ blocks left %2$d";
 "id_1s_twofactor_set_up" = "%1$@ Two-Factor set up";
 "id_2_hours" = "~ 2 Hours";
+"id_4_hours" = "~ 4 Hours";
 "id_5_seconds_minimum" = "5 seconds minimum";
 "id_a_new_transaction_has_just" = "A new transaction has just arrived in your wallet.";
 "id_accept" = "ACCEPT";
+"id_action_canceled" = "Action canceled";
 "id_add_amount" = "Add Amount";
 "id_add_custom_network_by_qr_code" = "Add custom network by QR Code";
 "id_add_custom_network_by_url" = "Add custom network by URL";
@@ -40,8 +41,8 @@
 "id_completed" = "Completed";
 "id_confirmation" = "Confirmation";
 "id_confirmation_in_12_blocks_2" = "Confirmation in 12 blocks, 2 hours on average";
+"id_confirmation_in_24_blocks_4" = "Confirmation in 24 blocks, 4 hours on average";
 "id_confirmation_in_3_blocks_30" = "Confirmation in 3 blocks, 30 minutes on average";
-"id_confirmation_in_6_blocks_1_hour" = "Confirmation in 6 blocks, 1 hour on average";
 "id_congratulations" = "Congratulations!";
 "id_connecting_to_tor_onion_nodes" = "Connecting to Tor (.onion) nodes allows maximum privacy and security. Press \"OK\" to continue.";
 "id_continue" = "Continue";
@@ -141,6 +142,7 @@
 "id_invalid_pin_remaining_attempts" = "Invalid PIN. Remaining attempts: %1$d.";
 "id_invalid_pin_you_dont_have_any" = "Invalid PIN, you don't have any attempts left. Please log in using your mnemonic.";
 "id_invalid_pin_you_have_1d" = "Invalid PIN, you have %1$d attempts left";
+"id_invalid_private_key" = "Invalid private key";
 "id_invalid_replacement_fee_rate" = "Invalid replacement fee rate";
 "id_invalid_twofactor_code" = "Invalid Two-Factor code";
 "id_invalid_url" = "Invalid URL";

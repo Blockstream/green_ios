@@ -25,7 +25,7 @@ class SendBtcDetailsViewController: UIViewController {
     var selectedButton : UIButton? = nil
     var priority: TransactionPriority? = nil
     var transaction: Transaction!
-    let blockTime = [NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1_hour", comment: ""), NSLocalizedString("id_1020_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
+    let blockTime = [NSLocalizedString("id_4_hours", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
     var amountData: [String: Any]? = nil
 
     override func viewDidLoad() {
