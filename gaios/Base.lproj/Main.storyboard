@@ -1715,13 +1715,13 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-KU-8DT">
-                                                        <rect key="frame" x="20" y="77" width="280" height="17"/>
+                                                        <rect key="frame" x="40" y="77" width="260" height="17"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aBM-WW-tOr" userLabel="Fee Label">
-                                                        <rect key="frame" x="20" y="127" width="280" height="17"/>
+                                                        <rect key="frame" x="40" y="127" width="260" height="17"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="17" id="Ejb-Dc-zrS"/>
                                                         </constraints>
@@ -1747,12 +1747,11 @@
                                                     <constraint firstAttribute="trailing" secondItem="kqu-cj-tFb" secondAttribute="trailing" constant="20" id="5JX-hX-SSW"/>
                                                     <constraint firstAttribute="bottom" secondItem="aBM-WW-tOr" secondAttribute="bottom" constant="14" id="Cux-qX-Zyn"/>
                                                     <constraint firstItem="Kut-i0-fzN" firstAttribute="top" secondItem="Wfq-KU-8DT" secondAttribute="bottom" constant="6" id="F42-2l-ZcP"/>
-                                                    <constraint firstItem="Wfq-KU-8DT" firstAttribute="leading" secondItem="Isa-tm-wze" secondAttribute="leading" constant="20" id="ONg-bf-6lh"/>
+                                                    <constraint firstItem="Wfq-KU-8DT" firstAttribute="leading" secondItem="Isa-tm-wze" secondAttribute="leading" constant="40" id="ONg-bf-6lh"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="trailing" secondItem="dMq-Cz-EHS" secondAttribute="trailing" id="Qs9-I3-SjU"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="top" secondItem="Kut-i0-fzN" secondAttribute="bottom" constant="7" id="Tfi-oF-uiO"/>
                                                     <constraint firstItem="dMq-Cz-EHS" firstAttribute="top" secondItem="kqu-cj-tFb" secondAttribute="bottom" constant="9" id="X2H-R5-BTF"/>
                                                     <constraint firstItem="kqu-cj-tFb" firstAttribute="top" secondItem="Isa-tm-wze" secondAttribute="top" constant="20" id="aRN-ll-TNi"/>
-                                                    <constraint firstItem="aBM-WW-tOr" firstAttribute="leading" secondItem="Kut-i0-fzN" secondAttribute="leading" id="cFY-nf-Se3"/>
                                                     <constraint firstItem="kqu-cj-tFb" firstAttribute="leading" secondItem="Isa-tm-wze" secondAttribute="leading" constant="20" id="ecA-Ys-bun"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="leading" secondItem="Wfq-KU-8DT" secondAttribute="leading" id="fSo-lo-EKQ"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="top" secondItem="Kut-i0-fzN" secondAttribute="bottom" constant="7" id="fW4-hw-rm6"/>
@@ -1935,7 +1934,6 @@
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
-                            <constraint firstItem="aBM-WW-tOr" firstAttribute="leading" secondItem="4ey-B9-Lvr" secondAttribute="leading" constant="20" id="0zQ-iV-fhc"/>
                             <constraint firstItem="4ey-B9-Lvr" firstAttribute="bottom" secondItem="b4a-oP-ynd" secondAttribute="bottom" id="BRx-y0-4fa"/>
                             <constraint firstItem="Sj6-kQ-GqU" firstAttribute="leading" secondItem="4ey-B9-Lvr" secondAttribute="leading" id="Byf-ga-2Ww"/>
                             <constraint firstItem="b4a-oP-ynd" firstAttribute="trailing" secondItem="4ey-B9-Lvr" secondAttribute="trailing" id="IQc-0l-zz8"/>
