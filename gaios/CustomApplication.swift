@@ -4,7 +4,8 @@ import UIKit
 class CustomApplication: UIApplication {
 
     private var timeoutInSeconds: TimeInterval {
-        let time = TimeInterval(SettingsStore.shared.getAutolockSettings().1)
+        guard let settings = getGAService().getSettings() else { return 5 * 60 }
+        let time = TimeInterval(settings.altimeout * 60)
         return time
     }
 

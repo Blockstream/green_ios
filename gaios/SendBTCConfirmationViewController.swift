@@ -76,9 +76,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
-            let size = CGSize(width: 30, height: 30)
             uiErrorLabel.isHidden = true
-            startAnimating(size, message: "Sending...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)

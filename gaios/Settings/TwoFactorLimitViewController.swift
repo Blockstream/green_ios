@@ -10,91 +10,63 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
     @IBOutlet weak var fiatButton: UIButton!
     @IBOutlet weak var limitButtonConstraint: NSLayoutConstraint!
     @IBOutlet weak var descriptionLabel: UILabel!
-    var fiat: Bool = true
+    var isFiat: Bool = true
     var errorLabel: UIErrorLabel!
+    var limits: TwoFactorConfigLimits!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setButton()
         title = NSLocalizedString("id_twofactor_threshold", comment: "")
         setLimitButton.setTitle(NSLocalizedString("id_set_twofactor_threshold", comment: ""), for: .normal)
-        refesh()
-        setButton()
-        SettingsStore.shared.setTwoFactorLimit()
+        limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
+                                                                  attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         errorLabel = UIErrorLabel(self.view)
+        refresh()
     }
 
-    func refesh() {
-        if let config = try! getSession().getTwoFactorConfig() {
-            let limits = config["limits"] as! [String: Any]
-            let isFiat = limits["is_fiat"] as! Bool
-            let denomination = getDenominationKey(SettingsStore.shared.getDenominationSettings())
-            var amount = ""
-            if isFiat {
-                amount = limits["fiat"] as! String
-            } else {
-                amount = limits[denomination] as! String
-            }
-            limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                                      attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-
-            if !amount.isEmpty {
-                limitTextField.text = amount
-                var localized = NSLocalizedString("id_your_transaction_threshold_is_s", comment: "")
-                localized = String(format: localized, amount) + " "
-                if isFiat {
-                    localized = localized + denomination;
-                } else {
-                    let ccy = limits["fiat_currency"] as! String
-                    localized = localized + ccy;
-                }
-                descriptionLabel.text = localized
-            }
-            fiat = isFiat
+    func refresh() {
+        guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return }
+        guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
+        guard let settings = getGAService().getSettings() else { return }
+        limits = twoFactorConfig.limits
+        isFiat = limits.isFiat
+        let amount: String
+        let subtitle: String
+        if isFiat == true {
+            amount = limits.fiat
+            subtitle = String(format: "%@ %@", amount, settings.getCurrency())
+        } else {
+            let denomination: String = settings.denomination.rawValue
+            amount = limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denomination.lowercased())!)!
+            subtitle = String(format: "%@ %@", amount, denomination)
         }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        limitTextField.becomeFirstResponder()
-    }
-
-    @IBAction func backButtonClicked(_ sender: Any) {
-        if !self.isAnimating {
-            self.navigationController?.popViewController(animated: true)
-        }
+        limitTextField.text = amount
+        descriptionLabel.text = String(format: NSLocalizedString("id_your_transaction_threshold_is_s", comment: ""), subtitle)
+        setFiatButton()
     }
 
     @IBAction func setLimitClicked(_ sender: Any) {
         guard let amount = Double(limitTextField.text!) else { return }
-        var details = [String:Any]()
-        if(fiat) {
-            details["is_fiat"] = true
-            details["fiat"] = String(amount)
+        guard let settings = getGAService().getSettings() else { return }
+        let details: [String:Any]
+        if isFiat {
+            details = ["is_fiat": isFiat, "fiat": String(amount)]
         } else {
-            details["is_fiat"] = false
-            let denomination = getDenominationKey(SettingsStore.shared.getDenominationSettings())
-            details[denomination] = limitTextField.text!
+            let denomination: String = settings.denomination.rawValue.lowercased()
+            details = ["is_fiat": isFiat, denomination: String(amount)]
         }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.errorLabel.isHidden = true
             startAnimating(type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
-        }.then(on: bgq) {
-            return Guarantee().compactMap(on: bgq) {
-                try getSession().setTwoFactorLimit(details: details)
-            }
+        }.compactMap(on: bgq) {
+            try getSession().setTwoFactorLimit(details: details)
         }.compactMap(on: bgq) { call in
             try call.resolve(self)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            SettingsStore.shared.setTwoFactorLimit()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
             self.errorLabel.isHidden = false
@@ -109,25 +81,21 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
         }
     }
 
-    func setButton() {
-        if(fiat) {
-            fiatButton.setTitle(SettingsStore.shared.getCurrencyString(), for: UIControlState.normal)
+    func setFiatButton() {
+        guard let settings = getGAService().getSettings() else { return }
+        if isFiat {
+            fiatButton.setTitle(settings.getCurrency(), for: UIControlState.normal)
             fiatButton.backgroundColor = UIColor.clear
             fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         } else {
-            fiatButton.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)
+            fiatButton.setTitle(settings.denomination.rawValue, for: UIControlState.normal)
             fiatButton.backgroundColor = UIColor.customMatrixGreen()
             fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
     }
 
     @IBAction func fiatButtonClicked(_ sender: Any) {
-        if(fiat) {
-            fiat = !fiat
-            setButton()
-        } else {
-            fiat = !fiat
-            setButton()
-        }
+        isFiat = !isFiat
+        setFiatButton()
     }
 }

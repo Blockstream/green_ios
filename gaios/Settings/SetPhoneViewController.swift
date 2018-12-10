@@ -22,11 +22,6 @@ class SetPhoneViewController: KeyboardViewController, NVActivityIndicatorViewabl
         errorLabel = UIErrorLabel(self.view)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        textField.becomeFirstResponder()
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         getCodeButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
@@ -34,16 +29,14 @@ class SetPhoneViewController: KeyboardViewController, NVActivityIndicatorViewabl
 
     @IBAction func getCodeClicked(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        let dict = ["enabled": true, "confirmed": true, "data": self.textField.text!] as [String : Any]
-        let method = self.sms == true ? "sms" : "phone"
+        let method = self.sms == true ? TwoFactorType.sms : TwoFactorType.phone
+        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: self.textField.text!)
         firstly {
             self.errorLabel.isHidden = true
             startAnimating(type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
-        }.then(on: bgq) {
-            return Guarantee().compactMap(on: bgq) {
-                try getSession().changeSettingsTwoFactor(method: method, details: dict)
-            }
+        }.compactMap(on: bgq) {
+            try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
         }.compactMap(on: bgq) { call in
             try call.resolve(self)
         }.ensure {

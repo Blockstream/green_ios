@@ -27,23 +27,24 @@ class EditScreenLockSettings: UIViewController {
     }
 
     func updateValues() {
-        let settings = SettingsStore.shared.getScreenLockSetting()
-        if settings == ScreenLock.None {
+        guard let settings = getGAService().getSettings() else { return }
+        let screenlock = settings.getScreenLock()
+        if screenlock == .None {
             bioSwitch.isOn = false
             bioSwitch.isEnabled = true
             pinSwitch.isOn = false
             pinSwitch.isEnabled = true
-        } else if settings == ScreenLock.all {
+        } else if screenlock == .All {
             bioSwitch.isOn = true
             bioSwitch.isEnabled = false
             pinSwitch.isOn = true
             pinSwitch.isEnabled = false
-        } else if settings == ScreenLock.FaceID || settings == ScreenLock.TouchID {
+        } else if screenlock == .FaceID || screenlock == .TouchID {
             bioSwitch.isOn = true
             bioSwitch.isEnabled = false
             pinSwitch.isOn = false
             pinSwitch.isEnabled = true
-        } else if settings == ScreenLock.Pin {
+        } else if screenlock == .Pin {
             bioSwitch.isOn = false
             bioSwitch.isEnabled = true
             pinSwitch.isOn = true
@@ -54,7 +55,6 @@ class EditScreenLockSettings: UIViewController {
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
         if (!sender.isOn) {
             AppDelegate.removeBioKeychainData()
-            SettingsStore.shared.setScreenLockSettings()
             self.updateValues()
         } else {
             let password = String.random(length: 14)
@@ -68,7 +68,6 @@ class EditScreenLockSettings: UIViewController {
                 }
                 let network = getNetworkSettings().network
                 try AuthenticationTypeHandler.addBiometryType(data: result, extraData: password, forNetwork: network)
-                SettingsStore.shared.setScreenLockSettings()
             }.catch { error in
                 print("setPin failed")
             }

@@ -22,7 +22,6 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         getCodeButton.backgroundColor = UIColor.customTitaniumLight()
-        textField.becomeFirstResponder()
     }
 
     override func viewDidLayoutSubviews() {
@@ -32,15 +31,13 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
 
     @IBAction func getCodeClicked(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        let dict = ["enabled": true, "confirmed": true, "data": self.textField.text!] as [String : Any]
+        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: self.textField.text!)
         firstly {
             self.errorLabel.isHidden = true
-            startAnimating(message: "Sending...", type: NVActivityIndicatorType.ballRotateChase)
+            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
-        }.then(on: bgq) {
-            return Guarantee().compactMap(on: bgq) {
-                try getSession().changeSettingsTwoFactor(method: "email", details: dict)
-            }
+        }.compactMap(on: bgq) {
+            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
         }.compactMap(on: bgq) { call in
             try call.resolve(self)
         }.ensure {

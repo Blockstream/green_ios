@@ -23,31 +23,33 @@ extension String {
         if (satoshi != nil) { dict["satoshi"] = satoshi }
         if (fiat != nil) { dict["fiat"] = fiat }
         if (fiatCurrency != nil) { dict["fiat_currency"] = fiatCurrency }
-        if (value != nil) { dict[getDenominationKey(fromType)] = value }
+        if (value != nil) { dict[fromType!.rawValue.lowercased()] = value }
         guard let res = try? getSession().convertAmount(input: dict) else {
             return nil
         }
-        if (toType != nil) { return res![getDenominationKey(toType)] as? String }
+        if (toType != nil) { return res![toType!.rawValue.lowercased()] as? String }
         return String(res!["satoshi"] as! UInt64)
     }
 
     static func toFiat(satoshi: UInt64? = nil, value: String? = nil, fromType: DenominationType? = nil) -> String? {
         var dict = [String: Any]()
         if (satoshi != nil) { dict["satoshi"] = satoshi }
-        if (value != nil) { dict[getDenominationKey(fromType)] = value }
+        if (value != nil) { dict[fromType!.rawValue.lowercased()] = value }
         let res = try! getSession().convertAmount(input: dict)
         return res!["fiat"] as? String
     }
 
     static func formatBtc(satoshi: UInt64? = nil, value: String? = nil, fromType: DenominationType? = nil, toType: DenominationType? = nil) -> String {
-        let fType = fromType ?? SettingsStore.shared.getDenominationSettings()
-        let tType = toType ?? SettingsStore.shared.getDenominationSettings()
+        guard let settings = getGAService().getSettings() else { return "" }
+        let fType = fromType ?? settings.denomination
+        let tType = toType ?? settings.denomination
         let text: String = toBtc(satoshi: satoshi, value: value, fromType: fType, toType: tType)!
         return String(format: "%@ %@", text, tType.rawValue)
     }
 
     static func formatFiat(satoshi: UInt64? = nil, fiat: String? = nil, fiatCurrency: String? = nil) -> String {
-        let currency = fiatCurrency ?? SettingsStore.shared.getCurrencyString()
+        guard let settings = getGAService().getSettings() else { return "" }
+        let currency = fiatCurrency ?? settings.getCurrency()
         let value = fiat ?? toFiat(satoshi: satoshi, value: fiatCurrency)!
         return String(format: "%@ %@", value, currency)
     }

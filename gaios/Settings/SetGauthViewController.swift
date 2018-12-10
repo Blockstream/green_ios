@@ -8,46 +8,34 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var qrCodeImageView: UIImageView!
     @IBOutlet weak var secretLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
-    var secret: String? = ""
-    var otp: String? = ""
     var errorLabel: UIErrorLabel!
+    var twoFactorConfig: TwoFactorConfig!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        secret = AccountStore.shared.getGauthSecret()
-        otp = AccountStore.shared.getGauthOTP()
-        if (secret == nil) {
+        guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return }
+        guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
+        guard let secret = twoFactorConfig.gauthSecret() else {
             self.errorLabel.isHidden = false
             self.errorLabel.text = "something went wrong gauth"
             return
         }
-        qrCodeImageView.image = QRImageGenerator.imageForText(text: otp!, frame: qrCodeImageView.frame)
+        qrCodeImageView.image = QRImageGenerator.imageForText(text: twoFactorConfig.gauth.data, frame: qrCodeImageView.frame)
         secretLabel.text = secret
         nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
         title = NSLocalizedString("id_google_authenticator_qr_code", comment: "")
         errorLabel = UIErrorLabel(self.view)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     @IBAction func nextButtonClicked(_ sender: Any) {
-
-        let config = try! getSession().getTwoFactorConfig()
-        let gauth = config!["gauth"] as! [String: Any]
-        let gauthdata = gauth["data"] as! String
-        let dict = ["enabled": true, "confirmed": true, "data": gauthdata] as [String : Any]
-
+        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: twoFactorConfig.gauth.data)
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.errorLabel.isHidden = true
             startAnimating(type: NVActivityIndicatorType.ballRotateChase)
             return Guarantee()
-        }.then(on: bgq) {
-            return Guarantee().compactMap(on: bgq) {
-                try getSession().changeSettingsTwoFactor(method: "gauth", details: dict)
-            }
+        }.compactMap(on: bgq) {
+            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
         }.compactMap(on: bgq) { call in
             try call.resolve(self)
         }.ensure {

@@ -40,7 +40,7 @@ class TOSViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let tosString = NSMutableAttributedString(string: "I agree to the Terms of Service")
-        tosString.addAttribute(.link, value: SettingsStore.shared.tosURL, range: NSRange(location: 15, length: 16))
+        tosString.addAttribute(.link, value: "https://greenaddress.it/en/tos", range: NSRange(location: 15, length: 16))
         tosString.setColor(color: UIColor.white, forText: "I agree to the")
         let linkAttributes: [String : Any] = [
             NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),

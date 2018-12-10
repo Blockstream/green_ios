@@ -25,7 +25,7 @@ class SendBtcDetailsViewController: UIViewController {
     var isFiat = false
     var feeRate: UInt64 = 1
     var selectedButton : UIButton? = nil
-    var priority = SettingsStore.shared.getFeeSettings().0
+    var priority: TransactionPriority!
     var transaction: Transaction!
     let blockTime = [NSLocalizedString("id_4_hours", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
     var amountData: [String: Any]? = nil
@@ -37,6 +37,8 @@ class SendBtcDetailsViewController: UIViewController {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
+        guard let settings = getGAService().getSettings() else { return }
+        priority = settings.transactionPriority
 
         uiErrorLabel = UIErrorLabel(self.view)
         errorLabel.isHidden = true
@@ -90,7 +92,8 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updateAmountTextField(_ forceUpdate: Bool) {
         if forceUpdate {
-            let textAmount = sendAllFundsButton.isSelected ? "All" : amountData?[!isFiat ? SettingsStore.shared.getDenominationSettings().rawValue.lowercased() : "fiat"] as? String ?? String()
+            guard let settings = getGAService().getSettings() else { return }
+            let textAmount = sendAllFundsButton.isSelected ? "All" : amountData?[!isFiat ? settings.denomination.rawValue.lowercased() : "fiat"] as? String ?? String()
             amountTextField.text = textAmount
         }
 
@@ -98,11 +101,12 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func setCurrencySwitch() {
+        guard let settings = getGAService().getSettings() else { return }
         if !isFiat {
-            currencySwitch.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)
+            currencySwitch.setTitle(settings.denomination.rawValue, for: UIControlState.normal)
             currencySwitch.backgroundColor = UIColor.customMatrixGreen()
         } else {
-            currencySwitch.setTitle(SettingsStore.shared.getCurrencyString(), for: UIControlState.normal)
+            currencySwitch.setTitle(settings.getCurrency(), for: UIControlState.normal)
             currencySwitch.backgroundColor = UIColor.clear
         }
         currencySwitch.setTitleColor(UIColor.white, for: UIControlState.normal)
@@ -139,8 +143,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
+        guard let settings = getGAService().getSettings() else { return }
         let amount = !amountTextField.text!.isEmpty ? amountTextField.text! : amountTextField.placeholder!
-        let conversionKey = !isFiat ? SettingsStore.shared.getDenominationSettings().rawValue.lowercased() : "fiat"
+        let conversionKey = !isFiat ? settings.denomination.rawValue.lowercased() : "fiat"
         amountData = convertAmount(details: [conversionKey : amount])
         updateTransaction()
     }
@@ -197,6 +202,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateSummaryLabel(button: UIButton, fee: UInt64) {
+        guard let settings = getGAService().getSettings() else { return }
         feeLabel.removeFromSuperview()
         if(fee == 0) {
             return
@@ -206,7 +212,7 @@ class SendBtcDetailsViewController: UIViewController {
 
         
         let fiatValue = String.toFiat(satoshi: fee)!
-        let feeInBTC = String.toBtc(satoshi: fee, toType: SettingsStore.shared.getDenominationSettings())!
+        let feeInBTC = String.toBtc(satoshi: fee, toType: settings.denomination)!
         let satoshiPerVByte = Double(transaction.feeRate) / 1000.0
         var timeEstimate = ""
         feeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -223,7 +229,7 @@ class SendBtcDetailsViewController: UIViewController {
         } else {
             timeEstimate = blockTime[3]
         }
-        feeLabel.text = String(format: "%.1f satoshi / vbyte \nTime: %@\nFee: %@ %@ / ~%@ %@", satoshiPerVByte, timeEstimate, feeInBTC, SettingsStore.shared.getDenominationSettings().rawValue, fiatValue, SettingsStore.shared.getCurrencyString())
+        feeLabel.text = String(format: "%.1f satoshi / vbyte \nTime: %@\nFee: %@ %@ / ~%@ %@", satoshiPerVByte, timeEstimate, feeInBTC, settings.denomination.rawValue, fiatValue, settings.getCurrency())
         feeLabel.numberOfLines = 3
         feeLabel.font = feeLabel.font.withSize(13)
 

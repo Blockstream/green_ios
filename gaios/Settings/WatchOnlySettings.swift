@@ -2,6 +2,7 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
 class WatchOnlySettings: KeyboardViewController, NVActivityIndicatorViewable {
 
@@ -26,22 +27,17 @@ class WatchOnlySettings: KeyboardViewController, NVActivityIndicatorViewable {
     @IBAction func saveClicked(_ sender: Any) {
         let username = usernameTextField.text!
         let password = passwordTextField.text!
-        wrap {
-            try getSession().setWatchOnly(username: username, password: password)
+
+        firstly {
+            startAnimating()
+            return Guarantee()
+        }.compactMap {
+            try getGAService().getSession().setWatchOnly(username: username, password: password)
+        }.ensure {
+            self.stopAnimating()
         }.done {
-            let size = CGSize(width: 30, height: 30)
-            let message = NSLocalizedString("id_done", comment: "")
-            self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-                self.stopAnimating()
-            }
+            self.navigationController?.popViewController(animated: true)
         }.catch { error in
-            let size = CGSize(width: 30, height: 30)
-            let message = NSLocalizedString("id_something_went_wrong", comment: "")
-            self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-                self.stopAnimating()
-            }
         }
     }
 }

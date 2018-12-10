@@ -133,11 +133,6 @@ class NotificationStore {
 
     func createWarningNotification() -> NotificationItem? {
         let date = Date()
-        if (!AccountStore.shared.isTwoFactorEnabled()) {
-            return NotificationItem(date: date.addingTimeInterval(date.timeIntervalSince1970), id: "warninghash1", seen: false, isWarning: true, satoshi: 0, type: "warning", address: "")
-        } else if (AccountStore.shared.twoFactorsEnabledCount() == 1) {
-            return NotificationItem(date: date.addingTimeInterval(date.timeIntervalSince1970), id: "warninghash2", seen: false, isWarning: true, satoshi: 0, type: "warning", address: "")
-        }
         return nil
     }
 

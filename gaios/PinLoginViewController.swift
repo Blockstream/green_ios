@@ -118,7 +118,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             let network = getNetworkSettings().network
             try AuthenticationTypeHandler.addPIN(data: data, forNetwork: network)
         }.done {
-            SettingsStore.shared.setScreenLockSettings()
             if self.editPinMode {
                 self.navigationController?.popViewController(animated: true)
             } else if self.restoreMode {

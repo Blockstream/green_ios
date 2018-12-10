@@ -32,10 +32,7 @@
 		092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092F5DE920F1619D007356F2 /* cardFooter.swift */; };
 		092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092F5DEB20F16353007356F2 /* cardFooter.xib */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
-		09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */; };
 		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
-		09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */; };
-		09309F2521365E6900DE093B /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F1B212FB55000DE093B /* SettingsStore.swift */; };
 		09309F272136888C00DE093B /* DenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F262136888C00DE093B /* DenominationCell.swift */; };
 		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
 		0933A599210716EC00C43838 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0933A598210716EC00C43838 /* GreenAddress.swift */; };
@@ -49,7 +46,6 @@
 		0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */; };
 		09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
-		09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B342166F499009BABFE /* EditTwoFactorViewController.swift */; };
 		09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* EditScreenLockSettings.swift */; };
 		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
@@ -59,10 +55,7 @@
 		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
 		0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */; };
 		0980B4FE21841BE2007715F4 /* IncreaseFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */; };
-		0980B50021883AD9007715F4 /* DisputeRequestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FF21883AD9007715F4 /* DisputeRequestViewController.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
-		0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0981927E217692C700D8434F /* TransactionFeeViewController.swift */; };
-		098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */; };
 		098192832176D05500D8434F /* CustomApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* CustomApplication.swift */; };
 		098192852176D12F00D8434F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192842176D12F00D8434F /* main.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
@@ -77,8 +70,6 @@
 		0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */; };
 		0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */; };
 		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
-		09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */; };
-		09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5B656217AC833001B5002 /* RequestNLockEmails.swift */; };
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
@@ -92,9 +83,13 @@
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
 		67B11D5421B0467E00D65B58 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
+		811ED52721BE8FCA0033A4A1 /* PopupPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */; };
+		811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
+		811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */; };
 		811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EE25C219EC17800684AD8 /* TransactionsViewController.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
 		81310C452189D10F00563B91 /* GDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* GDKHelper.swift */; };
+		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
 		81F22333219EE91D005E65D4 /* WalletCardHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81F22332219EE91D005E65D4 /* WalletCardHeader.xib */; };
 		81F22335219EFF9F005E65D4 /* WalletCardHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F22334219EFF9F005E65D4 /* WalletCardHeader.swift */; };
 		81FABC2D21AEEFF000AE2ECD /* CongratsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FABC2C21AEEFF000AE2ECD /* CongratsViewController.swift */; };
@@ -144,10 +139,7 @@
 		092F5DE920F1619D007356F2 /* cardFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cardFooter.swift; sourceTree = "<group>"; };
 		092F5DEB20F16353007356F2 /* cardFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = cardFooter.xib; sourceTree = "<group>"; };
 		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
-		09309F1B212FB55000DE093B /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
-		09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleSettingsViewController.swift; sourceTree = "<group>"; };
 		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
-		09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationSelectorViewController.swift; sourceTree = "<group>"; };
 		09309F262136888C00DE093B /* DenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationCell.swift; sourceTree = "<group>"; };
 		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0933A598210716EC00C43838 /* GreenAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = gdk/src/swift/GreenAddress/Sources/GreenAddress/GreenAddress.swift; sourceTree = "<group>"; };
@@ -161,7 +153,6 @@
 		0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetViewController.swift; sourceTree = "<group>"; };
 		09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLimitViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
-		09546B342166F499009BABFE /* EditTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTwoFactorViewController.swift; sourceTree = "<group>"; };
 		09546B3621686053009BABFE /* EditScreenLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScreenLockSettings.swift; sourceTree = "<group>"; };
 		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
@@ -171,10 +162,7 @@
 		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
 		0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
 		0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncreaseFeeViewController.swift; sourceTree = "<group>"; };
-		0980B4FF21883AD9007715F4 /* DisputeRequestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeRequestViewController.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
-		0981927E217692C700D8434F /* TransactionFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeViewController.swift; sourceTree = "<group>"; };
-		098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutolockSettingsViewController.swift; sourceTree = "<group>"; };
 		098192822176D05500D8434F /* CustomApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomApplication.swift; sourceTree = "<group>"; };
 		098192842176D12F00D8434F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
@@ -189,8 +177,6 @@
 		0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLoginViewController.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
 		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
-		09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestTwoFactorReset.swift; sourceTree = "<group>"; };
-		09C5B656217AC833001B5002 /* RequestNLockEmails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestNLockEmails.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String+random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+random.swift"; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -215,9 +201,13 @@
 		67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
+		811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupPromise.swift; sourceTree = "<group>"; };
+		811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorConfig.swift; sourceTree = "<group>"; };
+		811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenAddressService.swift; sourceTree = "<group>"; };
 		811EE25C219EC17800684AD8 /* TransactionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsViewController.swift; sourceTree = "<group>"; };
 		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* GDKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GDKHelper.swift; sourceTree = "<group>"; };
+		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81F22332219EE91D005E65D4 /* WalletCardHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCardHeader.xib; sourceTree = "<group>"; };
 		81F22334219EFF9F005E65D4 /* WalletCardHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCardHeader.swift; sourceTree = "<group>"; };
 		81FABC2C21AEEFF000AE2ECD /* CongratsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongratsViewController.swift; sourceTree = "<group>"; };
@@ -300,12 +290,15 @@
 				0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */,
 				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
 				092D05AE2123E27A00B9B7CD /* NotificationStore.swift */,
-				09309F1B212FB55000DE093B /* SettingsStore.swift */,
 				092D05B221277E2E00B9B7CD /* Date+helpers.swift */,
 				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
 				092D05B02125623800B9B7CD /* Storage.swift */,
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
+				811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */,
+				81D94CF021B93905003B03F9 /* Settings.swift */,
+				811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */,
+				811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */,
 			);
 			path = helpers;
 			sourceTree = "<group>";
@@ -415,22 +408,14 @@
 		811EE25A219EBB1500684AD8 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				09309F1D2130D3AC00DE093B /* ToggleSettingsViewController.swift */,
-				09309F23213539AF00DE093B /* DenominationSelectorViewController.swift */,
 				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
 				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
 				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
-				098192802176C8BA00D8434F /* AutolockSettingsViewController.swift */,
 				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
-				09546B342166F499009BABFE /* EditTwoFactorViewController.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
 				0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */,
 				09546B3621686053009BABFE /* EditScreenLockSettings.swift */,
-				0981927E217692C700D8434F /* TransactionFeeViewController.swift */,
-				0980B4FF21883AD9007715F4 /* DisputeRequestViewController.swift */,
-				09C5B656217AC833001B5002 /* RequestNLockEmails.swift */,
-				09C5B654217AC81C001B5002 /* RequestTwoFactorReset.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 			);
 			path = Settings;
@@ -760,7 +745,6 @@
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
 				092D05AF2123E27A00B9B7CD /* NotificationStore.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
-				09309F2521365E6900DE093B /* SettingsStore.swift in Sources */,
 				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
 				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
@@ -771,6 +755,7 @@
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
 				098192852176D12F00D8434F /* main.swift in Sources */,
+				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
@@ -784,29 +769,27 @@
 				092C7BCC20D238BE00F90DF2 /* WalletsController.swift in Sources */,
 				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
 				81FABC2D21AEEFF000AE2ECD /* CongratsViewController.swift in Sources */,
-				09C5B655217AC81C001B5002 /* RequestTwoFactorReset.swift in Sources */,
-				09546B352166F499009BABFE /* EditTwoFactorViewController.swift in Sources */,
-				0980B50021883AD9007715F4 /* DisputeRequestViewController.swift in Sources */,
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
 				09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */,
+				811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
+				811ED52721BE8FCA0033A4A1 /* PopupPromise.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
-				09309F24213539AF00DE093B /* DenominationSelectorViewController.swift in Sources */,
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
-				098192812176C8BA00D8434F /* AutolockSettingsViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
+				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				67B11D5421B0467E00D65B58 /* QRCodeReaderViewController.swift in Sources */,
 				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
@@ -821,12 +804,9 @@
 				092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */,
 				81310C452189D10F00563B91 /* GDKHelper.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */,
-				0981927F217692C700D8434F /* TransactionFeeViewController.swift in Sources */,
-				09309F1E2130D3AC00DE093B /* ToggleSettingsViewController.swift in Sources */,
 				092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */,
 				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
-				09C5B657217AC833001B5002 /* RequestNLockEmails.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 				098192832176D05500D8434F /* CustomApplication.swift in Sources */,
 				097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */,

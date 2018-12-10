@@ -74,7 +74,8 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func changeType() {
-        let denomination = SettingsStore.shared.getDenominationSettings()
+        guard let settings = getGAService().getSettings() else { return }
+        let denomination = settings.denomination
         var amount: String = amountTextfield.text!
         if (amount.isEmpty || Double(amount) == nil) {
             amount = "0"
@@ -91,19 +92,21 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func setButton() {
+        guard let settings = getGAService().getSettings() else { return }
         if (selectedType == TransactionType.BTC) {
-            fiatSwitchButton.setTitle(SettingsStore.shared.getDenominationSettings().rawValue, for: UIControlState.normal)
+            fiatSwitchButton.setTitle(settings.denomination.rawValue, for: UIControlState.normal)
             fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
             fiatSwitchButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         } else {
-            fiatSwitchButton.setTitle(SettingsStore.shared.getCurrencyString(), for: UIControlState.normal)
+            fiatSwitchButton.setTitle(settings.getCurrency(), for: UIControlState.normal)
             fiatSwitchButton.backgroundColor = UIColor.clear
             fiatSwitchButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
     }
 
     func updateEstimate() {
-        let denomination = SettingsStore.shared.getDenominationSettings()
+        guard let settings = getGAService().getSettings() else { return }
+        let denomination = settings.denomination
         var amount: String = amountTextfield.text!
         if (amount.isEmpty || Double(amount) == nil) {
             amount = "0"
