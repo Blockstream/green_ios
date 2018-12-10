@@ -8,6 +8,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var slidingButton: SlidingButton!
     @IBOutlet weak var fiatAmountLabel: UILabel!
+    @IBOutlet weak var feeLabel: UILabel!
     @IBOutlet weak var walletNameLabel: UILabel!
     @IBOutlet weak var recepientAddressLabel: UILabel!
     @IBOutlet weak var sendingTitle: UILabel!
@@ -43,7 +44,10 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         recepientAddressLabel.text = address
         let btcAmount = String.formatBtc(satoshi: satoshi)
         let fiatAmount = String.formatFiat(satoshi: satoshi)
-        fiatAmountLabel.text = String(format: "%@ ( %@ )", btcAmount, fiatAmount)
+        fiatAmountLabel.text = String(format: "%@ / %@", btcAmount, fiatAmount)
+        let feeBtc = String.formatBtc(satoshi: transaction.fee)
+        let feeFiat = String.formatFiat(satoshi: transaction.fee)
+        feeLabel.text = String(format: "%@ / %@", feeBtc, feeFiat)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -86,7 +90,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
                 _ = try getSession().broadcastTransaction(tx_hex: result["transaction"] as! String)
             } else {
                 let call = try getSession().sendTransaction(details: result)
-                // FIXME: 2FA
                 _ = try call.resolve(self)
             }
         }.done { _ in

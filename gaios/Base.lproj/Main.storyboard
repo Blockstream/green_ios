@@ -1714,29 +1714,29 @@
                                                         <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-KU-8DT">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wfq-KU-8DT">
                                                         <rect key="frame" x="20" y="77" width="280" height="17"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00 USD (0.00 BTC)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aBM-WW-tOr" userLabel="Fee Label">
-                                                        <rect key="frame" x="20" y="124" width="280" height="21"/>
+                                                        <rect key="frame" x="20" y="127" width="280" height="17"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="21" id="Ejb-Dc-zrS"/>
+                                                            <constraint firstAttribute="height" constant="17" id="Ejb-Dc-zrS"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Fee" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kut-i0-fzN">
-                                                        <rect key="frame" x="20" y="100" width="280" height="21"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="752" text="Fee" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kut-i0-fzN">
+                                                        <rect key="frame" x="20" y="100" width="280" height="20"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dMq-Cz-EHS">
-                                                        <rect key="frame" x="20" y="51" width="280" height="20"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dMq-Cz-EHS">
+                                                        <rect key="frame" x="20" y="50" width="280" height="20"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                         <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -1745,18 +1745,18 @@
                                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="kqu-cj-tFb" secondAttribute="trailing" constant="20" id="5JX-hX-SSW"/>
-                                                    <constraint firstAttribute="bottom" secondItem="aBM-WW-tOr" secondAttribute="bottom" constant="13" id="Cux-qX-Zyn"/>
+                                                    <constraint firstAttribute="bottom" secondItem="aBM-WW-tOr" secondAttribute="bottom" constant="14" id="Cux-qX-Zyn"/>
                                                     <constraint firstItem="Kut-i0-fzN" firstAttribute="top" secondItem="Wfq-KU-8DT" secondAttribute="bottom" constant="6" id="F42-2l-ZcP"/>
                                                     <constraint firstItem="Wfq-KU-8DT" firstAttribute="leading" secondItem="Isa-tm-wze" secondAttribute="leading" constant="20" id="ONg-bf-6lh"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="trailing" secondItem="dMq-Cz-EHS" secondAttribute="trailing" id="Qs9-I3-SjU"/>
-                                                    <constraint firstItem="aBM-WW-tOr" firstAttribute="top" secondItem="Kut-i0-fzN" secondAttribute="bottom" constant="3" id="Tfi-oF-uiO"/>
-                                                    <constraint firstItem="dMq-Cz-EHS" firstAttribute="top" secondItem="kqu-cj-tFb" secondAttribute="bottom" constant="10" id="X2H-R5-BTF"/>
+                                                    <constraint firstItem="aBM-WW-tOr" firstAttribute="top" secondItem="Kut-i0-fzN" secondAttribute="bottom" constant="7" id="Tfi-oF-uiO"/>
+                                                    <constraint firstItem="dMq-Cz-EHS" firstAttribute="top" secondItem="kqu-cj-tFb" secondAttribute="bottom" constant="9" id="X2H-R5-BTF"/>
                                                     <constraint firstItem="kqu-cj-tFb" firstAttribute="top" secondItem="Isa-tm-wze" secondAttribute="top" constant="20" id="aRN-ll-TNi"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="leading" secondItem="Kut-i0-fzN" secondAttribute="leading" id="cFY-nf-Se3"/>
                                                     <constraint firstItem="kqu-cj-tFb" firstAttribute="leading" secondItem="Isa-tm-wze" secondAttribute="leading" constant="20" id="ecA-Ys-bun"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="leading" secondItem="Wfq-KU-8DT" secondAttribute="leading" id="fSo-lo-EKQ"/>
-                                                    <constraint firstItem="aBM-WW-tOr" firstAttribute="top" secondItem="Kut-i0-fzN" secondAttribute="bottom" constant="3" id="fW4-hw-rm6"/>
-                                                    <constraint firstItem="Wfq-KU-8DT" firstAttribute="top" secondItem="dMq-Cz-EHS" secondAttribute="bottom" constant="6" id="gj5-lW-5qn"/>
+                                                    <constraint firstItem="aBM-WW-tOr" firstAttribute="top" secondItem="Kut-i0-fzN" secondAttribute="bottom" constant="7" id="fW4-hw-rm6"/>
+                                                    <constraint firstItem="Wfq-KU-8DT" firstAttribute="top" secondItem="dMq-Cz-EHS" secondAttribute="bottom" constant="7" id="gj5-lW-5qn"/>
                                                     <constraint firstAttribute="trailing" secondItem="Wfq-KU-8DT" secondAttribute="trailing" constant="20" id="h77-pY-7Ax"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="trailing" secondItem="Kut-i0-fzN" secondAttribute="trailing" id="hbX-Xf-nkJ"/>
                                                     <constraint firstItem="aBM-WW-tOr" firstAttribute="leading" secondItem="dMq-Cz-EHS" secondAttribute="leading" id="lsM-Sx-EFd"/>
@@ -1951,6 +1951,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Send" id="h9D-wi-d1p"/>
                     <connections>
+                        <outlet property="feeLabel" destination="aBM-WW-tOr" id="OqO-5s-PJV"/>
                         <outlet property="fiatAmountLabel" destination="Wfq-KU-8DT" id="qt9-0m-Ayx"/>
                         <outlet property="fromTitle" destination="3Uh-v7-6xz" id="AHw-lh-3yb"/>
                         <outlet property="myNotesTitle" destination="kaW-dv-gPJ" id="Eyv-KP-sN1"/>
@@ -3282,7 +3283,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="477" width="288" height="21"/>
+                                <rect key="frame" x="16" y="477.5" width="288" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>

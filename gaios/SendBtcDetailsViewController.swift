@@ -82,7 +82,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updateAmountData(_ satoshi: UInt64) {
         let newAmountData = convertAmount(details: ["satoshi" : satoshi])
-        if newAmountData?["satoshi"] as! UInt64 != amountData?["satoshi"] as! UInt64 {
+        if newAmountData?["satoshi"] as? UInt64 != amountData?["satoshi"] as? UInt64 {
             amountData = newAmountData
             updateAmountTextField(true)
         }
