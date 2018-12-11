@@ -190,8 +190,8 @@ class TransactionsController: UITableViewController {
             nextController.receiveAddress = presentingWallet?.getAddress()
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? TransactionDetailViewController {
-            nextController.transaction_g = sender as? TransactionItem
-            nextController.pointer = presentingWallet!.pointer
+            nextController.transactionItem = sender as? TransactionItem
+            nextController.wallet = presentingWallet
         } else if let addressDetail = segue.destination as? AddressDetailViewController {
             addressDetail.wallet = presentingWallet
             addressDetail.providesPresentationContextTransitionStyle = true

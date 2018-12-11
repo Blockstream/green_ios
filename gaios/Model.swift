@@ -204,12 +204,19 @@ class Wallets : Codable {
     let array: [WalletItem]
 }
 
+func getTransactionDetails(txhash: String) -> Promise<[String: Any]> {
+    let bgq = DispatchQueue.global(qos: .background)
+    return Guarantee().compactMap(on: bgq) {
+        try getSession().getTransactionDetails(txhash: txhash)
+    }
+}
+
 func createTransaction(details: [String: Any]) -> Promise<Transaction> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
         try getSession().createTransaction(details: details)
-        }.map(on: bgq) { data in
-            return Transaction(data)
+    }.map(on: bgq) { data in
+        return Transaction(data)
     }
 }
 

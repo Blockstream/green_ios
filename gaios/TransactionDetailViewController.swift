@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import PromiseKit
 
 class TransactionDetailViewController: UIViewController {
 
@@ -18,24 +19,24 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var amountTitle: UILabel!
     @IBOutlet weak var memoTitle: UILabel!
 
-    var transaction_g: TransactionItem? = nil
-    var bumpTransaction: [String:Any]?
-    var pointer: UInt32 = 0
+    var transactionItem: TransactionItem!
+    var rbfTransaction: Transaction? = nil
+    var wallet: WalletItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         updateUI()
         feeButton.isHidden = true
-        if(transaction_g?.blockHeight == 0) {
+        if transactionItem?.blockHeight == 0 {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
-        } else if (AccountStore.shared.getBlockheight() - (transaction_g?.blockHeight)! < 6) {
-            let blocks = AccountStore.shared.getBlockheight() - (transaction_g?.blockHeight)! + 1
+        } else if AccountStore.shared.getBlockheight() - (transactionItem.blockHeight) < 6 {
+            let blocks = AccountStore.shared.getBlockheight() - transactionItem.blockHeight + 1
             let localizedConfirmed = NSLocalizedString("id_blocks_confirmed", comment: "")
             warniniglabel.text = String(format: "(%d/6) %@", blocks, localizedConfirmed)
         } else {
             warniniglabel.isHidden = true
         }
-        if(transaction_g?.canRBF)! {
+        if transactionItem.canRBF {
             feeButton.isHidden = false
         }
 
@@ -49,11 +50,11 @@ class TransactionDetailViewController: UIViewController {
     }
 
     func updateUI() {
-        hashLabel.text = transaction_g?.hash
-        amountLabel.text = transaction_g?.amount()
-        feeLabel.text = feeText(fee: (transaction_g?.fee)!, size: (transaction_g?.size)!)
-        memoLabel.text = transaction_g?.memo
-        dateLabel.text = transaction_g?.date()
+        hashLabel.text = transactionItem.hash
+        amountLabel.text = transactionItem.amount()
+        feeLabel.text = feeText(fee: transactionItem.fee, size: transactionItem.size)
+        memoLabel.text = transactionItem.memo
+        dateLabel.text = transactionItem.date()
     }
 
     @objc func refreshTransaction(_ notification: NSNotification) {
@@ -64,23 +65,21 @@ class TransactionDetailViewController: UIViewController {
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
-        do {
-            let txhash = transaction_g?.hash
-            let rawTx = try getSession().getTransactionDetails(txhash: txhash!)
-            var details = [String: Any]()
-            details["previous_transaction"] = rawTx
-            details["fee_rate"] = rawTx!["fee_rate"]
-            bumpTransaction = try getSession().createTransaction(details: details)
+        let bgq = DispatchQueue.global(qos: .background)
+        gaios.getTransactionDetails(txhash: transactionItem.hash).then(on: bgq) { (prevTx: [String: Any]) -> Promise<Transaction> in
+            let details: [String: Any] = ["previous_transaction": prevTx, "fee_rate": prevTx["fee_rate"] as Any]
+            return gaios.createTransaction(details: details)
+        }.done { tx in
+            self.rbfTransaction = tx
             self.performSegue(withIdentifier: "next", sender: self)
-        } catch {
-            print("something went worng with creating subAccount")
-            bumpTransaction = nil
+        }.catch { _ in
         }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcDetailsViewController {
-            nextController.wallet = nil
+            nextController.transaction = rbfTransaction
+            nextController.wallet = wallet
         }
     }
 
@@ -89,7 +88,7 @@ class TransactionDetailViewController: UIViewController {
             let currentNetwork: String = getNetwork().rawValue.lowercased()
             let config = try getGdkNetwork(currentNetwork)
             let baseUrl = config!["tx_explorer_url"] as! String
-            if let url = URL(string: baseUrl + (transaction_g?.hash)! ) {
+            if let url = URL(string: baseUrl + transactionItem.hash) {
                 UIApplication.shared.open(url, options: [:])
             }
         } catch {
