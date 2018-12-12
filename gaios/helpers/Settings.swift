@@ -134,14 +134,26 @@ struct SettingsItem {
     var type: SettingsType
 }
 
+struct SettingsNotifications: Codable {
+    enum CodingKeys: String, CodingKey {
+        case emailIncoming = "email_incoming"
+        case emailOutgoing = "email_outgoing"
+    }
+    var emailIncoming: Bool
+    var emailOutgoing: Bool
+}
+
 // Main setting
-class Settings : Codable {
+class Settings: Codable {
     enum CodingKeys: String, CodingKey {
         case requiredNumBlock = "required_num_blocks"
         case altimeout = "altimeout"
         case unit = "unit"
         case pricing = "pricing"
         case customFeeRate = "custom_fee_rate"
+        case pgp = "pgp"
+        case sound = "sound"
+        case notifications = "notifications"
     }
 
     var requiredNumBlock: Int
@@ -149,6 +161,9 @@ class Settings : Codable {
     var unit: String
     var pricing: [String: String]
     var customFeeRate: Int?
+    var pgp: String?
+    var sound: Bool
+    var notifications: SettingsNotifications?
 
     var denomination: DenominationType {
         get { return DenominationType.init(rawValue: self.unit)!}

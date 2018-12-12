@@ -109,7 +109,8 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
     }
 
     func createTransaction(userInput: String) {
-        let feeRate =  SettingsStore.shared.getFeeSettings().1
+        guard let settings = getGAService().getSettings() else { return }
+        let feeRate = settings.customFeeRate ?? 1000
         let details: [String: Any] = sweepTransaction ? ["private_key": userInput, "fee_rate":  feeRate] : ["addressees": [["address": userInput]], "fee_rate":  feeRate]
         gaios.createTransaction(details: details).get { tx in
             self.transaction = tx

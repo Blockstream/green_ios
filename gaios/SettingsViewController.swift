@@ -90,7 +90,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             section: .account,
             type: .ReferenceExchangeRate)
 
-
         let defaultTransactionPriority = SettingsItem(
             title: NSLocalizedString("id_default_transaction_priority", comment: ""),
             subtitle: toString(settings.transactionPriority),
@@ -111,17 +110,20 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             type: .SetupTwoFactor)
 
 
-        let thresholdValue: String
-        guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return [] }
-        if let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) {
-            let limits = twoFactorConfig.limits
-            if limits.isFiat == true {
-                thresholdValue = String(format: "%@ %@", limits.fiat, settings.getCurrency())
-            } else {
-                thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue.lowercased())!)!, settings.denomination.rawValue)
+        var thresholdValue = ""
+        var locktimeRecoveryEnable = false
+        if let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() {
+            if let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) {
+                let limits = twoFactorConfig.limits
+                if limits.isFiat == true {
+                    thresholdValue = String(format: "%@ %@", limits.fiat, settings.getCurrency())
+                } else {
+                    thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue.lowercased())!)!, settings.denomination.rawValue)
+                }
+                if let notifications = settings.notifications {
+                    locktimeRecoveryEnable = notifications.emailOutgoing == true
+                }
             }
-        } else {
-            thresholdValue = ""
         }
         let thresholdTwoFactor = SettingsItem(
             title: NSLocalizedString("id_twofactor_threshold", comment: ""),
@@ -130,7 +132,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             type: .ThresholdTwoFactor)
         let locktimeRecovery = SettingsItem(
             title: NSLocalizedString("id_enable_nlocktime_recovery_emails", comment: ""),
-            subtitle: "",
+            subtitle: locktimeRecoveryEnable ? "Enabled" : "Disabled",
             section: .twoFactor,
             type: .LockTimeRecovery)
         let locktimeRequest = SettingsItem(
@@ -204,13 +206,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         return menu
     }
 
-
     func toString(_ tp: TransactionPriority) -> String {
         switch tp {
         case .Low:
-            return NSLocalizedString("id_confirmation_in_12_blocks_2", comment: "")
+            return NSLocalizedString("id_confirmation_in_24_blocks_4", comment: "")
         case .Medium:
-            return NSLocalizedString("id_confirmation_in_6_blocks_1_hour", comment: "")
+            return NSLocalizedString("id_confirmation_in_12_blocks_2", comment: "")
         case .High:
             return NSLocalizedString("id_confirmation_in_3_blocks_30", comment: "")
         default:
@@ -281,7 +282,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.performSegue(withIdentifier: "screenLock", sender: nil)
             break
         case .WatchOnly:
-            self.showAlertWatchOnly()
+            let alert = UIAlertController(title: NSLocalizedString("id_set_watchonly", comment: ""), message: "", preferredStyle: .alert)
+            alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_username", comment: "") }
+            alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_password", comment: "") }
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: "Ok", style: .default) { _ in
+                let username = alert.textFields![0].text!
+                let password = alert.textFields![1].text!
+                self.setWatchOnly(username: username, password: password)
+            })
+            self.present(alert, animated: true, completion: nil)
             break
         case .ReferenceExchangeRate:
             self.performSegue(withIdentifier: "currency", sender: nil)
@@ -327,38 +337,25 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }, completing: { self.logoutClicked(self) })
             break
         case .CancelTwoFactor:
-            let bgq = DispatchQueue.global(qos: .background)
-            firstly {
-                self.startAnimating()
-                return Guarantee()
-            }.compactMap(on: bgq) {
-                try getGAService().getSession().cancelTwoFactorReset()
-            }.compactMap(on: bgq) { call in
-                try call.resolve(self)
-            }.ensure {
-                self.stopAnimating()
-            }.done { _ in
-                self.logoutClicked(self)
-            }.catch {_ in
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
-            }
+            setCancelTwoFactor()
             break
         case .LockTimeRecovery:
+            var enabled = false
+            if let notifications = settings.notifications {
+                enabled = notifications.emailOutgoing == true
+            }
+            let alert = UIAlertController(title: NSLocalizedString("id_enable_nlocktime_recovery_emails", comment: ""), message: "", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "Enable", style: enabled ? .destructive : .default) { _ in
+                self.setRecoveryEmail(true)
+            })
+            alert.addAction(UIAlertAction(title: "Disable", style: !enabled ? .destructive : .default) { _ in
+                self.setRecoveryEmail(false)
+            })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+            self.present(alert, animated: true, completion: nil)
             break
         case .LockTimeRequest:
-            let bgq = DispatchQueue.global(qos: .background)
-            firstly {
-                self.startAnimating()
-                return Guarantee()
-            }.compactMap(on: bgq) {
-                return try getSession().sendNlocktimes()
-            }.ensure {
-                self.stopAnimating()
-            }.done { _ in
-                self.showAlert(title: NSLocalizedString("id_request_nlocktime", comment: ""), message: NSLocalizedString("id_nlocktime_transaction_request", comment: ""))
-            }.catch {_ in
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_request_failure", comment: ""))
-            }
+            setLockTimeRequest()
         case .Mnemonic:
             self.performSegue(withIdentifier: "recovery", sender: nil)
             break
@@ -379,7 +376,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func resolvePopup(popup: PopupPromise, setting: @escaping (_ value: Any) throws -> TwoFactorCall, completing: @escaping () -> ()) {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            startAnimating()
             return Guarantee()
         }.then {
             popup.show()
@@ -409,33 +406,82 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.present(alert, animated: true, completion: nil)
     }
 
+    func setWatchOnly(username: String, password: String) {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try getGAService().getSession().setWatchOnly(username: username, password: password)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+        }.catch {_ in
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_failure", comment: ""))
+        }
+    }
 
-    func showAlertWatchOnly() {
-        let alert = UIAlertController(title: NSLocalizedString("id_set_watchonly", comment: ""), message: "", preferredStyle: .alert)
-        alert.addTextField { (textField) in
-            textField.placeholder = NSLocalizedString("id_username", comment: "")
+    func setCancelTwoFactor() {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try getGAService().getSession().cancelTwoFactorReset()
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.logoutClicked(self)
+        }.catch {_ in
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
         }
-        alert.addTextField { (textField) in
-            textField.placeholder = NSLocalizedString("id_password", comment: "")
+    }
+
+    func setLockTimeRequest() {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            return try getSession().sendNlocktimes()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.showAlert(title: NSLocalizedString("id_request_nlocktime", comment: ""), message: NSLocalizedString("id_nlocktime_transaction_request", comment: ""))
+        }.catch {_ in
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_request_failure", comment: ""))
         }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        alert.addAction(UIAlertAction(title: "Ok", style: .default) { _ in
-            let bgq = DispatchQueue.global(qos: .background)
-            let username = alert.textFields![0].text!
-            let password = alert.textFields![1].text!
-            firstly {
-                self.startAnimating()
-                return Guarantee()
-            }.compactMap(on: bgq) {
-                try getGAService().getSession().setWatchOnly(username: username, password: password)
-            }.ensure {
-                self.stopAnimating()
-            }.done { _ in
-            }.catch {_ in
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_failure", comment: ""))
+    }
+
+    func setRecoveryEmail(_ value: Bool) {
+        guard let settings = getGAService().getSettings() else { return }
+        let bgq = DispatchQueue.global(qos: .background)
+        let data = ["email_incoming": value, "email_outgoing": value]
+        let json = try! JSONSerialization.data(withJSONObject: data, options: [])
+        settings.notifications = try! JSONDecoder().decode(SettingsNotifications.self, from: json)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.reloadData()
+        }.catch { error in
+            let text: String
+            if error is TwoFactorCallError {
+                switch error as! TwoFactorCallError {
+                case .failure(let localizedDescription):
+                    text = localizedDescription
+                }
+                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
             }
-        })
-        self.present(alert, animated: true, completion: nil)
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
