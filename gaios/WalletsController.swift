@@ -55,7 +55,7 @@ class WalletsController: UIViewController, WalletViewDelegate {
         super.viewDidAppear(animated)
     }
 
-    func showTransaction(tx: TransactionItem) {
+    func showTransaction(tx: Transaction) {
         self.performSegue(withIdentifier: "txDetails", sender: tx)
     }
 

@@ -12,7 +12,7 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
     @IBOutlet weak var satoshiLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var amountTextField: UITextField!
-    var transaction: TransactionItem!
+    var transaction: Transaction!
     var feeLabel: UILabel = UILabel()
     var firstTime: Bool = true
     var errorLabel: UIErrorLabel!
@@ -50,9 +50,9 @@ class IncreaseFeeViewController: KeyboardViewController, NVActivityIndicatorView
     func increaseFee(feeRate: Double) {
         let bgq = DispatchQueue.global(qos: .background)
         var details = [String: Any]()
-        let jsonData = try! JSONEncoder().encode(self.transaction)
-        details["previous_transaction"] = String(data: jsonData, encoding: .utf8)
-        details["fee_rate"] = feeRate
+        //let jsonData = try! JSONEncoder().encode(self.transaction)
+        //details["previous_transaction"] = String(data: jsonData, encoding: .utf8)
+        //details["fee_rate"] = feeRate
 
         firstly {
             self.errorLabel.isHidden = true

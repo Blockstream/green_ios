@@ -19,7 +19,7 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var amountTitle: UILabel!
     @IBOutlet weak var memoTitle: UILabel!
 
-    var transactionItem: TransactionItem!
+    var transaction: Transaction!
     var rbfTransaction: Transaction? = nil
     var wallet: WalletItem!
 
@@ -27,16 +27,16 @@ class TransactionDetailViewController: UIViewController {
         super.viewDidLoad()
         updateUI()
         feeButton.isHidden = true
-        if transactionItem?.blockHeight == 0 {
+        if transaction.blockHeight == 0 {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
-        } else if AccountStore.shared.getBlockheight() - (transactionItem.blockHeight) < 6 {
-            let blocks = AccountStore.shared.getBlockheight() - transactionItem.blockHeight + 1
+        } else if AccountStore.shared.getBlockheight() - (transaction.blockHeight) < 6 {
+            let blocks = AccountStore.shared.getBlockheight() - transaction.blockHeight + 1
             let localizedConfirmed = NSLocalizedString("id_blocks_confirmed", comment: "")
             warniniglabel.text = String(format: "(%d/6) %@", blocks, localizedConfirmed)
         } else {
             warniniglabel.isHidden = true
         }
-        if transactionItem.canRBF {
+        if transaction.canRBF {
             feeButton.isHidden = false
         }
 
@@ -50,11 +50,11 @@ class TransactionDetailViewController: UIViewController {
     }
 
     func updateUI() {
-        hashLabel.text = transactionItem.hash
-        amountLabel.text = transactionItem.amount()
-        feeLabel.text = feeText(fee: transactionItem.fee, size: transactionItem.size)
-        memoLabel.text = transactionItem.memo
-        dateLabel.text = transactionItem.date()
+        hashLabel.text = transaction.hash
+        amountLabel.text = transaction.amount()
+        feeLabel.text = feeText(fee: transaction.fee, size: transaction.size)
+        memoLabel.text = transaction.memo
+        dateLabel.text = transaction.date()
     }
 
     @objc func refreshTransaction(_ notification: NSNotification) {
@@ -65,13 +65,8 @@ class TransactionDetailViewController: UIViewController {
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            gaios.getTransactionDetails(txhash: transactionItem.hash)
-        }.then(on: bgq) { (prevTx: [String: Any]) -> Promise<Transaction> in
-            let details: [String: Any] = ["previous_transaction": prevTx["transaction"] as Any]
-            return gaios.createTransaction(details: details)
-        }.done { tx in
+        let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate]
+        gaios.createTransaction(details: details).done { tx in
             self.rbfTransaction = tx
             self.performSegue(withIdentifier: "rbf", sender: self)
         }.catch { _ in
@@ -90,7 +85,7 @@ class TransactionDetailViewController: UIViewController {
             let currentNetwork: String = getNetwork().rawValue.lowercased()
             let config = try getGdkNetwork(currentNetwork)
             let baseUrl = config!["tx_explorer_url"] as! String
-            if let url = URL(string: baseUrl + transactionItem.hash) {
+            if let url = URL(string: baseUrl + transaction.hash) {
                 UIApplication.shared.open(url, options: [:])
             }
         } catch {
@@ -98,7 +93,7 @@ class TransactionDetailViewController: UIViewController {
         }
     }
 
-    func feeText(fee: UInt32, size: UInt32) -> String {
+    func feeText(fee: UInt64, size: UInt64) -> String {
         let perbyte = Double(fee/size)
         return String(format: "Transaction fee is %d satoshi, %.2f satoshi per byte", fee, perbyte)
     }

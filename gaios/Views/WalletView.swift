@@ -6,7 +6,7 @@ import PromiseKit
  */
 open class WalletView: UIView, UITableViewDelegate {
 
-    var items = [TransactionItem]()
+    var items = [Transaction]()
     var delegate: WalletViewDelegate?
     var presentingWallet: WalletItem? = nil
 
@@ -981,6 +981,6 @@ open class WalletView: UIView, UITableViewDelegate {
 protocol WalletViewDelegate: class {
     func cardViewPresented(cardView: CardView)
     func cardViewDismissed(cardView: CardView)
-    func showTransaction(tx :TransactionItem)
+    func showTransaction(tx :Transaction)
 }
 

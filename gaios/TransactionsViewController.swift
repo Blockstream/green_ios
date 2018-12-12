@@ -91,7 +91,7 @@ class TransactionsController: UITableViewController {
             cell.amount.textColor = UIColor.white
         }
 
-        if(item.blockHeight == 0) {
+        if item.blockHeight == 0 {
             cell.status.text = NSLocalizedString("id_unconfirmed", comment: "")
             cell.status.textColor = UIColor.red
         } else if (AccountStore.shared.getBlockheight() - item.blockHeight < 6) {
@@ -129,8 +129,11 @@ class TransactionsController: UITableViewController {
         Guarantee().compactMap(on: bgq) {
             try getSession().getTransactions(subaccount: (self.presentingWallet?.pointer)!, page: 0)
         }.compactMap(on: bgq) { data -> Transactions in
-            let jsonData = try JSONSerialization.data(withJSONObject: data)
-            return try JSONDecoder().decode(Transactions.self, from: jsonData)
+            let txList = (data["list"] as! [[String: Any]]).map { tx -> Transaction in
+                return Transaction(tx)
+            }
+            let txs = Transactions(list: txList, nextPageId: data["next_page_id"] as! UInt32, pageId: data["page_id"] as! UInt32)
+            return txs
         }.done { txs -> Void in
             self.items = txs
             self.tableView.reloadData()
@@ -175,7 +178,7 @@ class TransactionsController: UITableViewController {
         self.performSegue(withIdentifier: "receive", sender: self)
     }
 
-    func showTransaction(tx: TransactionItem) {
+    func showTransaction(tx: Transaction) {
         self.performSegue(withIdentifier: "detail", sender: tx)
     }
 
@@ -190,7 +193,7 @@ class TransactionsController: UITableViewController {
             nextController.receiveAddress = presentingWallet?.getAddress()
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? TransactionDetailViewController {
-            nextController.transactionItem = sender as? TransactionItem
+            nextController.transaction = sender as? Transaction
             nextController.wallet = presentingWallet
         } else if let addressDetail = segue.destination as? AddressDetailViewController {
             addressDetail.wallet = presentingWallet

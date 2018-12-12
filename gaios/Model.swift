@@ -2,70 +2,16 @@
 import Foundation
 import PromiseKit
 
-struct TransactionItem : Codable {
-
-    enum CodingKeys : String, CodingKey {
-        case addressees
-        case blockHeight = "block_height"
-        case canRBF = "can_rbf"
-        case createdAt = "created_at"
-        case fee
-        case feeRate = "fee_rate"
-        case hash = "txhash"
-        case memo
-        case satoshi
-        case size = "transaction_vsize"
-        case type
-    }
-
-    let addressees: [String]
-    let blockHeight: UInt32
-    let canRBF: Bool
-    let createdAt: String
-    let fee: UInt32
-    let feeRate: UInt64
-    let hash: String
-    let memo: String
-    let satoshi: UInt64
-    let size: UInt32
-    let type: String
-
-    func amount() -> String {
-        let satoshi = String.formatBtc(satoshi: self.satoshi)
-        if type == "outgoing" || type == "redeposit" {
-            return "-" + satoshi
-        } else {
-            return satoshi
-        }
-    }
-
-    func address() -> String? {
-        guard !addressees.isEmpty else {
-            return nil
-        }
-        return addressees[0]
-    }
-
-    func date() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .short
-        let date = Date.dateFromString(dateString: createdAt)
-        return Date.dayMonthYear(date: date)
-    }
-}
-
-struct Transactions : Codable {
-
-    enum CodingKeys : String, CodingKey {
-        case list
-        case nextPageId = "next_page_id"
-        case pageId = "page_id"
-    }
-
-    let list: [TransactionItem]
+struct Transactions {
+    let list: [Transaction]
     let nextPageId: UInt32
     let pageId: UInt32
+
+    init(list: [Transaction], nextPageId: UInt32, pageId: UInt32) {
+        self.list = list
+        self.nextPageId = nextPageId
+        self.pageId = pageId
+    }
 }
 
 enum TransactionError : Error {
@@ -115,6 +61,18 @@ struct Transaction {
         get { return get("addresses_read_only") ?? false }
     }
 
+    var blockHeight: UInt32 {
+        get { return get("block_height") ?? 0 }
+    }
+
+    var canRBF: Bool {
+        get { return get("can_rbf") ?? false }
+    }
+
+    var createdAt: String {
+        get { return get("created_at") ?? String() }
+    }
+
     var error: String {
         get { return get("error") ?? String() }
     }
@@ -126,6 +84,10 @@ struct Transaction {
     var feeRate: UInt64 {
         get { return get("fee_rate" ) ?? 0 }
         set { details["fee_rate"] = newValue }
+    }
+
+    var hash: String {
+        get { return get("txhash") ?? String() }
     }
 
     var isSweep: Bool {
@@ -146,9 +108,39 @@ struct Transaction {
         set { details["send_all"] = newValue }
     }
 
-    var transactionSize: UInt64 {
+    var size: UInt64 {
         get { return get("transaction_vsize") ?? 0 }
     }
+
+    var type: String {
+        get { return get("type") ?? String() }
+    }
+
+    func amount() -> String {
+        let satoshi = String.formatBtc(satoshi: self.satoshi)
+        if type == "outgoing" || type == "redeposit" {
+            return "-" + satoshi
+        } else {
+            return satoshi
+        }
+    }
+
+    func address() -> String? {
+        let o: [String] = get("addressees") ?? []
+        guard !o.isEmpty else {
+            return nil
+        }
+        return o[0]
+    }
+
+    func date() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        let date = Date.dateFromString(dateString: createdAt)
+        return Date.dayMonthYear(date: date)
+    }
+
 }
 
 class WalletItem : Codable {
@@ -240,4 +232,9 @@ func convertAmount(details: [String: Any]) -> [String: Any]? {
         return nil
     }
     return conversion
+}
+
+func getFeeEstimates() -> [UInt64] {
+    let estimates = try! getSession().getFeeEstimates()
+    return estimates!["fees"] as! [UInt64]
 }
