@@ -29,7 +29,7 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
         textfield.delegate = self
         textfield.attributedPlaceholder =
             NSAttributedString(string: sweepTransaction ?
-                "Enter Private Key" : NSLocalizedString("id_enter_the_address", comment: ""),
+                "Enter Private Key" : NSLocalizedString("id_enter_an_address_or_private_key", comment: ""),
                 attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always

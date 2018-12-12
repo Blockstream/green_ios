@@ -89,10 +89,10 @@
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "Enter a valid .onion or IP address (.onion preferred)";
 "id_enter_a_valid_username" = "Enter a valid username";
+"id_enter_an_address_or_private_key" = "Enter an address or private key";
 "id_enter_new_email" = "Enter new email";
 "id_enter_phone_number" = "Enter phone number";
 "id_enter_pin" = "Enter PIN";
-"id_enter_the_address" = "Enter the address";
 "id_enter_the_matching_words" = "Enter The Matching Words";
 "id_enter_the_pin_for_your_hardware" = "Enter the PIN for your hardware wallet";
 "id_enter_your_email_address" = "Enter your email address";
