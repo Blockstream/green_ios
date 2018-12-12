@@ -54,7 +54,6 @@
 		097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C9218068850089C379 /* AddressDetailViewController.swift */; };
 		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
 		0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */; };
-		0980B4FE21841BE2007715F4 /* IncreaseFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
 		098192832176D05500D8434F /* CustomApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* CustomApplication.swift */; };
 		098192852176D12F00D8434F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192842176D12F00D8434F /* main.swift */; };
@@ -161,7 +160,6 @@
 		097D20C9218068850089C379 /* AddressDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDetailViewController.swift; sourceTree = "<group>"; };
 		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
 		0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
-		0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncreaseFeeViewController.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		098192822176D05500D8434F /* CustomApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomApplication.swift; sourceTree = "<group>"; };
 		098192842176D12F00D8434F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -364,7 +362,6 @@
 				097D20CB218161B10089C379 /* WatchOnlySignIn.swift */,
 				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
 				09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */,
-				0980B4FD21841BE2007715F4 /* IncreaseFeeViewController.swift */,
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
 				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
 				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
@@ -762,7 +759,6 @@
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */,
-				0980B4FE21841BE2007715F4 /* IncreaseFeeViewController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
 				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,

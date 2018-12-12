@@ -18,7 +18,6 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var minerFeeTitle: UILabel!
 
     lazy var feeRateButtons = [lowFeeButton, mediumFeeButton, highFeeButton, customfeeButton]
-    lazy var feePriority = [TransactionPriority.Low, TransactionPriority.Medium, TransactionPriority.High, TransactionPriority.Custom]
 
     let blockTime = [NSLocalizedString("id_4_hours", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
 
@@ -35,9 +34,28 @@ class SendBtcDetailsViewController: UIViewController {
         for (i, v) in [24, 12, 3, 0].enumerated() {
             feeEstimates[i] = estimates[v]
         }
-        return estimates
+
+        guard let settings = getGAService().getSettings() else { return feeEstimates }
+        if settings.customFeeRate != nil {
+            feeEstimates[3] = UInt64(settings.customFeeRate!)
+        }
+
+        return feeEstimates
     }()
-    var selectedFee: Int = 0
+
+    var selectedFee: Int = {
+        guard let settings = getGAService().getSettings() else { return 0 }
+        switch settings.transactionPriority {
+        case .Low:
+            return 0
+        case .Medium:
+            return 1
+        case .High:
+            return 2
+        case .Custom:
+            return 3
+        }
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -283,9 +301,9 @@ class SendBtcDetailsViewController: UIViewController {
     func showCustomFeePopup() {
         let alert = UIAlertController(title: "Custom fee rate", message: "satoshi / byte", preferredStyle: .alert)
         alert.addTextField { (textField) in
-            let minFee = String(format: "%d", AccountStore.shared.getFeeRateMin() / 1000)
+            let customFee = String(self.feeEstimates[self.feeRateButtons.count - 1] / 1000)
             textField.keyboardType = .numberPad
-            textField.attributedPlaceholder = NSAttributedString(string: minFee,
+            textField.attributedPlaceholder = NSAttributedString(string: customFee,
                                                                           attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         }
         alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel) { [weak alert] (_) in
@@ -294,7 +312,6 @@ class SendBtcDetailsViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] (_) in
             let amount:String = alert!.textFields![0].text!
             guard let amount_i = Int(amount) else {
-                self.updateSummaryLabel(fee: 0)
                 return
             }
             self.selectedFee = self.feeRateButtons.count - 1
