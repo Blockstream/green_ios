@@ -66,12 +66,14 @@ class TransactionDetailViewController: UIViewController {
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        gaios.getTransactionDetails(txhash: transactionItem.hash).then(on: bgq) { (prevTx: [String: Any]) -> Promise<Transaction> in
-            let details: [String: Any] = ["previous_transaction": prevTx, "fee_rate": prevTx["fee_rate"] as Any]
+        firstly {
+            gaios.getTransactionDetails(txhash: transactionItem.hash)
+        }.then(on: bgq) { (prevTx: [String: Any]) -> Promise<Transaction> in
+            let details: [String: Any] = ["previous_transaction": prevTx["transaction"] as Any]
             return gaios.createTransaction(details: details)
         }.done { tx in
             self.rbfTransaction = tx
-            self.performSegue(withIdentifier: "next", sender: self)
+            self.performSegue(withIdentifier: "rbf", sender: self)
         }.catch { _ in
         }
     }

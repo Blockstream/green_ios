@@ -18,17 +18,26 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var minerFeeTitle: UILabel!
 
     lazy var feeRateButtons = [lowFeeButton, mediumFeeButton, highFeeButton, customfeeButton]
+    lazy var feePriority = [TransactionPriority.Low, TransactionPriority.Medium, TransactionPriority.High, TransactionPriority.Custom]
+
+    let blockTime = [NSLocalizedString("id_4_hours", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
 
     var feeLabel: UILabel = UILabel()
     var uiErrorLabel: UIErrorLabel!
     var wallet: WalletItem? = nil
     var isFiat = false
-    var feeRate: UInt64 = 1
-    var selectedButton : UIButton? = nil
-    var priority: TransactionPriority!
     var transaction: Transaction!
-    let blockTime = [NSLocalizedString("id_4_hours", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
     var amountData: [String: Any]? = nil
+
+    var feeEstimates: [UInt64] = {
+        var feeEstimates = [UInt64](repeating: 0, count: 4)
+        let estimates = getFeeEstimates()
+        for (i, v) in [24, 12, 3, 0].enumerated() {
+            feeEstimates[i] = estimates[v]
+        }
+        return estimates
+    }()
+    var selectedFee: Int = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +46,6 @@ class SendBtcDetailsViewController: UIViewController {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
-        guard let settings = getGAService().getSettings() else { return }
-        priority = settings.transactionPriority
 
         uiErrorLabel = UIErrorLabel(self.view)
         errorLabel.isHidden = true
@@ -50,6 +57,21 @@ class SendBtcDetailsViewController: UIViewController {
         if transaction.addresseesReadOnly {
             amountTextField.isUserInteractionEnabled = false
             sendAllFundsButton.isUserInteractionEnabled = false
+        }
+
+        if let oldFeeRate = getOldFeeRate() {
+            feeEstimates[feeRateButtons.count - 1] = oldFeeRate + 1
+            var found = false
+            for i in 0..<feeRateButtons.count - 1 {
+                if oldFeeRate < feeEstimates[i] {
+                    found = true
+                    selectedFee = i
+                    break
+                }
+            }
+            if !found {
+                selectedFee = feeRateButtons.count - 1
+            }
         }
 
         updatePriorityButtons()
@@ -80,6 +102,13 @@ class SendBtcDetailsViewController: UIViewController {
         updateReviewButton(false)
 
         updateTransaction()
+    }
+
+    func getOldFeeRate() -> UInt64? {
+        if let prevTx = transaction.details["previous_transaction"] as? [String: Any] {
+            return prevTx["fee_rate"] as? UInt64
+        }
+        return nil
     }
 
     func updateAmountData(_ satoshi: UInt64) {
@@ -154,7 +183,7 @@ class SendBtcDetailsViewController: UIViewController {
         reviewButton.isUserInteractionEnabled = false
 
         transaction.sendAll = sendAllFundsButton.isSelected
-        transaction.feeRate = feeRate
+        transaction.feeRate = feeEstimates[selectedFee]
 
         if !transaction.addresseesReadOnly {
             let satoshi = amountData?["satoshi"] as? UInt64 ?? 0
@@ -171,7 +200,7 @@ class SendBtcDetailsViewController: UIViewController {
             self.updateAmountData(tx.addressees[0].satoshi)
             self.uiErrorLabel.isHidden = true
             self.updateReviewButton(true)
-            self.updateSummaryLabel(button: self.selectedButton!, fee: tx.fee)
+            self.updateSummaryLabel(fee: tx.fee)
         }.catch { error in
             if let txError = (error as? TransactionError) {
                 switch txError {
@@ -183,7 +212,7 @@ class SendBtcDetailsViewController: UIViewController {
             }
             self.uiErrorLabel.isHidden = false
             self.updateReviewButton(false)
-            self.updateSummaryLabel(button: self.selectedButton!, fee: 0)
+            self.updateSummaryLabel(fee: 0)
         }
     }
 
@@ -201,35 +230,28 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.resignFirstResponder()
     }
 
-    func updateSummaryLabel(button: UIButton, fee: UInt64) {
+    func updateSummaryLabel(fee: UInt64) {
         guard let settings = getGAService().getSettings() else { return }
+
         feeLabel.removeFromSuperview()
-        if(fee == 0) {
+
+        if fee == 0 {
             return
         }
-        feeLabel = UILabel(frame: CGRect(x: button.center.x, y: button.center.y + button.frame.size.height / 2 + 10, width: 150, height: 21))
+
+        feeLabel = UILabel(frame: CGRect(x: lowFeeButton.center.x, y: lowFeeButton.center.y + lowFeeButton.frame.size.height / 2 + 10, width: 150, height: 21))
         feeLabel.textColor = UIColor.customTitaniumLight()
 
-        
         let fiatValue = String.toFiat(satoshi: fee)!
         let feeInBTC = String.toBtc(satoshi: fee, toType: settings.denomination)!
         let satoshiPerVByte = Double(transaction.feeRate) / 1000.0
-        var timeEstimate = ""
+
         feeLabel.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(feeLabel)
         feeLabel.textAlignment = .left
         NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: lowFeeButton, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
 
-        if button == lowFeeButton {
-            timeEstimate = blockTime[0]
-        } else if button == mediumFeeButton {
-            timeEstimate = blockTime[1]
-        } else if button == highFeeButton {
-            timeEstimate = blockTime[2]
-        } else {
-            timeEstimate = blockTime[3]
-        }
-        feeLabel.text = String(format: "%.1f satoshi / vbyte \nTime: %@\nFee: %@ %@ / ~%@ %@", satoshiPerVByte, timeEstimate, feeInBTC, settings.denomination.rawValue, fiatValue, settings.getCurrency())
+        feeLabel.text = String(format: "%.1f satoshi / vbyte \nTime: %@\nFee: %@ %@ / ~%@ %@", satoshiPerVByte, blockTime[selectedFee], feeInBTC, settings.denomination.rawValue, fiatValue, settings.getCurrency())
         feeLabel.numberOfLines = 3
         feeLabel.font = feeLabel.font.withSize(13)
 
@@ -255,23 +277,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updatePriorityButtons() {
         resetFeeRateButtons()
-
-        if priority == TransactionPriority.Low {
-            selectedButton = lowFeeButton
-            feeRate = AccountStore.shared.getFeeRateLow()
-            highlightFeeRateButton(lowFeeButton)
-        } else if priority == TransactionPriority.Medium {
-            selectedButton = mediumFeeButton
-            feeRate = AccountStore.shared.getFeeRateMedium()
-            highlightFeeRateButton(mediumFeeButton)
-        } else if priority == TransactionPriority.High {
-            selectedButton = highFeeButton
-            feeRate = AccountStore.shared.getFeeRateHigh()
-            highlightFeeRateButton(highFeeButton)
-        } else if priority == TransactionPriority.Custom {
-            selectedButton = customfeeButton
-            highlightFeeRateButton(customfeeButton)
-        }
+        highlightFeeRateButton(feeRateButtons[selectedFee]!)
     }
 
     func showCustomFeePopup() {
@@ -288,36 +294,36 @@ class SendBtcDetailsViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] (_) in
             let amount:String = alert!.textFields![0].text!
             guard let amount_i = Int(amount) else {
-                self.updateSummaryLabel(button: self.customfeeButton, fee: 0)
+                self.updateSummaryLabel(fee: 0)
                 return
             }
-            self.feeRate = UInt64(1000 * amount_i)
+            self.selectedFee = self.feeRateButtons.count - 1
+            self.feeEstimates[self.feeRateButtons.count - 1] = UInt64(1000 * amount_i)
             self.updateTransaction()
             self.updatePriorityButtons()
         })
         self.present(alert, animated: true, completion: nil)
     }
 
-    private func onFeeChanged(_ priority: TransactionPriority) {
-        self.priority = priority
+    private func onFeeChanged(_ selectedFee: Int) {
+        self.selectedFee = selectedFee
         updatePriorityButtons()
         updateTransaction()
     }
 
     @IBAction func lowFeeClicked(_ sender: Any) {
-        onFeeChanged(TransactionPriority.Low)
+        onFeeChanged(0)
     }
 
     @IBAction func mediumFeeClicked(_ sender: Any) {
-        onFeeChanged(TransactionPriority.Medium)
+        onFeeChanged(1)
     }
 
     @IBAction func highFeeClicked(_ sender: Any) {
-        onFeeChanged(TransactionPriority.High)
+        onFeeChanged(2)
     }
 
     @IBAction func customFeeClicked(_ sender: Any) {
-        priority = TransactionPriority.Custom
         showCustomFeePopup()
     }
 }
