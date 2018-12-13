@@ -33,7 +33,23 @@ class TransactionsController: UITableViewController {
         loadTransactions()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateBalance()
+    }
+
+    func updateBalance() {
+        guard let wallet = presentingWallet else { return }
+        wallet.getBalance().get { balance in
+            let view = self.tableView.tableHeaderView as! WalletCardHeader
+            view.balanceLabel.text = String.formatBtc(satoshi: wallet.satoshi)
+        }.done { _ in }.catch { _ in }
+    }
+
     @objc func refreshTransactions(_ notification: NSNotification) {
+        updateBalance()
+
         if let dict = notification.userInfo as NSDictionary? {
             if let accounts = dict["subaccounts"] as? NSArray {
                 for acc in accounts {
@@ -150,7 +166,6 @@ class TransactionsController: UITableViewController {
 
         let view: WalletCardHeader = ((Bundle.main.loadNibNamed("WalletCardHeader", owner: self, options: nil)![0] as? WalletCardHeader)!)
 
-        view.balanceLabel.text = String.formatBtc(satoshi: wallet.satoshi)
         view.addressLabel.text = wallet.getAddress()
         view.nameLabel.text = wallet.localizedName()
         view.nameLabel.textColor = UIColor.customMatrixGreen()

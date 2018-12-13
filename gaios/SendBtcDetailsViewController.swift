@@ -160,8 +160,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateMaxAmountLabel() {
-        guard let amount = wallet?.satoshi else { return }
-        maxAmountLabel.text = String.formatBtc(satoshi: amount)
+        wallet?.getBalance().get { balance in
+            self.maxAmountLabel.text = String.formatBtc(satoshi: self.wallet?.satoshi)
+        }.done { _ in }.catch { _ in }
     }
 
     @IBAction func sendAllFundsClick(_ sender: Any) {

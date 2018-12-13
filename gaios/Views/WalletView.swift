@@ -244,11 +244,11 @@ open class WalletView: UIView, UITableViewDelegate {
         }
     }
 
-    func updateBalance(forCardview: Int, sat: String) {
+    func updateBalance(forCardview: Int, sat: UInt64) {
         for index in 0..<insertedCardViews.count {
             let wallet = insertedCardViews[index] as! ColoredCardView
             if(wallet.wallet?.pointer == UInt32(forCardview)) {
-                wallet.balanceLabel.text = String.formatBtc(satoshi: UInt64(sat)!)
+                wallet.balanceLabel.text = String.formatBtc(satoshi: sat)
                 return
             }
         }
@@ -308,12 +308,12 @@ open class WalletView: UIView, UITableViewDelegate {
 
     // MARK: Private methods
 
-    private let observerContext = UnsafeMutableRawPointer.allocate(bytes: 4, alignedTo: 1)
+    private let observerContext = UnsafeMutableRawPointer.allocate(byteCount: 4, alignment: 1)
 
     deinit {
         scrollView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.frame))
         scrollView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.bounds))
-        observerContext.deallocate(bytes: 4, alignedTo: 1)
+        observerContext.deallocate()
     }
 
 
@@ -577,7 +577,7 @@ open class WalletView: UIView, UITableViewDelegate {
         cardViewHeight = min(preferableCardViewHeight, maximumCardViewHeight)
 
 
-        let usableCardViewsHeight = walletHeaderHeight + insertedCardViews.map { _ in cardViewHeight }.reduce(0, { $0 + $1 } )
+        _ = walletHeaderHeight + insertedCardViews.map { _ in cardViewHeight }.reduce(0, { $0 + $1 } )
 
         distanceBetweenCardViews = 65
 

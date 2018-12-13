@@ -7,7 +7,6 @@ class AccountStore {
     var wallets = [WalletItem]()
     var blockHeight: UInt32 = 0
     var isWatchOnly: Bool = false
-    public let GDKQueue = DispatchQueue(label: "gdk",attributes: .concurrent)
 
     func getSubaccounts() -> Promise<[WalletItem]> {
         let bgq = DispatchQueue.global(qos: .background)
@@ -37,60 +36,6 @@ class AccountStore {
 
     func setBlockHeight(height: UInt32) {
         blockHeight = height
-    }
-
-    func getFeeRateHigh() -> UInt64 {
-        do {
-            let json = try getSession().getFeeEstimates()
-            let estimates = json!["fees"] as! NSArray
-            let result = estimates[2] as! UInt64
-            return result
-        } catch {
-            print("something went wrong")
-        }
-        return 0
-    }
-
-    func getFeeRateMedium() -> UInt64 {
-        do {
-            let json = try getSession().getFeeEstimates()
-            let estimates = json!["fees"] as! NSArray
-            let result = estimates[6] as! UInt64
-            return result
-        } catch {
-            print("something went wrong")
-        }
-        return 0
-    }
-
-    func getFeeRateLow() -> UInt64 {
-        do {
-            let json = try getSession().getFeeEstimates()
-            let estimates = json!["fees"] as! NSArray
-            let result = estimates[12] as! UInt64
-            return result
-        } catch {
-            print("something went wrong")
-        }
-        return 0
-    }
-
-    func getFeeRateMin() -> UInt64 {
-        do {
-            let json = try getSession().getFeeEstimates()
-            let estimates = json!["fees"] as! NSArray
-            let result = estimates[0] as! UInt64
-            return result
-        } catch {
-            print("something went wrong")
-        }
-        return 0
-    }
-
-    func dateFromTimestamp(date: String) -> Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return dateFormatter.date(from: date)!
     }
 
     @objc func incomingTransaction(_ notification: NSNotification) {

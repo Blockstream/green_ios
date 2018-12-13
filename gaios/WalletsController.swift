@@ -110,20 +110,16 @@ class WalletsController: UIViewController, WalletViewDelegate {
     }
 
     func refreshBalance() {
-        AccountStore.shared.GDKQueue.async{
-            for wallet in self.wallets {
-                do {
-                    let balance = try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
-                    DispatchQueue.main.async {
-                        let satoshi = balance!["satoshi"] as! UInt64
-                        wallet.satoshi = satoshi
-                        self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: String(satoshi))
-                    }
-                } catch {
-                    print("error updating balance")
-                }
+        let balances = self.wallets.map { wallet in
+            wallet.getBalance().get { satoshi in
+                self.walletView.updateBalance(forCardview: Int(wallet.pointer), sat: satoshi)
             }
         }
+        var promise = Promise()
+        for p in balances {
+            promise = promise.then { p.asVoid() }
+        }
+        promise.done { _ in }.catch { _ in }
     }
 
     override func viewWillDisappear(_ animated: Bool) {

@@ -190,6 +190,18 @@ class WalletItem : Codable {
         receiveAddress = generateNewAddress()
         return receiveAddress ?? String()
     }
+
+    func getBalance() -> Promise<UInt64> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().compactMap(on: bgq) {
+            try getSession().getBalance(subaccount: self.pointer, numConfs: 0)
+        }.compactMap(on: bgq) { balance in
+            return balance["satoshi"] as? UInt64
+        }.compactMap { satoshi in
+            self.satoshi = satoshi
+            return satoshi
+        }
+    }
 }
 
 class Wallets : Codable {
