@@ -20,11 +20,6 @@ class ReceiveBtcViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
-        //walletAddressLabel.text = receiveAddress
-        let address = wallet?.getAddress()
-        walletAddressLabel.text = address
-        receiveAddress = address
-        updateQRCode()
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
 
@@ -34,10 +29,21 @@ class ReceiveBtcViewController: KeyboardViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
         walletQRCode.isUserInteractionEnabled = true
         walletQRCode.addGestureRecognizer(tap)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
         //receiveLabel.text = NSLocalizedString("id_receive", comment: "")
         amountLabel.text = NSLocalizedString("id_amount", comment: "")
         shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+        let address = wallet?.getAddress()
+        walletAddressLabel.text = address
+        receiveAddress = address
+        updateQRCode()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
     }
 
     @objc func newAddress(_ notification: NSNotification) {

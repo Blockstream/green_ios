@@ -63,7 +63,7 @@ class AddressDetailViewController: UIViewController {
             wallet?.receiveAddress = address
             receiveAddressLabel.text = wallet?.getAddress()
             updateQRCode()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "addressChanged"), object: nil, userInfo: ["pointer" : wallet?.pointer])
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, userInfo: ["pointer" : wallet?.pointer])
         } catch {
             print("unable to get receive address")
         }

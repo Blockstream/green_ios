@@ -206,7 +206,6 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
             let _ = try DummyResolve(call: resolver)
         }.done { _ in
             Storage.wipeAll()
-            AccountStore.shared.initializeAccountStore()
             self.performSegue(withIdentifier: "next", sender: self)
         }.catch { error in
             var message = "Login Failed"

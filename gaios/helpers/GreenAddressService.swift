@@ -2,11 +2,20 @@ import Foundation
 import UIKit
 import PromiseKit
 
+enum EventType: String {
+    case Block = "block"
+    case Transaction = "transaction"
+    case TwoFactorReset = "twofactor_reset"
+    case Settings = "settings"
+    case AddressChanged = "address_changed"
+}
+
 class GreenAddressService: SessionNotificationDelegate {
 
     private var session: Session = try! Session()
     private var settings: Settings?
     private var twoFactorReset: TwoFactorReset?
+    private var events = Events([])
 
     public init() {
         Session.delegate = self
@@ -24,11 +33,8 @@ class GreenAddressService: SessionNotificationDelegate {
         return twoFactorReset
     }
 
-    enum EventType: String {
-        case Block = "block"
-        case Transaction = "transaction"
-        case TwofactorReset = "twofactor_reset"
-        case Settings = "settings"
+    func getEvents() -> Events {
+        return events
     }
 
     func newNotification(notification: [String : Any]?) {
@@ -40,37 +46,53 @@ class GreenAddressService: SessionNotificationDelegate {
             case .Block:
                 let blockHeight = data["block_height"] as! UInt32
                 AccountStore.shared.setBlockHeight(height: blockHeight)
+                post(event: .Block, data: data)
                 break
             case .Transaction:
-                let type = data["type"] as! String
-                let hash = data["txhash"] as! String
-                var subaccounts = Array<Int>()
-                if let accounts = data["subaccounts"] as? [Int] {
-                    subaccounts.append(contentsOf: accounts)
-                }
-                if let account = data["subaccounts"] as? Int {
-                    subaccounts.append(account)
-                }
+                let json = try! JSONSerialization.data(withJSONObject: data, options: [])
+                let txEvent = try! JSONDecoder().decode(TransactionEvent.self, from: json)
+                events.append(Event(type: .Transaction, value: data))
+                post(event: .Transaction, data: data)
+
                 // TODO refactoring notifications
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "transaction"), object: nil, userInfo: ["subaccounts" : subaccounts])
-                if (type == "incoming") {
-                    print("incoming transaction")
+                if txEvent.type == "incoming" {
+                    updateSubAccounts(txEvent.subAccounts)
                     DispatchQueue.main.async {
                         self.showIncomingNotification()
                     }
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "incomingTX"), object: nil, userInfo: ["subaccounts" : subaccounts])
-                } else if (type == "outgoing"){
-                    print("outgoing transaction")
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "outgoingTX"), object: nil, userInfo: ["subaccounts" : subaccounts, "txhash" : hash])
                 }
                 break
-            case .TwofactorReset:
+            case .TwoFactorReset:
                 let json = try! JSONSerialization.data(withJSONObject: data, options: [])
                 self.twoFactorReset = try! JSONDecoder().decode(TwoFactorReset.self, from: json)
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "twoFactorReset"), object: nil, userInfo: ["twoFactorReset" : dict])
+                events.append(Event(type: .TwoFactorReset, value: data))
+                post(event: .TwoFactorReset, data: data)
             case .Settings:
                 let json = try! JSONSerialization.data(withJSONObject: data, options: [])
                 self.settings = try! JSONDecoder().decode(Settings.self, from: json)
+                post(event: .Settings, data: data)
+            default:
+                break
+        }
+    }
+
+    func post(event: EventType, data: [String: Any]) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue), object: nil, userInfo: data)
+    }
+
+    func updateSubAccounts(_ accounts: [Int]) {
+        for account in accounts {
+            let pointer = UInt32(account)
+            let bgq = DispatchQueue.global(qos: .background)
+            Guarantee().then(on: bgq) {
+                AccountStore.shared.getWallets(cached: true)
+            }.compactMap(on: bgq) { (wallets: [WalletItem]) in
+                for wallet in wallets {
+                    wallet.receiveAddress = try self.getSession().getReceiveAddress(subaccount: wallet.pointer)
+                }
+            }.done {_ in
+                self.post(event: .AddressChanged, data: ["pointer": pointer])
+            }
         }
     }
 

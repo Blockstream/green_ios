@@ -23,19 +23,15 @@ class TransactionsController: UITableViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.bounces = true
         tableView.alwaysBounceVertical = true
-
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "incomingTX"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: "outgoingTX"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
-
-        loadTransactions()
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+        reloadWalletCardView(tableView.tableHeaderView as! WalletCardHeader)
+        loadTransactions()
         updateBalance()
     }
 
@@ -47,32 +43,48 @@ class TransactionsController: UITableViewController {
         }.done { _ in }.catch { _ in }
     }
 
-    @objc func refreshTransactions(_ notification: NSNotification) {
-        updateBalance()
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+    }
 
-        if let dict = notification.userInfo as NSDictionary? {
-            if let accounts = dict["subaccounts"] as? NSArray {
-                for acc in accounts {
-                    if (acc as! UInt32) == presentingWallet?.pointer {
-                        loadTransactions()
-                    }
-                }
+    @objc func refreshTransactions(_ notification: NSNotification) {
+        guard let dict = notification.userInfo as NSDictionary? else { return }
+        var subaccounts = [UInt32]()
+        if notification.name.rawValue == EventType.Block.rawValue {
+            let saccounts = AccountStore.shared.wallets.map { return $0.pointer }
+            subaccounts.append(contentsOf: saccounts)
+        } else {
+            if let saccounts =  dict["subaccounts"] as! [UInt32]? {
+                subaccounts.append(contentsOf: saccounts)
+            }
+        }
+        if subaccounts.filter({ UInt32($0) == presentingWallet?.pointer }).count > 0 {
+            Guarantee().done {
+                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletCardHeader)
+                self.loadTransactions()
             }
         }
     }
 
     @objc func newAddress(_ notification: NSNotification) {
-        if let dict = notification.userInfo as NSDictionary? {
-            let pointer = dict["pointer"] as! UInt32
-            if presentingWallet?.pointer == pointer {
-                guard let wallet = tableView.tableHeaderView as? WalletCardHeader else {
-                    return
-                }
-                let address = presentingWallet?.getAddress()
-                wallet.addressLabel.text = address
-                let uri = bip21Helper.btcURIforAddress(address: address!)
-                wallet.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: wallet.qrImageView.frame)
+        guard let dict = notification.userInfo as NSDictionary? else { return }
+        guard let pointer = dict["pointer"] as? UInt32 else { return }
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().compactMap(on: bgq) {_ in
+            let wallets = AccountStore.shared.wallets.filter{ $0.pointer == pointer }
+            if wallets.count == 0 {
+                throw GaError.GenericError
             }
+            return wallets[0].getAddress()
+        }.done { (address: String) in
+            guard let wallet = self.tableView.tableHeaderView as? WalletCardHeader else { return }
+            self.presentingWallet?.receiveAddress = address
+            wallet.addressLabel.text = address
+            let uri = bip21Helper.btcURIforAddress(address: address)
+            wallet.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: wallet.qrImageView.frame)
+        }.catch { _ in
         }
     }
 
@@ -162,27 +174,35 @@ class TransactionsController: UITableViewController {
     }
 
     func getWalletCardView() -> WalletCardHeader? {
-        guard let wallet = presentingWallet else { return nil }
-
         let view: WalletCardHeader = ((Bundle.main.loadNibNamed("WalletCardHeader", owner: self, options: nil)![0] as? WalletCardHeader)!)
-
-        view.addressLabel.text = wallet.getAddress()
-        view.nameLabel.text = wallet.localizedName()
-        view.nameLabel.textColor = UIColor.customMatrixGreen()
-        view.index = Int(wallet.pointer)
-        view.wallet = wallet
-        view.balanceLabel.textColor = UIColor.white
-        let uri = bip21Helper.btcURIforAddress(address: wallet.getAddress())
-        view.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: view.qrImageView.frame)
-
+        view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.receiveToWallet)))
+        view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.self.sendfromWallet)))
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
         view.qrImageView.isUserInteractionEnabled = true
         view.qrImageView.addGestureRecognizer(tap)
-        view.sendView.isHidden = AccountStore.shared.isWatchOnly
-        view.dividerView.isHidden = AccountStore.shared.isWatchOnly
-        view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.receiveToWallet)))
-        view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.self.sendfromWallet)))
         return view
+    }
+
+    func reloadWalletCardView(_ view: WalletCardHeader){
+        guard let wallet = presentingWallet else { return }
+        Guarantee().compactMap {
+            return try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
+        }.compactMap { balance in
+            let satoshi = balance["satoshi"] as! UInt64
+            wallet.satoshi = satoshi
+        }.done {_ in
+            view.balanceLabel.text = String.formatBtc(satoshi: wallet.satoshi)
+            view.addressLabel.text = wallet.getAddress()
+            view.nameLabel.text = wallet.localizedName()
+            view.nameLabel.textColor = UIColor.customMatrixGreen()
+            view.index = Int(wallet.pointer)
+            view.wallet = wallet
+            view.balanceLabel.textColor = UIColor.white
+            let uri = bip21Helper.btcURIforAddress(address: wallet.getAddress())
+            view.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: view.qrImageView.frame)
+            view.sendView.isHidden = AccountStore.shared.isWatchOnly
+            view.dividerView.isHidden = AccountStore.shared.isWatchOnly
+        }
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {

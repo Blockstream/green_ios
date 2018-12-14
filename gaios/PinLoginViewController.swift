@@ -82,7 +82,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             let jsonData = try JSONSerialization.data(withJSONObject: $0)
             try getSession().loginWithPin(pin: withPIN ?? $0["plaintext_biometric"] as! String, pin_data: String(data: jsonData, encoding: .utf8)!)
         }.done {
-            AccountStore.shared.initializeAccountStore()
             self.performSegue(withIdentifier: "main", sender: self)
         }.catch { error in
             let authError = error as? AuthenticationTypeHandler.AuthError

@@ -25,8 +25,33 @@ class TransactionDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        hashTitle.text = NSLocalizedString("id_hash", comment: "")
+        dateTitle.text = NSLocalizedString("id_date", comment: "")
+        feeTitle.text = NSLocalizedString("id_fee", comment: "")
+        amountTitle.text = NSLocalizedString("id_amount", comment: "")
+        memoTitle.text = NSLocalizedString("id_memo", comment: "")
+        feeButton.setTitle(NSLocalizedString("id_increase_fee", comment: ""), for: .normal)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+        feeButton.layoutIfNeeded()
+        feeButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         updateUI()
-        feeButton.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+    }
+
+    func updateUI() {
+        hashLabel.text = transaction.hash
+        amountLabel.text = transaction.amount()
+        feeLabel.text = feeText(fee: transaction.fee, size: transaction.size)
+        memoLabel.text = transaction.memo
+        dateLabel.text = transaction.date()
         if transaction.blockHeight == 0 {
             warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
         } else if AccountStore.shared.getBlockheight() - (transaction.blockHeight) < 6 {
@@ -38,23 +63,9 @@ class TransactionDetailViewController: UIViewController {
         }
         if transaction.canRBF {
             feeButton.isHidden = false
+        } else {
+            feeButton.isHidden = true
         }
-
-        hashTitle.text = NSLocalizedString("id_hash", comment: "")
-        dateTitle.text = NSLocalizedString("id_date", comment: "")
-        feeTitle.text = NSLocalizedString("id_fee", comment: "")
-        amountTitle.text = NSLocalizedString("id_amount", comment: "")
-        memoTitle.text = NSLocalizedString("id_memo", comment: "")
-        feeButton.setTitle(NSLocalizedString("id_increase_fee", comment: ""), for: .normal)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: "outgoingTX"), object: nil)
-    }
-
-    func updateUI() {
-        hashLabel.text = transaction.hash
-        amountLabel.text = transaction.amount()
-        feeLabel.text = feeText(fee: transaction.fee, size: transaction.size)
-        memoLabel.text = transaction.memo
-        dateLabel.text = transaction.date()
     }
 
     @objc func refreshTransaction(_ notification: NSNotification) {
@@ -62,6 +73,9 @@ class TransactionDetailViewController: UIViewController {
         // an outgoing transaction. Probably needs to be extended to include actual pertinent
         // information in the case of an RBF but can be argued this controller shouldn't
         // be listening for notifications on behalf of the parent.
+        Guarantee().done {
+            self.updateUI()
+        }
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
@@ -96,11 +110,5 @@ class TransactionDetailViewController: UIViewController {
     func feeText(fee: UInt64, size: UInt64) -> String {
         let perbyte = Double(fee/size)
         return String(format: "Transaction fee is %d satoshi, %.2f satoshi per byte", fee, perbyte)
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        feeButton.layoutIfNeeded()
-        feeButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 }

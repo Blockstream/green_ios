@@ -15,19 +15,38 @@ class WalletsController: UIViewController, WalletViewDelegate {
         walletView.presentedFooterView.receiveButton.addTarget(self, action: #selector(self.receiveToWallet(_:)), for: .touchUpInside)
         walletView.presentedFooterView.sendButton.addTarget(self, action: #selector(self.sendfromWallet(_:)), for: .touchUpInside)
         walletView.delegate = self
-        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: "addressChanged"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.resetChanged(_:)), name: NSNotification.Name(rawValue: "twoFactorReset"), object: nil)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.resetChanged(_:)), name: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refresh(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        refresh(nil)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        //walletView.dismissPresentedCardView(animated: true)
+    }
+
+    @objc func refresh(_ notification: NSNotification?) {
         updateWallet()
+        self.refreshWallets()
+        self.refreshBalance()
     }
 
     func updateWallet() {
-        guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
-        if twoFactorReset.isResetActive {
-            warningLabel.text = NSLocalizedString("id_twofactor_reset_in_progress", comment: "")
-            warningLabel.isHidden = false
-        } else {
-            warningLabel.isHidden = true
+        Guarantee().compactMap {
+            return getGAService().getTwoFactorReset()
+        }.done { twoFactorReset in
+            if twoFactorReset.isResetActive {
+                self.warningLabel.text = NSLocalizedString("id_twofactor_reset_in_progress", comment: "")
+            }
+            self.warningLabel.isHidden = !twoFactorReset.isResetActive
         }
+
     }
 
     @objc func resetChanged(_ notification: NSNotification) {
@@ -81,30 +100,14 @@ class WalletsController: UIViewController, WalletViewDelegate {
         walletView.reload(cardViews: coloredCardViews)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        DispatchQueue.global(qos: .background).async {
-            // Background Thread
-            if(self.wallets.count == 0) {
-                self.refreshWallets()
-            } else {
-                self.refreshBalance()
-            }
-        }
-    }
-
     func refreshWallets() {
-        AccountStore.shared.getWallets(cached: true).done { accounts in
-            guard !accounts.isEmpty else {
-                return
-            }
-
-            DispatchQueue.main.async {
-                // Run UI Updates or call completion block
-                self.walletView.remove(cardViews: self.walletView.insertedCardViews)
-                self.wallets = accounts
-                self.reloadWallets()
-            }
+        Guarantee().then {
+            AccountStore.shared.getWallets(cached: true)
+        }.done { accounts in
+            guard !accounts.isEmpty else { return }
+            self.walletView.remove(cardViews: self.walletView.insertedCardViews)
+            self.wallets = accounts
+            self.reloadWallets()
         }.catch { _ in
         }
     }
@@ -120,11 +123,6 @@ class WalletsController: UIViewController, WalletViewDelegate {
             promise = promise.then { p.asVoid() }
         }
         promise.done { _ in }.catch { _ in }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        //walletView.dismissPresentedCardView(animated: true)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

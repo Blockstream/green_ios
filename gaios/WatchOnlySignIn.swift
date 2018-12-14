@@ -43,7 +43,6 @@ class WatchOnlySignIn: KeyboardViewController, NVActivityIndicatorViewable {
             try getSession().loginWatchOnly(username: username!, password: password!)
         }.done {
             AccountStore.shared.isWatchOnly = true
-            AccountStore.shared.initializeAccountStore()
             self.performSegue(withIdentifier: "main", sender: nil)
         }.catch { error in
             DispatchQueue.main.async{

@@ -108,7 +108,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                             DispatchQueue.main.async {
                                 self.stopAnimating()
                                 Storage.wipeAll()
-                                AccountStore.shared.initializeAccountStore()
                                 self.performSegue(withIdentifier: "pin", sender: self)
                             }
                         }.catch { error in
