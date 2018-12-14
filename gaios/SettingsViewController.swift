@@ -417,7 +417,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.stopAnimating()
         }.done { _ in
         }.catch {_ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_failure", comment: ""))
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_username_not_available", comment: ""))
         }
     }
 
