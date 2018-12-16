@@ -131,7 +131,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             section: .twoFactor,
             type: .ThresholdTwoFactor)
         let locktimeRecovery = SettingsItem(
-            title: NSLocalizedString("id_enable_nlocktime_recovery_emails", comment: ""),
+            title: NSLocalizedString("id_nlocktime_transaction_emails", comment: ""),
             subtitle: locktimeRecoveryEnable ? "Enabled" : "Disabled",
             section: .twoFactor,
             type: .LockTimeRecovery)
@@ -344,7 +344,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if let notifications = settings.notifications {
                 enabled = notifications.emailOutgoing == true
             }
-            let alert = UIAlertController(title: NSLocalizedString("id_enable_nlocktime_recovery_emails", comment: ""), message: "", preferredStyle: .actionSheet)
+            let alert = UIAlertController(title: NSLocalizedString("id_nlocktime_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: "Enable", style: enabled ? .destructive : .default) { _ in
                 self.setRecoveryEmail(true)
             })

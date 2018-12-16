@@ -36,7 +36,7 @@
 "id_cant_connect_to_this_url" = "Can't connect to this URL";
 "id_change" = "CHANGE";
 "id_choose" = "Choose";
-"id_choose_twofactor_authentication" = "Choose Two-Factor Authentication method";
+"id_choose_twofactor_authentication" = "Choose Two-Factor authentication method";
 "id_clear" = "CLEAR";
 "id_completed" = "Completed";
 "id_confirmation" = "Confirmation";
@@ -44,6 +44,8 @@
 "id_confirmation_in_24_blocks_4" = "Confirmation in 24 blocks, 4 hours on average";
 "id_confirmation_in_3_blocks_30" = "Confirmation in 3 blocks, 30 minutes on average";
 "id_congratulations" = "Congratulations!";
+"id_connect_through_a_proxy" = "Connect through a proxy";
+"id_connect_with_tor" = "Connect with Tor";
 "id_connecting_to_tor_onion_nodes" = "Connecting to Tor (.onion) nodes allows maximum privacy and security. Press \"OK\" to continue.";
 "id_continue" = "Continue";
 "id_copy_to_clipboard" = "Copy To Clipboard";
@@ -80,9 +82,7 @@
 "id_email_address" = "email address";
 "id_enable_custom_networks_debug" = "Enable custom networks debug options";
 "id_enable_face_id" = "Enable Face ID";
-"id_enable_nlocktime_recovery_emails" = "Enable nLocktime recovery emails";
 "id_enable_spv" = "Enable SPV";
-"id_enable_tor" = "Enable Tor";
 "id_enable_touch_id" = "Enable Touch ID";
 "id_enabled_1s" = "Enabled: %1$@";
 "id_enter" = "Enter";
@@ -179,6 +179,7 @@
 "id_next" = "Next";
 "id_nfc_logo" = "NFC Logo";
 "id_nfc_tags_written" = "NFC TAGs Written:";
+"id_nlocktime_transaction_emails" = "nLocktime transaction emails";
 "id_nlocktime_transaction_request" = "nLocktime transaction request sent";
 "id_no_amount_specified" = "No amount specified";
 "id_no_attempts_remaining" = "No attempts remaining";
@@ -199,6 +200,8 @@
 "id_outdated_hardware_wallet" = "Outdated hardware wallet firmware. Please upgrade to the latest firmware from your desktop.";
 "id_outgoing" = "Outgoing";
 "id_password" = "Password";
+"id_password_protected" = "Password protected";
+"id_paste" = "Paste";
 "id_pgp_key" = "PGP Key";
 "id_phone_call" = "Phone call";
 "id_phone_number" = "phone number";
@@ -222,7 +225,6 @@
 "id_receive" = "Receive";
 "id_received" = "Received";
 "id_received_on" = "Received on";
-"id_receiving" = "RECEIVING";
 "id_recipient" = "Recipient";
 "id_recovery_and_notifications" = "Recovery and Notifications";
 "id_recovery_words" = "Recovery words";
@@ -232,13 +234,11 @@
 "id_remember_me" = "Remember me";
 "id_remember_username" = "Remember username";
 "id_remove_custom_network" = "Remove custom network";
-"id_request" = "Request";
+"id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "Request Failed";
-"id_request_nlocktime" = "Request nLockTime";
 "id_request_nlocktime_transactions" = "Request nLocktime transactions";
 "id_request_sent" = "Request Sent";
 "id_request_twofactor_reset" = "Request Two-Factor reset";
-"id_request_will_send_nlocktimezip" = "Request will send nlocktime.zip to your email address";
 "id_requested_fee_rate_too_low" = "Requested fee rate too low";
 "id_reset_spv" = "Reset SPV";
 "id_restore" = "Restore";
@@ -266,7 +266,7 @@
 "id_set_a_new_pin" = "Set a new PIN";
 "id_set_custom_fee_rate" = "Set custom fee rate";
 "id_set_twofactor_threshold" = "Set Two-Factor Threshold";
-"id_set_up_twofactor_authentication" = "Set up Two-Factor Authentication";
+"id_set_up_twofactor_authentication" = "Set up Two-Factor authentication";
 "id_set_watchonly" = "Set Watch-Only";
 "id_setting_updated" = "Setting updated";
 "id_settings" = "Settings";
@@ -308,7 +308,7 @@
 "id_transaction_already_confirmed" = "Transaction already confirmed";
 "id_transaction_details" = "Transaction details";
 "id_transaction_sent" = "Transaction Sent";
-"id_twofactor_authentication" = "Two-Factor Authentication";
+"id_twofactor_authentication" = "Two-Factor authentication";
 "id_twofactor_reset_in_progress" = "Two-Factor reset in progress, your wallet is currently locked.";
 "id_twofactor_settings" = "Two-Factor Settings";
 "id_twofactor_threshold" = "Two-Factor threshold";
@@ -346,13 +346,11 @@
 "id_you_are_not_connected_to_the" = "You are not connected to the internet. Please connect and retry.";
 "id_you_have_full_control_of_your" = "You have full control of your funds.";
 "id_you_have_received_s" = "You have received %@";
-"id_you_must_enable_twofactor" = "You must enable Two-Factor Authentication before you can change this setting.";
 "id_you_must_first_log_out_before" = "You must first log out before logging in.";
 "id_you_must_save_this_mnemonic_now" = "You MUST save this mnemonic NOW";
 "id_you_need_to_enable_the_proxy" = "You need to enable the proxy configuration (Orbot Socks5) first to enable Tor.";
-"id_you_need_to_enable_twofactor" = "You need to enable Two-Factor Authentication before setting the threshold";
-"id_you_need_to_set_an_email" = "You need to set an email address to request nLocktime transactions";
 "id_you_only_have_one_twofactor" = "You only have one Two-Factor authentication method enabled.\nPlease enable another authentication method to avoid losing access to your funds.";
+"id_you_will_need_to_reenter_your" = "You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press \"OK\" to continue.";
 "id_your_green_wallet_is_now_ready" = "Your Green wallet is now ready to use.";
 "id_your_notifications_will_be" = "Your notifications will be shown here.";
 "id_your_s_sent_to_s_has_been" = "Your %@ sent to %@ has been confirmed";

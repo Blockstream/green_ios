@@ -33,7 +33,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
         // show title
         if (setPinMode == true) {
-            title = NSLocalizedString("id_set_a_new_pin", comment: "")
+            title = NSLocalizedString("id_create_a_pin_to_access_your", comment: "")
         } else {
             title = NSLocalizedString("id_enter_pin", comment: "")
         }
