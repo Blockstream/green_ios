@@ -12,7 +12,6 @@ class ReceiveBtcViewController: KeyboardViewController {
     @IBOutlet weak var fiatSwitchButton: UIButton!
     @IBOutlet weak var amountLabel: UILabel!
 
-    var receiveAddress: String? = nil
     var wallet: WalletItem? = nil
     var selectedType = TransactionType.FIAT
     var amount_g: Double = 0
@@ -24,8 +23,6 @@ class ReceiveBtcViewController: KeyboardViewController {
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
 
         amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        setButton()
-        updateEstimate()
         let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
         walletQRCode.isUserInteractionEnabled = true
         walletQRCode.addGestureRecognizer(tap)
@@ -36,10 +33,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
-        let address = wallet?.getAddress()
-        walletAddressLabel.text = address
-        receiveAddress = address
-        updateQRCode()
+        refresh()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -47,17 +41,22 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @objc func newAddress(_ notification: NSNotification) {
-        print(notification.userInfo ?? "")
-        if let dict = notification.userInfo as NSDictionary? {
-            if let pointer = dict["pointer"] as? Int {
-                if(pointer == Int(wallet!.pointer)) {
-                    let address = wallet?.getAddress()
-                    receiveAddress = address
-                    walletAddressLabel.text = address
-                    updateQRCode()
-                }
+        guard let dict = notification.userInfo as NSDictionary? else { return }
+        guard let pointer = dict["pointer"] as? UInt32 else { return }
+        guard let address = dict["address"] as? String else { return }
+        if wallet?.pointer == pointer {
+            wallet?.receiveAddress = address
+            DispatchQueue.main.async {
+                self.refresh()
             }
         }
+    }
+
+    func refresh() {
+        walletAddressLabel.text = wallet?.receiveAddress
+        updateQRCode()
+        setButton()
+        updateEstimate()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -131,10 +130,10 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func updateQRCode() {
         if (amount_g == 0) {
-            let uri = bip21Helper.btcURIforAddress(address: receiveAddress!)
+            let uri = bip21Helper.btcURIforAddress(address: wallet!.receiveAddress!)
             walletQRCode.image = QRImageGenerator.imageForTextDark(text: uri, frame: walletQRCode.frame)
         } else {
-            walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmount(address:self.receiveAddress!, amount: amount_g), frame: walletQRCode.frame)
+            walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmount(address: wallet!.receiveAddress!, amount: amount_g), frame: walletQRCode.frame)
         }
     }
 
@@ -148,9 +147,9 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @IBAction func shareButtonClicked(_ sender: Any) {
-        var uri: String = receiveAddress!
+        var uri: String = wallet!.receiveAddress!
         if (amount_g > 0) {
-            uri = bip21Helper.btcURIforAmount(address:self.receiveAddress!, amount: amount_g)
+            uri = bip21Helper.btcURIforAmount(address: wallet!.receiveAddress!, amount: amount_g)
         }
         let activityViewController = UIActivityViewController(activityItems: [uri] , applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self.view
@@ -158,7 +157,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @IBAction func copyButtonClicked(_ sender: Any) {
-        UIPasteboard.general.string = receiveAddress
+        UIPasteboard.general.string = wallet!.receiveAddress!
     }
 
 }

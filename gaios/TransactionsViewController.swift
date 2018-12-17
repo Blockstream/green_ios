@@ -64,6 +64,7 @@ class TransactionsController: UITableViewController {
             Guarantee().done {
                 self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletCardHeader)
                 self.loadTransactions()
+                self.updateBalance()
             }
         }
     }
@@ -71,20 +72,12 @@ class TransactionsController: UITableViewController {
     @objc func newAddress(_ notification: NSNotification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         guard let pointer = dict["pointer"] as? UInt32 else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {_ in
-            let wallets = AccountStore.shared.wallets.filter{ $0.pointer == pointer }
-            if wallets.count == 0 {
-                throw GaError.GenericError
-            }
-            return wallets[0].getAddress()
-        }.done { (address: String) in
-            guard let wallet = self.tableView.tableHeaderView as? WalletCardHeader else { return }
+        guard let address = dict["address"] as? String else { return }
+        if self.presentingWallet?.pointer == pointer {
             self.presentingWallet?.receiveAddress = address
-            wallet.addressLabel.text = address
-            let uri = bip21Helper.btcURIforAddress(address: address)
-            wallet.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: wallet.qrImageView.frame)
-        }.catch { _ in
+            DispatchQueue.main.async {
+                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletCardHeader)
+            }
         }
     }
 
@@ -225,7 +218,6 @@ class TransactionsController: UITableViewController {
         if let nextController = segue.destination as? SendBtcViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? ReceiveBtcViewController {
-            nextController.receiveAddress = presentingWallet?.getAddress()
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? TransactionDetailViewController {
             nextController.transaction = sender as? Transaction

@@ -81,19 +81,16 @@ class GreenAddressService: SessionNotificationDelegate {
     }
 
     func updateSubAccounts(_ accounts: [Int]) {
-        for account in accounts {
-            let pointer = UInt32(account)
-            let bgq = DispatchQueue.global(qos: .background)
-            Guarantee().then(on: bgq) {
-                AccountStore.shared.getWallets(cached: true)
-            }.compactMap(on: bgq) { (wallets: [WalletItem]) in
-                for wallet in wallets {
-                    wallet.receiveAddress = try self.getSession().getReceiveAddress(subaccount: wallet.pointer)
-                }
-            }.done {_ in
-                self.post(event: .AddressChanged, data: ["pointer": pointer])
+        let bgq = DispatchQueue.global(qos: .background)
+        AccountStore.shared.getWallets(cached: true).compactMap(on: bgq) { wallets in
+            let updates = wallets.filter { accounts.contains(Int($0.pointer)) }
+            return updates.map { $0.receiveAddress = $0.generateNewAddress(); return $0 }
+        }.done { (wallets: [WalletItem]) in
+            wallets.forEach { wallet in
+                guard let address = wallet.receiveAddress else { return }
+                self.post(event: .AddressChanged, data: ["pointer": wallet.pointer, "address": address])
             }
-        }
+        }.catch { _ in }
     }
 
     // TODO: remove from here
