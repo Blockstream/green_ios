@@ -2,8 +2,9 @@ import Foundation
 import PromiseKit
 import UIKit
 import AVFoundation
+import NVActivityIndicatorView
 
-class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
+class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var QRCodeReader: UIView!
@@ -111,14 +112,31 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate {
     func createTransaction(userInput: String) {
         guard let settings = getGAService().getSettings() else { return }
         let feeRate = settings.customFeeRate ?? 1000
-        let details: [String: Any] = sweepTransaction ? ["private_key": userInput, "fee_rate":  feeRate] : ["addressees": [["address": userInput]], "fee_rate":  feeRate]
+
+        self.uiErrorLabel.isHidden = true
+        startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+
+        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate]
         gaios.createTransaction(details: details).get { tx in
             self.transaction = tx
-        }.done { tx in
+        }.map { tx -> Promise<Transaction> in
+            if tx.error.isEmpty {
+                self.performSegue(withIdentifier: "next", sender: self)
+            } else if tx.error != "id_invalid_private_key" {
+                throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
+            }
+            let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate":  feeRate]
+            return gaios.createTransaction(details: details)
+        }.then { tx in
+            return tx
+        }.compactMap { tx in
+            self.transaction = tx
             if !tx.error.isEmpty && tx.error != "id_invalid_amount" && tx.error != "id_insufficient_funds" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
             self.performSegue(withIdentifier: "next", sender: self)
+        }.ensure {
+            self.stopAnimating()
         }.catch { error in
             if let txError = (error as? TransactionError) {
                 switch txError {
