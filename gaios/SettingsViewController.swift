@@ -375,11 +375,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     func resolvePopup(popup: PopupPromise, setting: @escaping (_ value: Any) throws -> TwoFactorCall, completing: @escaping () -> ()) {
         let bgq = DispatchQueue.global(qos: .background)
-        firstly {
+        popup.show().get {_ in
             self.startAnimating()
-            return Guarantee()
-        }.then {
-            popup.show()
         }.compactMap(on: bgq) { newValue in
             try setting(newValue)
         }.compactMap(on: bgq) { call in
@@ -389,14 +386,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.done { _ in
             completing()
         }.catch { error in
-            let text: String
-            if error is TwoFactorCallError {
-                switch error as! TwoFactorCallError {
-                case .failure(let localizedDescription):
-                    text = localizedDescription
-                }
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
+            self.showAlert(error)
+        }
+    }
+
+
+    func showAlert(_ error: Error) {
+        let text: String
+        if error is TwoFactorCallError {
+            switch error as! TwoFactorCallError {
+            case .failure(let localizedDescription):
+                text = localizedDescription
             }
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
         }
     }
 
@@ -473,14 +475,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.done { _ in
             self.reloadData()
         }.catch { error in
-            let text: String
-            if error is TwoFactorCallError {
-                switch error as! TwoFactorCallError {
-                case .failure(let localizedDescription):
-                    text = localizedDescription
-                }
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
-            }
+            self.showAlert(error)
         }
     }
 
