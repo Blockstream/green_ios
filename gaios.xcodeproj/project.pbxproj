@@ -11,12 +11,7 @@
 		0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */; };
 		0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14B211912AE0008F94A /* InstructionViewController.swift */; };
 		092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */; };
-		092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */; };
-		092C7BCC20D238BE00F90DF2 /* WalletsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC820D238BD00F90DF2 /* WalletsController.swift */; };
 		092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */; };
-		092C7BCE20D238BE00F90DF2 /* ColoredCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092C7BCA20D238BE00F90DF2 /* ColoredCardView.xib */; };
-		092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BCF20D23DBD00F90DF2 /* CardView.swift */; };
-		092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD020D23DBD00F90DF2 /* WalletView.swift */; };
 		092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD420D599D700F90DF2 /* UIView+helpers.swift */; };
 		092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */; };
 		092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */; };
@@ -28,15 +23,11 @@
 		092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */; };
 		092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D5C6320C04D130077048C /* CreateWalletViewController.swift */; };
 		092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092E1EAF20CF993700362253 /* UIColor+Hex.swift */; };
-		092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092F5DE920F1619D007356F2 /* cardFooter.swift */; };
-		092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092F5DEB20F16353007356F2 /* cardFooter.xib */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
 		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
-		09309F272136888C00DE093B /* DenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F262136888C00DE093B /* DenominationCell.swift */; };
 		0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */; };
 		0933A599210716EC00C43838 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0933A598210716EC00C43838 /* GreenAddress.swift */; };
 		09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD721001A5E009DCDEA /* SettingsViewController.swift */; };
-		09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD921003961009DCDEA /* SettingsCell.swift */; };
 		09342FDC21004309009DCDEA /* CustomAlertInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FDB21004309009DCDEA /* CustomAlertInputView.swift */; };
 		093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D5212E844400134235 /* CurrencySelectorViewController.swift */; };
 		093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D7212E86DF00134235 /* CurrencyCell.swift */; };
@@ -48,8 +39,6 @@
 		09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* EditScreenLockSettings.swift */; };
 		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
-		0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0967BF5920DB58ED0062A653 /* WalletCard.xib */; };
-		0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0967BF5B20DB59560062A653 /* WalletTableCell.swift */; };
 		097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C9218068850089C379 /* AddressDetailViewController.swift */; };
 		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
 		0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */; };
@@ -120,12 +109,7 @@
 		0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionSettings.swift; sourceTree = "<group>"; };
 		0926C14B211912AE0008F94A /* InstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionViewController.swift; sourceTree = "<group>"; };
 		092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmailViewController.swift; sourceTree = "<group>"; };
-		092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColoredCardView.swift; sourceTree = "<group>"; };
-		092C7BC820D238BD00F90DF2 /* WalletsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsController.swift; sourceTree = "<group>"; };
 		092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
-		092C7BCA20D238BE00F90DF2 /* ColoredCardView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ColoredCardView.xib; sourceTree = "<group>"; };
-		092C7BCF20D23DBD00F90DF2 /* CardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
-		092C7BD020D23DBD00F90DF2 /* WalletView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		092C7BD420D599D700F90DF2 /* UIView+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+helpers.swift"; sourceTree = "<group>"; };
 		092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableCell.swift; sourceTree = "<group>"; };
 		092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotificationTableCell.xib; sourceTree = "<group>"; };
@@ -137,15 +121,11 @@
 		092D5C6120BEE9B10077048C /* VerifyMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyMnemonicsViewController.swift; sourceTree = "<group>"; };
 		092D5C6320C04D130077048C /* CreateWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateWalletViewController.swift; sourceTree = "<group>"; };
 		092E1EAF20CF993700362253 /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
-		092F5DE920F1619D007356F2 /* cardFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cardFooter.swift; sourceTree = "<group>"; };
-		092F5DEB20F16353007356F2 /* cardFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = cardFooter.xib; sourceTree = "<group>"; };
 		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
-		09309F262136888C00DE093B /* DenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationCell.swift; sourceTree = "<group>"; };
 		0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterMnemonicsViewController.swift; sourceTree = "<group>"; };
 		0933A598210716EC00C43838 /* GreenAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = gdk/src/swift/GreenAddress/Sources/GreenAddress/GreenAddress.swift; sourceTree = "<group>"; };
 		09342FD721001A5E009DCDEA /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		09342FD921003961009DCDEA /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		09342FDB21004309009DCDEA /* CustomAlertInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertInputView.swift; sourceTree = "<group>"; };
 		093544D5212E844400134235 /* CurrencySelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectorViewController.swift; sourceTree = "<group>"; };
 		093544D7212E86DF00134235 /* CurrencyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCell.swift; sourceTree = "<group>"; };
@@ -157,8 +137,6 @@
 		09546B3621686053009BABFE /* EditScreenLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScreenLockSettings.swift; sourceTree = "<group>"; };
 		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
-		0967BF5920DB58ED0062A653 /* WalletCard.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCard.xib; sourceTree = "<group>"; };
-		0967BF5B20DB59560062A653 /* WalletTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTableCell.swift; sourceTree = "<group>"; };
 		097D20C9218068850089C379 /* AddressDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDetailViewController.swift; sourceTree = "<group>"; };
 		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
 		0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
@@ -250,20 +228,10 @@
 		092C7BC620D2381700F90DF2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				092C7BCF20D23DBD00F90DF2 /* CardView.swift */,
-				092C7BD020D23DBD00F90DF2 /* WalletView.swift */,
-				092C7BC720D238BD00F90DF2 /* ColoredCardView.swift */,
-				092C7BCA20D238BE00F90DF2 /* ColoredCardView.xib */,
-				092F5DE920F1619D007356F2 /* cardFooter.swift */,
-				092F5DEB20F16353007356F2 /* cardFooter.xib */,
-				0967BF5B20DB59560062A653 /* WalletTableCell.swift */,
-				0967BF5920DB58ED0062A653 /* WalletCard.xib */,
 				092D47F820EA2907005720F3 /* TransactionTableCell.swift */,
 				092D47F620EA28ED005720F3 /* TransactionTableCell.xib */,
 				092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */,
 				092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */,
-				09342FD921003961009DCDEA /* SettingsCell.swift */,
-				09309F262136888C00DE093B /* DenominationCell.swift */,
 				092C7BC920D238BD00F90DF2 /* UIViewExtension.swift */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
 				0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */,
@@ -380,7 +348,6 @@
 				097D20C9218068850089C379 /* AddressDetailViewController.swift */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
 				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
-				092C7BC820D238BD00F90DF2 /* WalletsController.swift */,
 				81E9B7FD21C90F74004D87B6 /* HomeViewController.swift */,
 				811EE25C219EC17800684AD8 /* TransactionsViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
@@ -559,13 +526,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
-				092C7BCE20D238BE00F90DF2 /* ColoredCardView.xib in Resources */,
 				81E9B80221C92EF7004D87B6 /* WalletCardView.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
-				0967BF5A20DB58ED0062A653 /* WalletCard.xib in Resources */,
 				0981927D217531E000D8434F /* Localizable.strings in Resources */,
 				092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */,
-				092F5DEC20F16353007356F2 /* cardFooter.xib in Resources */,
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
 				092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */,
@@ -751,7 +715,6 @@
 				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
-				0967BF5C20DB59560062A653 /* WalletTableCell.swift in Sources */,
 				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
@@ -768,10 +731,6 @@
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
-				09342FDA21003961009DCDEA /* SettingsCell.swift in Sources */,
-				09309F272136888C00DE093B /* DenominationCell.swift in Sources */,
-				092C7BCC20D238BE00F90DF2 /* WalletsController.swift in Sources */,
-				092F5DEA20F1619D007356F2 /* cardFooter.swift in Sources */,
 				81FABC2D21AEEFF000AE2ECD /* CongratsViewController.swift in Sources */,
 				09358BD62106A57D00D1066F /* CustomAletView.swift in Sources */,
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
@@ -800,7 +759,6 @@
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
-				092C7BCB20D238BE00F90DF2 /* ColoredCardView.swift in Sources */,
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
 				81E9B7FE21C90F74004D87B6 /* HomeViewController.swift in Sources */,
@@ -811,8 +769,6 @@
 				092C7BCD20D238BE00F90DF2 /* UIViewExtension.swift in Sources */,
 				81310C452189D10F00563B91 /* GDKHelper.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */,
-				092C7BD220D23DBD00F90DF2 /* WalletView.swift in Sources */,
-				092C7BD120D23DBD00F90DF2 /* CardView.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 				098192832176D05500D8434F /* CustomApplication.swift in Sources */,
