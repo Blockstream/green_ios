@@ -42,4 +42,19 @@ class HomeViewController: UICollectionViewController, UICollectionViewDelegateFl
         let width = self.view.frame.width - CGFloat(padding)
         return CGSize(width: width, height: 180)
     }
+
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let wallet = wallets[indexPath.row]
+        self.performSegue(withIdentifier: "account", sender: wallet)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? TransactionsController {
+            guard let wallet = sender as? WalletItem else { return }
+            nextController.presentingWallet = wallet
+            Guarantee().map {
+                try! getSession().setCurrentSubaccount(subaccount: wallet.pointer)
+            }
+        }
+    }
 }

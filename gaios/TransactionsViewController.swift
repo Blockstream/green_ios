@@ -30,7 +30,7 @@ class TransactionsController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
-        reloadWalletCardView(tableView.tableHeaderView as! WalletCardHeader)
+        reloadWalletCardView(tableView.tableHeaderView as! WalletFullCardView)
         loadTransactions()
         updateBalance()
     }
@@ -38,8 +38,8 @@ class TransactionsController: UITableViewController {
     func updateBalance() {
         guard let wallet = presentingWallet else { return }
         wallet.getBalance().get { balance in
-            let view = self.tableView.tableHeaderView as! WalletCardHeader
-            view.balanceLabel.text = String.formatBtc(satoshi: wallet.satoshi)
+            let view = self.tableView.tableHeaderView as! WalletFullCardView
+            view.balance.text = String.formatBtc(satoshi: wallet.satoshi)
         }.done { _ in }.catch { _ in }
     }
 
@@ -62,7 +62,7 @@ class TransactionsController: UITableViewController {
         }
         if subaccounts.filter({ UInt32($0) == presentingWallet?.pointer }).count > 0 {
             Guarantee().done {
-                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletCardHeader)
+                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletFullCardView)
                 self.loadTransactions()
                 self.updateBalance()
             }
@@ -76,7 +76,7 @@ class TransactionsController: UITableViewController {
         if self.presentingWallet?.pointer == pointer {
             self.presentingWallet?.receiveAddress = address
             DispatchQueue.main.async {
-                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletCardHeader)
+                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletFullCardView)
             }
         }
     }
@@ -166,35 +166,27 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    func getWalletCardView() -> WalletCardHeader? {
-        let view: WalletCardHeader = ((Bundle.main.loadNibNamed("WalletCardHeader", owner: self, options: nil)![0] as? WalletCardHeader)!)
+    func getWalletCardView() -> WalletFullCardView? {
+        let view: WalletFullCardView = ((Bundle.main.loadNibNamed("WalletFullCardView", owner: self, options: nil)![0] as? WalletFullCardView)!)
         view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.receiveToWallet)))
         view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.self.sendfromWallet)))
-        let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
-        view.qrImageView.isUserInteractionEnabled = true
-        view.qrImageView.addGestureRecognizer(tap)
         return view
     }
 
-    func reloadWalletCardView(_ view: WalletCardHeader){
+    func reloadWalletCardView(_ view: WalletFullCardView){
         guard let wallet = presentingWallet else { return }
+        guard let settings = getGAService().getTwoFactorReset() else { return }
         Guarantee().compactMap {
             return try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
         }.compactMap { balance in
             let satoshi = balance["satoshi"] as! UInt64
             wallet.satoshi = satoshi
         }.done {_ in
-            view.balanceLabel.text = String.formatBtc(satoshi: wallet.satoshi)
-            view.addressLabel.text = wallet.getAddress()
-            view.nameLabel.text = wallet.localizedName()
-            view.nameLabel.textColor = UIColor.customMatrixGreen()
-            view.index = Int(wallet.pointer)
-            view.wallet = wallet
-            view.balanceLabel.textColor = UIColor.white
-            let uri = bip21Helper.btcURIforAddress(address: wallet.getAddress())
-            view.qrImageView.image = QRImageGenerator.imageForTextDark(text: uri, frame: view.qrImageView.frame)
-            view.sendView.isHidden = AccountStore.shared.isWatchOnly
-            view.dividerView.isHidden = AccountStore.shared.isWatchOnly
+            view.balance.text = String.formatBtc(satoshi: wallet.satoshi)
+            view.walletName.text = wallet.localizedName()
+            if settings.isResetActive {
+                view.actionsView.isHidden = true
+            }
         }
     }
 
@@ -208,10 +200,6 @@ class TransactionsController: UITableViewController {
 
     func showTransaction(tx: Transaction) {
         self.performSegue(withIdentifier: "detail", sender: tx)
-    }
-
-    @objc func zoomQR(recognizer: UITapGestureRecognizer) {
-        self.performSegue(withIdentifier: "address", sender: self)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
