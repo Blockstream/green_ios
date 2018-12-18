@@ -58,7 +58,7 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.errorLabel.isHidden = true
-            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
             try getSession().setTwoFactorLimit(details: details)

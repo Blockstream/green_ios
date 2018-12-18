@@ -94,8 +94,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func registerAndLogin(mnemonics: String) {
-        let size = CGSize(width: 30, height: 30)
-        startAnimating(size, message: "Registering...", messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+        startAnimating()
         DispatchQueue.global(qos: .background).async {
             wrap {
                     let call = try getSession().registerUser(mnemonic: mnemonics)

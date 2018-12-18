@@ -77,7 +77,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
 
         firstly {
             uiErrorLabel.isHidden = true
-            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
@@ -109,8 +109,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     }
 
     func executeOnDone() {
-        self.startAnimating(CGSize(width: 30, height: 30), message: "Transaction Sent", messageFont: nil, type: NVActivityIndicatorType.blank)
-        NVActivityIndicatorPresenter.sharedInstance.setMessage("Transaction Sent")
+        self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
             self.popBack(toControllerType: TransactionsController.self)

@@ -32,7 +32,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.errorLabel.isHidden = true
-            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
             try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])

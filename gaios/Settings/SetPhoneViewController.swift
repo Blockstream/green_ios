@@ -33,7 +33,7 @@ class SetPhoneViewController: KeyboardViewController, NVActivityIndicatorViewabl
         let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: self.textField.text!)
         firstly {
             self.errorLabel.isHidden = true
-            startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+            self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
             try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])

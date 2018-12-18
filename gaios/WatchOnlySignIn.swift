@@ -33,9 +33,8 @@ class WatchOnlySignIn: KeyboardViewController, NVActivityIndicatorViewable {
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
-            let size = CGSize(width: 30, height: 30)
             let message = NSLocalizedString("id_logging_in", comment: "")
-            startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            self.startAnimating(message: message)
             let username = self.usernameTextField.text
             let password = self.passwordTextField.text
             return .value((username!, password!))

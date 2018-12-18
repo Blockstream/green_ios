@@ -212,8 +212,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
             if let _ = error as? LoginError {
                 message = "Invalid Mnemonic"
             }
-            let size = CGSize(width: 30, height: 30)
-            self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.blank)
+            self.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
                 self.stopAnimating()
             }

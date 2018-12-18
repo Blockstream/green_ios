@@ -63,8 +63,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     fileprivate func startAnimation(message: String) -> Promise<Void> {
         return Promise<Void> { seal in
-            let size = CGSize(width: 30, height: 30)
-            self.startAnimating(size, message: message, messageFont: nil, type: NVActivityIndicatorType.ballRotateChase)
+            self.startAnimating(message: message)
             seal.fulfill(())
         }
     }

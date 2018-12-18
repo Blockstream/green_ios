@@ -376,7 +376,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func resolvePopup(popup: PopupPromise, setting: @escaping (_ value: Any) throws -> TwoFactorCall, completing: @escaping () -> ()) {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            startAnimating()
+            self.startAnimating()
             return Guarantee()
         }.then {
             popup.show()
