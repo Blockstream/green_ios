@@ -210,12 +210,6 @@ class TransactionsController: UITableViewController {
         } else if let nextController = segue.destination as? TransactionDetailViewController {
             nextController.transaction = sender as? Transaction
             nextController.wallet = presentingWallet
-        } else if let addressDetail = segue.destination as? AddressDetailViewController {
-            addressDetail.wallet = presentingWallet
-            addressDetail.providesPresentationContextTransitionStyle = true
-            addressDetail.definesPresentationContext = true
-            addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-            addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
         } else if let nextController = segue.destination as? TransactionsController {
             nextController.presentingWallet = presentingWallet
         }

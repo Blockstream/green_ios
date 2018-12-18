@@ -38,7 +38,6 @@
 		09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* EditScreenLockSettings.swift */; };
 		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
-		097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20C9218068850089C379 /* AddressDetailViewController.swift */; };
 		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
 		0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */; };
 		0981927D217531E000D8434F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0981927C217531E000D8434F /* Localizable.strings */; };
@@ -135,7 +134,6 @@
 		09546B3621686053009BABFE /* EditScreenLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScreenLockSettings.swift; sourceTree = "<group>"; };
 		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
-		097D20C9218068850089C379 /* AddressDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDetailViewController.swift; sourceTree = "<group>"; };
 		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
 		0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
 		0981927C217531E000D8434F /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
@@ -342,7 +340,6 @@
 				676FCF2D1F9D0CF800354E93 /* Info.plist */,
 				09342FDB21004309009DCDEA /* CustomAlertInputView.swift */,
 				09358BD52106A57D00D1066F /* CustomAletView.swift */,
-				097D20C9218068850089C379 /* AddressDetailViewController.swift */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
 				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
 				81E9B7FD21C90F74004D87B6 /* HomeViewController.swift */,
@@ -733,7 +730,6 @@
 				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
 				09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
-				097D20CA218068850089C379 /* AddressDetailViewController.swift in Sources */,
 				811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,

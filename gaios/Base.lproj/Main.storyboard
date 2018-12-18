@@ -3218,7 +3218,6 @@
                         <segue destination="zxH-Uq-pPW" kind="show" identifier="detail" id="m9D-Ww-ii0"/>
                         <segue destination="jsC-nu-G2U" kind="show" identifier="receive" id="g4H-sA-Rhj"/>
                         <segue destination="6PL-t1-BTP" kind="show" identifier="send" id="N3b-0p-Evi"/>
-                        <segue destination="nfu-fJ-eh9" kind="show" identifier="address" id="U22-Ed-8ep"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zxA-j3-WFJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3718,165 +3717,6 @@
             </objects>
             <point key="canvasLocation" x="12578" y="-2738"/>
         </scene>
-        <!--Address-->
-        <scene sceneID="c5A-n6-0f5">
-            <objects>
-                <viewController storyboardIdentifier="addressDetail" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="nfu-fJ-eh9" customClass="AddressDetailViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="KRr-AW-Ot1">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view alpha="0.84999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JDw-ur-xqO">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <color key="backgroundColor" red="0.027526069432497025" green="0.0031129433773458004" blue="0.003540748031809926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9xM-Sq-1oZ">
-                                <rect key="frame" x="16" y="39" width="288" height="490"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="B9S-Kz-a7A">
-                                        <rect key="frame" x="74" y="20" width="140" height="140"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="140" id="WGJ-QN-jpX"/>
-                                            <constraint firstAttribute="height" constant="140" id="rmv-XV-BlY"/>
-                                            <constraint firstAttribute="width" constant="140" id="y3I-SS-HCc"/>
-                                        </constraints>
-                                    </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="lF7-D6-vdH">
-                                        <rect key="frame" x="16" y="180" width="256" height="94"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="jjm-NF-SFj">
-                                        <rect key="frame" x="0.0" y="294" width="288" height="196"/>
-                                        <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aF8-aA-SKy">
-                                                <rect key="frame" x="0.0" y="0.0" width="288" height="1"/>
-                                                <color key="backgroundColor" name="customTitaniumMedium"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="1" id="Ia4-Rl-pyM"/>
-                                                </constraints>
-                                            </view>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dHS-TW-YB6">
-                                                <rect key="frame" x="0.0" y="1" width="288" height="48"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="48" id="19l-71-vVD"/>
-                                                </constraints>
-                                                <state key="normal" title="Generate new address">
-                                                    <color key="titleColor" name="customMatrixGreen"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="generateNewAddress:" destination="nfu-fJ-eh9" eventType="touchUpInside" id="kYA-KB-PEw"/>
-                                                </connections>
-                                            </button>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EYW-uK-jZS">
-                                                <rect key="frame" x="0.0" y="49" width="288" height="1"/>
-                                                <color key="backgroundColor" name="customTitaniumMedium"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="1" id="avT-m6-9Ee"/>
-                                                </constraints>
-                                            </view>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Shc-Gd-dj5">
-                                                <rect key="frame" x="0.0" y="50" width="288" height="48"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="48" id="r7q-gl-ZTz"/>
-                                                </constraints>
-                                                <state key="normal" title="Copy to clipboard">
-                                                    <color key="titleColor" name="customMatrixGreen"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="copyButtonClicked:" destination="nfu-fJ-eh9" eventType="touchUpInside" id="ZMZ-UW-GGR"/>
-                                                </connections>
-                                            </button>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ie6-IM-klx">
-                                                <rect key="frame" x="0.0" y="98" width="288" height="1"/>
-                                                <color key="backgroundColor" name="customTitaniumMedium"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="1" id="kzB-m0-WCb"/>
-                                                </constraints>
-                                            </view>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3es-RB-QEG">
-                                                <rect key="frame" x="0.0" y="99" width="288" height="48"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="48" id="ccl-p3-iod"/>
-                                                </constraints>
-                                                <state key="normal" title="Share">
-                                                    <color key="titleColor" name="customMatrixGreen"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="shareButtonClicked:" destination="nfu-fJ-eh9" eventType="touchUpInside" id="aOF-Pv-ZnT"/>
-                                                </connections>
-                                            </button>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y18-hC-XzM">
-                                                <rect key="frame" x="0.0" y="147" width="288" height="1"/>
-                                                <color key="backgroundColor" name="customTitaniumMedium"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="1" id="hIQ-qz-7bK"/>
-                                                </constraints>
-                                            </view>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hv3-zC-KX0">
-                                                <rect key="frame" x="0.0" y="148" width="288" height="48"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="48" id="c4C-7R-29i"/>
-                                                </constraints>
-                                                <state key="normal" title="Sweep from paper wallet">
-                                                    <color key="titleColor" name="customMatrixGreen"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="sweepButtonClicked:" destination="nfu-fJ-eh9" eventType="touchUpInside" id="gJr-MO-Xvw"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
-                                </subviews>
-                                <color key="backgroundColor" name="customLowerBar"/>
-                                <constraints>
-                                    <constraint firstItem="B9S-Kz-a7A" firstAttribute="centerX" secondItem="9xM-Sq-1oZ" secondAttribute="centerX" id="1RH-TZ-puy"/>
-                                    <constraint firstAttribute="bottom" secondItem="jjm-NF-SFj" secondAttribute="bottom" id="2C3-L7-RW8"/>
-                                    <constraint firstAttribute="height" constant="490" id="ARF-XF-pv4"/>
-                                    <constraint firstItem="lF7-D6-vdH" firstAttribute="top" secondItem="B9S-Kz-a7A" secondAttribute="bottom" constant="20" id="K8U-aO-i9G"/>
-                                    <constraint firstItem="lF7-D6-vdH" firstAttribute="centerX" secondItem="9xM-Sq-1oZ" secondAttribute="centerX" id="NrK-gg-a1P"/>
-                                    <constraint firstItem="lF7-D6-vdH" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" constant="16" id="O9q-Kf-85m"/>
-                                    <constraint firstItem="jjm-NF-SFj" firstAttribute="leading" secondItem="9xM-Sq-1oZ" secondAttribute="leading" id="R1f-Jz-ymj"/>
-                                    <constraint firstAttribute="trailing" secondItem="lF7-D6-vdH" secondAttribute="trailing" constant="16" id="Uz6-ih-Kgc"/>
-                                    <constraint firstItem="B9S-Kz-a7A" firstAttribute="top" secondItem="9xM-Sq-1oZ" secondAttribute="top" constant="20" id="bEY-US-FJR"/>
-                                    <constraint firstItem="jjm-NF-SFj" firstAttribute="top" secondItem="lF7-D6-vdH" secondAttribute="bottom" constant="20" id="s2c-Mq-c9S"/>
-                                    <constraint firstAttribute="trailing" secondItem="jjm-NF-SFj" secondAttribute="trailing" id="wYh-AP-uht"/>
-                                </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="8"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="JDw-ur-xqO" firstAttribute="top" secondItem="KRr-AW-Ot1" secondAttribute="top" id="8Ce-Qd-F67"/>
-                            <constraint firstItem="Gkf-w2-Eni" firstAttribute="trailing" secondItem="9xM-Sq-1oZ" secondAttribute="trailing" constant="16" id="PoP-yI-Uku"/>
-                            <constraint firstItem="9xM-Sq-1oZ" firstAttribute="centerY" secondItem="KRr-AW-Ot1" secondAttribute="centerY" id="Yxl-EN-0Px"/>
-                            <constraint firstAttribute="bottom" secondItem="JDw-ur-xqO" secondAttribute="bottom" id="iZ0-Ib-t9Q"/>
-                            <constraint firstItem="JDw-ur-xqO" firstAttribute="leading" secondItem="Gkf-w2-Eni" secondAttribute="leading" id="j5x-ig-RtY"/>
-                            <constraint firstItem="JDw-ur-xqO" firstAttribute="trailing" secondItem="Gkf-w2-Eni" secondAttribute="trailing" id="lqn-0w-HMH"/>
-                            <constraint firstItem="9xM-Sq-1oZ" firstAttribute="leading" secondItem="Gkf-w2-Eni" secondAttribute="leading" constant="16" id="t2E-GV-oyE"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="Gkf-w2-Eni"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Address" id="0Eh-ij-M5J">
-                        <barButtonItem key="backBarButtonItem" title=" " id="eAz-Wb-dep"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="backgroundView" destination="JDw-ur-xqO" id="VRR-Gu-Sp1"/>
-                        <outlet property="qrImageView" destination="B9S-Kz-a7A" id="NXH-zW-x9f"/>
-                        <outlet property="receiveAddressLabel" destination="lF7-D6-vdH" id="0tU-wR-u3t"/>
-                        <outlet property="sweepButton" destination="Hv3-zC-KX0" id="qad-jx-5td"/>
-                        <segue destination="6PL-t1-BTP" kind="show" identifier="sweep" id="6du-SE-lGn"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gH6-BH-3RI" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="13991.25" y="481.6901408450704"/>
-        </scene>
         <!--Two-Factor treshold-->
         <scene sceneID="qcc-Ge-SXC">
             <objects>
@@ -4153,7 +3993,6 @@
         <segue reference="S0G-tL-SMV"/>
         <segue reference="EcC-We-I1f"/>
         <segue reference="nPw-9e-cll"/>
-        <segue reference="6du-SE-lGn"/>
         <segue reference="XOQ-Gh-RFa"/>
         <segue reference="4QF-E2-lEm"/>
         <segue reference="qmH-aQ-bII"/>
