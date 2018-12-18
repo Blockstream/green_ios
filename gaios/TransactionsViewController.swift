@@ -28,7 +28,6 @@ class TransactionsController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
         reloadWalletCardView(tableView.tableHeaderView as! WalletFullCardView)
         loadTransactions()
@@ -45,7 +44,6 @@ class TransactionsController: UITableViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
     }
 
@@ -65,18 +63,6 @@ class TransactionsController: UITableViewController {
                 self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletFullCardView)
                 self.loadTransactions()
                 self.updateBalance()
-            }
-        }
-    }
-
-    @objc func newAddress(_ notification: NSNotification) {
-        guard let dict = notification.userInfo as NSDictionary? else { return }
-        guard let pointer = dict["pointer"] as? UInt32 else { return }
-        guard let address = dict["address"] as? String else { return }
-        if self.presentingWallet?.pointer == pointer {
-            self.presentingWallet?.receiveAddress = address
-            DispatchQueue.main.async {
-                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletFullCardView)
             }
         }
     }
