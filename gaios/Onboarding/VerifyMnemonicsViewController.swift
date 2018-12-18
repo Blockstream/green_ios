@@ -98,11 +98,11 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         DispatchQueue.global(qos: .background).async {
             wrap {
                     let call = try getSession().registerUser(mnemonic: mnemonics)
-                    try DummyResolve(call: call)
+                    _ = try DummyResolve(call: call)
                 }.done { _ in
                     wrap {
                             let call = try getSession().login(mnemonic: mnemonics)
-                            try DummyResolve(call: call)
+                            _ = try DummyResolve(call: call)
                         }.done { _ in
                             DispatchQueue.main.async {
                                 self.stopAnimating()

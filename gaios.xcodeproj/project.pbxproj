@@ -14,7 +14,6 @@
 		092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD420D599D700F90DF2 /* UIView+helpers.swift */; };
 		092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */; };
 		092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */; };
-		092D05B12125623800B9B7CD /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05B02125623800B9B7CD /* Storage.swift */; };
 		092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05B221277E2E00B9B7CD /* Date+helpers.swift */; };
 		092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D47F420EA2570005720F3 /* NotificationsViewController.swift */; };
 		092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D47F620EA28ED005720F3 /* TransactionTableCell.xib */; };
@@ -108,7 +107,6 @@
 		092C7BD420D599D700F90DF2 /* UIView+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+helpers.swift"; sourceTree = "<group>"; };
 		092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableCell.swift; sourceTree = "<group>"; };
 		092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotificationTableCell.xib; sourceTree = "<group>"; };
-		092D05B02125623800B9B7CD /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		092D05B221277E2E00B9B7CD /* Date+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+helpers.swift"; sourceTree = "<group>"; };
 		092D47F420EA2570005720F3 /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
 		092D47F620EA28ED005720F3 /* TransactionTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionTableCell.xib; sourceTree = "<group>"; };
@@ -250,7 +248,6 @@
 				092D05B221277E2E00B9B7CD /* Date+helpers.swift */,
 				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
-				092D05B02125623800B9B7CD /* Storage.swift */,
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
 				811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */,
 				81D94CF021B93905003B03F9 /* Settings.swift */,
@@ -732,7 +729,6 @@
 				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				67B11D5421B0467E00D65B58 /* QRCodeReaderViewController.swift in Sources */,
-				092D05B12125623800B9B7CD /* Storage.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,

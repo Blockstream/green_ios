@@ -12,54 +12,9 @@ func getSession() -> Session {
     return getGAService().getSession()
 }
 
-var network: Network = Network.TestNet
-var proxyIp: String = ""
-var proxyPort: String = ""
-var torEnabled: Bool = false
-
-func getNetwork() -> Network {
-    return network
-}
-
-func setNetwork(net: Network) {
-    network = net
-    saveNetworkSettingsToDisk()
-}
-
-func setProxyIp(ip: String) {
-    proxyIp = ip
-    saveNetworkSettingsToDisk()
-}
-
-func setProxyPort(port: String) {
-    proxyPort = port
-    saveNetworkSettingsToDisk()
-}
-
-func setAllNetworkSettings(net: Network, ip: String, port: String, tor: Bool) {
-    network = net
-    proxyIp = ip
-    proxyPort = port
-    torEnabled = tor
-    saveNetworkSettingsToDisk()
-}
-
-class NetworkSettings: Codable {
-    let network: String
-    let ipAddress: String
-    let portNumber: String
-    let torEnabled: Bool
-
-    init(network: String, ipAddress: String, portNumber: String, torEnabled: Bool) {
-        self.network = network
-        self.ipAddress = ipAddress
-        self.portNumber = portNumber
-        self.torEnabled = torEnabled
-    }
-}
-
-func getNetworkSettings() -> NetworkSettings {
-    return NetworkSettings(network: getNetwork().rawValue, ipAddress:proxyIp, portNumber: proxyPort, torEnabled: torEnabled)
+func getNetwork() -> String {
+    let defaults = getUserNetworkSettings()
+    return (defaults?["network"] as? String ?? "Mainnet").lowercased()
 }
 
 func getGdkNetwork(_ network: String) throws -> [String: Any]? {
@@ -69,68 +24,6 @@ func getGdkNetwork(_ network: String) throws -> [String: Any]? {
     }
     return result![network] as? [String: Any]
 }
-
-func setDefaultNetworkSetings() {
-    setNetwork(net: Network.TestNet)
-    proxyPort = ""
-    proxyIp = ""
-}
-
-func stringForNetwork(net: Network) ->String {
-    if(net == Network.MainNet) {
-        return "MainNet"
-    } else if(net == Network.TestNet) {
-        return "TestNet"
-    } else if(net == Network.LocalTest) {
-        return "LocalTest"
-    } else {
-        return "RegTest"
-    }
-}
-
-func networkForString(net: String) -> Network {
-    if (net == "mainnet") {
-        return Network.MainNet
-    } else if (net == "testnet") {
-        return Network.TestNet
-    } else if (net == "localtest") {
-        return Network.LocalTest
-    } else {
-        return Network.RegTest
-    }
-}
-
-func loadNetworkSettings() {
-    guard let url = Storage.getDocumentsURL()?.appendingPathComponent("network.json") else {
-        setDefaultNetworkSetings()
-        return
-    }
-    let decoder = JSONDecoder()
-    do {
-        let data = try Data(contentsOf: url, options: [])
-        let network = try decoder.decode( NetworkSettings.self, from: data)
-        setNetwork(net: networkForString(net: network.network))
-        proxyPort = network.portNumber
-        proxyIp = network.ipAddress
-        torEnabled = network.torEnabled
-    } catch {
-        setDefaultNetworkSetings()
-    }
-}
-
-func saveNetworkSettingsToDisk() {
-    guard let url = Storage.getDocumentsURL()?.appendingPathComponent("network.json") else {
-        return
-    }
-    let encoder = JSONEncoder()
-    do {
-        let data = try encoder.encode(getNetworkSettings())
-        try data.write(to: url, options: [])
-    } catch {
-        print("error writing network settings to disk")
-    }
-}
-
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -173,18 +66,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     static func removeKeychainData() {
-        let network = getNetworkSettings().network
+        let network = getNetwork()
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
      }
 
     static func removeBioKeychainData() {
-        let network = getNetworkSettings().network
+        let network = getNetwork()
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
     }
 
     static func removePinKeychainData() {
-        let network = getNetworkSettings().network
+        let network = getNetwork()
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
     }
 
@@ -192,35 +85,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         finishedConnecting = false
         DispatchQueue.global(qos: .background).async {
             wrap {
-                let netset = getNetworkSettings()
-                if(netset.ipAddress != "" && netset.portNumber != "") {
-                    let uri = String(format: "socks5://%@:%@/", netset.ipAddress, netset.portNumber)
-                    try getSession().connectWithProxy(network: getNetwork(), proxy_uri: uri, use_tor: netset.torEnabled, debug: true)
-                } else {
-                    try getSession().connect(network: getNetwork(), debug: true)
-                }
+                let networkSettings = getUserNetworkSettings()
+                let networkName = ((networkSettings?["network"] as? String) ?? "mainnet").lowercased()
+                let useProxy = networkSettings?["proxy"] as? Bool ?? false
+                let socks5Hostname = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
+                let socks5Port = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
+                let useTor = networkSettings?["tor"] as? Bool ?? false
+                let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
+
+                try getSession().connectWithProxy(network: Network(rawValue: networkName)!, proxy_uri: proxyURI, use_tor: useTor, debug: networkName != "mainnet")
             }.done {
                 print("Connected")
                 self.finishedConnecting = true
             }.catch { error in
-                DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                    self.connect()
-                }
             }
         }
     }
 
     func disconnect() {
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                try getSession().disconnect()
-            }.done {
-                print("Disconnected")
-            }.catch { error in
-                DispatchQueue.global(qos: .background).asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                    self.disconnect()
-                }
-            }
+        do {
+            try getSession().disconnect()
+        } catch {
         }
     }
 
@@ -231,9 +116,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func lock() {
         connect()
-        print("locking now")
+
         self.window?.endEditing(true)
-        let network = getNetworkSettings().network
+        let network = getNetwork()
         let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
         let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
         if pinData || bioData {
@@ -251,22 +136,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
-        wrap {
-            try getSession().disconnect()
-        }.done {
-            AccountStore.shared.isWatchOnly = false
-        }.catch { error in
-            print("problem while logging out")
-        }
+        disconnect()
         lock()
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         setupNavigationColor()
         // Override point for customization after application launch.
-        loadNetworkSettings()
 
-        let network = getNetworkSettings().network
+        let network = getNetwork()
 
         // Generate a keypair to encrypt user data
         let initKey = network + "FirstInitialization"

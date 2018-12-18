@@ -66,7 +66,7 @@ class EditScreenLockSettings: UIViewController {
                 guard let result = result else {
                     return
                 }
-                let network = getNetworkSettings().network
+                let network = getNetwork()
                 try AuthenticationTypeHandler.addBiometryType(data: result, extraData: password, forNetwork: network)
             }.catch { error in
                 print("setPin failed")

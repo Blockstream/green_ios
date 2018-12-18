@@ -96,7 +96,7 @@ class TransactionDetailViewController: UIViewController {
 
     @IBAction func viewInExplorerClicked(_ sender: Any) {
         do {
-            let currentNetwork: String = getNetwork().rawValue.lowercased()
+            let currentNetwork: String = getNetwork().lowercased()
             let config = try getGdkNetwork(currentNetwork)
             let baseUrl = config!["tx_explorer_url"] as! String
             if let url = URL(string: baseUrl + transaction.hash) {

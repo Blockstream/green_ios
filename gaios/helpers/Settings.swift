@@ -185,7 +185,7 @@ class Settings: Codable {
     }
 
     func getScreenLock() -> ScreenLockType {
-        let network = getNetworkSettings().network
+        let network = getNetwork()
         let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
         let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
         if pinData && bioData {

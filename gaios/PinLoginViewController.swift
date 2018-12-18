@@ -46,7 +46,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         attempts.isHidden = true
 
         // customize network image
-        let network = getNetworkSettings().network
+        let network = getNetwork()
         let networkBarItem = UIBarButtonItem(image: UIImage(named: network)!, style: .plain, target: self, action: nil)
         navigationItem.rightBarButtonItem = networkBarItem
 
@@ -113,7 +113,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             let mnemonics = getAppDelegate().getMnemonicWordsString()
             return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 14))
         }.map(on: bgq) { (data: [String: Any]) -> Void in
-            let network = getNetworkSettings().network
+            let network = getNetwork()
             try AuthenticationTypeHandler.addPIN(data: data, forNetwork: network)
         }.done {
             if self.editPinMode {
@@ -137,7 +137,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             return
         }
 
-        let network = getNetworkSettings().network
+        let network = getNetwork()
         let bioAuth = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
         if bioAuth {
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, network: network, withPIN: nil)
@@ -189,7 +189,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             //show confirm pin
             title = "Confirm PIN"
         } else {
-            let network = getNetworkSettings().network
+            let network = getNetwork()
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN, network: network, withPIN: self.pinCode)
         }
     }

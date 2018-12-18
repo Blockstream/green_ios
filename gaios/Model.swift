@@ -250,3 +250,7 @@ func getFeeEstimates() -> [UInt64] {
     let estimates = try! getSession().getFeeEstimates()
     return estimates!["fees"] as! [UInt64]
 }
+
+func getUserNetworkSettings() -> [String: Any]? {
+    return UserDefaults.standard.value(forKey: "network_settings") as? [String: Any]
+}
