@@ -106,7 +106,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                         }.done { _ in
                             DispatchQueue.main.async {
                                 self.stopAnimating()
-                                Storage.wipeAll()
                                 self.performSegue(withIdentifier: "pin", sender: self)
                             }
                         }.catch { error in
