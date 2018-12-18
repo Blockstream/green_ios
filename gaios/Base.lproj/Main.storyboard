@@ -3015,9 +3015,9 @@
         <!--Wallet-->
         <scene sceneID="7fK-jx-vqZ">
             <objects>
-                <tableViewController hidesBottomBarWhenPushed="YES" id="C2t-ug-DjR" customClass="TransactionsController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="C2t-ug-DjR" customClass="TransactionsController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="UuB-Au-2Ty">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
