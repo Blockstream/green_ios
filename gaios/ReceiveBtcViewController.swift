@@ -21,12 +21,10 @@ class ReceiveBtcViewController: KeyboardViewController {
         self.tabBarController?.tabBar.isHidden = true
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
-
         amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(zoomQR))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(copyToClipboard))
         walletQRCode.isUserInteractionEnabled = true
         walletQRCode.addGestureRecognizer(tap)
-        //receiveLabel.text = NSLocalizedString("id_receive", comment: "")
         amountLabel.text = NSLocalizedString("id_amount", comment: "")
         shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
     }
@@ -38,6 +36,19 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+    }
+
+    @IBAction func refreshClick(_ sender: Any) {
+        let bgq = DispatchQueue.global(qos: .background)
+        AccountStore.shared.getWallets(cached: true).compactMap(on: bgq) { wallets in
+            let updates = wallets.filter { self.wallet?.pointer == $0.pointer }
+            return updates.map { $0.receiveAddress = $0.generateNewAddress(); return $0 }
+        }.done { (wallets: [WalletItem]) in
+            wallets.forEach { wallet in
+                guard let address = wallet.receiveAddress else { return }
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, userInfo: ["pointer": wallet.pointer, "address": address])
+            }
+        }.catch { _ in }
     }
 
     @objc func newAddress(_ notification: NSNotification) {
@@ -53,32 +64,16 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func refresh() {
-        walletAddressLabel.text = wallet?.receiveAddress
         updateQRCode()
         setButton()
         updateEstimate()
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let addressDetail = segue.destination as? AddressDetailViewController {
-            addressDetail.wallet = wallet
-            addressDetail.amount = amount_g
-            addressDetail.providesPresentationContextTransitionStyle = true
-            addressDetail.definesPresentationContext = true
-            addressDetail.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-            addressDetail.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        }
-    }
-
-    @objc func zoomQR(recognizer: UITapGestureRecognizer) {
-        self.performSegue(withIdentifier: "address", sender: self)
+    @objc func copyToClipboard(_ sender: Any) {
+        UIPasteboard.general.string = wallet!.getAddress()
     }
 
     @IBAction func switchButtonClicked(_ sender: Any) {
-        changeType()
-    }
-
-    func changeType() {
         guard let settings = getGAService().getSettings() else { return }
         let denomination = settings.denomination
         var amount: String = amountTextfield.text!
@@ -129,12 +124,15 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func updateQRCode() {
+        let uri: String
         if (amount_g == 0) {
-            let uri = bip21Helper.btcURIforAddress(address: wallet!.receiveAddress!)
-            walletQRCode.image = QRImageGenerator.imageForTextDark(text: uri, frame: walletQRCode.frame)
+            uri = bip21Helper.btcURIforAddress(address: wallet!.getAddress())
+            walletAddressLabel.text = wallet!.getAddress()
         } else {
-            walletQRCode.image = QRImageGenerator.imageForTextDark(text: bip21Helper.btcURIforAmount(address: wallet!.receiveAddress!, amount: amount_g), frame: walletQRCode.frame)
+            uri = bip21Helper.btcURIforAmount(address: wallet!.getAddress(), amount: amount_g)
+            walletAddressLabel.text = uri
         }
+        walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: walletQRCode.frame)
     }
 
     override func viewDidLayoutSubviews() {
@@ -147,19 +145,14 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @IBAction func shareButtonClicked(_ sender: Any) {
-        var uri: String = wallet!.receiveAddress!
+        var uri: String = wallet!.getAddress()
         if (amount_g > 0) {
-            uri = bip21Helper.btcURIforAmount(address: wallet!.receiveAddress!, amount: amount_g)
+            uri = bip21Helper.btcURIforAmount(address: wallet!.getAddress(), amount: amount_g)
         }
         let activityViewController = UIActivityViewController(activityItems: [uri] , applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self.view
         self.present(activityViewController, animated: true, completion: nil)
     }
-
-    @IBAction func copyButtonClicked(_ sender: Any) {
-        UIPasteboard.general.string = wallet!.receiveAddress!
-    }
-
 }
 
 public enum TransactionType: UInt32 {
