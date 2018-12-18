@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-class HomeViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class WalletsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var wallets = [WalletItem]()
 
