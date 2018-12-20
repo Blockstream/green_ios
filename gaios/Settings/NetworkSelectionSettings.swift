@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
 
-class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate {
+class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIScrollViewDelegate {
 
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var bitcoin: UIView!
     @IBOutlet weak var testnet: UIView!
     @IBOutlet weak var localtest: UIView!
@@ -13,12 +14,8 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate {
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var torSwitch: UISwitch!
     @IBOutlet weak var torLabel: UILabel!
-    @IBOutlet weak var topConstraint: NSLayoutConstraint!
     @IBOutlet weak var socks5Hostname: UITextField!
     @IBOutlet weak var socks5Port: UITextField!
-
-    private let topConstantNoProxy: CGFloat = 130
-    private let topConstantWithProxy: CGFloat = 20
 
     var torLabelConstraint: NSLayoutConstraint!
     var torSwitchConstraint: NSLayoutConstraint!
@@ -29,6 +26,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        scrollView.delegate = self
         socks5Hostname.delegate = self
         socks5Port.delegate = self
 
@@ -90,6 +88,24 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate {
         handleSelection(regtest, "Regtest")
     }
 
+    @objc override func keyboardWillShow(notification: NSNotification) {
+        super.keyboardWillShow(notification: notification)
+
+        let userInfo = notification.userInfo
+        let keyboardFrame = userInfo?[UIKeyboardFrameEndUserInfoKey] as! CGRect
+        let contentInset = UIEdgeInsetsMake(0.0, 0.0, keyboardFrame.height + socks5Port.frame.height, 0.0)
+        scrollView.contentInset = contentInset
+        scrollView.scrollIndicatorInsets = contentInset
+    }
+
+    @objc override func keyboardWillHide(notification: NSNotification) {
+        let contentInset = UIEdgeInsets.zero
+        scrollView.contentInset = contentInset
+        scrollView.scrollIndicatorInsets = contentInset
+
+        super.keyboardWillHide(notification: notification)
+    }
+
     @IBAction func proxySwitchAction(_ sender: Any) {
         guard let switcher = sender as? UISwitch else {
             return
@@ -97,7 +113,6 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate {
         proxySettings.isHidden = !switcher.isOn
         torLabelConstraint.isActive = !switcher.isOn
         torSwitchConstraint.isActive = !switcher.isOn
-        topConstraint.constant = !switcher.isOn ? topConstantNoProxy : topConstantWithProxy
     }
 
     @IBAction func saveButtonClicked(_ sender: Any) {
@@ -134,7 +149,6 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate {
         }
 
         proxySettings.isHidden = !(defaults?["proxy"] as? Bool ?? false)
-        topConstraint.constant = proxySettings.isHidden ? topConstantNoProxy : topConstantWithProxy
         torLabelConstraint = NSLayoutConstraint(item: torLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: proxyLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 16)
         torSwitchConstraint = NSLayoutConstraint(item: torSwitch, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: proxySwitch, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 16)
         torLabelConstraint.isActive = proxySettings.isHidden
