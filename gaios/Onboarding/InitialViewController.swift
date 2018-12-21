@@ -29,6 +29,9 @@ class InitialViewController: UIViewController {
         let networkSelector = self.storyboard?.instantiateViewController(withIdentifier: "networkSelection") as! NetworkSelectionSettings
         networkSelector.onSave = {
             self.updateNetworkButtonTitle()
+            if getAppDelegate().isPinEnabled(network: getNetwork()) {
+                getAppDelegate().instantiateViewControllerAsRoot(identifier: "PinLoginNavigationController")
+            }
         }
         networkSelector.providesPresentationContextTransitionStyle = true
         networkSelector.definesPresentationContext = true

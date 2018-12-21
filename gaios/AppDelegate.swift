@@ -81,6 +81,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
     }
 
+    func isPinEnabled(network: String) -> Bool {
+        let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+        let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+        return pinData || bioData
+    }
+
+    func instantiateViewControllerAsRoot(identifier: String) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let firstVC = storyboard.instantiateViewController(withIdentifier: identifier) as! UINavigationController
+        self.window?.rootViewController = firstVC
+        self.window?.makeKeyAndVisible()
+    }
+
     func connect() {
         finishedConnecting = false
         DispatchQueue.global(qos: .background).async {
@@ -118,20 +131,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         connect()
 
         self.window?.endEditing(true)
-        let network = getNetwork()
-        let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-        let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
-        if pinData || bioData {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "PinLoginNavigationController") as! UINavigationController
-            self.window?.rootViewController = firstVC
-            self.window?.makeKeyAndVisible()
-            return
+        if isPinEnabled(network: getNetwork()) {
+            instantiateViewControllerAsRoot(identifier: "PinLoginNavigationController")
         } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let firstVC = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! UINavigationController
-            self.window?.rootViewController = firstVC
-            self.window?.makeKeyAndVisible()
+            instantiateViewControllerAsRoot(identifier: "InitialViewController")
         }
     }
 
