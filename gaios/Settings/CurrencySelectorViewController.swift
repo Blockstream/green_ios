@@ -13,6 +13,7 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = NSLocalizedString("id_reference_exchange_rate", comment: "")
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()

@@ -18,6 +18,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = NSLocalizedString("id_receive", comment: "")
         self.tabBarController?.tabBar.isHidden = true
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])

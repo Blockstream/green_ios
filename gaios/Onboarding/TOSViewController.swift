@@ -39,9 +39,12 @@ class TOSViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let tosString = NSMutableAttributedString(string: "I agree to the Terms of Service")
+
+        let whiteString = NSLocalizedString("id_i_agree_to_the", comment: "")
+        let linkString = NSLocalizedString("id_terms_of_service", comment: "")
+        let tosString = NSMutableAttributedString(string: whiteString + linkString)
         tosString.addAttribute(.link, value: "https://greenaddress.it/en/tos", range: NSRange(location: 15, length: 16))
-        tosString.setColor(color: UIColor.white, forText: "I agree to the")
+        tosString.setColor(color: UIColor.white, forText: whiteString)
         let linkAttributes: [String : Any] = [
             NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
             NSAttributedStringKey.underlineColor.rawValue: UIColor.customMatrixGreen(),
@@ -51,12 +54,11 @@ class TOSViewController: UIViewController {
         tosTextView.attributedText = tosString
         tosTextView.font = UIFont.systemFont(ofSize: 16)
         tosTextView.isUserInteractionEnabled = true
-        let stringLocalized = NSLocalizedString("id_green_is_a_noncustodial_wallet", comment: "")
+        let stringLocalized = NSLocalizedString("id_welcome_to", comment: "") + "GREEN"
         let topString = NSMutableAttributedString(string: stringLocalized)
-
         topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
         topLabel.attributedText = topString
-        secondaryLabel.text = NSLocalizedString("", comment: "")
+        secondaryLabel.text = NSLocalizedString("id_you_have_control_on_your_funds", comment: "")
         nButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
     }
 }

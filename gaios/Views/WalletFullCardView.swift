@@ -8,11 +8,15 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var sendView: UIView!
     @IBOutlet weak var receiveView: UIView!
     @IBOutlet weak var actionsView: UIStackView!
-    
+    @IBOutlet weak var sendLabel: UILabel!
+    @IBOutlet weak var receiveLabel: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         self.borderColor = UIColor.customMatrixGreen()
         self.borderWidth = 2
         self.cornerRadius = 16
+        self.sendLabel.text = NSLocalizedString("id_send", comment: "").uppercased()
+        self.receiveLabel.text = NSLocalizedString("id_receive", comment: "").uppercased()
     }
 }

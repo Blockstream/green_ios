@@ -34,6 +34,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.title = NSLocalizedString("id_settings", comment: "")
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = fotterView
@@ -92,7 +93,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         let defaultTransactionPriority = SettingsItem(
             title: NSLocalizedString("id_default_transaction_priority", comment: ""),
-            subtitle: toString(settings.transactionPriority),
+            subtitle: toString(settings.transactionPriority, detail: true),
             section: .account,
             type: .DefaultTransactionPriority)
 
@@ -206,16 +207,33 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         return menu
     }
 
-    func toString(_ tp: TransactionPriority) -> String {
+    func toString(_ tp: TransactionPriority, detail: Bool) -> String {
         switch tp {
         case .Low:
-            return NSLocalizedString("id_confirmation_in_24_blocks_4", comment: "")
+            return NSLocalizedString(detail ? "id_confirmation_in_24_blocks_4" : "id_low", comment: "")
         case .Medium:
-            return NSLocalizedString("id_confirmation_in_12_blocks_2", comment: "")
+            return NSLocalizedString(detail ? "id_confirmation_in_12_blocks_2" : "id_medium", comment: "")
         case .High:
-            return NSLocalizedString("id_confirmation_in_3_blocks_30", comment: "")
+            return NSLocalizedString(detail ? "id_confirmation_in_3_blocks_30" : "id_high", comment: "")
         default:
             return ""
+        }
+    }
+
+    func toString(_ section: SettingsSections) -> String {
+        switch section {
+        case .about:
+            return NSLocalizedString("id_about", comment: "")
+        case .account:
+            return NSLocalizedString("id_account", comment: "")
+        case .network:
+            return NSLocalizedString("id_network", comment: "")
+        case .twoFactor:
+            return NSLocalizedString("id_two_factor", comment: "")
+        case .security:
+            return NSLocalizedString("id_security", comment: "")
+        case .advanced:
+            return NSLocalizedString("id_advanced", comment: "")
         }
     }
 
@@ -240,7 +258,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let section = sections[section]
-        return section.rawValue
+        return toString(section)
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -286,7 +304,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_username", comment: "") }
             alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_password", comment: "") }
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-            alert.addAction(UIAlertAction(title: "Ok", style: .default) { _ in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
                 let username = alert.textFields![0].text!
                 let password = alert.textFields![1].text!
                 self.setWatchOnly(username: username, password: password)
@@ -297,11 +315,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.performSegue(withIdentifier: "currency", sender: nil)
             break
         case .DefaultTransactionPriority:
-            let list = [TransactionPriority.High.rawValue, TransactionPriority.Medium.rawValue, TransactionPriority.Low.rawValue]
-            let selected = settings.transactionPriority.rawValue
+            let list = [toString(TransactionPriority.High, detail: false),
+                        toString(TransactionPriority.Medium, detail: false),
+                        toString(TransactionPriority.Low, detail: false)]
+            let selected = toString(settings.transactionPriority, detail: false)
             let popup = PopupList(self, title: item.title, list: list, selected: selected)
             resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                settings.transactionPriority = TransactionPriority.init(rawValue: value as! String)!
+                guard let string = value as? String else { throw GaError.GenericError }
+                if string == self.toString(.Low, detail: false) { settings.transactionPriority = .Low}
+                else if string == self.toString(.Medium, detail: false) { settings.transactionPriority = .Medium}
+                else if string == self.toString(.High, detail: false) { settings.transactionPriority = .High}
                 return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
             }, completing: { self.reloadData() })
             break
@@ -395,7 +418,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let text: String
         if error is TwoFactorCallError {
             switch error as! TwoFactorCallError {
-            case .failure(let localizedDescription):
+            case .failure(let localizedDescription), .cancel(let localizedDescription):
                 text = localizedDescription
             }
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
@@ -403,7 +426,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
@@ -451,7 +474,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.showAlert(title: NSLocalizedString("id_request_nlocktime", comment: ""), message: NSLocalizedString("id_nlocktime_transaction_request", comment: ""))
+            self.showAlert(title: NSLocalizedString("id_request_sent", comment: ""), message: NSLocalizedString("id_nlocktime_transaction_request", comment: ""))
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_request_failure", comment: ""))
         }

@@ -102,7 +102,7 @@ class GreenAddressService: SessionNotificationDelegate {
         let label = UILabel()
         label.frame = CGRect(x: 0, y: 0, width: 120, height: 30)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Transaction Received"
+        label.text = NSLocalizedString("id_new_transaction", comment: "")
         label.textColor = UIColor.white
         label.textAlignment = .center
         v.addSubview(label)

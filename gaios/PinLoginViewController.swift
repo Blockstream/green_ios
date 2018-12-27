@@ -58,6 +58,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         // show skip button
         if setPinMode || restoreMode {
             skipButton.isHidden = false
+            skipButton.setTitle(NSLocalizedString("id_skip", comment: ""), for: .normal)
         }
     }
 
@@ -72,7 +73,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
-            startAnimation(message: "Logging in...")
+            startAnimation(message: NSLocalizedString("id_logging_in", comment: ""))
         }.compactMap(on: bgq) {
             try AuthenticationTypeHandler.getAuth(method: usingAuth, forNetwork: network)
         }.map(on: bgq) {
@@ -97,8 +98,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 self.updateAttemptsLabel()
                 self.resetEverything()
             }
-
-            NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed")
+            let message = NSLocalizedString("id_login_failed", comment: "")
+            NVActivityIndicatorPresenter.sharedInstance.setMessage(message)
         }.finally {
             self.stopAnimating()
         }
@@ -108,7 +109,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
-            startAnimation(message: "Setting PIN...")
+            startAnimation(message: "")
         }.compactMap(on: bgq) {
             let mnemonics = getAppDelegate().getMnemonicWordsString()
             return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 14))
@@ -124,7 +125,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 self.performSegue(withIdentifier: "congrats", sender: self)
             }
         }.catch { error in
-            NVActivityIndicatorPresenter.sharedInstance.setMessage("Setting PIN failed")
+            let message = NSLocalizedString("id_operation_failure", comment: "")
+            NVActivityIndicatorPresenter.sharedInstance.setMessage(message)
         }.finally {
             self.stopAnimating()
         }
@@ -145,12 +147,12 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func updateAttemptsLabel() {
-        attempts.text = String(format: "%d attempts remaining", attemptsCount)
+        attempts.text = String(format: NSLocalizedString("id_d_attempts_remaining", comment: ""), attemptsCount)
         attempts.isHidden = false
     }
 
     func updatePinMismatch() {
-        attempts.text = "PINs must match"
+        attempts.text = NSLocalizedString("id_pins_do_not_match_please_try", comment: "")
         attempts.isHidden = false
     }
 
@@ -173,7 +175,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             if (confirmPin == true) {
                 //set pin
                 if(pinCode != pinConfirm) {
-                    title = "Set a new PIN"
+                    title = NSLocalizedString("id_set_a_new_pin", comment: "")
                     resetEverything()
                     updatePinMismatch()
                     skipButton.isHidden = true
@@ -187,7 +189,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             pinCode = ""
             updateView()
             //show confirm pin
-            title = "Confirm PIN"
+            title = NSLocalizedString("id_verify_your_pin", comment: "")
         } else {
             let network = getNetwork()
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN, network: network, withPIN: self.pinCode)

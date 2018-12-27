@@ -16,6 +16,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     @IBOutlet weak var toTitle: UILabel!
     @IBOutlet weak var myNotesTitle: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var amountTitle: UILabel!
+    @IBOutlet weak var feeTitle: UILabel!
 
     var uiErrorLabel: UIErrorLabel!
     var walletName: String = ""
@@ -25,8 +27,10 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
-        walletNameLabel.text = transaction.isSweep ? "Paper Wallet" : wallet?.localizedName()
+        self.title = NSLocalizedString("id_send", comment: "")
+        walletNameLabel.text = transaction.isSweep ?  NSLocalizedString("id_sweep_from_paper_wallet", comment: "") : wallet?.localizedName()
         slidingButton.delegate = self
+        slidingButton.buttonText = NSLocalizedString("id_slide_to_send", comment: "")
         uiErrorLabel = UIErrorLabel(self.view)
         refresh()
         textView.delegate = self
@@ -36,6 +40,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         fromTitle.text = NSLocalizedString("id_from", comment: "")
         toTitle.text = NSLocalizedString("id_to", comment: "")
         myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
+        amountTitle.text = NSLocalizedString("id_amount", comment: "")
+        feeTitle.text = NSLocalizedString("id_fee", comment: "")
     }
 
     func refresh() {
@@ -99,7 +105,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             self.uiErrorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
-                case .failure(let localizedDescription):
+                case .failure(let localizedDescription), .cancel(let localizedDescription):
                     self.uiErrorLabel.text = localizedDescription
                 }
             } else {

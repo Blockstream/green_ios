@@ -7,7 +7,9 @@
 "id_4_hours" = "~ 4 Hours";
 "id_5_seconds_minimum" = "5 seconds minimum";
 "id_a_new_transaction_has_just" = "A new transaction has just arrived in your wallet.";
+"id_about" = "ABOUT";
 "id_accept" = "ACCEPT";
+"id_account" = "ACCOUNT";
 "id_action_canceled" = "Action canceled";
 "id_add_amount" = "Add Amount";
 "id_add_custom_network_by_qr_code" = "Add custom network by QR Code";
@@ -16,6 +18,8 @@
 "id_address" = "Address";
 "id_address_1s" = "Address: %1$@";
 "id_address_copied_to_clipboard" = "Address copied to clipboard";
+"id_advanced" = "ADVANCED";
+"id_all" = "All";
 "id_amount" = "Amount";
 "id_are_you_sure_you_want_to_view" = "Are you sure you want to view the transaction using %@?";
 "id_auto_logout_timeout" = "Auto logout timeout";
@@ -37,6 +41,7 @@
 "id_change" = "CHANGE";
 "id_choose" = "Choose";
 "id_choose_twofactor_authentication" = "Choose Two-Factor authentication method";
+"id_choose_your_network" = "Choose Your Network";
 "id_clear" = "CLEAR";
 "id_completed" = "Completed";
 "id_confirmation" = "Confirmation";
@@ -50,7 +55,7 @@
 "id_continue" = "Continue";
 "id_copy_to_clipboard" = "Copy To Clipboard";
 "id_create" = "Create";
-"id_create_a_pin_to_access_your" = "Create a PIN to access your wallet.";
+"id_create_a_pin_to_access_your" = "Create a PIN to access your wallet";
 "id_create_wallet" = "Create Wallet";
 "id_currency" = "Currency";
 "id_custom" = "Custom";
@@ -64,9 +69,7 @@
 "id_days_remaining_s" = "Days remaining: %@";
 "id_default_custom_fee_rate" = "Default custom fee rate";
 "id_default_transaction_priority" = "Default transaction priority";
-"id_delete_pin" = "Delete PIN";
 "id_deleting_your_pin_will_remove" = "Deleting your PIN will remove wallet access permanently unless you have your mnemonic available. Press \"OK\" to continue.";
-"id_deleting_your_pin_will_require" = "Deleting your PIN will require your mnemonic to log in in the future.";
 "id_denomination" = "Denomination";
 "id_deposit" = "Deposit";
 "id_displays_the_progress_of_spv" = "Displays the progress of SPV synchronization";
@@ -172,6 +175,7 @@
 "id_months" = "months";
 "id_my_notes" = "MY NOTES";
 "id_name" = "Name";
+"id_network" = "NETWORK";
 "id_network_configuration" = "Network Configuration";
 "id_network_monitor" = "Network Monitor";
 "id_new_s_transaction_of_s_in" = "New %@ transaction of %@ in account %@.";
@@ -221,6 +225,7 @@
 "id_privacy_policy" = "Privacy Policy";
 "id_problem_with_key_1s" = "Problem with key %1$@";
 "id_providing_an_email_enables" = "Providing an email enables notifications and transaction recovery.";
+"id_proxy_settings" = "PROXY SETTINGS";
 "id_qr_scanner" = "QR Scanner";
 "id_receive" = "Receive";
 "id_received" = "Received";
@@ -247,7 +252,7 @@
 "id_review" = "Review";
 "id_s_blocks_left" = "%@ blocks left";
 "id_s_from_s" = "%@ from %@";
-"id_s_network" = "%@ NETWORK";
+"id_s_network" = "%@ network";
 "id_save" = "Save";
 "id_save_your_mnemonic" = "Save your mnemonic";
 "id_scan_the_qr_code_in_google" = "Scan the QR Code in Google Authenticator:";
@@ -255,6 +260,7 @@
 "id_search" = "Search";
 "id_second" = "second";
 "id_seconds" = "seconds";
+"id_security" = "SECURITY";
 "id_select_network" = "Select network";
 "id_select_word_number_d" = "Select word number %d";
 "id_send" = "Send";
@@ -308,6 +314,8 @@
 "id_transaction_already_confirmed" = "Transaction already confirmed";
 "id_transaction_details" = "Transaction details";
 "id_transaction_sent" = "Transaction Sent";
+"id_two_factor" = "TWO FACTOR";
+"id_two_factor_authentication" = "TWO FACTOR AUTHENTICATION";
 "id_twofactor_authentication" = "Two-Factor authentication";
 "id_twofactor_reset_in_progress" = "Two-Factor reset in progress, your wallet is currently locked.";
 "id_twofactor_settings" = "Two-Factor Settings";
@@ -338,12 +346,14 @@
 "id_watchonly_disabled" = "Watch-Only disabled";
 "id_watchonly_login" = "Watch-Only Login";
 "id_welcome" = "Welcome";
+"id_welcome_to" = "Welcome to";
 "id_write_down_the_words" = "Write down the words";
 "id_write_down_your_mnemonic_words" = "Write down your mnemonic words on paper or on a cold storage device.";
 "id_year" = "year";
 "id_years" = "years";
 "id_you_are_not_connected_please" = "You are not connected, please wait";
 "id_you_are_not_connected_to_the" = "You are not connected to the internet. Please connect and retry.";
+"id_you_have_control_on_your_funds" = "You have control on your funds";
 "id_you_have_full_control_of_your" = "You have full control of your funds.";
 "id_you_have_received_s" = "You have received %@";
 "id_you_must_first_log_out_before" = "You must first log out before logging in.";

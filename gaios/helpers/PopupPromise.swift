@@ -28,7 +28,7 @@ class PopupList : PopupPromise {
                     result.fulfill(strItem)
                 })
             }
-            alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
                 result.reject(GaError.GenericError)
             })
             DispatchQueue.main.async {
@@ -61,10 +61,10 @@ class PopupEditable : PopupPromise {
                 textField.text = self.text ?? ""
                 textField.keyboardType = self.keyboardType ?? .asciiCapable
             }
-            alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
                 result.reject(GaError.GenericError)
             })
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (action: UIAlertAction) in
                 let textField = alert.textFields![0]
                 result.fulfill(textField.text!)
             })

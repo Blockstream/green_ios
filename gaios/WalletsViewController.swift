@@ -8,6 +8,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.title = NSLocalizedString("id_wallets", comment: "")
         let cellNib = UINib(nibName: "WalletCardView", bundle: nil)
         self.collectionView!.register(cellNib, forCellWithReuseIdentifier: "cell")
     }

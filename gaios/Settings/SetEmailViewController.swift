@@ -48,7 +48,7 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
             self.errorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
-                case .failure(let localizedDescription):
+                case .failure(let localizedDescription), .cancel(let localizedDescription):
                     self.errorLabel.text = localizedDescription
                 }
             } else {

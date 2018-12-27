@@ -17,7 +17,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         guard let secret = twoFactorConfig.gauthSecret() else {
             self.errorLabel.isHidden = false
-            self.errorLabel.text = "something went wrong gauth"
+            self.errorLabel.text =  NSLocalizedString("id_operation_failure", comment: "")
             return
         }
         qrCodeImageView.image = QRImageGenerator.imageForText(text: twoFactorConfig.gauth.data, frame: qrCodeImageView.frame)
@@ -46,7 +46,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
             self.errorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
-                case .failure(let localizedDescription):
+                case .failure(let localizedDescription), .cancel(let localizedDescription):
                     self.errorLabel.text = localizedDescription
                 }
             } else {

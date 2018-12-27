@@ -10,6 +10,7 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.title = NSLocalizedString("id_notifications", comment: "")
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()

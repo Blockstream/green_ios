@@ -10,6 +10,7 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NV
     @IBOutlet weak var QRCodeReader: UIView!
     @IBOutlet weak var topImage: UIImageView!
     @IBOutlet weak var bottomButton: UIButton!
+    @IBOutlet weak var orLabel: UILabel!
 
     var uiErrorLabel: UIErrorLabel!
     var wallets = [WalletItem]()
@@ -20,6 +21,8 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NV
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = NSLocalizedString("id_send_to", comment: "")
+        orLabel.text = NSLocalizedString("id_or", comment: "")
         // setup scanner placeholder
         let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)

@@ -59,7 +59,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.title = NSLocalizedString("id_send", comment: "")
         self.tabBarController?.tabBar.isHidden = true
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
@@ -102,7 +102,6 @@ class SendBtcDetailsViewController: UIViewController {
         customfeeButton.setTitle(NSLocalizedString("id_custom", comment: ""), for: .normal)
         sendAllFundsButton.setTitle(NSLocalizedString(("id_send_all_funds"), comment: ""), for: .normal)
         reviewButton.setTitle(NSLocalizedString("id_review", comment: ""), for: .normal)
-
         recipientTitle.text = NSLocalizedString("id_recipient", comment: "")
         minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "")
     }
@@ -140,7 +139,7 @@ class SendBtcDetailsViewController: UIViewController {
     func updateAmountTextField(_ forceUpdate: Bool) {
         if forceUpdate {
             guard let settings = getGAService().getSettings() else { return }
-            let textAmount = sendAllFundsButton.isSelected ? "All" : amountData?[!isFiat ? settings.denomination.rawValue.lowercased() : "fiat"] as? String ?? String()
+            let textAmount = sendAllFundsButton.isSelected ? NSLocalizedString("id_all", comment: "") : amountData?[!isFiat ? settings.denomination.rawValue.lowercased() : "fiat"] as? String ?? String()
             amountTextField.text = textAmount
         }
 
@@ -270,7 +269,9 @@ class SendBtcDetailsViewController: UIViewController {
         feeLabel.textAlignment = .left
         NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: lowFeeButton, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
 
-        feeLabel.text = String(format: "%.1f satoshi / vbyte \nTime: %@\nFee: %@ %@ / ~%@ %@", satoshiPerVByte, blockTime[selectedFee], feeInBTC, settings.denomination.rawValue, fiatValue, settings.getCurrency())
+        feeLabel.text = String(format: "%.1f satoshi / vbyte \n", satoshiPerVByte) +
+            String(format: "%@: %@\n", NSLocalizedString("id_confirmation", comment: ""), blockTime[selectedFee]) +
+            String(format: "%@: %@ %@ / ~%@ %@", NSLocalizedString("id_fee", comment: ""), feeInBTC, settings.denomination.rawValue, fiatValue, settings.getCurrency())
         feeLabel.numberOfLines = 3
         feeLabel.font = feeLabel.font.withSize(13)
 
@@ -300,17 +301,17 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func showCustomFeePopup() {
-        let alert = UIAlertController(title: "Custom fee rate", message: "satoshi / byte", preferredStyle: .alert)
+        let alert = UIAlertController(title: NSLocalizedString("id_set_custom_fee_rate", comment: ""), message: "satoshi / byte", preferredStyle: .alert)
         alert.addTextField { (textField) in
             let customFee = String(self.feeEstimates[self.feeRateButtons.count - 1] / 1000)
             textField.keyboardType = .numberPad
             textField.attributedPlaceholder = NSAttributedString(string: customFee,
                                                                           attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         }
-        alert.addAction(UIAlertAction(title: "CANCEL", style: .cancel) { [weak alert] (_) in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { [weak alert] (_) in
             alert?.dismiss(animated: true, completion: nil)
         })
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] (_) in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { [weak alert] (_) in
             let amount:String = alert!.textFields![0].text!
             guard let amount_i = Int(amount) else {
                 return

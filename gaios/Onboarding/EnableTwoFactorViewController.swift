@@ -23,6 +23,7 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
         title = NSLocalizedString("id_twofactor_authentication", comment: "")
         errorLabel = UIErrorLabel(self.view)
         walletButton.isHidden = isHiddenWalletButton
+        walletButton.setTitle(NSLocalizedString("id_go_to_wallet", comment: ""), for: .normal)
     }
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int
@@ -113,7 +114,7 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
             self.errorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
-                case .failure(let localizedDescription):
+                case .failure(let localizedDescription), .cancel(let localizedDescription):
                     self.errorLabel.text = localizedDescription
                 }
             } else {

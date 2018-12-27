@@ -64,6 +64,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         // update title
         let localized = NSLocalizedString("id_select_word_number_d", comment: "")
         title = String(format: localized, questionPosition + 1)
+        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
         // update buttons
         buttonsArray.enumerated().forEach { (offset, element) in
             element.setTitle(mnemonics[selectionWordNumbers[offset]], for: .normal)

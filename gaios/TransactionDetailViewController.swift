@@ -18,6 +18,7 @@ class TransactionDetailViewController: UIViewController {
     @IBOutlet weak var feeTitle: UILabel!
     @IBOutlet weak var amountTitle: UILabel!
     @IBOutlet weak var memoTitle: UILabel!
+    @IBOutlet weak var viewInExplorerButton: UIButton!
 
     var transaction: Transaction!
     var rbfTransaction: Transaction? = nil
@@ -25,11 +26,13 @@ class TransactionDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = NSLocalizedString("id_transaction_details", comment: "")
         hashTitle.text = NSLocalizedString("id_hash", comment: "")
         dateTitle.text = NSLocalizedString("id_date", comment: "")
         feeTitle.text = NSLocalizedString("id_fee", comment: "")
         amountTitle.text = NSLocalizedString("id_amount", comment: "")
         memoTitle.text = NSLocalizedString("id_memo", comment: "")
+        viewInExplorerButton.setTitle(NSLocalizedString("id_view_in_explorer", comment: ""), for: .normal)
         feeButton.setTitle(NSLocalizedString("id_increase_fee", comment: ""), for: .normal)
     }
 
@@ -53,7 +56,7 @@ class TransactionDetailViewController: UIViewController {
         memoLabel.text = transaction.memo
         dateLabel.text = transaction.date()
         if transaction.blockHeight == 0 {
-            warniniglabel.text = "Unconfirmed transaction, please wait for block confirmations to gain trust in this transaction "
+            warniniglabel.isHidden = true
         } else if AccountStore.shared.getBlockheight() - (transaction.blockHeight) < 6 {
             let blocks = AccountStore.shared.getBlockheight() - transaction.blockHeight + 1
             let localizedConfirmed = NSLocalizedString("id_blocks_confirmed", comment: "")
@@ -109,6 +112,6 @@ class TransactionDetailViewController: UIViewController {
 
     func feeText(fee: UInt64, size: UInt64) -> String {
         let perbyte = Double(fee/size)
-        return String(format: "Transaction fee is %d satoshi, %.2f satoshi per byte", fee, perbyte)
+        return String(format: "%d satoshi, %.2f sat/vbyte", fee, perbyte)
     }
 }

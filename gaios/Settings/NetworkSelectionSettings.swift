@@ -16,6 +16,8 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
     @IBOutlet weak var torLabel: UILabel!
     @IBOutlet weak var socks5Hostname: UITextField!
     @IBOutlet weak var socks5Port: UITextField!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var proxySettingsLabel: UILabel!
 
     var torLabelConstraint: NSLayoutConstraint!
     var torSwitchConstraint: NSLayoutConstraint!
@@ -46,6 +48,13 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
                                                                attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         socks5Port.attributedPlaceholder = NSAttributedString(string: "Socks5 Port",
                                                                  attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        titleLabel.text = NSLocalizedString("id_choose_your_network", comment: "")
+        proxyLabel.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
+        proxySettingsLabel.text = NSLocalizedString("id_proxy_settings", comment: "")
+        socks5Hostname.text = NSLocalizedString("id_socks5_hostname", comment: "")
+        socks5Port.text = NSLocalizedString("id_socks5_port", comment: "")
+        torLabel.text = NSLocalizedString("id_connect_with_tor", comment: "")
+        saveButton.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -207,11 +207,11 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
         }.done { _ in
             self.performSegue(withIdentifier: "next", sender: self)
         }.catch { error in
-            var message = "Login Failed"
+            var message = NSLocalizedString("id_login_failed", comment: "")
             if let _ = error as? LoginError {
-                message = "Invalid Mnemonic"
+                message = NSLocalizedString("id_invalid_mnemonic", comment: "")
             }
-            self.startAnimating()
+            self.startAnimating(message: message)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
                 self.stopAnimating()
             }
