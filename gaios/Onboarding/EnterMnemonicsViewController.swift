@@ -356,7 +356,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
         }
         // set title bar
         isScannerVisible = true
-        scanBarButton.image = UIImage(named: "stepIndicator")
+        scanBarButton.image = UIImage(named: "check")
     }
 
     override func stopScan() {
@@ -365,7 +365,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
         qrCodeFrameView?.frame = CGRect.zero
 
         isScannerVisible = false
-        scanBarButton.image = UIImage(named: "scan")
+        scanBarButton.image = UIImage(named: "qr")
 
         super.stopScan()
     }

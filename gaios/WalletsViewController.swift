@@ -35,6 +35,10 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         let wallet = wallets[indexPath.row]
         cell.balance.text = String.formatBtc(satoshi: wallet.satoshi)
         cell.walletName.text = wallet.localizedName()
+        cell.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
+
+        guard let res = try? getSession().convertAmount(input: ["satoshi": wallet.satoshi]) else { return cell }
+        cell.balanceFiat.text = String(format: "≈ %@ %@", (res!["fiat"] as? String)!, getGAService().getSettings()!.getCurrency())
         return cell
     }
 

@@ -27,6 +27,7 @@ class TransactionsController: UITableViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
         reloadWalletCardView(tableView.tableHeaderView as! WalletFullCardView)
@@ -39,6 +40,8 @@ class TransactionsController: UITableViewController {
         wallet.getBalance().get { balance in
             let view = self.tableView.tableHeaderView as! WalletFullCardView
             view.balance.text = String.formatBtc(satoshi: wallet.satoshi)
+            let res = try getSession().convertAmount(input: ["satoshi": wallet.satoshi])
+            view.balanceFiat.text = String(format: "≈ %@ %@", (res!["fiat"] as? String)!, getGAService().getSettings()!.getCurrency())
         }.done { _ in }.catch { _ in }
     }
 
@@ -155,7 +158,8 @@ class TransactionsController: UITableViewController {
     func getWalletCardView() -> WalletFullCardView? {
         let view: WalletFullCardView = ((Bundle.main.loadNibNamed("WalletFullCardView", owner: self, options: nil)![0] as? WalletFullCardView)!)
         view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.receiveToWallet)))
-        view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.self.sendfromWallet)))
+        view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.sendfromWallet)))
+        view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.back)))
         return view
     }
 
@@ -170,10 +174,15 @@ class TransactionsController: UITableViewController {
         }.done {_ in
             view.balance.text = String.formatBtc(satoshi: wallet.satoshi)
             view.walletName.text = wallet.localizedName()
+            view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             if settings.isResetActive {
                 view.actionsView.isHidden = true
             }
         }
+    }
+
+    @objc func back(_ sender: UIButton) {
+        self.navigationController?.popViewController(animated: true)
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -189,6 +198,7 @@ class TransactionsController: UITableViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        self.navigationController?.isNavigationBarHidden = false
         if let nextController = segue.destination as? SendBtcViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? ReceiveBtcViewController {

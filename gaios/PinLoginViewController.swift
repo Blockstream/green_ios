@@ -47,7 +47,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
         // customize network image
         let network = getNetwork()
-        let networkBarItem = UIBarButtonItem(image: UIImage(named: network)!, style: .plain, target: self, action: nil)
+        let networkImage = network == "Mainnet".lowercased() ? "btc" : "btc_testnet"
+        let networkBarItem = UIBarButtonItem(image: UIImage(named: networkImage)!, style: .plain, target: self, action: nil)
         navigationItem.rightBarButtonItem = networkBarItem
 
         // customize back button

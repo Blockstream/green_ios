@@ -8,8 +8,11 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var qrCodeImageView: UIImageView!
     @IBOutlet weak var secretLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var subtitleLabel: UILabel!
+    @IBOutlet weak var warningLabel: UILabel!
+    @IBOutlet weak var copyImage: UIImageView!
     var errorLabel: UIErrorLabel!
-    var twoFactorConfig: TwoFactorConfig!
+    var gauthData: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,15 +23,25 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
             self.errorLabel.text =  NSLocalizedString("id_operation_failure", comment: "")
             return
         }
-        qrCodeImageView.image = QRImageGenerator.imageForText(text: twoFactorConfig.gauth.data, frame: qrCodeImageView.frame)
-        secretLabel.text = secret
-        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+        self.secretLabel.text = secret
+        self.gauthData = twoFactorConfig.gauth.data
+        qrCodeImageView.image = QRImageGenerator.imageForTextWhite(text: gauthData!, frame: qrCodeImageView.frame)
+        nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         title = NSLocalizedString("id_google_authenticator_qr_code", comment: "")
+        subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_in_google", comment: "")
+        warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
+        secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
+        copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
         errorLabel = UIErrorLabel(self.view)
     }
 
+    @objc func copyToClipboard(_ sender: UIButton) {
+        UIPasteboard.general.string = secretLabel.text
+    }
+
     @IBAction func nextButtonClicked(_ sender: Any) {
-        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: twoFactorConfig.gauth.data)
+        guard let gauth = gauthData else { return }
+        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.errorLabel.isHidden = true
