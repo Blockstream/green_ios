@@ -1,27 +1,20 @@
 import Foundation
 import UIKit
-import AVFoundation
 import NVActivityIndicatorView
 import PromiseKit
 
-class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
+class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDelegate, SuggestionsDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var scanBarButton: UIBarButtonItem!
 
-    let WL: [String] = getBIP39WordList()
+    let WL = getBIP39WordList()
 
     var textFields: Array<UITextField> = []
     var box:UIView = UIView()
     var constraint: NSLayoutConstraint? = nil
-    var suggestionView = UIView()
-    var pasteView = UIView()
-    var suggestion1 = UILabel()
-    var suggestion2 = UILabel()
-    var suggestion3 = UILabel()
-    lazy var labels = [suggestion1, suggestion2, suggestion3]
+    var suggestions: KeyboardSuggestions? = nil
     var mnemonic: [String]? = nil
-    var qrCodeFrameView: UIView?
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
     var adaptToSmallScreen = false
@@ -36,110 +29,42 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
         createSuggestionView()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         doneButton.backgroundColor = UIColor.customTitaniumLight()
         doneButton.isUserInteractionEnabled = false
-        if var pasteString = UIPasteboard.general.string {
-            while(pasteString.last == " ") {
-                pasteString.removeLast()
-            }
-            let separated = pasteString.components(separatedBy: " ")
-            if(separated.count == 24) {
-                mnemonic = separated
-                createPasteView(mnemonics: pasteString)
-                pasteView.isHidden = false
-            }
-        }
     }
 
-    func createPasteView(mnemonics: String) {
-        pasteView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 100)
-        pasteView.backgroundColor = UIColor.lightGray
-        let label = UILabel()
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = UIColor.white
-        label.frame = CGRect(x: 0, y: 0, width: pasteView.frame.width, height: pasteView.frame.height)
-        label.text = mnemonics
-        pasteView.addSubview(label)
-        pasteView.isHidden = true
-        pasteView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(pasteTapped))
-        pasteView.addGestureRecognizer(tap)
-        self.view.addSubview(pasteView)
+    @objc override func keyboardWillShow(notification: NSNotification) {
+        super.keyboardWillShow(notification: notification)
+
+        let userInfo = notification.userInfo
+        let keyboardFrame = userInfo?[UIKeyboardFrameEndUserInfoKey] as! CGRect
+        self.suggestions!.frame = CGRect(x: 0, y: view.frame.height - keyboardFrame.height - 40, width: view.frame.width, height: 40)
     }
 
-    @objc func pasteTapped(sender:UITapGestureRecognizer) {
-        for index in 0..<textFields.count {
-            let textField = textFields[index]
-            textField.text = mnemonic?[index]
-            if textField.isFirstResponder {
-                textField.resignFirstResponder()
-            }
-        }
-        doneButtonEnable()
+    @objc override func keyboardWillHide(notification: NSNotification) {
+        suggestions!.isHidden = true
+        super.keyboardWillHide(notification: notification)
     }
 
     func createSuggestionView() {
-        suggestionView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 42)
-        suggestionView.backgroundColor = UIColor.lightGray
-        let separator1 = UIView()
-        separator1.backgroundColor = UIColor.customTitaniumLight()
-        separator1.frame = CGRect(x: suggestionView.frame.width / 3, y: 0, width: 2, height: suggestionView.frame.height)
-        suggestionView.addSubview(separator1)
-        let separator2 = UIView()
-        separator2.backgroundColor = UIColor.customTitaniumLight()
-        separator2.frame = CGRect(x: suggestionView.frame.width*2 / 3, y: 0, width: 2, height: suggestionView.frame.height)
-        suggestionView.addSubview(separator2)
-
-        suggestion1.frame = CGRect(x: 0, y: 0, width: suggestionView.frame.width / 3, height: suggestionView.frame.height)
-        suggestion2.frame = CGRect(x: suggestionView.frame.width / 3, y: 0, width: suggestionView.frame.width / 3, height: suggestionView.frame.height)
-        suggestion3.frame = CGRect(x: suggestionView.frame.width * 2 / 3, y: 0, width: suggestionView.frame.width / 3, height: suggestionView.frame.height)
-
-        suggestion1.textAlignment = .center
-        suggestion2.textAlignment = .center
-        suggestion3.textAlignment = .center
-
-        suggestionView.addSubview(suggestion1)
-        suggestionView.addSubview(suggestion2)
-        suggestionView.addSubview(suggestion3)
-
-        suggestion1.textColor = UIColor.white
-        suggestion2.textColor = UIColor.white
-        suggestion3.textColor = UIColor.white
-
-        suggestion1.isUserInteractionEnabled = true
-        suggestion2.isUserInteractionEnabled = true
-        suggestion3.isUserInteractionEnabled = true
-
-        let tap1 = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped))
-        let tap2 = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped))
-        let tap3 = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped))
-
-        suggestion1.addGestureRecognizer(tap1)
-        suggestion2.addGestureRecognizer(tap2)
-        suggestion3.addGestureRecognizer(tap3)
-
-        suggestionView.isHidden = true
-        self.view.addSubview(suggestionView)
+        suggestions = KeyboardSuggestions(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 40))
+        suggestions!.suggestionDelegate = self
+        suggestions!.isHidden = true
+        view.addSubview(suggestions!)
     }
 
-    @objc func suggestionTapped(sender:UITapGestureRecognizer) {
-        let label = sender.view as! UILabel
+    func suggestionWasTapped(suggestion: String) {
         for index in 0..<textFields.count {
             let textField = textFields[index]
             if textField.isFirstResponder {
-                textField.text = label.text
+                textField.text = suggestion
                 if(index < textFields.count - 1) {
                     let next = textFields[index+1]
                     next.becomeFirstResponder()
                 }
-                suggestionView.isHidden = true
+                suggestions!.isHidden = true
                 break
             }
         }
@@ -156,32 +81,25 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
     }
 
     func updateSuggestions(prefix: String) {
-        let upTo = 3 // FIXME: only shows up to 3 suggestions. requires scrollview.
-        let suggestions = getSuggestions(prefix: prefix)
-        for i in 0..<upTo {
-            labels[i].text = i < suggestions.count ? suggestions[i] : String()
-        }
-        suggestionView.isHidden = suggestions.isEmpty || suggestions.count > upTo
+        let words = getSuggestions(prefix: prefix)
+        self.suggestions!.setSuggestions(suggestions: words)
+        self.suggestions!.isHidden = words.isEmpty
     }
 
     func doneButtonEnable() {
-        doneButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        doneButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
         doneButton.isUserInteractionEnabled = true
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
         checkTextfield(textField: textField)
-        if (textField.text?.count)! > 0 {
-            pasteView.isHidden = true
+        if !(textField.text?.isEmpty ?? true) {
             updateSuggestions(prefix: textField.text!)
         } else {
-            suggestionView.isHidden = true
-            if mnemonic != nil {
-                pasteView.isHidden = false
-            }
+            suggestions!.isHidden = true
         }
         for field in textFields {
-            if field.text == nil || field.text == "" {
+            if field.text?.isEmpty ?? true {
                 return
             }
         }
@@ -235,9 +153,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
     }
 
     func checkMnemonics() {
-        for textField in textFields {
-            checkTextfield(textField: textField)
-        }
+        textFields.forEach { checkTextfield(textField: $0) }
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -362,7 +278,6 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, UITextFieldDeleg
     override func stopScan() {
         QRCodeReader.removeFromSuperview()
         previewLayer.removeFromSuperlayer()
-        qrCodeFrameView?.frame = CGRect.zero
 
         isScannerVisible = false
         scanBarButton.image = UIImage(named: "qr")
