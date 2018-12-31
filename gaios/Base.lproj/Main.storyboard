@@ -140,7 +140,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ZW2-ot-cFm">
-                                <rect key="frame" x="0.0" y="156" width="320" height="412"/>
+                                <rect key="frame" x="0.0" y="112" width="320" height="456"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="pBX-bn-UIZ" customClass="CurrencyCell" customModule="gaios" customModuleProvider="target">
@@ -180,7 +180,7 @@
                                 </prototypes>
                             </tableView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Search" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Yow-vt-kAL" customClass="SearchTextField" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="16" y="64" width="288" height="35"/>
+                                <rect key="frame" x="16" y="20" width="288" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="35" id="mxD-KG-0g0"/>
                                 </constraints>
@@ -197,7 +197,7 @@
                                 </userDefinedRuntimeAttributes>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="83T-x6-5F9">
-                                <rect key="frame" x="304" y="115" width="0.0" height="21"/>
+                                <rect key="frame" x="304" y="71" width="0.0" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="gJB-QN-R2A"/>
                                 </constraints>
@@ -206,7 +206,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="erf-Ov-BjI">
-                                <rect key="frame" x="16" y="115" width="0.0" height="21"/>
+                                <rect key="frame" x="16" y="71" width="0.0" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="fZR-46-w83"/>
                                 </constraints>
@@ -215,7 +215,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="search" translatesAutoresizingMaskIntoConstraints="NO" id="G9o-TV-lse">
-                                <rect key="frame" x="26" y="74" width="15" height="15"/>
+                                <rect key="frame" x="26" y="30" width="15" height="15"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="15" id="HI6-Ui-6eV"/>
                                     <constraint firstAttribute="height" constant="15" id="ZFQ-yD-lUn"/>
@@ -2527,7 +2527,7 @@
             </objects>
             <point key="canvasLocation" x="5544" y="-2735"/>
         </scene>
-        <!--Enter your recovery seed-->
+        <!--Enter your wallet mnemonic-->
         <scene sceneID="Vxs-Tv-sVV">
             <objects>
                 <viewController id="o6l-5o-Ocm" customClass="EnterMnemonicsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
@@ -2536,10 +2536,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Ka-HY-djy">
-                                <rect key="frame" x="16" y="510" width="288" height="42"/>
+                                <rect key="frame" x="16" y="476" width="288" height="42"/>
                                 <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="yaM-Bo-Ooe"/>
+                                    <constraint firstAttribute="height" constant="42" id="fnB-qR-Pds"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
                                 <state key="normal" title="Done">
@@ -2549,16 +2549,73 @@
                                     <action selector="doneButtonClicked:" destination="o6l-5o-Ocm" eventType="touchUpInside" id="inu-nQ-ulD"/>
                                 </connections>
                             </button>
+                            <collectionView clipsSubviews="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="6oW-aw-gUc">
+                                <rect key="frame" x="0.0" y="108" width="320" height="352"/>
+                                <color key="backgroundColor" name="customTitaniumDark"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="bGb-Vh-bGF">
+                                    <size key="itemSize" width="259" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" contentMode="center" reuseIdentifier="wordCell" id="Xdr-cN-apQ" customClass="MnemonicWordCell" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="30.5" y="0.0" width="259" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                            <rect key="frame" x="0.0" y="0.0" width="259" height="40"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="24" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yN5-lq-Ore">
+                                                    <rect key="frame" x="6" y="12" width="21" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" name="customTitaniumDark"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" name="customTitaniumLight"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="1fi-kF-V9A">
+                                                    <rect key="frame" x="32" y="11" width="207" height="19"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" name="customTitaniumDark"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                                    <connections>
+                                                        <action selector="editingChanged:" destination="Xdr-cN-apQ" eventType="editingChanged" id="ADw-Aq-LdS"/>
+                                                    </connections>
+                                                </textField>
+                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="30h-dR-M1C">
+                                                    <rect key="frame" x="32" y="29" width="207" height="1"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" name="customTitaniumLight"/>
+                                                </view>
+                                            </subviews>
+                                        </view>
+                                        <color key="backgroundColor" name="customTitaniumDark"/>
+                                        <size key="customSize" width="259" height="40"/>
+                                        <connections>
+                                            <outlet property="wordLabel" destination="yN5-lq-Ore" id="ge2-YV-2YN"/>
+                                            <outlet property="wordSeparator" destination="30h-dR-M1C" id="F0a-pI-VLk"/>
+                                            <outlet property="wordText" destination="1fi-kF-V9A" id="cDs-FD-sNm"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
-                            <constraint firstItem="6Ka-HY-djy" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" constant="16" id="CXP-gV-zbK"/>
-                            <constraint firstItem="t2r-7e-jNo" firstAttribute="bottom" secondItem="6Ka-HY-djy" secondAttribute="bottom" constant="16" id="pRL-dN-THt"/>
-                            <constraint firstItem="t2r-7e-jNo" firstAttribute="trailing" secondItem="6Ka-HY-djy" secondAttribute="trailing" constant="16" id="vbL-u9-2MH"/>
+                            <constraint firstItem="6Ka-HY-djy" firstAttribute="top" secondItem="6oW-aw-gUc" secondAttribute="bottom" constant="16" id="AfY-nZ-RQl"/>
+                            <constraint firstItem="t2r-7e-jNo" firstAttribute="bottom" secondItem="6Ka-HY-djy" secondAttribute="bottom" constant="50" id="Lvd-Ja-lCQ"/>
+                            <constraint firstItem="6oW-aw-gUc" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="44" id="aDA-iC-8g9"/>
+                            <constraint firstItem="6oW-aw-gUc" firstAttribute="centerX" secondItem="t2r-7e-jNo" secondAttribute="centerX" id="ctR-Zx-b6V"/>
+                            <constraint firstItem="t2r-7e-jNo" firstAttribute="trailing" secondItem="6Ka-HY-djy" secondAttribute="trailing" constant="16" id="lrJ-48-ydy"/>
+                            <constraint firstItem="6Ka-HY-djy" firstAttribute="leading" secondItem="t2r-7e-jNo" secondAttribute="leading" constant="16" id="okI-Gg-gmR"/>
+                            <constraint firstItem="6oW-aw-gUc" firstAttribute="width" secondItem="5FT-sb-MH7" secondAttribute="width" id="qJx-p2-ETl"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="t2r-7e-jNo"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Enter your recovery seed" id="GCg-9J-4AJ">
+                    <navigationItem key="navigationItem" title="Enter your wallet mnemonic" id="GCg-9J-4AJ">
                         <barButtonItem key="backBarButtonItem" title=" " id="aNm-iv-5BH"/>
                         <barButtonItem key="rightBarButtonItem" image="qr" id="9FH-fh-RD8">
                             <connections>
@@ -2568,13 +2625,14 @@
                     </navigationItem>
                     <connections>
                         <outlet property="doneButton" destination="6Ka-HY-djy" id="aUc-q0-ZyF"/>
+                        <outlet property="mnemonicWords" destination="6oW-aw-gUc" id="AOs-9X-WgR"/>
                         <outlet property="scanBarButton" destination="9FH-fh-RD8" id="9iv-iB-0Aq"/>
                         <segue destination="kWT-Yh-qgi" kind="show" identifier="next" id="rZR-ak-fSt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="peA-Kf-YoL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-654" y="752"/>
+            <point key="canvasLocation" x="-654.375" y="751.05633802816897"/>
         </scene>
         <!--Create Mnemonic Navigation Controller-->
         <scene sceneID="bag-aB-G2t">
@@ -3971,6 +4029,8 @@
     <inferredMetricsTieBreakers>
         <segue reference="fhM-Q9-pGm"/>
         <segue reference="NmU-wd-kgf"/>
+        <segue reference="S0G-tL-SMV"/>
+        <segue reference="WTS-vP-0Hc"/>
         <segue reference="EcC-We-I1f"/>
         <segue reference="Uzj-6y-k3B"/>
         <segue reference="ho6-WN-AfT"/>
