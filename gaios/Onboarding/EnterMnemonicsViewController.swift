@@ -11,10 +11,11 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
     let WL = getBIP39WordList()
 
     var suggestions: KeyboardSuggestions? = nil
-    var mnemonic = [String](repeating: String(), count: 24)
+    var mnemonic = [String](repeating: String(), count: 27)
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
     var isScannerVisible = false
+    var isPasswordProtected = false
 
     var currIndexPath: IndexPath? = nil
 
@@ -75,7 +76,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
 
     func getMnemonicString() -> Promise<String> {
         return Promise { seal in
-            seal.fulfill(mnemonic.joined(separator: " ").lowercased())
+            seal.fulfill(mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).joined(separator: " ").lowercased())
         }
     }
 
@@ -143,6 +144,11 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
         } 
     }
 
+    @IBAction func switchChanged(_ sender: Any) {
+        isPasswordProtected = (sender as! UISwitch).isOn
+        mnemonicWords.reloadData()
+    }
+
     override func startScan() {
         super.startScan()
 
@@ -184,7 +190,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
 
     override func onQRCodeReadSuccess(result: String) {
         let words = result.split(separator: " ")
-        guard words.count == 24 || words.count == 27 else {
+        guard words.count == 24 || (isPasswordProtected && words.count == 27) else {
             return
         }
 
@@ -215,7 +221,7 @@ extension EnterMnemonicsViewController : UICollectionViewDataSource {
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 8
+        return isPasswordProtected ? 9 : 8
     }
 }
 
