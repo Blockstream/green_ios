@@ -71,7 +71,15 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
 
     func suggestionWasTapped(suggestion: String) {
         mnemonic[currIndexPath!.row + currIndexPath!.section * 3] = suggestion
-        mnemonicWords.reloadData()
+        mnemonicWords.reloadItems(at: [currIndexPath!])
+
+        let nextRow = (currIndexPath!.row + 1) % 3
+        let nextSection = nextRow == 0 ? (currIndexPath!.section + 1) % (isPasswordProtected ? 9 : 8) : currIndexPath!.section
+        let nextIndexPath = IndexPath(row: nextRow, section: nextSection)
+        if let cell = mnemonicWords.cellForItem(at: nextIndexPath) as? MnemonicWordCell {
+            mnemonicWords.selectItem(at: nextIndexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.centeredVertically)
+            cell.wordText.becomeFirstResponder()
+        }
     }
 
     func getMnemonicString() -> Promise<String> {
