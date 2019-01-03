@@ -140,7 +140,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ZW2-ot-cFm">
-                                <rect key="frame" x="0.0" y="112" width="320" height="456"/>
+                                <rect key="frame" x="0.0" y="156" width="320" height="412"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="pBX-bn-UIZ" customClass="CurrencyCell" customModule="gaios" customModuleProvider="target">
@@ -180,7 +180,7 @@
                                 </prototypes>
                             </tableView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Search" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Yow-vt-kAL" customClass="SearchTextField" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="16" y="20" width="288" height="35"/>
+                                <rect key="frame" x="16" y="64" width="288" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="35" id="mxD-KG-0g0"/>
                                 </constraints>
@@ -197,7 +197,7 @@
                                 </userDefinedRuntimeAttributes>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="83T-x6-5F9">
-                                <rect key="frame" x="304" y="71" width="0.0" height="21"/>
+                                <rect key="frame" x="304" y="115" width="0.0" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="gJB-QN-R2A"/>
                                 </constraints>
@@ -206,7 +206,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="erf-Ov-BjI">
-                                <rect key="frame" x="16" y="71" width="0.0" height="21"/>
+                                <rect key="frame" x="16" y="115" width="0.0" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="fZR-46-w83"/>
                                 </constraints>
@@ -215,7 +215,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="search" translatesAutoresizingMaskIntoConstraints="NO" id="G9o-TV-lse">
-                                <rect key="frame" x="26" y="30" width="15" height="15"/>
+                                <rect key="frame" x="26" y="74" width="15" height="15"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="15" id="HI6-Ui-6eV"/>
                                     <constraint firstAttribute="height" constant="15" id="ZFQ-yD-lUn"/>
@@ -2355,7 +2355,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="+1 123456489" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dyf-gQ-Uj2">
-                                <rect key="frame" x="51" y="170" width="253" height="30"/>
+                                <rect key="frame" x="51" y="214" width="253" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="w5R-rw-Zfd"/>
                                 </constraints>
@@ -2425,7 +2425,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="email@domain.com" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3RB-4g-aw1">
-                                <rect key="frame" x="25" y="124" width="270" height="36"/>
+                                <rect key="frame" x="25" y="168" width="270" height="36"/>
                                 <color key="tintColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="1yq-D6-UkO"/>
@@ -2435,7 +2435,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-fc-34s">
-                                <rect key="frame" x="25" y="160" width="270" height="1"/>
+                                <rect key="frame" x="25" y="204" width="270" height="1"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="Xcg-it-o7h"/>
@@ -3469,7 +3469,7 @@
                                 </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Bpx-al-4Lo">
-                                <rect key="frame" x="16" y="40" width="288" height="458"/>
+                                <rect key="frame" x="16" y="84" width="288" height="365"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
@@ -3544,7 +3544,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Face ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y7S-LK-Jbq">
-                                <rect key="frame" x="49" y="40" width="57" height="21"/>
+                                <rect key="frame" x="49" y="84" width="57" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="Sxp-2M-ImA"/>
                                 </constraints>
@@ -3553,7 +3553,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PIN" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vph-mu-yep">
-                                <rect key="frame" x="49" y="91" width="27" height="21"/>
+                                <rect key="frame" x="49" y="135" width="27" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="KpK-AL-ftL"/>
                                 </constraints>
@@ -3562,13 +3562,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Iml-sS-CpW">
-                                <rect key="frame" x="255" y="35" width="51" height="31"/>
+                                <rect key="frame" x="255" y="79" width="51" height="31"/>
                                 <connections>
                                     <action selector="bioAuthSwitched:" destination="80V-46-g4d" eventType="valueChanged" id="qmJ-rT-grW"/>
                                 </connections>
                             </switch>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="IPB-IC-lO0">
-                                <rect key="frame" x="255" y="86" width="51" height="31"/>
+                                <rect key="frame" x="255" y="130" width="51" height="31"/>
                                 <connections>
                                     <action selector="pinSwitched:" destination="80V-46-g4d" eventType="valueChanged" id="KyP-Kr-MaS"/>
                                 </connections>
@@ -3791,10 +3791,10 @@
             </objects>
             <point key="canvasLocation" x="13740" y="-2738"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Tab View Controller-->
         <scene sceneID="VnM-9c-bim">
             <objects>
-                <tabBarController id="YV9-qz-m5y" sceneMemberID="viewController">
+                <tabBarController id="YV9-qz-m5y" customClass="TabViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" barStyle="black" translucent="NO" itemPositioning="fill" id="xM0-zh-2KN">
                         <rect key="frame" x="0.0" y="975" width="768" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -3844,7 +3844,6 @@
     <resources>
         <image name="2fa_email" width="50" height="50"/>
         <image name="2fa_sms" width="50" height="50"/>
-        <image name="backarrow" width="31" height="50"/>
         <image name="blockstreamGreen" width="560" height="229"/>
         <image name="btc" width="50" height="50"/>
         <image name="btc_testnet" width="50" height="50"/>
@@ -3854,14 +3853,10 @@
         <image name="erase" width="50" height="50"/>
         <image name="graphic" width="1500" height="970"/>
         <image name="logo" width="45" height="56"/>
-        <image name="mainnet" width="50" height="50"/>
-        <image name="matrix404" width="1563" height="1384"/>
-        <image name="north" width="2000" height="1500"/>
         <image name="notifications" width="50" height="50"/>
         <image name="notifications_clicked" width="50" height="50"/>
         <image name="paper" width="200" height="223"/>
         <image name="qr" width="50" height="50"/>
-        <image name="scan" width="50" height="50"/>
         <image name="search" width="150" height="150"/>
         <image name="sendWhite" width="24.25" height="24.25"/>
         <image name="settings" width="50" height="50"/>
@@ -3892,6 +3887,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="j8k-Hn-Z8w"/>
         <segue reference="fhM-Q9-pGm"/>
         <segue reference="S0G-tL-SMV"/>
         <segue reference="EcC-We-I1f"/>

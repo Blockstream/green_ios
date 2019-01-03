@@ -66,6 +66,7 @@
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
+		81073D7721E6024600E08F86 /* TabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81073D7621E6024600E08F86 /* TabViewController.swift */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
 		811ED52721BE8FCA0033A4A1 /* PopupPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */; };
 		811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
@@ -172,6 +173,7 @@
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
+		81073D7621E6024600E08F86 /* TabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewController.swift; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
 		811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupPromise.swift; sourceTree = "<group>"; };
 		811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorConfig.swift; sourceTree = "<group>"; };
@@ -335,6 +337,7 @@
 				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
 				81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */,
 				811EE25C219EC17800684AD8 /* TransactionsViewController.swift */,
+				81073D7621E6024600E08F86 /* TabViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
@@ -739,6 +742,7 @@
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
+				81073D7721E6024600E08F86 /* TabViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,

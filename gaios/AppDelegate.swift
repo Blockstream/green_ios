@@ -1,4 +1,5 @@
 import UIKit
+import PromiseKit
 
 func getAppDelegate() -> AppDelegate {
     return UIApplication.shared.delegate as! AppDelegate
@@ -29,9 +30,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     let service = GreenAddressService()
-    var startTime = DispatchTime.now()
-    var endTime = DispatchTime.now()
-    var finishedConnecting: Bool = false
 
     var mnemonicWords: [String]? = nil
 
@@ -90,57 +88,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func instantiateViewControllerAsRoot(identifier: String) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let firstVC = storyboard.instantiateViewController(withIdentifier: identifier) as! UINavigationController
-        self.window?.rootViewController = firstVC
-        self.window?.makeKeyAndVisible()
-    }
-
-    func connect() {
-        finishedConnecting = false
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                let networkSettings = getUserNetworkSettings()
-                let networkName = ((networkSettings?["network"] as? String) ?? "mainnet").lowercased()
-                let useProxy = networkSettings?["proxy"] as? Bool ?? false
-                let socks5Hostname = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
-                let socks5Port = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
-                let useTor = networkSettings?["tor"] as? Bool ?? false
-                let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
-
-                try getSession().connectWithProxy(network: Network(rawValue: networkName)!, proxy_uri: proxyURI, use_tor: useTor, debug: networkName != "mainnet")
-            }.done {
-                print("Connected")
-                self.finishedConnecting = true
-            }.catch { error in
-            }
+        guard let window = self.window else { return }
+        if window.rootViewController != nil {
+            window.rootViewController!.navigationController?.popToRootViewController(animated: true)
         }
+        window.rootViewController = firstVC
+        window.makeKeyAndVisible()
     }
 
-    func disconnect() {
-        do {
-            try getSession().disconnect()
-        } catch {
-        }
+    func connect() throws {
+        let networkSettings = getUserNetworkSettings()
+        let networkName = ((networkSettings?["network"] as? String) ?? "mainnet").lowercased()
+        let useProxy = networkSettings?["proxy"] as? Bool ?? false
+        let socks5Hostname = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
+        let socks5Port = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
+        let useTor = networkSettings?["tor"] as? Bool ?? false
+        let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
+        try getSession().connectWithProxy(network: Network(rawValue: networkName)!, proxy_uri: proxyURI, use_tor: useTor, debug: networkName != "mainnet")
     }
 
-    @objc func lockApplication(_ notification: NSNotification) {
-        //check if user is loggedIn
-        lock()
+    func disconnect() throws {
+        try getSession().disconnect()
     }
 
     func lock() {
-        connect()
-
-        self.window?.endEditing(true)
+        // update view
+        window?.endEditing(true)
         if isPinEnabled(network: getNetwork()) {
             instantiateViewControllerAsRoot(identifier: "PinLoginNavigationController")
         } else {
             instantiateViewControllerAsRoot(identifier: "InitialViewController")
         }
-    }
-
-    func logout() {
-        disconnect()
-        lock()
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -157,16 +135,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UserDefaults.standard.set(true, forKey: initKey)
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: "autolock"), object: nil)
-
         lock()
         return true
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        print("start timer")
-        startTime = DispatchTime.now()
-
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
     }
@@ -178,13 +151,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-        endTime = DispatchTime.now()
-        let timeElapsed = (endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1000000000 //in seconds
-        if (timeElapsed < 600) {
-            print("time elapsed is less than 5 minutes")
-        } else {
-            lock()
-        }
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

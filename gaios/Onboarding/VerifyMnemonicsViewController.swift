@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import PromiseKit
 
 class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewable {
 
@@ -95,35 +96,38 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     }
 
     func registerAndLogin(mnemonics: String) {
-        startAnimating()
-        DispatchQueue.global(qos: .background).async {
-            wrap {
-                    let call = try getSession().registerUser(mnemonic: mnemonics)
-                    _ = try DummyResolve(call: call)
-                }.done { _ in
-                    wrap {
-                            let call = try getSession().login(mnemonic: mnemonics)
-                            _ = try DummyResolve(call: call)
-                        }.done { _ in
-                            DispatchQueue.main.async {
-                                self.stopAnimating()
-                                self.performSegue(withIdentifier: "pin", sender: self)
-                            }
-                        }.catch { error in
-                            print("Login failed")
-                            DispatchQueue.main.async() {
-                                NVActivityIndicatorPresenter.sharedInstance.setMessage("Login Failed...")
-                                self.stopAnimating()
-                            }
-                    }
-                }.catch { error in
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                        NVActivityIndicatorPresenter.sharedInstance.setMessage("Register Failed...")
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-                        self.stopAnimating()
-                    }
-                    print("register failed")
+        let bgq = DispatchQueue.global(qos: .background)
+        let appDelegate = getAppDelegate()
+
+        firstly {
+            self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try appDelegate.disconnect()
+        }.compactMap(on: bgq) {
+            try appDelegate.connect()
+        }.compactMap(on: bgq) {
+            try getSession().registerUser(mnemonic: mnemonics)
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.compactMap(on: bgq) { call in
+            try getSession().login(mnemonic: mnemonics)
+        }.compactMap(on: bgq) { call in
+            try call.resolve(self)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.performSegue(withIdentifier: "pin", sender: self)
+        }.catch { error in
+            let message: String
+            if let err = error as? GaError, err != GaError.GenericError {
+                message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+            } else {
+                message = NSLocalizedString("id_login_failed", comment: "")
+            }
+            self.startAnimating(message: message)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                self.stopAnimating()
             }
         }
     }

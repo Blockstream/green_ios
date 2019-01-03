@@ -8,6 +8,7 @@ enum EventType: String {
     case TwoFactorReset = "twofactor_reset"
     case Settings = "settings"
     case AddressChanged = "address_changed"
+    case Network = "network"
 }
 
 class GreenAddressService: SessionNotificationDelegate {
@@ -71,6 +72,8 @@ class GreenAddressService: SessionNotificationDelegate {
                 let json = try! JSONSerialization.data(withJSONObject: data, options: [])
                 self.settings = try! JSONDecoder().decode(Settings.self, from: json)
                 post(event: .Settings, data: data)
+            case .Network:
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
             default:
                 break
         }

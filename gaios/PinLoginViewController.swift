@@ -22,10 +22,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var restoreMode: Bool = false
 
     var confirmPin: Bool = false
-
-    var views: Array<UIView> = Array<UIView>()
-    var labels: Array<UILabel> = Array<UILabel>()
-    var indicator: UIView? = nil
+    var labels = [UILabel]()
     var attemptsCount = 3
 
     override func viewDidLoad() {
@@ -40,10 +37,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
         // show pin label
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
-        for label in labels {
-            label.isHidden = true
-        }
-        attempts.isHidden = true
 
         // customize network image
         let network = getNetwork()
@@ -63,18 +56,17 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
 
-    fileprivate func startAnimation(message: String) -> Promise<Void> {
-        return Promise<Void> { seal in
-            self.startAnimating(message: message)
-            seal.fulfill(())
-        }
-    }
-
     fileprivate func loginWithPin(usingAuth: String, network: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
+        let appDelegate = getAppDelegate()
 
         firstly {
-            startAnimation(message: NSLocalizedString("id_logging_in", comment: ""))
+            startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try appDelegate.disconnect()
+        }.compactMap(on: bgq) {
+            try appDelegate.connect()
         }.compactMap(on: bgq) {
             try AuthenticationTypeHandler.getAuth(method: usingAuth, forNetwork: network)
         }.map(on: bgq) {
@@ -82,27 +74,39 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
             let jsonData = try JSONSerialization.data(withJSONObject: $0)
             try getSession().loginWithPin(pin: withPIN ?? $0["plaintext_biometric"] as! String, pin_data: String(data: jsonData, encoding: .utf8)!)
+        }.ensure {
+            self.stopAnimating()
         }.done {
             self.performSegue(withIdentifier: "main", sender: self)
         }.catch { error in
-            let authError = error as? AuthenticationTypeHandler.AuthError
-            if  authError == AuthenticationTypeHandler.AuthError.CanceledByUser {
-                return
-            }
-
-            if let _ = withPIN {
-                self.attemptsCount -= 1
-                if self.attemptsCount == 0 {
-                    AppDelegate.removePinKeychainData()
-                    self.performSegue(withIdentifier: "entrance", sender: nil)
+            let message: String
+            if let authError = error as? AuthenticationTypeHandler.AuthError {
+                if authError == AuthenticationTypeHandler.AuthError.CanceledByUser {
+                    return
+                } else {
+                    message = NSLocalizedString("id_login_failed", comment: "")
                 }
-                self.updateAttemptsLabel()
-                self.resetEverything()
+            } else {
+                guard let error = error as? GaError else { return }
+                if error == .GenericError, let _ = withPIN {
+                    self.attemptsCount -= 1
+                    if self.attemptsCount == 0 {
+                        AppDelegate.removePinKeychainData()
+                        self.stopAnimating()
+                        self.performSegue(withIdentifier: "entrance", sender: nil)
+                        return
+                    }
+                    message = NSLocalizedString("id_login_failed", comment: "")
+                } else {
+                    message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+                }
             }
-            let message = NSLocalizedString("id_login_failed", comment: "")
-            NVActivityIndicatorPresenter.sharedInstance.setMessage(message)
-        }.finally {
-            self.stopAnimating()
+            self.updateAttemptsLabel()
+            self.resetEverything()
+            self.startAnimating(message: message)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                self.stopAnimating()
+            }
         }
     }
 
@@ -110,13 +114,16 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
-            startAnimation(message: "")
+            startAnimating(message: "")
+            return Guarantee()
         }.compactMap(on: bgq) {
             let mnemonics = getAppDelegate().getMnemonicWordsString()
             return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 14))
         }.map(on: bgq) { (data: [String: Any]) -> Void in
             let network = getNetwork()
             try AuthenticationTypeHandler.addPIN(data: data, forNetwork: network)
+        }.ensure {
+            self.stopAnimating()
         }.done {
             if self.editPinMode {
                 self.navigationController?.popViewController(animated: true)
@@ -126,16 +133,24 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 self.performSegue(withIdentifier: "congrats", sender: self)
             }
         }.catch { error in
-            let message = NSLocalizedString("id_operation_failure", comment: "")
-            NVActivityIndicatorPresenter.sharedInstance.setMessage(message)
-        }.finally {
-            self.stopAnimating()
+            let message: String
+            if let err = error as? GaError, err != GaError.GenericError {
+                message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+            } else {
+                message = NSLocalizedString("id_operation_failure", comment: "")
+            }
+            self.startAnimating(message: message)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                self.stopAnimating()
+            }
         }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        resetEverything()
         updateView()
+        updateAttemptsLabel()
         if setPinMode || confirmPin {
             return
         }
@@ -149,7 +164,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     func updateAttemptsLabel() {
         attempts.text = String(format: NSLocalizedString("id_d_attempts_remaining", comment: ""), attemptsCount)
-        attempts.isHidden = false
+        attempts.isHidden = attemptsCount == 3
     }
 
     func updatePinMismatch() {
@@ -167,7 +182,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     @IBAction func numberClicked(_ sender: UIButton) {
         pinCode += (sender.titleLabel?.text)!
-        pinAppend()
+        updateView()
         if (pinCode.count < 6) {
             return
         }
@@ -189,6 +204,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             pinConfirm = pinCode
             pinCode = ""
             updateView()
+            updateAttemptsLabel()
             //show confirm pin
             title = NSLocalizedString("id_verify_your_pin", comment: "")
         } else {
@@ -204,50 +220,14 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func updateView() {
-        for label in labels {
-            label.text = "*"
-            label.isHidden = false
+        for (i, label) in labels.enumerated() {
+            if i < pinCode.count {
+                label.text = "*"
+                label.isHidden = false
+            } else {
+                label.isHidden = true
+            }
         }
-        createIndicator(position: pinCode.count)
-        for label in labels {
-            label.isHidden = true
-        }
-    }
-
-    func pinAppend() {
-        let count = self.pinCode.count
-        labels[count - 1].text = String(pinCode.last!)
-        labels[count - 1].isHidden = false
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-            self.labels[count - 1].text = "*"
-            self.labels[count - 1].sizeToFit()
-        }
-        createIndicator(position: pinCode.count)
-    }
-
-    func createIndicator(position: Int) {
-        if (position >= 6) {
-            indicator?.isHidden = true
-            return
-        }
-        indicator?.layer.removeAllAnimations()
-        indicator?.removeFromSuperview()
-        let labelP = labels[position]
-        indicator = UIView()
-        indicator?.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
-        indicator?.backgroundColor = UIColor.customMatrixGreen()
-        indicator?.translatesAutoresizingMaskIntoConstraints = false
-        indicator?.alpha = 1.0;
-        self.view.addSubview(indicator!)
-        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 0, constant: 2).isActive = true
-        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 0, constant: 21).isActive = true
-        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: labelP, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: indicator!, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: labelP, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
-        UIView.animate(withDuration: 0.5, delay: 0, options: [.repeat, .autoreverse], animations: {
-
-        self.indicator?.alpha = 0.0
-
-        }, completion: nil)
     }
 
     @IBAction func deleteClicked(_ sender: UIButton) {

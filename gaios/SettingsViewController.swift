@@ -11,13 +11,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     var items = [SettingsItem]()
     var sections = [SettingsSections]()
     var data: Dictionary<SettingsSections, Any> = Dictionary()
-    var anyTwoFactorEnabled: Bool {
-        get {
-            guard let dataTwoFactorConfig = try? getGAService().getSession().getTwoFactorConfig() else { return false }
-            guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return false }
-            return twoFactorConfig.anyEnabled
-        }
-    }
+    var username: String?
+    var twoFactorConfig: TwoFactorConfig?
     var isResetActive: Bool {
         get {
             guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return false }
@@ -42,7 +37,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadData()
+        let bgq = DispatchQueue.global(qos : .background)
+        Guarantee().compactMap {
+            self.reloadData()
+        }.compactMap(on: bgq) {
+            return try getGAService().getSession().getWatchOnlyUsername()
+        }.compactMap { username in
+            self.username = username
+        }.compactMap(on: bgq) {
+            let dataTwoFactorConfig = try getGAService().getSession().getTwoFactorConfig()
+            return try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+        }.compactMap { (twoFactorConfig: TwoFactorConfig) in
+            self.twoFactorConfig = twoFactorConfig
+        }.done {
+            self.reloadData()
+        }.catch { _ in }
     }
 
     func reloadData() {
@@ -72,7 +81,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             subtitle: "",
             section: .network,
             type: .SetupPin)
-        let username = try? getSession().getWatchOnlyUsername()
         let watchOnly = SettingsItem(
             title: NSLocalizedString("id_watchonly_login", comment: ""),
             subtitle: String(format: NSLocalizedString((username != nil) ? "id_enabled_1s" : "id_touch_to_set_up", comment: ""), username ?? ""),
@@ -114,17 +122,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         var thresholdValue = ""
         var locktimeRecoveryEnable = false
-        if let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() {
-            if let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) {
-                let limits = twoFactorConfig.limits
-                if limits.isFiat == true {
-                    thresholdValue = String(format: "%@ %@", limits.fiat, settings.getCurrency())
-                } else {
-                    thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue.lowercased())!)!, settings.denomination.rawValue)
-                }
-                if let notifications = settings.notifications {
-                    locktimeRecoveryEnable = notifications.emailOutgoing == true
-                }
+        if let twoFactorConfig = self.twoFactorConfig {
+            let limits = twoFactorConfig.limits
+            if limits.isFiat == true {
+                thresholdValue = String(format: "%@ %@", limits.fiat, settings.getCurrency())
+            } else {
+                thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue.lowercased())!)!, settings.denomination.rawValue)
+            }
+            if let notifications = settings.notifications {
+                locktimeRecoveryEnable = notifications.emailOutgoing == true
             }
         }
         let thresholdTwoFactor = SettingsItem(
@@ -191,7 +197,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         var menu = [SettingsItem]()
         if !isWatchOnly && !isResetActive {
             menu.append(contentsOf: [setupPin, watchOnly, bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate, setupTwoFactor])
-            if anyTwoFactorEnabled {
+            if twoFactorConfig?.anyEnabled ?? false {
                 menu.append(contentsOf: [thresholdTwoFactor, locktimeRecovery, locktimeRequest, resetTwoFactor])
             }
         }
@@ -238,17 +244,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
 
-
     @IBAction func logoutClicked(_ sender: Any) {
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
-            try getSession().disconnect()
-        }.done {
-            AccountStore.shared.isWatchOnly = false
-            getAppDelegate().lock()
-        }.catch { error in
-            print("error")
-        }
+        AccountStore.shared.isWatchOnly = false
+        getAppDelegate().lock()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

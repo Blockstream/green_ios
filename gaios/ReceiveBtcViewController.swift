@@ -122,15 +122,27 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func updateQRCode() {
-        let uri: String
-        if (amount_g == 0) {
-            uri = bip21Helper.btcURIforAddress(address: wallet!.getAddress())
-            walletAddressLabel.text = wallet!.getAddress()
-        } else {
-            uri = bip21Helper.btcURIforAmount(address: wallet!.getAddress(), amount: amount_g)
-            walletAddressLabel.text = uri
+        guard let wallet = self.wallet else {
+            walletAddressLabel.isHidden = true
+            walletQRCode.isHidden = true
+            return
         }
-        walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: walletQRCode.frame)
+        Guarantee().compactMap {
+            return wallet.getAddress()
+        }.done { address in
+            let uri: String
+            if (self.amount_g == 0) {
+                uri = bip21Helper.btcURIforAddress(address: address)
+                self.walletAddressLabel.text = wallet.getAddress()
+            } else {
+                uri = bip21Helper.btcURIforAmount(address: address, amount: self.amount_g)
+                self.walletAddressLabel.text = uri
+            }
+            self.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.walletQRCode.frame)
+        }.catch{ _ in
+            // Force to disconnect
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -143,13 +155,15 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @IBAction func shareButtonClicked(_ sender: Any) {
-        var uri: String = wallet!.getAddress()
-        if (amount_g > 0) {
-            uri = bip21Helper.btcURIforAmount(address: wallet!.getAddress(), amount: amount_g)
-        }
-        let activityViewController = UIActivityViewController(activityItems: [uri] , applicationActivities: nil)
-        activityViewController.popoverPresentationController?.sourceView = self.view
-        self.present(activityViewController, animated: true, completion: nil)
+        guard let wallet = self.wallet else { return }
+        Guarantee().compactMap {
+            return wallet.getAddress()
+        }.done { address in
+            let uri = self.amount_g == 0 ? address : bip21Helper.btcURIforAmount(address: address, amount: self.amount_g)
+            let activityViewController = UIActivityViewController(activityItems: [uri] , applicationActivities: nil)
+            activityViewController.popoverPresentationController?.sourceView = self.view
+            self.present(activityViewController, animated: true, completion: nil)
+        }.catch{ _ in }
     }
 }
 

@@ -131,9 +131,17 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
         }
 
         let bgq = DispatchQueue.global(qos: .background)
+        let appDelegate = getAppDelegate()
 
         firstly {
-            getMnemonicString()
+            self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try appDelegate.disconnect()
+        }.compactMap(on: bgq) {
+            try appDelegate.connect()
+        }.then {
+            self.getMnemonicString()
         }.get { (mnemonic: String, password: String) in
             guard validateMnemonic(mnemonic: mnemonic) else {
                 throw LoginError.InvalidMnemonic
@@ -141,15 +149,21 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
         }.compactMap(on: bgq) {
             let resolver = try getSession().login(mnemonic: $0.0, password: $0.1)
             let _ = try DummyResolve(call: resolver)
+        }.ensure {
+            self.stopAnimating()
         }.done { _ in
             self.performSegue(withIdentifier: "next", sender: self)
         }.catch { error in
-            var message = NSLocalizedString("id_login_failed", comment: "")
+            let message: String
             if let _ = error as? LoginError {
                 message = NSLocalizedString("id_invalid_mnemonic", comment: "")
+            } else if let err = error as? GaError, err != GaError.GenericError {
+                message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+            } else {
+                message = NSLocalizedString("id_login_failed", comment: "")
             }
             self.startAnimating(message: message)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
                 self.stopAnimating()
             }
         }
