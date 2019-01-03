@@ -2,6 +2,7 @@ import UIKit
 
 protocol MnemonicWordCellDelegate {
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicWordCell)
+    func collectionView(pastedIn text: String, from cell: MnemonicWordCell)
 }
 
 class MnemonicWordCell : UICollectionViewCell {
@@ -26,6 +27,9 @@ class MnemonicWordCell : UICollectionViewCell {
 extension MnemonicWordCell : UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if !string.isEmpty {
+            delegate?.collectionView(pastedIn: string, from: self)
+        }
         return true
     }
 

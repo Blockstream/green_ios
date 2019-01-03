@@ -7,6 +7,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var scanBarButton: UIBarButtonItem!
     @IBOutlet weak var mnemonicWords: UICollectionView!
+    @IBOutlet weak var passwordProtectedSwitch: UISwitch!
 
     let WL = getBIP39WordList()
 
@@ -15,7 +16,11 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
     var isScannerVisible = false
-    var isPasswordProtected = false
+    var isPasswordProtected = false {
+        willSet {
+            passwordProtectedSwitch.isOn = newValue
+        }
+    }
 
     var currIndexPath: IndexPath? = nil
 
@@ -82,9 +87,27 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
         }
     }
 
-    func getMnemonicString() -> Promise<String> {
+    func getMnemonicString() -> Promise<(String, String)> {
         return Promise { seal in
-            seal.fulfill(mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).joined(separator: " ").lowercased())
+            if self.isPasswordProtected {
+                let alert = UIAlertController(title: "Encryption passphrase", message: NSLocalizedString("id_please_provide_your_passphrase", comment: ""), preferredStyle: .alert)
+                alert.addTextField { textField in
+                    textField.keyboardType = .asciiCapable
+                    textField.isSecureTextEntry = true
+                }
+                alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+                    seal.reject(GaError.GenericError)
+                })
+                alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (action: UIAlertAction) in
+                    let textField = alert.textFields![0]
+                    seal.fulfill((self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!))
+                })
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                }
+            } else {
+                seal.fulfill((mnemonic.prefix(upTo: 24).joined(separator: " ").lowercased(), String()))
+            }
         }
     }
 
@@ -107,12 +130,12 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
 
         firstly {
             getMnemonicString()
-        }.get { (mnemonic: String) in
+        }.get { (mnemonic: String, password: String) in
             guard validateMnemonic(mnemonic: mnemonic) else {
                 throw LoginError.InvalidMnemonic
             }
         }.compactMap(on: bgq) {
-            let resolver = try getSession().login(mnemonic: $0)
+            let resolver = try getSession().login(mnemonic: $0.0, password: $0.1)
             let _ = try DummyResolve(call: resolver)
         }.done { _ in
             self.performSegue(withIdentifier: "next", sender: self)
@@ -196,16 +219,21 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
         stopScan()
     }
 
-    override func onQRCodeReadSuccess(result: String) {
+    private func onPaste(_ result: String) {
         let words = result.split(separator: " ")
-        guard words.count == 24 || (isPasswordProtected && words.count == 27) else {
+        guard words.count == 24 || words.count == 27 else {
             return
         }
 
         words.enumerated().forEach { mnemonic[$0.0] = String($0.1) }
-        mnemonicWords.reloadData()
+        isPasswordProtected = words.count == 27
 
+        mnemonicWords.reloadData()
         updateDoneButton(true)
+    }
+
+    override func onQRCodeReadSuccess(result: String) {
+        onPaste(result)
         stopScan()
     }
 }
@@ -246,6 +274,9 @@ extension EnterMnemonicsViewController : MnemonicWordCellDelegate {
         let text = textField.text?.isEmpty ?? true ? String() : textField.text!
 
         currIndexPath = mnemonicWords.indexPath(for: cell)
+        if currIndexPath == nil {
+            return
+        }
         mnemonic[currIndexPath!.row + currIndexPath!.section * 3] = text
 
         checkTextfield(textField: textField)
@@ -260,5 +291,10 @@ extension EnterMnemonicsViewController : MnemonicWordCellDelegate {
             }
         }
         updateDoneButton(true)
+    }
+
+    func collectionView(pastedIn text: String, from cell: MnemonicWordCell) {
+        currIndexPath = mnemonicWords.indexPath(for: cell)
+        onPaste(text)
     }
 }
