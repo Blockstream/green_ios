@@ -184,6 +184,10 @@ class Settings: Codable {
         return self.pricing["currency"]!
     }
 
+    func getWatchonlyUsername() -> String {
+        return self.pricing["currency"]!
+    }
+
     func getScreenLock() -> ScreenLockType {
         let network = getNetwork()
         let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)

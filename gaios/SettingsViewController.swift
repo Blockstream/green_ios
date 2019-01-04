@@ -72,9 +72,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             subtitle: "",
             section: .network,
             type: .SetupPin)
+        let username = try? getSession().getWatchOnlyUsername()
         let watchOnly = SettingsItem(
             title: NSLocalizedString("id_watchonly_login", comment: ""),
-            subtitle: String(format: NSLocalizedString("id_touch_to_set_up", comment: "")),
+            subtitle: String(format: NSLocalizedString((username != nil) ? "id_enabled_1s" : "id_touch_to_set_up", comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
 
@@ -441,6 +442,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.ensure {
             self.stopAnimating()
         }.done { _ in
+            self.reloadData()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_username_not_available", comment: ""))
         }
