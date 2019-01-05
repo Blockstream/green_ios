@@ -13,6 +13,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
 
     var suggestions: KeyboardSuggestions? = nil
     var mnemonic = [String](repeating: String(), count: 27)
+    var qrCodeFrameView: UIView?
     var QRCodeReader = UIView()
     var QRBackgroundView = UIView()
     var isScannerVisible = false
