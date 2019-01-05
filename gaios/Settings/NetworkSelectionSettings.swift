@@ -63,6 +63,12 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         setupView()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        saveButton.updateGradientLayerFrame()
+    }
+
     private func setBorderColor(_ view: UIView, _ color: UIColor = UIColor.customMatrixGreen()) {
         view.borderColor = color
     }
@@ -168,6 +174,6 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         socks5Port.text = defaults?["socks5_hostname"] as? String ?? ""
         torSwitch.isOn = defaults?["tor"] as? Bool ?? false
 
-        saveButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
+        saveButton.enableWithGradient(true)
     }
 }

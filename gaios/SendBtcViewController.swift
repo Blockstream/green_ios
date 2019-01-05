@@ -46,6 +46,12 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
         qrCodeReaderBackgroundView.stopScan()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        bottomButton.updateGradientLayerFrame()
+    }
+
     @objc func textFieldDidChange(_ textField: UITextField) {
         updateButton()
     }
@@ -57,13 +63,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
     }
 
     func updateButton() {
-        if textfield?.text != "" {
-            bottomButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
-            bottomButton.isUserInteractionEnabled = true
-        } else {
-            bottomButton.applyHorizontalGradient(colours: [UIColor.customTitaniumMedium(), UIColor.customTitaniumLight()])
-            bottomButton.isUserInteractionEnabled = false
-        }
+        bottomButton.enableWithGradient(!(textfield.text?.isEmpty ?? true))
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {

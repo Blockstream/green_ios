@@ -45,14 +45,14 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
         updateDoneButton(false)
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        doneButton.updateGradientLayerFrame()
+    }
+
     func updateDoneButton(_ enable: Bool) {
-        if !enable {
-            doneButton.applyHorizontalGradient(colours: [UIColor.customTitaniumMedium(), UIColor.customTitaniumLight()])
-            doneButton.isUserInteractionEnabled = false
-        } else {
-            doneButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
-            doneButton.isUserInteractionEnabled = true
-        }
+        doneButton.enableWithGradient(enable)
     }
 
     @objc override func keyboardWillShow(notification: NSNotification) {

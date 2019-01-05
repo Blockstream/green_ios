@@ -111,15 +111,62 @@ extension UIView {
         gradient.endPoint = CGPoint(x: 0, y: 0)
         self.layer.insertSublayer(gradient, at: 0)
     }
+}
 
-    func applyHorizontalGradient(colours: [UIColor]) -> Void {
+extension UIButton {
+    private static var gradientLayers = [UIButton: (CAGradientLayer, CAGradientLayer)]()
+
+    var enabledGradientLayer: CAGradientLayer {
+        get {
+            return createGradients().0
+        }
+    }
+
+    var disabledGradientLayer: CAGradientLayer {
+        get {
+            return createGradients().1
+        }
+    }
+
+    private func createHorizontalGradientLayer(colours: [UIColor]) -> CAGradientLayer {
         let gradient: CAGradientLayer = CAGradientLayer()
         gradient.frame = self.bounds
         gradient.colors = colours.map { $0.cgColor }
         gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
         gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
-        self.layer.sublayers?[0].removeFromSuperlayer()
-        self.layer.insertSublayer(gradient, at: 0)
-        self.setNeedsDisplay()
+        return gradient
+    }
+
+    private func createEnabledGradient() -> CAGradientLayer {
+        return createHorizontalGradientLayer(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
+    }
+
+    private func createDisabledGradient() -> CAGradientLayer {
+        return createHorizontalGradientLayer(colours: [UIColor.customTitaniumMedium(), UIColor.customTitaniumLight()])
+    }
+
+    private func createGradients() -> (CAGradientLayer, CAGradientLayer) {
+        if UIButton.gradientLayers[self] == nil {
+            UIButton.gradientLayers[self] = (createEnabledGradient(), createDisabledGradient())
+        }
+        return UIButton.gradientLayers[self]!
+    }
+
+    func enableWithGradient(_ enable: Bool) {
+        if enable == isUserInteractionEnabled {
+            return
+        }
+        if layer.sublayers != nil {
+            layer.replaceSublayer(enable ? disabledGradientLayer : enabledGradientLayer, with: enable ? enabledGradientLayer : disabledGradientLayer)
+        } else {
+            layer.addSublayer(enable ? enabledGradientLayer : disabledGradientLayer)
+        }
+        isUserInteractionEnabled = enable
+        setNeedsDisplay()
+    }
+
+    func updateGradientLayerFrame() {
+        enabledGradientLayer.frame = bounds
+        disabledGradientLayer.frame = bounds
     }
 }

@@ -121,6 +121,12 @@ class SendBtcDetailsViewController: UIViewController {
         updateTransaction()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        reviewButton.updateGradientLayerFrame()
+    }
+
     func getOldFeeRate() -> UInt64? {
         if let prevTx = transaction.details["previous_transaction"] as? [String: Any] {
             return prevTx["fee_rate"] as? UInt64
@@ -235,13 +241,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateReviewButton(_ enable: Bool) {
-       if !enable {
-            self.reviewButton.applyHorizontalGradient(colours: [UIColor.customTitaniumMedium(), UIColor.customTitaniumLight()])
-            self.reviewButton.isUserInteractionEnabled = false
-        } else {
-            self.reviewButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
-            self.reviewButton.isUserInteractionEnabled = true
-        }
+        reviewButton.enableWithGradient(enable)
     }
 
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
