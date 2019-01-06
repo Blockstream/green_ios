@@ -29,7 +29,6 @@
 		093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D5212E844400134235 /* CurrencySelectorViewController.swift */; };
 		093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D7212E86DF00134235 /* CurrencyCell.swift */; };
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
-		0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */; };
 		09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
 		09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* EditScreenLockSettings.swift */; };
@@ -55,6 +54,7 @@
 		09DA612620E73A2300C3EA03 /* String+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String+random.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
+		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
 		671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */; };
 		67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */ = {isa = PBXBuildFile; fileRef = 67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */; };
 		67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */; };
@@ -66,7 +66,6 @@
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
-		67B11D5421B0467E00D65B58 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
 		811ED52721BE8FCA0033A4A1 /* PopupPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */; };
 		811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
@@ -125,7 +124,6 @@
 		093544D5212E844400134235 /* CurrencySelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectorViewController.swift; sourceTree = "<group>"; };
 		093544D7212E86DF00134235 /* CurrencyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCell.swift; sourceTree = "<group>"; };
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
-		0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetViewController.swift; sourceTree = "<group>"; };
 		09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLimitViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
 		09546B3621686053009BABFE /* EditScreenLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScreenLockSettings.swift; sourceTree = "<group>"; };
@@ -155,6 +153,7 @@
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
+		6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCodeReaderView.swift; sourceTree = "<group>"; };
 		671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCell.swift; sourceTree = "<group>"; };
 		67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = KeyboardSuggestions.xib; sourceTree = "<group>"; };
 		67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSuggestions.swift; sourceTree = "<group>"; };
@@ -172,7 +171,6 @@
 		676FCF411F9D0CF800354E93 /* gaiosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gaiosUITests.swift; sourceTree = "<group>"; };
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
-		67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
 		811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupPromise.swift; sourceTree = "<group>"; };
@@ -224,6 +222,7 @@
 		092C7BC620D2381700F90DF2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */,
 				092D47F820EA2907005720F3 /* TransactionTableCell.swift */,
 				092D47F620EA28ED005720F3 /* TransactionTableCell.xib */,
 				092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */,
@@ -339,8 +338,6 @@
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
-				0936AE4F2145F9FF00879778 /* NoInternetViewController.swift */,
-				67B11D5321B0467E00D65B58 /* QRCodeReaderViewController.swift */,
 				675DBA6421B4B13B000C5D70 /* Model.swift */,
 			);
 			path = gaios;
@@ -719,12 +716,12 @@
 				0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				81FABC2D21AEEFF000AE2ECD /* CongratsViewController.swift in Sources */,
-				0936AE502145F9FF00879778 /* NoInternetViewController.swift in Sources */,
 				09546B3721686053009BABFE /* EditScreenLockSettings.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
+				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
 				811ED52721BE8FCA0033A4A1 /* PopupPromise.swift in Sources */,
@@ -740,7 +737,6 @@
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
-				67B11D5421B0467E00D65B58 /* QRCodeReaderViewController.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,

@@ -75,6 +75,7 @@ struct Transaction {
 
     var error: String {
         get { return get("error") ?? String() }
+        set { details["error"] = newValue }
     }
 
     var fee: UInt64 {

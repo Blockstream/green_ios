@@ -160,7 +160,7 @@ class Settings: Codable {
     var altimeout: Int
     var unit: String
     var pricing: [String: String]
-    var customFeeRate: Int?
+    var customFeeRate: UInt64?
     var pgp: String?
     var sound: Bool
     var notifications: SettingsNotifications?

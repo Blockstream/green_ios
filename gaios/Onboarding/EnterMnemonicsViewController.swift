@@ -2,7 +2,7 @@ import UIKit
 import NVActivityIndicatorView
 import PromiseKit
 
-class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDelegate, NVActivityIndicatorViewable {
+class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var scanBarButton: UIBarButtonItem!
@@ -13,9 +13,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
 
     var suggestions: KeyboardSuggestions? = nil
     var mnemonic = [String](repeating: String(), count: 27)
-    var qrCodeFrameView: UIView?
-    var QRCodeReader = UIView()
-    var QRBackgroundView = UIView()
+    var QRCodeReader = QRCodeReaderView()
     var isScannerVisible = false
     var isPasswordProtected = false {
         willSet {
@@ -35,6 +33,11 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
         mnemonicWords.dataSource = self
 
         createSuggestionView()
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        QRCodeReader.addGestureRecognizer(tap)
+
+        QRCodeReader.delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -181,44 +184,29 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
         mnemonicWords.reloadData()
     }
 
-    override func startScan() {
-        super.startScan()
+    func startScan() {
+        QRCodeReader.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
+        view.addSubview(QRCodeReader)
 
-        QRCodeReader.layoutIfNeeded()
-        QRCodeReader.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
-        self.view.addSubview(QRCodeReader)
-        previewLayer.frame = QRCodeReader.layer.bounds
-        QRCodeReader.layer.addSublayer(previewLayer)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(onTap))
-        QRCodeReader.addGestureRecognizer(tap)
-
-        // Initialize QR Code Frame to highlight the QR code
-        qrCodeFrameView = UIView()
-
-        if let qrCodeFrameView = qrCodeFrameView {
-            qrCodeFrameView.layer.borderColor = UIColor.red.cgColor
-            qrCodeFrameView.layer.borderWidth = 4
-            QRCodeReader.addSubview(qrCodeFrameView)
-            QRCodeReader.bringSubview(toFront: qrCodeFrameView)
-        }
-        // set title bar
         isScannerVisible = true
         scanBarButton.image = UIImage(named: "check")
+        QRCodeReader.startScan()
     }
 
-    override func stopScan() {
+    func stopScan() {
+        QRCodeReader.stopScan()
         QRCodeReader.removeFromSuperview()
-        previewLayer.removeFromSuperlayer()
 
         isScannerVisible = false
         scanBarButton.image = UIImage(named: "qr")
-
-        super.stopScan()
     }
 
     @objc func onTap(sender: UITapGestureRecognizer?) {
         stopScan()
     }
+}
+
+extension EnterMnemonicsViewController : QRCodeReaderDelegate {
 
     private func onPaste(_ result: String) {
         let words = result.split(separator: " ")
@@ -233,7 +221,7 @@ class EnterMnemonicsViewController: QRCodeReaderViewController, SuggestionsDeleg
         updateDoneButton(true)
     }
 
-    override func onQRCodeReadSuccess(result: String) {
+    func onQRCodeReadSuccess(result: String) {
         onPaste(result)
         stopScan()
     }

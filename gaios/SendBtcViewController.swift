@@ -4,53 +4,47 @@ import UIKit
 import AVFoundation
 import NVActivityIndicatorView
 
-class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
+class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
 
     @IBOutlet weak var textfield: UITextField!
-    @IBOutlet weak var QRCodeReader: UIView!
-    @IBOutlet weak var topImage: UIImageView!
+    @IBOutlet weak var qrCodeReaderBackgroundView: QRCodeReaderView!
     @IBOutlet weak var bottomButton: UIButton!
     @IBOutlet weak var orLabel: UILabel!
 
     var uiErrorLabel: UIErrorLabel!
     var wallets = [WalletItem]()
-    var qrCodeFrameView: UIView?
     var wallet:WalletItem? = nil
-    var sweepTransaction: Bool = false
-    var transaction: Transaction?
+    var transaction: Transaction? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         self.title = NSLocalizedString("id_send_to", comment: "")
         orLabel.text = NSLocalizedString("id_or", comment: "")
-        // setup scanner placeholder
-        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = topImage.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        topImage.addSubview(blurEffectView)
 
         textfield.delegate = self
         textfield.attributedPlaceholder =
-            NSAttributedString(string: sweepTransaction ?
-                "Enter Private Key" : NSLocalizedString("id_enter_an_address_or_private_key", comment: ""),
+            NSAttributedString(string: NSLocalizedString("id_enter_an_address_or_private_key", comment: ""),
                 attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        // setup button and error message
-        bottomButton.setTitle(sweepTransaction ? NSLocalizedString("id_sweep", comment: "") : NSLocalizedString("id_add_amount", comment: ""), for: .normal)
+
+        bottomButton.setTitle(NSLocalizedString("id_add_amount", comment: ""), for: .normal)
         uiErrorLabel = UIErrorLabel(self.view)
+
+        qrCodeReaderBackgroundView.delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // add tap gesture to qr scanner
-        let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.someAction (_:)))
-        QRCodeReader.addGestureRecognizer(gesture)
-        QRCodeReader.isUserInteractionEnabled = true
-        // set next button
         updateButton()
+        qrCodeReaderBackgroundView.startScan()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        qrCodeReaderBackgroundView.stopScan()
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -64,39 +58,12 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NV
     }
 
     func updateButton() {
-        if(textfield.text != nil && textfield.text != "") {
+        if textfield?.text != "" {
             bottomButton.applyHorizontalGradient(colours: [UIColor.customMatrixGreenDark(), UIColor.customMatrixGreen()])
             bottomButton.isUserInteractionEnabled = true
         } else {
             bottomButton.applyHorizontalGradient(colours: [UIColor.customTitaniumMedium(), UIColor.customTitaniumLight()])
             bottomButton.isUserInteractionEnabled = false
-        }
-    }
-
-    @objc func someAction(_ sender: UITapGestureRecognizer) {
-        if keyboardDismissGesture != nil {
-            dismissKeyboard()
-            return
-        }
-        sender.isEnabled = false
-        if requestVideoAccess() ==  .authorized {
-            startScan()
-        }
-    }
-
-    override func startScan() {
-        QRCodeReader.layoutIfNeeded()
-        previewLayer.frame = QRCodeReader.layer.bounds
-        QRCodeReader.layer.addSublayer(previewLayer)
-        captureSession.startRunning()
-
-        // Initialize QR Code Frame to highlight the QR code
-        qrCodeFrameView = UIView()
-        if let qrCodeFrameView = qrCodeFrameView {
-            qrCodeFrameView.layer.borderColor = UIColor.red.cgColor
-            qrCodeFrameView.layer.borderWidth = 4
-            QRCodeReader.addSubview(qrCodeFrameView)
-            QRCodeReader.bringSubview(toFront: qrCodeFrameView)
         }
     }
 
@@ -112,24 +79,32 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NV
         }
     }
 
+    private func createSweepTransaction(userInput: String, feeRate: UInt64) -> Promise<Transaction> {
+        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate]
+        return gaios.createTransaction(details: details)
+    }
+
     func createTransaction(userInput: String) {
         guard let settings = getGAService().getSettings() else { return }
-        let feeRate = settings.customFeeRate ?? 1000
+        let feeRate: UInt64 = settings.customFeeRate ?? UInt64(1000)
 
         self.uiErrorLabel.isHidden = true
         startAnimating(type: NVActivityIndicatorType.ballRotateChase)
 
-        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate]
-        gaios.createTransaction(details: details).get { tx in
-            self.transaction = tx
-        }.map { tx -> Promise<Transaction> in
+        createSweepTransaction(userInput: userInput, feeRate: feeRate).map { tx -> Promise<Transaction> in
             if tx.error.isEmpty {
                 self.performSegue(withIdentifier: "next", sender: self)
             } else if tx.error != "id_invalid_private_key" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate":  feeRate]
-            return gaios.createTransaction(details: details)
+            if self.transaction != nil {
+                self.transaction!.addressees = [Addressee(address: userInput, satoshi: 0)]
+                self.transaction!.feeRate = feeRate
+                return gaios.createTransaction(transaction: self.transaction!)
+            } else {
+                let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate":  feeRate]
+                return gaios.createTransaction(details: details)
+            }
         }.then { tx in
             return tx
         }.compactMap { tx in
@@ -138,8 +113,6 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NV
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
             self.performSegue(withIdentifier: "next", sender: self)
-        }.ensure {
-            self.stopAnimating()
         }.catch { error in
             if let txError = (error as? TransactionError) {
                 switch txError {
@@ -151,14 +124,19 @@ class SendBtcViewController: QRCodeReaderViewController, UITextFieldDelegate, NV
             }
             self.uiErrorLabel.isHidden = false
             self.bottomButton.isUserInteractionEnabled = true
+        }.finally {
+            self.stopAnimating()
+            if !self.uiErrorLabel.isHidden {
+                self.qrCodeReaderBackgroundView.startScan()
+            }
         }
     }
+}
 
-    override func onQRCodeReadSuccess(result: String) {
-        self.captureSession.stopRunning()
-        self.previewLayer.removeFromSuperlayer()
-        self.qrCodeFrameView?.frame = CGRect.zero
+extension SendBtcViewController : QRCodeReaderDelegate {
 
+    func onQRCodeReadSuccess(result: String) {
+        qrCodeReaderBackgroundView.stopScan()
         createTransaction(userInput: result)
     }
 }

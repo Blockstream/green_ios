@@ -333,7 +333,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             let popup = PopupEditable(self, title: item.title, hint: hint, text: hint, keyboardType: .numberPad)
             resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
                 guard let feeRate: Float = Float(value as! String) else { throw GaError.GenericError}
-                settings.customFeeRate = Int(feeRate * 1000)
+                settings.customFeeRate = UInt64(feeRate * 1000)
                 return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
             }, completing: { self.reloadData() })
             break
