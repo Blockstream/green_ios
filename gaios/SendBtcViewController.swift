@@ -12,7 +12,6 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
     @IBOutlet weak var orLabel: UILabel!
 
     var uiErrorLabel: UIErrorLabel!
-    var wallets = [WalletItem]()
     var wallet:WalletItem? = nil
     var transaction: Transaction? = nil
 
@@ -80,12 +79,13 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
     }
 
     private func createSweepTransaction(userInput: String, feeRate: UInt64) -> Promise<Transaction> {
-        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate]
+        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate, "subaccount": self.wallet!.pointer]
         return gaios.createTransaction(details: details)
     }
 
     func createTransaction(userInput: String) {
         guard let settings = getGAService().getSettings() else { return }
+        guard let subaccount = wallet?.pointer else { return }
         let feeRate: UInt64 = settings.customFeeRate ?? UInt64(1000)
 
         self.uiErrorLabel.isHidden = true
@@ -102,7 +102,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
                 self.transaction!.feeRate = feeRate
                 return gaios.createTransaction(transaction: self.transaction!)
             } else {
-                let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate":  feeRate]
+                let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate":  feeRate, "subaccount": subaccount]
                 return gaios.createTransaction(details: details)
             }
         }.then { tx in

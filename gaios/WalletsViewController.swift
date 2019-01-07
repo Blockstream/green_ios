@@ -15,10 +15,10 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        AccountStore.shared.getWallets(cached: true).done { wallets in
+        getSubaccounts().done { wallets in
             self.wallets = wallets
             self.collectionView?.reloadData()
-        }
+        }.catch {_ in }
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -57,9 +57,6 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         if let nextController = segue.destination as? TransactionsController {
             guard let wallet = sender as? WalletItem else { return }
             nextController.presentingWallet = wallet
-            Guarantee().map {
-                try! getSession().setCurrentSubaccount(subaccount: wallet.pointer)
-            }
         }
     }
 }

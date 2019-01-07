@@ -40,11 +40,8 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @IBAction func refreshClick(_ sender: Any) {
-        let bgq = DispatchQueue.global(qos: .background)
-        AccountStore.shared.getWallets(cached: true).compactMap(on: bgq) { wallets in
-            let updates = wallets.filter { self.wallet?.pointer == $0.pointer }
-            return updates.map { $0.receiveAddress = $0.generateNewAddress(); return $0 }
-        }.done { (wallets: [WalletItem]) in
+        let pointers: [UInt32] = [self.wallet!.pointer]
+        changeAddresses(pointers).done { (wallets: [WalletItem]) in
             wallets.forEach { wallet in
                 guard let address = wallet.receiveAddress else { return }
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, userInfo: ["pointer": wallet.pointer, "address": address])

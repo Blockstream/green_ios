@@ -56,7 +56,7 @@ class GreenAddressService: SessionNotificationDelegate {
 
                 // TODO refactoring notifications
                 if txEvent.type == "incoming" {
-                    updateSubAccounts(txEvent.subAccounts)
+                    updateAddresses(txEvent.subAccounts.map{ UInt32($0)})
                     DispatchQueue.main.async {
                         self.showIncomingNotification()
                     }
@@ -80,12 +80,8 @@ class GreenAddressService: SessionNotificationDelegate {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue), object: nil, userInfo: data)
     }
 
-    func updateSubAccounts(_ accounts: [Int]) {
-        let bgq = DispatchQueue.global(qos: .background)
-        AccountStore.shared.getWallets(cached: true).compactMap(on: bgq) { wallets in
-            let updates = wallets.filter { accounts.contains(Int($0.pointer)) }
-            return updates.map { $0.receiveAddress = $0.generateNewAddress(); return $0 }
-        }.done { (wallets: [WalletItem]) in
+    func updateAddresses(_ accounts: [UInt32]) {
+        changeAddresses(accounts).done { (wallets: [WalletItem]) in
             wallets.forEach { wallet in
                 guard let address = wallet.receiveAddress else { return }
                 self.post(event: .AddressChanged, data: ["pointer": wallet.pointer, "address": address])

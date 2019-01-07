@@ -82,7 +82,7 @@ class TransactionDetailViewController: UIViewController {
     }
 
     @IBAction func increaseFeeClicked(_ sender: Any) {
-        let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate]
+        let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate, "subaccount": wallet.pointer]
         gaios.createTransaction(details: details).done { tx in
             self.rbfTransaction = tx
             self.performSegue(withIdentifier: "rbf", sender: self)

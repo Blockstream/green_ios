@@ -255,3 +255,32 @@ func getFeeEstimates() -> [UInt64] {
 func getUserNetworkSettings() -> [String: Any]? {
     return UserDefaults.standard.value(forKey: "network_settings") as? [String: Any]
 }
+
+func getSubaccount(_ pointer: UInt32) -> Promise<WalletItem> {
+    let bgq = DispatchQueue.global(qos: .background)
+    return Guarantee().compactMap(on: bgq) {
+        try getSession().getSubaccount(subaccount: pointer)
+        }.compactMap(on: bgq) { data in
+            let jsonData = try JSONSerialization.data(withJSONObject: data)
+            return try JSONDecoder().decode(WalletItem.self, from: jsonData)
+    }
+}
+
+func getSubaccounts() -> Promise<[WalletItem]> {
+    let bgq = DispatchQueue.global(qos: .background)
+    return Guarantee().compactMap(on: bgq) {
+        try getSession().getSubaccounts()
+        }.compactMap(on: bgq) { data in
+            let jsonData = try JSONSerialization.data(withJSONObject: data)
+            let wallets: Wallets = try JSONDecoder().decode(Wallets.self, from: jsonData)
+            return wallets.array
+    }
+}
+
+func changeAddresses(_ accounts: [UInt32]) -> Promise<[WalletItem]> {
+    let bgq = DispatchQueue.global(qos: .background)
+    return getSubaccounts().compactMap(on: bgq) { wallets in
+        let updates = wallets.filter { accounts.contains($0.pointer) }
+        return updates.map { $0.receiveAddress = $0.generateNewAddress(); return $0 }
+    }
+}
