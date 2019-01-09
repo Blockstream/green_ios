@@ -166,7 +166,8 @@ class TransactionsController: UITableViewController {
     func reloadWalletCardView(_ view: WalletFullCardView){
         guard let wallet = presentingWallet else { return }
         guard let settings = getGAService().getTwoFactorReset() else { return }
-        Guarantee().compactMap {
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().compactMap(on: bgq) {
             return try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
         }.compactMap { balance in
             let satoshi = balance["satoshi"] as! UInt64
@@ -178,7 +179,7 @@ class TransactionsController: UITableViewController {
             if settings.isResetActive {
                 view.actionsView.isHidden = true
             }
-        }
+        }.catch{ _ in }
     }
 
     @objc func back(_ sender: UIButton) {

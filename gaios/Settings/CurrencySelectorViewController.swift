@@ -96,7 +96,8 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
     }
 
     func getExchangeRate() {
-        Guarantee().compactMap {
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().compactMap(on: bgq) {
             try getSession().getAvailableCurrencies()
         }.done { (data: [String:Any]?) in
             guard let json = data else { return }

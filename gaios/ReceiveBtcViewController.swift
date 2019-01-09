@@ -127,13 +127,14 @@ class ReceiveBtcViewController: KeyboardViewController {
             walletQRCode.isHidden = true
             return
         }
-        Guarantee().compactMap {
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
             let uri: String
             if (self.amount_g == 0) {
                 uri = bip21Helper.btcURIforAddress(address: address)
-                self.walletAddressLabel.text = wallet.getAddress()
+                self.walletAddressLabel.text = address
             } else {
                 uri = bip21Helper.btcURIforAmount(address: address, amount: self.amount_g)
                 self.walletAddressLabel.text = uri
@@ -156,7 +157,8 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     @IBAction func shareButtonClicked(_ sender: Any) {
         guard let wallet = self.wallet else { return }
-        Guarantee().compactMap {
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
             let uri = self.amount_g == 0 ? address : bip21Helper.btcURIforAmount(address: address, amount: self.amount_g)
