@@ -54,7 +54,7 @@ class TOSViewController: UIViewController {
         tosTextView.attributedText = tosString
         tosTextView.font = UIFont.systemFont(ofSize: 16)
         tosTextView.isUserInteractionEnabled = true
-        let stringLocalized = NSLocalizedString("id_welcome_to", comment: "") + "GREEN"
+        let stringLocalized = NSLocalizedString("id_welcome_to", comment: "") + " GREEN"
         let topString = NSMutableAttributedString(string: stringLocalized)
         topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
         topLabel.attributedText = topString
