@@ -156,8 +156,10 @@ extension UIButton {
         if enable == isUserInteractionEnabled {
             return
         }
-        if layer.sublayers != nil {
-            layer.replaceSublayer(enable ? disabledGradientLayer : enabledGradientLayer, with: enable ? enabledGradientLayer : disabledGradientLayer)
+        if let sublayers = layer.sublayers {
+            if sublayers.contains(enable ? disabledGradientLayer : enabledGradientLayer) {
+                layer.replaceSublayer(enable ? disabledGradientLayer : enabledGradientLayer, with: enable ? enabledGradientLayer : disabledGradientLayer)
+            }
         } else {
             layer.addSublayer(enable ? enabledGradientLayer : disabledGradientLayer)
         }
