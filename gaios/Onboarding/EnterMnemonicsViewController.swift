@@ -288,7 +288,7 @@ extension EnterMnemonicsViewController : MnemonicWordCellDelegate {
         } else {
             suggestions!.isHidden = true
         }
-        for word in mnemonic {
+        for word in mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24) {
             if word.isEmpty {
                 return
             }
