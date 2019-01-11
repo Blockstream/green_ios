@@ -101,7 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let networkName = ((networkSettings?["network"] as? String) ?? "mainnet").lowercased()
         let useProxy = networkSettings?["proxy"] as? Bool ?? false
         let socks5Hostname = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
-        let socks5Port = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
+        let socks5Port = useProxy ? networkSettings?["socks5_port"] as? String ?? "" : ""
         let useTor = networkSettings?["tor"] as? Bool ?? false
         let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
         try getSession().connectWithProxy(network: Network(rawValue: networkName)!, proxy_uri: proxyURI, use_tor: useTor, debug: networkName != "mainnet")

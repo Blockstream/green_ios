@@ -171,7 +171,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
 
         proxySwitch.isOn = defaults?["proxy"] as? Bool ?? false
         socks5Hostname.text = defaults?["socks5_hostname"] as? String ?? ""
-        socks5Port.text = defaults?["socks5_hostname"] as? String ?? ""
+        socks5Port.text = defaults?["socks5_port"] as? String ?? ""
         torSwitch.isOn = defaults?["tor"] as? Bool ?? false
 
         saveButton.enableWithGradient(true)
