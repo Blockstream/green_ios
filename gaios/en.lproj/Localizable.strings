@@ -11,6 +11,7 @@
 "id_accept" = "ACCEPT";
 "id_account" = "ACCOUNT";
 "id_action_canceled" = "Action canceled";
+"id_add_a_note" = "Add a note…";
 "id_add_amount" = "Add Amount";
 "id_add_custom_network_by_qr_code" = "Add custom network by QR Code";
 "id_add_custom_network_by_url" = "Add custom network by URL";
@@ -72,6 +73,8 @@
 "id_deleting_your_pin_will_remove" = "Deleting your PIN will remove wallet access permanently unless you have your mnemonic available. Press \"OK\" to continue.";
 "id_denomination" = "Denomination";
 "id_deposit" = "Deposit";
+"id_disable" = "Disable";
+"id_disabled" = "Disabled";
 "id_displays_the_progress_of_spv" = "Displays the progress of SPV synchronization";
 "id_dispute_twofactor_reset" = "Dispute Two-Factor reset";
 "id_disputed" = "Disputed";
@@ -83,11 +86,14 @@
 "id_download_finished" = "Download finished";
 "id_email" = "Email";
 "id_email_address" = "email address";
+"id_enable" = "Enable";
 "id_enable_custom_networks_debug" = "Enable custom networks debug options";
 "id_enable_face_id" = "Enable Face ID";
 "id_enable_spv" = "Enable SPV";
 "id_enable_touch_id" = "Enable Touch ID";
+"id_enabled" = "Enabled";
 "id_enabled_1s" = "Enabled: %1$@";
+"id_encryption_passphrase" = "Encryption passphrase";
 "id_enter" = "Enter";
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "Enter a valid .onion or IP address (.onion preferred)";
@@ -108,6 +114,7 @@
 "id_face_id" = "Face ID";
 "id_fee" = "Fee";
 "id_fee_amount_size_fee_rate" = "Fee Amount, Size, Fee Rate";
+"id_fee_rate" = "Fee rate";
 "id_fee_rate_is_below_minimum" = "Fee rate is below minimum accepted fee rate";
 "id_fee_rate_must_be_higher_than" = "Fee rate must be higher than minimum relay fee rate";
 "id_from" = "FROM";
@@ -120,6 +127,7 @@
 "id_green_is_a_noncustodial_wallet" = "Green is a non-custodial wallet";
 "id_green_logo" = "Green Logo";
 "id_green_mnemonic_qr_code" = "Green Mnemonic QR Code";
+"id_green_uses_touch_id_and_face_id" = "Green uses Touch ID and Face ID to allow easy access to the wallet";
 "id_hash" = "Hash";
 "id_high" = "High";
 "id_hold_your_nfc_tag_close_to_the" = "Hold your NFC tag close to the device";
@@ -276,6 +284,7 @@
 "id_set_watchonly" = "Set Watch-Only";
 "id_setting_updated" = "Setting updated";
 "id_settings" = "Settings";
+"id_setup_pin" = "Setup PIN";
 "id_share" = "Share";
 "id_share_address" = "Share Address";
 "id_show_fiat" = "Show fiat";
@@ -290,6 +299,7 @@
 "id_something_went_wrong" = "Something went wrong";
 "id_spv_is_always_synchronized_on" = "SPV is always synchronized on non mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.";
 "id_spv_notifications" = "SPV notifications";
+"id_spv_reset_and_restarted" = "SPV reset and restarted";
 "id_spv_synchronization" = "SPV Synchronization";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "Sweep From Paper Wallet";
@@ -302,6 +312,7 @@
 "id_thank_you_for_downloading_green" = "Thank you for downloading Green! Please leave us a review when you get a chance";
 "id_the_camera_has_a_problem_you" = "The camera has a problem. You probably need to restart the device.";
 "id_the_easier_safer_and_faster" = "the easier, safer and faster wallet";
+"id_the_hardware_wallet_you_are" = "The hardware wallet you are using is not yet supported";
 "id_the_password_cant_be_empty" = "The password can't be empty";
 "id_the_recovery_key_below_will_not" = "The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.";
 "id_to" = "TO";
@@ -345,10 +356,12 @@
 "id_watchonly" = "Watch-Only";
 "id_watchonly_disabled" = "Watch-Only disabled";
 "id_watchonly_login" = "Watch-Only Login";
+"id_we_use_the_camera_to_scan_qr" = "We use the camera to scan QR codes";
 "id_welcome" = "Welcome";
 "id_welcome_to" = "Welcome to";
 "id_write_down_the_words" = "Write down the words";
 "id_write_down_your_mnemonic_words" = "Write down your mnemonic words on paper or on a cold storage device.";
+"id_wrong_choice_check_your" = "Wrong choice. Check your mnemonic and try again.";
 "id_year" = "year";
 "id_years" = "years";
 "id_you_are_not_connected_please" = "You are not connected, please wait";

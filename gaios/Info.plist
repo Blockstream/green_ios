@@ -23,9 +23,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>We use camera to scan QR codes</string>
+	<string>id_please_enable_camera</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Green uses touch and face ID to protect your wallet</string>
+	<string>id_green_uses_touch_id_and_face_id</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
