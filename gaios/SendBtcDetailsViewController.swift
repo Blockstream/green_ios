@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import PromiseKit
 
 class SendBtcDetailsViewController: UIViewController {
 
@@ -204,8 +205,6 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateTransaction() {
-        reviewButton.isUserInteractionEnabled = false
-
         transaction.sendAll = sendAllFundsButton.isSelected
         transaction.feeRate = feeEstimates[selectedFee]
 

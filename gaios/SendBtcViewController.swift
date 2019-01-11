@@ -37,7 +37,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateButton()
+        updateButton(!isTextFieldEmpty())
         qrCodeReaderBackgroundView.startScan()
     }
 
@@ -52,22 +52,25 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
         bottomButton.updateGradientLayerFrame()
     }
 
+    func isTextFieldEmpty() -> Bool {
+        return textfield.text?.isEmpty ?? true
+    }
+
     @objc func textFieldDidChange(_ textField: UITextField) {
-        updateButton()
+        updateButton(!isTextFieldEmpty())
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        updateButton()
+        updateButton(!isTextFieldEmpty())
         return true
     }
 
-    func updateButton() {
-        bottomButton.enableWithGradient(!(textfield.text?.isEmpty ?? true))
+    func updateButton(_ enable: Bool) {
+        bottomButton.enableWithGradient(enable)
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
-        bottomButton.isUserInteractionEnabled = false
         createTransaction(userInput: textfield.text!)
     }
 
@@ -90,6 +93,9 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
 
         self.uiErrorLabel.isHidden = true
         startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+
+        // multiple fast consecutive taps will race so 2 segues can/will be performed
+        updateButton(false)
 
         createSweepTransaction(userInput: userInput, feeRate: feeRate).map { tx -> Promise<Transaction> in
             if tx.error.isEmpty {
@@ -123,12 +129,12 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
                 self.uiErrorLabel.text = error.localizedDescription
             }
             self.uiErrorLabel.isHidden = false
-            self.bottomButton.isUserInteractionEnabled = true
         }.finally {
             self.stopAnimating()
             if !self.uiErrorLabel.isHidden {
                 self.qrCodeReaderBackgroundView.startScan()
             }
+            self.updateButton(true)
         }
     }
 }
