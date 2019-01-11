@@ -2355,7 +2355,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="+1 123456489" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dyf-gQ-Uj2">
-                                <rect key="frame" x="51" y="214" width="253" height="30"/>
+                                <rect key="frame" x="51" y="170" width="253" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="w5R-rw-Zfd"/>
                                 </constraints>
@@ -2425,7 +2425,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="email@domain.com" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3RB-4g-aw1">
-                                <rect key="frame" x="25" y="168" width="270" height="36"/>
+                                <rect key="frame" x="25" y="124" width="270" height="36"/>
                                 <color key="tintColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="1yq-D6-UkO"/>
@@ -2435,7 +2435,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-fc-34s">
-                                <rect key="frame" x="25" y="204" width="270" height="1"/>
+                                <rect key="frame" x="25" y="160" width="270" height="1"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="Xcg-it-o7h"/>
@@ -2596,6 +2596,7 @@
                     <connections>
                         <outlet property="doneButton" destination="6Ka-HY-djy" id="aUc-q0-ZyF"/>
                         <outlet property="mnemonicWords" destination="6oW-aw-gUc" id="AOs-9X-WgR"/>
+                        <outlet property="passwordProtectedLabel" destination="F2P-wf-Oem" id="BZv-rF-q1W"/>
                         <outlet property="passwordProtectedSwitch" destination="Ncp-M1-IN2" id="ePg-i8-1fe"/>
                         <outlet property="scanBarButton" destination="9FH-fh-RD8" id="9iv-iB-0Aq"/>
                         <segue destination="kWT-Yh-qgi" kind="show" identifier="next" id="rZR-ak-fSt"/>
@@ -3469,7 +3470,7 @@
                                 </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Bpx-al-4Lo">
-                                <rect key="frame" x="16" y="84" width="288" height="365"/>
+                                <rect key="frame" x="16" y="40" width="288" height="458"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
@@ -3574,14 +3575,14 @@
                                 </connections>
                             </switch>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="settings" translatesAutoresizingMaskIntoConstraints="NO" id="btM-na-cVS">
-                                <rect key="frame" x="16" y="38" width="25" height="25"/>
+                                <rect key="frame" x="16" y="82" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="cZ0-6y-YJd"/>
                                     <constraint firstAttribute="height" constant="25" id="vos-Kq-U2V"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="settings" translatesAutoresizingMaskIntoConstraints="NO" id="ueA-th-Kb0">
-                                <rect key="frame" x="16" y="89" width="25" height="25"/>
+                                <rect key="frame" x="16" y="133" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="7Jy-GE-0TE"/>
                                     <constraint firstAttribute="width" constant="25" id="ZBG-EO-VtP"/>
@@ -3887,7 +3888,6 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="j8k-Hn-Z8w"/>
         <segue reference="fhM-Q9-pGm"/>
         <segue reference="S0G-tL-SMV"/>
         <segue reference="EcC-We-I1f"/>

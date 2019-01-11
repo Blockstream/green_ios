@@ -8,6 +8,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
     @IBOutlet weak var scanBarButton: UIBarButtonItem!
     @IBOutlet weak var mnemonicWords: UICollectionView!
     @IBOutlet weak var passwordProtectedSwitch: UISwitch!
+    @IBOutlet weak var passwordProtectedLabel: UILabel!
 
     let WL = getBIP39WordList()
 
@@ -28,6 +29,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
 
         title = NSLocalizedString("id_enter_your_wallet_mnemonic", comment: "")
         doneButton.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
+        passwordProtectedLabel.text = NSLocalizedString("id_password_protected", comment: "")
 
         mnemonicWords.delegate = self
         mnemonicWords.dataSource = self
