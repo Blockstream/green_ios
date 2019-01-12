@@ -63,6 +63,24 @@ class QRCodeReaderView : UIView {
         return borderView
     }()
 
+    lazy var placeholderTextView: UIView = {
+        let placeholderTextView = UIView(frame: frame)
+        placeholderTextView.backgroundColor = UIColor.customTitaniumDark()
+        let label = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 40))
+        placeholderTextView.addSubview(label)
+
+        label.translatesAutoresizingMaskIntoConstraints = true
+        label.center = CGPoint(x: placeholderTextView.bounds.midX, y: placeholderTextView.bounds.midY)
+        label.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
+        label.setTitle("Press to allow camera access", for: .normal)
+        label.setTitleColor(UIColor.customTitaniumMedium(), for: .normal)
+        label.titleLabel?.adjustsFontSizeToFitWidth = true
+        label.backgroundColor = UIColor.customTitaniumDark()
+        label.addTarget(self, action: #selector(onAllowCameraTap), for: .touchUpInside)
+
+        return placeholderTextView
+    }()
+
     var delegate: QRCodeReaderDelegate? = nil
 
     override init(frame: CGRect) {
@@ -76,16 +94,21 @@ class QRCodeReaderView : UIView {
     }
 
     private func setupView() {
-        if previewLayer != nil {
-            layer.addSublayer(previewLayer!)
+        if captureSession != nil {
+            if previewLayer != nil {
+                layer.addSublayer(previewLayer!)
+            }
+            addSubview(blurEffectView)
+            addSubview(borderView)
+        } else {
+            addSubview(placeholderTextView)
         }
-        addSubview(blurEffectView)
-        addSubview(borderView)
     }
 
     override func layoutSubviews() {
         blurEffectView.frame = frame
         previewLayer?.frame = frame
+        placeholderTextView.frame = frame
 
         borderView.frame = createFrame(frame: frame)
         captureMetadataOutput?.rectOfInterest = CGRect(x: 0.25, y: 0.25, width: 0.5, height: 0.5)
@@ -131,9 +154,18 @@ class QRCodeReaderView : UIView {
     }
 
     func startScan() {
-        if !(captureSession?.isRunning ?? true) && requestVideoAccess() ==  .authorized {
-            captureSession?.startRunning()
+        if captureSession != nil {
+            // app has permission to use camera (default or otherwise) but may have not
+            // been authorised on first install
+            if !captureSession!.isRunning && requestVideoAccess(presentingViewController: nil) ==  .authorized {
+                captureSession?.startRunning()
+            }
         }
+        // no permissions or not available. defer behaviour to parent view controller
+    }
+
+    func isCaptureSessionAvailable() -> Bool {
+        return captureSession != nil
     }
 
     func stopScan() {
@@ -142,23 +174,33 @@ class QRCodeReaderView : UIView {
         }
     }
 
-    func requestVideoAccess() -> AVAuthorizationStatus {
-        var status: AVAuthorizationStatus = .notDetermined
+    @objc func onAllowCameraTap(_ sender: Any) {
+        _ = requestVideoAccess(presentingViewController: self.findViewController())
+    }
 
-        if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
-            status = .authorized
-        } else {
+    func requestVideoAccess(presentingViewController: UIViewController?) -> AVAuthorizationStatus {
+        var status = AVCaptureDevice.authorizationStatus(for: .video)
+
+        if status == .notDetermined {
             AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
                 if granted {
                     status = .authorized
-                } else {
-                    if let url = URL(string: UIApplicationOpenSettingsURLString) {
-                        if UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                        }
+                }
+                // not authorised
+            })
+        } else if status == .denied {
+            let alert = UIAlertController(title: "Allow camera access", message: NSLocalizedString("Green will restart", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
+                if let url = URL(string: UIApplicationOpenSettingsURLString) {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
                     }
                 }
             })
+            DispatchQueue.main.async {
+                presentingViewController?.present(alert, animated: true, completion: nil)
+            }
         }
         return status
     }

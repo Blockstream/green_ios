@@ -201,6 +201,10 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
     }
 
     func startScan() {
+        if !QRCodeReader.isCaptureSessionAvailable() && QRCodeReader.requestVideoAccess(presentingViewController: self) != .authorized {
+            // no permissions and no user authorisation
+            return
+        }
         QRCodeReader.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
         view.addSubview(QRCodeReader)
 
