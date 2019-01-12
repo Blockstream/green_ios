@@ -2852,7 +2852,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pC8-6B-pnO">
-                                <rect key="frame" x="16" y="477.5" width="288" height="20.5"/>
+                                <rect key="frame" x="16" y="477" width="288" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -2921,7 +2921,6 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IaS-5u-88S" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="5" y="350" width="70" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="70" id="Chd-Yn-rTg"/>
                                     <constraint firstAttribute="height" constant="30" id="Qma-0X-oq0"/>
                                 </constraints>
                                 <state key="normal" title="low">
@@ -3052,6 +3051,7 @@
                             <constraint firstItem="nGg-K9-ra6" firstAttribute="top" secondItem="gHm-CC-0OT" secondAttribute="bottom" constant="10" id="plD-Ot-kdF"/>
                             <constraint firstItem="GfR-el-e3B" firstAttribute="height" secondItem="IaS-5u-88S" secondAttribute="height" id="qoa-dM-G5x"/>
                             <constraint firstItem="Iyz-82-YFW" firstAttribute="centerY" secondItem="IaS-5u-88S" secondAttribute="centerY" id="rQ3-ty-sY8"/>
+                            <constraint firstItem="IaS-5u-88S" firstAttribute="width" secondItem="zHX-qb-iAe" secondAttribute="width" multiplier="0.25" constant="-10" id="sCC-1q-xF7"/>
                             <constraint firstItem="eOW-xp-thT" firstAttribute="trailing" secondItem="x2K-bM-Wig" secondAttribute="trailing" id="sb9-Hc-05f"/>
                             <constraint firstItem="GfR-el-e3B" firstAttribute="centerX" secondItem="zHX-qb-iAe" secondAttribute="centerX" multiplier="0.75" id="soV-oM-z11"/>
                             <constraint firstItem="x2K-bM-Wig" firstAttribute="trailing" secondItem="pC8-6B-pnO" secondAttribute="trailing" constant="16" id="tJQ-17-WaU"/>
@@ -3627,7 +3627,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ab7-yZ-oZi">
-                                <rect key="frame" x="16" y="40" width="144" height="57"/>
+                                <rect key="frame" x="16" y="84" width="144" height="57"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="57" id="SUP-Mu-I4M"/>
                                 </constraints>
@@ -3636,13 +3636,13 @@
                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't need two factor code for transactions under the selected value" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LXf-em-GWL">
-                                <rect key="frame" x="16" y="107" width="288" height="36"/>
+                                <rect key="frame" x="16" y="151" width="288" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gyd-mo-6vL">
-                                <rect key="frame" x="185" y="52.5" width="60" height="32"/>
+                                <rect key="frame" x="185" y="96.5" width="60" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="bgF-WT-FwL"/>
                                     <constraint firstAttribute="width" constant="60" id="xSJ-vZ-y8c"/>
