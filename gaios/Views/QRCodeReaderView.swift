@@ -7,41 +7,13 @@ protocol QRCodeReaderDelegate {
 
 class QRCodeReaderView : UIView {
 
-    lazy var captureSession: AVCaptureSession? = {
-        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
-            return nil
-        }
+    private let sessionQueue = DispatchQueue(label: "capture session queue", qos: .userInteractive)
 
-        guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
-            return nil
-        }
-
-        let captureSession = AVCaptureSession()
-        guard captureSession.canAddInput(captureDeviceInput) else {
-            return nil
-        }
-
-        captureSession.addInput(captureDeviceInput)
-
-        captureMetadataOutput = AVCaptureMetadataOutput()
-        guard captureSession.canAddOutput(captureMetadataOutput!) else {
-            return nil
-        }
-
-        captureSession.addOutput(captureMetadataOutput!)
-        captureMetadataOutput!.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-        captureMetadataOutput!.metadataObjectTypes = captureMetadataOutput!.availableMetadataObjectTypes
-
-        return captureSession
-    }()
-
+    var captureSession = AVCaptureSession()
     var captureMetadataOutput: AVCaptureMetadataOutput? = nil
 
     lazy var previewLayer: AVCaptureVideoPreviewLayer? = {
-        guard captureSession != nil else {
-            return nil
-        }
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
+        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer.videoGravity = .resizeAspectFill
         return previewLayer
     }()
@@ -81,6 +53,8 @@ class QRCodeReaderView : UIView {
         return placeholderTextView
     }()
 
+    var authorizationStatus: AVAuthorizationStatus!
+
     var delegate: QRCodeReaderDelegate? = nil
 
     override init(frame: CGRect) {
@@ -93,15 +67,61 @@ class QRCodeReaderView : UIView {
         setupView()
     }
 
+    private func setupSession() {
+        captureSession.beginConfiguration()
+        defer {
+            captureSession.commitConfiguration()
+        }
+
+        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+            return
+        }
+
+        guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+            return
+        }
+
+        guard captureSession.canAddInput(captureDeviceInput) else {
+            return
+        }
+
+        captureSession.addInput(captureDeviceInput)
+
+        captureMetadataOutput = AVCaptureMetadataOutput()
+        guard captureSession.canAddOutput(captureMetadataOutput!) else {
+            return
+        }
+
+        captureSession.addOutput(captureMetadataOutput!)
+        captureMetadataOutput!.setMetadataObjectsDelegate(self, queue: sessionQueue)
+        captureMetadataOutput!.metadataObjectTypes = self.captureMetadataOutput!.availableMetadataObjectTypes
+    }
+
+    private func setupCaptureView() {
+        if previewLayer != nil {
+            layer.addSublayer(previewLayer!)
+        }
+        addSubview(blurEffectView)
+        addSubview(borderView)
+    }
+
+    private func setupPlaceholderView() {
+        addSubview(placeholderTextView)
+    }
+
     private func setupView() {
-        if captureSession != nil {
-            if previewLayer != nil {
-                layer.addSublayer(previewLayer!)
+        requestVideoAccess(presentingViewController: nil)
+        sessionQueue.async {
+            if self.authorizationStatus == .authorized {
+                DispatchQueue.main.async {
+                    self.setupSession()
+                    self.setupCaptureView()
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.setupPlaceholderView()
+                }
             }
-            addSubview(blurEffectView)
-            addSubview(borderView)
-        } else {
-            addSubview(placeholderTextView)
         }
     }
 
@@ -154,41 +174,50 @@ class QRCodeReaderView : UIView {
     }
 
     func startScan() {
-        if captureSession != nil {
-            // app has permission to use camera (default or otherwise) but may have not
-            // been authorised on first install
-            if !captureSession!.isRunning && requestVideoAccess(presentingViewController: nil) ==  .authorized {
-                captureSession?.startRunning()
+#if !(arch(i386) || arch(x86_64))
+        DispatchQueue.main.async {
+            if !self.captureSession.isRunning && self.authorizationStatus == .authorized {
+                self.captureSession.startRunning()
             }
         }
-        // no permissions or not available. defer behaviour to parent view controller
+#endif
     }
 
-    func isCaptureSessionAvailable() -> Bool {
-        return captureSession != nil
+    func isSessionNotDetermined() -> Bool {
+        return authorizationStatus == .notDetermined
+    }
+
+    func isSessionAuthorized() -> Bool {
+        return authorizationStatus == .authorized
     }
 
     func stopScan() {
-        if captureSession?.isRunning ?? false {
-            captureSession?.stopRunning()
+#if !(arch(i386) || arch(x86_64))
+        DispatchQueue.main.async {
+            if self.captureSession.isRunning {
+                self.captureSession.stopRunning()
+            }
         }
+#endif
     }
 
     @objc func onAllowCameraTap(_ sender: Any) {
         _ = requestVideoAccess(presentingViewController: self.findViewController())
     }
 
-    func requestVideoAccess(presentingViewController: UIViewController?) -> AVAuthorizationStatus {
-        var status = AVCaptureDevice.authorizationStatus(for: .video)
+    func requestVideoAccess(presentingViewController: UIViewController?) {
+        authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
 
-        if status == .notDetermined {
+        if authorizationStatus == .notDetermined {
+            sessionQueue.suspend()
             AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
                 if granted {
-                    status = .authorized
+                    self.authorizationStatus = .authorized
                 }
-                // not authorised
+                // not authorized
+                self.sessionQueue.resume()
             })
-        } else if status == .denied {
+        } else if authorizationStatus == .denied {
             let alert = UIAlertController(title: "Allow camera access", message: NSLocalizedString("Green will restart", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
@@ -202,7 +231,6 @@ class QRCodeReaderView : UIView {
                 presentingViewController?.present(alert, animated: true, completion: nil)
             }
         }
-        return status
     }
 }
 
@@ -216,7 +244,9 @@ extension QRCodeReaderView : AVCaptureMetadataOutputObjectsDelegate {
             guard let stringValue = readableObject.stringValue else {
                 return
             }
-            delegate?.onQRCodeReadSuccess(result: stringValue)
+            DispatchQueue.main.async {
+                self.delegate?.onQRCodeReadSuccess(result: stringValue)
+            }
         }
     }
 }

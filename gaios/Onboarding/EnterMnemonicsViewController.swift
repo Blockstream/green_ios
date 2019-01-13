@@ -14,7 +14,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
 
     var suggestions: KeyboardSuggestions? = nil
     var mnemonic = [String](repeating: String(), count: 27)
-    var QRCodeReader = QRCodeReaderView()
+    var qrCodeReader = QRCodeReaderView()
     var isScannerVisible = false
     var isPasswordProtected = false {
         willSet {
@@ -34,12 +34,11 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
         mnemonicWords.delegate = self
         mnemonicWords.dataSource = self
 
-        createSuggestionView()
-
         let tap = UITapGestureRecognizer(target: self, action: #selector(onTap))
-        QRCodeReader.addGestureRecognizer(tap)
+        qrCodeReader.addGestureRecognizer(tap)
+        qrCodeReader.delegate = self
 
-        QRCodeReader.delegate = self
+        createSuggestionView()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -201,21 +200,30 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
     }
 
     func startScan() {
-        if !QRCodeReader.isCaptureSessionAvailable() && QRCodeReader.requestVideoAccess(presentingViewController: self) != .authorized {
-            // no permissions and no user authorisation
+        if qrCodeReader.isSessionNotDetermined() {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                self.startScan()
+            }
             return
         }
-        QRCodeReader.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
-        view.addSubview(QRCodeReader)
+        if !qrCodeReader.isSessionAuthorized() {
+            qrCodeReader.requestVideoAccess(presentingViewController: self)
+            if !qrCodeReader.isSessionAuthorized() {
+                return
+            }
+        }
+        qrCodeReader.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
+        view.addSubview(qrCodeReader)
+
+        qrCodeReader.startScan()
 
         isScannerVisible = true
         scanBarButton.image = UIImage(named: "check")
-        QRCodeReader.startScan()
     }
 
     func stopScan() {
-        QRCodeReader.stopScan()
-        QRCodeReader.removeFromSuperview()
+        qrCodeReader.stopScan()
+        qrCodeReader.removeFromSuperview()
 
         isScannerVisible = false
         scanBarButton.image = UIImage(named: "qr")

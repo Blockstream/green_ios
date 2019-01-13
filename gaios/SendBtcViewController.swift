@@ -35,15 +35,32 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
         qrCodeReaderBackgroundView.delegate = self
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateButton(!isTextFieldEmpty())
+    private func startCapture() {
+        if qrCodeReaderBackgroundView.isSessionNotDetermined() {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                self.startCapture()
+            }
+            return
+        }
+        if !qrCodeReaderBackgroundView.isSessionAuthorized() {
+            return
+        }
         qrCodeReaderBackgroundView.startScan()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateButton(!isTextFieldEmpty())
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        super.viewWillDisappear(animated)
         qrCodeReaderBackgroundView.stopScan()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startCapture()
     }
 
     override func viewDidLayoutSubviews() {
@@ -134,7 +151,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
             if !self.uiErrorLabel.isHidden {
                 self.qrCodeReaderBackgroundView.startScan()
             }
-            self.updateButton(true)
+            self.updateButton(!self.isTextFieldEmpty())
         }
     }
 }
