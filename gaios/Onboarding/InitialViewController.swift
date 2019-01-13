@@ -29,7 +29,9 @@ class InitialViewController: UIViewController {
         let networkSelector = self.storyboard?.instantiateViewController(withIdentifier: "networkSelection") as! NetworkSelectionSettings
         networkSelector.onSave = {
             self.updateNetworkButtonTitle()
-            if getAppDelegate().isPinEnabled(network: getNetwork()) {
+            let network = getNetwork()
+            onFirstInitialization(network: network)
+            if getAppDelegate().isPinEnabled(network: network) {
                 getAppDelegate().instantiateViewControllerAsRoot(identifier: "PinLoginNavigationController")
             }
         }
@@ -43,18 +45,6 @@ class InitialViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
 
     @IBAction func unwindToInitialViewController(segue: UIStoryboardSegue) {

@@ -125,15 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupNavigationColor()
         // Override point for customization after application launch.
 
-        let network = getNetwork()
-
-        // Generate a keypair to encrypt user data
-        let initKey = network + "FirstInitialization"
-        if !UserDefaults.standard.bool(forKey: initKey) {
-            let _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
-            AppDelegate.removeKeychainData()
-            UserDefaults.standard.set(true, forKey: initKey)
-        }
+        onFirstInitialization(network: getNetwork())
 
         lock()
         return true

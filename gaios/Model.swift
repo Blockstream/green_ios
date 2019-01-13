@@ -256,13 +256,23 @@ func getUserNetworkSettings() -> [String: Any]? {
     return UserDefaults.standard.value(forKey: "network_settings") as? [String: Any]
 }
 
+func onFirstInitialization(network: String) {
+    // Generate a keypair to encrypt user data
+    let initKey = network + "FirstInitialization"
+    if !UserDefaults.standard.bool(forKey: initKey) {
+        let _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
+        AppDelegate.removeKeychainData()
+        UserDefaults.standard.set(true, forKey: initKey)
+    }
+}
+
 func getSubaccount(_ pointer: UInt32) -> Promise<WalletItem> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
         try getSession().getSubaccount(subaccount: pointer)
-        }.compactMap(on: bgq) { data in
-            let jsonData = try JSONSerialization.data(withJSONObject: data)
-            return try JSONDecoder().decode(WalletItem.self, from: jsonData)
+    }.compactMap(on: bgq) { data in
+        let jsonData = try JSONSerialization.data(withJSONObject: data)
+        return try JSONDecoder().decode(WalletItem.self, from: jsonData)
     }
 }
 
@@ -270,10 +280,10 @@ func getSubaccounts() -> Promise<[WalletItem]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
         try getSession().getSubaccounts()
-        }.compactMap(on: bgq) { data in
-            let jsonData = try JSONSerialization.data(withJSONObject: data)
-            let wallets: Wallets = try JSONDecoder().decode(Wallets.self, from: jsonData)
-            return wallets.array
+    }.compactMap(on: bgq) { data in
+        let jsonData = try JSONSerialization.data(withJSONObject: data)
+        let wallets: Wallets = try JSONDecoder().decode(Wallets.self, from: jsonData)
+        return wallets.array
     }
 }
 
