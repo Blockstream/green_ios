@@ -110,6 +110,7 @@ class QRCodeReaderView : UIView {
     }
 
     private func setupView() {
+        backgroundColor = UIColor.customTitaniumDark()
         requestVideoAccess(presentingViewController: nil)
         sessionQueue.async {
             if self.authorizationStatus == .authorized {
