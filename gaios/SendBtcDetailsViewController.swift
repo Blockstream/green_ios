@@ -146,7 +146,7 @@ class SendBtcDetailsViewController: UIViewController {
     func updateAmountTextField(_ forceUpdate: Bool) {
         if forceUpdate {
             guard let settings = getGAService().getSettings() else { return }
-            let textAmount = sendAllFundsButton.isSelected ? NSLocalizedString("id_all", comment: "") : amountData?[!isFiat ? settings.denomination.rawValue.lowercased() : "fiat"] as? String ?? String()
+            let textAmount = sendAllFundsButton.isSelected ? NSLocalizedString("id_all", comment: "") : amountData?[!isFiat ? settings.denomination.rawValue : "fiat"] as? String ?? String()
             amountTextField.text = textAmount
         }
 
@@ -156,7 +156,7 @@ class SendBtcDetailsViewController: UIViewController {
     func setCurrencySwitch() {
         guard let settings = getGAService().getSettings() else { return }
         if !isFiat {
-            currencySwitch.setTitle(settings.denomination.rawValue, for: UIControlState.normal)
+            currencySwitch.setTitle(settings.denomination.toString(), for: UIControlState.normal)
             currencySwitch.backgroundColor = UIColor.customMatrixGreen()
         } else {
             currencySwitch.setTitle(settings.getCurrency(), for: UIControlState.normal)
@@ -166,8 +166,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateMaxAmountLabel() {
-        wallet?.getBalance().get { balance in
-            self.maxAmountLabel.text = String.formatBtc(satoshi: self.wallet?.satoshi)
+        guard let wallet = self.wallet else { return }
+        wallet.getBalance().get { balance in
+            self.maxAmountLabel.text = String.toBtc(satoshi: wallet.satoshi)
         }.done { _ in }.catch { _ in }
     }
 
@@ -199,7 +200,7 @@ class SendBtcDetailsViewController: UIViewController {
     @objc func textFieldDidChange(_ textField: UITextField) {
         guard let settings = getGAService().getSettings() else { return }
         let amount = !amountTextField.text!.isEmpty ? amountTextField.text! : amountTextField.placeholder!
-        let conversionKey = !isFiat ? settings.denomination.rawValue.lowercased() : "fiat"
+        let conversionKey = !isFiat ? settings.denomination.rawValue : "fiat"
         amountData = convertAmount(details: [conversionKey : amount])
         updateTransaction()
     }
@@ -259,8 +260,8 @@ class SendBtcDetailsViewController: UIViewController {
         feeLabel = UILabel(frame: CGRect(x: lowFeeButton.center.x, y: lowFeeButton.center.y + lowFeeButton.frame.size.height / 2 + 10, width: 150, height: 21))
         feeLabel.textColor = UIColor.customTitaniumLight()
 
-        let fiatValue = String.toFiat(satoshi: fee)!
-        let feeInBTC = String.toBtc(satoshi: fee, toType: settings.denomination)!
+        let fiatValue = String.toFiat(satoshi: fee)
+        let feeInBTC = String.toBtc(satoshi: fee)
         let satoshiPerVByte = Double(transaction.feeRate) / 1000.0
 
         feeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -270,7 +271,7 @@ class SendBtcDetailsViewController: UIViewController {
 
         feeLabel.text = String(format: "%.1f satoshi / vbyte \n", satoshiPerVByte) +
             String(format: "%@: %@\n", NSLocalizedString("id_confirmation", comment: ""), blockTime[selectedFee]) +
-            String(format: "%@: %@ %@ / ~%@ %@", NSLocalizedString("id_fee", comment: ""), feeInBTC, settings.denomination.rawValue, fiatValue, settings.getCurrency())
+            String(format: "%@: %@ %@ / ~%@ %@", NSLocalizedString("id_fee", comment: ""), feeInBTC, settings.denomination.toString(), fiatValue, settings.getCurrency())
         feeLabel.numberOfLines = 3
         feeLabel.font = feeLabel.font.withSize(13)
 

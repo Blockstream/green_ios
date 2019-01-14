@@ -40,7 +40,7 @@ class TransactionsController: UITableViewController {
         guard let wallet = presentingWallet else { return }
         wallet.getBalance().get { balance in
             let view = self.tableView.tableHeaderView as! WalletFullCardView
-            view.balance.text = String.formatBtc(satoshi: wallet.satoshi)
+            view.balance.text = String.toBtc(satoshi: wallet.satoshi)
             let res = try getSession().convertAmount(input: ["satoshi": wallet.satoshi])
             view.balanceFiat.text = String(format: "≈ %@ %@", (res!["fiat"] as? String)!, getGAService().getSettings()!.getCurrency())
         }.done { _ in }.catch { _ in }
@@ -175,7 +175,7 @@ class TransactionsController: UITableViewController {
             let satoshi = balance["satoshi"] as! UInt64
             wallet.satoshi = satoshi
         }.done {_ in
-            view.balance.text = String.formatBtc(satoshi: wallet.satoshi)
+            view.balance.text = String.toBtc(satoshi: wallet.satoshi)
             view.walletName.text = wallet.localizedName()
             view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             if settings.isResetActive {

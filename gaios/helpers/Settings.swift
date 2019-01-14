@@ -69,10 +69,36 @@ public enum TransactionPriority: String {
 
 // Bitcoin denomination type
 public enum DenominationType: String, CodingKey {
-    case BTC = "BTC"
-    case MilliBTC = "mBTC"
-    case MicroBTC = "uBTC"
+    case BTC = "btc"
+    case MilliBTC = "mbtc"
+    case MicroBTC = "ubtc"
     case Bits = "bits"
+
+    func toString() -> String {
+        switch self {
+        case .BTC:
+            return "BTC"
+        case .MilliBTC:
+            return "mBTC"
+        case .MicroBTC:
+            return "µBTC"
+        case .Bits:
+            return "bits"
+        }
+    }
+
+    static func fromString(_ value: String) -> DenominationType {
+        switch value.lowercased() {
+        case "btc":
+            return .BTC
+        case "mbtc":
+            return .MilliBTC
+        case "µbtc", "ubtc":
+            return .MicroBTC
+        default:
+            return .Bits
+        }
+    }
 }
 
 // Autolock type in time unit
@@ -166,8 +192,8 @@ class Settings: Codable {
     var notifications: SettingsNotifications?
 
     var denomination: DenominationType {
-        get { return DenominationType.init(rawValue: self.unit)!}
-        set { self.unit = newValue.rawValue}
+        get { return DenominationType.fromString(self.unit)}
+        set { self.unit = newValue.toString()}
     }
 
     var transactionPriority: TransactionPriority {
@@ -181,10 +207,6 @@ class Settings: Codable {
     }
 
     func getCurrency() -> String {
-        return self.pricing["currency"]!
-    }
-
-    func getWatchonlyUsername() -> String {
         return self.pricing["currency"]!
     }
 

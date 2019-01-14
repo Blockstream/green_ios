@@ -36,9 +36,8 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
             amount = limits.fiat
             subtitle = String(format: "%@ %@", amount, settings.getCurrency())
         } else {
-            let denomination: String = settings.denomination.rawValue
-            amount = limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denomination.lowercased())!)!
-            subtitle = String(format: "%@ %@", amount, denomination)
+            amount = limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!
+            subtitle = String(format: "%@ %@", amount, settings.denomination.toString())
         }
         limitTextField.text = amount
         descriptionLabel.text = String(format: NSLocalizedString("id_your_transaction_threshold_is_s", comment: ""), subtitle)
@@ -52,7 +51,7 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
         if isFiat {
             details = ["is_fiat": isFiat, "fiat": String(amount)]
         } else {
-            let denomination: String = settings.denomination.rawValue.lowercased()
+            let denomination: String = settings.denomination.rawValue
             details = ["is_fiat": isFiat, denomination: String(amount)]
         }
         let bgq = DispatchQueue.global(qos: .background)
@@ -88,7 +87,7 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
             fiatButton.backgroundColor = UIColor.clear
             fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         } else {
-            fiatButton.setTitle(settings.denomination.rawValue, for: UIControlState.normal)
+            fiatButton.setTitle(settings.denomination.toString(), for: UIControlState.normal)
             fiatButton.backgroundColor = UIColor.customMatrixGreen()
             fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }

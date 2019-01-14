@@ -18,40 +18,27 @@ extension String {
         return String(partial)
     }
 
-    static func toBtc(satoshi: UInt64? = nil, value: String? = nil, fiat: String? = nil, fiatCurrency: String? = nil, fromType: DenominationType? = nil, toType: DenominationType? = nil) -> String? {
-        var dict = [String: Any]()
-        if (satoshi != nil) { dict["satoshi"] = satoshi }
-        if (fiat != nil) { dict["fiat"] = fiat }
-        if (fiatCurrency != nil) { dict["fiat_currency"] = fiatCurrency }
-        if (value != nil) { dict[fromType!.rawValue.lowercased()] = value }
-        guard let res = try? getSession().convertAmount(input: dict) else {
-            return nil
-        }
-        if (toType != nil) { return res![toType!.rawValue.lowercased()] as? String }
-        return String(res!["satoshi"] as! UInt64)
-    }
-
-    static func toFiat(satoshi: UInt64? = nil, value: String? = nil, fromType: DenominationType? = nil) -> String? {
-        var dict = [String: Any]()
-        if (satoshi != nil) { dict["satoshi"] = satoshi }
-        if (value != nil) { dict[fromType!.rawValue.lowercased()] = value }
-        let res = try! getSession().convertAmount(input: dict)
-        return res!["fiat"] as? String
-    }
-
-    static func formatBtc(satoshi: UInt64? = nil, value: String? = nil, fromType: DenominationType? = nil, toType: DenominationType? = nil) -> String {
+    static func toBtc(satoshi: UInt64) -> String {
         guard let settings = getGAService().getSettings() else { return "" }
-        let fType = fromType ?? settings.denomination
-        let tType = toType ?? settings.denomination
-        let text: String = toBtc(satoshi: satoshi, value: value, fromType: fType, toType: tType)!
-        return String(format: "%@ %@", text, tType.rawValue)
+        guard let res = try! getSession().convertAmount(input: ["satoshi" : satoshi]) else { return "" }
+        return String(format: "%@ %@", res[settings.denomination.rawValue] as! String, settings.denomination.toString())
     }
 
-    static func formatFiat(satoshi: UInt64? = nil, fiat: String? = nil, fiatCurrency: String? = nil) -> String {
+    static func toFiat(satoshi: UInt64) -> String {
         guard let settings = getGAService().getSettings() else { return "" }
-        let currency = fiatCurrency ?? settings.getCurrency()
-        let value = fiat ?? toFiat(satoshi: satoshi, value: fiatCurrency)!
-        return String(format: "%@ %@", value, currency)
+        guard let res = try! getSession().convertAmount(input: ["satoshi" : satoshi]) else { return "" }
+        return String(format: "%@ %@", res["fiat"] as! String, settings.getCurrency())
+    }
+
+    static func toSatoshi(fiat: String) -> UInt64 {
+        guard let res = try! getSession().convertAmount(input: ["fiat" : fiat]) else { return 0 }
+        return res["satoshi"] as! UInt64
+    }
+
+    static func toSatoshi(amount: String) -> UInt64 {
+        guard let settings = getGAService().getSettings() else { return 0 }
+        guard let res = try! getSession().convertAmount(input: [settings.denomination.rawValue : amount]) else { return 0 }
+        return res["satoshi"] as! UInt64
     }
 
     func heightWithConstrainedWidth(width: CGFloat, font: UIFont) -> CGFloat {

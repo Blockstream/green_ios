@@ -68,7 +68,7 @@ struct Event: Equatable {
         case .Transaction:
             guard let txEvent = get() as TransactionEvent? else { return "" }
             let txType = txEvent.type == "incoming" ? NSLocalizedString("id_incoming", comment: "") : NSLocalizedString("id_outgoing", comment: "")
-            let txAmount = String.formatBtc(satoshi: txEvent.satoshi, value: nil, fromType: nil, toType: settings.denomination)
+            let txAmount = String.toBtc(satoshi: txEvent.satoshi)
             let wallets = AccountStore.shared.wallets.filter { txEvent.subAccounts.contains(Int($0.pointer)) }
             let txWalletName = wallets.isEmpty ? "" : wallets[0].localizedName()
             return String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, txAmount, txWalletName)

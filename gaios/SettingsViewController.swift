@@ -90,7 +90,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // Account settings
         let bitcoinDenomination = SettingsItem(
             title: NSLocalizedString("id_bitcoin_denomination", comment: ""),
-            subtitle: settings.unit,
+            subtitle: settings.denomination.toString(),
             section: .account,
             type: .BitcoinDenomination)
 
@@ -127,7 +127,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if limits.isFiat == true {
                 thresholdValue = String(format: "%@ %@", limits.fiat, settings.getCurrency())
             } else {
-                thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue.lowercased())!)!, settings.denomination.rawValue)
+                thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!, settings.denomination.toString())
             }
             if let notifications = settings.notifications {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
@@ -287,11 +287,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         switch item.type {
         case .BitcoinDenomination:
-            let list = [DenominationType.BTC.rawValue, DenominationType.MilliBTC.rawValue,  DenominationType.MicroBTC.rawValue, DenominationType.Bits.rawValue]
-            let selected = settings.unit
+            let list = [DenominationType.BTC.toString(), DenominationType.MilliBTC.toString(),  DenominationType.MicroBTC.toString(), DenominationType.Bits.toString()]
+            let selected = settings.denomination.toString()
             let popup = PopupList(self, title: item.title, list: list, selected: selected)
             resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                settings.denomination = DenominationType.init(rawValue: value as! String)!
+                settings.denomination = DenominationType.fromString(value as! String)
                 return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
             }, completing: { self.reloadData() })
             break

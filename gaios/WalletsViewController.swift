@@ -33,7 +33,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell",
                                                       for: indexPath) as! WalletCardView
         let wallet = wallets[indexPath.row]
-        cell.balance.text = String.formatBtc(satoshi: wallet.satoshi)
+        cell.balance.text = String.toBtc(satoshi: wallet.satoshi)
         cell.walletName.text = wallet.localizedName()
         cell.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
 

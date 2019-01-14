@@ -48,11 +48,11 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         let address = transaction.addressees.first!.address
         let satoshi = transaction.addressees.first!.satoshi
         recepientAddressLabel.text = address
-        let btcAmount = String.formatBtc(satoshi: satoshi)
-        let fiatAmount = String.formatFiat(satoshi: satoshi)
+        let btcAmount = String.toBtc(satoshi: satoshi)
+        let fiatAmount = String.toFiat(satoshi: satoshi)
         fiatAmountLabel.text = String(format: "%@ / %@", btcAmount, fiatAmount)
-        let feeBtc = String.formatBtc(satoshi: transaction.fee)
-        let feeFiat = String.formatFiat(satoshi: transaction.fee)
+        let feeBtc = String.toBtc(satoshi: transaction.fee)
+        let feeFiat = String.toFiat(satoshi: transaction.fee)
         feeLabel.text = String(format: "%@ / %@", feeBtc, feeFiat)
     }
 

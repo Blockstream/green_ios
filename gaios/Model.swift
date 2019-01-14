@@ -118,7 +118,7 @@ struct Transaction {
     }
 
     func amount() -> String {
-        let satoshi = String.formatBtc(satoshi: self.satoshi)
+        let satoshi = String.toBtc(satoshi: self.satoshi)
         if type == "outgoing" || type == "redeposit" {
             return "-" + satoshi
         } else {
