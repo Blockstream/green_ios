@@ -15,7 +15,9 @@
         <scene sceneID="98S-gn-WX3">
             <objects>
                 <navigationController storyboardIdentifier="settings" useStoryboardIdentifierAsRestorationIdentifier="YES" id="jv4-eX-6a2" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="settings" selectedImage="settingsSelected" id="iPQ-eB-b2O"/>
+                    <tabBarItem key="tabBarItem" title="" image="settings" selectedImage="settingsSelected" id="iPQ-eB-b2O">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="oTL-oi-ezi">
                         <rect key="frame" x="0.0" y="20" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -33,11 +35,11 @@
             <objects>
                 <viewController id="FMS-m7-CQZ" customClass="SettingsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cKE-NQ-dHi">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="r4T-PV-5vR">
-                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="5g8-8E-neB">
                                     <rect key="frame" x="0.0" y="124.5" width="320" height="90"/>
@@ -2636,6 +2638,7 @@
             <objects>
                 <navigationController storyboardIdentifier="wallets" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="2Ef-ep-v7F" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="logo" id="cz0-xf-6qK">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                         <color key="badgeColor" red="0.16862745098039217" green="0.18823529411764706" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -3435,7 +3438,9 @@
         <scene sceneID="19M-wj-2Dc">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="8Uf-nP-fYP" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="notifications" selectedImage="notifications_clicked" id="1kK-xZ-07j"/>
+                    <tabBarItem key="tabBarItem" title="" image="notifications" selectedImage="notifications_clicked" id="1kK-xZ-07j">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nuI-u1-HH9">
                         <rect key="frame" x="0.0" y="20" width="320" height="44"/>
@@ -3910,6 +3915,10 @@
     <inferredMetricsTieBreakers>
         <segue reference="EJj-Nq-Nji"/>
         <segue reference="WTS-vP-0Hc"/>
+        <segue reference="aG8-vY-CuS"/>
+        <segue reference="fhM-Q9-pGm"/>
+        <segue reference="S0G-tL-SMV"/>
+        <segue reference="EcC-We-I1f"/>
         <segue reference="Uzj-6y-k3B"/>
         <segue reference="ho6-WN-AfT"/>
         <segue reference="XPe-Xy-Qrf"/>
