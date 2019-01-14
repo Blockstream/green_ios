@@ -38,9 +38,9 @@ class AuthenticationTypeHandler {
         if status != errSecSuccess && status != errSecDuplicateItem {
             if #available(iOS 11.3, *) {
                 let err = SecCopyErrorMessageString(status, nil)
-                NSLog("Operation failed: \(String(describing: err))")
+                NSLog("Operation failed: \(String(describing: err))\nStacktrace: \(Thread.callStackSymbols)")
             } else {
-                NSLog("Operation failed: \(status). Check the error message through https://osstatus.com.")
+                NSLog("Operation failed: \(status). Check the error message through https://osstatus.com.\nStacktrace: \(Thread.callStackSymbols)")
             }
         }
         return status
@@ -48,7 +48,7 @@ class AuthenticationTypeHandler {
 
     fileprivate static func describeSecurityError(_ error: Unmanaged<CFError>) {
         let err = CFErrorCopyDescription(error.takeRetainedValue())
-        NSLog("Operation failed: \(String(describing: err))")
+        NSLog("Operation failed: \(String(describing: err))\nStacktrace: \(Thread.callStackSymbols)")
     }
 
     fileprivate static func callWrapper(fun call: @autoclosure () -> Int32) -> OSStatus {
@@ -66,6 +66,7 @@ class AuthenticationTypeHandler {
                                                       SecAccessControlCreateFlags.privateKeyUsage],
                                                      &error);
         guard error == nil else {
+            describeSecurityError(error!)
             return nil
         }
         return access
@@ -87,6 +88,7 @@ class AuthenticationTypeHandler {
         var error: Unmanaged<CFError>?
         _ = SecKeyCreateRandomKey(params as CFDictionary, &error)
         guard error == nil else {
+            describeSecurityError(error!)
             return false
         }
         return true
@@ -104,6 +106,7 @@ class AuthenticationTypeHandler {
         var privateKey: CFTypeRef?
         let status = SecItemCopyMatching(q as CFDictionary, &privateKey)
         guard status == errSecSuccess else {
+            _ = describeKeychainError(status)
             return nil
         }
         return (privateKey as! SecKey)
@@ -125,14 +128,14 @@ class AuthenticationTypeHandler {
 
         let canDecrypt = SecKeyIsAlgorithmSupported(privateKey!, SecKeyOperationType.decrypt, ECCEncryptionType)
         guard canDecrypt else {
+            NSLog("Operation failed: Decryption algorithm not supported.\nStacktrace: \(Thread.callStackSymbols)")
             return nil
         }
 
         var error: Unmanaged<CFError>?
         let decrypted = SecKeyCreateDecryptedData(privateKey!, ECCEncryptionType, base64Encoded as CFData, &error)
         guard error == nil else {
-            let err = CFErrorCopyDescription(error!.takeRetainedValue())
-            NSLog("Operation failed: \(err!)")
+            describeSecurityError(error!)
             throw AuthError.CanceledByUser
         }
         return String(data: decrypted! as Data, encoding: .utf8)
@@ -144,17 +147,17 @@ class AuthenticationTypeHandler {
             return nil
         }
 
-        var error: Unmanaged<CFError>?
         let canEncrypt = SecKeyIsAlgorithmSupported(publicKey! , SecKeyOperationType.encrypt, ECCEncryptionType)
         guard canEncrypt else {
+            NSLog("Operation failed: Encryption algorithm not supported.\nStacktrace: \(Thread.callStackSymbols)")
             return nil
         }
 
+        var error: Unmanaged<CFError>?
         let data = plaintext.data(using: .utf8, allowLossyConversion: false)
         let encrypted = SecKeyCreateEncryptedData(publicKey!, ECCEncryptionType, data! as CFData, &error)
         guard error == nil else {
-            let err = CFErrorCopyDescription(error!.takeRetainedValue())
-            NSLog("Operation failed: \(String(describing: err))")
+            describeSecurityError(error!)
             return nil
         }
 

@@ -91,7 +91,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
     func getMnemonicString() -> Promise<(String, String)> {
         return Promise { seal in
             if self.isPasswordProtected {
-                let alert = UIAlertController(title: "Encryption passphrase", message: NSLocalizedString("id_please_provide_your_passphrase", comment: ""), preferredStyle: .alert)
+                let alert = UIAlertController(title: NSLocalizedString("id_encryption_passphrase", comment: ""), message: NSLocalizedString("id_please_provide_your_passphrase", comment: ""), preferredStyle: .alert)
                 alert.addTextField { textField in
                     textField.keyboardType = .asciiCapable
                     textField.isSecureTextEntry = true
