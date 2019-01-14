@@ -46,7 +46,6 @@
 		0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */; };
 		0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */; };
 		0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86920E56F4400F6AAAB /* TOSViewController.swift */; };
-		0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */; };
 		0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */; };
 		0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */; };
 		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
@@ -143,7 +142,6 @@
 		0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetailsViewController.swift; sourceTree = "<group>"; };
 		0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBTCConfirmationViewController.swift; sourceTree = "<group>"; };
 		0992F86920E56F4400F6AAAB /* TOSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOSViewController.swift; sourceTree = "<group>"; };
-		0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+padding.swift"; sourceTree = "<group>"; };
 		0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLoginViewController.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
 		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
@@ -255,7 +253,6 @@
 				0926C14721178FEE0008F94A /* TextField.swift */,
 				09309F19212F8D8700DE093B /* SearchTextField.swift */,
 				092C7BD420D599D700F90DF2 /* UIView+helpers.swift */,
-				0992F86F20E581FB00F6AAAB /* UILabel+padding.swift */,
 				09DA612520E73A2300C3EA03 /* String+random.swift */,
 				0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */,
 				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
@@ -740,7 +737,6 @@
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
-				0992F87020E581FB00F6AAAB /* UILabel+padding.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,

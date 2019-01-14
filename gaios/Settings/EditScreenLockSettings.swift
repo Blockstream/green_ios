@@ -1,7 +1,8 @@
-import Foundation
+import NVActivityIndicatorView
+import PromiseKit
 import UIKit
 
-class EditScreenLockSettings: UIViewController {
+class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var bioAuthLabel: UILabel!
     @IBOutlet weak var bioSwitch: UISwitch!
     @IBOutlet weak var pinSwitch: UISwitch!
@@ -27,68 +28,77 @@ class EditScreenLockSettings: UIViewController {
     }
 
     func updateValues() {
-        guard let settings = getGAService().getSettings() else { return }
+        guard let settings = getGAService().getSettings() else {
+            return
+        }
         let screenlock = settings.getScreenLock()
         if screenlock == .None {
             bioSwitch.isOn = false
-            bioSwitch.isEnabled = true
             pinSwitch.isOn = false
-            pinSwitch.isEnabled = true
         } else if screenlock == .All {
             bioSwitch.isOn = true
-            bioSwitch.isEnabled = false
             pinSwitch.isOn = true
-            pinSwitch.isEnabled = false
         } else if screenlock == .FaceID || screenlock == .TouchID {
             bioSwitch.isOn = true
-            bioSwitch.isEnabled = false
             pinSwitch.isOn = false
-            pinSwitch.isEnabled = true
         } else if screenlock == .Pin {
             bioSwitch.isOn = false
-            bioSwitch.isEnabled = true
             pinSwitch.isOn = true
-            pinSwitch.isEnabled = false
+        }
+    }
+
+    func onAuthRemoval(_ sender: UISwitch, _ completionHandler: @escaping () -> Void) {
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("id_deleting_your_pin_will_remove", comment: ""), preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
+            sender.isOn = true
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
+            completionHandler()
+        })
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
         }
     }
 
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
-        if (!sender.isOn) {
-            AppDelegate.removeBioKeychainData()
-            self.updateValues()
-        } else {
-            let password = String.random(length: 14)
-            let deviceid = String.random(length: 14)
-            let mnemonics = getAppDelegate().getMnemonicWordsString()
-            wrap {
-                try getSession().setPin(mnemonic: mnemonics!, pin: password, device: deviceid) }
-            .done { result in
-                guard let result = result else {
-                    return
-                }
-                let network = getNetwork()
-                try AuthenticationTypeHandler.addBiometryType(data: result, extraData: password, forNetwork: network)
-            }.catch { error in
-                print("setPin failed")
+        if !sender.isOn {
+            onAuthRemoval(sender) {
+                AppDelegate.removeBioKeychainData()
             }
-          }
+        } else {
+            let bgq = DispatchQueue.global(qos: .background)
+            firstly {
+                startAnimating()
+                return Guarantee()
+            }.compactMap(on: bgq) {
+                let password = String.random(length: 14)
+                let deviceid = String.random(length: 14)
+                let mnemonics = getAppDelegate().getMnemonicWordsString()
+                return (try getSession().setPin(mnemonic: mnemonics!, pin: password, device: deviceid), password) as? ([String : Any], String)
+            }.done { (data: [String: Any], password: String) -> Void in
+                let network = getNetwork()
+                try AuthenticationTypeHandler.addBiometryType(data: data, extraData: password, forNetwork: network)
+            }.catch { _ in
+            }.finally {
+                self.stopAnimating()
+            }
+        }
     }
 
     @IBAction func pinSwitched(_ sender: UISwitch) {
-        if (sender.isOn) {
-            self.performSegue(withIdentifier: "pinConfirm", sender: "set")
+        if sender.isOn {
+            self.performSegue(withIdentifier: "restorePin", sender: nil)
         } else {
-            self.performSegue(withIdentifier: "pinConfirm", sender: "remove")
+            onAuthRemoval(sender) {
+                AppDelegate.removePinKeychainData()
+            }
         }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? PinLoginViewController {
-            let todo = sender as! String
-            if (todo == "set") {
-                nextController.editPinMode = true
-                nextController.setPinMode = true
-            }
+            nextController.editPinMode = true
+            nextController.setPinMode = true
         }
     }
 }
