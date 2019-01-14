@@ -180,6 +180,8 @@ class TransactionsController: UITableViewController {
             view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             if settings.isResetActive {
                 view.actionsView.isHidden = true
+            } else if AccountStore.shared.isWatchOnly {
+                view.sendImage.image = UIImage(named: "qr_sweep")
             }
         }.catch{ _ in }
     }

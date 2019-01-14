@@ -160,8 +160,10 @@
                 <outlet property="balance" destination="1lQ-Zl-5eN" id="Pyl-9Z-Rgx"/>
                 <outlet property="balanceFiat" destination="sbk-4L-NhS" id="eyf-un-PiQ"/>
                 <outlet property="networkImage" destination="2Y4-AM-p6C" id="dWo-JC-Zxx"/>
+                <outlet property="receiveImage" destination="wWG-jc-RMb" id="tPq-Ae-cGW"/>
                 <outlet property="receiveLabel" destination="VXN-70-3Eh" id="ac6-rZ-UaT"/>
                 <outlet property="receiveView" destination="NhV-2c-ij4" id="9ye-pT-8xf"/>
+                <outlet property="sendImage" destination="ogA-JC-ijT" id="uj7-Ab-Nb8"/>
                 <outlet property="sendLabel" destination="ZyS-6U-vOg" id="ISI-KS-gYo"/>
                 <outlet property="sendView" destination="C5I-Cm-13D" id="jmH-cP-rrD"/>
                 <outlet property="stackButton" destination="jB9-Ug-MkP" id="jHs-oo-4W0"/>

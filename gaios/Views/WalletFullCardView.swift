@@ -13,6 +13,8 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var receiveLabel: UILabel!
     @IBOutlet weak var stackButton: UIButton!
     @IBOutlet weak var networkImage: UIImageView!
+    @IBOutlet weak var sendImage: UIImageView!
+    @IBOutlet weak var receiveImage: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
