@@ -100,10 +100,12 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
                     seal.reject(GaError.GenericError)
                 })
                 alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (action: UIAlertAction) in
+                    self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
                     let textField = alert.textFields![0]
                     seal.fulfill((self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!))
                 })
                 DispatchQueue.main.async {
+                    self.stopAnimating()
                     self.present(alert, animated: true, completion: nil)
                 }
             } else {
