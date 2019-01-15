@@ -39,6 +39,8 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
             bioSwitch.isOn = true
             pinSwitch.isOn = true
         } else if screenlock == .FaceID || screenlock == .TouchID {
+            // this should never happen
+            NSLog("no pin exists but faceid/touchid is enabled" )
             bioSwitch.isOn = true
             pinSwitch.isOn = false
         } else if screenlock == .Pin {
@@ -50,7 +52,9 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
     func onAuthRemoval(_ sender: UISwitch, _ completionHandler: @escaping () -> Void) {
         let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("id_deleting_your_pin_will_remove", comment: ""), preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
-            sender.isOn = true
+            DispatchQueue.main.async {
+                sender.setOn(true, animated: true)
+            }
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
             completionHandler()
@@ -60,8 +64,19 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
         }
     }
 
+    func verifyAuth(message: String, _ sender: UISwitch) {
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in })
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+            sender.setOn(!sender.isOn, animated: true)
+        }
+    }
+
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
-        if !sender.isOn {
+        if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: getNetwork()) {
+            verifyAuth(message: "Please add PIN authentication before adding or removing biometric authentication", sender)
+        } else if !sender.isOn {
             onAuthRemoval(sender) {
                 removeBioKeychainData()
             }
@@ -89,8 +104,12 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
         if sender.isOn {
             self.performSegue(withIdentifier: "restorePin", sender: nil)
         } else {
-            onAuthRemoval(sender) {
-                removePinKeychainData()
+            if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: getNetwork()) {
+                verifyAuth(message: "Please remove biometric authentication before removing PIN", sender)
+            } else {
+                onAuthRemoval(sender) {
+                    removePinKeychainData()
+                }
             }
         }
     }
