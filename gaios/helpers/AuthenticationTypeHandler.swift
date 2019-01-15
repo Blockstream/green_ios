@@ -74,19 +74,16 @@ class AuthenticationTypeHandler {
     }
 
     public static func generateBiometricPrivateKey(network: String) -> Bool {
-        let acl = getACL()
-        guard acl != nil else {
+        guard let acl = getACL() else {
             return false
         }
 
         let privateKeyLabel = AuthKeyBiometricPrivateKeyPathPrefix + String.random(length: PrivateKeyPathSize) + network
-        UserDefaults.standard.set(privateKeyLabel, forKey: "AuthKeyBiometricPrivateKey" + network)
-
         let params: [CFString: Any] = [kSecAttrKeyType: ECCKeyType,
                                        kSecAttrKeySizeInBits: ECCKeySizeInBits,
                                        kSecAttrTokenID: kSecAttrTokenIDSecureEnclave,
                                        kSecPrivateKeyAttrs: [kSecAttrLabel: privateKeyLabel,
-                                                             kSecAttrAccessControl: acl!,
+                                                             kSecAttrAccessControl: acl,
                                                              kSecAttrIsPermanent: true]]
 
         var error: Unmanaged<CFError>?
@@ -95,6 +92,9 @@ class AuthenticationTypeHandler {
             describeSecurityError(error!)
             return false
         }
+
+        UserDefaults.standard.set(privateKeyLabel, forKey: "AuthKeyBiometricPrivateKey" + network)
+
         return true
     }
 
