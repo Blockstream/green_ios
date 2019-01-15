@@ -390,7 +390,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
             }, completing: { self.reloadData() })
             break
-        case .Version, .TermsOfUse, .PrivacyPolicy:
+        case .TermsOfUse:
+            UIApplication.shared.open(URL(string: "https://greenaddress.it/tos.html")!)
+            break
+        case .PrivacyPolicy:
+            UIApplication.shared.open(URL(string: "https://greenaddress.it/privacy.html")!)
+            break
+        case .Version:
             break
         }
     }

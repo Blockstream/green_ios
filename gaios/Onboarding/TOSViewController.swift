@@ -43,7 +43,7 @@ class TOSViewController: UIViewController {
         let whiteString = NSLocalizedString("id_i_agree_to_the", comment: "")
         let linkString = NSLocalizedString("id_terms_of_service", comment: "")
         let tosString = NSMutableAttributedString(string: whiteString + " " + linkString)
-        tosString.addAttribute(.link, value: "https://greenaddress.it/en/tos", range: NSRange(location: whiteString.count + 1, length: linkString.count))
+        tosString.addAttribute(.link, value: "https://greenaddress.it/tos", range: NSRange(location: whiteString.count + 1, length: linkString.count))
         tosString.setColor(color: UIColor.white, forText: whiteString)
         let linkAttributes: [String : Any] = [
             NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
