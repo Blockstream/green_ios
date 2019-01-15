@@ -100,7 +100,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
                 if error == .GenericError, let _ = withPIN {
                     self.attemptsCount -= 1
                     if self.attemptsCount == 0 {
-                        removePinKeychainData()
+                        removeKeychainData()
                         self.stopAnimating()
                         self.performSegue(withIdentifier: "entrance", sender: nil)
                         return
