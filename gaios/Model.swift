@@ -58,7 +58,7 @@ struct Transaction {
     }
 
     var addresseesReadOnly: Bool {
-        get { return get("addresses_read_only") ?? false }
+        get { return get("addressees_read_only") ?? false }
     }
 
     var blockHeight: UInt32 {
