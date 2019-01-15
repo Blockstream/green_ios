@@ -11,8 +11,9 @@ class AuthenticationTypeHandler {
     static let AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
     static let AuthKeyPIN = "com.blockstream.green.auth_key_pin"
 
-    // FIXME: these parameters will need to change for release
-    static let AuthKeyBiometricPrivateKey = "com.blockstream.green.priv_key_biometric4"
+    // TODO: verify curve parameters for release
+    static let PrivateKeyPathSize = 32
+    static let AuthKeyBiometricPrivateKeyPathPrefix = "com.blockstream.green."
     static let ECCEncryptionType = SecKeyAlgorithm.eciesEncryptionCofactorX963SHA256AESGCM
     static let ECCKeyType = kSecAttrKeyTypeECSECPrimeRandom
     static let ECCKeySizeInBits = 256
@@ -62,7 +63,7 @@ class AuthenticationTypeHandler {
         var error: Unmanaged<CFError>?
         let access = SecAccessControlCreateWithFlags(nil,
                                                      kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
-                                                     [SecAccessControlCreateFlags.biometryCurrentSet,
+                                                     [SecAccessControlCreateFlags.biometryAny,
                                                       SecAccessControlCreateFlags.privateKeyUsage],
                                                      &error);
         guard error == nil else {
@@ -77,7 +78,10 @@ class AuthenticationTypeHandler {
         guard acl != nil else {
             return false
         }
-        let privateKeyLabel = AuthKeyBiometricPrivateKey + network
+
+        let privateKeyLabel = AuthKeyBiometricPrivateKeyPathPrefix + String.random(length: PrivateKeyPathSize) + network
+        UserDefaults.standard.set(privateKeyLabel, forKey: "AuthKeyBiometricPrivateKey" + network)
+
         let params: [CFString: Any] = [kSecAttrKeyType: ECCKeyType,
                                        kSecAttrKeySizeInBits: ECCKeySizeInBits,
                                        kSecAttrTokenID: kSecAttrTokenIDSecureEnclave,
@@ -95,11 +99,11 @@ class AuthenticationTypeHandler {
     }
 
     fileprivate static func getPrivateKey(forNetwork: String) -> SecKey? {
-        let privateKeyLabel = AuthKeyBiometricPrivateKey + forNetwork
+        let privateKeyLabel = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
         let q: [CFString: Any] = [kSecClass: kSecClassKey,
                                   kSecAttrKeyType: ECCKeyType,
                                   kSecAttrKeySizeInBits: ECCKeySizeInBits,
-                                  kSecAttrLabel: privateKeyLabel,
+                                  kSecAttrLabel: privateKeyLabel!,
                                   kSecReturnRef: true,
                                   kSecUseOperationPrompt: "Unlock Green"]
 

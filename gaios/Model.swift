@@ -260,8 +260,8 @@ func onFirstInitialization(network: String) {
     // Generate a keypair to encrypt user data
     let initKey = network + "FirstInitialization"
     if !UserDefaults.standard.bool(forKey: initKey) {
-        let _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
         AppDelegate.removeKeychainData()
+        let _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
         UserDefaults.standard.set(true, forKey: initKey)
     }
 }
