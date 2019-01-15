@@ -59,18 +59,27 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     fileprivate func loginWithPin(usingAuth: String, network: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()
+        let isBiometricLogin = usingAuth == AuthenticationTypeHandler.AuthKeyBiometric
 
         firstly {
-            startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            startAnimating(message: !isBiometricLogin ? NSLocalizedString("id_logging_in", comment: "") : "")
             return Guarantee()
         }.compactMap(on: bgq) {
             try appDelegate.disconnect()
         }.compactMap(on: bgq) {
             try appDelegate.connect()
+        }.get { _ in
+            if isBiometricLogin {
+                self.stopAnimating()
+            }
         }.compactMap(on: bgq) {
             try AuthenticationTypeHandler.getAuth(method: usingAuth, forNetwork: network)
+        }.get { _ in
+            if isBiometricLogin {
+                self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            }
         }.map(on: bgq) {
-            assert(withPIN != nil || usingAuth == AuthenticationTypeHandler.AuthKeyBiometric)
+            assert(withPIN != nil || isBiometricLogin)
 
             let jsonData = try JSONSerialization.data(withJSONObject: $0)
             try getSession().loginWithPin(pin: withPIN ?? $0["plaintext_biometric"] as! String, pin_data: String(data: jsonData, encoding: .utf8)!)
