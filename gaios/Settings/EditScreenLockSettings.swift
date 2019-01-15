@@ -63,7 +63,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
         if !sender.isOn {
             onAuthRemoval(sender) {
-                AppDelegate.removeBioKeychainData()
+                removeBioKeychainData()
             }
         } else {
             let bgq = DispatchQueue.global(qos: .background)
@@ -90,7 +90,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
             self.performSegue(withIdentifier: "restorePin", sender: nil)
         } else {
             onAuthRemoval(sender) {
-                AppDelegate.removePinKeychainData()
+                removePinKeychainData()
             }
         }
     }

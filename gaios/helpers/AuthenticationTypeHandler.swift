@@ -28,7 +28,7 @@ class AuthenticationTypeHandler {
         return context.biometryType
     }
 
-    static public func supportsBiometricAuthentication() -> Bool {
+    static func supportsBiometricAuthentication() -> Bool {
         guard let biometryType = biometryType else {
             return false
         }
@@ -73,7 +73,7 @@ class AuthenticationTypeHandler {
         return access
     }
 
-    public static func generateBiometricPrivateKey(network: String) -> Bool {
+    static func generateBiometricPrivateKey(network: String) -> Bool {
         guard let acl = getACL() else {
             return false
         }
@@ -225,20 +225,30 @@ class AuthenticationTypeHandler {
         return extended
     }
 
-    public static func getAuth(method: String, forNetwork: String) throws -> [String: Any]? {
+    static func getAuth(method: String, forNetwork: String) throws -> [String: Any]? {
         return try get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
     }
 
-    public static func findAuth(method: String, forNetwork: String) -> Bool {
+    static func findAuth(method: String, forNetwork: String) -> Bool {
         return get_(method: method, forNetwork: forNetwork) != nil
     }
 
-    public static func removeAuth(method: String, forNetwork: String) -> Bool {
+    static func removePrivateKey(forNetwork: String) {
+        let privateKeyLabel = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
+        let q: [CFString: Any] = [kSecClass: kSecClassKey,
+                                  kSecAttrKeyType: ECCKeyType,
+                                  kSecAttrKeySizeInBits: ECCKeySizeInBits,
+                                  kSecAttrLabel: privateKeyLabel!,
+                                  kSecReturnRef: true]
+        _ = callWrapper(fun: SecItemDelete(q as CFDictionary))
+    }
+
+    static func removeAuth(method: String, forNetwork: String) -> Bool {
         let q = queryForData(method: method, forNetwork: forNetwork)
         return callWrapper(fun: SecItemDelete(q as CFDictionary)) == errSecSuccess
     }
 
-    public static func addBiometryType(data: [String: Any], extraData: String, forNetwork: String) throws {
+    static func addBiometryType(data: [String: Any], extraData: String, forNetwork: String) throws {
         guard let encrypted = encrypt(plaintext: extraData, forNetwork: forNetwork) else {
             throw AuthError.ServiceNotAvailable
         }
@@ -247,7 +257,7 @@ class AuthenticationTypeHandler {
         try set(method: AuthKeyBiometric, data: extended, forNetwork: forNetwork)
     }
 
-    public static func addPIN(data: [String: Any], forNetwork: String) throws {
+    static func addPIN(data: [String: Any], forNetwork: String) throws {
         try set(method: AuthKeyPIN, data: data, forNetwork: forNetwork)
     }
 }

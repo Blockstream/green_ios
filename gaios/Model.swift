@@ -256,11 +256,27 @@ func getUserNetworkSettings() -> [String: Any]? {
     return UserDefaults.standard.value(forKey: "network_settings") as? [String: Any]
 }
 
+func removeKeychainData() {
+    let network = getNetwork()
+    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+}
+
+func removeBioKeychainData() {
+    let network = getNetwork()
+    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+}
+
+func removePinKeychainData() {
+    let network = getNetwork()
+    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+}
+
 func onFirstInitialization(network: String) {
     // Generate a keypair to encrypt user data
     let initKey = network + "FirstInitialization"
     if !UserDefaults.standard.bool(forKey: initKey) {
-        AppDelegate.removeKeychainData()
+        removeKeychainData()
         let _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
         UserDefaults.standard.set(true, forKey: initKey)
     }
