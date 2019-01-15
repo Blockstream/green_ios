@@ -50,7 +50,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         self.navigationItem.leftBarButtonItem = newBackButton
 
         // show skip button
-        if setPinMode || restoreMode {
+        if (setPinMode || restoreMode) && !editPinMode {
             skipButton.isHidden = false
             skipButton.setTitle(NSLocalizedString("id_skip", comment: ""), for: .normal)
         }
