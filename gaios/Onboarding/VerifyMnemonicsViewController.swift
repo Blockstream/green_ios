@@ -12,7 +12,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     var questionPosition: Int = 0
     let numberOfSteps: Int = 4
 
-    @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var button0: DesignableButton!
     @IBOutlet weak var button1: DesignableButton!
     @IBOutlet weak var button2: DesignableButton!
@@ -65,7 +64,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         // update title
         let localized = NSLocalizedString("id_select_word_number_d", comment: "")
         title = String(format: localized, questionPosition + 1)
-        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
         // update buttons
         buttonsArray.enumerated().forEach { (offset, element) in
             element.setTitle(mnemonics[selectionWordNumbers[offset]], for: .normal)
@@ -89,10 +87,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         let attributedString = NSMutableAttributedString(string: placeHolder)
         attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
         bottomText.attributedText = attributedString
-        // disable next button
-        nextButton.backgroundColor = UIColor.customTitaniumLight()
-        nextButton.isEnabled = false
-        nextButton.layer.sublayers?.removeFirst()
     }
 
     func registerAndLogin(mnemonics: String) {
@@ -148,12 +142,10 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
             button.isSelected = false
         }
         sender.isSelected = true
-        nextButton.isEnabled = true
-        nextButton.backgroundColor = UIColor.customMatrixGreen()
-        nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        next()
     }
 
-    @IBAction func nextClicked(_ sender: UIButton) {
+    func next() {
         var selectedWord: String?
         for button in buttonsArray {
             if button.isSelected {

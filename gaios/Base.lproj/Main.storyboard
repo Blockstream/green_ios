@@ -1966,61 +1966,22 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GGF-JH-H1Q">
-                                <rect key="frame" x="0.0" y="494" width="320" height="74"/>
-                                <color key="backgroundColor" name="customTitaniumMedium"/>
-                            </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jUB-j0-wU3">
-                                <rect key="frame" x="16" y="510" width="288" height="42"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="nyg-mU-91z"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                <state key="normal" title="Next">
-                                    <color key="titleColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
-                                        <real key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
-                                        <real key="value" value="0.80000000000000004"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                                        <color key="value" cocoaTouchSystemColor="darkTextColor"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="size" keyPath="shadowOffset">
-                                        <size key="value" width="2" height="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="nextClicked:" destination="B3F-nW-PwN" eventType="touchUpInside" id="hKS-kB-L4V"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="c3W-43-Qov" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="25J-Cl-rtP"/>
                             <constraint firstItem="ihj-Me-kJe" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="3hg-d1-5Pr"/>
-                            <constraint firstItem="ysd-3L-I4w" firstAttribute="bottom" secondItem="jUB-j0-wU3" secondAttribute="bottom" constant="16" id="56Z-rf-iAX"/>
-                            <constraint firstItem="GGF-JH-H1Q" firstAttribute="leading" secondItem="ysd-3L-I4w" secondAttribute="leading" id="5mP-It-tsR"/>
                             <constraint firstItem="c3W-43-Qov" firstAttribute="width" secondItem="ihj-Me-kJe" secondAttribute="width" id="C1S-kU-Jd8"/>
                             <constraint firstItem="ueP-Wq-fNm" firstAttribute="top" secondItem="ysd-3L-I4w" secondAttribute="top" constant="40" id="Db0-nR-olQ"/>
-                            <constraint firstItem="jUB-j0-wU3" firstAttribute="leading" secondItem="ysd-3L-I4w" secondAttribute="leading" constant="16" id="JFG-nV-r02"/>
-                            <constraint firstItem="GGF-JH-H1Q" firstAttribute="bottom" secondItem="ysd-3L-I4w" secondAttribute="bottom" id="O7q-FW-1Ps"/>
                             <constraint firstItem="rpD-pK-Vgo" firstAttribute="width" secondItem="ihj-Me-kJe" secondAttribute="width" id="Vdh-Yo-lQZ"/>
                             <constraint firstItem="8l0-Vs-wHx" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="WOv-oU-Z6k"/>
                             <constraint firstItem="rpD-pK-Vgo" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="YoW-Aj-8Ie"/>
                             <constraint firstItem="ihj-Me-kJe" firstAttribute="top" secondItem="ueP-Wq-fNm" secondAttribute="bottom" constant="40" id="ZGm-Hz-CBQ"/>
                             <constraint firstItem="8l0-Vs-wHx" firstAttribute="width" secondItem="ihj-Me-kJe" secondAttribute="width" id="ZVe-HA-wyo"/>
-                            <constraint firstItem="GGF-JH-H1Q" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8l0-Vs-wHx" secondAttribute="bottom" constant="10" id="dYL-ht-ahr"/>
                             <constraint firstItem="c3W-43-Qov" firstAttribute="top" secondItem="rpD-pK-Vgo" secondAttribute="bottom" constant="16" id="iu6-No-gP3"/>
-                            <constraint firstItem="jUB-j0-wU3" firstAttribute="top" secondItem="GGF-JH-H1Q" secondAttribute="top" constant="16" id="pYA-CM-jo9"/>
                             <constraint firstItem="rpD-pK-Vgo" firstAttribute="top" secondItem="ihj-Me-kJe" secondAttribute="bottom" constant="16" id="uNB-dt-sna"/>
                             <constraint firstItem="ueP-Wq-fNm" firstAttribute="centerX" secondItem="F3p-31-gqF" secondAttribute="centerX" id="uQX-6W-CFF"/>
-                            <constraint firstItem="GGF-JH-H1Q" firstAttribute="trailing" secondItem="ysd-3L-I4w" secondAttribute="trailing" id="v9n-eB-bRE"/>
                             <constraint firstItem="8l0-Vs-wHx" firstAttribute="top" secondItem="c3W-43-Qov" secondAttribute="bottom" constant="16" id="yXX-Qn-Ml3"/>
-                            <constraint firstItem="ysd-3L-I4w" firstAttribute="trailing" secondItem="jUB-j0-wU3" secondAttribute="trailing" constant="16" id="zxW-hI-Fu0"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ysd-3L-I4w"/>
                     </view>
@@ -2033,7 +1994,6 @@
                         <outlet property="button1" destination="rpD-pK-Vgo" id="i65-mt-8IP"/>
                         <outlet property="button2" destination="c3W-43-Qov" id="NQG-WC-gWf"/>
                         <outlet property="button3" destination="8l0-Vs-wHx" id="H0G-Dq-fnE"/>
-                        <outlet property="nextButton" destination="jUB-j0-wU3" id="RwP-bO-E29"/>
                         <segue destination="kWT-Yh-qgi" kind="show" identifier="pin" id="Kqq-cQ-hZv"/>
                         <segue destination="YV9-qz-m5y" kind="showDetail" identifier="mainView" id="EJj-Nq-Nji"/>
                     </connections>
@@ -3156,7 +3116,7 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </imageView>
-				    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="center" lineBreakMode="characterWrap" baselineAdjustment="none" minimumFontSize="8" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Go-uJ-SYf">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="center" lineBreakMode="characterWrap" baselineAdjustment="none" minimumFontSize="8" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Go-uJ-SYf">
                                         <rect key="frame" x="16" y="220" width="288" height="18"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
