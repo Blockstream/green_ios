@@ -151,7 +151,12 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.performSegue(withIdentifier: "next", sender: self)
+            if isPinEnabled(network: getNetwork()) {
+                GreenAddressService.restoreFromMnemonics = true
+                self.performSegue(withIdentifier: "mainView", sender: self)
+            } else {
+                self.performSegue(withIdentifier: "next", sender: self)
+            }
         }.catch { error in
             let message: String
             if let _ = error as? LoginError {

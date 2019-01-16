@@ -86,6 +86,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         }.ensure {
             self.stopAnimating()
         }.done {
+            GreenAddressService.restoreFromMnemonics = false
             self.performSegue(withIdentifier: "main", sender: self)
         }.catch { error in
             let message: String

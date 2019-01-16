@@ -31,7 +31,7 @@ class InitialViewController: UIViewController {
             self.updateNetworkButtonTitle()
             let network = getNetwork()
             onFirstInitialization(network: network)
-            if getAppDelegate().isPinEnabled(network: network) {
+            if isPinEnabled(network: network) {
                 getAppDelegate().instantiateViewControllerAsRoot(identifier: "PinLoginNavigationController")
             }
         }

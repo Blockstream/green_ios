@@ -63,12 +63,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return result
     }
 
-    func isPinEnabled(network: String) -> Bool {
-        let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-        let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
-        return pinData || bioData
-    }
-
     func instantiateViewControllerAsRoot(identifier: String) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let firstVC = storyboard.instantiateViewController(withIdentifier: identifier) as! UINavigationController

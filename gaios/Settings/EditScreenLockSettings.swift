@@ -6,6 +6,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var bioAuthLabel: UILabel!
     @IBOutlet weak var bioSwitch: UISwitch!
     @IBOutlet weak var pinSwitch: UISwitch!
+    @IBOutlet weak var helpLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +32,15 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
         guard let settings = getGAService().getSettings() else {
             return
         }
+        helpLabel.text = ""
         let screenlock = settings.getScreenLock()
-        if screenlock == .None {
+        if GreenAddressService.restoreFromMnemonics && isPinEnabled(network: getNetwork()) {
+            bioSwitch.isOn = false
+            bioSwitch.isEnabled = false
+            pinSwitch.isOn = false
+            pinSwitch.isEnabled = false
+            helpLabel.text = "Restore from mnemonic but PIN is enabled. PIN settings have been disabled."
+        } else if screenlock == .None {
             bioSwitch.isOn = false
             pinSwitch.isOn = false
         } else if screenlock == .All {

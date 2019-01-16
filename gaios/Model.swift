@@ -272,6 +272,12 @@ func removePinKeychainData() {
     _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
 }
 
+func isPinEnabled(network: String) -> Bool {
+    let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+    let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+    return pinData || bioData
+}
+
 func onFirstInitialization(network: String) {
     // Generate a keypair to encrypt user data
     let initKey = network + "FirstInitialization"

@@ -18,6 +18,8 @@ class GreenAddressService: SessionNotificationDelegate {
     private var twoFactorReset: TwoFactorReset?
     private var events = Events([])
 
+    static var restoreFromMnemonics = false
+
     public init() {
         Session.delegate = self
     }
