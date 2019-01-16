@@ -47,15 +47,27 @@ class InitialViewController: UIViewController {
         topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
-    @IBAction func restoreWalletAction(_ sender: Any) {
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("PIN already exists. PIN settings will be disabled.", comment: ""), preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
-            self.performSegue(withIdentifier: "enterMnemonic", sender: self)
-        })
-        DispatchQueue.main.async {
-            self.present(alert, animated: true, completion: nil)
+    private func onAction(identifier: String) {
+        if isPinEnabled(network: getNetwork()) {
+            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("PIN already exists. PIN settings will be disabled.", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
+                self.performSegue(withIdentifier: identifier, sender: self)
+            })
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
+        } else {
+            self.performSegue(withIdentifier: identifier, sender: self)
         }
+    }
+
+    @IBAction func createWalletAction(_ sender: Any) {
+        onAction(identifier: "createWallet")
+    }
+
+    @IBAction func restoreWalletAction(_ sender: Any) {
+        onAction(identifier: "enterMnemonic")
     }
 
     @IBAction func unwindToInitialViewController(segue: UIStoryboardSegue) {

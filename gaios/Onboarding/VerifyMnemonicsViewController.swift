@@ -117,7 +117,12 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.performSegue(withIdentifier: "pin", sender: self)
+            if isPinEnabled(network: getNetwork()) {
+                GreenAddressService.restoreFromMnemonics = true
+                self.performSegue(withIdentifier: "mainView", sender: self)
+            } else {
+                self.performSegue(withIdentifier: "pin", sender: self)
+            }
         }.catch { error in
             let message: String
             if let err = error as? GaError, err != GaError.GenericError {
