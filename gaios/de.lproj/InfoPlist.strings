@@ -1,2 +1,2 @@
-NSCameraUsageDescription = "Please enable camera permissions to use the camera.";
 NSFaceIDUsageDescription = "Green uses Touch ID and Face ID to allow easy access to the wallet";
+NSCameraUsageDescription = "Bitte erlauben Sie Zugang zu Ihrer Kamera um die Kamera zu benutzen.";
