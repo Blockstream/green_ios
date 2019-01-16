@@ -83,7 +83,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             type: .SetupPin)
         let watchOnly = SettingsItem(
             title: NSLocalizedString("id_watchonly_login", comment: ""),
-            subtitle: String(format: NSLocalizedString((username != nil) ? "id_enabled_1s" : "id_touch_to_set_up", comment: ""), username ?? ""),
+            subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_touch_to_set_up" : "id_enabled_1s" , comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
 
