@@ -407,7 +407,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="o6l-5o-Ocm" kind="show" id="W5q-up-0wY"/>
+                                    <action selector="restoreWalletAction:" destination="4ce-3b-8z0" eventType="touchUpInside" id="kc6-y7-4Sm"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lbd-hr-xkm" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
@@ -502,6 +502,7 @@
                         <outlet property="networkButton" destination="uis-0X-sLw" id="jKr-jh-qKr"/>
                         <outlet property="restoreWalletbutton" destination="Nct-Hm-9xI" id="h8e-e4-Gr1"/>
                         <outlet property="topButton" destination="lbd-hr-xkm" id="4Ij-L1-qjT"/>
+                        <segue destination="o6l-5o-Ocm" kind="show" identifier="enterMnemonic" id="XPe-Xy-Qrf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uYz-un-mGa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3455,11 +3456,11 @@
             <objects>
                 <viewController id="hHc-Dv-gzZ" customClass="EnableTwoFactorViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ELO-vc-9sa">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KDf-73-rQl">
-                                <rect key="frame" x="16" y="457" width="288" height="42"/>
+                                <rect key="frame" x="16" y="506" width="288" height="42"/>
                                 <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="bGR-Sx-zR1"/>
@@ -3472,7 +3473,7 @@
                                 </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Bpx-al-4Lo">
-                                <rect key="frame" x="16" y="84" width="288" height="365"/>
+                                <rect key="frame" x="16" y="40" width="288" height="458"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
@@ -3643,7 +3644,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ab7-yZ-oZi">
-                                <rect key="frame" x="16" y="84" width="144" height="57"/>
+                                <rect key="frame" x="16" y="40" width="144" height="57"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="57" id="SUP-Mu-I4M"/>
                                 </constraints>
@@ -3652,13 +3653,13 @@
                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't need two factor code for transactions under the selected value" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LXf-em-GWL">
-                                <rect key="frame" x="16" y="151" width="288" height="36"/>
+                                <rect key="frame" x="16" y="107" width="288" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" name="customTitaniumLight"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gyd-mo-6vL">
-                                <rect key="frame" x="185" y="96.5" width="60" height="32"/>
+                                <rect key="frame" x="185" y="52.5" width="60" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="bgF-WT-FwL"/>
                                     <constraint firstAttribute="width" constant="60" id="xSJ-vZ-y8c"/>
@@ -3909,7 +3910,7 @@
         <segue reference="EcC-We-I1f"/>
         <segue reference="Uzj-6y-k3B"/>
         <segue reference="ho6-WN-AfT"/>
-        <segue reference="4QF-E2-lEm"/>
+        <segue reference="XPe-Xy-Qrf"/>
         <segue reference="asu-sJ-gO5"/>
     </inferredMetricsTieBreakers>
 </document>
