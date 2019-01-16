@@ -61,7 +61,7 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
             return Guarantee()
         }.compactMap(on: bgq) {
             try getSession().setTwoFactorLimit(details: details)
-        }.compactMap(on: bgq) { call in
+        }.then(on: bgq) { call in
             try call.resolve(self)
         }.ensure {
             self.stopAnimating()

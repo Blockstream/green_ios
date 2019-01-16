@@ -9,41 +9,50 @@ enum TwoFactorCallError : Error {
 }
 
 extension TwoFactorCall {
-    func resolve(_ sender: UIViewController) throws -> [String:Any]? {
-        var status = ""
-        var json: [String:Any] = [:]
-        while status != "error" && status != "done" {
-            json = try self.getStatus()!
-            status = json["status"] as! String
-            if status == "call" {
-                try self.call().wait()
-            } else if status == "request_code" {
-                let methods: [String] = json["methods"] as! [String]
-                if methods.count > 1 {
-                    try PopupMethodResolver(sender)
-                        .method(methods)
-                        .then { method in
-                            return try! self.requestCode(method: method)
-                        }.wait()
+
+    func resolve(_ sender: UIViewController) throws -> Promise<[String: Any]> {
+        func step() -> Promise<[String: Any]> {
+            return try! resolving(sender: sender).then {_ -> Promise<[String: Any]> in
+                guard let json = try self.getStatus() else { throw GaError.GenericError }
+                guard let status = json["status"] as? String else { throw GaError.GenericError }
+                if status == "done" {
+                    return Promise<[String: Any]> { seal in seal.fulfill(json) }
+                } else if status == "error"{
+                    let error: String = json["error"] as! String
+                    throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
                 } else {
-                    try! self.requestCode(method: methods[0]).wait()
+                    return step()
                 }
-            } else if status == "resolve_code" {
-                let method: String = json["method"] as! String
-                try PopupCodeResolver(sender)
-                    .code(method)
-                    .then { code in
-                        return try! self.resolveCode(code: code)
-                    }.wait()
             }
         }
-        if status == "done" {
-            return json
-        } else if status == "error"{
-            let error: String = json["error"] as! String
-            throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
+        return step()
+    }
+
+    func resolving(sender: UIViewController) throws -> Promise<Void> {
+        let json = try self.getStatus()!
+        let status = json["status"] as! String
+        if status == "call" {
+            return try! self.call()
+        } else if status == "request_code" {
+            let methods: [String] = json["methods"] as! [String]
+            if methods.count > 1 {
+                return PopupMethodResolver(sender)
+                    .method(methods)
+                    .then { method in
+                        return try! self.requestCode(method: method)
+                    }
+            } else {
+                return try self.requestCode(method: methods[0])
+            }
+        } else if status == "resolve_code" {
+            let method: String = json["method"] as! String
+            return PopupCodeResolver(sender)
+                .code(method)
+                .then { code in
+                    return try self.resolveCode(code: code)
+                }
         }
-        return nil
+        return Guarantee().asVoid()
     }
 }
 

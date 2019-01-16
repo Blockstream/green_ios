@@ -38,7 +38,7 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
             return Guarantee()
         }.compactMap(on: bgq) {
             try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
-        }.compactMap(on: bgq) { call in
+        }.then(on: bgq) { call in
             try call.resolve(self)
         }.ensure {
             self.stopAnimating()
