@@ -10,16 +10,16 @@ enum TwoFactorCallError : Error {
 
 extension TwoFactorCall {
 
-    func resolve(_ sender: UIViewController) throws -> Promise<[String: Any]> {
+    func resolve(_ sender: UIViewController) -> Promise<[String: Any]> {
         func step() -> Promise<[String: Any]> {
-            return try! resolving(sender: sender).then {_ -> Promise<[String: Any]> in
-                guard let json = try self.getStatus() else { throw GaError.GenericError }
+            return Guarantee().map{
+                try self.getStatus()!
+            }.then { json in
+                try self.resolving(sender: sender, json: json).map { _ in json }
+            }.then { json -> Promise<[String: Any]> in
                 guard let status = json["status"] as? String else { throw GaError.GenericError }
                 if status == "done" {
                     return Promise<[String: Any]> { seal in seal.fulfill(json) }
-                } else if status == "error"{
-                    let error: String = json["error"] as! String
-                    throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
                 } else {
                     return step()
                 }
@@ -28,31 +28,37 @@ extension TwoFactorCall {
         return step()
     }
 
-    func resolving(sender: UIViewController) throws -> Promise<Void> {
-        let json = try self.getStatus()!
-        let status = json["status"] as! String
-        if status == "call" {
-            return try! self.call()
-        } else if status == "request_code" {
+    func resolving(sender: UIViewController, json: [String: Any]) throws -> Promise<Void> {
+        guard let status = json["status"] as? String else { throw GaError.GenericError }
+        switch status {
+        case "done":
+            return Guarantee().asVoid()
+        case "error":
+            let error: String = json["error"] as! String
+            throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
+        case "call":
+            return try self.call()
+        case "request_code":
             let methods: [String] = json["methods"] as! [String]
             if methods.count > 1 {
                 return PopupMethodResolver(sender)
                     .method(methods)
                     .then { method in
-                        return try! self.requestCode(method: method)
+                        return try self.requestCode(method: method)
                     }
             } else {
                 return try self.requestCode(method: methods[0])
             }
-        } else if status == "resolve_code" {
+        case "resolve_code":
             let method: String = json["method"] as! String
             return PopupCodeResolver(sender)
                 .code(method)
                 .then { code in
                     return try self.resolveCode(code: code)
                 }
+        default:
+            return Guarantee().asVoid()
         }
-        return Guarantee().asVoid()
     }
 }
 

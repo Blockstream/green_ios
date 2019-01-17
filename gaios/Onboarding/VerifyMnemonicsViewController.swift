@@ -102,11 +102,11 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         }.compactMap(on: bgq) {
             try getSession().registerUser(mnemonic: mnemonics)
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.compactMap(on: bgq) { call in
             try getSession().login(mnemonic: mnemonics)
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.ensure {
             self.stopAnimating()
         }.done { _ in

@@ -87,7 +87,7 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
         }.compactMap(on: bgq) {
             try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.done { _ in
             self.navigationController?.popViewController(animated: true)
         }.catch {_ in

@@ -88,7 +88,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.compactMap(on: bgq) { result_dict in
             let result = result_dict["result"] as! [String: Any]
             if self.transaction.isSweep {
@@ -98,7 +98,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
                 return try getSession().sendTransaction(details: result)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) in
-            try call!.resolve(self)
+            call!.resolve(self)
         }.done { _ in
             self.executeOnDone()
         }.catch { error in

@@ -408,7 +408,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.compactMap(on: bgq) { newValue in
             try setting(newValue)
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -460,7 +460,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.compactMap(on: bgq) {
             try getGAService().getSession().cancelTwoFactorReset()
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -498,7 +498,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.compactMap(on: bgq) {
             try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.ensure {
             self.stopAnimating()
         }.done { _ in

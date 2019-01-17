@@ -50,7 +50,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
         }.compactMap(on: bgq) {
             try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
         }.then(on: bgq) { call in
-            try call.resolve(self)
+            call.resolve(self)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
