@@ -15,10 +15,11 @@ class InstructionViewController: UIViewController {
         middleLabel.text = NSLocalizedString("id_dont_store_your_mnemonic_in", comment: "")
         bottomLabel.text = NSLocalizedString("id_dont_take_screenshots_of_your", comment: "")
         nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+        nextButton.setGradient(true)
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        nextButton.updateGradientLayerFrame()
         bottomLabel.sizeToFit()
     }
 }

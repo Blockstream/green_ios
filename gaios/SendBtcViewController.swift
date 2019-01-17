@@ -84,7 +84,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
     }
 
     func updateButton(_ enable: Bool) {
-        bottomButton.enableWithGradient(enable)
+        bottomButton.toggleGradient(enable)
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {

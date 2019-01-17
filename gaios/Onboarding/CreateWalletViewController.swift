@@ -27,6 +27,8 @@ class CreateWalletViewController: UIViewController {
         self.navigationItem.hidesBackButton = true
         let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(CreateWalletViewController.back(sender:)))
         self.navigationItem.leftBarButtonItem = newBackButton
+
+        nextButton.setGradient(true)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -37,8 +39,9 @@ class CreateWalletViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
-    }
+
+        nextButton.updateGradientLayerFrame()
+     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let verifyMnemonics = segue.destination as? VerifyMnemonicsViewController {

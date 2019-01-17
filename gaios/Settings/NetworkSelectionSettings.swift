@@ -174,6 +174,6 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         socks5Port.text = defaults?["socks5_port"] as? String ?? ""
         torSwitch.isOn = defaults?["tor"] as? Bool ?? false
 
-        saveButton.enableWithGradient(true)
+        saveButton.toggleGradient(true)
     }
 }

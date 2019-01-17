@@ -2,7 +2,7 @@ import UIKit
 
 class InitialViewController: UIViewController {
 
-    @IBOutlet weak var topButton: DesignableButton!
+    @IBOutlet weak var topButton: UIButton!
     @IBOutlet weak var networkButton: UIButton!
     @IBOutlet weak var restoreWalletbutton: UIButton!
 
@@ -10,6 +10,7 @@ class InitialViewController: UIViewController {
         super.viewDidLoad()
 
         topButton.setTitle(NSLocalizedString("id_create_wallet", comment: ""), for: .normal)
+        topButton.setGradient(true)
         restoreWalletbutton.setTitle(NSLocalizedString("id_restore_existing_wallet", comment: ""), for: .normal)
     }
 
@@ -44,7 +45,8 @@ class InitialViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        topButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+
+        topButton.updateGradientLayerFrame()
     }
 
     private func onAction(identifier: String) {

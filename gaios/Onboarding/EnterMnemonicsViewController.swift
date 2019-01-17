@@ -49,7 +49,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
     }
 
     func updateDoneButton(_ enable: Bool) {
-        doneButton.enableWithGradient(enable)
+        doneButton.toggleGradient(enable)
     }
 
     @objc override func keyboardWillShow(notification: NSNotification) {

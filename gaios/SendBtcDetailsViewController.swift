@@ -241,7 +241,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateReviewButton(_ enable: Bool) {
-        reviewButton.enableWithGradient(enable)
+        reviewButton.toggleGradient(enable)
     }
 
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {

@@ -412,7 +412,7 @@
                                     <action selector="restoreWalletAction:" destination="4ce-3b-8z0" eventType="touchUpInside" id="kc6-y7-4Sm"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lbd-hr-xkm" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lbd-hr-xkm">
                                 <rect key="frame" x="20" y="414" width="280" height="42"/>
                                 <color key="backgroundColor" red="0.0" green="0.70588243007659912" blue="0.3529411764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>

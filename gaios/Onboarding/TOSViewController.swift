@@ -18,23 +18,21 @@ class TOSViewController: UIViewController {
         sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
         sender.setImage(UIImage(named: "check"), for: UIControlState.normal)
         sender.tintColor = UIColor.white
-        nButton.isUserInteractionEnabled = true
-        nButton.backgroundColor = UIColor.customMatrixGreen()
-        nButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
+        nButton.toggleGradient(true)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+
+        nButton.updateGradientLayerFrame()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        nButton.backgroundColor = UIColor.customTitaniumLight()
-        nButton.isUserInteractionEnabled = false
-        nButton.layer.sublayers?.removeFirst()
         tosButton.backgroundColor = UIColor.clear
         tosButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
         tosButton.setImage(nil, for: UIControlState.normal)
+        nButton.toggleGradient(false)
     }
 
     override func viewDidLoad() {

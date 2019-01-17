@@ -163,7 +163,13 @@ extension UIButton {
         return UIButton.gradientLayers[self]!
     }
 
-    func enableWithGradient(_ enable: Bool) {
+    func setGradient(_ enable: Bool) {
+        precondition(layer.sublayers == nil, "attempting to set multiple layers")
+        layer.addSublayer(enable ? enabledGradientLayer : disabledGradientLayer)
+        setNeedsDisplay()
+    }
+
+    func toggleGradient(_ enable: Bool) {
         if enable == isUserInteractionEnabled {
             return
         }
@@ -173,8 +179,8 @@ extension UIButton {
         } else {
             layer.addSublayer(enable ? enabledGradientLayer : disabledGradientLayer)
         }
-        isUserInteractionEnabled = enable
         setNeedsDisplay()
+        isUserInteractionEnabled = enable
     }
 
     func updateGradientLayerFrame() {
