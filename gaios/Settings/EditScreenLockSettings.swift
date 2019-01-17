@@ -96,11 +96,10 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
             }.compactMap(on: bgq) {
                 let password = String.random(length: 14)
                 let deviceid = String.random(length: 14)
-                let mnemonics = getAppDelegate().getMnemonicWordsString()
-                return (try getSession().setPin(mnemonic: mnemonics!, pin: password, device: deviceid), password) as? ([String : Any], String)
+                let mnemonics = try getSession().getMnemmonicPassphrase(password: "")
+                return (try getSession().setPin(mnemonic: mnemonics, pin: password, device: deviceid), password) as? ([String : Any], String)
             }.done { (data: [String: Any], password: String) -> Void in
-                let network = getNetwork()
-                try AuthenticationTypeHandler.addBiometryType(data: data, extraData: password, forNetwork: network)
+                try AuthenticationTypeHandler.addBiometryType(data: data, extraData: password, forNetwork: getNetwork())
             }.catch { _ in
             }.finally {
                 self.stopAnimating()

@@ -7,7 +7,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
 
     var selectionWordNumbers: [Int] = [Int](repeating: 0, count:4)
     var expectedWordNumbers: [Int] = [Int](repeating: 0, count:4)
-    var mnemonics:[String] = []
+    var mnemonic: [Substring]!
     var questionCounter: Int = 0
     var questionPosition: Int = 0
     let numberOfSteps: Int = 4
@@ -22,7 +22,6 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
     override func viewDidLoad() {
         super.viewDidLoad()
         expectedWordNumbers = generateRandomWordNumbers()
-        mnemonics = getAppDelegate().getMnemonicWords()!
         newRandomWords()
         update()
     }
@@ -66,7 +65,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         title = String(format: localized, questionPosition + 1)
         // update buttons
         buttonsArray.enumerated().forEach { (offset, element) in
-            element.setTitle(mnemonics[selectionWordNumbers[offset]], for: .normal)
+            element.setTitle(String(mnemonic[selectionWordNumbers[offset]]), for: .normal)
             element.isSelected = false
         }
         // update subtitle
@@ -83,7 +82,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
             rangeEnd = questionPosition + 1
         }
         let question = "  ______   "
-        let placeHolder = mnemonics[rangeStart...rangeEnd].joined(separator: " ").replacingOccurrences(of: mnemonics[questionPosition], with: question)
+        let placeHolder = mnemonic[rangeStart...rangeEnd].joined(separator: " ").replacingOccurrences(of: mnemonic[questionPosition], with: question)
         let attributedString = NSMutableAttributedString(string: placeHolder)
         attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
         bottomText.attributedText = attributedString
@@ -155,9 +154,9 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
         if selectedWord == nil {
             return
         }
-        if selectedWord == mnemonics[questionPosition] {
+        if selectedWord == String(mnemonic[questionPosition]) {
             if(questionCounter == numberOfSteps - 1) {
-                let stringRepresentation = mnemonics.joined(separator: " ")
+                let stringRepresentation = mnemonic.joined(separator: " ")
                 registerAndLogin(mnemonics: stringRepresentation)
             } else {
                 questionCounter += 1

@@ -127,8 +127,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             startAnimating(message: "")
             return Guarantee()
         }.compactMap(on: bgq) {
-            let mnemonics = getAppDelegate().getMnemonicWordsString()
-            return try getSession().setPin(mnemonic: mnemonics!, pin: self.pinCode, device: String.random(length: 14))
+            let mnemonics = try getSession().getMnemmonicPassphrase(password: "")
+            return try getSession().setPin(mnemonic: mnemonics, pin: self.pinCode, device: String.random(length: 14))
         }.map(on: bgq) { (data: [String: Any]) -> Void in
             let network = getNetwork()
             try AuthenticationTypeHandler.addPIN(data: data, forNetwork: network)

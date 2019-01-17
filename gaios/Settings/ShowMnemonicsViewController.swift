@@ -2,12 +2,10 @@ import Foundation
 import UIKit
 
 class ShowMnemonicsViewController : UIViewController {
-    var mnemonics:[String] = []
     var viewArray: Array<UIView> = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        mnemonics = getAppDelegate().getMnemonicWords()!
         createViews()
         title = NSLocalizedString("id_recovery_words", comment: "")
     }
@@ -17,7 +15,8 @@ class ShowMnemonicsViewController : UIViewController {
         let viewWidth = (screenSize.width - 40) / 4
         let viewHeight = viewWidth / 1.61
 
-        for index in 0...23 {
+        let mnemonic = try! getSession().getMnemmonicPassphrase(password: "").split(separator: " ")
+        for index in 0..<mnemonic.count {
             let myView = UIView(frame: CGRect(x: 0, y: 0, width: viewWidth, height: viewHeight))
             myView.translatesAutoresizingMaskIntoConstraints = false
             myView.borderWidth = 1
@@ -36,16 +35,16 @@ class ShowMnemonicsViewController : UIViewController {
             NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 0).isActive = true
 
             //mnemonic label
-            let menmonicLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
-            menmonicLabel.textAlignment = .center
-            menmonicLabel.text = mnemonics[index]
-            menmonicLabel.font = UIFont.systemFont(ofSize: 16)
-            menmonicLabel.textColor = UIColor.customTitaniumLight()
-            menmonicLabel.translatesAutoresizingMaskIntoConstraints = false
-            myView.addSubview(menmonicLabel)
-            NSLayoutConstraint(item: menmonicLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-            NSLayoutConstraint(item: menmonicLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 4).isActive = true
-            NSLayoutConstraint(item: menmonicLabel, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 0).isActive = true
+            let mnemonicLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
+            mnemonicLabel.textAlignment = .center
+            mnemonicLabel.text = String(mnemonic[index])
+            mnemonicLabel.font = UIFont.systemFont(ofSize: 16)
+            mnemonicLabel.textColor = UIColor.customTitaniumLight()
+            mnemonicLabel.translatesAutoresizingMaskIntoConstraints = false
+            myView.addSubview(mnemonicLabel)
+            NSLayoutConstraint(item: mnemonicLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: mnemonicLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 4).isActive = true
+            NSLayoutConstraint(item: mnemonicLabel, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: myView, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 0).isActive = true
 
             self.view.addSubview(myView)
             //left constraint

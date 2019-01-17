@@ -1,9 +1,10 @@
-import Foundation
 import UIKit
 
 class CreateWalletViewController: UIViewController {
 
-    var mnemonics:[String] = []
+    var mnemonic: [Substring] = {
+        return try! generateMnemonic().split(separator: " ")
+    }()
     var pageCounter:Int = 0;
     lazy var arrayLabels: [UILabel] = [self.word1, self.word2, self.word3, self.word4, self.word5, self.word6]
 
@@ -18,8 +19,7 @@ class CreateWalletViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        getAppDelegate().setMnemonicWords(try! generateMnemonic().components(separatedBy: " "))
-        mnemonics = getAppDelegate().getMnemonicWords()!
+
         title = NSLocalizedString("id_write_down_the_words", comment: "")
         nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
 
@@ -40,8 +40,14 @@ class CreateWalletViewController: UIViewController {
         nextButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let verifyMnemonics = segue.destination as? VerifyMnemonicsViewController {
+            verifyMnemonics.mnemonic = mnemonic
+        }
+    }
+
     @IBAction func nextButtonClicked(_ sender: Any) {
-        if (pageCounter == 3) {
+        if pageCounter == 3 {
             self.performSegue(withIdentifier: "next", sender: nil)
         } else {
             pageCounter += 1
@@ -55,7 +61,7 @@ class CreateWalletViewController: UIViewController {
         let end = start + 6
         for index in start..<end {
             let real = index+1
-            let formattedString = NSMutableAttributedString(string: String(format: "%d  %@", real, mnemonics[index]))
+            let formattedString = NSMutableAttributedString(string: String("\(real) \(mnemonic[index])"))
             formattedString.setColor(color: UIColor.customMatrixGreen(), forText: String(format: "%d", real))
             formattedString.setFont(font: UIFont.systemFont(ofSize: 13), stringValue: String(format: "%d", real))
             arrayLabels[index % 6].attributedText = formattedString
@@ -64,7 +70,7 @@ class CreateWalletViewController: UIViewController {
     }
 
     @objc func back(sender: UIBarButtonItem) {
-        if(pageCounter == 0) {
+        if pageCounter == 0 {
             navigationController?.popViewController(animated: true)
         } else {
             pageCounter -= 1

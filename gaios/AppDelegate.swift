@@ -31,36 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let service = GreenAddressService()
 
-    var mnemonicWords: [String]? = nil
-
     func getService() -> GreenAddressService {
         return self.service
-    }
-
-    func setMnemonicWords(_ words: [String]) {
-        mnemonicWords = words
-    }
-
-    func getMnemonicWords() -> [String]? {
-        if (mnemonicWords) == nil {
-            do {
-                let mn = try getSession().getMnemmonicPassphrase(password: "")
-                return getMnemonicsArray(mnemonics: mn)
-            } catch {
-                print("somethin went wrong")
-            }
-            return nil
-        }
-        return mnemonicWords
-    }
-
-    func getMnemonicWordsString() -> String? {
-        return getMnemonicWords()!.joined(separator: " ")
-    }
-
-    func getMnemonicsArray(mnemonics: String) -> [String]? {
-        let result = mnemonics.components(separatedBy: " ")
-        return result
     }
 
     func instantiateViewControllerAsRoot(identifier: String) {
