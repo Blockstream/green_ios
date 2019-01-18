@@ -2609,7 +2609,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="SwO-Lj-Khe" kind="relationship" relationship="rootViewController" id="OR1-dN-TVi"/>
+                        <segue destination="C2t-ug-DjR" kind="relationship" relationship="rootViewController" id="iDa-Lt-csv"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZJt-S6-WZa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2619,7 +2619,7 @@
         <!--Wallets-->
         <scene sceneID="0mj-df-92g">
             <objects>
-                <collectionViewController id="SwO-Lj-Khe" customClass="WalletsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController hidesBottomBarWhenPushed="YES" id="SwO-Lj-Khe" customClass="WalletsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" id="SET-Ft-JEm">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -2648,9 +2648,6 @@
                     <navigationItem key="navigationItem" title="Wallets" id="Osd-dh-5r3">
                         <barButtonItem key="backBarButtonItem" title=" " id="rxn-12-b1G"/>
                     </navigationItem>
-                    <connections>
-                        <segue destination="C2t-ug-DjR" kind="show" identifier="account" id="fLS-fY-Csu"/>
-                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Qk-YW-F9t" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -3084,6 +3081,7 @@
                         <segue destination="zxH-Uq-pPW" kind="show" identifier="detail" id="m9D-Ww-ii0"/>
                         <segue destination="jsC-nu-G2U" kind="show" identifier="receive" id="g4H-sA-Rhj"/>
                         <segue destination="6PL-t1-BTP" kind="show" identifier="send" id="N3b-0p-Evi"/>
+                        <segue destination="SwO-Lj-Khe" kind="show" identifier="wallets" id="KmS-eB-Wwz"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zxA-j3-WFJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3873,10 +3871,6 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="EJj-Nq-Nji"/>
-        <segue reference="WTS-vP-0Hc"/>
-        <segue reference="aG8-vY-CuS"/>
-        <segue reference="fhM-Q9-pGm"/>
         <segue reference="S0G-tL-SMV"/>
         <segue reference="EcC-We-I1f"/>
         <segue reference="Uzj-6y-k3B"/>

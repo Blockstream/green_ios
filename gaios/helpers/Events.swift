@@ -69,9 +69,12 @@ struct Event: Equatable {
             guard let txEvent = get() as TransactionEvent? else { return "" }
             let txType = txEvent.type == "incoming" ? NSLocalizedString("id_incoming", comment: "") : NSLocalizedString("id_outgoing", comment: "")
             let txAmount = String.toBtc(satoshi: txEvent.satoshi)
-            let wallets = AccountStore.shared.wallets.filter { txEvent.subAccounts.contains(Int($0.pointer)) }
-            let txWalletName = wallets.isEmpty ? "" : wallets[0].localizedName()
-            return String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, txAmount, txWalletName)
+            let data = try! getSession().getSubaccounts() as [String: Any]?
+            let jsonData = try! JSONSerialization.data(withJSONObject: data!)
+            let wallets = try! JSONDecoder().decode(Wallets.self, from: jsonData).array
+            let list = wallets.filter { txEvent.subAccounts.contains(Int($0.pointer)) }
+            let walletName = list.isEmpty ? "" : list[0].localizedName()
+            return String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, txAmount, walletName)
         case .TwoFactorReset, .Settings:
             guard let twoFactorReset = getGAService().getTwoFactorReset() else { return "" }
             if twoFactorReset.isResetActive {

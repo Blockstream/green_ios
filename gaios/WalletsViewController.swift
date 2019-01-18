@@ -5,6 +5,7 @@ import PromiseKit
 class WalletsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var wallets = [WalletItem]()
+    var subaccountDelegate: SubaccountDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,13 +51,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let wallet = wallets[indexPath.row]
-        self.performSegue(withIdentifier: "account", sender: wallet)
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? TransactionsController {
-            guard let wallet = sender as? WalletItem else { return }
-            nextController.presentingWallet = wallet
-        }
+        subaccountDelegate?.onChange(wallet.pointer)
+        navigationController?.popViewController(animated: true)
     }
 }

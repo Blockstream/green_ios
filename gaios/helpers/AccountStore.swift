@@ -4,7 +4,6 @@ import PromiseKit
 class AccountStore {
 
     static let shared = AccountStore()
-    var wallets = [WalletItem]()
     var blockHeight: UInt32 = 0
     var isWatchOnly: Bool = false
 

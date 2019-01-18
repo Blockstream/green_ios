@@ -2,9 +2,14 @@ import Foundation
 import UIKit
 import PromiseKit
 
+protocol SubaccountDelegate
+{
+    func onChange(_ pointer: UInt32)
+}
 
-class TransactionsController: UITableViewController {
+class TransactionsController: UITableViewController, SubaccountDelegate {
 
+    var pointerWallet : UInt32 = 0
     var presentingWallet: WalletItem? = nil
     var items: Transactions? = nil
 
@@ -28,22 +33,10 @@ class TransactionsController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.isNavigationBarHidden = true
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
-        reloadWalletCardView(tableView.tableHeaderView as! WalletFullCardView)
+        loadWallet()
         loadTransactions()
-        updateBalance()
-    }
-
-    func updateBalance() {
-        guard let wallet = presentingWallet else { return }
-        wallet.getBalance().get { balance in
-            let view = self.tableView.tableHeaderView as! WalletFullCardView
-            view.balance.text = String.toBtc(satoshi: wallet.satoshi)
-            let res = try getSession().convertAmount(input: ["satoshi": wallet.satoshi])
-            view.balanceFiat.text = String(format: "≈ %@ %@", (res!["fiat"] as? String)!, getGAService().getSettings()!.getCurrency())
-        }.done { _ in }.catch { _ in }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -56,19 +49,15 @@ class TransactionsController: UITableViewController {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         var subaccounts = [UInt32]()
         if notification.name.rawValue == EventType.Block.rawValue {
-            let saccounts = AccountStore.shared.wallets.map { return $0.pointer }
-            subaccounts.append(contentsOf: saccounts)
+            subaccounts.append(pointerWallet)
         } else {
             if let saccounts =  dict["subaccounts"] as! [UInt32]? {
                 subaccounts.append(contentsOf: saccounts)
             }
         }
-        if subaccounts.filter({ UInt32($0) == presentingWallet?.pointer }).count > 0 {
-            Guarantee().done {
-                self.reloadWalletCardView(self.tableView.tableHeaderView as! WalletFullCardView)
-                self.loadTransactions()
-                self.updateBalance()
-            }
+        if subaccounts.filter({ $0 == pointerWallet }).count > 0 {
+           self.loadWallet()
+           self.loadTransactions()
         }
     }
 
@@ -138,8 +127,8 @@ class TransactionsController: UITableViewController {
 
     func loadTransactions() {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
-            try getSession().getTransactions(subaccount: (self.presentingWallet?.pointer)!, page: 0)
+        Guarantee().compactMap(on: bgq) {_ in 
+            try getSession().getTransactions(subaccount: self.pointerWallet, page: 0)
         }.compactMap(on: bgq) { data -> Transactions in
             let txList = (data["list"] as! [[String: Any]]).map { tx -> Transaction in
                 return Transaction(tx)
@@ -161,21 +150,17 @@ class TransactionsController: UITableViewController {
         let view: WalletFullCardView = ((Bundle.main.loadNibNamed("WalletFullCardView", owner: self, options: nil)![0] as? WalletFullCardView)!)
         view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.receiveToWallet)))
         view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.sendfromWallet)))
-        view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.back)))
+        view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.wallets)))
         return view
     }
 
-    func reloadWalletCardView(_ view: WalletFullCardView){
-        guard let wallet = presentingWallet else { return }
+    func loadWallet(){
         guard let settings = getGAService().getTwoFactorReset() else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
-            return try getSession().getBalance(subaccount: wallet.pointer, numConfs: 0)
-        }.compactMap { balance in
-            let satoshi = balance["satoshi"] as! UInt64
-            wallet.satoshi = satoshi
-        }.done {_ in
+        getSubaccount(self.pointerWallet).done { wallet in
+            self.presentingWallet = wallet
+            let view = self.tableView.tableHeaderView as! WalletFullCardView
             view.balance.text = String.toBtc(satoshi: wallet.satoshi)
+            view.balanceFiat.text = String.toFiat(satoshi: wallet.satoshi)
             view.walletName.text = wallet.localizedName()
             view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             if settings.isResetActive {
@@ -186,8 +171,8 @@ class TransactionsController: UITableViewController {
         }.catch{ _ in }
     }
 
-    @objc func back(_ sender: UIButton) {
-        self.navigationController?.popViewController(animated: true)
+    @objc func wallets(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "wallets", sender: self)
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -203,7 +188,6 @@ class TransactionsController: UITableViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        self.navigationController?.isNavigationBarHidden = false
         if let nextController = segue.destination as? SendBtcViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? ReceiveBtcViewController {
@@ -211,8 +195,12 @@ class TransactionsController: UITableViewController {
         } else if let nextController = segue.destination as? TransactionDetailViewController {
             nextController.transaction = sender as? Transaction
             nextController.wallet = presentingWallet
-        } else if let nextController = segue.destination as? TransactionsController {
-            nextController.presentingWallet = presentingWallet
+        } else if let nextController = segue.destination as? WalletsViewController {
+            nextController.subaccountDelegate = self
         }
+    }
+
+    func onChange(_ pointer: UInt32) {
+        self.pointerWallet = pointer
     }
 }
