@@ -409,7 +409,6 @@
 				676FCF191F9D0CF800354E93 /* Frameworks */,
 				676FCF1A1F9D0CF800354E93 /* Resources */,
 				D23CE903E100C9C13584F174 /* [CP] Embed Pods Frameworks */,
-				27DDE49E8F2DEB4CF0B047CA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -428,8 +427,6 @@
 				676FCF2E1F9D0CF800354E93 /* Sources */,
 				676FCF2F1F9D0CF800354E93 /* Frameworks */,
 				676FCF301F9D0CF800354E93 /* Resources */,
-				2135C1015316F90ADD6C5C98 /* [CP] Embed Pods Frameworks */,
-				B918B72174CAFC57AA7CEB35 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -449,8 +446,6 @@
 				676FCF391F9D0CF800354E93 /* Sources */,
 				676FCF3A1F9D0CF800354E93 /* Frameworks */,
 				676FCF3B1F9D0CF800354E93 /* Resources */,
-				8ECD83853B708AA9DB37C591 /* [CP] Embed Pods Frameworks */,
-				4CE278A53C89387F04A793D2 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -580,66 +575,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2135C1015316F90ADD6C5C98 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		27DDE49E8F2DEB4CF0B047CA /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4CE278A53C89387F04A793D2 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8ECD83853B708AA9DB37C591 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		99CCE11601CC4F788E5063AE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -656,21 +591,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B918B72174CAFC57AA7CEB35 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D23CE903E100C9C13584F174 /* [CP] Embed Pods Frameworks */ = {
@@ -957,14 +877,8 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";
@@ -990,14 +904,8 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";
