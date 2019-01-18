@@ -25,4 +25,16 @@ extension UIColor {
     class func customTitaniumLight() -> UIColor {
         return UIColor(named: "customTitaniumLight")!
     }
+
+    class func cardLight() -> UIColor {
+        return UIColor.init(red: 0x0A / 255, green: 0x7C / 255, blue: 0x4A / 255, alpha: 1)
+    }
+
+    class func cardMedium() -> UIColor {
+        return UIColor.init(red: 0x21 / 255, green: 0x40 / 255, blue: 0x49 / 255, alpha: 1)
+    }
+
+    class func cardDark() -> UIColor {
+        return UIColor.init(red: 0x14 / 255, green: 0x1E / 255, blue: 0x28 / 255, alpha: 1)
+    }
 }

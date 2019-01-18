@@ -67,6 +67,10 @@
 		81073D7721E6024600E08F86 /* TabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81073D7621E6024600E08F86 /* TabViewController.swift */; };
 		81073D7821E8B27700E08F86 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81073D7A21E8B27700E08F86 /* Localizable.strings */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
+		811B963821F5FC8300DE02CB /* HeaderWalletsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811B963721F5FC8300DE02CB /* HeaderWalletsCollection.swift */; };
+		811B963A21F5FC9500DE02CB /* HeaderWalletsCollection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 811B963921F5FC9500DE02CB /* HeaderWalletsCollection.xib */; };
+		811B963C21F72A5B00DE02CB /* FooterWalletsCollection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 811B963B21F72A5B00DE02CB /* FooterWalletsCollection.xib */; };
+		811B963E21F72B5200DE02CB /* FooterWalletsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811B963D21F72B5200DE02CB /* FooterWalletsCollection.swift */; };
 		811ED52721BE8FCA0033A4A1 /* PopupPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */; };
 		811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
 		811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */; };
@@ -175,6 +179,10 @@
 		81073D7921E8B27700E08F86 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		81073D7B21E8B61400E08F86 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
+		811B963721F5FC8300DE02CB /* HeaderWalletsCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderWalletsCollection.swift; sourceTree = "<group>"; };
+		811B963921F5FC9500DE02CB /* HeaderWalletsCollection.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeaderWalletsCollection.xib; sourceTree = "<group>"; };
+		811B963B21F72A5B00DE02CB /* FooterWalletsCollection.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FooterWalletsCollection.xib; sourceTree = "<group>"; };
+		811B963D21F72B5200DE02CB /* FooterWalletsCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterWalletsCollection.swift; sourceTree = "<group>"; };
 		811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupPromise.swift; sourceTree = "<group>"; };
 		811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorConfig.swift; sourceTree = "<group>"; };
 		811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenAddressService.swift; sourceTree = "<group>"; };
@@ -240,6 +248,10 @@
 				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
 				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
 				671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */,
+				811B963721F5FC8300DE02CB /* HeaderWalletsCollection.swift */,
+				811B963921F5FC9500DE02CB /* HeaderWalletsCollection.xib */,
+				811B963D21F72B5200DE02CB /* FooterWalletsCollection.swift */,
+				811B963B21F72A5B00DE02CB /* FooterWalletsCollection.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -512,9 +524,11 @@
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				81E9B80221C92EF7004D87B6 /* WalletCardView.xib in Resources */,
+				811B963A21F5FC9500DE02CB /* HeaderWalletsCollection.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */,
+				811B963C21F72A5B00DE02CB /* FooterWalletsCollection.xib in Resources */,
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
 				092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */,
@@ -651,11 +665,13 @@
 				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
+				811B963821F5FC8300DE02CB /* HeaderWalletsCollection.swift in Sources */,
 				811ED52721BE8FCA0033A4A1 /* PopupPromise.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor+Hex.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String+random.swift in Sources */,
 				0926C14821178FEE0008F94A /* TextField.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
+				811B963E21F72B5200DE02CB /* FooterWalletsCollection.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
@@ -877,8 +893,14 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";
@@ -904,8 +926,14 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";

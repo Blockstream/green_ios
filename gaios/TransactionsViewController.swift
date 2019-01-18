@@ -24,15 +24,15 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         tableView.allowsSelection = true
         tableView.isUserInteractionEnabled = true
         tableView.separatorColor = UIColor.customTitaniumLight()
-        tableView.tableHeaderView = getWalletCardView()
-        tableView.refreshControl = UIRefreshControl()
+        tableView.tableHeaderView = getWalletCardView()!
         tableView.bounces = true
-        tableView.alwaysBounceVertical = true
+        tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: true)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
         loadWallet()
@@ -41,8 +41,19 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard let headerView = tableView.tableHeaderView else { return }
+        let height = headerView.systemLayoutSizeFitting(UILayoutFittingCompressedSize).height
+        if height != headerView.frame.size.height {
+            headerView.frame.size.height = height
+            tableView.tableHeaderView = headerView
+        }
     }
 
     @objc func refreshTransactions(_ notification: NSNotification) {
@@ -155,15 +166,17 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
     }
 
     func loadWallet(){
-        guard let settings = getGAService().getTwoFactorReset() else { return }
+        guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
+        guard let settings = getGAService().getSettings() else { return }
         getSubaccount(self.pointerWallet).done { wallet in
             self.presentingWallet = wallet
             let view = self.tableView.tableHeaderView as! WalletFullCardView
-            view.balance.text = String.toBtc(satoshi: wallet.satoshi)
+            view.balance.text = String.toBtc(satoshi: wallet.satoshi).split(separator: " ").map(String.init).first
+            view.unit.text = settings.denomination.toString()
             view.balanceFiat.text = String.toFiat(satoshi: wallet.satoshi)
             view.walletName.text = wallet.localizedName()
             view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
-            if settings.isResetActive {
+            if twoFactorReset.isResetActive {
                 view.actionsView.isHidden = true
             } else if AccountStore.shared.isWatchOnly {
                 view.sendImage.image = UIImage(named: "qr_sweep")

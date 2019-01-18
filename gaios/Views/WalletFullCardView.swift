@@ -15,12 +15,20 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var networkImage: UIImageView!
     @IBOutlet weak var sendImage: UIImageView!
     @IBOutlet weak var receiveImage: UIImageView!
+    @IBOutlet weak var backgroundView: UIView!
+    @IBOutlet weak var unit: UILabel!
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        self.borderColor = UIColor.customMatrixGreen()
-        self.borderWidth = 2
-        self.cornerRadius = 16
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.cardDark().cgColor, UIColor.cardMedium().cgColor, UIColor.cardLight().cgColor]
+        gradient.locations = [0.0, 0.5, 1.0]
+        gradient.startPoint = CGPoint(x: 0.0, y: 1.0)
+        gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
+        gradient.frame = backgroundView.bounds
+        backgroundView.layer.insertSublayer(gradient, at: 0)
+
         self.sendLabel.text = NSLocalizedString("id_send", comment: "").uppercased()
         self.receiveLabel.text = NSLocalizedString("id_receive", comment: "").uppercased()
     }

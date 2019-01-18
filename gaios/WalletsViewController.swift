@@ -6,20 +6,35 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     var wallets = [WalletItem]()
     var subaccountDelegate: SubaccountDelegate?
+    private let cellId = "cell"
+    private let headerId = "header"
+    private let footerId = "footer"
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = NSLocalizedString("id_wallets", comment: "")
+        guard let collectionView = self.collectionView else { return }
         let cellNib = UINib(nibName: "WalletCardView", bundle: nil)
-        self.collectionView!.register(cellNib, forCellWithReuseIdentifier: "cell")
+        let headerNib = UINib(nibName: "HeaderWalletsCollection", bundle: nil)
+        let footerNib = UINib(nibName: "FooterWalletsCollection", bundle: nil)
+        collectionView.register(cellNib, forCellWithReuseIdentifier: cellId)
+        collectionView.register(headerNib, forSupplementaryViewOfKind:
+            UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
+        collectionView.register(footerNib, forSupplementaryViewOfKind:
+            UICollectionElementKindSectionFooter, withReuseIdentifier: footerId)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.hidesBarsOnSwipe = true
         getSubaccounts().done { wallets in
             self.wallets = wallets
             self.collectionView?.reloadData()
         }.catch {_ in }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.hidesBarsOnSwipe = false
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -31,20 +46,55 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell",
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId,
                                                       for: indexPath) as! WalletCardView
         let wallet = wallets[indexPath.row]
-        cell.balance.text = String.toBtc(satoshi: wallet.satoshi)
+        guard let settings = getGAService().getSettings() else { return cell }
+        cell.balance.text = String.toBtc(satoshi: wallet.satoshi).split(separator: " ").map(String.init).first
+        cell.unit.text = settings.denomination.toString()
+        cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.satoshi)
         cell.walletName.text = wallet.localizedName()
         cell.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
-
-        guard let res = try? getSession().convertAmount(input: ["satoshi": wallet.satoshi]) else { return cell }
-        cell.balanceFiat.text = String(format: "≈ %@ %@", (res!["fiat"] as? String)!, getGAService().getSettings()!.getCurrency())
         return cell
     }
 
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case UICollectionElementKindSectionHeader:
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
+                headerId, for: indexPath) as! HeaderWalletsCollection
+            let satoshi = wallets.map { $0.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
+                return accumulation + nextValue
+            }
+            header.btcLabel.text = String.toBtc(satoshi: satoshi)
+            header.fiatLabel.text = String.toFiat(satoshi: satoshi)
+            return header
+        case UICollectionElementKindSectionFooter:
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
+                footerId, for: indexPath) as! FooterWalletsCollection
+            footer.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
+            let tapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(self.addWallet))
+            footer.addGestureRecognizer(tapGestureRecognizer)
+            footer.isUserInteractionEnabled = true
+            return footer
+        default:
+            return UICollectionReusableView()
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.size.width, height: 60)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        if AccountStore.shared.isWatchOnly {
+            return CGSize.zero
+        }
+        return CGSize(width: self.view.frame.width, height: 180)
+    }
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let padding = 22
+        let padding = 18
         let width = self.view.frame.width - CGFloat(padding)
         return CGSize(width: width, height: 180)
     }
@@ -53,5 +103,13 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         let wallet = wallets[indexPath.row]
         subaccountDelegate?.onChange(wallet.pointer)
         navigationController?.popViewController(animated: true)
+    }
+
+    @objc func addWallet(_ sender: Any?) {
+        let alert = UIAlertController(title: "", message: NSLocalizedString("id_adding_new_accounts", comment: ""), preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in })
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }
