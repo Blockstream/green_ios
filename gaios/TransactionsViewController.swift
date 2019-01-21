@@ -138,7 +138,10 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
 
     func loadTransactions() {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {_ in 
+        Guarantee().compactMap {
+            self.items = Transactions(list: [], nextPageId: 0, pageId: 0)
+            self.tableView.reloadData()
+        }.compactMap(on: bgq) {_ in
             try getSession().getTransactions(subaccount: self.pointerWallet, page: 0)
         }.compactMap(on: bgq) { data -> Transactions in
             let txList = (data["list"] as! [[String: Any]]).map { tx -> Transaction in
