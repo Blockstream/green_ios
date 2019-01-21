@@ -27,6 +27,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         self.title = NSLocalizedString("id_send", comment: "")
         walletNameLabel.text = transaction.isSweep ?  NSLocalizedString("id_sweep_from_paper_wallet", comment: "") : wallet?.localizedName()
         slidingButton.delegate = self
