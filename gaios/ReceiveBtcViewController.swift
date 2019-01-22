@@ -1,8 +1,9 @@
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 import PromiseKit
 
-class ReceiveBtcViewController: KeyboardViewController {
+class ReceiveBtcViewController: KeyboardViewController, NVActivityIndicatorViewable {
 
     @IBOutlet weak var walletAddressLabel: UILabel!
     @IBOutlet weak var walletQRCode: UIImageView!
@@ -69,7 +70,18 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @objc func copyToClipboard(_ sender: Any) {
-        UIPasteboard.general.string = wallet!.getAddress()
+        guard let wallet = self.wallet else { return }
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().compactMap(on: bgq) {
+            return wallet.getAddress()
+        }.done { address in
+            let uri = self.getSatoshi() == 0 ? address : bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+            UIPasteboard.general.string = uri
+            self.startAnimating(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""))
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                self.stopAnimating()
+            }
+        }.catch{ _ in }
     }
 
     @IBAction func switchButtonClicked(_ sender: Any) {
