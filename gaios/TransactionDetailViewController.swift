@@ -100,16 +100,28 @@ class TransactionDetailViewController: UIViewController {
     }
 
     @IBAction func viewInExplorerClicked(_ sender: Any) {
-        do {
-            let currentNetwork: String = getNetwork().lowercased()
-            let config = try getGdkNetwork(currentNetwork)
-            let baseUrl = config!["tx_explorer_url"] as! String
-            if let url = URL(string: baseUrl + transaction.hash) {
-                UIApplication.shared.open(url, options: [:])
-            }
-        } catch {
-            print("error to retrieve the url")
+        let currentNetwork: String = getNetwork().lowercased()
+        let configNetwork = try? getGdkNetwork(currentNetwork)
+        guard let config = configNetwork as? [String: Any] else { return }
+        guard let baseUrl = config["tx_explorer_url"] as? String else { return }
+        guard let url: URL = URL(string: baseUrl + self.transaction.hash) else { return }
+        let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!;
+        if UserDefaults.standard.bool(forKey: "view_in_explorer") {
+            UIApplication.shared.open(url, options: [:])
+            return
         }
+        let message = String(format: NSLocalizedString("id_are_you_sure_you_want_to_view", comment: ""), host)
+        let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+        })
+        alert.addAction(UIAlertAction(title: "Only this time", style: .default) { (action: UIAlertAction) in
+            UIApplication.shared.open(url, options: [:])
+        })
+        alert.addAction(UIAlertAction(title: "Always", style: .default) { (action: UIAlertAction) in
+            UserDefaults.standard.set(true, forKey: "view_in_explorer")
+            UIApplication.shared.open(url, options: [:])
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func feeText(fee: UInt64, size: UInt64) -> String {
