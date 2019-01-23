@@ -54,7 +54,7 @@ class TransactionDetailViewController: UIViewController {
     func updateUI() {
         hashLabel.text = transaction.hash
         amountLabel.text = transaction.amount()
-        feeLabel.text = feeText(fee: transaction.fee, size: transaction.size)
+        feeLabel.text = String(format: "%d satoshi, %.2f sat/vbyte", transaction.fee, Double(transaction.feeRate) / 1000)
         memoLabel.text = transaction.memo
         dateLabel.text = transaction.date()
         if transaction.blockHeight == 0 {
@@ -122,10 +122,5 @@ class TransactionDetailViewController: UIViewController {
             UIApplication.shared.open(url, options: [:])
         })
         self.present(alert, animated: true, completion: nil)
-    }
-
-    func feeText(fee: UInt64, size: UInt64) -> String {
-        let perbyte = Double(fee/size)
-        return String(format: "%d satoshi, %.2f sat/vbyte", fee, perbyte)
     }
 }
