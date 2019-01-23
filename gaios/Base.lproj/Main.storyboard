@@ -2156,9 +2156,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Congrats! you are now a proud owner of bitcoin wallet" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fiG-BW-Ekc">
-                                <rect key="frame" x="30" y="104" width="260" height="337"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="47"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Congratulations!" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="22" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fiG-BW-Ekc">
+                                <rect key="frame" x="22" y="104" width="276" height="43"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="36"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -2175,14 +2175,24 @@
                                     <segue destination="hHc-Dv-gzZ" kind="show" id="WTS-vP-0Hc"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="you are now a proud owner of bitcoin wallet" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BRl-bz-Xsd">
+                                <rect key="frame" x="23" y="155" width="275" height="129"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="36"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
+                            <constraint firstItem="BRl-bz-Xsd" firstAttribute="leading" secondItem="Ub4-TB-6g6" secondAttribute="leading" constant="23" id="DR2-bm-45n"/>
+                            <constraint firstItem="IqO-ed-IBI" firstAttribute="top" secondItem="BRl-bz-Xsd" secondAttribute="bottom" priority="100" constant="8" id="DhJ-QX-Hzf"/>
                             <constraint firstItem="IqO-ed-IBI" firstAttribute="leading" secondItem="Ub4-TB-6g6" secondAttribute="leading" constant="16" id="Gga-gX-XmF"/>
-                            <constraint firstItem="Ub4-TB-6g6" firstAttribute="trailing" secondItem="fiG-BW-Ekc" secondAttribute="trailing" constant="30" id="LK5-Fs-8fg"/>
-                            <constraint firstItem="fiG-BW-Ekc" firstAttribute="leading" secondItem="Ub4-TB-6g6" secondAttribute="leading" constant="30" id="ejF-cO-9nA"/>
+                            <constraint firstItem="Ub4-TB-6g6" firstAttribute="trailing" secondItem="fiG-BW-Ekc" secondAttribute="trailing" constant="22" id="LK5-Fs-8fg"/>
+                            <constraint firstItem="fiG-BW-Ekc" firstAttribute="leading" secondItem="Ub4-TB-6g6" secondAttribute="leading" constant="22" id="ejF-cO-9nA"/>
+                            <constraint firstItem="BRl-bz-Xsd" firstAttribute="top" secondItem="fiG-BW-Ekc" secondAttribute="bottom" constant="8" id="mZ5-qz-r1Y"/>
                             <constraint firstItem="fiG-BW-Ekc" firstAttribute="top" secondItem="Ub4-TB-6g6" secondAttribute="top" constant="40" id="rNM-Ej-mqy"/>
                             <constraint firstItem="Ub4-TB-6g6" firstAttribute="bottom" secondItem="IqO-ed-IBI" secondAttribute="bottom" constant="20" id="vby-Mr-sXt"/>
+                            <constraint firstItem="Ub4-TB-6g6" firstAttribute="trailing" secondItem="BRl-bz-Xsd" secondAttribute="trailing" constant="22" id="ySi-vZ-xPH"/>
                             <constraint firstItem="Ub4-TB-6g6" firstAttribute="trailing" secondItem="IqO-ed-IBI" secondAttribute="trailing" constant="16" id="yTh-Zh-895"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Ub4-TB-6g6"/>
@@ -2192,6 +2202,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="button" destination="IqO-ed-IBI" id="TYE-bX-1db"/>
+                        <outlet property="subtext" destination="BRl-bz-Xsd" id="qpM-mh-Lfb"/>
                         <outlet property="text" destination="fiG-BW-Ekc" id="ild-kl-Dan"/>
                     </connections>
                 </viewController>
@@ -2631,7 +2642,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="cell" id="hgJ-At-87B">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="hgJ-At-87B">
                                 <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
