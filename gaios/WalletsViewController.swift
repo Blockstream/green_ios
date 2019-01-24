@@ -12,6 +12,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = NSLocalizedString("id_total_assets", comment: "")
         guard let collectionView = self.collectionView else { return }
         let cellNib = UINib(nibName: "WalletCardView", bundle: nil)
         let headerNib = UINib(nibName: "HeaderWalletsCollection", bundle: nil)

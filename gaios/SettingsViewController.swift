@@ -37,10 +37,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        reloadData()
+    }
+
+    func reloadData() {
         let bgq = DispatchQueue.global(qos : .background)
-        Guarantee().compactMap {
-            self.reloadData()
-        }.compactMap(on: bgq) {
+        Guarantee().compactMap(on: bgq) {
             return try getGAService().getSession().getWatchOnlyUsername()
         }.compactMap { username in
             self.username = username
@@ -50,17 +52,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.compactMap { (twoFactorConfig: TwoFactorConfig) in
             self.twoFactorConfig = twoFactorConfig
         }.done {
-            self.reloadData()
+            self.sections = self.getSections()
+            self.items = self.getSettings()
+            self.data = Dictionary(grouping: self.items) { (item) in
+                return item.section
+            }
+            self.tableView.reloadData()
         }.catch { _ in }
-    }
-
-    func reloadData() {
-        sections = getSections()
-        items = getSettings()
-        data = Dictionary(grouping: items) { (item) in
-            return item.section
-        }
-        tableView.reloadData()
     }
 
     func getSections() -> [SettingsSections] {
@@ -236,7 +234,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         case .network:
             return NSLocalizedString("id_network", comment: "")
         case .twoFactor:
-            return NSLocalizedString("id_two_factor", comment: "")
+            return NSLocalizedString("id_twofactor", comment: "")
         case .security:
             return NSLocalizedString("id_security", comment: "")
         case .advanced:
@@ -299,7 +297,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.performSegue(withIdentifier: "screenLock", sender: nil)
             break
         case .WatchOnly:
-            let alert = UIAlertController(title: NSLocalizedString("id_set_watchonly", comment: ""), message: "", preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("id_set_watchonly", comment: ""), message: NSLocalizedString("id_allows_you_to_quickly_check", comment: ""), preferredStyle: .alert)
             alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_username", comment: "") }
             alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_password", comment: "") }
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
@@ -437,6 +435,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func setWatchOnly(username: String, password: String) {
+        if username.isEmpty {
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_enter_a_valid_username", comment: ""))
+            return
+        } else if password.isEmpty {
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_the_password_cant_be_empty", comment: ""))
+            return
+        }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()

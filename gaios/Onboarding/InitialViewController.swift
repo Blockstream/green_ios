@@ -51,9 +51,10 @@ class InitialViewController: UIViewController {
 
     private func onAction(identifier: String) {
         if isPinEnabled(network: getNetwork()) {
-            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("PIN already exists. PIN settings will be disabled.", comment: ""), preferredStyle: .alert)
+            let message = String(format: NSLocalizedString("id_there_is_already_a_pin_set_for", comment: ""), getNetwork())
+            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
                 self.performSegue(withIdentifier: identifier, sender: self)
             })
             DispatchQueue.main.async {

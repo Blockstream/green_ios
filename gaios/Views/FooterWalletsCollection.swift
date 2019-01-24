@@ -22,5 +22,6 @@ class FooterWalletsCollection: UICollectionViewCell {
         let bgView = UIView.init(frame: self.contentView.bounds)
         bgView.layer.insertSublayer(border, at: 0)
         self.backgroundView = bgView
+        message.text = NSLocalizedString("id_add_new_account", comment: "")
     }
 }

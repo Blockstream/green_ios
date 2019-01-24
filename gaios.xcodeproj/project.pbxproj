@@ -78,6 +78,8 @@
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
 		81205D6921C3B7EB005180CF /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81205D6821C3B7EB005180CF /* Events.swift */; };
 		81310C452189D10F00563B91 /* GDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* GDKHelper.swift */; };
+		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
+		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
 		81E9B7FE21C90F74004D87B6 /* WalletsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */; };
@@ -190,6 +192,8 @@
 		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		81205D6821C3B7EB005180CF /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* GDKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GDKHelper.swift; sourceTree = "<group>"; };
+		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
+		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8192BB8521EF52B100B04185 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -274,6 +278,8 @@
 				811B963921F5FC9500DE02CB /* HeaderWalletsCollection.xib */,
 				811B963D21F72B5200DE02CB /* FooterWalletsCollection.swift */,
 				811B963B21F72A5B00DE02CB /* FooterWalletsCollection.xib */,
+				81640CDF21FB2B4200E7F79C /* FeeButton.xib */,
+				81640CDD21FB2B1100E7F79C /* FeeButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -564,6 +570,7 @@
 				811B963C21F72A5B00DE02CB /* FooterWalletsCollection.xib in Resources */,
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
+				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 			);
@@ -721,6 +728,7 @@
 				81E9B7FE21C90F74004D87B6 /* WalletsViewController.swift in Sources */,
 				092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
+				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				81E9B80021C92DB1004D87B6 /* WalletCardView.swift in Sources */,
 				81310C452189D10F00563B91 /* GDKHelper.swift in Sources */,

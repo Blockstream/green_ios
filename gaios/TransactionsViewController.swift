@@ -90,6 +90,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         }
 
         let item = items.list[indexPath.row]
+        cell.replaceable.isHidden = true
 
         cell.amount.text = item.amount()
         if item.type == "redeposit" {
@@ -102,14 +103,13 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
             cell.address.text = item.address() ?? String()
             cell.amount.textColor = UIColor.white
         }
-
         if item.blockHeight == 0 {
             cell.status.text = NSLocalizedString("id_unconfirmed", comment: "")
             cell.status.textColor = UIColor.red
+            cell.replaceable.isHidden = false
         } else if (AccountStore.shared.getBlockheight() - item.blockHeight < 6) {
             let confirmCount = AccountStore.shared.getBlockheight() - item.blockHeight + 1
-            cell.status.text = String(format: "(%d/6)", confirmCount)
-            cell.status.textColor = UIColor.red
+            cell.status.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
         } else {
             cell.status.text = NSLocalizedString("id_completed", comment: "")
             cell.status.textColor = UIColor.customTitaniumLight()
@@ -183,6 +183,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
                 view.actionsView.isHidden = true
             } else if AccountStore.shared.isWatchOnly {
                 view.sendImage.image = UIImage(named: "qr_sweep")
+                view.sendLabel.text = NSLocalizedString("id_sweep", comment: "")
             }
         }.catch{ _ in }
     }

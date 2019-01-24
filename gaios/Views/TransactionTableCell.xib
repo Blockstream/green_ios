@@ -44,16 +44,32 @@
                             <color key="textColor" name="customTitaniumMedium"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REPLACEABLE" textAlignment="natural" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fmS-hJ-Lu6">
+                            <rect key="frame" x="35" y="37.5" width="59" height="14"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="14" id="KLU-yA-DI4"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="8"/>
+                            <color key="textColor" name="customTitaniumMedium"/>
+                            <nil key="highlightedColor"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="2"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </label>
                     </subviews>
                     <constraints>
                         <constraint firstItem="Ibg-h6-Z32" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Kgy-Kq-zWp" secondAttribute="top" constant="10" id="3yq-Ft-xWB"/>
+                        <constraint firstItem="gle-3F-dUj" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="fmS-hJ-Lu6" secondAttribute="trailing" constant="16" id="8We-nS-2Qo"/>
                         <constraint firstItem="IeI-c0-CbE" firstAttribute="top" secondItem="Ibg-h6-Z32" secondAttribute="bottom" constant="10" id="9Ge-DQ-o83"/>
                         <constraint firstAttribute="trailing" secondItem="gle-3F-dUj" secondAttribute="trailing" id="QJk-Ri-t81"/>
                         <constraint firstItem="gle-3F-dUj" firstAttribute="centerY" secondItem="Ibg-h6-Z32" secondAttribute="centerY" id="SpP-K5-Uhf"/>
                         <constraint firstItem="a3b-3L-Usg" firstAttribute="centerY" secondItem="IeI-c0-CbE" secondAttribute="centerY" id="cHz-rT-FgM"/>
                         <constraint firstItem="a3b-3L-Usg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IeI-c0-CbE" secondAttribute="trailing" constant="16" id="hXp-5y-TCP"/>
                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="IeI-c0-CbE" secondAttribute="bottom" constant="10" id="jgC-qg-k5B"/>
-                        <constraint firstItem="gle-3F-dUj" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ibg-h6-Z32" secondAttribute="trailing" constant="16" id="jjB-Ar-R7v"/>
+                        <constraint firstItem="fmS-hJ-Lu6" firstAttribute="centerY" secondItem="Ibg-h6-Z32" secondAttribute="centerY" id="q5L-7D-rp8"/>
+                        <constraint firstItem="fmS-hJ-Lu6" firstAttribute="leading" secondItem="Ibg-h6-Z32" secondAttribute="trailing" constant="10" id="qsg-pp-71f"/>
                         <constraint firstItem="Ibg-h6-Z32" firstAttribute="leading" secondItem="Kgy-Kq-zWp" secondAttribute="leading" id="z99-Uq-xFz"/>
                         <constraint firstItem="Ibg-h6-Z32" firstAttribute="bottom" secondItem="Kgy-Kq-zWp" secondAttribute="centerY" id="zbQ-IF-JmL"/>
                         <constraint firstAttribute="trailing" secondItem="a3b-3L-Usg" secondAttribute="trailing" id="zkz-7J-Hoo"/>
@@ -74,6 +90,7 @@
                 <outlet property="address" destination="IeI-c0-CbE" id="wEN-be-Hgb"/>
                 <outlet property="amount" destination="gle-3F-dUj" id="Uda-zs-tLJ"/>
                 <outlet property="date" destination="Ibg-h6-Z32" id="dch-Kx-VEC"/>
+                <outlet property="replaceable" destination="fmS-hJ-Lu6" id="hAS-Rc-oBY"/>
                 <outlet property="status" destination="a3b-3L-Usg" id="2O8-A0-BSa"/>
             </connections>
             <point key="canvasLocation" x="9.5999999999999996" y="96.251874062968525"/>

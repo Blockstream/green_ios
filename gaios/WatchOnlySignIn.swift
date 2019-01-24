@@ -13,6 +13,15 @@ class WatchOnlySignIn: KeyboardViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var rememberTitle: UILabel!
     @IBOutlet weak var loginButton: UIButton!
 
+    var username: String? {
+        get {
+            return UserDefaults.standard.string(forKey: getNetwork() + "_username")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_username")
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,6 +36,24 @@ class WatchOnlySignIn: KeyboardViewController, NVActivityIndicatorViewable {
         passwordTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: passwordTextField.frame.height))
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
+
+        if let _ = username {
+            usernameTextField.text = username!
+        }
+    }
+
+    @IBAction func rememberSwitch(_ sender: UISwitch) {
+        if sender.isOn {
+            let alert = UIAlertController(title: NSLocalizedString("id_warning_the_username_will_be", comment: ""), message: NSLocalizedString("id_your_watchonly_username_will_be", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+                sender.isOn = false
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
+                sender.isOn = true
+            })
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 
     @IBAction func loginButtonClicked(_ sender: Any) {
@@ -43,6 +70,7 @@ class WatchOnlySignIn: KeyboardViewController, NVActivityIndicatorViewable {
         }.compactMap {
             let username = self.usernameTextField.text
             let password = self.passwordTextField.text
+            self.username = username
             return (username!, password!)
         }.compactMap(on: bgq) { (username, password) in
             try getSession().loginWatchOnly(username: username!, password: password!)

@@ -112,6 +112,23 @@ extension UIView {
         self.layer.insertSublayer(gradient, at: 0)
     }
 
+    func applyCardGradient() {
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.cardDark().cgColor, UIColor.cardMedium().cgColor, UIColor.cardLight().cgColor]
+        gradient.locations = [0.0, 0.5, 1.0]
+        gradient.startPoint = CGPoint(x: 0.0, y: 1.0)
+        gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
+        gradient.frame = self.bounds
+        gradient.borderWidth = 2
+        gradient.cornerRadius = 8
+        gradient.borderColor = UIColor.customTitaniumDark().cgColor
+        gradient.masksToBounds = true
+        guard let sublayers = layer.sublayers else { return layer.insertSublayer(gradient, at: 0) }
+        let sublayerWithGradient = sublayers.filter({ $0 is CAGradientLayer})
+        if sublayerWithGradient.isEmpty { return layer.insertSublayer(gradient, at: 0) }
+        layer.replaceSublayer(sublayerWithGradient.first!, with: gradient)
+    }
+
     // from https://www.hackingwithswift.com
     func findViewController() -> UIViewController? {
         if let nextResponder = self.next as? UIViewController {

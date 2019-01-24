@@ -4,11 +4,7 @@ import PromiseKit
 
 class SendBtcDetailsViewController: UIViewController {
 
-    @IBOutlet weak var lowFeeButton: DesignableButton!
-    @IBOutlet weak var mediumFeeButton: DesignableButton!
-    @IBOutlet weak var highFeeButton: DesignableButton!
     @IBOutlet weak var addressLabel: UILabel!
-    @IBOutlet weak var customfeeButton: DesignableButton!
     @IBOutlet weak var maxAmountLabel: UILabel!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var reviewButton: UIButton!
@@ -18,9 +14,14 @@ class SendBtcDetailsViewController: UIViewController {
     @IBOutlet weak var sendAllFundsButton: UIButton!
     @IBOutlet weak var minerFeeTitle: UILabel!
 
-    lazy var feeRateButtons = [lowFeeButton, mediumFeeButton, highFeeButton, customfeeButton]
+    @IBOutlet weak var fastFeeButton: FeeButton!
+    @IBOutlet weak var mediumFeeButton: FeeButton!
+    @IBOutlet weak var slowFeeButton: FeeButton!
+    @IBOutlet weak var customFeeButton: FeeButton!
 
-    let blockTime = [NSLocalizedString("id_4_hours", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_unknown_custom", comment: "")]
+    lazy var feeRateButtons = [fastFeeButton, mediumFeeButton, slowFeeButton, customFeeButton]
+
+    let blockTime = [NSLocalizedString("id_1030_minutes", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_4_hours", comment: ""), ""]
 
     var feeLabel: UILabel = UILabel()
     var uiErrorLabel: UIErrorLabel!
@@ -29,17 +30,13 @@ class SendBtcDetailsViewController: UIViewController {
     var transaction: Transaction!
     var amountData: [String: Any]? = nil
 
-    var feeEstimates: [UInt64] = {
-        var feeEstimates = [UInt64](repeating: 0, count: 4)
+    var feeEstimates: [UInt64?] = {
+        var feeEstimates = [UInt64?](repeating: 0, count: 4)
         let estimates = getFeeEstimates()
-        for (i, v) in [24, 12, 3, 0].enumerated() {
+        for (i, v) in [3, 12, 24, 0].enumerated() {
             feeEstimates[i] = estimates[v]
         }
-
-        guard let settings = getGAService().getSettings() else { return feeEstimates }
-        if settings.customFeeRate != nil {
-            feeEstimates[3] = UInt64(settings.customFeeRate!)
-        }
+        feeEstimates[3] = nil
         return feeEstimates
     }()
 
@@ -85,30 +82,27 @@ class SendBtcDetailsViewController: UIViewController {
             feeEstimates[feeRateButtons.count - 1] = oldFeeRate + minFeeRate
             var found = false
             for i in 0..<feeRateButtons.count - 1 {
-                if oldFeeRate < feeEstimates[i] {
+                guard let feeEstimate = feeEstimates[i] else { break }
+                if oldFeeRate < feeEstimate {
                     found = true
                     selectedFee = i
                     break
                 }
-                feeRateButtons[i]?.isUserInteractionEnabled = false
+                feeRateButtons[i]?.isEnabled = false
             }
             if !found {
                 selectedFee = feeRateButtons.count - 1
             }
         }
 
-        updatePriorityButtons()
-        updateMaxAmountLabel()
-        setCurrencySwitch()
-
-        lowFeeButton.setTitle(NSLocalizedString("id_low", comment: ""), for: .normal)
-        mediumFeeButton.setTitle(NSLocalizedString("id_medium", comment: ""), for: .normal)
-        highFeeButton.setTitle(NSLocalizedString("id_high", comment: ""), for: .normal)
-        customfeeButton.setTitle(NSLocalizedString("id_custom", comment: ""), for: .normal)
+        fastFeeButton.setTitle(NSLocalizedString("id_fast", comment: ""))
+        mediumFeeButton.setTitle(NSLocalizedString("id_medium", comment: ""))
+        slowFeeButton.setTitle(NSLocalizedString("id_slow", comment: ""))
+        customFeeButton.setTitle(NSLocalizedString("id_custom", comment: ""))
         sendAllFundsButton.setTitle(NSLocalizedString(("id_send_all_funds"), comment: ""), for: .normal)
         reviewButton.setTitle(NSLocalizedString("id_review", comment: ""), for: .normal)
-        recipientTitle.text = NSLocalizedString("id_recipient", comment: "")
-        minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "")
+        recipientTitle.text = NSLocalizedString("id_recipient", comment: "").uppercased()
+        minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "").uppercased()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -122,7 +116,9 @@ class SendBtcDetailsViewController: UIViewController {
         addressLabel.text = address
 
         updateReviewButton(false)
-
+        updateFeeButtons()
+        updateMaxAmountLabel()
+        setCurrencySwitch()
         updateTransaction()
     }
 
@@ -167,6 +163,7 @@ class SendBtcDetailsViewController: UIViewController {
             currencySwitch.backgroundColor = UIColor.clear
         }
         currencySwitch.setTitleColor(UIColor.white, for: UIControlState.normal)
+        updateFeeButtons()
     }
 
     func updateMaxAmountLabel() {
@@ -210,8 +207,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateTransaction() {
+        guard let feeEstimate = feeEstimates[selectedFee] else { return }
         transaction.sendAll = sendAllFundsButton.isSelected
-        transaction.feeRate = feeEstimates[selectedFee]
+        transaction.feeRate = feeEstimate
 
         if !transaction.addresseesReadOnly {
             let satoshi = amountData?["satoshi"] as? UInt64 ?? 0
@@ -228,7 +226,7 @@ class SendBtcDetailsViewController: UIViewController {
             self.updateAmountData(tx.addressees[0].satoshi)
             self.uiErrorLabel.isHidden = true
             self.updateReviewButton(true)
-            self.updateSummaryLabel(fee: tx.fee)
+            self.updateFeeButtons()
         }.catch { error in
             if let txError = (error as? TransactionError) {
                 switch txError {
@@ -240,7 +238,7 @@ class SendBtcDetailsViewController: UIViewController {
             }
             self.uiErrorLabel.isHidden = false
             self.updateReviewButton(false)
-            self.updateSummaryLabel(fee: 0)
+            self.updateFeeButtons()
         }
     }
 
@@ -252,67 +250,43 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.resignFirstResponder()
     }
 
-    func updateSummaryLabel(fee: UInt64) {
-        feeLabel.removeFromSuperview()
-
-        if fee == 0 {
-            return
+    func updateFeeButtons() {
+        for i in 0..<feeEstimates.count {
+            guard let feeButton = feeRateButtons[i] else { break }
+            if feeButton.gestureRecognizers == nil && feeButton.isEnabled {
+                let tap = UITapGestureRecognizer(target: self, action: #selector(clickFeeButton))
+                feeButton.addGestureRecognizer(tap)
+                feeButton.isUserInteractionEnabled = true
+            }
+            feeButton.isSelect = false
+            feeButton.timeLabel.text = String(format: "%@", blockTime[i])
+            guard let fee = feeEstimates[i] else {
+                feeButton.feerateLabel.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")
+                break
+            }
+            let feeSatVByte = Double(fee) / 1000.0
+            let feeSatoshi = UInt64(feeSatVByte * Double(transaction.size))
+            let amount = isFiat ? String.toFiat(satoshi: feeSatoshi) : String.toBtc(satoshi: feeSatoshi)
+            feeButton.feerateLabel.text = String(format: "%@ (%.1f satoshi / vbyte)", amount, feeSatVByte)
         }
-
-        feeLabel = UILabel(frame: CGRect(x: lowFeeButton.center.x, y: lowFeeButton.center.y + lowFeeButton.frame.size.height / 2 + 10, width: 150, height: 21))
-        feeLabel.textColor = UIColor.customTitaniumLight()
-
-        let fiatValue = String.toFiat(satoshi: fee)
-        let feeInBTC = String.toBtc(satoshi: fee)
-        let satoshiPerVByte = Double(transaction.feeRate) / 1000.0
-
-        feeLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(feeLabel)
-        feeLabel.textAlignment = .left
-        NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: lowFeeButton, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
-
-        feeLabel.text = String(format: "%@: %.1f satoshi / vbyte \n", NSLocalizedString("id_fee_rate", comment: ""), satoshiPerVByte) +
-            String(format: "%@: %@\n", NSLocalizedString("id_confirmation", comment: ""), blockTime[selectedFee]) +
-            String(format: "%@: %@ / ~%@", NSLocalizedString("id_fee", comment: ""), feeInBTC, fiatValue)
-        feeLabel.numberOfLines = 3
-        feeLabel.font = feeLabel.font.withSize(13)
-
-        NSLayoutConstraint(item: feeLabel, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: lowFeeButton, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 10).isActive = true
-        feeLabel.layoutIfNeeded()
+        feeRateButtons[selectedFee]?.isSelect = true
     }
 
-    func highlightFeeRateButton(_ button: DesignableButton) {
-        button.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        button.layer.borderWidth = 2
-    }
-
-    func resetFeeRateButton(_ button: DesignableButton) {
-        button.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        button.layer.borderWidth = 1
-    }
-
-    func resetFeeRateButtons() {
-        feeRateButtons.forEach { button in
-            resetFeeRateButton(button!)
-        }
-    }
-
-    func updatePriorityButtons() {
-        resetFeeRateButtons()
-        highlightFeeRateButton(feeRateButtons[selectedFee]!)
-    }
-
-    func showCustomFeePopup() {
+    func showFeeCustomPopup() {
         let alert = UIAlertController(title: NSLocalizedString("id_set_custom_fee_rate", comment: ""), message: "satoshi / byte", preferredStyle: .alert)
         alert.addTextField { (textField) in
-            let customFee: UInt64
-            if let oldFeeRate = self.getOldFeeRate() {
-                customFee = (oldFeeRate + self.minFeeRate) / 1000
+            let feeRate: UInt64
+            if let storedFeeRate = self.feeEstimates[self.feeRateButtons.count - 1] {
+                feeRate = storedFeeRate
+            } else if let oldFeeRate = self.getOldFeeRate() {
+                feeRate = (oldFeeRate + self.minFeeRate)
+            } else if let settings = getGAService().getSettings() {
+                feeRate = UInt64(settings.customFeeRate ?? self.minFeeRate)
             } else {
-                customFee = self.feeEstimates[self.feeRateButtons.count - 1] / 1000
+                feeRate = self.minFeeRate
             }
             textField.keyboardType = .numberPad
-            textField.attributedPlaceholder = NSAttributedString(string: String(customFee),
+            textField.attributedPlaceholder = NSAttributedString(string: String(Double(feeRate) / 1000),
                                                                           attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { [weak alert] (_) in
@@ -323,31 +297,31 @@ class SendBtcDetailsViewController: UIViewController {
             guard let number = Double(amount) else { return }
             self.selectedFee = self.feeRateButtons.count - 1
             self.feeEstimates[self.feeRateButtons.count - 1] = UInt64(1000 * number)
+            self.updateFeeButtons()
             self.updateTransaction()
-            self.updatePriorityButtons()
         })
         self.present(alert, animated: true, completion: nil)
     }
 
-    private func onFeeChanged(_ selectedFee: Int) {
-        self.selectedFee = selectedFee
-        updatePriorityButtons()
+    @objc func clickFeeButton(_ sender: UITapGestureRecognizer){
+        guard let view = sender.view else { return }
+        switch view {
+        case fastFeeButton:
+            self.selectedFee = 0
+            break
+        case mediumFeeButton:
+            self.selectedFee = 1
+            break
+        case slowFeeButton:
+            self.selectedFee = 2
+            break
+        case customFeeButton:
+            showFeeCustomPopup()
+            break
+        default:
+            return
+        }
+        updateFeeButtons()
         updateTransaction()
-    }
-
-    @IBAction func lowFeeClicked(_ sender: Any) {
-        onFeeChanged(0)
-    }
-
-    @IBAction func mediumFeeClicked(_ sender: Any) {
-        onFeeChanged(1)
-    }
-
-    @IBAction func highFeeClicked(_ sender: Any) {
-        onFeeChanged(2)
-    }
-
-    @IBAction func customFeeClicked(_ sender: Any) {
-        showCustomFeePopup()
     }
 }

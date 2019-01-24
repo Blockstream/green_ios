@@ -39,7 +39,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
             bioSwitch.isEnabled = false
             pinSwitch.isOn = false
             pinSwitch.isEnabled = false
-            helpLabel.text = "Restore from mnemonic but PIN is enabled. PIN settings have been disabled."
+            helpLabel.text = String(format: NSLocalizedString("id_there_is_already_a_pin_set_for", comment: ""), getNetwork())
         } else if screenlock == .None {
             bioSwitch.isOn = false
             pinSwitch.isOn = false
@@ -58,13 +58,13 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
     }
 
     func onAuthRemoval(_ sender: UISwitch, _ completionHandler: @escaping () -> Void) {
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("id_deleting_your_pin_will_remove", comment: ""), preferredStyle: .alert)
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString(sender == pinSwitch ? "id_deleting_your_pin_will_remove" : "id_your_pin_or_your_mnemonic_will", comment: ""), preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
             DispatchQueue.main.async {
                 sender.setOn(true, animated: true)
             }
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
             completionHandler()
         })
         DispatchQueue.main.async {
@@ -74,7 +74,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
 
     func verifyAuth(message: String, _ sender: UISwitch) {
         let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
             sender.setOn(!sender.isOn, animated: true)
@@ -83,7 +83,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
 
     @IBAction func bioAuthSwitched(_ sender: UISwitch) {
         if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: getNetwork()) {
-            verifyAuth(message: "Please add PIN authentication before adding or removing biometric authentication", sender)
+            verifyAuth(message: NSLocalizedString("id_please_enable_pin", comment: ""), sender)
         } else if !sender.isOn {
             onAuthRemoval(sender) {
                 removeBioKeychainData()
@@ -112,7 +112,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
             self.performSegue(withIdentifier: "restorePin", sender: nil)
         } else {
             if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: getNetwork()) {
-                verifyAuth(message: "Please remove biometric authentication before removing PIN", sender)
+                verifyAuth(message: NSLocalizedString("id_there_is_already_a_pin_set_for", comment: ""), sender)
             } else {
                 onAuthRemoval(sender) {
                     removePinKeychainData()
