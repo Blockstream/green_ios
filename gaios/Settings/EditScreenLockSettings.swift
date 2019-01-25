@@ -112,7 +112,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
             self.performSegue(withIdentifier: "restorePin", sender: nil)
         } else {
             if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: getNetwork()) {
-                verifyAuth(message: NSLocalizedString("id_there_is_already_a_pin_set_for", comment: ""), sender)
+                verifyAuth(message: NSLocalizedString("id_please_disable_biometric", comment: ""), sender)
             } else {
                 onAuthRemoval(sender) {
                     removePinKeychainData()
