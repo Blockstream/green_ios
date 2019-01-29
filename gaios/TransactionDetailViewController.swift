@@ -10,6 +10,15 @@ class TransactionDetailViewController: KeyboardViewController {
 
     @IBOutlet weak var viewInExplorerButton: UIButton!
 
+    var viewInExplorerPreference: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: getNetwork() + "_view_in_explorer")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_view_in_explorer")
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if transaction.type == "redeposit" {
@@ -42,7 +51,7 @@ class TransactionDetailViewController: KeyboardViewController {
         guard let baseUrl = config["tx_explorer_url"] as? String else { return }
         guard let url: URL = URL(string: baseUrl + self.transaction.hash) else { return }
         let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!;
-        if UserDefaults.standard.bool(forKey: "view_in_explorer") {
+        if viewInExplorerPreference {
             UIApplication.shared.open(url, options: [:])
             return
         }
@@ -54,7 +63,7 @@ class TransactionDetailViewController: KeyboardViewController {
             UIApplication.shared.open(url, options: [:])
         })
         alert.addAction(UIAlertAction(title: "Always", style: .default) { (action: UIAlertAction) in
-            UserDefaults.standard.set(true, forKey: "view_in_explorer")
+            self.viewInExplorerPreference = true
             UIApplication.shared.open(url, options: [:])
         })
         self.present(alert, animated: true, completion: nil)
