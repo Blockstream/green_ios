@@ -45,7 +45,8 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
     }
 
     @IBAction func setLimitClicked(_ sender: Any) {
-        guard let amount = Double(limitTextField.text!) else { return }
+        guard let amountText = limitTextField.text else { return }
+        guard let amount = Double(amountText.replacingOccurrences(of: ",", with: ".")) else { return }
         guard let settings = getGAService().getSettings() else { return }
         let details: [String:Any]
         if isFiat {

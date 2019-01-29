@@ -199,8 +199,11 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
+        guard var amountText = amountTextField.text else { return }
+        amountText = amountText.replacingOccurrences(of: ",", with: ".")
+        amountTextField.text = amountText
         guard let settings = getGAService().getSettings() else { return }
-        let amount = !amountTextField.text!.isEmpty ? amountTextField.text! : amountTextField.placeholder!
+        let amount = !amountText.isEmpty ? amountText : "0"
         let conversionKey = !isFiat ? settings.denomination.rawValue : "fiat"
         amountData = convertAmount(details: [conversionKey : amount])
         updateTransaction()
@@ -285,7 +288,7 @@ class SendBtcDetailsViewController: UIViewController {
             } else {
                 feeRate = self.minFeeRate
             }
-            textField.keyboardType = .numberPad
+            textField.keyboardType = .decimalPad
             textField.attributedPlaceholder = NSAttributedString(string: String(Double(feeRate) / 1000),
                                                                           attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         }
@@ -293,7 +296,8 @@ class SendBtcDetailsViewController: UIViewController {
             alert?.dismiss(animated: true, completion: nil)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { [weak alert] (_) in
-            guard let amount = alert!.textFields![0].text else { return }
+            guard var amount = alert!.textFields![0].text else { return }
+            amount = amount.replacingOccurrences(of: ",", with: ".")
             guard let number = Double(amount) else { return }
             self.selectedFee = self.feeRateButtons.count - 1
             self.feeEstimates[self.feeRateButtons.count - 1] = UInt64(1000 * number)
