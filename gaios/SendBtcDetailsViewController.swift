@@ -74,6 +74,7 @@ class SendBtcDetailsViewController: UIViewController {
         amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
 
         if transaction.addresseesReadOnly {
+            amountTextField.isEnabled = false
             amountTextField.isUserInteractionEnabled = false
             sendAllFundsButton.isUserInteractionEnabled = false
         }
@@ -149,8 +150,7 @@ class SendBtcDetailsViewController: UIViewController {
             let textAmount = sendAllFundsButton.isSelected ? NSLocalizedString("id_all", comment: "") : amountData?[!isFiat ? settings.denomination.rawValue : "fiat"] as? String ?? String()
             amountTextField.text = textAmount
         }
-
-        amountTextField.isEnabled = !sendAllFundsButton.isSelected && amountTextField.isUserInteractionEnabled
+        amountTextField.textColor = amountTextField.isEnabled ? UIColor.white : UIColor.lightGray
     }
 
     func setCurrencySwitch() {

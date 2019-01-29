@@ -41,7 +41,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         fromTitle.text = NSLocalizedString("id_from", comment: "")
         toTitle.text = NSLocalizedString("id_to", comment: "")
         myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
-        //feeTitle.text = NSLocalizedString("id_total_with_fee", comment: "")
+        feeTitle.text = NSLocalizedString("id_total_with_fee", comment: "")
         setupCurrencyButton()
         update()
     }

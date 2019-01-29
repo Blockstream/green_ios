@@ -54,7 +54,7 @@ struct Event: Equatable {
             if !twoFactorConfig.anyEnabled {
                 return NSLocalizedString("id_set_up_twofactor_authentication", comment: "")
             } else if twoFactorConfig.enableMethods.count == 1 {
-                return NSLocalizedString("id_set_up_twofactor_authentication", comment: "")
+                return NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
             }
             return ""
         default:
@@ -85,7 +85,7 @@ struct Event: Equatable {
             if !twoFactorConfig.anyEnabled {
                 return NSLocalizedString("id_your_wallet_is_not_yet_fully", comment: "")
             } else if twoFactorConfig.enableMethods.count == 1 {
-                return NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
+                return NSLocalizedString("id_please_enable_another", comment: "")
             }
             return ""
         default:

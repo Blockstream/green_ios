@@ -90,8 +90,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         }
 
         let item = items.list[indexPath.row]
-        cell.replaceable.isHidden = true
-
+        cell.replaceable.isHidden = !item.canRBF
         cell.amount.text = item.amount()
         if item.type == "redeposit" {
             cell.address.text = NSLocalizedString("id_redeposited", comment: String())
@@ -106,7 +105,6 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         if item.blockHeight == 0 {
             cell.status.text = NSLocalizedString("id_unconfirmed", comment: "")
             cell.status.textColor = UIColor.red
-            cell.replaceable.isHidden = false
         } else if (AccountStore.shared.getBlockheight() - item.blockHeight < 6) {
             let confirmCount = AccountStore.shared.getBlockheight() - item.blockHeight + 1
             cell.status.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
