@@ -23,7 +23,16 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
     var confirmPin: Bool = false
     var labels = [UILabel]()
-    var attemptsCount = 3
+    private let MAX_ATTEMPTS = 3
+
+    var pinAttemptsPreference: Int {
+        get {
+            return UserDefaults.standard.integer(forKey: getNetwork() + "_pin_attempts")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_pin_attempts")
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,28 +96,32 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             self.stopAnimating()
         }.done {
             GreenAddressService.restoreFromMnemonics = false
+            self.pinAttemptsPreference = 0
             self.performSegue(withIdentifier: "main", sender: self)
         }.catch { error in
-            let message: String
+            var message = NSLocalizedString("id_login_failed", comment: "")
             if let authError = error as? AuthenticationTypeHandler.AuthError {
                 if authError == AuthenticationTypeHandler.AuthError.CanceledByUser {
                     return
-                } else {
-                    message = NSLocalizedString("id_login_failed", comment: "")
                 }
-            } else {
-                guard let error = error as? GaError else { return }
-                if error == .GenericError, let _ = withPIN {
-                    self.attemptsCount -= 1
-                    if self.attemptsCount == 0 {
-                        removeKeychainData()
-                        self.stopAnimating()
-                        self.performSegue(withIdentifier: "entrance", sender: nil)
-                        return
-                    }
-                    message = NSLocalizedString("id_login_failed", comment: "")
-                } else {
-                    message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+            } else if let error = error as? GaError {
+                switch error {
+                    case .NotAuthorizedError:
+                        if let _ = withPIN {
+                            self.pinAttemptsPreference += 1
+                            if self.pinAttemptsPreference == self.MAX_ATTEMPTS {
+                                self.stopAnimating()
+                                removeKeychainData()
+                                self.pinAttemptsPreference = 0
+                                self.performSegue(withIdentifier: "entrance", sender: nil)
+                                return
+                            }
+                        }
+                        break
+                    case .GenericError:
+                        break
+                    default:
+                        message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
                 }
             }
             self.updateAttemptsLabel()
@@ -173,8 +186,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func updateAttemptsLabel() {
-        attempts.text = String(format: NSLocalizedString("id_d_attempts_remaining", comment: ""), attemptsCount)
-        attempts.isHidden = attemptsCount == 3
+        attempts.text = String(format: NSLocalizedString("id_d_attempts_remaining", comment: ""), MAX_ATTEMPTS - pinAttemptsPreference)
+        attempts.isHidden = pinAttemptsPreference == 0
     }
 
     func updatePinMismatch() {
