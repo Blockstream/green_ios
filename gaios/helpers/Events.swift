@@ -42,8 +42,7 @@ struct Event: Equatable {
     func title() -> String {
         switch type {
         case .Transaction:
-            guard let transaction = get() as TransactionEvent? else { return "" }
-            return NSLocalizedString("id_new_transaction", comment: "")
+            return ((get() as TransactionEvent?) != nil) ? NSLocalizedString("id_new_transaction", comment: "") : ""
         case .TwoFactorReset, .Settings:
             guard let twoFactorReset = getGAService().getTwoFactorReset() else { return "" }
             if twoFactorReset.isResetActive {

@@ -11,21 +11,21 @@ enum EventType: String {
     case Network = "network"
 }
 
-class GreenAddressService: SessionNotificationDelegate {
+class GreenAddressService {
 
-    private var session: Session = try! Session()
-    private var settings: Settings?
-    private var twoFactorReset: TwoFactorReset?
+    private var session: Session? = nil
+    private var settings: Settings? = nil
+    private var twoFactorReset: TwoFactorReset? = nil
     private var events = Events([])
 
     static var restoreFromMnemonics = false
 
     public init() {
-        Session.delegate = self
+        session = try! Session(completionHandler: newNotification)
     }
 
     func getSession() -> Session {
-        return self.session
+        return self.session!
     }
 
     func getSettings() -> Settings? {
@@ -41,7 +41,9 @@ class GreenAddressService: SessionNotificationDelegate {
     }
 
     func newNotification(notification: [String : Any]?) {
-        guard let dict: [String : Any] = notification else { return }
+        guard let dict = notification else {
+            return
+        }
         guard let notificationEvent: String = dict["event"] as? String else { return }
         guard let event: EventType = EventType.init(rawValue: notificationEvent) else { return }
         let data = dict[event.rawValue] as! [String: Any]
@@ -50,7 +52,6 @@ class GreenAddressService: SessionNotificationDelegate {
                 let blockHeight = data["block_height"] as! UInt32
                 AccountStore.shared.setBlockHeight(height: blockHeight)
                 post(event: .Block, data: data)
-                break
             case .Transaction:
                 let json = try! JSONSerialization.data(withJSONObject: data, options: [])
                 let txEvent = try! JSONDecoder().decode(TransactionEvent.self, from: json)
@@ -64,7 +65,6 @@ class GreenAddressService: SessionNotificationDelegate {
                         Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT_DURATION)
                     }
                 }
-                break
             case .TwoFactorReset:
                 let json = try! JSONSerialization.data(withJSONObject: data, options: [])
                 self.twoFactorReset = try! JSONDecoder().decode(TwoFactorReset.self, from: json)
@@ -75,7 +75,8 @@ class GreenAddressService: SessionNotificationDelegate {
                 self.settings = try! JSONDecoder().decode(Settings.self, from: json)
                 post(event: .Settings, data: data)
             case .Network:
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
+                //NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
+                break
             default:
                 break
         }
