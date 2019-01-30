@@ -61,7 +61,7 @@ class GreenAddressService: SessionNotificationDelegate {
                 if txEvent.type == "incoming" {
                     updateAddresses(txEvent.subAccounts.map{ UInt32($0)})
                     DispatchQueue.main.async {
-                        self.showIncomingNotification()
+                        Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT_DURATION)
                     }
                 }
                 break
@@ -92,27 +92,5 @@ class GreenAddressService: SessionNotificationDelegate {
                 self.post(event: .AddressChanged, data: ["pointer": wallet.pointer, "address": address])
             }
         }.catch { _ in }
-    }
-
-    // TODO: remove from here
-    func showIncomingNotification() {
-        let window = UIApplication.shared.keyWindow!
-        let v = UIView(frame: window.bounds)
-        window.addSubview(v);
-        v.backgroundColor = UIColor.black
-        let label = UILabel()
-        label.frame = CGRect(x: 0, y: 0, width: 120, height: 30)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = NSLocalizedString("id_new_transaction", comment: "")
-        label.textColor = UIColor.white
-        label.textAlignment = .center
-        v.addSubview(label)
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: 220).isActive = true
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 30).isActive = true
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.3) {
-            v.removeFromSuperview()
-        }
     }
 }

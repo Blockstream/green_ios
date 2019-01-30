@@ -23,9 +23,10 @@ class ReceiveBtcViewController: KeyboardViewController, NVActivityIndicatorViewa
         amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(copyToClipboard))
+        walletQRCode.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
+        walletAddressLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
         walletQRCode.isUserInteractionEnabled = true
-        walletQRCode.addGestureRecognizer(tap)
+        walletAddressLabel.isUserInteractionEnabled = true
         amountLabel.text = NSLocalizedString("id_amount", comment: "")
         shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
     }
@@ -77,10 +78,7 @@ class ReceiveBtcViewController: KeyboardViewController, NVActivityIndicatorViewa
         }.done { address in
             let uri = self.getSatoshi() == 0 ? address : bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
             UIPasteboard.general.string = uri
-            self.startAnimating(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""))
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                self.stopAnimating()
-            }
+            Toast.show(NSLocalizedString("id_address_copied_to_clipboard", comment: ""), timeout: Toast.SHORT_DURATION)
         }.catch{ _ in }
     }
 

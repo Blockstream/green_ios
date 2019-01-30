@@ -32,11 +32,14 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
         warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
         secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
         copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
+        secretLabel.isUserInteractionEnabled = true
+        copyImage.isUserInteractionEnabled = true
         errorLabel = UIErrorLabel(self.view)
     }
 
     @objc func copyToClipboard(_ sender: UIButton) {
         UIPasteboard.general.string = secretLabel.text
+        Toast.show(NSLocalizedString("id_copy_to_clipboard", comment: ""), timeout: Toast.SHORT_DURATION)
     }
 
     @IBAction func nextButtonClicked(_ sender: Any) {
