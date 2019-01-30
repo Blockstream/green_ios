@@ -6,7 +6,6 @@ import PromiseKit
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable {
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var fotterView: UIView!
 
     var items = [SettingsItem]()
     var sections = [SettingsSections]()
@@ -32,7 +31,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.navigationItem.title = NSLocalizedString("id_settings", comment: "")
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.tableFooterView = fotterView
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -84,6 +82,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_touch_to_set_up" : "id_enabled_1s" , comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
+        let logout = SettingsItem(
+            title: String(format: NSLocalizedString("id_s_network", comment: ""), getNetwork()).localizedCapitalized,
+            subtitle: NSLocalizedString("id_log_out", comment: ""),
+            section: .network,
+            type: .Logout)
 
         // Account settings
         let bitcoinDenomination = SettingsItem(
@@ -194,7 +197,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         var menu = [SettingsItem]()
         if !isWatchOnly && !isResetActive {
-            menu.append(contentsOf: [setupPin, watchOnly, bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate, setupTwoFactor])
+            menu.append(contentsOf: [setupPin, watchOnly])
+        }
+        menu.append(logout)
+        if !isWatchOnly && !isResetActive {
+            menu.append(contentsOf: [bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate, setupTwoFactor])
             if twoFactorConfig?.anyEnabled ?? false {
                 menu.append(contentsOf: [thresholdTwoFactor, locktimeRecovery, locktimeRequest, resetTwoFactor])
             }
@@ -242,7 +249,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
 
-    @IBAction func logoutClicked(_ sender: Any) {
+    func logout() {
         AccountStore.shared.isWatchOnly = false
         getAppDelegate().lock()
     }
@@ -270,8 +277,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let itemsInSection = data[section] as! [SettingsItem]
         let item: SettingsItem = itemsInSection[indexPath.row]
         cell.textLabel!.text = item.title
-        cell.detailTextLabel!.text = item.subtitle
-        cell.detailTextLabel!.numberOfLines = 2
+        cell.detailTextLabel?.text = item.subtitle
+        cell.detailTextLabel?.numberOfLines = 2
+        cell.detailTextLabel?.textColor = item.type == .Logout ? UIColor.red : UIColor.lightGray
         cell.selectionStyle = .none
         cell.setNeedsLayout()
         return cell
@@ -295,6 +303,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             break
         case .SetupPin:
             self.performSegue(withIdentifier: "screenLock", sender: nil)
+            break
+        case .Logout:
+            self.logout()
             break
         case .WatchOnly:
             let alert = UIAlertController(title: NSLocalizedString("id_set_watchonly", comment: ""), message: NSLocalizedString("id_allows_you_to_quickly_check", comment: ""), preferredStyle: .alert)
@@ -347,7 +358,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
                 guard let email = value as? String else { throw GaError.GenericError }
                 return try getGAService().getSession().resetTwoFactor(email: email, isDispute: false)
-            }, completing: { self.logoutClicked(self) })
+            }, completing: { self.logout() })
             break
         case .DisputeTwoFactor:
             let hint = "jane@example.com"
@@ -355,7 +366,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
                 guard let email = value as? String else { throw GaError.GenericError }
                 return try getGAService().getSession().resetTwoFactor(email: email, isDispute: true)
-            }, completing: { self.logoutClicked(self) })
+            }, completing: { self.logout() })
             break
         case .CancelTwoFactor:
             setCancelTwoFactor()
@@ -470,7 +481,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.logoutClicked(self)
+            self.logout()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
         }

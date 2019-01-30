@@ -41,39 +41,6 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="r4T-PV-5vR">
                                 <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
-                                <view key="tableFooterView" contentMode="scaleToFill" id="5g8-8E-neB">
-                                    <rect key="frame" x="0.0" y="124.5" width="320" height="90"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YxU-9m-6PU">
-                                            <rect key="frame" x="16" y="22.5" width="288" height="45"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="45" id="Z6G-D5-qJl"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <state key="normal" title="Log Out">
-                                                <color key="titleColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                    <real key="value" value="1"/>
-                                                </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                    <color key="value" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="logoutClicked:" destination="FMS-m7-CQZ" eventType="touchUpInside" id="dta-NC-0N3"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <color key="backgroundColor" name="customTitaniumDark"/>
-                                    <constraints>
-                                        <constraint firstItem="YxU-9m-6PU" firstAttribute="centerY" secondItem="5g8-8E-neB" secondAttribute="centerY" id="FSl-RF-iZP"/>
-                                        <constraint firstAttribute="trailing" secondItem="YxU-9m-6PU" secondAttribute="trailing" constant="16" id="Ojm-qo-WZM"/>
-                                        <constraint firstItem="YxU-9m-6PU" firstAttribute="leading" secondItem="5g8-8E-neB" secondAttribute="leading" constant="16" id="jGk-5i-c1X"/>
-                                    </constraints>
-                                </view>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="settingsCell" textLabel="ZzX-HE-Gog" detailTextLabel="1jH-zf-nT5" rowHeight="51" style="IBUITableViewCellStyleSubtitle" id="LHm-QM-Sbm">
                                         <rect key="frame" x="0.0" y="55.5" width="320" height="51"/>
@@ -117,7 +84,6 @@
                         <barButtonItem key="backBarButtonItem" title=" " id="jwb-Km-VXm"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="fotterView" destination="5g8-8E-neB" id="oEX-jD-6mk"/>
                         <outlet property="tableView" destination="r4T-PV-5vR" id="TLZ-m8-HfM"/>
                         <segue destination="pU1-Se-Foe" kind="show" identifier="currency" id="ohf-w7-4lz"/>
                         <segue destination="s51-Si-EAJ" kind="show" identifier="recovery" id="HPP-44-6o5"/>
@@ -4126,7 +4092,7 @@
         <segue reference="hsU-YB-NCj"/>
         <segue reference="EcC-We-I1f"/>
         <segue reference="1nK-CI-RDW"/>
-        <segue reference="ho6-WN-AfT"/>
+        <segue reference="XOQ-Gh-RFa"/>
         <segue reference="4QF-E2-lEm"/>
         <segue reference="asu-sJ-gO5"/>
     </inferredMetricsTieBreakers>
