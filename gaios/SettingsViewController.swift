@@ -265,6 +265,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         return toString(section)
     }
 
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.tintColor = UIColor.customMatrixGreen()
+        let header = view as! UITableViewHeaderFooterView
+        header.textLabel?.textColor = UIColor.customMatrixGreen()
+    }
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return sections.count
     }
