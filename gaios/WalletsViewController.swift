@@ -108,7 +108,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     @objc func addWallet(_ sender: Any?) {
         let alert = UIAlertController(title: "", message: NSLocalizedString("id_adding_new_accounts", comment: ""), preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
         }

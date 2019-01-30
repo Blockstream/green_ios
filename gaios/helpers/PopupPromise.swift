@@ -64,7 +64,7 @@ class PopupEditable : PopupPromise {
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
                 result.reject(GaError.GenericError)
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { (action: UIAlertAction) in
                 let textField = alert.textFields![0]
                 result.fulfill(textField.text!)
             })
