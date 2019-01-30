@@ -157,7 +157,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         if transaction.blockHeight == 0 {
             statusLabel.textColor = UIColor.red
             statusLabel.text = NSLocalizedString("id_unconfirmed", comment: "")
-        } else if AccountStore.shared.getBlockheight() - (transaction.blockHeight) < 6 {
+        } else if AccountStore.shared.getBlockheight() - (transaction.blockHeight) < 5 {
             let blocks = AccountStore.shared.getBlockheight() - transaction.blockHeight + 1
             statusLabel.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), blocks)
         } else {

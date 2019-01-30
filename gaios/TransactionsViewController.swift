@@ -105,8 +105,9 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         if item.blockHeight == 0 {
             cell.status.text = NSLocalizedString("id_unconfirmed", comment: "")
             cell.status.textColor = UIColor.red
-        } else if (AccountStore.shared.getBlockheight() - item.blockHeight < 6) {
+        } else if (AccountStore.shared.getBlockheight() - item.blockHeight < 5) {
             let confirmCount = AccountStore.shared.getBlockheight() - item.blockHeight + 1
+            cell.status.textColor = UIColor.customTitaniumLight()
             cell.status.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
         } else {
             cell.status.text = NSLocalizedString("id_completed", comment: "")
