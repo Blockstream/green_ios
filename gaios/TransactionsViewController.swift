@@ -23,7 +23,6 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
         tableView.allowsSelection = true
         tableView.isUserInteractionEnabled = true
-        tableView.separatorColor = UIColor.customTitaniumLight()
         tableView.tableHeaderView = getWalletCardView()!
         tableView.bounces = true
         tableView.refreshControl = UIRefreshControl()

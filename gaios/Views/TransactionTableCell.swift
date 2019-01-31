@@ -15,5 +15,6 @@ class TransactionTableCell: UITableViewCell {
         replaceable.layer.borderWidth = 1
         replaceable.layer.borderColor = UIColor.customTitaniumMedium().cgColor
         replaceable.text = "  " + NSLocalizedString("id_replaceable", comment: "").uppercased() + "  "
+        super.layoutSubviews()
     }
 }
