@@ -121,8 +121,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             } else {
                 return try getSession().sendTransaction(details: result)
             }
-        }.map(on: bgq) { (call: TwoFactorCall?) in
-            call?.resolve(self)
+        }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
+            call?.resolve(self) ?? Promise<[String: Any]>() { seal in seal.fulfill([:]) }
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
