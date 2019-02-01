@@ -76,7 +76,8 @@ class SendBtcDetailsViewController: UIViewController {
         if transaction.addresseesReadOnly {
             amountTextField.isEnabled = false
             amountTextField.isUserInteractionEnabled = false
-            sendAllFundsButton.isUserInteractionEnabled = false
+            sendAllFundsButton.isHidden = true
+            maxAmountLabel.isHidden = true
         }
 
         if let oldFeeRate = getOldFeeRate() {
