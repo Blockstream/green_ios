@@ -181,7 +181,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
                 view.actionsView.isHidden = true
             } else if AccountStore.shared.isWatchOnly {
                 view.sendImage.image = UIImage(named: "qr_sweep")
-                view.sendLabel.text = NSLocalizedString("id_sweep", comment: "")
+                view.sendLabel.text = NSLocalizedString("id_sweep", comment: "").uppercased()
             }
         }.catch{ _ in }
     }

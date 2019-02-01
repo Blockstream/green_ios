@@ -41,14 +41,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func reloadData() {
         let bgq = DispatchQueue.global(qos : .background)
         Guarantee().compactMap(on: bgq) {
-            return try getGAService().getSession().getWatchOnlyUsername()
-        }.compactMap { username in
-            self.username = username
-        }.compactMap(on: bgq) {
-            let dataTwoFactorConfig = try getGAService().getSession().getTwoFactorConfig()
-            return try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
-        }.compactMap { (twoFactorConfig: TwoFactorConfig) in
-            self.twoFactorConfig = twoFactorConfig
+            if !AccountStore.shared.isWatchOnly {
+                self.username = try getGAService().getSession().getWatchOnlyUsername()
+                let dataTwoFactorConfig = try getGAService().getSession().getTwoFactorConfig()
+                self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+            }
+            return ()
         }.done {
             self.sections = self.getSections()
             self.items = self.getSettings()
@@ -61,9 +59,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     func getSections() -> [SettingsSections] {
         if isWatchOnly {
-            return [.about]
+            return [.network, .about]
         } else if isResetActive {
-            return [.twoFactor, .about]
+            return [.network, .twoFactor, .about]
         }
         return [.network, .account, .twoFactor, .security, .about]
     }

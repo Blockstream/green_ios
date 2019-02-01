@@ -17,7 +17,13 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var receiveImage: UIImageView!
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var unit: UILabel!
-    
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        self.sendLabel.text = NSLocalizedString("id_send", comment: "").uppercased()
+        self.receiveLabel.text = NSLocalizedString("id_receive", comment: "").uppercased()
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
@@ -28,8 +34,5 @@ class WalletFullCardView: UIView {
         gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
         gradient.frame = backgroundView.bounds
         backgroundView.layer.insertSublayer(gradient, at: 0)
-
-        self.sendLabel.text = NSLocalizedString("id_send", comment: "").uppercased()
-        self.receiveLabel.text = NSLocalizedString("id_receive", comment: "").uppercased()
     }
 }
