@@ -21,7 +21,7 @@ class GreenAddressService {
     static var restoreFromMnemonics = false
 
     public init() {
-        session = try! Session(completionHandler: newNotification)
+        session = try! Session(notificationCompletionHandler: newNotification)
     }
 
     func getSession() -> Session {

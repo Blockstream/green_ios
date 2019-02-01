@@ -62,7 +62,7 @@ struct Event: Equatable {
     }
 
     func description() -> String {
-        guard let settings = getGAService().getSettings() else { return "" }
+        guard getGAService().getSettings() != nil else { return "" }
         switch type {
         case .Transaction:
             guard let txEvent = get() as TransactionEvent? else { return "" }

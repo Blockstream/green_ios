@@ -57,11 +57,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         try getSession().connectWithProxy(network: Network(rawValue: networkName)!, proxy_uri: proxyURI, use_tor: useTor, debug: networkName != "mainnet")
     }
 
-    func disconnect() throws {
-        try getSession().disconnect()
+    func disconnect() {
+        try! getSession().disconnect()
     }
 
     func lock() {
+        disconnect()
+
         // update view
         window?.endEditing(true)
         if isPinEnabled(network: getNetwork()) {
