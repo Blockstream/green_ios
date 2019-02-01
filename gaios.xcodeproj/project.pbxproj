@@ -12,8 +12,6 @@
 		0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14B211912AE0008F94A /* InstructionViewController.swift */; };
 		092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */; };
 		092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD420D599D700F90DF2 /* UIView+helpers.swift */; };
-		092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */; };
-		092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */; };
 		092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05B221277E2E00B9B7CD /* Date+helpers.swift */; };
 		092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D47F420EA2570005720F3 /* NotificationsViewController.swift */; };
 		092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D47F620EA28ED005720F3 /* TransactionTableCell.xib */; };
@@ -114,8 +112,6 @@
 		0926C14B211912AE0008F94A /* InstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionViewController.swift; sourceTree = "<group>"; };
 		092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmailViewController.swift; sourceTree = "<group>"; };
 		092C7BD420D599D700F90DF2 /* UIView+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+helpers.swift"; sourceTree = "<group>"; };
-		092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableCell.swift; sourceTree = "<group>"; };
-		092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotificationTableCell.xib; sourceTree = "<group>"; };
 		092D05B221277E2E00B9B7CD /* Date+helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+helpers.swift"; sourceTree = "<group>"; };
 		092D47F420EA2570005720F3 /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
 		092D47F620EA28ED005720F3 /* TransactionTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionTableCell.xib; sourceTree = "<group>"; };
@@ -263,8 +259,6 @@
 				6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */,
 				092D47F820EA2907005720F3 /* TransactionTableCell.swift */,
 				092D47F620EA28ED005720F3 /* TransactionTableCell.xib */,
-				092D05AA2123DA8900B9B7CD /* NotificationTableCell.swift */,
-				092D05AC2123DAED00B9B7CD /* NotificationTableCell.xib */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
 				0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */,
 				81E9B80121C92EF7004D87B6 /* WalletCardView.xib */,
@@ -566,7 +560,6 @@
 				811B963A21F5FC9500DE02CB /* HeaderWalletsCollection.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
-				092D05AD2123DAED00B9B7CD /* NotificationTableCell.xib in Resources */,
 				811B963C21F72A5B00DE02CB /* FooterWalletsCollection.xib in Resources */,
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
@@ -726,7 +719,6 @@
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
 				81E9B7FE21C90F74004D87B6 /* WalletsViewController.swift in Sources */,
 				81C208A32201ED6A00F4BC1F /* Toast.swift in Sources */,
-				092D05AB2123DA8900B9B7CD /* NotificationTableCell.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
