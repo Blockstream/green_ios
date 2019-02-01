@@ -96,7 +96,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
             self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            try appDelegate.disconnect()
+            appDelegate.disconnect()
         }.compactMap(on: bgq) {
             try appDelegate.connect()
         }.compactMap(on: bgq) {

@@ -6,7 +6,7 @@ func getAppDelegate() -> AppDelegate {
 }
 
 func getGAService() -> GreenAddressService {
-    return getAppDelegate().getService()
+    return AppDelegate.getService()
 }
 
 func getSession() -> Session {
@@ -29,10 +29,10 @@ func getGdkNetwork(_ network: String) throws -> [String: Any]? {
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    let service = GreenAddressService()
+    static let service = GreenAddressService()
 
-    func getService() -> GreenAddressService {
-        return self.service
+    static func getService() -> GreenAddressService {
+        return service
     }
 
     func instantiateViewControllerAsRoot(identifier: String) {

@@ -74,7 +74,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             startAnimating(message: !isBiometricLogin ? NSLocalizedString("id_logging_in", comment: "") : "")
             return Guarantee()
         }.compactMap(on: bgq) {
-            try appDelegate.disconnect()
+            appDelegate.disconnect()
         }.compactMap(on: bgq) {
             try appDelegate.connect()
         }.get { _ in
