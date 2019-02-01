@@ -9,37 +9,37 @@ class CustomApplication: UIApplication {
         return time
     }
 
-    private var idleTimer: Timer?
+    private var idleTimer: Timer? = nil
 
-    private func resetIdleTimer() {
-        if let idleTimer = idleTimer {
-            idleTimer.invalidate()
-        }
-        idleTimer = Timer.scheduledTimer(timeInterval: timeoutInSeconds,
-                                         target: self,
-                                         selector: #selector(CustomApplication.timeout),
-                                         userInfo: nil,
-                                         repeats: false
-        )
+    override init() {
+        super.init()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(self.resetIdleTimer(_:)), name: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil)
     }
 
-    @objc private func timeout() {
-        print("lock me")
+    @objc func resetIdleTimer(_ notification: NSNotification) {
+        self.resetIdleTimer()
+    }
+
+    private func resetIdleTimer() {
+        DispatchQueue.main.async {
+            self.idleTimer?.invalidate()
+            self.idleTimer = Timer.scheduledTimer(timeInterval: self.timeoutInSeconds,
+                                                  target: self,
+                                                  selector: #selector(self.timeout(_:)),
+                                                  userInfo: nil,
+                                                  repeats: false)
+        }
+    }
+
+    @objc private func timeout(_ timer: Timer) {
+        NSLog("Idle timer expired: locking application...")
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
     }
 
     override func sendEvent(_ event: UIEvent) {
-
         super.sendEvent(event)
 
-        if idleTimer != nil {
-            self.resetIdleTimer()
-        }
-
-        if let touches = event.allTouches {
-            for touch in touches where touch.phase == UITouchPhase.began {
-                self.resetIdleTimer()
-            }
-        }
+        resetIdleTimer()
     }
 }
