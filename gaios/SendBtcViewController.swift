@@ -99,7 +99,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
     }
 
     private func createSweepTransaction(userInput: String, feeRate: UInt64) -> Promise<Transaction> {
-        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate, "subaccount": self.wallet!.pointer]
+        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate, "subaccount": wallet!.pointer, "addressees" : [["address": wallet!.generateNewAddress()!, "satoshi": 0]]]
         return gaios.createTransaction(details: details)
     }
 
@@ -114,10 +114,10 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
         // multiple fast consecutive taps will race so 2 segues can/will be performed
         updateButton(false)
 
-        createSweepTransaction(userInput: userInput, feeRate: feeRate).map { tx -> Promise<Transaction> in
+        createSweepTransaction(userInput: userInput, feeRate: feeRate).compactMap { tx -> Promise<Transaction> in
             if tx.error.isEmpty {
-                self.performSegue(withIdentifier: "next", sender: self)
-            } else if tx.error != "id_invalid_private_key" {
+                return Promise<Transaction> { seal in seal.fulfill(tx) }
+            } else if tx.error != "id_invalid_private_key" || AccountStore.shared.isWatchOnly {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
             if self.transaction != nil {
@@ -130,7 +130,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
             }
         }.then { tx in
             return tx
-        }.compactMap { tx in
+        }.done { tx in
             self.transaction = tx
             if !tx.error.isEmpty && tx.error != "id_invalid_amount" && tx.error != "id_insufficient_funds" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))

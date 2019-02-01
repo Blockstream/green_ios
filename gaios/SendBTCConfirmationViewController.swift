@@ -113,7 +113,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             signTransaction(transaction: self.transaction)
         }.then(on: bgq) { call in
             call.resolve(self)
-        }.compactMap(on: bgq) { result_dict in
+        }.map(on: bgq) { result_dict in
             let result = result_dict["result"] as! [String: Any]
             if self.transaction.isSweep {
                 _ = try getSession().broadcastTransaction(tx_hex: result["transaction"] as! String)
@@ -121,8 +121,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             } else {
                 return try getSession().sendTransaction(details: result)
             }
-        }.then(on: bgq) { (call: TwoFactorCall?) in
-            call!.resolve(self)
+        }.map(on: bgq) { (call: TwoFactorCall?) in
+            call?.resolve(self)
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
