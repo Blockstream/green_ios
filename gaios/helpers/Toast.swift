@@ -3,7 +3,7 @@ import UIKit
 
 class Toast {
     static let SHORT_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds( 1 * 1000)
-    static let LONG_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds( 5 * 1000)
+    static let LONG_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds( 3 * 1000)
     static let padding = CGFloat(20)
 
     class Label: UILabel {

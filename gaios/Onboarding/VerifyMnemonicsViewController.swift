@@ -164,6 +164,7 @@ class VerifyMnemonicsViewController: UIViewController, NVActivityIndicatorViewab
                 update()
             }
         } else {
+            Toast.show(NSLocalizedString("id_wrong_choice_check_your", comment: ""), timeout: Toast.LONG_DURATION);
             self.navigationController?.popViewController(animated: true)
         }
     }
