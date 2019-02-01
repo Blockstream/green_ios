@@ -1,7 +1,6 @@
-import Foundation
 import UIKit
 
-class CustomApplication: UIApplication {
+class GreenApplication : UIApplication {
 
     private var timeoutInSeconds: TimeInterval {
         guard let settings = getGAService().getSettings() else { return 5 * 60 }
