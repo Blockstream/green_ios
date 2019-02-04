@@ -5,6 +5,7 @@ class InitialViewController: UIViewController {
     @IBOutlet weak var topButton: UIButton!
     @IBOutlet weak var networkButton: UIButton!
     @IBOutlet weak var restoreWalletbutton: UIButton!
+    @IBOutlet weak var optionsBarButton: UIBarButtonItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -12,6 +13,7 @@ class InitialViewController: UIViewController {
         topButton.setTitle(NSLocalizedString("id_create_wallet", comment: ""), for: .normal)
         topButton.setGradient(true)
         restoreWalletbutton.setTitle(NSLocalizedString("id_restore_existing_wallet", comment: ""), for: .normal)
+        optionsBarButton.title = NSLocalizedString("id_login_options", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +75,17 @@ class InitialViewController: UIViewController {
         onAction(identifier: "enterMnemonic")
     }
 
-    @IBAction func unwindToInitialViewController(segue: UIStoryboardSegue) {
+    @IBAction func optionsBarButtonClick(_ sender: UIBarButtonItem) {
+        let alert = UIAlertController(title: NSLocalizedString("id_login_options", comment: ""), message: "", preferredStyle: .actionSheet)
+        if isPinEnabled(network: getNetwork()) {
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_enter_pin", comment: ""), style: .default) { _ in
+                self.performSegue(withIdentifier: "pin", sender: self)
+            })
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_watchonly_login", comment: ""), style: .default) { _ in
+            self.performSegue(withIdentifier: "watchonly", sender: self)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
     }
 }
