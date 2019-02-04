@@ -126,10 +126,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             }
             self.updateAttemptsLabel()
             self.resetEverything()
-            self.startAnimating(message: message)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                self.stopAnimating()
-            }
+            Toast.show(message, timeout: Toast.SHORT_DURATION)
         }
     }
 
@@ -162,10 +159,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             } else {
                 message = NSLocalizedString("id_operation_failure", comment: "")
             }
-            self.startAnimating(message: message)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                self.stopAnimating()
-            }
+            Toast.show(message, timeout: Toast.SHORT_DURATION)
         }
     }
 

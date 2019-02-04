@@ -131,6 +131,9 @@ class ReceiveBtcViewController: KeyboardViewController, NVActivityIndicatorViewa
         Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
+            if address.isEmpty {
+                throw GaError.GenericError
+            }
             let uri: String
             if (self.getSatoshi() == 0) {
                 uri = bip21Helper.btcURIforAddress(address: address)
@@ -141,8 +144,7 @@ class ReceiveBtcViewController: KeyboardViewController, NVActivityIndicatorViewa
             }
             self.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.walletQRCode.frame)
         }.catch{ _ in
-            // Force to disconnect
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
+            Toast.show(NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), timeout: Toast.SHORT_DURATION)
         }
     }
 
@@ -161,6 +163,9 @@ class ReceiveBtcViewController: KeyboardViewController, NVActivityIndicatorViewa
         Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
+            if address.isEmpty {
+                throw GaError.GenericError
+            }
             let uri = self.getSatoshi() == 0 ? address : bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
             let activityViewController = UIActivityViewController(activityItems: [uri] , applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = self.view

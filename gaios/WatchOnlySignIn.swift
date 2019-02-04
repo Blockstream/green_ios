@@ -86,10 +86,7 @@ class WatchOnlySignIn: KeyboardViewController, NVActivityIndicatorViewable {
             } else {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
-            self.startAnimating(message: message)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                self.stopAnimating()
-            }
+            Toast.show(message, timeout: Toast.SHORT_DURATION)
         }
     }
 }

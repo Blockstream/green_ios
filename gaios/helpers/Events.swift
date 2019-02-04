@@ -25,7 +25,6 @@ struct Event: Equatable {
         return lhs.type == rhs.type && NSDictionary(dictionary: lhs.value).isEqual(to: rhs.value)
     }
 
-
     func get<T>() -> T? {
         switch type {
         case .Transaction:
@@ -36,59 +35,6 @@ struct Event: Equatable {
             return try? JSONDecoder().decode(Settings.self, from: JSONSerialization.data(withJSONObject: value, options: [])) as! T
         default:
             return nil
-        }
-    }
-
-    func title() -> String {
-        switch type {
-        case .Transaction:
-            return ((get() as TransactionEvent?) != nil) ? NSLocalizedString("id_new_transaction", comment: "") : ""
-        case .TwoFactorReset, .Settings:
-            guard let twoFactorReset = getGAService().getTwoFactorReset() else { return "" }
-            if twoFactorReset.isResetActive {
-                return NSLocalizedString("id_twofactor_reset_in_progress", comment: "")
-            }
-            guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return "" }
-            guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return "" }
-            if !twoFactorConfig.anyEnabled {
-                return NSLocalizedString("id_set_up_twofactor_authentication", comment: "")
-            } else if twoFactorConfig.enableMethods.count == 1 {
-                return NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
-            }
-            return ""
-        default:
-            return ""
-        }
-    }
-
-    func description() -> String {
-        guard getGAService().getSettings() != nil else { return "" }
-        switch type {
-        case .Transaction:
-            guard let txEvent = get() as TransactionEvent? else { return "" }
-            let txType = txEvent.type == "incoming" ? NSLocalizedString("id_incoming", comment: "") : NSLocalizedString("id_outgoing", comment: "")
-            let txAmount = String.toBtc(satoshi: txEvent.satoshi)
-            let data = try! getSession().getSubaccounts() as [String: Any]?
-            let jsonData = try! JSONSerialization.data(withJSONObject: data!)
-            let wallets = try! JSONDecoder().decode(Wallets.self, from: jsonData).array
-            let list = wallets.filter { txEvent.subAccounts.contains(Int($0.pointer)) }
-            let walletName = list.isEmpty ? "" : list[0].localizedName()
-            return String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, txAmount, walletName)
-        case .TwoFactorReset, .Settings:
-            guard let twoFactorReset = getGAService().getTwoFactorReset() else { return "" }
-            if twoFactorReset.isResetActive {
-                return NSLocalizedString("id_twofactor_reset_in_progress", comment: "")
-            }
-            guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return "" }
-            guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return "" }
-            if !twoFactorConfig.anyEnabled {
-                return NSLocalizedString("id_your_wallet_is_not_yet_fully", comment: "")
-            } else if twoFactorConfig.enableMethods.count == 1 {
-                return NSLocalizedString("id_please_enable_another", comment: "")
-            }
-            return ""
-        default:
-            return ""
         }
     }
 }

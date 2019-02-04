@@ -34,6 +34,12 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         navigationController?.setNavigationBarHidden(true, animated: true)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+
+        if presentingWallet?.pointer != pointerWallet {
+            // clear tx list only after a subaccount change in order to provide cache in offline mode
+            items = Transactions(list: [], nextPageId: 0, pageId: 0)
+            tableView.reloadData()
+        }
         loadWallet()
         loadTransactions()
     }
@@ -136,10 +142,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
 
     func loadTransactions() {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap {
-            self.items = Transactions(list: [], nextPageId: 0, pageId: 0)
-            self.tableView.reloadData()
-        }.compactMap(on: bgq) {_ in
+        Guarantee().compactMap(on: bgq) {_ in
             try getSession().getTransactions(subaccount: self.pointerWallet, page: 0)
         }.compactMap(on: bgq) { data -> Transactions in
             let txList = (data["list"] as! [[String: Any]]).map { tx -> Transaction in

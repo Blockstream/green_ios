@@ -27,7 +27,10 @@ class TabViewController: UITabBarController {
     }
 
     @objc func lockApplication(_ notification: NSNotification) {
-        Guarantee().done {
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map(on: bgq){
+            try! getSession().disconnect()
+        }.done {
             getAppDelegate().lock()
         }
     }
@@ -40,9 +43,7 @@ class TabViewController: UITabBarController {
         if (timeElapsed < timeout) {
             return
         }
-        Guarantee().done {
-            getAppDelegate().lock()
-        }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
     }
 
     @objc func willResignActive(_ notification: NSNotification) {

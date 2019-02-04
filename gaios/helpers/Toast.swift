@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 
 class Toast {
-    static let SHORT_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds( 1 * 1000)
-    static let LONG_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds( 3 * 1000)
+    static let SHORT_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds(2000)
+    static let LONG_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds(3500)
     static let padding = CGFloat(20)
 
     class Label: UILabel {

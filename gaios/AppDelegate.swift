@@ -62,8 +62,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func lock() {
-        disconnect()
-
         // update view
         window?.endEditing(true)
         if isPinEnabled(network: getNetwork()) {

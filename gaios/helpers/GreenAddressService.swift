@@ -75,6 +75,7 @@ class GreenAddressService {
                 self.settings = try! JSONDecoder().decode(Settings.self, from: json)
                 post(event: .Settings, data: data)
             case .Network:
+                print(data)
                 //NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
                 break
             default:
