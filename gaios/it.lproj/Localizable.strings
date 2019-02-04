@@ -17,7 +17,7 @@
 "id_add_custom_network_by_url" = "Aggiungi un network custom con un URL";
 "id_add_new_account" = "Aggiungi Nuovo Account";
 "id_add_wallet" = "Aggiungi Wallet";
-"id_adding_new_accounts" = "Adding New Accounts functionality coming soon.";
+"id_adding_new_accounts" = "La creazione di Nuovi Account sarà possibile prossimamente.";
 "id_address" = "Indirizzo";
 "id_address_1s" = "Indirizzo: %1$@";
 "id_address_copied_to_clipboard" = "Indirizzo copiato in clipboard";
@@ -85,8 +85,8 @@
 "id_disputed" = "Contestato";
 "id_done" = "Fatto";
 "id_dont_ask_me_again" = "Non chiedermelo più";
-"id_dont_store_your_mnemonic_in" = "Non conservare la tua mnemonica nelle email, nè sul tuo dispositivo mobile, nè sul tuo desktop nè su alcun servizio cloud";
-"id_dont_take_screenshots_of_your" = "Non fare screenshot alla tua mnemonica!";
+"id_dont_store_your_mnemonic_in" = "Non conservare la tua mnemonica nelle email, nè sul tuo dispositivo mobile, nè sul tuo desktop nè su alcun servizio cloud.";
+"id_dont_take_screenshots_of_your" = "Non fare screenshot della tua mnemonica!";
 "id_double_spend" = "doppia spesa";
 "id_double_spend_by" = "Doppia spesa da";
 "id_download_finished" = "Download terminato";
@@ -118,7 +118,7 @@
 "id_estimated_blocks_until" = "Blocchi stimati per la conferma: %d";
 "id_example_89014283334011612858333" = "Es.: 8.90.14.2:8333,40.116.12.85:8333";
 "id_face_id" = "Face ID";
-"id_fast" = "Fast";
+"id_fast" = "Rapido";
 "id_fee" = "Commissione";
 "id_fee_amount_size_fee_rate" = "Commissioni totali, Dimensione Transazione, Tasso Commissioni";
 "id_fee_rate" = "Tasso commissione";
@@ -177,11 +177,12 @@
 "id_log_out" = "Esci";
 "id_logging_in" = "Accesso in corso…";
 "id_login_failed" = "Accesso Fallito";
+"id_login_options" = "Login options";
 "id_look_at_the_device_for_the" = "Guarda la disposizione dei numeri sul dispositivo";
 "id_low" = "Bassa";
 "id_main" = "Principale";
 "id_malleated" = "malleata";
-"id_medium" = "Media";
+"id_medium" = "Medio";
 "id_memo" = "Memo";
 "id_miner_fee" = "COMMISSIONE MINER";
 "id_minute" = "minuto";
@@ -195,7 +196,7 @@
 "id_network" = "NETWORK";
 "id_network_configuration" = "Configurazione Network";
 "id_network_monitor" = "Network Monitor";
-"id_new_s_transaction_of_s_in" = "Nuova %@ transazione di %@ nel conto %@.";
+"id_new_s_transaction_of_s_in" = "Nuova transazione %@  di %@ nell'account %@.";
 "id_new_transaction" = "Nuova transazione";
 "id_next" = "Avanti";
 "id_nfc_logo" = "NFC Logo";
@@ -232,7 +233,7 @@
 "id_pin_has_to_be_between_4_and_15" = "Il PIN dev'essere fra 4 e 15 cifre";
 "id_pins_do_not_match_please_try" = "I PIN non coincidono, riprova.";
 "id_please_disable_biometric" = "Disabilita l'autenticazione biometrica prima di disabilitare il PIN";
-"id_please_enable_another" = "Please enable another authentication method to avoid losing access to your funds.";
+"id_please_enable_another" = "Abilita un altro metodo di autenticazione per evitare di perdere l'accesso ai tuoi fondi.";
 "id_please_enable_camera" = "Per piacere abilita i permessi dell'app per usare la fotocamera.";
 "id_please_enable_pin" = "Abilita autenticazione tramite PIN prima di aggiungere o rimuovere l'autenticazione biometrica";
 "id_please_enter_the_passphrase_for" = "Inserisci la passphrase del tuo hardware wallet.";
@@ -260,8 +261,8 @@
 "id_refresh" = "Aggiorna";
 "id_remember_username" = "Ricorda l'username";
 "id_remove_custom_network" = "Rimuovi il network custom";
-"id_replaceable" = "replaceable";
-"id_request_amount" = "RECHIEDI IMPORTO";
+"id_replaceable" = "rimpiazzabile";
+"id_request_amount" = "RICHIEDI IMPORTO";
 "id_request_failed" = "Richiesta fallita";
 "id_request_nlocktime_transactions" = "Richiedi transazioni nLockTime";
 "id_request_sent" = "Richiesta Inviata";
@@ -314,9 +315,11 @@
 "id_socks5_port" = "Socks5 Port";
 "id_something_went_wrong" = "Qualcosa è andato storto";
 "id_spv_is_always_synchronized_on" = "SPV è sempre sincronizzato su network fissi come WiFI o Ethernet. Questa impostazione sincronizza anche su network Mobile. Può essere costoso dipendendo dal tuo piano tariffario. Attenzione ad abilitarlo.";
+"id_spv_not_fully_synced" = "SPV not fully synced";
 "id_spv_notifications" = "Notifiche SPV";
 "id_spv_reset_and_restarted" = "SPV riavviato";
 "id_spv_synchronization" = "Sincronizzazione SPV";
+"id_spv_unverified" = "SPV unverified";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "Trasferisci Tutto da un Paper Wallet";
 "id_synchronize_spv_on_mobile" = "Abilita Sincronizzazione SPV mobile";
@@ -336,8 +339,8 @@
 "id_to" = "A";
 "id_tor_connectivity_disabled" = "Connessione Tor Disabilitata!";
 "id_tor_will_use_1s_and_only_work" = "Tor userà %1$@ e funzionerà solo se hai una proxy Orbot o Tor abilitata.";
-"id_total_assets" = "Total Assets";
-"id_total_with_fee" = "Total with Fee";
+"id_total_assets" = "Totale disponibile";
+"id_total_with_fee" = "Totale incluse commissioni";
 "id_touch_id" = "Touch ID";
 "id_touch_to_display" = "Tocca per mostrare";
 "id_touch_to_set_up" = "Tocca per impostare";
@@ -347,7 +350,7 @@
 "id_transaction_id" = "ID Transazione";
 "id_transaction_sent" = "Transazione Inviata";
 "id_two_factor_authentication" = "AUTENTICAZIONE A DUE FATTORI";
-"id_twofactor" = "TWO-FACTOR";
+"id_twofactor" = "AUTENTICAZIONE A DUE FATTORI";
 "id_twofactor_authentication" = "Autenticazione a Due Fattori";
 "id_twofactor_reset_in_progress" = "Reset Secondo Fattore di Autenticazione in corso, il tuo wallet è attualmente bloccato.";
 "id_twofactor_settings" = "Impostazioni Secondo Fattore";
@@ -394,7 +397,7 @@
 "id_you_must_first_log_out_before" = "Devi effettuare il logout prima di poter accedere.";
 "id_you_must_save_this_mnemonic_now" = "DEVI conservare la mnemonica ORA";
 "id_you_need_to_enable_the_proxy" = "Devi abilitare la configurazione del proxy (Orbot o Socks5) prima di abilitare Tor.";
-"id_you_only_have_one_twofactor" = "You only have one Two-Factor authentication method enabled";
+"id_you_only_have_one_twofactor" = "Hai attivato un solo metodo di autenticazione a due fattori";
 "id_you_will_need_to_reenter_your" = "Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi \"OK\" per continuare.";
 "id_your_green_wallet_is_now_ready" = "Il tuo wallet Green è ora pronto all'uso.";
 "id_your_notifications_will_be" = "Vedrai qui le tue notifiche.";

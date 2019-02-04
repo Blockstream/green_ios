@@ -177,6 +177,7 @@
 "id_log_out" = "Выйти";
 "id_logging_in" = "Выполняется вход...";
 "id_login_failed" = "Вход невозможен";
+"id_login_options" = "Login options";
 "id_look_at_the_device_for_the" = "Посмотрите расположение чисел на устройстве";
 "id_low" = "Низкий";
 "id_main" = "Основной";
@@ -232,7 +233,7 @@
 "id_pin_has_to_be_between_4_and_15" = "PIN-код должен содержать от 4 до 15 символов";
 "id_pins_do_not_match_please_try" = "PIN-коды не совпадают, повторите попытку.";
 "id_please_disable_biometric" = "Пожалуйста, отключите биометрическую аутентификацию перед удалением PIN-кода";
-"id_please_enable_another" = "Please enable another authentication method to avoid losing access to your funds.";
+"id_please_enable_another" = "Пожалуйста, включите еще один метод аутентификации во избежание потери доступа к вашим средствам.";
 "id_please_enable_camera" = "Включите разрешение для использования камеры.";
 "id_please_enable_pin" = "Пожалуйста, включите PIN-аутентификацию перед добавлением или удалением биометрической аутентификации";
 "id_please_enter_the_passphrase_for" = "Введите кодовую фразу для вашего аппаратного кошелька.";
@@ -314,9 +315,11 @@
 "id_socks5_port" = "Порт Socks5";
 "id_something_went_wrong" = "Что-то пошло не так";
 "id_spv_is_always_synchronized_on" = "SPV всегда синхронизируется в немобильных сетях, таких как WiFi или Ethernet. Этот параметр также синхронизируется при использовании мобильного интернета. Может быть дорогостоящим в зависимости от вашего тарифа, поэтому будьте осторожны при включении.";
+"id_spv_not_fully_synced" = "SPV-синхронизация произошла не полностью";
 "id_spv_notifications" = "Уведомления SPV";
 "id_spv_reset_and_restarted" = "SPV переустановлено и перезапущено";
 "id_spv_synchronization" = "SPV-синхронизация";
+"id_spv_unverified" = "SPV не верифицирован";
 "id_sweep" = "Смести";
 "id_sweep_from_paper_wallet" = "Смести с бумажного кошелька";
 "id_synchronize_spv_on_mobile" = "Синхронизируйте SPV на мобильном телефоне";
@@ -337,7 +340,7 @@
 "id_tor_connectivity_disabled" = "Соединение с Tor разорвано!";
 "id_tor_will_use_1s_and_only_work" = "Tor будет использовать %1$@ и будет работать только в том случае, если вы используете прокси Orbot или включен Tor";
 "id_total_assets" = "Общая сумма активов";
-"id_total_with_fee" = "Total with Fee";
+"id_total_with_fee" = "Всего с комиссией";
 "id_touch_id" = "Touch ID";
 "id_touch_to_display" = "Коснитесь для отображения";
 "id_touch_to_set_up" = "Коснитесь, чтобы настроить";
@@ -394,7 +397,7 @@
 "id_you_must_first_log_out_before" = "Прежде, чем войти, произведите выход.";
 "id_you_must_save_this_mnemonic_now" = "Вы ДОЛЖНЫ сохранить эту мнемоническую фразу СЕЙЧАС";
 "id_you_need_to_enable_the_proxy" = "Необходимо включить конфигурацию прокси (Orbot Socks5) перед тем, как включить Tor.";
-"id_you_only_have_one_twofactor" = "You only have one Two-Factor authentication method enabled";
+"id_you_only_have_one_twofactor" = "У вас включен только один метод двухфакторной аутентификации";
 "id_you_will_need_to_reenter_your" = "Если вы не установите PIN-код, каждый раз, чтобы войти, вам придется вводить вашу мнемоническую фразу. Нажмите \"OK\" для продолжения.";
 "id_your_green_wallet_is_now_ready" = "Ваш Green-кошелек готов к использованию.";
 "id_your_notifications_will_be" = "Здесь будут показаны ваши уведомления.";

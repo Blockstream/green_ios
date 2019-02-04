@@ -177,6 +177,7 @@
 "id_log_out" = "Afmelden";
 "id_logging_in" = "Aanmelden…";
 "id_login_failed" = "Aanmelden mislukt";
+"id_login_options" = "Login options";
 "id_look_at_the_device_for_the" = "Kijk op het apparaat voor de positie van de cijfers";
 "id_low" = "Laag";
 "id_main" = "Hoofd";
@@ -314,9 +315,11 @@
 "id_socks5_port" = "Socks5 Port";
 "id_something_went_wrong" = "Er is iets misgegaan";
 "id_spv_is_always_synchronized_on" = "SPV wordt altijd gesynchroniseerd op niet-mobiele netwerken zoals WiFi of Ethernet. Deze instelling zorgt dat synchronisatie ook plaatsvindt op mobiele netwerken. Dit kan duur zijn, afhankelijk van je dataplan, dus wees voorzichtig.";
+"id_spv_not_fully_synced" = "SPV not fully synced";
 "id_spv_notifications" = "SPV-notificaties";
 "id_spv_reset_and_restarted" = "SPV reset and restarted";
 "id_spv_synchronization" = "SPV Synchronization";
+"id_spv_unverified" = "SPV unverified";
 "id_sweep" = "Leegruimen";
 "id_sweep_from_paper_wallet" = "Sweep From Paper Wallet";
 "id_synchronize_spv_on_mobile" = "Synchroniseer SPV op mobiel";
