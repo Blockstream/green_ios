@@ -55,3 +55,77 @@ class Toast {
         }
     }
 }
+
+class SnackBar {
+
+    var message = ""
+    var action = false
+    static let padding = CGFloat(16)
+    let TAG = 100
+    var stackView = UIStackView()
+    var button = UIButton()
+    var label = Label()
+
+    init() { }
+
+    init(_ message: String, action: Bool) {
+        self.message = message
+        self.action = action
+    }
+
+    class Label: UILabel {
+        override func drawText(in rect: CGRect) {
+            super.drawText(in: UIEdgeInsetsInsetRect(rect, UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)))
+        }
+    }
+
+    func show() {
+        guard let window = UIApplication.shared.keyWindow else { return }
+        self.hide()
+
+        // setup stackView container
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        stackView.alignment = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.tag = TAG
+
+        // setup label message
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = message
+        label.numberOfLines = 1
+        label.textAlignment = .left
+        label.textColor = UIColor.white
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.adjustsFontSizeToFitWidth = true
+        label.backgroundColor = UIColor.customTitaniumMedium()
+        stackView.addArrangedSubview(label)
+
+        if action {
+            // setup action button
+            button.setTitleColor(UIColor.red, for: .normal)
+            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.backgroundColor = UIColor.customTitaniumMedium()
+            stackView.addArrangedSubview(button)
+        }
+        window.addSubview(stackView)
+
+        // setup constrains
+        let estimateRect = label.attributedText?.boundingRect(with: stackView.frame.size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
+        let estimateHeight = estimateRect!.height + SnackBar.padding * 2
+        label.heightAnchor.constraint(equalToConstant: estimateHeight).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: window.bottomAnchor, constant: -50).isActive = true
+        stackView.widthAnchor.constraint(equalTo: window.widthAnchor).isActive = true
+        if action {
+            button.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        }
+    }
+
+    func hide() {
+        guard let window = UIApplication.shared.keyWindow else { return }
+        if let view = window.viewWithTag(TAG) {
+            view.removeFromSuperview()
+        }
+    }
+}

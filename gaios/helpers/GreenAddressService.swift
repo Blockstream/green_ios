@@ -11,6 +11,23 @@ enum EventType: String {
     case Network = "network"
 }
 
+struct Connection: Codable {
+    enum CodingKeys: String, CodingKey {
+        case connected = "connected"
+        case loginRequired = "login_required"
+        case heartbeatTimeout = "heartbeat_timeout"
+        case elapsed = "elapsed"
+        case waiting = "waiting"
+        case limit = "limit"
+    }
+    let connected: Bool
+    let loginRequired: Bool?
+    let heartbeatTimeout: Bool?
+    let elapsed: Int?
+    let waiting: Int?
+    let limit: Bool?
+}
+
 class GreenAddressService {
 
     private var session: Session? = nil
@@ -76,7 +93,15 @@ class GreenAddressService {
                 post(event: .Settings, data: data)
             case .Network:
                 print(data)
-                //NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
+                let json = try! JSONSerialization.data(withJSONObject: data, options: [])
+                let connection = try? JSONDecoder().decode(Connection.self, from: json)
+                if let _ = connection {
+                    if connection!.loginRequired == true {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
+                    } else {
+                        post(event: EventType.Network, data: data)
+                    }
+                }
                 break
             default:
                 break
