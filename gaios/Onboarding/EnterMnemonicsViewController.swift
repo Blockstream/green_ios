@@ -142,7 +142,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
         }.then {
             self.getMnemonicString()
         }.get { (mnemonic: String, password: String) in
-            guard validateMnemonic(mnemonic: mnemonic) else {
+            guard try validateMnemonic(mnemonic: mnemonic) else {
                 throw LoginError.InvalidMnemonic
             }
         }.compactMap(on: bgq) {
