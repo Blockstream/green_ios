@@ -45,6 +45,7 @@
 "id_cant_connect_to_this_url" = "URL 연결 불가";
 "id_change" = "바꾸기";
 "id_choose" = "선택";
+"id_choose_method_to_authorize_the" = "Choose method to authorize the action";
 "id_choose_twofactor_authentication" = "2FA 방식 선택";
 "id_choose_your_network" = "사용자 지정 네트워크 선택";
 "id_clear" = "새로고침";
@@ -136,7 +137,7 @@
 "id_green_is_a_noncustodial_wallet" = "Green은 자산을 맡겨 신뢰를 요구하는 지갑이 아닙니다";
 "id_green_logo" = "Green 로고";
 "id_green_mnemonic_qr_code" = "Green 니모닉(복원 코드)( QR 코드";
-"id_green_uses_touch_id_and_face_id" = "Green은 Touch ID와 Face ID를 사용하여 지갑을 손쉽게 사용할 수 있게 합니다.";
+"id_green_uses_biometric" = "Green uses biometric authentication to allow easy access to the wallet";
 "id_hash" = "해시";
 "id_high" = "높음";
 "id_hold_your_nfc_tag_close_to_the" = "NFC 태그를 기기에 가까이 대세요";
@@ -196,8 +197,11 @@
 "id_network" = "네트워크";
 "id_network_configuration" = "네트워크 설정";
 "id_network_monitor" = "네트워크 모니터";
+"id_new_incoming_transaction_in" = "New incoming transaction in account %@ (%@).";
+"id_new_outgoing_transaction_from" = "New outgoing transaction from account %@ (%@).";
 "id_new_s_transaction_of_s_in" = "계좌 %@에서 %@의 새로운 %@거래";
 "id_new_transaction" = "새로운 거래";
+"id_new_transaction_involving" = "New transaction involving accounts %@.";
 "id_next" = "다음";
 "id_nfc_logo" = "NFC 로고";
 "id_nfc_tags_written" = "쓰여진 NFC 태그들:";
@@ -271,6 +275,7 @@
 "id_reset_spv" = "SPV 새로고침";
 "id_restore" = "복구";
 "id_restore_existing_wallet" = "기존 지갑 복원";
+"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "안드로이드 인증 재사용하기";
 "id_review" = "검토";
 "id_s_blocks_left" = "%@ 블록 남음";
@@ -340,6 +345,7 @@
 "id_tor_connectivity_disabled" = "Tor 연결이 비활성화됐습니다!";
 "id_tor_will_use_1s_and_only_work" = "Tor는 %1$@를(을) 사용하고 있고 프록시가 Orbot이거나 Tor이 활성화되어있어야 작동합니다.";
 "id_total_assets" = "총자산";
+"id_total_balance" = "Total Balance";
 "id_total_with_fee" = "Total with Fee";
 "id_touch_id" = "Touch ID";
 "id_touch_to_display" = "터치하여 보기";
@@ -389,8 +395,10 @@
 "id_wrong_choice_check_your" = "잘못된 선택입니다. Mnemonic을 확인하시고 다시 시도하시길 바랍니다.";
 "id_year" = "연";
 "id_years" = "연";
+"id_you_are_not_connected" = "You are not connected";
 "id_you_are_not_connected_please" = "아직 연결 되지 않아 기다려 주십시오";
 "id_you_are_not_connected_to_the" = "인터넷에 연결되어 있지 않습니다. 연결하고 다시 시도하십시오.";
+"id_you_are_now_connected" = "You are now connected";
 "id_you_have_control_on_your_funds" = "자산의 모든 권한을 가지고 계십니다. ";
 "id_you_have_full_control_of_your" = "자산의 모든 권한을 가지고 계십니다. ";
 "id_you_have_received_s" = "%@를 받았습니다";

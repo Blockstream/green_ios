@@ -120,6 +120,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         }
         cell.selectionStyle = .none
         cell.date.text = item.date()
+        cell.date.textColor = UIColor.customTitaniumLight()
         cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0)
         return cell;
     }

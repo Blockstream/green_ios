@@ -105,7 +105,7 @@ class PopupMethodResolver {
 
     func method(_ methods: [String]) -> Promise<String> {
         return Promise { result in
-            let alert = UIAlertController(title: NSLocalizedString("id_choose_twofactor_authentication", comment: ""), message: "", preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("id_choose_twofactor_authentication", comment: ""), message: NSLocalizedString("id_choose_method_to_authorize_the", comment: ""), preferredStyle: .alert)
             methods.forEach { (method: String) in
                 let methodDesc: String
                 if method == TwoFactorType.email.rawValue { methodDesc = "id_email" }

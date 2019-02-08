@@ -1,2 +1,2 @@
-NSFaceIDUsageDescription = "Для быстрого доступа к кошельку Green используется Touch ID и Face ID ";
+NSFaceIDUsageDescription = "Green uses biometric authentication to allow easy access to the wallet";
 NSCameraUsageDescription = "Включите разрешение для использования камеры.";

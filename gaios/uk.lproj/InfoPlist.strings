@@ -1,2 +1,2 @@
-NSFaceIDUsageDescription = "Для швидкого доступу до гаманця Green використовується Touch ID та Face ID ";
+NSFaceIDUsageDescription = "Green uses biometric authentication to allow easy access to the wallet";
 NSCameraUsageDescription = "Увімкніть дозвіл для використання камери.";

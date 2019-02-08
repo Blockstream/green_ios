@@ -45,6 +45,7 @@
 "id_cant_connect_to_this_url" = "Kan geen verbinding maken met URL";
 "id_change" = "CHANGE";
 "id_choose" = "Choose";
+"id_choose_method_to_authorize_the" = "Choose method to authorize the action";
 "id_choose_twofactor_authentication" = "Choose Two-Factor authentication method";
 "id_choose_your_network" = "Choose Your Network";
 "id_clear" = "WISSEN";
@@ -136,7 +137,7 @@
 "id_green_is_a_noncustodial_wallet" = "In de Green-wallet beheer je je eigen bezittingen";
 "id_green_logo" = "Logo Green";
 "id_green_mnemonic_qr_code" = "QR-code woordenlijst Green";
-"id_green_uses_touch_id_and_face_id" = "Green uses Touch ID and Face ID to allow easy access to the wallet";
+"id_green_uses_biometric" = "Green uses biometric authentication to allow easy access to the wallet";
 "id_hash" = "Hash";
 "id_high" = "Hoog";
 "id_hold_your_nfc_tag_close_to_the" = "Houd je NFC-tag in de buurt van je apparaat";
@@ -196,8 +197,11 @@
 "id_network" = "NETWORK";
 "id_network_configuration" = "Netwerkconfiguratie";
 "id_network_monitor" = "Netwerk-monitor";
+"id_new_incoming_transaction_in" = "New incoming transaction in account %@ (%@).";
+"id_new_outgoing_transaction_from" = "New outgoing transaction from account %@ (%@).";
 "id_new_s_transaction_of_s_in" = "New %@ transaction of %@ in account %@.";
 "id_new_transaction" = "Nieuwe transactie";
+"id_new_transaction_involving" = "New transaction involving accounts %@.";
 "id_next" = "Volgende";
 "id_nfc_logo" = "NFC-logo";
 "id_nfc_tags_written" = "NFC-tags beschreven:";
@@ -271,6 +275,7 @@
 "id_reset_spv" = "SPV resetten";
 "id_restore" = "Herstellen";
 "id_restore_existing_wallet" = "Restore Existing Wallet";
+"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Gebruik de authenticatie van Android";
 "id_review" = "Overzicht";
 "id_s_blocks_left" = "%1$@ blocks te gaan %2$d";
@@ -340,6 +345,7 @@
 "id_tor_connectivity_disabled" = "Tor-connectiviteit uitgeschakeld!";
 "id_tor_will_use_1s_and_only_work" = "Tor maakt gebruik van %1$@ en werkt alleen als je proxy Orbot of Tor ondersteunt";
 "id_total_assets" = "Total Assets";
+"id_total_balance" = "Total Balance";
 "id_total_with_fee" = "Total with Fee";
 "id_touch_id" = "Touch ID";
 "id_touch_to_display" = "Raak aan om te tonen";
@@ -389,8 +395,10 @@
 "id_wrong_choice_check_your" = "Wrong choice. Check your mnemonic and try again.";
 "id_year" = "jaar";
 "id_years" = "jaar";
+"id_you_are_not_connected" = "You are not connected";
 "id_you_are_not_connected_please" = "Een moment, je bent niet verbonden";
 "id_you_are_not_connected_to_the" = "Je bent niet verbonden met het internet. Maak verbinding en probeer het opnieuw.";
+"id_you_are_now_connected" = "You are now connected";
 "id_you_have_control_on_your_funds" = "You have control on your funds";
 "id_you_have_full_control_of_your" = "Je beheert je eigen bezittingen volledig.";
 "id_you_have_received_s" = "Je hebt %@ ontvangen";

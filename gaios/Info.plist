@@ -25,7 +25,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>id_please_enable_camera</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>id_green_uses_touch_id_and_face_id</string>
+	<string>id_green_uses_biometric</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

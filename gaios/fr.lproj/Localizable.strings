@@ -45,6 +45,7 @@
 "id_cant_connect_to_this_url" = "Impossible de se connecter à cette URL";
 "id_change" = "CHANGE";
 "id_choose" = "Choose";
+"id_choose_method_to_authorize_the" = "Choose method to authorize the action";
 "id_choose_twofactor_authentication" = "Choose Two-Factor authentication method";
 "id_choose_your_network" = "Choose Your Network";
 "id_clear" = "EFFACER";
@@ -136,7 +137,7 @@
 "id_green_is_a_noncustodial_wallet" = "Green est un portefeuille sans dépôt";
 "id_green_logo" = "Logo Green";
 "id_green_mnemonic_qr_code" = "QR code du mnémonique Green";
-"id_green_uses_touch_id_and_face_id" = "Green uses Touch ID and Face ID to allow easy access to the wallet";
+"id_green_uses_biometric" = "Green uses biometric authentication to allow easy access to the wallet";
 "id_hash" = "Hash";
 "id_high" = "Haut";
 "id_hold_your_nfc_tag_close_to_the" = "Approchez l'étiquette NFC de l'appareil";
@@ -196,8 +197,11 @@
 "id_network" = "NETWORK";
 "id_network_configuration" = "Configuration réseau";
 "id_network_monitor" = "Contrôle du réseau";
+"id_new_incoming_transaction_in" = "New incoming transaction in account %@ (%@).";
+"id_new_outgoing_transaction_from" = "New outgoing transaction from account %@ (%@).";
 "id_new_s_transaction_of_s_in" = "New %@ transaction of %@ in account %@.";
 "id_new_transaction" = "Nouvelle transaction";
+"id_new_transaction_involving" = "New transaction involving accounts %@.";
 "id_next" = "Suivant";
 "id_nfc_logo" = "Logo NFC";
 "id_nfc_tags_written" = "Étiquette(s) NFC écrite(s) :";
@@ -271,6 +275,7 @@
 "id_reset_spv" = "Réinitialisation SPV";
 "id_restore" = "Restaurer";
 "id_restore_existing_wallet" = "Restore Existing Wallet";
+"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Réutiliser l'authentification Android";
 "id_review" = "Vérifier";
 "id_s_blocks_left" = "%@ blocs restant";
@@ -340,6 +345,7 @@
 "id_tor_connectivity_disabled" = "Connexion Tor désactivée !";
 "id_tor_will_use_1s_and_only_work" = "Tor utilisera %1$@ et ne fonctionnera que si votre proxy est Orbot ou si Tor est activé";
 "id_total_assets" = "Total Assets";
+"id_total_balance" = "Total Balance";
 "id_total_with_fee" = "Total with Fee";
 "id_touch_id" = "Touch ID";
 "id_touch_to_display" = "Toucher pour afficher";
@@ -389,8 +395,10 @@
 "id_wrong_choice_check_your" = "Wrong choice. Check your mnemonic and try again.";
 "id_year" = "année";
 "id_years" = "années";
+"id_you_are_not_connected" = "You are not connected";
 "id_you_are_not_connected_please" = "Vous n'êtes pas connecté, veuillez patienter";
 "id_you_are_not_connected_to_the" = "Vous n'êtes pas connecté à internet. Merci de vous connecter et d'essayer à nouveau.";
+"id_you_are_now_connected" = "You are now connected";
 "id_you_have_control_on_your_funds" = "You have control on your funds";
 "id_you_have_full_control_of_your" = "Vous avez le contrôle total de vos fonds.";
 "id_you_have_received_s" = "Vous avez reçu %@";

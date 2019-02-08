@@ -45,6 +45,7 @@
 "id_cant_connect_to_this_url" = "Не вдається приєднатися до цього URL";
 "id_change" = "РЕШТА";
 "id_choose" = "Обрати";
+"id_choose_method_to_authorize_the" = "Choose method to authorize the action";
 "id_choose_twofactor_authentication" = "Виберіть метод двофакторної аутентифікації";
 "id_choose_your_network" = "Виберіть мережу";
 "id_clear" = "ОЧИСТИТИ";
@@ -136,7 +137,7 @@
 "id_green_is_a_noncustodial_wallet" = "Green - гаманець, який дозволяє повністю контролювати кошти тільки його власнику";
 "id_green_logo" = "Логотип гаманця Green";
 "id_green_mnemonic_qr_code" = "Мнемонічний QR-код гаманця Green";
-"id_green_uses_touch_id_and_face_id" = "Для швидкого доступу до гаманця Green використовується Touch ID та Face ID ";
+"id_green_uses_biometric" = "Green uses biometric authentication to allow easy access to the wallet";
 "id_hash" = "Хеш";
 "id_high" = "Високий";
 "id_hold_your_nfc_tag_close_to_the" = "Тримайте NFC-тег поряд із вашим приладом";
@@ -196,8 +197,11 @@
 "id_network" = "МЕРЕЖА";
 "id_network_configuration" = "Конфігурація мережі";
 "id_network_monitor" = "Монітор мережі";
+"id_new_incoming_transaction_in" = "New incoming transaction in account %@ (%@).";
+"id_new_outgoing_transaction_from" = "New outgoing transaction from account %@ (%@).";
 "id_new_s_transaction_of_s_in" = "Нова %@ транзакція %@ на акаунті %@.";
 "id_new_transaction" = "Нова транзакція";
+"id_new_transaction_involving" = "New transaction involving accounts %@.";
 "id_next" = "Наступний";
 "id_nfc_logo" = "Логотип NFC";
 "id_nfc_tags_written" = "NFC-теги:";
@@ -271,6 +275,7 @@
 "id_reset_spv" = "Скинути SPV";
 "id_restore" = "Відновити";
 "id_restore_existing_wallet" = "Відновити існуючий гаманець";
+"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Використання аутентифікації Android";
 "id_review" = "Огляд";
 "id_s_blocks_left" = "%@ блоків залишилось";
@@ -340,6 +345,7 @@
 "id_tor_connectivity_disabled" = "З'єднання з Tor розірвано!";
 "id_tor_will_use_1s_and_only_work" = "Tor використовуватиме %1$@ і працюватиме тільки в тому випадку, якщо ви використовуєте проксі Orbot або увімкнений Tor";
 "id_total_assets" = "Загальна сума активів";
+"id_total_balance" = "Total Balance";
 "id_total_with_fee" = "Всього з комісією";
 "id_touch_id" = "Touch ID";
 "id_touch_to_display" = "Торкніться для відображення";
@@ -389,8 +395,10 @@
 "id_wrong_choice_check_your" = "Неправильний вибір. Перевірте вашу мнемонічну фразу та здійсніть іншу спробу.";
 "id_year" = "рік";
 "id_years" = "років";
+"id_you_are_not_connected" = "You are not connected";
 "id_you_are_not_connected_please" = "Ви не підключені, будь ласка, зачекайте";
 "id_you_are_not_connected_to_the" = "Ви не підключені до мережі Інтернет. Підключіться і повторіть спробу.";
+"id_you_are_now_connected" = "You are now connected";
 "id_you_have_control_on_your_funds" = "Ваші кошти у вас під контролем";
 "id_you_have_full_control_of_your" = "Ви повністю контролюєте свої кошти.";
 "id_you_have_received_s" = "Ви отримали %@";

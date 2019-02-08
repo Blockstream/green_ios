@@ -60,7 +60,7 @@ class TabViewController: UITabBarController {
             if connected {
                 self.snackbar = SnackBar(NSLocalizedString("id_you_are_now_connected", comment: ""), action: false)
             } else {
-                self.snackbar = SnackBar(NSLocalizedString("id_you_are_not_connected_please", comment: ""), action: true)
+                self.snackbar = SnackBar(NSLocalizedString("id_you_are_not_connected", comment: ""), action: true)
                 self.snackbar.button.setTitle(NSLocalizedString("id_retry", comment: ""), for: .normal)
                 self.snackbar.button.addTarget(self, action:#selector(self.snackbarClick), for: .touchUpInside)
             }

@@ -45,6 +45,7 @@
 "id_cant_connect_to_this_url" = "Не удается подключиться к этому URL";
 "id_change" = "СДАЧА";
 "id_choose" = "Выбрать";
+"id_choose_method_to_authorize_the" = "Choose method to authorize the action";
 "id_choose_twofactor_authentication" = "Выберите метод двухфакторной аутентификации";
 "id_choose_your_network" = "Выберите сеть";
 "id_clear" = "ОЧИСТИТЬ";
@@ -136,7 +137,7 @@
 "id_green_is_a_noncustodial_wallet" = "Green - кошелек, который позволяет полностью контролировать средства только его обладателю";
 "id_green_logo" = "Логотип кошелька Green";
 "id_green_mnemonic_qr_code" = "Мнемонический QR-код кошелька Green";
-"id_green_uses_touch_id_and_face_id" = "Для быстрого доступа к кошельку Green используется Touch ID и Face ID ";
+"id_green_uses_biometric" = "Green uses biometric authentication to allow easy access to the wallet";
 "id_hash" = "Хеш";
 "id_high" = "Высокий";
 "id_hold_your_nfc_tag_close_to_the" = "Держите NFC-тег рядом с вашим устройством";
@@ -196,8 +197,11 @@
 "id_network" = "СЕТЬ";
 "id_network_configuration" = "Конфигурация сети";
 "id_network_monitor" = "Сетевой монитор";
+"id_new_incoming_transaction_in" = "New incoming transaction in account %@ (%@).";
+"id_new_outgoing_transaction_from" = "New outgoing transaction from account %@ (%@).";
 "id_new_s_transaction_of_s_in" = "Новая %@ транзакция %@ на аккаунте %@.";
 "id_new_transaction" = "Новая транзакция";
+"id_new_transaction_involving" = "New transaction involving accounts %@.";
 "id_next" = "Следующий";
 "id_nfc_logo" = "Логотип NFC";
 "id_nfc_tags_written" = "NFC-теги:";
@@ -271,6 +275,7 @@
 "id_reset_spv" = "Сбросить SPV";
 "id_restore" = "Восстановить";
 "id_restore_existing_wallet" = "Восстановить существующий кошелек";
+"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Использование аутентификации Android";
 "id_review" = "Обзор";
 "id_s_blocks_left" = "%@ блоков осталось";
@@ -340,6 +345,7 @@
 "id_tor_connectivity_disabled" = "Соединение с Tor разорвано!";
 "id_tor_will_use_1s_and_only_work" = "Tor будет использовать %1$@ и будет работать только в том случае, если вы используете прокси Orbot или включен Tor";
 "id_total_assets" = "Общая сумма активов";
+"id_total_balance" = "Total Balance";
 "id_total_with_fee" = "Всего с комиссией";
 "id_touch_id" = "Touch ID";
 "id_touch_to_display" = "Коснитесь для отображения";
@@ -389,8 +395,10 @@
 "id_wrong_choice_check_your" = "Неправильный выбор. Проверьте вашу мнемоническую фразу и повторите попытку.";
 "id_year" = "год";
 "id_years" = "лет";
+"id_you_are_not_connected" = "You are not connected";
 "id_you_are_not_connected_please" = "Вы не подключены, подождите";
 "id_you_are_not_connected_to_the" = "Вы не подключены к Интернету. Подключитесь и повторите попытку.";
+"id_you_are_now_connected" = "You are now connected";
 "id_you_have_control_on_your_funds" = "Ваши средства у вас под контролем.";
 "id_you_have_full_control_of_your" = "Вы полностью контролируете свои средства.";
 "id_you_have_received_s" = "Вы получили %@";

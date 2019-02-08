@@ -39,6 +39,7 @@ class EditScreenLockSettings: UIViewController, NVActivityIndicatorViewable {
             bioSwitch.isEnabled = false
             pinSwitch.isOn = false
             pinSwitch.isEnabled = false
+            helpLabel.numberOfLines = 0
             helpLabel.text = String(format: NSLocalizedString("id_there_is_already_a_pin_set_for", comment: ""), getNetwork())
         } else if screenlock == .None {
             bioSwitch.isOn = false

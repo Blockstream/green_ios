@@ -1,2 +1,2 @@
-NSFaceIDUsageDescription = "Green은 Touch ID와 Face ID를 사용하여 지갑을 손쉽게 사용할 수 있게 합니다.";
+NSFaceIDUsageDescription = "Green uses biometric authentication to allow easy access to the wallet";
 NSCameraUsageDescription = "카메라를 사용하기 위해 카메라에 대한 접근 권한을 활성화하세요.";
