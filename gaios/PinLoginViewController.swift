@@ -254,11 +254,15 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
 
-    @objc func back(sender: UIBarButtonItem) {
+    @objc func back(sender: AnyObject) {
         if(setPinMode || editPinMode) {
             self.navigationController?.popViewController(animated: true)
         } else {
             self.performSegue(withIdentifier: "entrance", sender: nil)
         }
+    }
+    
+    @IBAction func cancelClicked(_ sender: UIButton) {
+        back(sender: self)
     }
 }
