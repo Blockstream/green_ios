@@ -77,7 +77,7 @@ class WatchOnlySignIn: KeyboardViewController, NVActivityIndicatorViewable {
         }.ensure {
             self.stopAnimating()
         }.done {
-            AccountStore.shared.isWatchOnly = true
+            getGAService().isWatchOnly = true
             self.performSegue(withIdentifier: "main", sender: nil)
         }.catch { error in
             let message: String

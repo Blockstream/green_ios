@@ -34,11 +34,20 @@ class GreenAddressService {
     private var settings: Settings? = nil
     private var twoFactorReset: TwoFactorReset? = nil
     private var events = Events([])
-
     static var restoreFromMnemonics = false
+    var blockHeight: UInt32 = 0
+    var isWatchOnly: Bool = false
 
     public init() {
         session = try! Session(notificationCompletionHandler: newNotification)
+    }
+
+    func reset() {
+        settings = nil
+        twoFactorReset = nil
+        events = Events([])
+        blockHeight = 0
+        isWatchOnly = false
     }
 
     func getSession() -> Session {
@@ -57,6 +66,10 @@ class GreenAddressService {
         return events
     }
 
+    func getBlockheight() -> UInt32 {
+        return blockHeight
+    }
+
     func newNotification(notification: [String : Any]?) {
         guard let dict = notification else {
             return
@@ -66,8 +79,8 @@ class GreenAddressService {
         let data = dict[event.rawValue] as! [String: Any]
         switch event {
             case .Block:
-                let blockHeight = data["block_height"] as! UInt32
-                AccountStore.shared.setBlockHeight(height: blockHeight)
+                guard let height = data["block_height"] as? UInt32 else { break }
+                blockHeight = height
                 post(event: .Block, data: data)
             case .Transaction:
                 do {
@@ -103,16 +116,15 @@ class GreenAddressService {
                 } catch { break }
                 post(event: .Settings, data: data)
             case .Network:
-                print(data)
-                let json = try! JSONSerialization.data(withJSONObject: data, options: [])
-                let connection = try? JSONDecoder().decode(Connection.self, from: json)
-                if let _ = connection {
-                    if connection!.loginRequired == true {
+                do {
+                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                    let connection = try JSONDecoder().decode(Connection.self, from: json)
+                    if connection.loginRequired == true {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
                     } else {
                         post(event: EventType.Network, data: data)
                     }
-                }
+                } catch { break }
                 break
             default:
                 break

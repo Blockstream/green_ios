@@ -24,7 +24,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             return twoFactorConfig.isDisputeActive
         }
     }
-    var isWatchOnly: Bool { get { return AccountStore.shared.isWatchOnly } }
+    var isWatchOnly: Bool { get { return getGAService().isWatchOnly } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,8 +40,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     func reloadData() {
         let bgq = DispatchQueue.global(qos : .background)
+        let isWatchOnly = getGAService().isWatchOnly
         Guarantee().compactMap(on: bgq) {
-            if !AccountStore.shared.isWatchOnly {
+            if !isWatchOnly {
                 self.username = try getGAService().getSession().getWatchOnlyUsername()
                 let dataTwoFactorConfig = try getGAService().getSession().getTwoFactorConfig()
                 self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
@@ -248,7 +249,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func logout() {
-        AccountStore.shared.isWatchOnly = false
         getAppDelegate().lock()
     }
 

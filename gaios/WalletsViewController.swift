@@ -88,7 +88,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        if AccountStore.shared.isWatchOnly {
+        if getGAService().isWatchOnly {
             return CGSize.zero
         }
         return CGSize(width: self.view.frame.width, height: 180)

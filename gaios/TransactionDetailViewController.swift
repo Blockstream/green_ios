@@ -157,15 +157,15 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         if transaction.blockHeight == 0 {
             statusLabel.textColor = UIColor.red
             statusLabel.text = NSLocalizedString("id_unconfirmed", comment: "")
-        } else if AccountStore.shared.getBlockheight() - (transaction.blockHeight) < 5 {
-            let blocks = AccountStore.shared.getBlockheight() - transaction.blockHeight + 1
+        } else if getGAService().getBlockheight() - (transaction.blockHeight) < 5 {
+            let blocks = getGAService().getBlockheight() - transaction.blockHeight + 1
             statusLabel.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), blocks)
         } else {
             statusLabel.text = NSLocalizedString("id_completed", comment: "")
             statusImage.image = UIImage(named: "check")
             statusImage.isHidden = false
         }
-        if transaction.canRBF && !AccountStore.shared.isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive {
+        if transaction.canRBF && !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive {
             statusImage.image = UIImage(named: "arrow_right")
             statusImage.isHidden = false
             increasefeeLabel.isHidden = false

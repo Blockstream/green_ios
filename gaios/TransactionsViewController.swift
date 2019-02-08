@@ -110,8 +110,8 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         if item.blockHeight == 0 {
             cell.status.text = NSLocalizedString("id_unconfirmed", comment: "")
             cell.status.textColor = UIColor.red
-        } else if (AccountStore.shared.getBlockheight() - item.blockHeight < 5) {
-            let confirmCount = AccountStore.shared.getBlockheight() - item.blockHeight + 1
+        } else if (getGAService().getBlockheight() - item.blockHeight < 5) {
+            let confirmCount = getGAService().getBlockheight() - item.blockHeight + 1
             cell.status.textColor = UIColor.customTitaniumLight()
             cell.status.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
         } else {
@@ -183,7 +183,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
             view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             if twoFactorReset.isResetActive {
                 view.actionsView.isHidden = true
-            } else if AccountStore.shared.isWatchOnly {
+            } else if getGAService().isWatchOnly {
                 view.sendImage.image = UIImage(named: "qr_sweep")
                 view.sendLabel.text = NSLocalizedString("id_sweep", comment: "").uppercased()
             }

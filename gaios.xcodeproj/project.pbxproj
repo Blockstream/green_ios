@@ -33,11 +33,9 @@
 		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
-		0980B4FC21818DF4007715F4 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */; };
 		098192832176D05500D8434F /* GreenApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* GreenApplication.swift */; };
 		098192852176D12F00D8434F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192842176D12F00D8434F /* main.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
-		098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247A20ED7AB100D7BC38 /* AccountStore.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
 		0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85920DD859200F6AAAB /* SendBtcViewController.swift */; };
 		0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */; };
@@ -134,11 +132,9 @@
 		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
-		0980B4FB21818DF4007715F4 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
 		098192822176D05500D8434F /* GreenApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenApplication.swift; sourceTree = "<group>"; };
 		098192842176D12F00D8434F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
-		098E247A20ED7AB100D7BC38 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
 		0992F85920DD859200F6AAAB /* SendBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcViewController.swift; sourceTree = "<group>"; };
 		0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveBtcViewController.swift; sourceTree = "<group>"; };
@@ -291,7 +287,6 @@
 				092C7BD420D599D700F90DF2 /* UIView+helpers.swift */,
 				09DA612520E73A2300C3EA03 /* String+random.swift */,
 				0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */,
-				098E247A20ED7AB100D7BC38 /* AccountStore.swift */,
 				092D05B221277E2E00B9B7CD /* Date+helpers.swift */,
 				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
@@ -674,7 +669,6 @@
 				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
-				098E247B20ED7AB100D7BC38 /* AccountStore.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,

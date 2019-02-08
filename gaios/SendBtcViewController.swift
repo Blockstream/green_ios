@@ -117,7 +117,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
         createSweepTransaction(userInput: userInput, feeRate: feeRate).compactMap { tx -> Promise<Transaction> in
             if tx.error.isEmpty {
                 return Promise<Transaction> { seal in seal.fulfill(tx) }
-            } else if tx.error != "id_invalid_private_key" || AccountStore.shared.isWatchOnly {
+            } else if tx.error != "id_invalid_private_key" || getGAService().isWatchOnly {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
             if self.transaction != nil {
