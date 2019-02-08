@@ -70,26 +70,37 @@ class GreenAddressService {
                 AccountStore.shared.setBlockHeight(height: blockHeight)
                 post(event: .Block, data: data)
             case .Transaction:
-                let json = try! JSONSerialization.data(withJSONObject: data, options: [])
-                let txEvent = try! JSONDecoder().decode(TransactionEvent.self, from: json)
-                events.append(Event(type: .Transaction, value: data))
-                post(event: .Transaction, data: data)
-
-                // TODO refactoring notifications
-                if txEvent.type == "incoming" {
-                    updateAddresses(txEvent.subAccounts.map{ UInt32($0)})
-                    DispatchQueue.main.async {
-                        Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT_DURATION)
+                do {
+                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                    let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
+                    events.append(Event(type: .Transaction, value: data))
+                    if txEvent.type == "incoming" {
+                        updateAddresses(txEvent.subAccounts.map{ UInt32($0)})
+                        DispatchQueue.main.async {
+                            Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT_DURATION)
+                        }
                     }
-                }
+                } catch { break }
+                post(event: .Transaction, data: data)
             case .TwoFactorReset:
-                let json = try! JSONSerialization.data(withJSONObject: data, options: [])
-                self.twoFactorReset = try! JSONDecoder().decode(TwoFactorReset.self, from: json)
-                events.append(Event(type: .TwoFactorReset, value: data))
+                do {
+                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                    self.twoFactorReset = try JSONDecoder().decode(TwoFactorReset.self, from: json)
+                    if self.twoFactorReset!.isResetActive {
+                        events.append(Event(type: .TwoFactorReset, value: data))
+                    }
+                } catch { break }
                 post(event: .TwoFactorReset, data: data)
             case .Settings:
-                let json = try! JSONSerialization.data(withJSONObject: data, options: [])
-                self.settings = try! JSONDecoder().decode(Settings.self, from: json)
+                do {
+                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                    self.settings = try JSONDecoder().decode(Settings.self, from: json)
+                    let dataTwoFactorConfig = try getSession().getTwoFactorConfig()
+                    let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+                    if twoFactorConfig.enableMethods.count <= 1 {
+                        events.append(Event(type: .Settings, value: data))
+                    }
+                } catch { break }
                 post(event: .Settings, data: data)
             case .Network:
                 print(data)

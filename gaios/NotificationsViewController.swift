@@ -72,11 +72,11 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
             let txWalletName = wallets.isEmpty ? "" : walletsList[0].localizedName()
             let description = String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, txAmount, txWalletName)
             return (title, description)
-        case .TwoFactorReset, .Settings:
+        case .TwoFactorReset:
             guard let twoFactorReset = getGAService().getTwoFactorReset() else { break }
-            if twoFactorReset.isResetActive {
-                return (NSLocalizedString("id_twofactor_reset_in_progress", comment: ""), "")
-            }
+            if !twoFactorReset.isResetActive { break }
+            return (NSLocalizedString("id_twofactor_reset_in_progress", comment: ""), "")
+        case .Settings:
             let title = NSLocalizedString("id_set_up_twofactor_authentication", comment: "")
             var description = ""
             guard let _ = twoFactorConfig else { break }
