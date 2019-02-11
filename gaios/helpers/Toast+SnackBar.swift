@@ -56,21 +56,19 @@ class Toast {
     }
 }
 
-class SnackBar {
+class SnackBar: UIStackView {
 
-    var message = ""
-    var action = false
-    static let padding = CGFloat(16)
-    let TAG = 100
-    var stackView = UIStackView()
-    var button = UIButton()
-    var label = Label()
+    private static let padding = CGFloat(16)
+    let button = UIButton()
+    let label = Label()
 
-    init() { }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
 
-    init(_ message: String, action: Bool) {
-        self.message = message
-        self.action = action
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     class Label: UILabel {
@@ -79,52 +77,56 @@ class SnackBar {
         }
     }
 
-    func show() {
-        guard let window = UIApplication.shared.keyWindow else { return }
-        self.hide()
-
+    func setup() {
         // setup stackView container
-        stackView.axis = .horizontal
-        stackView.distribution = .fill
-        stackView.alignment = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.tag = TAG
+        axis = .horizontal
+        distribution = .fill
+        alignment = .fill
+        translatesAutoresizingMaskIntoConstraints = false
+        tag = 100
+        isUserInteractionEnabled = true
 
         // setup label message
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = message
         label.numberOfLines = 1
         label.textAlignment = .left
         label.textColor = UIColor.white
         label.font = UIFont.systemFont(ofSize: 16)
         label.adjustsFontSizeToFitWidth = true
         label.backgroundColor = UIColor.customTitaniumMedium()
-        stackView.addArrangedSubview(label)
+        addArrangedSubview(label)
 
-        if action {
-            // setup action button
-            button.setTitleColor(UIColor.red, for: .normal)
-            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.backgroundColor = UIColor.customTitaniumMedium()
-            stackView.addArrangedSubview(button)
-        }
-        window.addSubview(stackView)
+        // setup action button
+        button.setTitleColor(UIColor.red, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = UIColor.customTitaniumMedium()
+        addArrangedSubview(button)
+    }
 
-        // setup constrains
-        let estimateRect = label.attributedText?.boundingRect(with: stackView.frame.size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
+    override func updateConstraints() {
+        super.updateConstraints()
+        guard let _ = self.superview else { return }
+        let estimateRect = label.attributedText?.boundingRect(with: frame.size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
         let estimateHeight = estimateRect!.height + SnackBar.padding * 2
         label.heightAnchor.constraint(equalToConstant: estimateHeight).isActive = true
-        stackView.bottomAnchor.constraint(equalTo: window.bottomAnchor, constant: -50).isActive = true
-        stackView.widthAnchor.constraint(equalTo: window.widthAnchor).isActive = true
-        if action {
-            button.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        bottomAnchor.constraint(equalTo: superview!.bottomAnchor, constant: -48).isActive = true
+        widthAnchor.constraint(equalTo: superview!.widthAnchor).isActive = true
+        button.widthAnchor.constraint(equalToConstant: 100).isActive = true
+    }
+
+    func addFromSuperview(_ superview: UIView) {
+        if superview.viewWithTag(tag) == nil {
+            superview.addSubview(self)
+            bringSubview(toFront: self)
+            updateConstraints()
         }
     }
 
-    func hide() {
-        guard let window = UIApplication.shared.keyWindow else { return }
-        if let view = window.viewWithTag(TAG) {
+    override func removeFromSuperview() {
+        super.removeFromSuperview()
+        guard let _ = self.superview else { return }
+        if let view = self.superview!.viewWithTag(tag) {
             view.removeFromSuperview()
         }
     }

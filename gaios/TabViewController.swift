@@ -4,10 +4,10 @@ import PromiseKit
 
 class TabViewController: UITabBarController {
 
-    static let AUTOLOCK = "autolock"
-    var startTime = DispatchTime.now()
-    var endTime = DispatchTime.now()
-    var snackbar = SnackBar()
+    private static let AUTOLOCK = "autolock"
+    private let snackbar = SnackBarNetwork()
+    private var startTime = DispatchTime.now()
+    private var endTime = DispatchTime.now()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,7 +18,7 @@ class TabViewController: UITabBarController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: TabViewController.AUTOLOCK), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: Notification.Name.UIApplicationWillEnterForeground, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(willResignActive), name: Notification.Name.UIApplicationWillResignActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeConnection), name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateConnection), name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -53,30 +53,75 @@ class TabViewController: UITabBarController {
         startTime = DispatchTime.now()
     }
 
-    @objc func changeConnection(_ notification: NSNotification) {
+    @objc func updateConnection(_ notification: NSNotification) {
         guard let connected = notification.userInfo?["connected"] as? Bool else { return }
         Guarantee().done {
-            self.snackbar.hide()
             if connected {
-                self.snackbar = SnackBar(NSLocalizedString("id_you_are_now_connected", comment: ""), action: false)
+                self.snackbar.connected(self.view)
             } else {
-                self.snackbar = SnackBar(NSLocalizedString("id_you_are_not_connected", comment: ""), action: true)
-                self.snackbar.button.setTitle(NSLocalizedString("id_retry", comment: ""), for: .normal)
-                self.snackbar.button.addTarget(self, action:#selector(self.snackbarClick), for: .touchUpInside)
-            }
-            self.snackbar.show()
-            if connected {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.milliseconds(2000)) {
-                    self.snackbar.hide()
+                guard let waiting = notification.userInfo?["waiting"] as? Int else { return }
+                if waiting < 5 {
+                    self.snackbar.removeFromSuperview()
+                } else {
+                    self.snackbar.disconnected(self.view, seconds: waiting)
                 }
             }
         }
     }
+}
 
-    @objc func snackbarClick(_ sender: UIButton) {
+class SnackBarNetwork: SnackBar {
+    var timer = Timer()
+    var seconds = 0
+
+    func disconnected(_ superview: UIView, seconds: Int) {
+        self.seconds = seconds
+        label.text = String(format: "Retry in %ds...", seconds)
+        button.setTitle(NSLocalizedString("id_retry", comment: "").uppercased(), for: .normal)
+        button.addTarget(self, action:#selector(self.click), for: .touchUpInside)
+        button.isHidden = false
+        if timer.isValid { timer.invalidate() }
+        timer = Timer.scheduledTimer(timeInterval: 1.0,
+                                                  target: self,
+                                                  selector: #selector(self.update(_:)),
+                                                  userInfo: nil,
+                                                  repeats: true)
+        addFromSuperview(superview)
+    }
+
+    func connected(_ superview: UIView) {
+        label.text = NSLocalizedString("id_you_are_now_connected", comment: "")
+        button.isHidden = true
+        addFromSuperview(superview)
+        if timer.isValid { timer.invalidate() }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.milliseconds(2000)) {
+            self.removeFromSuperview()
+        }
+    }
+
+    override func removeFromSuperview() {
+        super.removeFromSuperview()
+        if timer.isValid { timer.invalidate() }
+    }
+
+    @objc private func update(_ timer: Timer) {
+        Guarantee().done {
+            if self.seconds > 0 {
+                self.seconds -= 1
+                self.label.text = String(format: "Retry in %ds...", self.seconds)
+            }
+        }
+    }
+
+    @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(on: bgq){
+        Guarantee().map(){
+            self.removeFromSuperview()
+        }.map(on: bgq){
             try getSession().reconnectHint(hint: ["hint": "now"])
         }.catch { _ in }
     }
 }
+
+
+
