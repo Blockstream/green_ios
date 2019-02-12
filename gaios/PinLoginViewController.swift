@@ -13,7 +13,8 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var label5: UILabel!
     @IBOutlet weak var attempts: UILabel!
     @IBOutlet weak var skipButton: UIButton!
-
+    @IBOutlet weak var cancelButton: UIButton!
+    
     var pinCode = String()
     var pinConfirm = String()
 
@@ -43,6 +44,9 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         } else {
             title = NSLocalizedString("id_enter_pin", comment: "")
         }
+        
+        // set cancel button text
+        cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
 
         // show pin label
         labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
@@ -263,6 +267,6 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     @IBAction func cancelClicked(_ sender: UIButton) {
-        back(sender: self)
+        resetEverything()
     }
 }
