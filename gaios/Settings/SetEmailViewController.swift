@@ -8,20 +8,14 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var getCodeButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
-    var errorLabel: UIErrorLabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       textField.attributedPlaceholder = NSAttributedString(string: "email@domainm.com",
+        textField.becomeFirstResponder()
+        textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         getCodeButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         title = NSLocalizedString("id_enter_your_email_address", comment: "")
-        errorLabel = UIErrorLabel(self.view)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        getCodeButton.backgroundColor = UIColor.customTitaniumLight()
     }
 
     override func viewDidLayoutSubviews() {
@@ -29,11 +23,16 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
         getCodeButton.applyGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()])
     }
 
+    override func keyboardWillShow(notification: NSNotification) {
+        let userInfo = notification.userInfo! as NSDictionary
+        let keyboardFrame = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
+        getCodeButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.cgRectValue.height).isActive = true
+    }
+
     @IBAction func getCodeClicked(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
         let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: self.textField.text!)
         firstly {
-            self.errorLabel.isHidden = true
             startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
@@ -45,14 +44,13 @@ class SetEmailViewController: KeyboardViewController, NVActivityIndicatorViewabl
         }.done { _ in
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
-            self.errorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
                 case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    self.errorLabel.text = localizedDescription
+                    Toast.show(localizedDescription)
                 }
             } else {
-                self.errorLabel.text = error.localizedDescription
+                Toast.show(error.localizedDescription)
             }
         }
     }

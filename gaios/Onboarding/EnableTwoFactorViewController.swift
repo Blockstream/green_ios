@@ -7,7 +7,6 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
 
     @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var walletButton: UIButton!
-    var errorLabel: UIErrorLabel!
 
     struct FactorItem {
         var name: String
@@ -15,13 +14,12 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
         var enabled: Bool
         var type: TwoFactorType
     }
-    var factors = [FactorItem]()
+    fileprivate var factors = [FactorItem]()
     var isHiddenWalletButton: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_twofactor_authentication", comment: "")
-        errorLabel = UIErrorLabel(self.view)
         walletButton.isHidden = isHiddenWalletButton
         walletButton.setTitle(NSLocalizedString("id_go_to_wallet", comment: ""), for: .normal)
     }
@@ -103,7 +101,6 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
         let bgq = DispatchQueue.global(qos: .background)
         let config = TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
         firstly {
-            self.errorLabel.isHidden = true
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
@@ -115,14 +112,13 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
         }.done { _ in
             self.reloadData()
         }.catch { error in
-            self.errorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
                 case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    self.errorLabel.text = localizedDescription
+                    Toast.show(localizedDescription)
                 }
             } else {
-                self.errorLabel.text = error.localizedDescription
+                Toast.show(error.localizedDescription)
             }
         }
     }
