@@ -38,6 +38,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         reloadData()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard let controller = self.tabBarController as? TabViewController else { return }
+        controller.snackbar.isHidden = false
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        guard let controller = self.tabBarController as? TabViewController else { return }
+        controller.snackbar.isHidden = true
+    }
+
     func reloadData() {
         let bgq = DispatchQueue.global(qos : .background)
         let isWatchOnly = getGAService().isWatchOnly

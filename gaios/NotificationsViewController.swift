@@ -20,17 +20,25 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.separatorColor = UIColor.customTitaniumLight()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadData(_:)), name: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadData(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         reloadData(nil)
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard let controller = self.tabBarController as? TabViewController else { return }
+        controller.snackbar.isHidden = false
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        guard let controller = self.tabBarController as? TabViewController else { return }
+        controller.snackbar.isHidden = true
     }
 
     @objc func reloadData(_ notification: NSNotification?) {

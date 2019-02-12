@@ -44,11 +44,19 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         loadTransactions()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard let controller = self.tabBarController as? TabViewController else { return }
+        controller.snackbar.isHidden = false
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+        guard let controller = self.tabBarController as? TabViewController else { return }
+        controller.snackbar.isHidden = true
     }
 
     override func viewDidLayoutSubviews() {

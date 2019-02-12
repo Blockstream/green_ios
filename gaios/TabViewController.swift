@@ -5,13 +5,9 @@ import PromiseKit
 class TabViewController: UITabBarController {
 
     private static let AUTOLOCK = "autolock"
-    private let snackbar = SnackBarNetwork()
+    let snackbar = SnackBarNetwork()
     private var startTime = DispatchTime.now()
     private var endTime = DispatchTime.now()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
