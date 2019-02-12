@@ -84,7 +84,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         // Network settings
         let setupPin = SettingsItem(
-            title: "Setup PIN",
+            title: NSLocalizedString("id_setup_pin_and_", comment: ""),
             subtitle: "",
             section: .network,
             type: .SetupPin)

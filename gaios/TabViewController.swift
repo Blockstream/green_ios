@@ -72,8 +72,8 @@ class SnackBarNetwork: SnackBar {
 
     func disconnected(_ superview: UIView, seconds: Int) {
         self.seconds = seconds
-        label.text = String(format: "Retry in %ds...", seconds)
-        button.setTitle(NSLocalizedString("id_retry", comment: "").uppercased(), for: .normal)
+        label.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ss_", comment: ""), seconds)
+        button.setTitle(NSLocalizedString("id_try_now", comment: "").uppercased(), for: .normal)
         button.addTarget(self, action:#selector(self.click), for: .touchUpInside)
         button.isHidden = false
         if timer.isValid { timer.invalidate() }
@@ -104,7 +104,7 @@ class SnackBarNetwork: SnackBar {
         Guarantee().done {
             if self.seconds > 0 {
                 self.seconds -= 1
-                self.label.text = String(format: "Retry in %ds...", self.seconds)
+                self.label.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ss_", comment: ""), self.seconds)
             }
         }
     }
