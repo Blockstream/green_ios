@@ -84,7 +84,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         // Network settings
         let setupPin = SettingsItem(
-            title: NSLocalizedString("id_setup_pin_and_", comment: ""),
+            title: String(format: NSLocalizedString(AuthenticationTypeHandler.supportsBiometricAuthentication() ? "id_setup_pin_and_s" : "id_setup_pin", comment: ""), NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "")),
             subtitle: "",
             section: .network,
             type: .SetupPin)
