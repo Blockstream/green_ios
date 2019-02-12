@@ -214,6 +214,7 @@
 "id_no_recipients" = "No recipients";
 "id_no_utxos_found" = "未找到UTXO";
 "id_normal" = "正常";
+"id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
 "id_notifications" = "通知";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "还可再试一次";
@@ -275,7 +276,6 @@
 "id_reset_spv" = "重置SPV";
 "id_restore" = "恢复";
 "id_restore_existing_wallet" = "Restore Existing Wallet";
-"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "再次使用安卓的验证";
 "id_review" = "审查";
 "id_s_blocks_left" = "剩余%@个区块";
@@ -306,6 +306,7 @@
 "id_setting_updated" = "Setting updated";
 "id_settings" = "设置";
 "id_setup_pin" = "Setup PIN";
+"id_setup_pin_and_s" = "Setup PIN and %@";
 "id_share" = "分享";
 "id_share_address" = "分享地址";
 "id_show_fiat" = "显示法币";
@@ -355,6 +356,7 @@
 "id_transaction_details" = "交易细节";
 "id_transaction_id" = "Transaction ID";
 "id_transaction_sent" = "交易已发送";
+"id_try_now" = "Try now";
 "id_two_factor_authentication" = "TWO FACTOR AUTHENTICATION";
 "id_twofactor" = "TWO-FACTOR";
 "id_twofactor_authentication" = "Two-Factor authentication";

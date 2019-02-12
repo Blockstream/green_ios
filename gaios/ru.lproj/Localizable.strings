@@ -214,6 +214,7 @@
 "id_no_recipients" = "Получатели отсутствуют";
 "id_no_utxos_found" = "UTXO не обнаружен";
 "id_normal" = "Нормальный";
+"id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
 "id_notifications" = "Уведомления";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Осталась одна попытка";
@@ -275,7 +276,6 @@
 "id_reset_spv" = "Сбросить SPV";
 "id_restore" = "Восстановить";
 "id_restore_existing_wallet" = "Восстановить существующий кошелек";
-"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Использование аутентификации Android";
 "id_review" = "Обзор";
 "id_s_blocks_left" = "%@ блоков осталось";
@@ -306,6 +306,7 @@
 "id_setting_updated" = "Настройки обновлены";
 "id_settings" = "Настройки";
 "id_setup_pin" = "Установить PIN-код";
+"id_setup_pin_and_s" = "Setup PIN and %@";
 "id_share" = "Поделиться";
 "id_share_address" = "Поделиться адресом";
 "id_show_fiat" = "Показать фиат";
@@ -355,6 +356,7 @@
 "id_transaction_details" = "Детали транзакции";
 "id_transaction_id" = " ID транзакции";
 "id_transaction_sent" = "Транзакция отправлена";
+"id_try_now" = "Try now";
 "id_two_factor_authentication" = "ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ";
 "id_twofactor" = "ДВУХФАКТОРНЫЙ";
 "id_twofactor_authentication" = "Двухфакторная аутентификация";

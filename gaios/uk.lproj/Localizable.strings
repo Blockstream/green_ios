@@ -214,6 +214,7 @@
 "id_no_recipients" = "Отримувачі відсутні";
 "id_no_utxos_found" = "UTXO не знайдено";
 "id_normal" = "Нормальний";
+"id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
 "id_notifications" = "Повідомлення";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Залишилась одна спроба";
@@ -275,7 +276,6 @@
 "id_reset_spv" = "Скинути SPV";
 "id_restore" = "Відновити";
 "id_restore_existing_wallet" = "Відновити існуючий гаманець";
-"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Використання аутентифікації Android";
 "id_review" = "Огляд";
 "id_s_blocks_left" = "%@ блоків залишилось";
@@ -306,6 +306,7 @@
 "id_setting_updated" = "Налаштування оновлені";
 "id_settings" = "Налаштування";
 "id_setup_pin" = "Встановити PIN-код";
+"id_setup_pin_and_s" = "Setup PIN and %@";
 "id_share" = "Поділитися";
 "id_share_address" = "Поділитися адресою";
 "id_show_fiat" = "Показати фіат";
@@ -355,6 +356,7 @@
 "id_transaction_details" = "Деталі транзакції";
 "id_transaction_id" = "ID транзакції";
 "id_transaction_sent" = "Транзакція надіслана";
+"id_try_now" = "Try now";
 "id_two_factor_authentication" = "ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ";
 "id_twofactor" = "ДВОФАКТОРНИЙ";
 "id_twofactor_authentication" = "Двофакторна аутентифікація";

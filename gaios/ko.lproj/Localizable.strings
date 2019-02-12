@@ -214,6 +214,7 @@
 "id_no_recipients" = "수령인 없음";
 "id_no_utxos_found" = "UTXO 찾지 못함";
 "id_normal" = "보통";
+"id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
 "id_notifications" = "알람";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "시도 한번 남음";
@@ -275,7 +276,6 @@
 "id_reset_spv" = "SPV 새로고침";
 "id_restore" = "복구";
 "id_restore_existing_wallet" = "기존 지갑 복원";
-"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "안드로이드 인증 재사용하기";
 "id_review" = "검토";
 "id_s_blocks_left" = "%@ 블록 남음";
@@ -306,6 +306,7 @@
 "id_setting_updated" = "설정 업데이트됨";
 "id_settings" = "설정";
 "id_setup_pin" = "비밀번호 설정하기";
+"id_setup_pin_and_s" = "Setup PIN and %@";
 "id_share" = "공유하기";
 "id_share_address" = "주소 내보내기";
 "id_show_fiat" = "명목화폐 보기";
@@ -355,6 +356,7 @@
 "id_transaction_details" = "상세 거래 내역";
 "id_transaction_id" = "Transaction ID";
 "id_transaction_sent" = "거래 보냄";
+"id_try_now" = "Try now";
 "id_two_factor_authentication" = "2FA ";
 "id_twofactor" = "TWO-FACTOR";
 "id_twofactor_authentication" = "2FA";

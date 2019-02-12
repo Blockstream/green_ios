@@ -214,6 +214,7 @@
 "id_no_recipients" = "No recipients";
 "id_no_utxos_found" = "Geen UTXO's gevonden";
 "id_normal" = "Normaal";
+"id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
 "id_notifications" = "Notificaties";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Nog één poging te gaan";
@@ -275,7 +276,6 @@
 "id_reset_spv" = "SPV resetten";
 "id_restore" = "Herstellen";
 "id_restore_existing_wallet" = "Restore Existing Wallet";
-"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Gebruik de authenticatie van Android";
 "id_review" = "Overzicht";
 "id_s_blocks_left" = "%1$@ blocks te gaan %2$d";
@@ -306,6 +306,7 @@
 "id_setting_updated" = "Setting updated";
 "id_settings" = "Instellingen";
 "id_setup_pin" = "Setup PIN";
+"id_setup_pin_and_s" = "Setup PIN and %@";
 "id_share" = "Delen";
 "id_share_address" = "Adres delen";
 "id_show_fiat" = "Fiat tonen";
@@ -355,6 +356,7 @@
 "id_transaction_details" = "Details transactie";
 "id_transaction_id" = "Transaction ID";
 "id_transaction_sent" = "Transactie verzonden";
+"id_try_now" = "Try now";
 "id_two_factor_authentication" = "TWO FACTOR AUTHENTICATION";
 "id_twofactor" = "TWO-FACTOR";
 "id_twofactor_authentication" = "Two-Factor authentication";

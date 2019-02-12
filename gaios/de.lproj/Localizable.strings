@@ -214,6 +214,7 @@
 "id_no_recipients" = "No recipients";
 "id_no_utxos_found" = "Keine UTXOs gefunden.";
 "id_normal" = "Normal";
+"id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
 "id_notifications" = "Nachrichten";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Ein Versuch verbleibend";
@@ -275,7 +276,6 @@
 "id_reset_spv" = "SPV rücksetzen";
 "id_restore" = "Wiederherstellen";
 "id_restore_existing_wallet" = "Restore Existing Wallet";
-"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "Androids Authentisierung wiederbenutzen";
 "id_review" = "Review";
 "id_s_blocks_left" = "%@Blocks übrig";
@@ -306,6 +306,7 @@
 "id_setting_updated" = "Setting updated";
 "id_settings" = "Einstellungen";
 "id_setup_pin" = "Setup PIN";
+"id_setup_pin_and_s" = "Setup PIN and %@";
 "id_share" = "Teilen";
 "id_share_address" = "Adresse teilen";
 "id_show_fiat" = "Fiatgeld zeigen";
@@ -355,6 +356,7 @@
 "id_transaction_details" = "Transaktionsdetails";
 "id_transaction_id" = "Transaction ID";
 "id_transaction_sent" = "Transaktion versandt";
+"id_try_now" = "Try now";
 "id_two_factor_authentication" = "TWO FACTOR AUTHENTICATION";
 "id_twofactor" = "TWO-FACTOR";
 "id_twofactor_authentication" = "Two-Factor authentication";

@@ -214,6 +214,7 @@
 "id_no_recipients" = "No recipients";
 "id_no_utxos_found" = "UTXOが見つかりません";
 "id_normal" = "正常";
+"id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
 "id_notifications" = "告知事項";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "残り一回";
@@ -275,7 +276,6 @@
 "id_reset_spv" = "SPVリセット";
 "id_restore" = "修復";
 "id_restore_existing_wallet" = "Restore Existing Wallet";
-"id_retry" = "Retry";
 "id_reuse_androids_authentication" = "アンドロイドの認証を再利用する";
 "id_review" = "レビュー";
 "id_s_blocks_left" = "残り %@ ブロック";
@@ -306,6 +306,7 @@
 "id_setting_updated" = "Setting updated";
 "id_settings" = "設定";
 "id_setup_pin" = "Setup PIN";
+"id_setup_pin_and_s" = "Setup PIN and %@";
 "id_share" = "シェアする";
 "id_share_address" = "シェア・アドレス";
 "id_show_fiat" = "法廷通貨表示";
@@ -355,6 +356,7 @@
 "id_transaction_details" = "トランザクション詳細";
 "id_transaction_id" = "Transaction ID";
 "id_transaction_sent" = "トランザクション送信完了";
+"id_try_now" = "Try now";
 "id_two_factor_authentication" = "TWO FACTOR AUTHENTICATION";
 "id_twofactor" = "TWO-FACTOR";
 "id_twofactor_authentication" = "Two-Factor authentication";
