@@ -10,38 +10,50 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
     @IBOutlet weak var fiatButton: UIButton!
     @IBOutlet weak var limitButtonConstraint: NSLayoutConstraint!
     @IBOutlet weak var descriptionLabel: UILabel!
-    var isFiat: Bool = true
-    var errorLabel: UIErrorLabel!
-    var limits: TwoFactorConfigLimits!
+    @IBOutlet weak var convertedLabel: UILabel!
+    fileprivate var isFiat = false
+    fileprivate var limits: TwoFactorConfigLimits!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_twofactor_threshold", comment: "")
         setLimitButton.setTitle(NSLocalizedString("id_set_twofactor_threshold", comment: ""), for: .normal)
+        limitTextField.becomeFirstResponder()
         limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        errorLabel = UIErrorLabel(self.view)
-        refresh()
-    }
-
-    func refresh() {
+        limitTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         guard let settings = getGAService().getSettings() else { return }
         limits = twoFactorConfig.limits
         isFiat = limits.isFiat
-        let amount: String
-        let subtitle: String
-        if isFiat == true {
-            amount = limits.fiat
-            subtitle = String(format: "%@ %@", amount, settings.getCurrency())
-        } else {
-            amount = limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!
-            subtitle = String(format: "%@ %@", amount, settings.denomination.toString())
-        }
+        let amount = isFiat ? limits.fiat : limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!
+        let subtitle = isFiat ? String(format: "%@ %@", amount, settings.getCurrency()) : String(format: "%@ %@", amount, settings.denomination.toString())
         limitTextField.text = amount
         descriptionLabel.text = String(format: NSLocalizedString("id_your_transaction_threshold_is_s", comment: ""), subtitle)
-        setFiatButton()
+        refresh()
+    }
+
+    override func keyboardWillShow(notification: NSNotification) {
+        let userInfo = notification.userInfo! as NSDictionary
+        let keyboardFrame = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
+        setLimitButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.cgRectValue.height).isActive = true
+    }
+
+    func refresh() {
+        guard let settings = getGAService().getSettings() else { return }
+        let satoshi = getSatoshi()
+        if isFiat {
+            fiatButton.setTitle(settings.getCurrency(), for: UIControlState.normal)
+            fiatButton.backgroundColor = UIColor.clear
+            fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            convertedLabel.text = "≈ " + String.toBtc(satoshi: satoshi)
+        } else {
+            fiatButton.setTitle(settings.denomination.toString(), for: UIControlState.normal)
+            fiatButton.backgroundColor = UIColor.customMatrixGreen()
+            fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            convertedLabel.text = "≈ " + String.toFiat(satoshi: satoshi)
+        }
     }
 
     @IBAction func setLimitClicked(_ sender: Any) {
@@ -57,7 +69,6 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
         }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            self.errorLabel.isHidden = true
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
@@ -69,33 +80,34 @@ class TwoFactorLimitViewController: KeyboardViewController, NVActivityIndicatorV
         }.done { _ in
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
-            self.errorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
                 case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    self.errorLabel.text = localizedDescription
+                    Toast.show(localizedDescription)
                 }
             } else {
-                self.errorLabel.text = error.localizedDescription
+                Toast.show(error.localizedDescription)
             }
-        }
-    }
-
-    func setFiatButton() {
-        guard let settings = getGAService().getSettings() else { return }
-        if isFiat {
-            fiatButton.setTitle(settings.getCurrency(), for: UIControlState.normal)
-            fiatButton.backgroundColor = UIColor.clear
-            fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-        } else {
-            fiatButton.setTitle(settings.denomination.toString(), for: UIControlState.normal)
-            fiatButton.backgroundColor = UIColor.customMatrixGreen()
-            fiatButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
     }
 
     @IBAction func fiatButtonClicked(_ sender: Any) {
         isFiat = !isFiat
-        setFiatButton()
+        refresh()
     }
-}
+
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        refresh()
+    }
+
+    func getSatoshi() -> UInt64 {
+        let amount: String = limitTextField.text!
+        if (amount.isEmpty || Double(amount) == nil) {
+            return 0
+        }
+        if isFiat {
+            return String.toSatoshi(fiat: amount)
+        } else {
+            return String.toSatoshi(amount: amount)
+        }
+    }}

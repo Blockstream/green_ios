@@ -3863,21 +3863,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ab7-yZ-oZi">
-                                <rect key="frame" x="16" y="40" width="144" height="57"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ab7-yZ-oZi">
+                                <rect key="frame" x="16" y="84" width="212" height="57"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="57" id="SUP-Mu-I4M"/>
                                 </constraints>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="47"/>
-                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad" keyboardAppearance="alert"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't need two factor code for transactions under the selected value" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LXf-em-GWL">
-                                <rect key="frame" x="31.5" y="107" width="257.5" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" name="customTitaniumLight"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gyd-mo-6vL">
                                 <rect key="frame" x="185" y="52.5" width="60" height="32"/>
                                 <constraints>
@@ -3914,25 +3908,40 @@
                                     <action selector="setLimitClicked:" destination="jB7-Eo-Pwf" eventType="touchUpInside" id="dva-DG-oNu"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="~0.0 USD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MOZ-eo-CUa">
+                                <rect key="frame" x="16" y="141" width="288" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't need two factor code for transactions under the selected value" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LXf-em-GWL">
+                                <rect key="frame" x="16" y="175" width="288" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" name="customTitaniumLight"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="dqu-Ig-IY5" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" id="3D7-Qb-6A9"/>
                             <constraint firstItem="Gyd-mo-6vL" firstAttribute="centerY" secondItem="ab7-yZ-oZi" secondAttribute="centerY" id="4RK-b0-lej"/>
-                            <constraint firstItem="Gyd-mo-6vL" firstAttribute="leading" secondItem="ab7-yZ-oZi" secondAttribute="trailing" constant="25" id="5bL-AJ-B8y"/>
+                            <constraint firstItem="Gyd-mo-6vL" firstAttribute="leading" secondItem="ab7-yZ-oZi" secondAttribute="trailing" constant="16" id="5bL-AJ-B8y"/>
+                            <constraint firstItem="55a-8O-c7N" firstAttribute="trailing" secondItem="LXf-em-GWL" secondAttribute="trailing" constant="16" id="5kW-Q5-LfA"/>
                             <constraint firstItem="55a-8O-c7N" firstAttribute="bottom" secondItem="dqu-Ig-IY5" secondAttribute="bottom" id="Cuv-Dm-lMX"/>
                             <constraint firstItem="ab7-yZ-oZi" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="Ejj-vZ-EPX"/>
-                            <constraint firstItem="LXf-em-GWL" firstAttribute="centerX" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="PDf-Qs-ZtK"/>
-                            <constraint firstItem="ab7-yZ-oZi" firstAttribute="trailing" secondItem="I00-fi-Ow9" secondAttribute="centerX" id="VTY-qe-q0r"/>
+                            <constraint firstItem="55a-8O-c7N" firstAttribute="trailing" secondItem="Gyd-mo-6vL" secondAttribute="trailing" constant="16" id="OSM-z1-dNd"/>
+                            <constraint firstItem="MOZ-eo-CUa" firstAttribute="top" secondItem="ab7-yZ-oZi" secondAttribute="bottom" id="Tgz-QO-eat"/>
                             <constraint firstItem="ab7-yZ-oZi" firstAttribute="top" secondItem="55a-8O-c7N" secondAttribute="top" constant="20" id="XOG-6F-7ed"/>
                             <constraint firstItem="dqu-Ig-IY5" firstAttribute="trailing" secondItem="55a-8O-c7N" secondAttribute="trailing" id="Xdn-Ul-FbH"/>
-                            <constraint firstItem="LXf-em-GWL" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="55a-8O-c7N" secondAttribute="leading" id="eau-Qh-a2z"/>
-                            <constraint firstItem="LXf-em-GWL" firstAttribute="top" secondItem="ab7-yZ-oZi" secondAttribute="bottom" constant="10" id="ezj-5x-fTv"/>
-                            <constraint firstItem="55a-8O-c7N" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="LXf-em-GWL" secondAttribute="trailing" id="y4t-xv-rng"/>
+                            <constraint firstItem="LXf-em-GWL" firstAttribute="top" secondItem="MOZ-eo-CUa" secondAttribute="bottom" constant="16" id="aZB-Is-0Pe"/>
+                            <constraint firstItem="LXf-em-GWL" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="eau-Qh-a2z"/>
+                            <constraint firstItem="55a-8O-c7N" firstAttribute="trailing" secondItem="MOZ-eo-CUa" secondAttribute="trailing" constant="16" id="o7k-D9-IrA"/>
+                            <constraint firstItem="MOZ-eo-CUa" firstAttribute="leading" secondItem="55a-8O-c7N" secondAttribute="leading" constant="16" id="o89-ay-YGh"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="55a-8O-c7N"/>
                     </view>
                     <connections>
+                        <outlet property="convertedLabel" destination="MOZ-eo-CUa" id="fSM-WR-nPW"/>
                         <outlet property="descriptionLabel" destination="LXf-em-GWL" id="QK7-ot-cwi"/>
                         <outlet property="fiatButton" destination="Gyd-mo-6vL" id="zF2-mj-tw3"/>
                         <outlet property="limitButtonConstraint" destination="Cuv-Dm-lMX" id="9MO-6P-DUl"/>
@@ -4040,11 +4049,11 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="8GO-7h-4o5"/>
-        <segue reference="S0G-tL-SMV"/>
+        <segue reference="d4s-PC-g63"/>
         <segue reference="EcC-We-I1f"/>
-        <segue reference="1nK-CI-RDW"/>
+        <segue reference="Uzj-6y-k3B"/>
         <segue reference="ho6-WN-AfT"/>
-        <segue reference="XPe-Xy-Qrf"/>
-        <segue reference="qmH-aQ-bII"/>
+        <segue reference="4QF-E2-lEm"/>
+        <segue reference="rZR-ak-fSt"/>
     </inferredMetricsTieBreakers>
 </document>
