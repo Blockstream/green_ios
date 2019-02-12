@@ -37,7 +37,11 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
                                           for: indexPath as IndexPath)
         cell.textLabel?.text = self.factors[indexPath.row].name
         cell.imageView?.image = self.factors[indexPath.row].image
-        cell.accessoryType = (self.factors[indexPath.row].enabled) ? .checkmark : .disclosureIndicator
+        let uiswitch = UISwitch()
+        uiswitch.isOn = self.factors[indexPath.row].enabled
+        uiswitch.isUserInteractionEnabled = false
+        cell.accessoryView = uiswitch
+
         return cell
     }
 

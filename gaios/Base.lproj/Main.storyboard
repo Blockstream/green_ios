@@ -3697,7 +3697,7 @@
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" textLabel="uQs-0S-rmB" imageView="k4Q-gz-Z4a" style="IBUITableViewCellStyleDefault" id="wot-dv-GH3">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" textLabel="uQs-0S-rmB" imageView="k4Q-gz-Z4a" style="IBUITableViewCellStyleDefault" id="wot-dv-GH3">
                                         <rect key="frame" x="0.0" y="28" width="288" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wot-dv-GH3" id="xma-ww-2M0">
