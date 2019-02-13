@@ -961,8 +961,8 @@
                                     <action selector="skipButtonClicked:" destination="kWT-Yh-qgi" eventType="touchUpInside" id="tyi-Hl-fOp"/>
                                 </connections>
                             </button>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="41" translatesAutoresizingMaskIntoConstraints="NO" id="yIr-YR-U4Y" userLabel="Stack View Column">
-                                <rect key="frame" x="40" y="235" width="240" height="293"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="yIr-YR-U4Y" userLabel="Stack View Column">
+                                <rect key="frame" x="0.0" y="308" width="320" height="240"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="uSf-PB-ZHs" userLabel="Stack View Row 1">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="40"/>
@@ -998,6 +998,9 @@
                                                 </connections>
                                             </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="Lgt-Mi-Pj1"/>
+                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="rEp-cX-o7G" userLabel="Stack View Row 2">
                                         <rect key="frame" x="0.0" y="81" width="320" height="40"/>
@@ -1033,6 +1036,9 @@
                                                 </connections>
                                             </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="4lu-Hl-mk4"/>
+                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="eYj-eu-kcc" userLabel="Stack View Row 3">
                                         <rect key="frame" x="0.0" y="162" width="320" height="40"/>
@@ -1068,12 +1074,15 @@
                                                 </connections>
                                             </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="7fp-mK-cea"/>
+                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="4FG-j0-JL6" userLabel="Stack View Row 4">
                                         <rect key="frame" x="0.0" y="243" width="320" height="50"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uk9-ym-aSc">
-                                                <rect key="frame" x="0.0" y="0.0" width="106.5" height="50"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="106.5" height="60"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <state key="normal" title="Cancel">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1083,7 +1092,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uNt-3S-2HX">
-                                                <rect key="frame" x="106.5" y="0.0" width="107" height="50"/>
+                                                <rect key="frame" x="106.5" y="0.0" width="107" height="60"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="23"/>
                                                 <state key="normal" title="0">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1098,30 +1107,25 @@
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cSW-9T-q10">
                                                         <rect key="frame" x="0.0" y="0.0" width="106.5" height="50"/>
                                                         <inset key="imageEdgeInsets" minX="8" minY="12" maxX="8" maxY="12"/>
-                                                        <state key="normal">
+                                                        <state key="normal" image="erase">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <connections>
                                                             <action selector="deleteClicked:" destination="kWT-Yh-qgi" eventType="touchUpInside" id="3u2-ai-N0o"/>
                                                         </connections>
                                                     </button>
-                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="erase" translatesAutoresizingMaskIntoConstraints="NO" id="X7S-Ht-Xdv">
-                                                        <rect key="frame" x="28" y="5" width="50" height="40"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="40" id="5e8-c1-UL1"/>
-                                                        </constraints>
-                                                    </imageView>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="cSW-9T-q10" firstAttribute="top" secondItem="ZIr-w1-H0U" secondAttribute="top" id="1YF-S6-uip"/>
                                                     <constraint firstAttribute="trailing" secondItem="cSW-9T-q10" secondAttribute="trailing" id="3u2-0x-o3D"/>
-                                                    <constraint firstItem="X7S-Ht-Xdv" firstAttribute="centerY" secondItem="ZIr-w1-H0U" secondAttribute="centerY" id="YeS-iX-3k8"/>
-                                                    <constraint firstItem="X7S-Ht-Xdv" firstAttribute="centerX" secondItem="ZIr-w1-H0U" secondAttribute="centerX" id="e3s-AA-lL2"/>
                                                     <constraint firstAttribute="bottom" secondItem="cSW-9T-q10" secondAttribute="bottom" id="o9O-5d-SYH"/>
                                                     <constraint firstItem="cSW-9T-q10" firstAttribute="leading" secondItem="ZIr-w1-H0U" secondAttribute="leading" id="qz6-cP-hWj"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="qKC-BY-6uG"/>
+                                        </constraints>
                                     </stackView>
                                 </subviews>
                             </stackView>
@@ -1171,13 +1175,24 @@
                     <connections>
                         <outlet property="attempts" destination="XJE-9Q-Z9s" id="Icm-et-P5q"/>
                         <outlet property="cancelButton" destination="uk9-ym-aSc" id="7Lh-zh-e6D"/>
-                        <outlet property="label0" destination="ogq-GW-yOJ" id="qf0-UJ-KLu"/>
-                        <outlet property="label1" destination="18C-4K-J65" id="iGV-C5-eCL"/>
-                        <outlet property="label2" destination="b3S-ai-VOC" id="gyr-wU-rAr"/>
-                        <outlet property="label3" destination="Ga6-cB-PfW" id="N82-79-hYr"/>
-                        <outlet property="label4" destination="65h-S3-6KZ" id="vWb-V7-NG1"/>
-                        <outlet property="label5" destination="dRf-g8-ALy" id="m0w-Kk-HiA"/>
+                        <outlet property="deleteButton" destination="cSW-9T-q10" id="Mv6-uQ-aBb"/>
                         <outlet property="skipButton" destination="CqK-zx-qF0" id="MaV-Ie-7fh"/>
+                        <outletCollection property="pinLabel" destination="ogq-GW-yOJ" collectionClass="NSMutableArray" id="i2h-fZ-BJq"/>
+                        <outletCollection property="pinLabel" destination="18C-4K-J65" collectionClass="NSMutableArray" id="qSK-DB-ocl"/>
+                        <outletCollection property="pinLabel" destination="b3S-ai-VOC" collectionClass="NSMutableArray" id="vzD-hX-8An"/>
+                        <outletCollection property="pinLabel" destination="Ga6-cB-PfW" collectionClass="NSMutableArray" id="EpV-vY-Y7n"/>
+                        <outletCollection property="pinLabel" destination="65h-S3-6KZ" collectionClass="NSMutableArray" id="bvF-qP-W2D"/>
+                        <outletCollection property="pinLabel" destination="dRf-g8-ALy" collectionClass="NSMutableArray" id="e0p-hf-8ae"/>
+                        <outletCollection property="keyButton" destination="uNt-3S-2HX" collectionClass="NSMutableArray" id="xmb-5C-PCc"/>
+                        <outletCollection property="keyButton" destination="MSk-Nj-l66" collectionClass="NSMutableArray" id="Rm4-oH-brQ"/>
+                        <outletCollection property="keyButton" destination="R4W-Vu-M0I" collectionClass="NSMutableArray" id="8Oy-9Y-XMb"/>
+                        <outletCollection property="keyButton" destination="guG-L1-uhG" collectionClass="NSMutableArray" id="lZo-NH-clG"/>
+                        <outletCollection property="keyButton" destination="rVM-q4-BcU" collectionClass="NSMutableArray" id="Cad-Bt-oGw"/>
+                        <outletCollection property="keyButton" destination="4Rc-4w-Qrq" collectionClass="NSMutableArray" id="hPu-lz-LVq"/>
+                        <outletCollection property="keyButton" destination="ePR-sN-MuW" collectionClass="NSMutableArray" id="OIk-aW-veg"/>
+                        <outletCollection property="keyButton" destination="Saf-Kg-du6" collectionClass="NSMutableArray" id="fT5-0t-d5o"/>
+                        <outletCollection property="keyButton" destination="Ycw-s2-OGf" collectionClass="NSMutableArray" id="KSv-z4-8as"/>
+                        <outletCollection property="keyButton" destination="aKO-ZR-RcG" collectionClass="NSMutableArray" id="vva-eC-qoc"/>
                         <segue destination="B5O-7h-VGM" kind="showDetail" identifier="entrance" id="ho6-WN-AfT"/>
                         <segue destination="YV9-qz-m5y" kind="showDetail" identifier="main" id="NmU-wd-kgf"/>
                         <segue destination="EvG-OO-UNI" kind="show" identifier="congrats" id="8ap-7n-SAS"/>
@@ -4049,7 +4064,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="8GO-7h-4o5"/>
-        <segue reference="d4s-PC-g63"/>
+        <segue reference="NmU-wd-kgf"/>
         <segue reference="EcC-We-I1f"/>
         <segue reference="Uzj-6y-k3B"/>
         <segue reference="ho6-WN-AfT"/>

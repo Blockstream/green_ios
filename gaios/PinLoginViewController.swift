@@ -5,16 +5,13 @@ import PromiseKit
 
 class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
 
-    @IBOutlet weak var label0: UILabel!
-    @IBOutlet weak var label1: UILabel!
-    @IBOutlet weak var label2: UILabel!
-    @IBOutlet weak var label3: UILabel!
-    @IBOutlet weak var label4: UILabel!
-    @IBOutlet weak var label5: UILabel!
     @IBOutlet weak var attempts: UILabel!
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
-    
+    @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet var keyButton: Array<UIButton>?
+    @IBOutlet var pinLabel: Array<UILabel>?
+
     var pinCode = String()
     var pinConfirm = String()
 
@@ -22,8 +19,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     var editPinMode: Bool = false
     var restoreMode: Bool = false
 
-    var confirmPin: Bool = false
-    var labels = [UILabel]()
+    private var confirmPin: Bool = false
     private let MAX_ATTEMPTS = 3
 
     var pinAttemptsPreference: Int {
@@ -45,22 +41,25 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
             title = NSLocalizedString("id_enter_pin", comment: "")
         }
         
-        // set cancel button text
-        cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
-
-        // show pin label
-        labels.append(contentsOf: [label0, label1, label2, label3, label4, label5])
+        // set cancel and delete buttons
+        cancelButton.setTitle(NSLocalizedString("id_clear", comment: "").uppercased(), for: .normal)
+        deleteButton.contentMode = .center
+        deleteButton.imageView?.contentMode = .scaleAspectFill
 
         // customize network image
         let network = getNetwork()
         let networkImage = network == "Mainnet".lowercased() ? "btc" : "btc_testnet"
-        let networkBarItem = UIBarButtonItem(image: UIImage(named: networkImage)!, style: .plain, target: self, action: nil)
-        navigationItem.rightBarButtonItem = networkBarItem
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: networkImage)!, style: .plain, target: self, action: nil)
 
         // customize back button
         self.navigationItem.hidesBackButton = true
-        let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(PinLoginViewController.back(sender:)))
-        self.navigationItem.leftBarButtonItem = newBackButton
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(PinLoginViewController.back(sender:)))
+
+        // setup keypad button style
+        let background = getBackgroundImage(UIColor.customMatrixGreenDark().cgColor)
+        keyButton?.enumerated().forEach{ (i, button) in
+            button.setBackgroundImage(background, for: UIControlState.highlighted)
+        }
 
         // show skip button
         if (setPinMode || restoreMode) && !editPinMode {
@@ -234,6 +233,16 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
 
+    func getBackgroundImage(_ color: CGColor) -> UIImage? {
+        UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
+        guard let _ = UIGraphicsGetCurrentContext() else { return nil }
+        UIGraphicsGetCurrentContext()!.setFillColor(color)
+        UIGraphicsGetCurrentContext()!.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+
     func resetEverything() {
         confirmPin = false
         pinCode = ""
@@ -241,7 +250,7 @@ class PinLoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
 
     func updateView() {
-        for (i, label) in labels.enumerated() {
+        pinLabel?.enumerated().forEach {(i, label) in
             if i < pinCode.count {
                 label.text = "*"
                 label.isHidden = false
