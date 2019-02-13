@@ -261,7 +261,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func logout() {
-        getAppDelegate().lock()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
