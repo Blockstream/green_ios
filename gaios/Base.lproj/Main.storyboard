@@ -1106,18 +1106,19 @@
                                                         </connections>
                                                     </button>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="erase" translatesAutoresizingMaskIntoConstraints="NO" id="X7S-Ht-Xdv">
-                                                        <rect key="frame" x="0.0" y="0.0" width="106.5" height="50"/>
+                                                        <rect key="frame" x="28" y="5" width="50" height="40"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="5e8-c1-UL1"/>
+                                                        </constraints>
                                                     </imageView>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="X7S-Ht-Xdv" firstAttribute="leading" secondItem="ZIr-w1-H0U" secondAttribute="leading" id="AvE-3z-bf1"/>
-                                                    <constraint firstAttribute="trailing" secondItem="cSW-9T-q10" secondAttribute="trailing" id="Cuc-hl-cYz"/>
-                                                    <constraint firstAttribute="trailing" secondItem="X7S-Ht-Xdv" secondAttribute="trailing" id="Es0-nl-zMY"/>
-                                                    <constraint firstItem="cSW-9T-q10" firstAttribute="top" secondItem="ZIr-w1-H0U" secondAttribute="top" id="Q7f-Es-TNK"/>
-                                                    <constraint firstItem="X7S-Ht-Xdv" firstAttribute="top" secondItem="ZIr-w1-H0U" secondAttribute="top" id="UUn-W2-h7k"/>
-                                                    <constraint firstItem="cSW-9T-q10" firstAttribute="leading" secondItem="ZIr-w1-H0U" secondAttribute="leading" id="iDd-7i-KVs"/>
-                                                    <constraint firstAttribute="bottom" secondItem="cSW-9T-q10" secondAttribute="bottom" id="nnm-UF-Fvv"/>
-                                                    <constraint firstAttribute="bottom" secondItem="X7S-Ht-Xdv" secondAttribute="bottom" id="vHU-Pu-3eN"/>
+                                                    <constraint firstItem="cSW-9T-q10" firstAttribute="top" secondItem="ZIr-w1-H0U" secondAttribute="top" id="1YF-S6-uip"/>
+                                                    <constraint firstAttribute="trailing" secondItem="cSW-9T-q10" secondAttribute="trailing" id="3u2-0x-o3D"/>
+                                                    <constraint firstItem="X7S-Ht-Xdv" firstAttribute="centerY" secondItem="ZIr-w1-H0U" secondAttribute="centerY" id="YeS-iX-3k8"/>
+                                                    <constraint firstItem="X7S-Ht-Xdv" firstAttribute="centerX" secondItem="ZIr-w1-H0U" secondAttribute="centerX" id="e3s-AA-lL2"/>
+                                                    <constraint firstAttribute="bottom" secondItem="cSW-9T-q10" secondAttribute="bottom" id="o9O-5d-SYH"/>
+                                                    <constraint firstItem="cSW-9T-q10" firstAttribute="leading" secondItem="ZIr-w1-H0U" secondAttribute="leading" id="qz6-cP-hWj"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
