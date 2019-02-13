@@ -1593,7 +1593,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" name="customTitaniumMedium"/>
+                                <color key="backgroundColor" name="customLowerBar"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="RiY-nz-AQr" secondAttribute="trailing" constant="16" id="0ta-ef-DEI"/>
                                     <constraint firstItem="RiY-nz-AQr" firstAttribute="leading" secondItem="hxH-ky-wCP" secondAttribute="leading" constant="16" id="Fcn-25-3ea"/>
@@ -1695,7 +1695,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" name="customTitaniumMedium"/>
+                                <color key="backgroundColor" name="customLowerBar"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="Tfw-SF-9Xe" secondAttribute="trailing" constant="16" id="2qH-zC-y8M"/>
                                     <constraint firstAttribute="bottom" secondItem="Tfw-SF-9Xe" secondAttribute="bottom" constant="16" id="9Xj-gF-J9l"/>
@@ -2053,7 +2053,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" name="customTitaniumMedium"/>
+                                <color key="backgroundColor" name="customLowerBar"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="tdc-MV-QE3" secondAttribute="bottom" constant="16" id="EnQ-KI-tlf"/>
                                     <constraint firstAttribute="trailing" secondItem="tdc-MV-QE3" secondAttribute="trailing" constant="16" id="dhv-Il-B8y"/>
@@ -3168,25 +3168,37 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hzc-Uv-9ws">
-                                <rect key="frame" x="17" y="509" width="286" height="42"/>
-                                <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oln-0o-Gil">
+                                <rect key="frame" x="0.0" y="494" width="320" height="74"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hzc-Uv-9ws">
+                                        <rect key="frame" x="16" y="16" width="288" height="42"/>
+                                        <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="42" id="jJL-Uv-P1c"/>
+                                        </constraints>
+                                        <state key="normal" title="Share Address">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="shareButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="1xu-ba-p3z"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" name="customLowerBar"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="jJL-Uv-P1c"/>
+                                    <constraint firstAttribute="trailing" secondItem="Hzc-Uv-9ws" secondAttribute="trailing" constant="16" id="HJ0-zQ-XsN"/>
+                                    <constraint firstItem="Hzc-Uv-9ws" firstAttribute="leading" secondItem="oln-0o-Gil" secondAttribute="leading" constant="16" id="OA1-sP-523"/>
+                                    <constraint firstItem="Hzc-Uv-9ws" firstAttribute="top" secondItem="oln-0o-Gil" secondAttribute="top" constant="16" id="bVp-wP-wdh"/>
+                                    <constraint firstAttribute="bottom" secondItem="Hzc-Uv-9ws" secondAttribute="bottom" constant="16" id="gTs-Yd-QK8"/>
                                 </constraints>
-                                <state key="normal" title="Share Address">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="shareButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="1xu-ba-p3z"/>
-                                </connections>
-                            </button>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
-                            <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="Hzc-Uv-9ws" secondAttribute="trailing" constant="17" id="3lQ-31-Q7I"/>
-                            <constraint firstItem="PyK-Y4-Zyi" firstAttribute="bottom" secondItem="Hzc-Uv-9ws" secondAttribute="bottom" constant="17" id="BdX-hG-wDT"/>
                             <constraint firstItem="flj-QC-HKf" firstAttribute="top" secondItem="PyK-Y4-Zyi" secondAttribute="top" id="Ijq-Ka-6Jh"/>
+                            <constraint firstItem="oln-0o-Gil" firstAttribute="trailing" secondItem="PyK-Y4-Zyi" secondAttribute="trailing" id="J6I-ZL-g4k"/>
+                            <constraint firstItem="oln-0o-Gil" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" id="KMP-pu-Y18"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="flj-QC-HKf" secondAttribute="trailing" id="LTg-mT-Nca"/>
                             <constraint firstItem="gLm-OG-5hq" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="16" id="LUz-1d-f0Y"/>
                             <constraint firstItem="TCo-xL-xoX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Lu5-Gv-g6o" secondAttribute="trailing" constant="20" id="Sb1-8n-DGd"/>
@@ -3198,8 +3210,8 @@
                             <constraint firstItem="2aZ-Zn-588" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="16" id="hGi-OB-uYk"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="gLm-OG-5hq" secondAttribute="trailing" constant="16" id="iIf-Zb-a4S"/>
                             <constraint firstItem="2aZ-Zn-588" firstAttribute="top" secondItem="Lu5-Gv-g6o" secondAttribute="bottom" id="kZL-r5-eVT"/>
-                            <constraint firstItem="Hzc-Uv-9ws" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" constant="17" id="kjX-1L-DDp"/>
                             <constraint firstItem="flj-QC-HKf" firstAttribute="leading" secondItem="PyK-Y4-Zyi" secondAttribute="leading" id="wIs-iV-DFX"/>
+                            <constraint firstItem="oln-0o-Gil" firstAttribute="bottom" secondItem="PyK-Y4-Zyi" secondAttribute="bottom" id="wSe-LI-z2E"/>
                             <constraint firstItem="PyK-Y4-Zyi" firstAttribute="trailing" secondItem="2aZ-Zn-588" secondAttribute="trailing" constant="16" id="zB3-Sy-jUJ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="PyK-Y4-Zyi"/>
@@ -3235,35 +3247,47 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ge0-f1-pCf">
-                                <rect key="frame" x="0.0" y="64" width="320" height="426"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="430"/>
                                 <connections>
                                     <segue destination="9Uz-yh-UOA" kind="embed" identifier="tableview" id="18L-A6-Iyp"/>
                                 </connections>
                             </containerView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F98-li-Gxq">
-                                <rect key="frame" x="18" y="508" width="284" height="42"/>
-                                <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Be3-CK-zSY">
+                                <rect key="frame" x="0.0" y="494" width="320" height="74"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F98-li-Gxq">
+                                        <rect key="frame" x="16" y="16" width="288" height="42"/>
+                                        <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="42" id="oKC-i6-LRy"/>
+                                        </constraints>
+                                        <state key="normal" title="View in explorer">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="shareButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="gBo-zT-P3l"/>
+                                            <action selector="viewInExplorerClicked:" destination="zxH-Uq-pPW" eventType="touchUpInside" id="0bK-sH-rCQ"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" name="customLowerBar"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="oKC-i6-LRy"/>
+                                    <constraint firstAttribute="bottom" secondItem="F98-li-Gxq" secondAttribute="bottom" constant="16" id="MX1-tP-pff"/>
+                                    <constraint firstItem="F98-li-Gxq" firstAttribute="leading" secondItem="Be3-CK-zSY" secondAttribute="leading" constant="16" id="Z5V-49-lHt"/>
+                                    <constraint firstItem="F98-li-Gxq" firstAttribute="top" secondItem="Be3-CK-zSY" secondAttribute="top" constant="16" id="iX6-Ed-8Tv"/>
+                                    <constraint firstAttribute="trailing" secondItem="F98-li-Gxq" secondAttribute="trailing" constant="16" id="oAn-Mo-NHq"/>
                                 </constraints>
-                                <state key="normal" title="View in explorer">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="shareButtonClicked:" destination="jsC-nu-G2U" eventType="touchUpInside" id="gBo-zT-P3l"/>
-                                    <action selector="viewInExplorerClicked:" destination="zxH-Uq-pPW" eventType="touchUpInside" id="0bK-sH-rCQ"/>
-                                </connections>
-                            </button>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="ge0-f1-pCf" secondAttribute="trailing" id="3K4-Kk-bAy"/>
-                            <constraint firstItem="F98-li-Gxq" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" constant="18" id="3P6-fj-n9a"/>
-                            <constraint firstItem="rFE-l7-ht6" firstAttribute="bottom" secondItem="F98-li-Gxq" secondAttribute="bottom" constant="18" id="Fvh-X2-k04"/>
-                            <constraint firstItem="F98-li-Gxq" firstAttribute="top" secondItem="ge0-f1-pCf" secondAttribute="bottom" constant="18" id="Yd6-AF-EOW"/>
+                            <constraint firstItem="Be3-CK-zSY" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" id="Owd-S1-liK"/>
                             <constraint firstItem="ge0-f1-pCf" firstAttribute="leading" secondItem="rFE-l7-ht6" secondAttribute="leading" id="bGc-Bk-ZDt"/>
-                            <constraint firstItem="rFE-l7-ht6" firstAttribute="trailing" secondItem="F98-li-Gxq" secondAttribute="trailing" constant="18" id="bGw-Xw-fcR"/>
+                            <constraint firstItem="Be3-CK-zSY" firstAttribute="top" secondItem="ge0-f1-pCf" secondAttribute="bottom" id="cUM-ME-n1R"/>
+                            <constraint firstItem="Be3-CK-zSY" firstAttribute="bottom" secondItem="rFE-l7-ht6" secondAttribute="bottom" id="pH6-AH-x14"/>
                             <constraint firstItem="ge0-f1-pCf" firstAttribute="top" secondItem="rFE-l7-ht6" secondAttribute="top" id="rrj-8W-TUB"/>
+                            <constraint firstItem="Be3-CK-zSY" firstAttribute="trailing" secondItem="rFE-l7-ht6" secondAttribute="trailing" id="vbf-aq-jz3"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="rFE-l7-ht6"/>
                     </view>
@@ -3986,7 +4010,7 @@
             <color red="0.078431372549019607" green="0.11764705882352941" blue="0.15686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customLowerBar">
-            <color red="0.086274509803921567" green="0.11372549019607843" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
