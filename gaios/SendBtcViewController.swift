@@ -99,8 +99,13 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
     }
 
     private func createSweepTransaction(userInput: String, feeRate: UInt64) -> Promise<Transaction> {
-        let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate, "subaccount": wallet!.pointer, "addressees" : [["address": wallet!.generateNewAddress()!, "satoshi": 0]]]
-        return gaios.createTransaction(details: details)
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().map(on: bgq) {_ in
+            try getSession().getReceiveAddress(subaccount: self.wallet!.pointer)
+        }.then(on: bgq) { address -> Promise<Transaction> in
+            let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate, "subaccount": self.wallet!.pointer, "addressees" : [["address": address, "satoshi": 0]]]
+            return gaios.createTransaction(details: details)
+        }
     }
 
     func createTransaction(userInput: String) {
@@ -137,12 +142,14 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
             }
             self.performSegue(withIdentifier: "next", sender: self)
         }.catch { error in
-            if let txError = (error as? TransactionError) {
-                switch txError {
-                case .invalid(let localizedDescription):
-                    self.uiErrorLabel.text = localizedDescription
-                }
-            } else {
+            switch error {
+            case TransactionError.invalid(let localizedDescription):
+                self.uiErrorLabel.text = localizedDescription
+                break
+            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
+                self.uiErrorLabel.text = NSLocalizedString("id_you_are_not_connected", comment: "")
+                break
+            default:
                 self.uiErrorLabel.text = error.localizedDescription
             }
             self.uiErrorLabel.isHidden = false

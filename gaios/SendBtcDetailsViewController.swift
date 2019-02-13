@@ -232,12 +232,14 @@ class SendBtcDetailsViewController: UIViewController {
             self.updateReviewButton(true)
             self.updateFeeButtons()
         }.catch { error in
-            if let txError = (error as? TransactionError) {
-                switch txError {
-                case .invalid(let localizedDescription):
-                    self.uiErrorLabel.text = localizedDescription
-                }
-            } else {
+            switch error {
+            case TransactionError.invalid(let localizedDescription):
+                self.uiErrorLabel.text = localizedDescription
+                break
+            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
+                self.uiErrorLabel.text = NSLocalizedString("id_you_are_not_connected", comment: "")
+                break
+            default:
                 self.uiErrorLabel.text = error.localizedDescription
             }
             self.uiErrorLabel.isHidden = false
