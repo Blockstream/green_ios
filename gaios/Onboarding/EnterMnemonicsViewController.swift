@@ -296,6 +296,11 @@ extension EnterMnemonicsViewController : MnemonicWordCellDelegate {
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicWordCell) {
         let text = textField.text?.isEmpty ?? true ? String() : textField.text!
 
+        // pass focus to next item for valid words of length > 3
+        if text.count > 3 && WL.contains(text) {
+            suggestionWasTapped(suggestion: text)
+        }
+
         currIndexPath = mnemonicWords.indexPath(for: cell)
         if currIndexPath == nil {
             return
