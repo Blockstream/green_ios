@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "Enter a valid .onion or IP address (.onion preferred)";
 "id_enter_a_valid_username" = "Enter a valid username";
-"id_enter_an_address_or_private_key" = "Enter an address or private key";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "Enter new email";
 "id_enter_phone_number" = "Enter phone number";
 "id_enter_pin" = "Enter PIN";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "Enter your email address";
 "id_enter_your_wallet_mnemonic" = "Enter your wallet mnemonic";
 "id_error" = "Error";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "Error: NFC tag not writable";
 "id_error_nfc_tag_too_small" = "Error: NFC tag too small";
 "id_estimated_blocks_until" = "Estimated blocks until confirmation: %d";
@@ -205,8 +206,6 @@
 "id_next" = "Next";
 "id_nfc_logo" = "NFC Logo";
 "id_nfc_tags_written" = "NFC TAGs Written:";
-"id_nlocktime_transaction_emails" = "nLocktime transaction emails";
-"id_nlocktime_transaction_request" = "nLocktime transaction request sent";
 "id_no_amount_specified" = "No amount specified";
 "id_no_attempts_remaining" = "No attempts remaining";
 "id_no_peers_connected" = "No Peers Connected";
@@ -260,6 +259,8 @@
 "id_received_on" = "Received on";
 "id_recipient" = "Recipient";
 "id_recovery_and_notifications" = "Recovery and Notifications";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "Recovery words";
 "id_redeposited" = "Redeposited";
 "id_reference_exchange_rate" = "Reference exchange rate";
@@ -269,7 +270,7 @@
 "id_replaceable" = "replaceable";
 "id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "Request Failed";
-"id_request_nlocktime_transactions" = "Request nLocktime transactions";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "Request Sent";
 "id_request_twofactor_reset" = "Request Two-Factor reset";
 "id_requested_fee_rate_too_low" = "Requested fee rate too low";

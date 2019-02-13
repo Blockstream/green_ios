@@ -1,2 +1,2 @@
-NSFaceIDUsageDescription = "Green uses biometric authentication to allow easy access to the wallet";
+NSFaceIDUsageDescription = "Green usa l'autenticazione biometrica per garantire un facile accesso al wallet";
 NSCameraUsageDescription = "Per piacere abilita i permessi dell'app per usare la fotocamera.";

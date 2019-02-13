@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Введите PGP-ключ для получения зашифрованных сообщений на вашу почту.";
 "id_enter_a_valid_onion_or_ip" = "Введите действительный .onion или IP-адрес (желательно .onion)";
 "id_enter_a_valid_username" = "Введите действительное имя пользователя";
-"id_enter_an_address_or_private_key" = "Введите адрес или приватный ключ";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "Введите новый email";
 "id_enter_phone_number" = "Введите номер телефона";
 "id_enter_pin" = "Введите PIN-код";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "Введите ваш адрес электронной почты";
 "id_enter_your_wallet_mnemonic" = "Введите вашу мнемоническую фразу";
 "id_error" = "Ошибка";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "Ошибка: невозможно создать NFC-тег";
 "id_error_nfc_tag_too_small" = "Ошибка: NFC-тег слишком мал";
 "id_estimated_blocks_until" = "Приблизительно блоков до подтверждения: %d";
@@ -205,8 +206,6 @@
 "id_next" = "Следующий";
 "id_nfc_logo" = "Логотип NFC";
 "id_nfc_tags_written" = "NFC-теги:";
-"id_nlocktime_transaction_emails" = "электронные письма с nLocktime транзакциями ";
-"id_nlocktime_transaction_request" = "Запрос на nLocktime транзакции отправлен";
 "id_no_amount_specified" = "Сумма не указана";
 "id_no_attempts_remaining" = "Попыток не осталось";
 "id_no_peers_connected" = "Нет подключенных узлов";
@@ -260,6 +259,8 @@
 "id_received_on" = "Получено";
 "id_recipient" = "Получатель";
 "id_recovery_and_notifications" = "Восстановление и уведомления";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "Слова восстановления";
 "id_redeposited" = "Внесенный повторно";
 "id_reference_exchange_rate" = "Обменный курс";
@@ -269,7 +270,7 @@
 "id_replaceable" = "заменяемый";
 "id_request_amount" = "ЗАПРОСИТЬ СУММУ";
 "id_request_failed" = "Ошибка запроса";
-"id_request_nlocktime_transactions" = "Запрос транзакций nLockTime ";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "Запрос отправлен";
 "id_request_twofactor_reset" = "Запрос двухфакторного сброса";
 "id_requested_fee_rate_too_low" = "Запрашиваемая комиссия слишком низкая";

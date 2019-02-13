@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "有効な.onion又はIPアドレスを入力(.onionを推薦します)";
 "id_enter_a_valid_username" = "有効なユーザーネームを入力";
-"id_enter_an_address_or_private_key" = "Enter an address or private key";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "新しいEメールを入力";
 "id_enter_phone_number" = "電話番号を入力";
 "id_enter_pin" = "PIN入力";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "Eメールアドレス入力";
 "id_enter_your_wallet_mnemonic" = "ウォレットのmnemonic入力";
 "id_error" = "エラー発生";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "エラー: NFCタッグが読み取れません";
 "id_error_nfc_tag_too_small" = "エラー: NFCタッグが小さ過ぎます";
 "id_estimated_blocks_until" = "Estimated blocks until confirmation: %d";
@@ -205,8 +206,6 @@
 "id_next" = "次";
 "id_nfc_logo" = "NFCロゴ";
 "id_nfc_tags_written" = "NFC TAG 入力:";
-"id_nlocktime_transaction_emails" = "nLocktime transaction emails";
-"id_nlocktime_transaction_request" = "nLocktimeトランザクション要請を送る";
 "id_no_amount_specified" = "数量が決められていません";
 "id_no_attempts_remaining" = "残り回数が有りません";
 "id_no_peers_connected" = "ピアーが接続されていません";
@@ -260,6 +259,8 @@
 "id_received_on" = "受け取り先";
 "id_recipient" = "受信者";
 "id_recovery_and_notifications" = "リカバリーと告知";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "リカバリー単語";
 "id_redeposited" = "再お預け";
 "id_reference_exchange_rate" = "取引レート参照先";
@@ -269,7 +270,7 @@
 "id_replaceable" = "replaceable";
 "id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "要請失敗";
-"id_request_nlocktime_transactions" = "nLocktimeトランザクションの要請";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "要請済み";
 "id_request_twofactor_reset" = "2段階認証のリセットを要請する";
 "id_requested_fee_rate_too_low" = "要請された手数料が低過ぎます。";

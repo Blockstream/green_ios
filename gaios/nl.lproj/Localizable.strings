@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "Voer een geldig .onion- of IP-adres in (liever .onion)";
 "id_enter_a_valid_username" = "Voer een geldige gebruikersnaam in";
-"id_enter_an_address_or_private_key" = "Enter an address or private key";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "Voer nieuw e-mailadres in";
 "id_enter_phone_number" = "Voer telefoonnummer in";
 "id_enter_pin" = "Voer PIN in";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "Voer je e-mailadres in";
 "id_enter_your_wallet_mnemonic" = "Voer de woordenlijst van je wallet in";
 "id_error" = "Fout";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "Fout: NFC-tag niet schrijfbaar";
 "id_error_nfc_tag_too_small" = "Fout: NFC-tag te klein";
 "id_estimated_blocks_until" = "Estimated blocks until confirmation: %d";
@@ -205,8 +206,6 @@
 "id_next" = "Volgende";
 "id_nfc_logo" = "NFC-logo";
 "id_nfc_tags_written" = "NFC-tags beschreven:";
-"id_nlocktime_transaction_emails" = "nLocktime transaction emails";
-"id_nlocktime_transaction_request" = "nLocktime-transactieverzoek verstuurd";
 "id_no_amount_specified" = "Geen bedrag opgegeven";
 "id_no_attempts_remaining" = "Geen pogingen meer";
 "id_no_peers_connected" = "Geen peers verbonden";
@@ -260,6 +259,8 @@
 "id_received_on" = "Ontvangen op";
 "id_recipient" = "Ontvanger";
 "id_recovery_and_notifications" = "Herstel en notificaties";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "Herstelwoorden";
 "id_redeposited" = "Opnieuw gestort";
 "id_reference_exchange_rate" = "Standaard wisselkoers";
@@ -269,7 +270,7 @@
 "id_replaceable" = "replaceable";
 "id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "Verzoek mislukt";
-"id_request_nlocktime_transactions" = "Verzoek nLockTime-transacties";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "Verzoek verzonden";
 "id_request_twofactor_reset" = "Verzoek resetten tweetrapsauthenticatie";
 "id_requested_fee_rate_too_low" = "Verzochte tarief te laag";

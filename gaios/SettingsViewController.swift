@@ -151,12 +151,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             section: .twoFactor,
             type: .ThresholdTwoFactor)
         let locktimeRecovery = SettingsItem(
-            title: NSLocalizedString("id_nlocktime_transaction_emails", comment: ""),
+            title: NSLocalizedString("id_recovery_transaction_emails", comment: ""),
             subtitle: locktimeRecoveryEnable ? "Enabled" : "Disabled",
             section: .twoFactor,
             type: .LockTimeRecovery)
         let locktimeRequest = SettingsItem(
-            title: NSLocalizedString("id_request_nlocktime_transactions", comment: ""),
+            title: NSLocalizedString("id_request_recovery_transactions", comment: ""),
             subtitle: "",
             section: .twoFactor,
             type: .LockTimeRequest)
@@ -392,7 +392,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if let notifications = settings.notifications {
                 enabled = notifications.emailOutgoing == true
             }
-            let alert = UIAlertController(title: NSLocalizedString("id_nlocktime_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
+            let alert = UIAlertController(title: NSLocalizedString("id_recovery_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: "Enable", style: enabled ? .destructive : .default) { _ in
                 self.setRecoveryEmail(true)
             })
@@ -513,7 +513,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.showAlert(title: NSLocalizedString("id_request_sent", comment: ""), message: NSLocalizedString("id_nlocktime_transaction_request", comment: ""))
+            self.showAlert(title: NSLocalizedString("id_request_sent", comment: ""), message: NSLocalizedString("id_recovery_transaction_request", comment: ""))
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_request_failure", comment: ""))
         }

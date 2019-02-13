@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Уведіть  PGP-ключ для отримання зашифрованих повідомлень на вашу поштову скриньку.";
 "id_enter_a_valid_onion_or_ip" = "Введіть дійсну .onion або IP-адресу (бажано .onion)";
 "id_enter_a_valid_username" = "Введіть дійсне ім'я користувача ";
-"id_enter_an_address_or_private_key" = "Введіть адресу або приватний ключ";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "Введіть новий email";
 "id_enter_phone_number" = "Введіть номер телефону";
 "id_enter_pin" = "Введіть PIN-код";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "Введіть вашу адресу електронної пошти";
 "id_enter_your_wallet_mnemonic" = "Введіть вашу мнемонічну фразу";
 "id_error" = "Помилка";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "неможливо створити NFC-тег";
 "id_error_nfc_tag_too_small" = "Помилка: NFC-тег дуже малий";
 "id_estimated_blocks_until" = "Приблизно блоків до підтвердження: %d";
@@ -205,8 +206,6 @@
 "id_next" = "Наступний";
 "id_nfc_logo" = "Логотип NFC";
 "id_nfc_tags_written" = "NFC-теги:";
-"id_nlocktime_transaction_emails" = "електронні листи з nLocktime транзакціями ";
-"id_nlocktime_transaction_request" = "Запит на nLocktime транзакції відправлено";
 "id_no_amount_specified" = "Сума не вказана";
 "id_no_attempts_remaining" = "Не залишилось жодної спроби";
 "id_no_peers_connected" = "Немає підключених вузлів";
@@ -260,6 +259,8 @@
 "id_received_on" = "Отримано";
 "id_recipient" = "Отримувач";
 "id_recovery_and_notifications" = "Відновлення і повідомлення";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "Слова відновлення";
 "id_redeposited" = "Внесений повторно";
 "id_reference_exchange_rate" = "Курс обміну";
@@ -269,7 +270,7 @@
 "id_replaceable" = "замінний";
 "id_request_amount" = "ЗАПИТАТИ СУМУ";
 "id_request_failed" = "Помилка запиту";
-"id_request_nlocktime_transactions" = "Запитати транзакції nLockTime";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "Запит надіслано";
 "id_request_twofactor_reset" = "Запит двофакторного скидання";
 "id_requested_fee_rate_too_low" = "Комісія, що запитується, занадто низька";

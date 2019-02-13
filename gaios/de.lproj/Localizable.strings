@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "Geben Sie eine gültige .onion oder IP Adresse ein (.onion bevorzugt)";
 "id_enter_a_valid_username" = "Geben Sie einen gültigen Benutzernamen ein";
-"id_enter_an_address_or_private_key" = "Enter an address or private key";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "Geben Sie eine neue Email Adresse ein";
 "id_enter_phone_number" = "Geben Sie eine Telefonnummer ein";
 "id_enter_pin" = "Geben Sie den PIN ein";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "Geben Sie Ihre Email Adresse ein";
 "id_enter_your_wallet_mnemonic" = "Geben Sie Ihren Wallet Merksatz ein";
 "id_error" = "Fehler";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "Fehler: NFC Tag ist nicht beschreibbar";
 "id_error_nfc_tag_too_small" = "Fehler: NFC Tag zu klein";
 "id_estimated_blocks_until" = "Estimated blocks until confirmation: %d";
@@ -205,8 +206,6 @@
 "id_next" = "Weiter";
 "id_nfc_logo" = "NFC Logo";
 "id_nfc_tags_written" = "Geschriebene NFC Tags:";
-"id_nlocktime_transaction_emails" = "nLocktime transaction emails";
-"id_nlocktime_transaction_request" = "nLocktime Transaktionsanfrage verschickt";
 "id_no_amount_specified" = "Kein Betrag angeführt";
 "id_no_attempts_remaining" = "Keine Versuche verbleibend";
 "id_no_peers_connected" = "Keine Peers verbunden";
@@ -260,6 +259,8 @@
 "id_received_on" = "Empfangen am";
 "id_recipient" = "Empfänger";
 "id_recovery_and_notifications" = "Rücksicherung und Mitteilungen";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "Wiederherstellungs Wörter";
 "id_redeposited" = "Wiedereingezahlt";
 "id_reference_exchange_rate" = "Refernzwährungskurs";
@@ -269,7 +270,7 @@
 "id_replaceable" = "replaceable";
 "id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "Anfrage gescheitert";
-"id_request_nlocktime_transactions" = "nLocktime Transaktionen anfragen";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "Anfrage verschickt";
 "id_request_twofactor_reset" = "Zwei-Faktor Rücksetzung anfragen";
 "id_requested_fee_rate_too_low" = "Angefragte Gebührenrate zu niedrig";

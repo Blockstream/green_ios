@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "请输入一个有效的.onion或IP地址（最好是.onion）";
 "id_enter_a_valid_username" = "请输入一个有效的用户名";
-"id_enter_an_address_or_private_key" = "Enter an address or private key";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "请输入新的电子邮箱地址";
 "id_enter_phone_number" = "请输入手机号";
 "id_enter_pin" = "请输入PIN";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "请输入电子邮箱地址";
 "id_enter_your_wallet_mnemonic" = "请输入钱包助记符";
 "id_error" = "错误";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "错误：NFC标签无法写入";
 "id_error_nfc_tag_too_small" = "错误：NFC标签太小";
 "id_estimated_blocks_until" = "Estimated blocks until confirmation: %d";
@@ -205,8 +206,6 @@
 "id_next" = "下一个";
 "id_nfc_logo" = "NFC Logo";
 "id_nfc_tags_written" = "NFC标签已写：";
-"id_nlocktime_transaction_emails" = "nLocktime transaction emails";
-"id_nlocktime_transaction_request" = "nLockTime交易请求已发送";
 "id_no_amount_specified" = "未指定金额";
 "id_no_attempts_remaining" = "已无剩余尝试机会";
 "id_no_peers_connected" = "未连接到同伴节点";
@@ -260,6 +259,8 @@
 "id_received_on" = "接收平台为";
 "id_recipient" = "接收方";
 "id_recovery_and_notifications" = "恢复与通知";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "恢复词";
 "id_redeposited" = "已重新充值";
 "id_reference_exchange_rate" = "参考汇率";
@@ -269,7 +270,7 @@
 "id_replaceable" = "replaceable";
 "id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "请求失败";
-"id_request_nlocktime_transactions" = "请求nLockTime交易";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "请求已发送";
 "id_request_twofactor_reset" = "请求重置双重验证";
 "id_requested_fee_rate_too_low" = "请求费率太低";

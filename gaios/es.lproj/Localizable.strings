@@ -105,7 +105,7 @@
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
 "id_enter_a_valid_onion_or_ip" = "Ingresar una dirección de IP o una .onion válida (preferentemente, .onion)";
 "id_enter_a_valid_username" = "Ingresar un nombre de usuario válido";
-"id_enter_an_address_or_private_key" = "Enter an address or private key";
+"id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "Ingresar correo electrónico nuevo";
 "id_enter_phone_number" = "Ingresar número de teléfono";
 "id_enter_pin" = "Ingresar PIN";
@@ -114,6 +114,7 @@
 "id_enter_your_email_address" = "Ingresa tu dirección de correo electrónico";
 "id_enter_your_wallet_mnemonic" = "Ingresa la frase mnemónica de tu monedero";
 "id_error" = "Error";
+"id_error_logging_in_with_hardware" = "Error logging in with Hardware Wallet";
 "id_error_nfc_tag_not_writable" = "Error: la etiqueta NFC no es grabable";
 "id_error_nfc_tag_too_small" = "Error: la etiqueta NFC es demasiado pequeña";
 "id_estimated_blocks_until" = "Estimated blocks until confirmation: %d";
@@ -205,8 +206,6 @@
 "id_next" = "Siguiente";
 "id_nfc_logo" = "Logo de NFC";
 "id_nfc_tags_written" = "Etiquetas NFC grabadas:";
-"id_nlocktime_transaction_emails" = "nLocktime transaction emails";
-"id_nlocktime_transaction_request" = "Solicitud de transacción nLocktime enviada";
 "id_no_amount_specified" = "Cantidad no especificada";
 "id_no_attempts_remaining" = "No hay intentos restantes";
 "id_no_peers_connected" = "No hay pares conectados";
@@ -260,6 +259,8 @@
 "id_received_on" = "Recibido el";
 "id_recipient" = "Receptor";
 "id_recovery_and_notifications" = "Recuperación y notificaciones";
+"id_recovery_transaction_emails" = "Recovery transaction emails";
+"id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_words" = "Palabras de recuperación";
 "id_redeposited" = "Redepositado";
 "id_reference_exchange_rate" = "Tipo de cambio de referencia";
@@ -269,7 +270,7 @@
 "id_replaceable" = "replaceable";
 "id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "La solicitud falló";
-"id_request_nlocktime_transactions" = "Solicitar transacciones nLocktime";
+"id_request_recovery_transactions" = "Request recovery transactions";
 "id_request_sent" = "Solicitud enviada";
 "id_request_twofactor_reset" = "Solicitar restablecimiento de los dos factores";
 "id_requested_fee_rate_too_low" = "La tarifa solicitada es demasiado baja";
