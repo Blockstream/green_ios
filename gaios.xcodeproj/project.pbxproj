@@ -77,6 +77,7 @@
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
+		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
 		81C208A32201ED6A00F4BC1F /* Toast+SnackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */; };
 		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
 		81E9B7FE21C90F74004D87B6 /* WalletsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */; };
@@ -211,6 +212,7 @@
 		8192BB9821EF616100B04185 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8192BB9921EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8192BB9A21EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
 		81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Toast+SnackBar.swift"; sourceTree = "<group>"; };
 		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsViewController.swift; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 				81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */,
 				811EE25C219EC17800684AD8 /* TransactionsViewController.swift */,
 				81073D7621E6024600E08F86 /* TabViewController.swift */,
+				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF251F9D0CF800354E93 /* Main.storyboard */,
@@ -679,6 +682,7 @@
 				098192852176D12F00D8434F /* main.swift in Sources */,
 				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */,
+				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,

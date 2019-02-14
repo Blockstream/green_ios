@@ -53,6 +53,7 @@ class SetGauthViewController: UIViewController, NVActivityIndicatorViewable {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
+            getGAService().reloadTwoFactor()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {

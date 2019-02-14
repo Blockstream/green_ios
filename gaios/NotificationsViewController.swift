@@ -6,7 +6,7 @@ import PromiseKit
 class NotificationsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
-    private var items: Events { get { return getGAService().getEvents() } }
+    private var items: [Event] { get { return getGAService().getEvents() } }
     private var twoFactorConfig: TwoFactorConfig?
     private var wallets = [WalletItem]()
 
@@ -16,7 +16,6 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
-        tableView.allowsSelection = false
         tableView.separatorColor = UIColor.customTitaniumLight()
     }
 
@@ -60,43 +59,28 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.dequeueReusableCell(withIdentifier: "cell",
                                       for: indexPath as IndexPath)
         let event = items[indexPath.row]
-        let (title,description) = titleDescription(event)
-        cell.textLabel!.text = title
-        cell.detailTextLabel!.text = description
+        cell.textLabel!.text = event.title()
+        cell.detailTextLabel!.text = event.description(wallets: wallets, twoFactorConfig: twoFactorConfig)
         cell.detailTextLabel!.numberOfLines = 4
         cell.selectionStyle = .none
         cell.setNeedsLayout()
         return cell;
     }
 
-    func titleDescription(_ event: Event) -> (String, String) {
-        switch event.type {
-        case .Transaction:
-            let title = NSLocalizedString("id_new_transaction", comment: "")
-            guard let txEvent = event.get() as TransactionEvent? else { break }
-            let txType = txEvent.type == "incoming" ? NSLocalizedString("id_incoming", comment: "") : NSLocalizedString("id_outgoing", comment: "")
-            let txAmount = String.toBtc(satoshi: txEvent.satoshi)
-            let walletsList = wallets.filter { txEvent.subAccounts.contains(Int($0.pointer)) }
-            let txWalletName = wallets.isEmpty ? "" : walletsList[0].localizedName()
-            let description = String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, txAmount, txWalletName)
-            return (title, description)
-        case .TwoFactorReset:
-            guard let twoFactorReset = getGAService().getTwoFactorReset() else { break }
-            if !twoFactorReset.isResetActive { break }
-            return (NSLocalizedString("id_twofactor_reset_in_progress", comment: ""), "")
-        case .Settings:
-            let title = NSLocalizedString("id_set_up_twofactor_authentication", comment: "")
-            var description = ""
-            guard let _ = twoFactorConfig else { break }
-            if !twoFactorConfig!.anyEnabled {
-                description = NSLocalizedString("id_your_wallet_is_not_yet_fully", comment: "")
-            } else if twoFactorConfig!.enableMethods.count == 1 {
-                description = NSLocalizedString("id_you_only_have_one_twofactor", comment: "")
-            }
-            return (title, description)
-        default:
-            break
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let event = items[indexPath.row]
+        if event.kindOf(Settings.self) {
+            self.performSegue(withIdentifier: "twofactor", sender: event)
+        } else if event.kindOf(SystemMessage.self) {
+            self.performSegue(withIdentifier: "system_message", sender: event)
         }
-        return ("", "")
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? EnableTwoFactorViewController {
+            nextController.isHiddenWalletButton = true
+        } else if let nextController = segue.destination as? SystemMessageViewController {
+            nextController.systemMessage = sender as? Event
+        }
     }
 }

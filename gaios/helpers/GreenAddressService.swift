@@ -9,6 +9,7 @@ enum EventType: String {
     case Settings = "settings"
     case AddressChanged = "address_changed"
     case Network = "network"
+    case SystemMessage = "system_message"
 }
 
 struct Connection: Codable {
@@ -33,7 +34,7 @@ class GreenAddressService {
     private var session: Session? = nil
     private var settings: Settings? = nil
     private var twoFactorReset: TwoFactorReset? = nil
-    private var events = Events([])
+    private var events = [Event]()
     static var restoreFromMnemonics = false
     var blockHeight: UInt32 = 0
     var isWatchOnly: Bool = false
@@ -45,7 +46,7 @@ class GreenAddressService {
     func reset() {
         settings = nil
         twoFactorReset = nil
-        events = Events([])
+        events = [Event]()
         blockHeight = 0
         isWatchOnly = false
     }
@@ -62,7 +63,7 @@ class GreenAddressService {
         return twoFactorReset
     }
 
-    func getEvents() -> Events {
+    func getEvents() -> [Event] {
         return events
     }
 
@@ -86,7 +87,7 @@ class GreenAddressService {
                 do {
                     let json = try JSONSerialization.data(withJSONObject: data, options: [])
                     let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
-                    events.append(Event(type: .Transaction, value: data))
+                    events.append(Event(value: data))
                     if txEvent.type == "incoming" {
                         updateAddresses(txEvent.subAccounts.map{ UInt32($0)})
                         DispatchQueue.main.async {
@@ -99,22 +100,20 @@ class GreenAddressService {
                 do {
                     let json = try JSONSerialization.data(withJSONObject: data, options: [])
                     self.twoFactorReset = try JSONDecoder().decode(TwoFactorReset.self, from: json)
+                    events.removeAll(where: { $0.kindOf(TwoFactorReset.self)})
                     if self.twoFactorReset!.isResetActive {
-                        events.append(Event(type: .TwoFactorReset, value: data))
+                        events.append(Event(value: data))
                     }
                 } catch { break }
                 post(event: .TwoFactorReset, data: data)
             case .Settings:
+                reloadSystemMessage()
                 do {
                     let json = try JSONSerialization.data(withJSONObject: data, options: [])
                     self.settings = try JSONDecoder().decode(Settings.self, from: json)
-                    let dataTwoFactorConfig = try getSession().getTwoFactorConfig()
-                    let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
-                    if twoFactorConfig.enableMethods.count <= 1 {
-                        events.append(Event(type: .Settings, value: data))
-                    }
+                    reloadTwoFactor()
+                    post(event: .Settings, data: data)
                 } catch { break }
-                post(event: .Settings, data: data)
             case .Network:
                 do {
                     let json = try JSONSerialization.data(withJSONObject: data, options: [])
@@ -125,7 +124,6 @@ class GreenAddressService {
                         post(event: EventType.Network, data: data)
                     }
                 } catch { break }
-                break
             default:
                 break
         }
@@ -142,5 +140,35 @@ class GreenAddressService {
                 self.post(event: .AddressChanged, data: ["pointer": wallet.pointer, "address": address])
             }
         }.catch { _ in }
+    }
+
+    func reloadTwoFactor() {
+        events.removeAll(where: { $0.kindOf(Settings.self)})
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map(on: bgq) {
+            try self.getSession().getTwoFactorConfig()
+        }.done { dataTwoFactorConfig in
+            let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+            let data = try JSONSerialization.jsonObject(with: JSONEncoder().encode(self.settings), options: .allowFragments) as? [String: Any]
+            if twoFactorConfig.enableMethods.count <= 1 {
+                self.events.append(Event(value: data!))
+            }
+        }.catch { _ in
+                print("Error on get settings")
+        }
+    }
+
+    func reloadSystemMessage() {
+        events.removeAll(where: { $0.kindOf(SystemMessage.self)})
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map(on: bgq) {
+            try self.getSession().getSystemMessage()
+        }.done { text in
+            if !text.isEmpty {
+                self.events.append(Event(value: ["text": text]))
+            }
+        }.catch { _ in
+            print("Error on get system message")
+        }
     }
 }

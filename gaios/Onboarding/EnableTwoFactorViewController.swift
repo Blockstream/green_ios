@@ -111,6 +111,7 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
+            getGAService().reloadTwoFactor()
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
