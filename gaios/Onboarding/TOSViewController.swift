@@ -14,25 +14,13 @@ class TOSViewController: UIViewController {
     }
 
     @IBAction func agreeTOSClicked(_ sender: UIButton) {
-        sender.backgroundColor = UIColor.customMatrixGreen()
-        sender.layer.borderColor = UIColor.customMatrixGreen().cgColor
-        sender.setImage(UIImage(named: "check"), for: UIControlState.normal)
-        sender.tintColor = UIColor.white
-        nButton.toggleGradient(true)
+        nButton.isEnabled = !nButton.isEnabled
+        updateButtons()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
         nButton.updateGradientLayerFrame()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tosButton.backgroundColor = UIColor.clear
-        tosButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
-        tosButton.setImage(nil, for: UIControlState.normal)
-        nButton.toggleGradient(false)
     }
 
     override func viewDidLoad() {
@@ -56,7 +44,18 @@ class TOSViewController: UIViewController {
         let topString = NSMutableAttributedString(string: stringLocalized)
         topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
         topLabel.attributedText = topString
-        secondaryLabel.text = NSLocalizedString("id_you_have_control_on_your_funds", comment: "")
+        secondaryLabel.text = NSLocalizedString("id_you_have_full_control_of_your", comment: "")
         nButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+        nButton.isEnabled = false
+        updateButtons()
+    }
+
+    func updateButtons() {
+        let accept = nButton.isEnabled
+        tosButton.backgroundColor = accept ? UIColor.customMatrixGreen() : UIColor.clear
+        tosButton.layer.borderColor =  UIColor.customTitaniumLight().cgColor
+        tosButton.setImage(accept ? UIImage(named: "check") : nil, for: UIControlState.normal)
+        tosButton.tintColor = UIColor.white
+        nButton.toggleGradient(accept)
     }
 }

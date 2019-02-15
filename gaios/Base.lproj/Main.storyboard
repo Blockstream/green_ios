@@ -455,6 +455,7 @@
                         <viewLayoutGuide key="safeArea" id="7hx-b0-XCa"/>
                     </view>
                     <navigationItem key="navigationItem" id="r6N-ze-unT">
+                        <barButtonItem key="backBarButtonItem" title=" " id="eop-z3-13f"/>
                         <barButtonItem key="rightBarButtonItem" title="Login options" id="KmY-Ea-Vkz">
                             <connections>
                                 <action selector="optionsBarButtonClick:" destination="4ce-3b-8z0" id="z1U-Zf-DVf"/>
