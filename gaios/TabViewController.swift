@@ -55,13 +55,13 @@ class TabViewController: UITabBarController {
         guard let connected = notification.userInfo?["connected"] as? Bool else { return }
         Guarantee().done {
             if connected {
-                self.snackbar.connected(self.view)
+                self.snackbar.connected(self)
             } else {
                 guard let waiting = notification.userInfo?["waiting"] as? Int else { return }
                 if waiting < 5 {
                     self.snackbar.removeFromSuperview()
                 } else {
-                    self.snackbar.disconnected(self.view, seconds: waiting)
+                    self.snackbar.disconnected(self, seconds: waiting)
                 }
             }
         }
@@ -72,7 +72,7 @@ class SnackBarNetwork: SnackBar {
     var timer = Timer()
     var seconds = 0
 
-    func disconnected(_ superview: UIView, seconds: Int) {
+    func disconnected(_ controller: UITabBarController, seconds: Int) {
         self.seconds = seconds
         label.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), seconds)
         button.setTitle(NSLocalizedString("id_try_now", comment: "").uppercased(), for: .normal)
@@ -84,13 +84,13 @@ class SnackBarNetwork: SnackBar {
                                                   selector: #selector(self.update(_:)),
                                                   userInfo: nil,
                                                   repeats: true)
-        addFromSuperview(superview)
+        addFromController(controller)
     }
 
-    func connected(_ superview: UIView) {
+    func connected(_ controller: UITabBarController) {
         label.text = NSLocalizedString("id_you_are_now_connected", comment: "")
         button.isHidden = true
-        addFromSuperview(superview)
+        addFromController(controller)
         if timer.isValid { timer.invalidate() }
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.milliseconds(2000)) {
             self.removeFromSuperview()

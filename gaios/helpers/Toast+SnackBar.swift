@@ -110,9 +110,13 @@ class SnackBar: UIStackView {
         let estimateRect = label.attributedText?.boundingRect(with: frame.size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
         let estimateHeight = estimateRect!.height + SnackBar.padding * 2
         label.heightAnchor.constraint(equalToConstant: estimateHeight).isActive = true
-        bottomAnchor.constraint(equalTo: superview!.bottomAnchor, constant: -48).isActive = true
         widthAnchor.constraint(equalTo: superview!.widthAnchor).isActive = true
         button.widthAnchor.constraint(equalToConstant: 100).isActive = true
+    }
+
+    func addFromController(_ controller: UITabBarController) {
+        addFromSuperview(controller.view)
+        button.bottomAnchor.constraint(equalTo: controller.tabBar.topAnchor).isActive = true
     }
 
     func addFromSuperview(_ superview: UIView) {
