@@ -3103,7 +3103,7 @@
                         <segue destination="zxH-Uq-pPW" kind="show" identifier="detail" id="m9D-Ww-ii0"/>
                         <segue destination="jsC-nu-G2U" kind="show" identifier="receive" id="g4H-sA-Rhj"/>
                         <segue destination="6PL-t1-BTP" kind="show" identifier="send" id="N3b-0p-Evi"/>
-                        <segue destination="SwO-Lj-Khe" kind="show" identifier="wallets" id="KmS-eB-Wwz"/>
+                        <segue destination="SwO-Lj-Khe" kind="show" identifier="wallets" animates="NO" id="KmS-eB-Wwz"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zxA-j3-WFJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

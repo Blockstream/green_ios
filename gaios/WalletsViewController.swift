@@ -103,7 +103,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let wallet = wallets[indexPath.row]
         subaccountDelegate?.onChange(wallet.pointer)
-        navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: false)
     }
 
     @objc func addWallet(_ sender: Any?) {
