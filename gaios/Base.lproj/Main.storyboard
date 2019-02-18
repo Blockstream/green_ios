@@ -1566,7 +1566,7 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="world" translatesAutoresizingMaskIntoConstraints="NO" id="XJa-hA-0OE">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_noonline" translatesAutoresizingMaskIntoConstraints="NO" id="XJa-hA-0OE">
                                 <rect key="frame" x="16" y="155" width="28" height="28"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="28" id="bZN-dx-fdy"/>
@@ -1579,7 +1579,7 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="digital" translatesAutoresizingMaskIntoConstraints="NO" id="6f1-fv-ZSB">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_noscrshot" translatesAutoresizingMaskIntoConstraints="NO" id="6f1-fv-ZSB">
                                 <rect key="frame" x="16" y="246" width="28" height="28"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="28" id="3cJ-2h-cEm"/>
@@ -1635,7 +1635,7 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="paper" translatesAutoresizingMaskIntoConstraints="NO" id="OzQ-B3-2SL">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_write" translatesAutoresizingMaskIntoConstraints="NO" id="OzQ-B3-2SL">
                                 <rect key="frame" x="16" y="84" width="28" height="28"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="28" id="Af5-Kv-Qoa"/>
@@ -4144,21 +4144,21 @@
         <image name="btc" width="50" height="50"/>
         <image name="btc_testnet" width="50" height="50"/>
         <image name="copy" width="50" height="50"/>
-        <image name="digital" width="200" height="258"/>
         <image name="downArrow" width="100" height="50"/>
         <image name="erase" width="50" height="50"/>
         <image name="graphic" width="1500" height="970"/>
         <image name="logo" width="45" height="56"/>
         <image name="notifications" width="50" height="50"/>
         <image name="notifications_clicked" width="50" height="50"/>
-        <image name="paper" width="200" height="223"/>
+        <image name="onboarding_noonline" width="50" height="50"/>
+        <image name="onboarding_noscrshot" width="50" height="50"/>
+        <image name="onboarding_write" width="50" height="50"/>
         <image name="qr" width="50" height="50"/>
         <image name="search" width="150" height="150"/>
         <image name="sendWhite" width="24.25" height="24.25"/>
         <image name="settings" width="50" height="50"/>
         <image name="settingsSelected" width="50" height="50"/>
         <image name="user" width="133" height="133"/>
-        <image name="world" width="200" height="207"/>
         <namedColor name="customCardDark">
             <color red="0.078431372549019607" green="0.11764705882352941" blue="0.15686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
