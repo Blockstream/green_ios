@@ -103,8 +103,10 @@
 "id_encryption_passphrase" = "Encryption passphrase";
 "id_enter" = "输入";
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
+"id_enter_a_private_key_to_sweep" = "Enter a private key to sweep into this wallet";
 "id_enter_a_valid_onion_or_ip" = "请输入一个有效的.onion或IP地址（最好是.onion）";
 "id_enter_a_valid_username" = "请输入一个有效的用户名";
+"id_enter_an_address" = "Enter an address";
 "id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "请输入新的电子邮箱地址";
 "id_enter_phone_number" = "请输入手机号";

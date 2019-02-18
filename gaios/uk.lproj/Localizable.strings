@@ -103,8 +103,10 @@
 "id_encryption_passphrase" = "Кодова фраза шифрування";
 "id_enter" = "Увійти";
 "id_enter_a_pgp_public_key_to_have" = "Уведіть  PGP-ключ для отримання зашифрованих повідомлень на вашу поштову скриньку.";
+"id_enter_a_private_key_to_sweep" = "Enter a private key to sweep into this wallet";
 "id_enter_a_valid_onion_or_ip" = "Введіть дійсну .onion або IP-адресу (бажано .onion)";
 "id_enter_a_valid_username" = "Введіть дійсне ім'я користувача ";
+"id_enter_an_address" = "Enter an address";
 "id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "Введіть новий email";
 "id_enter_phone_number" = "Введіть номер телефону";

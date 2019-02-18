@@ -103,8 +103,10 @@
 "id_encryption_passphrase" = "Encryption passphrase";
 "id_enter" = "入力";
 "id_enter_a_pgp_public_key_to_have" = "Enter a PGP public key to have emails encrypted for better privacy.";
+"id_enter_a_private_key_to_sweep" = "Enter a private key to sweep into this wallet";
 "id_enter_a_valid_onion_or_ip" = "有効な.onion又はIPアドレスを入力(.onionを推薦します)";
 "id_enter_a_valid_username" = "有効なユーザーネームを入力";
+"id_enter_an_address" = "Enter an address";
 "id_enter_an_address_or_sweep_paper" = "Enter an address or sweep paper wallet";
 "id_enter_new_email" = "新しいEメールを入力";
 "id_enter_phone_number" = "電話番号を入力";

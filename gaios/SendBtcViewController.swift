@@ -23,7 +23,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
 
         textfield.delegate = self
         textfield.attributedPlaceholder =
-            NSAttributedString(string: NSLocalizedString("id_enter_an_address_or_sweep_paper", comment: ""),
+            NSAttributedString(string: NSLocalizedString(getGAService().isWatchOnly ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: ""),
                 attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always

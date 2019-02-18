@@ -103,8 +103,10 @@
 "id_encryption_passphrase" = "Encryption passphrase";
 "id_enter" = "Inserisci";
 "id_enter_a_pgp_public_key_to_have" = "Inserisci una chiave pubblica PGP per avere email crittate e maggiore privacy.";
+"id_enter_a_private_key_to_sweep" = "Inserisci una chiave privata per farne lo sweep in questo wallet";
 "id_enter_a_valid_onion_or_ip" = "Inserisci un indirizzo IP valido. (.onion  preferibilmente)";
 "id_enter_a_valid_username" = "Inserisci un username valido";
+"id_enter_an_address" = "Inserisci un indirizzo";
 "id_enter_an_address_or_sweep_paper" = "Inserisci indirizzo o fai sweep di un paper wallet";
 "id_enter_new_email" = "Inserisci la nuova email";
 "id_enter_phone_number" = "Inserisci numero telefonico";
