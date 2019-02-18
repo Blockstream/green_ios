@@ -12,7 +12,6 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_total_balance", comment: "")
         guard let collectionView = self.collectionView else { return }
         let cellNib = UINib(nibName: "WalletCardView", bundle: nil)
         let headerNib = UINib(nibName: "HeaderWalletsCollection", bundle: nil)
@@ -26,7 +25,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.hidesBarsOnSwipe = true
+        navigationController?.setNavigationBarHidden(true, animated: true)
         getSubaccounts().done { wallets in
             self.wallets = wallets
             self.collectionView?.reloadData()
@@ -35,7 +34,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.hidesBarsOnSwipe = false
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -67,6 +66,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             let satoshi = wallets.map { $0.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
+            header.title.text = NSLocalizedString("id_total_balance", comment: "")
             header.btcLabel.text = String.toBtc(satoshi: satoshi)
             header.fiatLabel.text = String.toFiat(satoshi: satoshi)
             return header
@@ -84,7 +84,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.size.width, height: 60)
+        return CGSize(width: collectionView.frame.size.width, height: 95)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
