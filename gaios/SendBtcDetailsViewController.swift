@@ -302,6 +302,11 @@ class SendBtcDetailsViewController: UIViewController {
             guard var amount = alert!.textFields![0].text else { return }
             amount = amount.replacingOccurrences(of: ",", with: ".")
             guard let number = Double(amount) else { return }
+            let minFeeRate = Double(self.minFeeRate) / 1000
+            if number < minFeeRate {
+                Toast.show(String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(minFeeRate)))
+                return
+            }
             self.selectedFee = self.feeRateButtons.count - 1
             self.feeEstimates[self.feeRateButtons.count - 1] = UInt64(1000 * number)
             self.updateFeeButtons()
