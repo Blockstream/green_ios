@@ -75,6 +75,7 @@ class SnackBarNetwork: SnackBar {
     func disconnected(_ controller: UITabBarController, seconds: Int) {
         self.seconds = seconds
         label.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), seconds)
+        label.backgroundColor = UIColor.customTitaniumMedium()
         button.setTitle(NSLocalizedString("id_try_now", comment: "").uppercased(), for: .normal)
         button.addTarget(self, action:#selector(self.click), for: .touchUpInside)
         button.isHidden = false
@@ -89,6 +90,7 @@ class SnackBarNetwork: SnackBar {
 
     func connected(_ controller: UITabBarController) {
         label.text = NSLocalizedString("id_you_are_now_connected", comment: "")
+        label.backgroundColor = UIColor.customMatrixGreen()
         button.isHidden = true
         addFromController(controller)
         if timer.isValid { timer.invalidate() }
