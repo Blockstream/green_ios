@@ -10,17 +10,21 @@ cd green_ios
 
 ## Build requirements
 
-Get the command line builds tools
+### Global requirements
+
+Get the command line builds tools, or ensure they are up to date
 
 `xcode-select --install`
-
-Install CocoaPods dependencies
-
-`pod install`
 
 On macOS 10.14 Mojave, you have to run another step after installing the command line tools:
 
 `installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /`
+
+### Local requirements
+
+Install CocoaPods dependencies locally
+
+`pod install`
 
 ## Build GDK for Mac OSX
 
@@ -30,7 +34,7 @@ git clone https://github.com/greenaddress/gdk.git
 cd gdk
 ```
 
-Build GDK dependencies for Mac OSX (virtualenv could be optional)
+Build GDK dependencies for Mac OSX (virtualenv could be optional if you already have python3 as default)
 ```
 brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config swig gnu-getopt gnu-tar
 pip3 install virtualenv
@@ -55,7 +59,7 @@ deactivate
 cd ..
 ```
 
-## Default settings
+## Mandatory Default Settings
 
 XCode Version 10.1 (10B61) with the following settings:
 
