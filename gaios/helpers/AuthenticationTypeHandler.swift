@@ -11,10 +11,9 @@ class AuthenticationTypeHandler {
     static let AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
     static let AuthKeyPIN = "com.blockstream.green.auth_key_pin"
 
-    // TODO: verify curve parameters for release
     static let PrivateKeyPathSize = 32
     static let AuthKeyBiometricPrivateKeyPathPrefix = "com.blockstream.green."
-    static let ECCEncryptionType = SecKeyAlgorithm.eciesEncryptionCofactorX963SHA256AESGCM
+    static let ECCEncryptionType = SecKeyAlgorithm.eciesEncryptionCofactorVariableIVX963SHA256AESGCM
     static let ECCKeyType = kSecAttrKeyTypeECSECPrimeRandom
     static let ECCKeySizeInBits = 256
 
