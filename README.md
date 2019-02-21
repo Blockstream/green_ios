@@ -59,11 +59,6 @@ deactivate
 cd ..
 ```
 
-## Mandatory Default Settings
+#### Contribution guidelines
 
-XCode Version 10.1 (10B61) with the following settings:
-
-- Device id `retina4_0`: in Storyboard "View as: IPhone SE"
-- Tools version `14460.31`
-- IBCocoaTouchPlugin version `14460.20`
-
+See CONTRIBUTING.md for contribution guidelines
