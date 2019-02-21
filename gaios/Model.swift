@@ -4,13 +4,9 @@ import PromiseKit
 
 struct Transactions {
     let list: [Transaction]
-    let nextPageId: UInt32
-    let pageId: UInt32
 
-    init(list: [Transaction], nextPageId: UInt32, pageId: UInt32) {
+    init(list: [Transaction]) {
         self.list = list
-        self.nextPageId = nextPageId
-        self.pageId = pageId
     }
 }
 
@@ -195,7 +191,7 @@ class WalletItem : Codable {
     func getBalance() -> Promise<UInt64> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
-            try getSession().getBalance(subaccount: self.pointer, numConfs: 0)
+            try getSession().getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
         }.compactMap(on: bgq) { balance in
             return balance["satoshi"] as? UInt64
         }.compactMap { satoshi in

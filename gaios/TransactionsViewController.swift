@@ -37,7 +37,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
 
         if presentingWallet?.pointer != pointerWallet {
             // clear tx list only after a subaccount change in order to provide cache in offline mode
-            items = Transactions(list: [], nextPageId: 0, pageId: 0)
+            items = Transactions(list: [])
             tableView.reloadData()
         }
         loadWallet()
@@ -152,12 +152,12 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
     func loadTransactions() {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap(on: bgq) {_ in
-            try getSession().getTransactions(subaccount: self.pointerWallet, page: 0)
+            try getSession().getTransactions(details: ["subaccount": self.pointerWallet])
         }.compactMap(on: bgq) { data -> Transactions in
             let txList = (data["list"] as! [[String: Any]]).map { tx -> Transaction in
                 return Transaction(tx)
             }
-            let txs = Transactions(list: txList, nextPageId: data["next_page_id"] as! UInt32, pageId: data["page_id"] as! UInt32)
+            let txs = Transactions(list: txList)
             return txs
         }.done { txs -> Void in
             self.items = txs
