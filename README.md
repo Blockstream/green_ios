@@ -1,4 +1,4 @@
-# Green - A native GreenAddress wallet for Android
+# Green - A native GreenAddress wallet for iOS
 
 
 ## Clone the repo
