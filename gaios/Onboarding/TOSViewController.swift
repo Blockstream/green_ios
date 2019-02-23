@@ -33,8 +33,6 @@ class TOSViewController: UIViewController {
         tosString.setColor(color: UIColor.white, forText: whiteString)
         let linkAttributes: [String : Any] = [
             NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
-            NSAttributedStringKey.underlineColor.rawValue: UIColor.customMatrixGreen(),
-            NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
         ]
         tosTextView.linkTextAttributes = linkAttributes
         tosTextView.attributedText = tosString
@@ -52,10 +50,10 @@ class TOSViewController: UIViewController {
 
     func updateButtons() {
         let accept = nButton.isEnabled
-        tosButton.backgroundColor = accept ? UIColor.customMatrixGreen() : UIColor.clear
-        tosButton.layer.borderColor =  UIColor.customTitaniumLight().cgColor
-        tosButton.setImage(accept ? UIImage(named: "check") : nil, for: UIControlState.normal)
-        tosButton.tintColor = UIColor.white
+        tosButton.backgroundColor = .clear
+        tosButton.layer.borderColor = UIColor.customTitaniumLight().cgColor
+        tosButton.setBackgroundImage(accept ? UIImage(named: "tosSelected") : nil, for: .normal)
+        tosButton.tintColor = UIColor.customMatrixGreen()
         nButton.toggleGradient(accept)
     }
 }
