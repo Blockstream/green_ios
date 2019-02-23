@@ -31,6 +31,8 @@ class TOSViewController: UIViewController {
         let tosString = NSMutableAttributedString(string: whiteString + " " + linkString)
         tosString.addAttribute(.link, value: "https://greenaddress.it/tos", range: NSRange(location: whiteString.count + 1, length: linkString.count))
         tosString.setColor(color: UIColor.white, forText: whiteString)
+        tosString.setKerning(kerning: 0.19, stringValue: whiteString + " " + linkString)
+        tosString.setFont(font: UIFont.systemFont(ofSize: 14, weight: .regular), stringValue: whiteString + " " + linkString)
         let linkAttributes: [String : Any] = [
             NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
         ]
@@ -38,11 +40,23 @@ class TOSViewController: UIViewController {
         tosTextView.attributedText = tosString
         tosTextView.font = UIFont.systemFont(ofSize: 16)
         tosTextView.isUserInteractionEnabled = true
-        let stringLocalized = NSLocalizedString("id_welcome_to", comment: "") + " GREEN"
+
+        let welcomeLocalized = NSLocalizedString("id_welcome_to", comment: "")
+        let stringLocalized = welcomeLocalized + " GREEN"
         let topString = NSMutableAttributedString(string: stringLocalized)
+        topString.setKerning(kerning: 0.24, stringValue: welcomeLocalized)
+        topString.setFont(font: UIFont.systemFont(ofSize: 24, weight: .regular), stringValue: welcomeLocalized)
+        topString.setKerning(kerning: 4.2, stringValue: "GREEN")
         topString.setColor(color: UIColor.customMatrixGreen(), forText: "GREEN")
+        topString.setFont(font: UIFont.systemFont(ofSize: 24, weight: .bold), stringValue: "GREEN")
         topLabel.attributedText = topString
-        secondaryLabel.text = NSLocalizedString("id_you_have_full_control_of_your", comment: "")
+
+        let fullControlString = NSLocalizedString("id_you_have_full_control_of_your", comment: "")
+        let attributedFullControlString = NSMutableAttributedString(string: fullControlString)
+        attributedFullControlString.setFont(font: UIFont.systemFont(ofSize: 14, weight: .regular), stringValue: fullControlString)
+        attributedFullControlString.setKerning(kerning: 0.7, stringValue: fullControlString)
+        secondaryLabel.attributedText = attributedFullControlString
+
         nButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
         nButton.isEnabled = false
         updateButtons()

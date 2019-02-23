@@ -61,6 +61,10 @@ extension NSMutableAttributedString {
         self.addAttributes([NSAttributedStringKey.font: font], range: range)
     }
 
+    func setKerning(kerning: Double, stringValue: String) {
+        let range: NSRange = self.mutableString.range(of: stringValue, options: .caseInsensitive)
+        self.addAttributes([NSAttributedStringKey.kern: kerning], range: range)
+    }
 }
 
 extension URL {
