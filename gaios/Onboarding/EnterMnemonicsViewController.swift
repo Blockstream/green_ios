@@ -28,7 +28,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
         super.viewDidLoad()
 
         title = NSLocalizedString("id_enter_your_wallet_mnemonic", comment: "")
-        doneButton.setTitle(NSLocalizedString("id_restore", comment: ""), for: .normal)
+
+        doneButton.setDefaultButtonText(string: NSLocalizedString("id_restore", comment: ""))
         passwordProtectedLabel.text = NSLocalizedString("id_password_protected", comment: "")
 
         mnemonicWords.delegate = self
@@ -44,7 +45,6 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate,
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
         doneButton.updateGradientLayerFrame()
     }
 

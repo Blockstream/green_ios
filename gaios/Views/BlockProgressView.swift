@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BlockProgressView: UIView {
+final class BlockProgressView: UIView {
     @IBOutlet var view: UIView!
 
     //row 1
@@ -51,9 +51,9 @@ class BlockProgressView: UIView {
     var row3Array = Array<UIImageView>()
     var row4Array = Array<UIImageView>()
     var prevValue = 0
+
     var progress: Int = 0 {
         didSet {
-
             updateProgress()
             prevValue = progress - 1
         }
@@ -68,10 +68,12 @@ class BlockProgressView: UIView {
         super.init(coder: aDecoder)
         setup()
     }
+
     func setImageDisplay(array: Array<UIImageView>, isEmpty: Bool, reversed: Bool) {
+
         var delay = 0.15
         let a = reversed ? array.reversed() : array
-        
+
         a.forEach {
             if(isEmpty) {
                 emptyImage(image: $0, delay: delay)
@@ -81,6 +83,7 @@ class BlockProgressView: UIView {
             delay += 0.15
         }
     }
+
     func updateProgress() {
         switch progress {
         case 0:
@@ -142,11 +145,6 @@ class BlockProgressView: UIView {
         row2Array = [row2Image1, row2Image2, row2Image3, row2Image4, row2Image5, row2Image6]
         row3Array = [ row3Image1, row3Image2, row3Image3, row3Image4, row3Image5, row3Image6]
         row4Array = [row4Image1, row4Image2, row4Image3, row4Image4, row4Image5, row4Image6]
-
-        setImageDisplay(array: row1Array, isEmpty: true, reversed: false)
-        setImageDisplay(array: row2Array, isEmpty: true, reversed: false)
-        setImageDisplay(array: row3Array, isEmpty: true, reversed: false)
-        setImageDisplay(array: row4Array, isEmpty: true, reversed: false)
     }
 
     func loadViewFromNib() -> UIView! {

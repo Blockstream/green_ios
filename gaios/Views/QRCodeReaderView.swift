@@ -12,6 +12,8 @@ class QRCodeReaderView : UIView {
     var captureSession = AVCaptureSession()
     var captureMetadataOutput: AVCaptureMetadataOutput? = nil
 
+    var scanning = false
+
     lazy var previewLayer: AVCaptureVideoPreviewLayer? = {
         let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer.videoGravity = .resizeAspectFill
@@ -19,20 +21,36 @@ class QRCodeReaderView : UIView {
     }()
 
     lazy var blurEffectView: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffect = UIBlurEffect(style: .light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = frame
         blurEffectView.layer.masksToBounds = true
-        blurEffectView.alpha = 0.6
+        blurEffectView.alpha = 0.9
         return blurEffectView
     }()
 
     lazy var borderView: UIView = {
         let borderView = UIView(frame: frame)
         borderView.backgroundColor = UIColor(white: 0, alpha: 0)
-        borderView.borderWidth = 4
-        borderView.borderColor = UIColor.red
         return borderView
+    }()
+
+    lazy var scanBox: UIImageView = {
+
+        let borderBackground = UIImageView(frame: frame)
+        borderBackground.center = borderView.center
+        borderBackground.backgroundColor = .clear
+        borderBackground.image = UIImage(named: "scan")
+        return borderBackground
+    }()
+
+    lazy var scanLine: UIImageView = {
+
+        let scanLine = UIImageView(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: scanBox.frame.width, height: 2))
+        scanLine.backgroundColor = UIColor.customMatrixGreen()
+        scanLine.center = borderView.center
+
+        return scanLine
     }()
 
     lazy var placeholderTextView: UIView = {
@@ -103,6 +121,7 @@ class QRCodeReaderView : UIView {
         }
         addSubview(blurEffectView)
         addSubview(borderView)
+        addSubview(scanBox)
     }
 
     private func setupPlaceholderView() {
@@ -130,7 +149,7 @@ class QRCodeReaderView : UIView {
         blurEffectView.frame = frame
         previewLayer?.frame = frame
         placeholderTextView.frame = frame
-
+        scanBox.frame = createFrame(frame: frame)
         borderView.frame = createFrame(frame: frame)
         captureMetadataOutput?.rectOfInterest = CGRect(x: 0.25, y: 0.25, width: 0.5, height: 0.5)
 
@@ -236,7 +255,7 @@ class QRCodeReaderView : UIView {
 extension QRCodeReaderView : AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
 
-        if let metadataObject = metadataObjects.first {
+        if let metadataObject = metadataObjects.first, !self.scanning {
             guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else {
                 return
             }
@@ -244,8 +263,35 @@ extension QRCodeReaderView : AVCaptureMetadataOutputObjectsDelegate {
                 return
             }
             DispatchQueue.main.async {
-                self.delegate?.onQRCodeReadSuccess(result: stringValue)
+                //Scan animation.
+                self.scanning = true
+                self.animateScan {
+                    self.delegate?.onQRCodeReadSuccess(result: stringValue)
+                    self.scanning = false
+                }
             }
+        }
+    }
+}
+
+extension QRCodeReaderView {
+    func animateScan(completion: @escaping () -> Void) {
+        addSubview(scanLine)
+        let origin = scanLine.center.y
+//        let width = scanLine.frame.size.width
+        UIView.animate(withDuration: 0.6, animations: {
+            self.scanLine.center.y = origin - self.scanLine.frame.size.width / 2
+        }) { _ in
+            UIView.animate(withDuration: 0.6, animations: {
+                self.scanLine.center.y = origin + self.scanLine.frame.size.width / 2
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.6, animations: {
+                    self.scanLine.center.y = origin
+                }, completion: { _ in
+                    self.scanLine.removeFromSuperview()
+                    completion()
+                })
+            })
         }
     }
 }

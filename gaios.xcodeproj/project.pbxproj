@@ -90,6 +90,7 @@
 		FF6E36FA22221316000CC41B /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6E36F922221316000CC41B /* UIButton.swift */; };
 		FF6E36FC2222207D000CC41B /* BlockProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6E36FB2222207D000CC41B /* BlockProgressView.swift */; };
 		FF6E36FE222220A6000CC41B /* BlockProgressView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6E36FD222220A6000CC41B /* BlockProgressView.xib */; };
+		FF6E3700222311C2000CC41B /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6E36FF222311C2000CC41B /* UIColor.swift */; };
 		FFAE61602222058E000D8748 /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAE615F2222058E000D8748 /* UILabel.swift */; };
 /* End PBXBuildFile section */
 
@@ -230,6 +231,7 @@
 		FF6E36F922221316000CC41B /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		FF6E36FB2222207D000CC41B /* BlockProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockProgressView.swift; sourceTree = "<group>"; };
 		FF6E36FD222220A6000CC41B /* BlockProgressView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BlockProgressView.xib; sourceTree = "<group>"; };
+		FF6E36FF222311C2000CC41B /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		FFAE615F2222058E000D8748 /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -447,6 +449,7 @@
 			children = (
 				FFAE615F2222058E000D8748 /* UILabel.swift */,
 				FF6E36F922221316000CC41B /* UIButton.swift */,
+				FF6E36FF222311C2000CC41B /* UIColor.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -746,6 +749,7 @@
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
+				FF6E3700222311C2000CC41B /* UIColor.swift in Sources */,
 				81E9B80021C92DB1004D87B6 /* WalletCardView.swift in Sources */,
 				81310C452189D10F00563B91 /* GDKHelper.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date+helpers.swift in Sources */,

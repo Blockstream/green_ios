@@ -61,11 +61,7 @@ class TOSViewController: UIViewController {
         attributedFullControlString.setKerning(kerning: 0.7, stringValue: fullControlString)
         secondaryLabel.attributedText = attributedFullControlString
 
-
-        let buttonString = NSLocalizedString("id_next", comment: "")
-        nButton.setDefaultButtonText(string: buttonString)
         nButton.isEnabled = false
-        nButton.addArrow()
         updateButtons()
     }
 
@@ -76,5 +72,10 @@ class TOSViewController: UIViewController {
         tosButton.setBackgroundImage(accept ? UIImage(named: "tosSelected") : nil, for: .normal)
         tosButton.tintColor = UIColor.customMatrixGreen()
         nButton.toggleGradient(accept)
+
+        //set font to white
+        let buttonString = NSLocalizedString("id_next", comment: "")
+        nButton.setDefaultButtonText(string: buttonString, fontColor: accept ? .white : .disabledColor())
+//        nButton.addArrow()
     }
 }
