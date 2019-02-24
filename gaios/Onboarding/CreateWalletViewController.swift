@@ -8,6 +8,7 @@ class CreateWalletViewController: UIViewController {
     var pageCounter:Int = 0;
     lazy var arrayLabels: [UILabel] = [self.word1, self.word2, self.word3, self.word4, self.word5, self.word6]
 
+    @IBOutlet weak var blockProgressView: BlockProgressView!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var word1: UILabel!
@@ -33,7 +34,9 @@ class CreateWalletViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        blockProgressView.progress = 0
         pageCounter = 0
+        hideWords()
         loadWords()
     }
 
@@ -53,8 +56,16 @@ class CreateWalletViewController: UIViewController {
         if pageCounter == 3 {
             self.performSegue(withIdentifier: "next", sender: nil)
         } else {
+            blockProgressView.progress += 1
             pageCounter += 1
+            hideWords()
             loadWords()
+        }
+    }
+
+    func hideWords() {
+        arrayLabels.forEach {
+            $0.alpha = 0
         }
     }
 
@@ -66,9 +77,16 @@ class CreateWalletViewController: UIViewController {
             let real = index+1
             let formattedString = NSMutableAttributedString(string: String("\(real) \(mnemonic[index])"))
             formattedString.setColor(color: UIColor.customMatrixGreen(), forText: String(format: "%d", real))
-            formattedString.setFont(font: UIFont.systemFont(ofSize: 13), stringValue: String(format: "%d", real))
+            formattedString.setFont(font: UIFont.systemFont(ofSize: 18, weight: .semibold), stringValue: String(format: "%d", real))
             arrayLabels[index % 6].attributedText = formattedString
 
+        }
+        var delay = 0.15
+        arrayLabels.forEach { label in
+            UIView.animate(withDuration: 0.2, delay: delay, options: .curveEaseIn, animations: {
+                label.alpha = 1
+            }, completion: nil)
+            delay += 0.15
         }
     }
 
@@ -76,6 +94,7 @@ class CreateWalletViewController: UIViewController {
         if pageCounter == 0 {
             navigationController?.popViewController(animated: true)
         } else {
+            blockProgressView.progress -= 1
             pageCounter -= 1
             loadWords()
         }

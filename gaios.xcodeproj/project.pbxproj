@@ -88,6 +88,8 @@
 		81FABC2D21AEEFF000AE2ECD /* CongratsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FABC2C21AEEFF000AE2ECD /* CongratsViewController.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 		FF6E36FA22221316000CC41B /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6E36F922221316000CC41B /* UIButton.swift */; };
+		FF6E36FC2222207D000CC41B /* BlockProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6E36FB2222207D000CC41B /* BlockProgressView.swift */; };
+		FF6E36FE222220A6000CC41B /* BlockProgressView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6E36FD222220A6000CC41B /* BlockProgressView.xib */; };
 		FFAE61602222058E000D8748 /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAE615F2222058E000D8748 /* UILabel.swift */; };
 /* End PBXBuildFile section */
 
@@ -226,6 +228,8 @@
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF6E36F922221316000CC41B /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
+		FF6E36FB2222207D000CC41B /* BlockProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockProgressView.swift; sourceTree = "<group>"; };
+		FF6E36FD222220A6000CC41B /* BlockProgressView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BlockProgressView.xib; sourceTree = "<group>"; };
 		FFAE615F2222058E000D8748 /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -278,6 +282,8 @@
 				811B963B21F72A5B00DE02CB /* FooterWalletsCollection.xib */,
 				81640CDF21FB2B4200E7F79C /* FeeButton.xib */,
 				81640CDD21FB2B1100E7F79C /* FeeButton.swift */,
+				FF6E36FB2222207D000CC41B /* BlockProgressView.swift */,
+				FF6E36FD222220A6000CC41B /* BlockProgressView.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -577,6 +583,7 @@
 				811B963C21F72A5B00DE02CB /* FooterWalletsCollection.xib in Resources */,
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
+				FF6E36FE222220A6000CC41B /* BlockProgressView.xib in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
@@ -730,6 +737,7 @@
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
 				81073D7721E6024600E08F86 /* TabViewController.swift in Sources */,
+				FF6E36FC2222207D000CC41B /* BlockProgressView.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView+helpers.swift in Sources */,
 				676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */,
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,

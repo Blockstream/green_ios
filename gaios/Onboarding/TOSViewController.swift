@@ -65,7 +65,7 @@ class TOSViewController: UIViewController {
         let buttonString = NSLocalizedString("id_next", comment: "")
         nButton.setDefaultButtonText(string: buttonString)
         nButton.isEnabled = false
-
+        nButton.addArrow()
         updateButtons()
     }
 

@@ -16,7 +16,12 @@ extension UIButton {
         attributedString.setColor(color: fontColor, forText: string)
         self.setAttributedTitle(attributedString, for: .normal)
     }
-    
+
+    func addArrow() {
+        let arrow = UIImage(named: "nextArrow")
+        self.setImage(arrow, for: .normal)
+        self.semanticContentAttribute = .forceRightToLeft
+    }
 }
 
 //Gradient Button
