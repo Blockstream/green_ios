@@ -22,7 +22,7 @@ class InstructionViewController: UIViewController {
         middleLabel.setLineSpacing(lineSpacing: 3)
         bottomLabel.attributedText = NSMutableAttributedString(string: NSLocalizedString("id_dont_take_screenshots_of_your", comment: ""))
         bottomLabel.setLineSpacing(lineSpacing: 3)
-        nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+        nextButton.setDefaultButtonText(string: NSLocalizedString("id_next", comment: ""))
         nextButton.setGradient(true)
     }
 
