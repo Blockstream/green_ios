@@ -7,16 +7,25 @@ class InstructionViewController: UIViewController {
     @IBOutlet weak var bottomLabel: UILabel!
     @IBOutlet weak var middleLabel: UILabel!
     @IBOutlet weak var topLabel: UILabel!
+    @IBOutlet weak var topTitleLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_save_your_mnemonic", comment: "")
-        topLabel.text = NSLocalizedString("id_write_down_your_mnemonic_words", comment: "")
-        middleLabel.text = NSLocalizedString("id_dont_store_your_mnemonic_in", comment: "")
-        bottomLabel.text = NSLocalizedString("id_dont_take_screenshots_of_your", comment: "")
+        setup()
+    }
+
+    func setup() {
+        topTitleLabel.attributedText = NSMutableAttributedString(string:  NSLocalizedString("id_save_your_mnemonic", comment: ""))
+        topLabel.attributedText = NSMutableAttributedString(string:  NSLocalizedString("id_write_down_your_mnemonic_words", comment: ""))
+        topLabel.setLineSpacing(lineSpacing: 3)
+        middleLabel.attributedText = NSMutableAttributedString(string:  NSLocalizedString("id_dont_store_your_mnemonic_in", comment: ""))
+        middleLabel.setLineSpacing(lineSpacing: 3)
+        bottomLabel.attributedText = NSMutableAttributedString(string: NSLocalizedString("id_dont_take_screenshots_of_your", comment: ""))
+        bottomLabel.setLineSpacing(lineSpacing: 3)
         nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
         nextButton.setGradient(true)
     }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         nextButton.updateGradientLayerFrame()

@@ -25,20 +25,24 @@ class TOSViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setup()
 
+    }
+
+    func setup() {
         let whiteString = NSLocalizedString("id_i_agree_to_the", comment: "")
         let linkString = NSLocalizedString("id_terms_of_service", comment: "")
         let tosString = NSMutableAttributedString(string: whiteString + " " + linkString)
         tosString.addAttribute(.link, value: "https://greenaddress.it/tos", range: NSRange(location: whiteString.count + 1, length: linkString.count))
         tosString.setColor(color: UIColor.white, forText: whiteString)
         tosString.setKerning(kerning: 0.19, stringValue: whiteString + " " + linkString)
-        tosString.setFont(font: UIFont.systemFont(ofSize: 14, weight: .regular), stringValue: whiteString + " " + linkString)
+        tosString.setFont(font: UIFont.systemFont(ofSize: 14, weight: .light), stringValue: whiteString)
+        tosString.setFont(font: UIFont.systemFont(ofSize: 14, weight: .medium), stringValue: linkString)
         let linkAttributes: [String : Any] = [
             NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
         ]
         tosTextView.linkTextAttributes = linkAttributes
         tosTextView.attributedText = tosString
-        tosTextView.font = UIFont.systemFont(ofSize: 16)
         tosTextView.isUserInteractionEnabled = true
 
         let welcomeLocalized = NSLocalizedString("id_welcome_to", comment: "")
@@ -57,8 +61,11 @@ class TOSViewController: UIViewController {
         attributedFullControlString.setKerning(kerning: 0.7, stringValue: fullControlString)
         secondaryLabel.attributedText = attributedFullControlString
 
-        nButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+
+        let buttonString = NSLocalizedString("id_next", comment: "")
+        nButton.setDefaultButtonText(string: buttonString)
         nButton.isEnabled = false
+
         updateButtons()
     }
 

@@ -9,10 +9,9 @@ class InitialViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        topButton.setTitle(NSLocalizedString("id_create_wallet", comment: ""), for: .normal)
+        topButton.setDefaultButtonText(string: NSLocalizedString("id_create_wallet", comment: ""))
         topButton.setGradient(true)
-        restoreWalletbutton.setTitle(NSLocalizedString("id_restore_existing_wallet", comment: ""), for: .normal)
+        restoreWalletbutton.setDefaultButtonText(string: NSLocalizedString("id_restore_existing_wallet", comment: ""), fontColor: UIColor.customMatrixGreen())
         optionsBarButton.title = NSLocalizedString("id_login_options", comment: "")
     }
 
