@@ -278,7 +278,6 @@ extension QRCodeReaderView {
     func animateScan(completion: @escaping () -> Void) {
         addSubview(scanLine)
         let origin = scanLine.center.y
-//        let width = scanLine.frame.size.width
         UIView.animate(withDuration: 0.6, animations: {
             self.scanLine.center.y = origin - self.scanLine.frame.size.width / 2
         }) { _ in
