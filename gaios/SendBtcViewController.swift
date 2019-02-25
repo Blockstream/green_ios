@@ -14,6 +14,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
     var uiErrorLabel: UIErrorLabel!
     var wallet:WalletItem? = nil
     var transaction: Transaction? = nil
+    var displayedError = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -144,18 +145,22 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate, NVActi
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):
-                self.uiErrorLabel.text = localizedDescription
+                Toast.show(localizedDescription, timeout: Toast.SHORT_DURATION)
+//                self.uiErrorLabel.text = localizedDescription
                 break
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                self.uiErrorLabel.text = NSLocalizedString("id_you_are_not_connected", comment: "")
+                Toast.show(NSLocalizedString("id_you_are_not_connected", comment: ""), timeout: Toast.SHORT_DURATION)
+//                self.uiErrorLabel.text = NSLocalizedString("id_you_are_not_connected", comment: "")
                 break
             default:
-                self.uiErrorLabel.text = error.localizedDescription
+                Toast.show(error.localizedDescription, timeout: Toast.SHORT_DURATION)
+//                self.uiErrorLabel.text = error.localizedDescription
             }
-            self.uiErrorLabel.isHidden = false
+            self.displayedError = true
+//            self.uiErrorLabel.isHidden = false
         }.finally {
             self.stopAnimating()
-            if !self.uiErrorLabel.isHidden {
+            if self.displayedError {
                 self.qrCodeReaderBackgroundView.startScan()
             }
             self.updateButton(!self.isTextFieldEmpty())

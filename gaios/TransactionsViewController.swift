@@ -184,10 +184,24 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         getSubaccount(self.pointerWallet).done { wallet in
             self.presentingWallet = wallet
             let view = self.tableView.tableHeaderView as! WalletFullCardView
-            view.balance.text = String.toBtc(satoshi: wallet.satoshi).split(separator: " ").map(String.init).first
-            view.unit.text = settings.denomination.toString()
-            view.balanceFiat.text = String.toFiat(satoshi: wallet.satoshi)
-            view.walletName.text = wallet.localizedName()
+
+            let attributedBalanceString = NSMutableAttributedString(string: String.toBtc(satoshi: wallet.satoshi).split(separator: " ").map(String.init).first!)
+            attributedBalanceString.setKerning(kerning: 1.6, stringValue: attributedBalanceString.string)
+            view.balance.attributedText = attributedBalanceString
+
+            let attributedUnitString = NSMutableAttributedString(string: settings.denomination.toString())
+            attributedUnitString.setKerning(kerning: 1.6, stringValue: attributedUnitString.string)
+            view.unit.attributedText =  attributedUnitString
+
+            let attributedFiatString = NSMutableAttributedString(string: String.toFiat(satoshi: wallet.satoshi))
+            attributedFiatString.setKerning(kerning: 0.9, stringValue: attributedFiatString.string)
+            view.balanceFiat.attributedText = attributedFiatString
+
+            let attributedWalletString = NSMutableAttributedString(string: wallet.localizedName())
+            attributedWalletString.setFont(font: UIFont.systemFont(ofSize: 16, weight: .semibold), stringValue: attributedWalletString.string)
+            attributedWalletString.setKerning(kerning: 0.16, stringValue: attributedWalletString.string)
+
+            view.walletName.attributedText = attributedWalletString
             view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             if twoFactorReset.isResetActive {
                 view.actionsView.isHidden = true
