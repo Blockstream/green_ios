@@ -61,11 +61,11 @@ pip install meson
 
 Build the library for iphone:
 
-`./tools/build.sh --iphone static --lto=true --install $PWD/gdk-iphone`
+`./tools/build.sh --iphone static $PWD/gdk-iphone`
 
 or for iphone simulators:
 
-`./tools/build.sh --iphonesim static --lto=true --install $PWD/gdk-iphone`
+`./tools/build.sh --iphonesim static $PWD/gdk-iphone`
 
 
 #### CocoaPods requirements
