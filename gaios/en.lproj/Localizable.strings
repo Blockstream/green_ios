@@ -215,7 +215,7 @@
 "id_double_spend" = "double spend";
 "id_double_spend_by" = "Double spend by";
 "id_download_finished" = "Download finished";
-"id_email" = "Email";
+"id_email" = "email";
 "id_email_address" = "email address";
 "id_enable" = "Enable";
 "id_enable_bluetooth" = "Enable Bluetooth";
@@ -491,7 +491,7 @@
 "id_paste" = "Paste";
 "id_permanently_block_this_wallet" = "Permanently Block This Wallet";
 "id_pgp_key" = "PGP key";
-"id_phone_call" = "Phone call";
+"id_phone_call" = "phone call";
 "id_phone_number" = "phone number";
 "id_pin" = "PIN";
 "id_pin_access_disabled" = "PIN access disabled";
@@ -508,7 +508,7 @@
 "id_please_follow_the_instructions" = "Please follow the instructions on your hardware wallet";
 "id_please_hold_on_while_your" = "Please hold on while your address is being generated";
 "id_please_provide_your_1s" = "Please provide your %1$@.";
-"id_please_provide_your_1s_code" = "Please provide your %1$@ code.";
+"id_please_provide_your_1s_code" = "Please enter the code provided to you by %1$@.";
 "id_please_provide_your_passphrase" = "Please provide your passphrase:";
 "id_please_reconnect_your_hardware" = "Please re-connect your hardware wallet before trying again.";
 "id_please_secure_your_mnemonic_and" = "Please secure your mnemonic and confirm you agree to the Terms of Service";
