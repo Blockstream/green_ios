@@ -715,7 +715,8 @@ extension Jade {
                       "use_ae_signatures": useAeProtocol,
                       "txn": txn] as [String: Any]
 
-        return Jade.shared.exchange(method: "sign_liquid_tx", params: params)
+        let package = SignLiquidTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: trustedCommitments, aeHostCommitment: useAeProtocol, txn: txn)
+        return Jade.shared.exchange(method: "sign_liquid_tx", params: package)
             .flatMap { res -> Observable<(commitments: [String], signatures: [String])> in
                 guard res["result"] as? Bool != nil else {
                     throw JadeError.Abort("Error response from initial sign_liquid_tx call: \(res.description)")
