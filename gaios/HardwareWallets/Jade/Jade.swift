@@ -144,7 +144,7 @@ final class Jade: JadeChannel, HWProtocol {
                 return Observable.just(xpub ?? "")
             }
     }
-    
+
     // swiftlint:disable:next function_parameter_count
     func signTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
@@ -176,18 +176,21 @@ final class Jade: JadeChannel, HWProtocol {
             return Observable.error(JadeError.Abort("Input transactions missing"))
         }
 
-        let change = getChangeData(outputs: outputs)
-        let changeParams = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(change)) as? [String: Any] ?? [:]
+        let changes = getChangeData(outputs: outputs)
+        //let changeParams = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(change)) as? [String: Any] ?? [:]
 
         let txhex = tx["transaction"] as? String
         let txn = hexToData(txhex ?? "")
 
-        let params = [ "change": changeParams!,
+        let params = [ "change": changes,
                        "network": network,
                        "num_inputs": inputs.count,
                        "use_ae_signatures": useAeProtocol,
                        "txn": txn] as [String: Any]
-        return Jade.shared.exchange(method: "sign_tx", params: params)
+
+        let package = SignTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: nil, aeHostCommitment: useAeProtocol, txn: txn)
+        let encoded = try! CodableCBOREncoder().encode(package)
+        return Jade.shared.exchange(method: "sign_tx", encoded: encoded)
             .flatMap { _ -> Observable<(commitments: [String], signatures: [String])> in
                 if useAeProtocol {
                     return self.signTxInputsAntiExfil(baseId: 0, inputs: txInputs)
@@ -605,7 +608,7 @@ extension Jade {
                 return res["result"] as? [String: Any]
             }
     }
-    
+
     // swiftlint:disable:next function_parameter_count
     func signLiquidTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
         let txInputs = inputs.map { input -> TxInputLiquid? in
@@ -715,7 +718,7 @@ extension Jade {
                       "use_ae_signatures": useAeProtocol,
                       "txn": txn] as [String: Any]
 
-        let package = SignLiquidTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: trustedCommitments, aeHostCommitment: useAeProtocol, txn: txn)
+        let package = SignTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: trustedCommitments, aeHostCommitment: useAeProtocol, txn: txn)
         return Jade.shared.exchange(method: "sign_liquid_tx", params: package)
             .flatMap { res -> Observable<(commitments: [String], signatures: [String])> in
                 guard res["result"] as? Bool != nil else {

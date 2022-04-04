@@ -43,8 +43,43 @@ class JadeChannel: HWChannelProtocol {
         if let p = params {
             packet["params"] = p
         }
-        let encoded: [UInt8] = try! CBOR.encodeAny(packet)
+        let encoded: [UInt8] = try! CBOR.encodeMap(packet)
         return Data(encoded)
+    }
+
+    func build(method: String, encoded: Data? = nil) -> Data {
+        let newid = 100000 + Int.random(in: 0 ..< 899999)
+        var packet: [String: Any] = [
+            "method": method,
+            "id": "\(newid)"
+        ]
+        if let p = encoded {
+            packet["params"] = p
+        }
+        let encoded: [UInt8] = try! CBOR.encodeMap(packet)
+        return Data(encoded)
+    }
+
+    func exchange(method: String, encoded: Data? = nil) -> Observable<[String: Any]> {
+        let package = build(method: method, encoded: encoded)
+        return exchange(package)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .map { buffer -> [String: Any] in
+                let decoded = try? CBOR.decode([UInt8](buffer))
+                return CBOR.parser(decoded ?? CBOR("")) as? [String: Any] ?? [:]
+            }.flatMap { res in
+                return Observable<[String: Any]>.create { observer in
+                    if let error = res["error"] as? [String: Any] {
+                        let code = error["code"] as? Int
+                        let message = error["message"] as? String
+                        observer.onError(JadeError.from(code: code ?? 0, message: message ?? ""))
+                    } else {
+                        observer.onNext(res)
+                        observer.onCompleted()
+                    }
+                    return Disposables.create { }
+                }
+            }
     }
 
     func exchange(method: String, params: Any? = nil) -> Observable<[String: Any]> {
