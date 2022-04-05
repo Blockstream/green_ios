@@ -104,13 +104,42 @@ class JadeChannel: HWChannelProtocol {
             }
     }
 
+    func exchange<T: Decodable, K: Decodable>(_ request: JadeRequest<T>) -> Observable<JadeResponse<K>> {
+        return exchange(request.encoded!)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .map { (buffer: Data) -> JadeResponse<K> in
+                try! CodableCBORDecoder().decode(JadeResponse<K>.self, from: buffer)
+            }
+    }
+
+    func exchange(_ encoded: Data? = nil) -> Observable<[String: Any]> {
+        return exchange(encoded!)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .map { buffer -> [String: Any] in
+                let decoded = try? CBOR.decode([UInt8](buffer))
+                return CBOR.parser(decoded ?? CBOR("")) as? [String: Any] ?? [:]
+            }.flatMap { res in
+                return Observable<[String: Any]>.create { observer in
+                    if let error = res["error"] as? [String: Any] {
+                        let code = error["code"] as? Int
+                        let message = error["message"] as? String
+                        observer.onError(JadeError.from(code: code ?? 0, message: message ?? ""))
+                    } else {
+                        observer.onNext(res)
+                        observer.onCompleted()
+                    }
+                    return Disposables.create { }
+                }
+            }
+    }
+/*
     func exchange(_ request: String) -> Observable<String> {
         return Jade.shared.exchange(request.data(using: .ascii)!)
             .flatMap { res -> Observable<String> in
                 return Observable.just(String(bytes: res, encoding: .ascii)!)
         }
     }
-
+*/
     func exchange(_ data: Data) -> Observable<Data> {
         #if DEBUG
         print("=> " + data.map { String(format: "%02hhx", $0) }.joined())

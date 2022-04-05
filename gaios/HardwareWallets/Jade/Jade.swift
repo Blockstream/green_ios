@@ -76,7 +76,7 @@ final class Jade: JadeChannel, HWProtocol {
                      aeHostEntropy: String?)
     -> Observable<(signature: String?, signerCommitment: String?)> {
         let pathstr = path?.map { UInt32($0) }
-        var signMessage: Observable<[String: Any]>?
+        var signMessage: Observable<JadeResponse<String>>?
         var signerCommitment: String?
         if useAeProtocol ?? false {
             // Anti-exfil protocol:
@@ -85,27 +85,21 @@ final class Jade: JadeChannel, HWProtocol {
             // We can then request the actual signature passing the host-entropy.
             let aeHostCommitment = hexToData(aeHostCommitment ?? "")
             let aeHostEntropy = hexToData(aeHostEntropy ?? "")
-            let params = ["path": pathstr ?? [],
-                          "message": message ?? "",
-                          "ae_host_commitment": aeHostCommitment
-            ] as [String: Any]
-            signMessage = Jade.shared.exchange(method: "sign_message", params: params)
-                .compactMap { res in
-                    let result = res["result"] as? [UInt8]
-                    signerCommitment = result?.map { String(format: "%02hhx", $0) }.joined()
-                }.flatMap { _ -> Observable<[String: Any]> in
-                    Jade.shared.exchange(method: "get_signature",
-                                         params: ["ae_host_entropy": aeHostEntropy])
+            let package = JadeSignMessage(message: message ?? "", path: pathstr ?? [], aeHostCommitment: aeHostCommitment)
+            signMessage = Jade.shared.exchange(JadeRequest<JadeSignMessage>(method: "sign_message", params: package))
+                .compactMap { (res: JadeResponse<[UInt8]>) in
+                    signerCommitment = res.result?.map { String(format: "%02hhx", $0) }.joined()
+                }.flatMap { _ -> Observable<JadeResponse<String>> in
+                    let package = JadeGetSignature(aeHostEntropy: aeHostEntropy)
+                    return Jade.shared.exchange(JadeRequest<JadeGetSignature>(method: "get_signature", params: package))
                 }
         } else {
             // Standard EC signature, simple case
-            let params = ["path": pathstr ?? [],
-                          "message": message ?? ""] as [String: Any]
-            signMessage = Jade.shared.exchange(method: "sign_message", params: params)
+            let package = JadeSignMessage(message: message ?? "", path: pathstr ?? [], aeHostCommitment: nil)
+            signMessage = Jade.shared.exchange(JadeRequest<JadeSignMessage>(method: "sign_message", params: package))
         }
-        return signMessage!.compactMap { res -> (String?, String?) in
-            let signature = res["result"] as? String
-            return (signature, signerCommitment)
+        return signMessage!.compactMap { (res: JadeResponse<String>) -> (String?, String?) in
+            return (res.result!, signerCommitment)
         }.compactMap { (sign, signerCom) -> (signature: String?, signerCommitment: String?) in
             // Convert the signature from Base64 into DER hex for GDK
             guard var sigDecoded = Data(base64Encoded: sign ?? "") else {
@@ -137,11 +131,11 @@ final class Jade: JadeChannel, HWProtocol {
 
     func xpubs(network: String, path: [Int]) -> Observable<String> {
         let pathstr: [UInt32] = path.map { UInt32($0) }
-        let params = [ "path": pathstr, "network": network] as [String: Any]
-        return Jade.shared.exchange(method: "get_xpub", params: params)
-            .flatMap { res -> Observable<String> in
-                let xpub = res["result"] as? String
-                return Observable.just(xpub ?? "")
+        let package = JadeGetXpub(network: network, path: pathstr)
+        let jadePackage = JadeRequest<JadeGetXpub>(method: "get_xpub", params: package)
+        return Jade.shared.exchange(jadePackage)
+            .compactMap { (res: JadeResponse<String>) -> String in
+                res.result!
             }
     }
 
@@ -182,15 +176,16 @@ final class Jade: JadeChannel, HWProtocol {
         let txhex = tx["transaction"] as? String
         let txn = hexToData(txhex ?? "")
 
-        let params = [ "change": changes,
+        /*let params = [ "change": changes,
                        "network": network,
                        "num_inputs": inputs.count,
                        "use_ae_signatures": useAeProtocol,
-                       "txn": txn] as [String: Any]
+                       "txn": txn] as [String: Any]*/
 
-        let package = SignTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: nil, aeHostCommitment: useAeProtocol, txn: txn)
-        let encoded = try! CodableCBOREncoder().encode(package)
-        return Jade.shared.exchange(method: "sign_tx", encoded: encoded)
+        let signtx = JadeSignTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: nil, aeHostCommitment: useAeProtocol, txn: txn)
+        let jadePackage = JadeRequest(method: "sign_tx", params: signtx)
+        let encoded = try! CodableCBOREncoder().encode(jadePackage)
+        return Jade.shared.exchange(encoded)
             .flatMap { _ -> Observable<(commitments: [String], signatures: [String])> in
                 if useAeProtocol {
                     return self.signTxInputsAntiExfil(baseId: 0, inputs: txInputs)
@@ -345,7 +340,7 @@ final class Jade: JadeChannel, HWProtocol {
                 csvBlock = output["subtype"] as? Int  ?? 0
             }
             return TxChangeOutput(path: output["user_path"] as? [UInt32] ?? [],
-                                  recoveryxpub: output["recovery_xpub"] as? String ?? "",
+                                  recoveryxpub: output["recovery_xpub"] as? String,
                                   csvBlocks: csvBlock,
                                   variant: mapAddressType(addressType))
         }
@@ -373,55 +368,26 @@ final class Jade: JadeChannel, HWProtocol {
                                                                branch: branch)
             }
             // Get receive address from Jade for the path elements given
-            return newReceiveAddress(network: network.chain,
-                                     subaccount: wallet.pointer,
-                                     branch: branch,
-                                     pointer: pointer,
-                                     recoveryPubKey: recoveryxpub,
-                                     csvBlocks: csvBlocks)
+            let package = JadeGetReceiveMultisigAddress(network: network.chain,
+                                                             pointer: pointer,
+                                                             subaccount: wallet.pointer,
+                                                             branch: branch,
+                                                             recoveryXpub: recoveryxpub,
+                                                             csvBlocks: csvBlocks)
+            let jadePackage = JadeRequest<JadeGetReceiveMultisigAddress>(method: "get_receive_address", params: package)
+            return Jade.shared.exchange(jadePackage)
+                .compactMap { (res: JadeResponse<String>) -> String in
+                    res.result!
+                }
         } else {
             // Green Electrum Singlesig
             let variant = mapAddressType(wallet.type)
-            return newReceiveAddress(network: network.chain,
-                                     variant: variant ?? "",
-                                     path: path)
-        }
-    }
-
-    // Get (receive) green address - multisig
-    // swiftlint:disable:next function_parameter_count
-    func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String> {
-        var params = [ "network": network,
-                       "pointer": pointer,
-                       "subaccount": subaccount,
-                       "branch": branch ] as [String: Any]
-        // Optional fields
-        if let recoveryPubKey = recoveryPubKey, !recoveryPubKey.isEmpty {
-            params["recovery_xpub"] = recoveryPubKey
-        }
-        if csvBlocks > 0 {
-            params["csv_blocks"] = csvBlocks
-        }
-        return Jade.shared.exchange(method: "get_receive_address", params: params)
-        .flatMap { res -> Observable<String> in
-            guard let result = res["result"] as? String else {
-                return Observable.error(JadeError.Abort(""))
-            }
-            return Observable.just(result)
-        }
-    }
-
-    // Get (receive) green address - singlesig
-    func newReceiveAddress(network: String, variant: String, path: [UInt32]) -> Observable<String> {
-        let params = [ "network": network,
-                       "path": path,
-                       "variant": variant ] as [String: Any]
-        return Jade.shared.exchange(method: "get_receive_address", params: params)
-        .flatMap { res -> Observable<String> in
-            guard let result = res["result"] as? String else {
-                return Observable.error(JadeError.Abort(""))
-            }
-            return Observable.just(result)
+            let package = JadeGetReceiveSinglesigAddress(network: network.chain, path: path, variant: variant ?? "")
+            let jadePackage = JadeRequest<JadeGetReceiveSinglesigAddress>(method: "get_receive_address", params: package)
+            return Jade.shared.exchange(jadePackage)
+                .compactMap { (res: JadeResponse<String>) -> String in
+                    res.result!
+                }
         }
     }
 
@@ -699,7 +665,7 @@ extension Jade {
 
     // swiftlint:disable:next function_parameter_count
     func signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], changes: [TxChangeOutput?], useAeProtocol: Bool) -> Observable<(commitments: [String], signatures: [String])> {
-        let changeParams = changes.map { change -> [String: Any]? in
+        /*let changeParams = changes.map { change -> [String: Any]? in
             let data = try? JSONEncoder().encode(change)
             var dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
             dict?["path"] = change?.path ?? []
@@ -717,8 +683,9 @@ extension Jade {
                       "trusted_commitments": commitmentsParams,
                       "use_ae_signatures": useAeProtocol,
                       "txn": txn] as [String: Any]
-
-        let package = SignTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: trustedCommitments, aeHostCommitment: useAeProtocol, txn: txn)
+         */
+        let package =
+        JadeSignTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: trustedCommitments, aeHostCommitment: useAeProtocol, txn: txn)
         return Jade.shared.exchange(method: "sign_liquid_tx", params: package)
             .flatMap { res -> Observable<(commitments: [String], signatures: [String])> in
                 guard res["result"] as? Bool != nil else {
