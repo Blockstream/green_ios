@@ -169,18 +169,16 @@ class BLEManager {
             .flatMap { p in Jade.shared.open(p) }
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .timeoutIfNoEvent(RxTimeInterval.seconds(3))
-            .flatMap { _ in
+            .flatMap { _ -> Observable<JadeVersionInfo> in
                 Jade.shared.version()
-            }.flatMap { version -> Observable<[String: Any]> in
-                let result = version["result"] as? [String: Any]
-                hasPin = result?["JADE_HAS_PIN"] as? Bool ?? false
-                self.fmwVersion = result?["JADE_VERSION"] as? String ?? ""
-                if let networks = result?["JADE_NETWORKS"] as? String {
-                    if networks == "TEST" && (network != "testnet" && network != "testnet-liquid") {
-                        throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
-                    } else if networks == "MAIN" && (network == "testnet" || network == "testnet-liquid") {
-                        throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
-                    }
+            }.flatMap { version -> Observable<Bool> in
+                hasPin = version.jadeHasPin
+                self.fmwVersion = version.jadeVersion
+                let testnet = ["testnet", "testnet-liquid"].contains(network)
+                if version.jadeNetworks == "TEST" && !testnet {
+                    throw JadeError.Abort("\(network) not supported in Jade \(version.jadeNetworks) mode")
+                } else if version.jadeNetworks == "MAIN" && testnet {
+                    throw JadeError.Abort("\(network) not supported in Jade \(version.jadeNetworks) mode")
                 }
                 // check genuine firmware
                 return Jade.shared.addEntropy()
@@ -205,9 +203,8 @@ class BLEManager {
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in
                 Jade.shared.version()
-            }.compactMap { data in
-                verInfo = data["result"] as? [String: Any]
-                return try Jade.shared.checkFirmware(verInfo!)
+            }.compactMap { verInfo in
+                return try Jade.shared.checkFirmware(verInfo)
             }.observeOn(MainScheduler.instance)
             .compactMap { (fmwFile: [String: String]?) in
                 let version = verInfo?["JADE_VERSION"] as? String
@@ -227,7 +224,6 @@ class BLEManager {
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Jade.shared.version() }
-            .compactMap { $0["result"] as? [String: Any] }
             .flatMap { Jade.shared.updateFirmare(verInfo: $0, fmwFile: fmwFile) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in

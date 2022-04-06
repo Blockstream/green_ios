@@ -11,13 +11,22 @@ final class Jade: JadeChannel, HWProtocol {
     static let EXCLUDED_CERTIFICATE = "-----BEGIN CERTIFICATE-----\nMIIDSjCCAjKgAwIBAgIQRK+wgNajJ7qJMDmGLvhAazANBgkqhkiG9w0BAQUFADA/\nMSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT\nDkRTVCBSb290IENBIFgzMB4XDTAwMDkzMDIxMTIxOVoXDTIxMDkzMDE0MDExNVow\nPzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMRcwFQYDVQQD\nEw5EU1QgUm9vdCBDQSBYMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\nAN+v6ZdQCINXtMxiZfaQguzH0yxrMMpb7NnDfcdAwRgUi+DoM3ZJKuM/IUmTrE4O\nrz5Iy2Xu/NMhD2XSKtkyj4zl93ewEnu1lcCJo6m67XMuegwGMoOifooUMM0RoOEq\nOLl5CjH9UL2AZd+3UWODyOKIYepLYYHsUmu5ouJLGiifSKOeDNoJjj4XLh7dIN9b\nxiqKqy69cK3FCxolkHRyxXtqqzTWMIn/5WgTe1QLyNau7Fqckh49ZLOMxt+/yUFw\n7BZy1SbsOFU5Q9D8/RhcQPGX69Wam40dutolucbY38EVAjqr2m7xPi71XAicPNaD\naeQQmxkqtilX4+U9m5/wAl0CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNV\nHQ8BAf8EBAMCAQYwHQYDVR0OBBYEFMSnsaR7LHH62+FLkHX/xBVghYkQMA0GCSqG\nSIb3DQEBBQUAA4IBAQCjGiybFwBcqR7uKGY3Or+Dxz9LwwmglSBd49lZRNI+DT69\nikugdB/OEIKcdBodfpga3csTS7MgROSR6cz8faXbauX+5v3gTt23ADq1cEmv8uXr\nAvHRAosZy5Q6XkjEGB5YGV8eAlrwDPGxrancWYaLbumR9YbK+rlmM6pZW87ipxZz\nR8srzJmwN0jP41ZL9c8PDHIyh8bwRLtTcm1D9SZImlJnt1ir/md2cXjbDaJWFBM5\nJDGFoqgCWjBH4d1QB7wCCZAA62RjYJsWvIjJEubSfZGL+T0yjWW06XyxV3bqxbYo\nOb8VZRzI9neWagqNdwvYkQsEjgfbKbYK7p2CNTUQ\n-----END CERTIFICATE-----\n"
     let SIGHASH_ALL: UInt8 = 1
 
-    func version() -> Observable<[String: Any]> {
-        return Jade.shared.exchange(method: "get_version_info")
+    func version() -> Observable<JadeVersionInfo> {
+        let jadePackage = JadeRequest<JadeEmpty>(method: "get_version_info", params: nil)
+        return Jade.shared.exchange(jadePackage)
+            .compactMap { (res: JadeResponse<JadeVersionInfo>) -> JadeVersionInfo in
+                res.result!
+            }
     }
 
-    func addEntropy() -> Observable<[String: Any]> {
+    func addEntropy() -> Observable<Bool> {
         let buffer = [UInt8].init(repeating: 0, count: 32).map { _ in UInt8(arc4random_uniform(0xff))}
-        return Jade.shared.exchange(method: "add_entropy", params: ["entropy": Data(buffer)])
+        let package = JadeAddEntropy(entropy: Data(buffer))
+        let jadePackage = JadeRequest<JadeAddEntropy>(method: "add_entropy", params: package)
+        return Jade.shared.exchange(jadePackage)
+            .compactMap { (res: JadeResponse<Bool>) -> Bool in
+                res.result!
+            }
     }
 
     func httpRequest(_ httpRequest: [String: Any]) -> [String: Any]? {
@@ -413,14 +422,13 @@ extension Jade {
         return Jade.MIN_ALLOWED_FW_VERSION <= version
     }
 
-    func firmwarePath(_ info: [String: Any]) -> String? {
-        let boardType = info["BOARD_TYPE"] as? String
-        if boardType != nil && ![Jade.BOARD_TYPE_JADE, Jade.BOARD_TYPE_JADE_V1_1].contains(boardType) {
+    func firmwarePath(_ info: JadeVersionInfo) -> String? {
+        if ![Jade.BOARD_TYPE_JADE, Jade.BOARD_TYPE_JADE_V1_1].contains(info.boardType) {
             return nil
         }
-        let isV1BoardType = boardType == Jade.BOARD_TYPE_JADE
+        let isV1BoardType = info.boardType == Jade.BOARD_TYPE_JADE
         // Alas the first version of the jade fmw didn't have 'BoardType' - so we assume an early jade.
-        if let jadeFeatures = info["JADE_FEATURES"] as? String, jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
+        if info.jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
             // Production Jade (Secure-Boot [and flash-encryption] enabled)
             return isV1BoardType ? Jade.FW_JADE_PATH : Jade.FW_JADE1_1_PATH
         } else {
@@ -438,12 +446,8 @@ extension Jade {
         return try? SessionsManager.current?.httpRequest(params: params)
     }
 
-    func checkFirmware(_ verInfo: [String: Any]) throws -> [String: String]? {
-        guard let currentVersion = verInfo["JADE_VERSION"] as? String,
-            let config = verInfo["JADE_CONFIG"] as? String else {
-            throw JadeError.Abort("Invalid version")
-        }
-        guard let hasPin = verInfo["JADE_HAS_PIN"] as? Bool, hasPin else {
+    func checkFirmware(_ verInfo: JadeVersionInfo) throws -> [String: String]? {
+        guard verInfo.jadeHasPin else {
             throw JadeError.Abort("Authentication required")
         }
         // Get relevant fmw path (or if hw not supported)
@@ -472,26 +476,26 @@ extension Jade {
                         "config": String(parts[1]),
                         "fwSize": String(parts[2])]
             }.filter { (v: [String: String]) in
-                v["version"]! > currentVersion &&
-                    v["config"]!.lowercased() == config.lowercased()
+                v["version"]! > verInfo.jadeVersion &&
+                v["config"]!.lowercased() == verInfo.jadeConfig.lowercased()
             }
         return versions.first
     }
 
-    func updateFirmare( verInfo: [String: Any], fmwFile: [String: String])-> Observable<Bool> {
+    func updateFirmare( verInfo: JadeVersionInfo, fmwFile: [String: String])-> Observable<Bool> {
         guard let res = download(fmwFile["filepath"] ?? "", base64: true),
             let body = res["body"] as? String,
             let fmw = Data(base64Encoded: body) else {
             return Observable.error(JadeError.Abort("Error downloading firmware file"))
         }
-        let chunk = verInfo["JADE_OTA_MAX_CHUNK"] as? UInt64
         let uncompressedSize = Int(fmwFile["fwSize"] ?? "")
         let compressedSize = fmw.count
         return Jade.shared.exchange(method: "ota", params: ["fwsize": uncompressedSize!,
                                                             "cmpsize": compressedSize,
-                                                            "otachunk": chunk!])
+                                                            "otachunk": verInfo.jadeOtaMaxChunk])
         .flatMap { _ in
-            self.otaSend(fmw, size: uncompressedSize!, chunksize: chunk!)
+            self.otaSend(fmw, size: uncompressedSize!,
+                         chunksize: verInfo.jadeOtaMaxChunk)
         }.flatMap { _ in
             return Observable.just(true)
         }
@@ -510,7 +514,7 @@ extension Jade {
         }
     }
 
-    func otaSend(_ data: Data, size: Int, chunksize: UInt64 = 4 * 1024) -> Observable<Bool> {
+    func otaSend(_ data: Data, size: Int, chunksize: Int = 4 * 1024) -> Observable<Bool> {
         let chunks = stride(from: 0, to: data.count, by: Int(chunksize)).map {
             Array(data[$0 ..< Swift.min($0 + Int(chunksize), data.count)])
         }

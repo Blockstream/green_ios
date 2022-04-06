@@ -73,6 +73,37 @@ struct JadeGetSignature: Codable {
     let aeHostEntropy: Data
 }
 
+struct JadeAddEntropy: Codable {
+    enum CodingKeys: String, CodingKey {
+        case entropy
+    }
+    let entropy: Data
+}
+
+struct JadeEmpty: Codable {
+}
+
+struct JadeVersionInfo: Codable {
+    enum CodingKeys: String, CodingKey {
+        case jadeVersion = "JADE_VERSION"
+        case jadeOtaMaxChunk = "JADE_OTA_MAX_CHUNK"
+        case jadeConfig = "JADE_CONFIG"
+        case boardType = "BOARD_TYPE"
+        case jadeState = "JADE_STATE"
+        case jadeNetworks = "JADE_NETWORKS"
+        case jadeFeatures = "JADE_FEATURES"
+        case jadeHasPin = "JADE_HAS_PIN"
+    }
+    let jadeVersion: String
+    let jadeOtaMaxChunk: Int
+    let jadeConfig: String
+    let boardType: String
+    let jadeState: String
+    let jadeNetworks: String
+    let jadeFeatures: String
+    let jadeHasPin: Bool
+}
+
 struct JadeRequest<T: Codable>: Decodable, Encodable {
     let id: String
     let method: String
@@ -105,7 +136,7 @@ struct JadeRequest<T: Codable>: Decodable, Encodable {
             try container.encode(params, forKey: .params)
         }
     }
-    
+
     var encoded: Data? {
         try? CodableCBOREncoder().encode(self)
     }
@@ -157,7 +188,7 @@ struct JadeResponse<T: Codable>: Decodable, Encodable {
             try container.encode(result, forKey: .result)
         }
     }
-    
+
     var encoded: Data? {
         try? CodableCBOREncoder().encode(self)
     }
