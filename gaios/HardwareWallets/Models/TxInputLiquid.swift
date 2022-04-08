@@ -15,8 +15,4 @@ struct TxInputLiquid: TxInputProtocol {
     let path: [UInt32]?
     let aeHostEntropy: [UInt8]?
     let aeHostCommitment: [UInt8]?
-
-    func encode() -> [String: Any] {
-        return try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
-    }
 }

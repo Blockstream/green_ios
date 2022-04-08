@@ -198,21 +198,20 @@ class BLEManager {
     }
 
     func checkFirmware(_ p: Peripheral) -> Observable<Peripheral> {
-        var verInfo: [String: Any]?
+        var verInfo: JadeVersionInfo?
         return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in
                 Jade.shared.version()
-            }.compactMap { verInfo in
-                return try Jade.shared.checkFirmware(verInfo)
+            }.compactMap { info in
+                verInfo = info
+                return try Jade.shared.checkFirmware(info)
             }.observeOn(MainScheduler.instance)
             .compactMap { (fmwFile: [String: String]?) in
-                let version = verInfo?["JADE_VERSION"] as? String
-                let boardType = verInfo?["BOARD_TYPE"] as? String
-                let needCableUpdate = boardType == Jade.BOARD_TYPE_JADE_V1_1 && version ?? "" < "0.1.28"
-                self.fmwVersion = version
+                self.fmwVersion = verInfo?.jadeVersion
                 if let fmw = fmwFile,
-                    let ver = version {
+                   let ver = verInfo?.jadeVersion {
+                    let needCableUpdate = ver == Jade.BOARD_TYPE_JADE_V1_1 && ver < "0.1.28"
                     self.delegate?.onCheckFirmware(p, fmw: fmw, currentVersion: ver, needCableUpdate: needCableUpdate)
                     throw BLEManagerError.firmwareErr(txt: "")
                 }

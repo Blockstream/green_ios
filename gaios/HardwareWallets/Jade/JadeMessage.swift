@@ -74,10 +74,128 @@ struct JadeGetSignature: Codable {
 }
 
 struct JadeAddEntropy: Codable {
-    enum CodingKeys: String, CodingKey {
-        case entropy
-    }
     let entropy: Data
+}
+
+struct JadeGetBlindingKey: Codable {
+    let script: Data
+
+    init(scriptHex: String) {
+        script = hexToData(scriptHex)
+    }
+}
+
+struct JadeGetSharedNonce: Codable {
+    enum CodingKeys: String, CodingKey {
+        case script = "script"
+        case theirPubkey = "their_pubkey"
+    }
+    let script: Data
+    let theirPubkey: Data
+
+    init(scriptHex: String, theirPubkeyHex: String) {
+        script = hexToData(scriptHex)
+        theirPubkey = hexToData(theirPubkeyHex)
+    }
+}
+
+struct JadeGetCommitment: Codable {
+    enum CodingKeys: String, CodingKey {
+        case hashPrevouts = "hash_prevouts"
+        case outputIdx = "output_index"
+        case assetId = "asset_id"
+        case value = "value"
+        case vbf = "vbf"
+    }
+    let hashPrevouts: Data
+    let outputIdx: Int
+    let assetId: Data
+    let value: UInt64
+    let vbf: Data?
+}
+
+struct JadeGetBlingingFactor: Codable {
+    enum CodingKeys: String, CodingKey {
+        case hashPrevouts = "hash_prevouts"
+        case outputIndex = "output_index"
+        case type = "type"
+    }
+    let hashPrevouts: Data
+    let outputIndex: Int
+    let type: String
+}
+
+struct JadeOta: Codable {
+    let fwsize: Int
+    let cmpsize: Int
+    let otachunk: Int
+}
+
+struct JadeAuthRequest: Codable {
+    enum CodingKeys: String, CodingKey {
+        case network
+    }
+    let network: String
+}
+
+struct JadeHandshakeCompleteReply: Codable {
+    enum CodingKeys: String, CodingKey {
+        case hmac = "hmac"
+        case encryptedKey = "encrypted_key"
+    }
+    let hmac: String
+    let encryptedKey: String
+}
+
+struct JadeHandshakeComplete: Codable {
+    enum CodingKeys: String, CodingKey {
+        case ske = "ske"
+        case cke = "cke"
+        case encryptedData = "encrypted_data"
+        case hmacEncryptedData =  "hmac_encrypted_data"
+    }
+    let ske: String
+    let cke: String
+    let encryptedData: String
+    let hmacEncryptedData: String
+}
+
+struct JadeHandshakeInit: Codable {
+    enum CodingKeys: String, CodingKey {
+        case sig
+        case ske
+    }
+    let sig: String
+    let ske: String
+}
+
+struct JadeHttpRequestParams<T: Codable>: Codable {
+    enum CodingKeys: String, CodingKey {
+        case urls
+        case method
+        case accept
+        case data
+    }
+    let urls: [String]
+    let method: String
+    let accept: String
+    let data: T
+}
+
+struct JadeHttpRequest<T: Codable>: Codable {
+    enum CodingKeys: String, CodingKey {
+        case params = "params"
+        case onReply = "on-reply"
+    }
+    let params: JadeHttpRequestParams<T>
+    let onReply: String
+}
+
+struct JadeAuthResponse<T: Codable>: Codable {
+    enum CodingKeys: String, CodingKey {
+        case httpRequest = "http_request"
+    }
+    let httpRequest: JadeHttpRequest<T>
 }
 
 struct JadeEmpty: Codable {
@@ -94,7 +212,7 @@ struct JadeVersionInfo: Codable {
         case jadeFeatures = "JADE_FEATURES"
         case jadeHasPin = "JADE_HAS_PIN"
     }
-    let jadeVersion: String
+    var jadeVersion: String
     let jadeOtaMaxChunk: Int
     let jadeConfig: String
     let boardType: String
@@ -103,6 +221,8 @@ struct JadeVersionInfo: Codable {
     let jadeFeatures: String
     let jadeHasPin: Bool
 }
+
+var JadeRequestId = Int.random(in: 0 ..< 899999)
 
 struct JadeRequest<T: Codable>: Decodable, Encodable {
     let id: String
@@ -123,7 +243,8 @@ struct JadeRequest<T: Codable>: Decodable, Encodable {
     }
 
     init(id: String? = nil, method: String, params: T? = nil) {
-        self.id = id ?? "\(100000 + Int.random(in: 0 ..< 899999))"
+        self.id = id ?? "\(JadeRequestId)"
+        JadeRequestId += 1
         self.method = method
         self.params = params
     }
@@ -168,8 +289,21 @@ struct JadeResponse<T: Codable>: Decodable, Encodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
-        error = try container.decode(JadeResponseError.self, forKey: .error)
-        result = try T(from: decoder)
+        if container.contains(.error) {
+            error = try container.decode(JadeResponseError.self, forKey: .error)
+        } else {
+            error = nil
+        }
+        if container.contains(.result) {
+            do {
+                result = try container.decode(T.self, forKey: .result)
+            } catch {
+                print (error)
+                throw error
+            }
+        } else {
+            result = nil
+        }
     }
 
     init(id: String, error: JadeResponseError?, result: T? = nil) {

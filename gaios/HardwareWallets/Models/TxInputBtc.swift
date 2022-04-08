@@ -1,8 +1,6 @@
 import Foundation
 
-protocol TxInputProtocol: Codable {
-    func encode() -> [String: Any]
-}
+protocol TxInputProtocol: Codable {}
 
 struct TxInputBtc: TxInputProtocol {
     enum CodingKeys: String, CodingKey {
@@ -21,8 +19,4 @@ struct TxInputBtc: TxInputProtocol {
     let path: [UInt32]?
     let aeHostEntropy: [UInt8]?
     let aeHostCommitment: [UInt8]?
-
-    func encode() -> [String: Any] {
-        return try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
-    }
 }
