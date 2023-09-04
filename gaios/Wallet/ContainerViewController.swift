@@ -9,7 +9,9 @@ class ContainerViewController: UIViewController {
     private var torToken: NSObjectProtocol?
     private var requests: Int = 0
 
-    var presentingWallet: WalletItem!
+    var accountViewModel: AccountViewModel?
+    var walletViewModel: WalletViewModel?
+    let nv = UINavigationController()
 
     @IBOutlet weak var networkView: UIView!
     @IBOutlet weak var networkText: UILabel!
@@ -21,6 +23,27 @@ class ContainerViewController: UIViewController {
         torToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: updateTor)
         self.networkView.isHidden = true
         view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view
+
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let walletViewModel = walletViewModel {
+            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletViewController") as? WalletViewController {
+                vc.viewModel = walletViewModel
+                nv.setViewControllers([vc], animated: false)
+            }
+        }
+        if let accountViewModel = accountViewModel {
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
+                vc.viewModel = accountViewModel
+                nv.setViewControllers([vc], animated: false)
+            }
+        }
+        nv.view.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        nv.view.frame = containerView.bounds
+        containerView.addSubview(nv.view)
+        nv.willMove(toParent: self)
+        nv.didMove(toParent: self)
+        nv.beginAppearanceTransition(true, animated: true)
+        nv.endAppearanceTransition()
     }
 
     override func viewDidDisappear(_ animated: Bool) {

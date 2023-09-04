@@ -13,7 +13,8 @@ class PolicyCell: UITableViewCell {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var bgType: UIView!
     @IBOutlet weak var bgTypeDesc: UIView!
-
+    @IBOutlet weak var imgBeta: UIImageView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -37,6 +38,7 @@ class PolicyCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imgLight.isHidden = true
+        imgBeta.isHidden = true
     }
 
     func configure(model: PolicyCellModel) {
@@ -46,8 +48,10 @@ class PolicyCell: UITableViewCell {
         lblTypeDesc.text = model.typeDesc.uppercased()
         lblName.text = model.name
         lblHint.text = model.hint
+        imgBeta.isHidden = true
         if model.isLight == true {
             imgLight.isHidden = false
+            imgBeta.isHidden = false
             imgSS.isHidden = true
             imgMS.isHidden = true
             lblTypeDesc.textColor = .white

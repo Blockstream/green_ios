@@ -3,6 +3,7 @@ import UIKit
 
 protocol DialogListViewControllerDelegate: AnyObject {
     func didSelectIndex(_ index: Int, with type: DialogType)
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType)
 }
 
 class DialogListViewController: UIViewController {
@@ -50,7 +51,7 @@ class DialogListViewController: UIViewController {
         }
 
         view.alpha = 0.0
-        anchorBottom.constant = -200
+        anchorBottom.constant = -cardView.frame.size.height
 
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
             swipeDown.direction = .down
@@ -99,7 +100,13 @@ class DialogListViewController: UIViewController {
 
     func dismiss(_ index: Int) {
         guard let vm = viewModel else { return }
-        anchorBottom.constant = -200
+        if let item = vm.items[safe: index] as? DialogListCellModel {
+            if item.switchState != nil {
+                /// prevent tap on cells with the switch
+                return
+            }
+        }
+        anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
             self.view.layoutIfNeeded()
@@ -109,6 +116,24 @@ class DialogListViewController: UIViewController {
                 self.delegate?.didSelectIndex(index, with: vm.type)
             }
         })
+    }
+
+    func switchAndDismiss(idx: Int, isOn: Bool, type: DialogType) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [self] in
+            self.anchorBottom.constant = -cardView.frame.size.height
+            UIView.animate(withDuration: 0.3, animations: {
+                self.view.alpha = 0.0
+                self.view.layoutIfNeeded()
+            }, completion: { _ in
+                self.dismiss(animated: false, completion: {
+                    if idx > -1 {
+                        self.delegate?.didSwitchAtIndex(index: idx,
+                                                        isOn: isOn,
+                                                        type: type)
+                    }
+                })
+            })
+        }
     }
 }
 
@@ -124,7 +149,10 @@ extension DialogListViewController: UITableViewDelegate, UITableViewDataSource {
         switch modeType {
         case .list:
             if let cell = tableView.dequeueReusableCell(withIdentifier: DialogListCell.identifier, for: indexPath) as? DialogListCell, let vm = viewModel {
-                cell.configure(vm.items[indexPath.row])
+                cell.configure(model: vm.items[indexPath.row],
+                               index: indexPath.row) { [weak self] (idx,isOn) in
+                    self?.switchAndDismiss(idx: idx, isOn: isOn, type: vm.type)
+                }
                 cell.selectionStyle = .none
                 return cell
             }

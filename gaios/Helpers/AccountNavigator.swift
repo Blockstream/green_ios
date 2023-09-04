@@ -4,12 +4,10 @@ import AsyncBluetooth
 
 class AccountNavigator {
 
+    @MainActor
     // open the account if just logged or redirect to login
-    static func goLogin(account: Account, nv: UINavigationController?) -> UINavigationController {
-        nv?.popToRootViewController(animated: false)
-        nv?.dismiss(animated: false, completion: nil)
-        let nv = nv ?? UINavigationController()
-
+    static func goLogin(account: Account) {
+        let nv = UINavigationController()
         let vcHome: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
@@ -17,7 +15,8 @@ class AccountNavigator {
 
         // switch on selected active session
         if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
-            return goLogged(account: account, nv: nv)
+            goLogged(account: account)
+            return
         } else if account.isHW {
             vcConnect?.account = account
             vcConnect?.bleViewModel = BleViewModel.shared
@@ -30,37 +29,68 @@ class AccountNavigator {
             vcLogin?.account = account
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         }
-        return nv
-    }
-
-    static func goLogged(account: Account? = nil, nv: UINavigationController?) -> UINavigationController {
-        if let account = account {
-            AccountsRepository.shared.current = account
-        }
-        nv?.popToRootViewController(animated: false)
-        nv?.dismiss(animated: false, completion: nil)
-        let nv = nv ?? UINavigationController()
-        let vcContainer: ContainerViewController? = instantiateViewController(storyboard: "Wallet", identifier: "Container")
-        nv.setNavigationBarHidden(true, animated: false)
-        nv.setViewControllers([vcContainer!], animated: false)
-        return nv
-    }
-
-    static func goLogout(account: Account, nv: UINavigationController?) -> UINavigationController {
-        //WalletsRepository.shared.get(for: account.id)?.disconnect()
         let appDelegate = UIApplication.shared.delegate
-        let nv = goLogin(account: account, nv: nv)
         appDelegate?.window??.rootViewController = nv
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+    }
+
+    @MainActor
+    static func goLogged(account: Account) {
+        AccountsRepository.shared.current = account
+        Task {
+            let isLightning = account.isLightningShortcut
+            let accountViewModel = isLightning ? await accountViewModel(account: account) : nil
+            let walletViewModel = !isLightning ? WalletViewModel() : nil
+            await MainActor.run {
+                if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
+                    vc.accountViewModel = accountViewModel
+                    vc.walletViewModel = walletViewModel
+                    let appDelegate = UIApplication.shared.delegate
+                    appDelegate?.window??.rootViewController = vc
+                    vc.stopLoader()
+                }
+            }
+        }
+    }
+
+    @MainActor
+    static func accountViewModel(account: Account) async -> AccountViewModel? {
+        guard let session = WalletManager.current?.lightningSession else {
+            return nil
+        }
+        guard let subaccount = try? await session.subaccount(0) else {
+            return nil
+        }
+        let balance = try? await session.getBalance(subaccount: 0, numConfs: 0)
+        let assetAmounts = AssetAmountList(balance ?? [:])
+        let accountCellModel = AccountCellModel(account: subaccount, satoshi: balance?.first?.value ?? 0)
+        let accountViewModel = AccountViewModel(model: accountCellModel, account: subaccount, cachedBalance: assetAmounts)
+        return accountViewModel
+    }
+
+    @MainActor
+    static func goLogout(account: Account?) {
+        if let account = account {
+            goLogin(account: account)
+        } else {
+            goHome()
+        }
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             appDelegate.resolve2faOff()
         }
-        return nv
     }
 
-    static func goFirstPage(nv: UINavigationController?) -> UINavigationController {
-        nv?.popToRootViewController(animated: false)
-        nv?.dismiss(animated: false, completion: nil)
-        let nv = nv ?? UINavigationController()
+    @MainActor
+    static func goHome() {
+        let nv = UINavigationController()
+        let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
+        nv.setViewControllers([home!], animated: true)
+        let appDelegate = UIApplication.shared.delegate
+        appDelegate?.window??.rootViewController = nv
+    }
+
+    @MainActor
+    static func goFirstPage() {
+        let nv = UINavigationController()
         if AccountsRepository.shared.accounts.isEmpty {
             let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
             nv.setViewControllers([onboard!], animated: true)
@@ -70,9 +100,9 @@ class AccountNavigator {
         }
         let appDelegate = UIApplication.shared.delegate
         appDelegate?.window??.rootViewController = nv
-        return nv
     }
 
+    @MainActor
     static func goAddWallet(nv: UINavigationController?) -> UINavigationController {
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)

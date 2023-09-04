@@ -157,9 +157,6 @@
                                     </view>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GVC-MA-XMp">
                                         <rect key="frame" x="0.0" y="20" width="414" height="828"/>
-                                        <connections>
-                                            <segue destination="34U-nb-dki" kind="embed" id="ySC-LT-Tbw"/>
-                                        </connections>
                                     </containerView>
                                 </subviews>
                             </stackView>
@@ -680,11 +677,11 @@
             <objects>
                 <viewController storyboardIdentifier="WalletViewController" id="cLb-Ee-a9U" customClass="WalletViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="L6x-5X-M7k">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="828"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="NrC-4Y-Tjd">
-                                <rect key="frame" x="0.0" y="92" width="414" height="736"/>
+                                <rect key="frame" x="0.0" y="92" width="414" height="804"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="cLb-Ee-a9U" id="TbY-GT-UGB"/>
@@ -692,10 +689,10 @@
                                 </connections>
                             </tableView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg_actions" translatesAutoresizingMaskIntoConstraints="NO" id="5Yf-fL-SB2">
-                                <rect key="frame" x="0.0" y="636" width="414" height="192"/>
+                                <rect key="frame" x="0.0" y="704" width="414" height="192"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WVX-Em-OBK">
-                                <rect key="frame" x="20" y="734" width="374" height="50"/>
+                                <rect key="frame" x="20" y="802" width="374" height="50"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="UTJ-vB-fLn">
                                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
@@ -802,13 +799,13 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nZc-kR-2Ii">
-                                <rect key="frame" x="0.0" y="92" width="414" height="736"/>
+                                <rect key="frame" x="0.0" y="92" width="414" height="804"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lg4-SM-cHo">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="804"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZOh-0D-27J">
-                                                <rect key="frame" x="36" y="146" width="342" height="324.5"/>
+                                                <rect key="frame" x="36" y="180" width="342" height="324.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6UG-os-h6J">
                                                         <rect key="frame" x="21" y="0.0" width="300" height="186"/>

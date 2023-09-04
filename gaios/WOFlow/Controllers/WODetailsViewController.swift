@@ -157,7 +157,7 @@ class WODetailsViewController: KeyboardViewController {
     @MainActor
     func success(account: Account) {
         stopLoader()
-        AccountNavigator.goLogged( nv: self.navigationController)
+        AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
     }
     
     @MainActor

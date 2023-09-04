@@ -179,7 +179,7 @@ class WOSetupViewController: KeyboardViewController {
     @MainActor
     func success(account: Account) {
         stopLoader()
-        AccountNavigator.goLogged(nv: self.navigationController)
+        AccountNavigator.goLogged(account: account)
     }
     
     @MainActor
@@ -203,6 +203,7 @@ class WOSetupViewController: KeyboardViewController {
 }
 
 extension WOSetupViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
 
     func selectNetwork() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)

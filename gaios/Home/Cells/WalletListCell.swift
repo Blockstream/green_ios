@@ -11,7 +11,22 @@ class WalletListCell: UITableViewCell {
     @IBOutlet weak var iconHW: UIImageView!
     @IBOutlet weak var lblHint: UILabel!
 
+    @IBOutlet weak var lblOverviewTitle: UILabel!
+    @IBOutlet weak var lblShortcutTitle: UILabel!
+    @IBOutlet weak var shortcutStack: UIStackView!
+    @IBOutlet weak var circleImageOverview: UIImageView!
+    @IBOutlet weak var circleImageShortcut: UIImageView!
+    @IBOutlet weak var shortcutView: UIView!
+
     var onLongpress: (() -> Void)?
+
+    var onTap: ((IndexPath) -> Void)?
+    var onTapOverview: ((IndexPath) -> Void)?
+    var onTapLightShort: ((IndexPath) -> Void)?
+    var indexPath: IndexPath?
+
+    var hasShortcut = false
+    var account: Account?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -19,6 +34,9 @@ class WalletListCell: UITableViewCell {
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         self.addGestureRecognizer(longPressRecognizer)
+
+        shortcutView.layer.cornerRadius = 7.0
+        shortcutView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -37,24 +55,32 @@ class WalletListCell: UITableViewCell {
     }
 
     func configure(item: Account,
-                   isSelected: Bool = false,
-                   onLongpress: (() -> Void)? = nil
+                   isOverviewSelected: Bool = false,
+                   isLightningSelected: Bool = false,
+                   indexPath: IndexPath,
+                   onLongpress: (() -> Void)? = nil,
+                   onTap: ((IndexPath) -> Void)? = nil,
+                   onTapOverview: ((IndexPath) -> Void)? = nil,
+                   onTapLightShort: ((IndexPath) -> Void)? = nil
     ) {
         lblTitle.text = item.name
         lblHint.text = ""
-
+        [lblTitle, lblOverviewTitle, lblShortcutTitle].forEach{
+            $0.setStyle(.txtBigger)
+        }
+        lblHint.setStyle(.txtSmaller)
+        self.hasShortcut = item.getLightningShortcutAccount() != nil
+        self.account = item
         let img: UIImage? = {
             if item.isWatchonly {
                 return UIImage(named: "ic_eye_flat")
-            } else if item.gdkNetwork.mainnet ?? true {
+            } else if item.gdkNetwork.mainnet {
                 return UIImage(named: "ic_wallet")
             } else {
                 return UIImage(named: "ic_wallet_testnet")
             }
         }()
         self.icon.image = img!.maskWithColor(color: .white)
-        self.circleImageView.isHidden = !isSelected
-
         self.iconSecurityType.image = UIImage() // UIImage(named: "ic_keys_invert")!
 
         lblHint.isHidden = !(item.isEphemeral || item.isHW)
@@ -74,12 +100,45 @@ class WalletListCell: UITableViewCell {
         iconPassphrase.isHidden = !item.isEphemeral
         iconHW.isHidden = !item.isHW
         self.onLongpress = onLongpress
+
+        shortcutStack.subviews.forEach { $0.isHidden = true }
+        if hasShortcut == true {
+            shortcutStack.subviews.forEach { $0.isHidden = false }
+        }
+        circleImageView.isHidden = hasShortcut || !isOverviewSelected
+        circleImageOverview.isHidden = !hasShortcut || !isOverviewSelected
+        circleImageShortcut.isHidden = !hasShortcut || !isLightningSelected
+        lblOverviewTitle.text = "Wallet Overview".localized
+        lblShortcutTitle.text = "Lightning Account".localized
+
+        self.indexPath = indexPath
+        self.onTap = onTap
+        self.onTapOverview = onTapOverview
+        self.onTapLightShort = onTapLightShort
     }
 
     @objc func longPressed(sender: UILongPressGestureRecognizer) {
 
         if sender.state == UIGestureRecognizer.State.began {
             onLongpress?()
+        }
+    }
+
+    @IBAction func btnTap(_ sender: Any) {
+        if let indexPath = indexPath {
+            onTap?(indexPath)
+        }
+    }
+    
+    @IBAction func onTapOverview(_ sender: Any) {
+        if let indexPath = indexPath {
+            onTapOverview?(indexPath)
+        }
+    }
+    
+    @IBAction func btnTapLightShort(_ sender: Any) {
+        if let indexPath = indexPath {
+            onTapLightShort?(indexPath)
         }
     }
 }

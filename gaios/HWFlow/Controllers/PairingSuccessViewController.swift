@@ -172,6 +172,8 @@ class PairingSuccessViewController: HWFlowBaseViewController {
 }
 
 extension PairingSuccessViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+    
 
     func selectNetwork() {
         self.stopLoader()

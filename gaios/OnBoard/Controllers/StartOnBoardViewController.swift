@@ -33,8 +33,9 @@ class StartOnBoardViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Take Control: Your Keys, Your Bitcoin"
-        lblHint.text = "Your keys secure your coins on the blockchain"
+
+        lblTitle.text = "id_take_control_your_keys_your".localized
+        lblHint.text = "id_your_keys_secure_your_coins_on".localized
         btnNewWallet.setTitle(NSLocalizedString("id_new_wallet", comment: ""), for: .normal)
         btnRestoreWallet.setTitle(NSLocalizedString("id_restore_wallet", comment: ""), for: .normal)
         btnWatchOnly.setTitle(NSLocalizedString("id_watchonly", comment: ""), for: .normal)
@@ -109,6 +110,8 @@ class StartOnBoardViewController: UIViewController {
 }
 
 extension StartOnBoardViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+    
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:

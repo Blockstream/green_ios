@@ -50,4 +50,17 @@ class DenominationExchangeViewModel {
                                            denominations: list,
                                            network: network)
     }
+    
+    func updateSettings() async throws {
+        guard let session = wm.prominentSession,
+            let settings = settings else { return }
+        _ = try await session.changeSettings(settings: settings)
+        if let account = wm.account.getLightningShortcutAccount() {
+            let session = SessionManager(account.gdkNetwork)
+            try? await session.connect()
+            let credentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: account.keychain)
+            _ = try? await session.loginUser(credentials, restore: false)
+            _ = try? await session.changeSettings(settings: settings)
+        }
+    }
 }

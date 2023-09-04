@@ -136,7 +136,7 @@ class DenominationExchangeViewController: UIViewController {
         Task {
             do {
                 self.startAnimating()
-                _ = try await self.viewModel.session?.changeSettings(settings: self.viewModel.settings!)
+                try await self.viewModel.updateSettings()
                 self.dismiss(.ok)
             } catch {
                 self.showError(error)

@@ -27,7 +27,7 @@ class UserSettingsViewModel {
             reloadTableView?()
         }
     }
-
+    
     func getCellModel(at indexPath: IndexPath) -> UserSettingsCellModel? {
         let section = sections[indexPath.section]
         return cellModels[section]?[indexPath.row]
@@ -154,6 +154,7 @@ class UserSettingsViewModel {
             .Security: getSecurity(),
             .Recovery: getRecovery(),
             .About: getAbout()]
+
         if isWatchonly {
             if isSinglesig {
                 sections = [ .Logout, .General, .About ]

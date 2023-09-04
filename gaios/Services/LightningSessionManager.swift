@@ -28,14 +28,14 @@ class LightningSessionManager: SessionManager {
                                eventListener: self)
     }
 
-    private func connectToGreenlight(credentials: Credentials, isRestore: Bool = false) -> Bool {
-        guard let mnemonic = getLightningMnemonic(credentials: credentials) else {
-            fatalError("Unsupported feature")
+    private func connectToGreenlight(credentials: Credentials, checkCredentials: Bool = false) async throws {
+        guard let mnemonic = credentials.mnemonic else {
+            fatalError("Invalid mnemonic")
         }
         AnalyticsManager.shared.loginLightningStart()
-        let connected = lightBridge?.connectToGreenlight(mnemonic: mnemonic, isRestore: isRestore) ?? false
+        try await lightBridge?.connectToGreenlight(mnemonic: mnemonic, checkCredentials: checkCredentials)
         AnalyticsManager.shared.loginLightningStop()
-        return connected
+        connected = true
     }
 
     override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
@@ -43,17 +43,14 @@ class LightningSessionManager: SessionManager {
         let walletId = walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
-        let greenlightCredentials = LightningRepository.shared.get(for: walletHashId)
+        _ = LightningRepository.shared.get(for: walletHashId)
         isRestoredNode = false
         lightBridge = initLightningBridge(params)
-        if connectToGreenlight(credentials: params, isRestore: restore) {
+        do {
+            try await connectToGreenlight(credentials: params, checkCredentials: restore)
             isRestoredNode = restore
-        } else if !restore {
-            if !connectToGreenlight(credentials: params) {
-                throw LoginError.connectionFailed()
-            }
-        } else {
-            return res
+        } catch {
+            try await connectToGreenlight(credentials: params)
         }
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
@@ -101,10 +98,6 @@ class LightningSessionManager: SessionManager {
     override func removeDatadir(walletHashId: String) {
         let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
         try? FileManager.default.removeItem(atPath: workingDir)
-    }
-
-    override func enabled() -> Bool {
-        return AppSettings.shared.lightningEnabled && AppSettings.shared.experimental
     }
 
     override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String : Int64] {

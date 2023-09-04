@@ -63,6 +63,10 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
             return false
         }
     }
+    
+    public var isLightning: Bool {
+        type == .lightning
+    }
 
     public static func == (lhs: WalletItem, rhs: WalletItem) -> Bool {
         return lhs.network == rhs.network &&

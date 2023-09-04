@@ -41,7 +41,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
             case .taproot:
                 return "Taproot"
             case .lightning:
-                return "Lightning"
+                return "Instant"
             }
         }
     }

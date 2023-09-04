@@ -38,7 +38,8 @@ class AccountsRepository {
         set {
             currentId = newValue?.id ?? ""
             if let account = newValue {
-                if account.isEphemeral {
+                if account.isLightningShortcut {
+                } else if account.isEphemeral {
                     if !ephAccounts.contains(where: { $0.id == account.id }) {
                         ephAccounts += [account]
                     }
@@ -61,12 +62,14 @@ class AccountsRepository {
 
     func get(for id: String) -> Account? {
         ephAccounts.filter({ $0.id == id }).first ??
-        accounts.filter({ $0.id == id }).first
+        accounts.filter({ $0.id == id }).first ??
+        accounts.compactMap { $0.getLightningShortcutAccount() }.filter({ $0.id == id }).first
     }
 
     func find(xpubHashId: String) -> [Account]? {
         ephAccounts.filter({ $0.xpubHashId == xpubHashId }) +
-        accounts.filter({ $0.xpubHashId == xpubHashId })
+        accounts.filter({ $0.xpubHashId == xpubHashId }) +
+        accounts.compactMap { $0.getLightningShortcutAccount() }.filter({ $0.xpubHashId == xpubHashId })
     }
 
     func upsert(_ account: Account) {

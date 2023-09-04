@@ -165,7 +165,7 @@ class WOLoginViewController: KeyboardViewController {
     @MainActor
     func success() {
         stopLoader()
-        AccountNavigator.goLogged(nv: self.navigationController)
+        AccountNavigator.goLogged(account: account)
     }
     
     @MainActor
@@ -232,6 +232,8 @@ extension WOLoginViewController: UIPopoverPresentationControllerDelegate {
 }
 
 extension WOLoginViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+    
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .loginPrefs:

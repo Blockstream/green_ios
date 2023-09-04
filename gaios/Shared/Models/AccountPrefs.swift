@@ -1,11 +1,14 @@
 import UIKit
 
-enum AccountPrefs: Int, CaseIterable {
-    case rename = 0
+enum AccountPrefs {
+    
+    case rename
     case archive
     case enhanceSecurity
     case nodeInfo
     case remove
+    case shortcut(state: Bool?)
+    case logout
 
     var name: String {
         switch self {
@@ -18,7 +21,20 @@ enum AccountPrefs: Int, CaseIterable {
         case .enhanceSecurity:
             return "id_enhance_security".localized
         case .nodeInfo:
-            return "Node Info"
+            return "Node Info".localized
+        case .shortcut:
+            return "Lightning shortcut".localized
+        case .logout:
+            return "id_logout".localized
+        }
+    }
+
+    var hint: String? {
+        switch self {
+        case .shortcut:
+            return "Quickly access your funds on Lightning, separately from the rest of the accounts."
+        default:
+            return nil
         }
     }
 
@@ -34,30 +50,56 @@ enum AccountPrefs: Int, CaseIterable {
             return UIImage(named: "ic_lightning_plain")!
         case .remove:
             return UIImage(named: "ic_dialog_arrow_down")!
+        case .shortcut:
+            return UIImage(named: "ic_lightning_shortcut_mini")!
+        case .logout:
+            return UIImage(named: "ic_logout")!
         }
     }
-
-    static func getItems(isLightning: Bool) -> [DialogListCellModel] {
-        var items: [DialogListCellModel] = []
-        if !isLightning {
-            items += [DialogListCellModel(type: .list,
-                                          icon: AccountPrefs.rename.icon,
-                                          title: AccountPrefs.rename.name)]
+    var switchState: Bool? {
+        switch self {
+        case .shortcut(let state):
+            return state
+        default:
+            return nil
+        }
+    }
+    static func getPrefs(isEphemeral: Bool,
+                         isLightning: Bool,
+                         isLightningShortcut: Bool,
+                         switchState: Bool? = nil) -> [AccountPrefs] {
+        var prefs: [AccountPrefs] = []
+        if isLightningShortcut {
+            prefs.append(.logout)
+        } else if !isLightning {
+            prefs.append(.rename)
             if let subaccount = WalletManager.current?.subaccounts,
                subaccount.filter({ !$0.hidden }).count > 1 {
-                items += [DialogListCellModel(type: .list,
-                                              icon: AccountPrefs.archive.icon,
-                                              title: AccountPrefs.archive.name)]
+                prefs.append(.archive)
             }
         } else {
-            items += [DialogListCellModel(type: .list,
-                                          icon: AccountPrefs.nodeInfo.icon,
-                                          title: AccountPrefs.nodeInfo.name)]
-            items += [DialogListCellModel(type: .list,
-                                          icon: AccountPrefs.remove.icon,
-                                          title: AccountPrefs.remove.name)]
+            prefs.append(.nodeInfo)
+            prefs.append(.remove)
+            if !isEphemeral {
+                prefs.append(.shortcut(state: switchState))
+            }
         }
+        return prefs
+    }
 
-        return items
+    static func getItems(isEphemeral: Bool,
+                         isLightning: Bool,
+                         isLightningShortcut: Bool,
+                         switchState: Bool?) -> [DialogListCellModel] {
+        
+        return AccountPrefs.getPrefs(isEphemeral: isEphemeral,
+                                     isLightning: isLightning,
+                                     isLightningShortcut: isLightningShortcut,
+                                     switchState: switchState).map {
+            DialogListCellModel(type: .list,
+                                icon: $0.icon,
+                                title: $0.name,
+                                hint: $0.hint,
+                                switchState: $0.switchState) }
     }
 }

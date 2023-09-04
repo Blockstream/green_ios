@@ -371,7 +371,7 @@ extension WalletSettingsViewController: LTInvitationViewControllerDelegate {
 }
 
 extension WalletSettingsViewController: DialogListViewControllerDelegate {
-
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) { }
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch RedeemPrefs(rawValue: index) {
         case .scan:

@@ -45,12 +45,11 @@ class AccountViewController: UIViewController {
     private var sIdx: Int = 0
     private var notificationObservers: [NSObjectProtocol] = []
     private var isReloading = false
-
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
     }
-
-    var showScan = true
+    private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
+    private var showScan = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,20 +91,20 @@ class AccountViewController: UIViewController {
     }
 
     func reload() {
-        Task {
-            if isReloading { return }
-            isReloading = true
-            try? await viewModel.getBalance()
-            reloadSections([.disclose, .adding, .account, .assets], animated: true)
-            if viewModel.isLightning {
-                _ = viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
-                reloadSections([.sweep, .inbound], animated: true)
+        Task { [weak self] in
+            if self?.isReloading ?? true { return }
+            self?.isReloading = true
+            try? await self?.viewModel.getBalance()
+            self?.reloadSections([.disclose, .adding, .account, .assets], animated: true)
+            if self?.viewModel.isLightning ?? false {
+                _ = self?.viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
+                self?.reloadSections([.sweep, .inbound], animated: true)
             }
-            let refresh = try? await viewModel.getTransactions()
+            let refresh = try? await self?.viewModel.getTransactions()
             if refresh ?? true {
-                reloadSections([.transaction], animated: true)
+                self?.reloadSections([.transaction], animated: true)
             }
-            isReloading = false
+            self?.isReloading = false
         }
     }
 
@@ -133,10 +132,8 @@ class AccountViewController: UIViewController {
         }
     }
 
-    func setContent() {
-
+    func setNavigationBar() {
         navigationItem.rightBarButtonItems = []
-
         // setup right menu bar: settings
         let settingsBtn = UIButton(type: .system)
         settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
@@ -145,17 +142,27 @@ class AccountViewController: UIViewController {
         if !viewModel.watchOnly {
             navigationItem.rightBarButtonItems?.append( UIBarButtonItem(customView: settingsBtn) )
         }
-
         let ampHelpBtn = UIButton(type: .system)
         ampHelpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
         ampHelpBtn.addTarget(self, action: #selector(ampHelp), for: .touchUpInside)
         if viewModel.ampEducationalMode == .header {
             navigationItem.rightBarButtonItems?.append( UIBarButtonItem(customView: ampHelpBtn) )
         }
-
+        if AccountsRepository.shared.current?.isLightningShortcut ?? false {
+            drawerIcon(true)            
+            let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
+            navigationItem.leftBarButtonItem = leftItem
+            let desiredWidth = 135.0
+            let desiredHeight = 35.0
+            let widthConstraint = NSLayoutConstraint(item: drawerItem, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredWidth)
+            let heightConstraint = NSLayoutConstraint(item: drawerItem, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredHeight)
+            drawerItem.addConstraints([widthConstraint, heightConstraint])
+        }
+    }
+    
+    func setActionBar() {
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
-
         // Sweep is only supported in watch-only for btc multisig wallets
         if viewModel.watchOnly {
             if let account = AccountsRepository.shared.current, !account.gdkNetwork.liquid {
@@ -166,17 +173,47 @@ class AccountViewController: UIViewController {
                    btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
                }
         }
+    }
 
+    func setContent() {
+        setNavigationBar()
+        setActionBar()
         tableView.prefetchDataSource = self
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(callPullToRefresh(_:)), for: .valueChanged)
+        drawerItem.configure(img: viewModel.headerIcon, onTap: {[weak self] () in
+                self?.switchNetwork()
+        })
+    }
 
+    // open wallet selector drawer
+    @objc func switchNetwork() {
+        let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
+            vc.transitioningDelegate = self
+            vc.modalPresentationStyle = .custom
+            vc.delegate = self
+            present(vc, animated: true, completion: nil)
+        }
     }
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
         btnScanView.layer.cornerRadius = 10.0
+    }
+
+    func drawerIcon(_ show: Bool) {
+        if let bar = navigationController?.navigationBar {
+            if show {
+                let i = UIImageView(frame: CGRect(x: 0.0, y: bar.frame.height / 2.0 - 5.0, width: 7.0, height: 10.0))
+                i.image = UIImage(named: "ic_drawer")
+                i.tag = 999
+                bar.addSubview(i)
+            } else {
+                bar.subviews.forEach { if $0.tag == 999 { $0.removeFromSuperview()} }
+            }
+        }
     }
 
     // tableview refresh gesture
@@ -189,7 +226,10 @@ class AccountViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Account Preferences", type: .accountPrefs, items: AccountPrefs.getItems(isLightning: viewModel.isLightning))
+            vc.viewModel =  DialogListViewModel(
+                title: "Account Preferences",
+                type: .accountPrefs,
+                items: viewModel.accountSettingsCell())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -250,6 +290,15 @@ class AccountViewController: UIViewController {
             } catch { showError(error) }
         }
     }
+    
+    func logout() {
+        Task {
+            let account = AccountsRepository.shared.current
+            await WalletManager.current?.disconnect()
+            WalletsRepository.shared.delete(for: account?.id ?? "")
+            AccountNavigator.goLogout(account: nil)
+        }
+    }
 
     func archive() {
         Task {
@@ -306,6 +355,17 @@ class AccountViewController: UIViewController {
         if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func handleShortcut(isOn: Bool) {
+        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {
+            vc.vm = LTShortcutViewModel(account: account,
+                                        action: isOn ? .addFromAccount : .remove)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -707,15 +767,13 @@ extension AccountViewController {
 }
 
 extension AccountViewController: DialogListViewControllerDelegate {
-    func didSelectIndex(_ index: Int, with type: DialogType) {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {
         switch type {
         case .accountPrefs:
-            if viewModel.account.networkType != .lightning {
-                switch index {
-                case 0:
-                    renameDialog()
-                case 1:
-                    archive()
+            if let item = viewModel.accountSettingsPrefs()[safe: index] {
+                switch item {
+                case .shortcut:
+                    handleShortcut(isOn: isOn)
                 default:
                     break
                 }
@@ -727,6 +785,32 @@ extension AccountViewController: DialogListViewControllerDelegate {
                     removeSubaccount()
                 default:
                     break
+                }
+            }
+        default:
+            break
+        }
+    }
+    
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
+        case .accountPrefs:
+            if let item = viewModel.accountSettingsPrefs()[safe: index] {
+                switch item {
+                case .rename:
+                    renameDialog()
+                case .archive:
+                    archive()
+                case .enhanceSecurity:
+                    break
+                case .nodeInfo:
+                    presentNodeInfo()
+                case .remove:
+                    removeSubaccount()
+                case .shortcut:
+                    break
+                case .logout:
+                    logout()
                 }
             }
         case .enable2faPrefs:
@@ -900,5 +984,84 @@ extension AccountViewController: DialogNodeViewControllerProtocol {
 extension AccountViewController: AlertViewControllerDelegate {
     func onAlertOk() {
         reload()
+    }
+}
+
+extension AccountViewController: LTShortcutViewControllerDelegate {
+    func onTap(_ action: LTShortcutUserAction) {
+        switch action {
+        case .learnMore:
+            print("learnMore")
+        case .add:
+            print("Add")
+            Task { try? await viewModel.addLightningShortcut() }
+        case .remove:
+            print("Remove")
+            Task { try? await viewModel.removeLightningShortcut() }
+        case .later:
+            print("later")
+        }
+    }
+}
+
+extension AccountViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        if let presented = presented as? DrawerNetworkSelectionViewController {
+            return DrawerPresentationController(presentedViewController: presented, presenting: presenting)
+        }
+        return ModalPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if presented as? DrawerNetworkSelectionViewController != nil {
+            return DrawerAnimator(isPresenting: true)
+        } else {
+            return ModalAnimator(isPresenting: true)
+        }
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if dismissed as? DrawerNetworkSelectionViewController != nil {
+            return DrawerAnimator(isPresenting: false)
+        } else {
+            return ModalAnimator(isPresenting: false)
+        }
+    }
+}
+
+extension AccountViewController: DrawerNetworkSelectionDelegate {
+
+    // accounts drawer: add new waller
+    func didSelectAddWallet() {
+        AccountNavigator.goAddWallet(nv: navigationController)
+    }
+
+    // accounts drawer: select another account
+    func didSelectAccount(account: Account) {
+        // don't switch if same account selected
+        if account.id == viewModel.wm?.account.id{
+            return
+        }
+        AccountNavigator.goLogin(account: account)
+    }
+
+    // accounts drawer: select app settings
+    func didSelectSettings() {
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        })
+    }
+
+    func didSelectAbout() {
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                self.present(vc, animated: false, completion: nil)
+            }
+        })
     }
 }

@@ -200,13 +200,13 @@ extension DialogAboutViewController: UITableViewDelegate, UITableViewDataSource 
             cell.selectionStyle = .none
             switch indexPath.row {
             case 0:
-                cell.configure(DialogListCellModel(type: .list, icon: nil, title: "id_give_us_your_feedback".localized))
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_give_us_your_feedback".localized))
             case 1:
-                cell.configure(DialogListCellModel(type: .list, icon: nil, title: "id_visit_the_blockstream_help".localized))
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_visit_the_blockstream_help".localized))
             case 2:
-                cell.configure(DialogListCellModel(type: .list, icon: nil, title: "id_terms_of_service".localized))
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_terms_of_service".localized))
             case 3:
-                cell.configure(DialogListCellModel(type: .list, icon: nil, title: "id_privacy_policy".localized))
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_privacy_policy".localized))
             default:
                 break
             }

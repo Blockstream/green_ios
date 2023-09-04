@@ -36,8 +36,6 @@ class HomeViewController: UIViewController {
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
 
         tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
-        tableView.register(UINib(nibName: "WalletListHDCell", bundle: nil), forCellReuseIdentifier: "WalletListHDCell")
-        tableView.register(UINib(nibName: "WalletListEmptyCell", bundle: nil), forCellReuseIdentifier: "WalletListEmptyCell")
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
@@ -97,6 +95,50 @@ class HomeViewController: UIViewController {
             vc.prefill = account?.name ?? ""
             present(vc, animated: false, completion: nil)
         }
+    }
+
+    func tapForOverview(_ indexPath: IndexPath) {
+        switch indexPath.section {
+        case HomeSection.remoteAlerts.rawValue:
+            break
+        case HomeSection.swWallet.rawValue:
+            let account = AccountsRepository.shared.swAccounts[indexPath.row]
+            AccountNavigator.goLogin(account: account)
+        case HomeSection.ephWallet.rawValue:
+            let account = ephAccounts[indexPath.row]
+            AccountNavigator.goLogin(account: account)
+        case HomeSection.hwWallet.rawValue:
+            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
+            AccountNavigator.goLogin(account: account)
+        default:
+            break
+        }
+    }
+
+    func onTap(_ indexPath: IndexPath) {
+        tapForOverview(indexPath)
+    }
+    
+    func onTapOverview(_ indexPath: IndexPath) {
+        tapForOverview(indexPath)
+    }
+    
+    func onTapLightShort(_ indexPath: IndexPath) {
+        let account = AccountsRepository.shared.swAccounts[indexPath.row]
+        if let lightning = account.getLightningShortcutAccount() {
+            AccountNavigator.goLogin(account: lightning)
+        }
+    }
+
+    func isOverviewSelected(_ account: Account) -> Bool {
+        WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
+    }
+
+    func isLightningSelected(_ account: Account) -> Bool {
+        if let account = account.getLightningShortcutAccount() {
+            return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
+        }
+        return false
     }
 
     @IBAction func btnNewWallet(_ sender: Any) {
@@ -164,34 +206,46 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.swWallet.rawValue:
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                let selected = { () -> Bool in
-                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-                }
+
                 cell.configure(item: account,
-                               isSelected: selected(),
-                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) })
+                               isOverviewSelected: isOverviewSelected(account),
+                               isLightningSelected: isLightningSelected(account),
+                               indexPath: indexPath,
+                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) },
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                )
                 cell.selectionStyle = .none
                 return cell
             }
         case HomeSection.ephWallet.rawValue:
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                let selected = { () -> Bool in
-                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-                }
-                cell.configure(item: account, isSelected: selected())
+                cell.configure(item: account,
+                               isOverviewSelected: isOverviewSelected(account),
+                               isLightningSelected: isLightningSelected(account),
+                               indexPath: indexPath,
+                               onLongpress: nil,
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                )
                 cell.selectionStyle = .none
                 return cell
             }
         case HomeSection.hwWallet.rawValue:
             let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                let selected = { () -> Bool in
-                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-                }
                 cell.configure(item: account,
-                               isSelected: selected(),
-                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) })
+                               isOverviewSelected: isOverviewSelected(account),
+                               isLightningSelected: isLightningSelected(account),
+                               indexPath: indexPath,
+                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) },
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                )
                 cell.selectionStyle = .none
                 return cell
             }
@@ -264,21 +318,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case HomeSection.remoteAlerts.rawValue:
-            break
-        case HomeSection.swWallet.rawValue:
-            let account = AccountsRepository.shared.swAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account, nv: navigationController)
-        case HomeSection.ephWallet.rawValue:
-            let account = ephAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account, nv: navigationController)
-        case HomeSection.hwWallet.rawValue:
-            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account, nv: navigationController)
-        default:
-            break
-        }
+        
     }
 }
 

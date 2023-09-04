@@ -205,4 +205,12 @@ class SecuritySelectViewModel {
         }
         return "\(type.string)\(network)"
     }
+
+    func addLightningShortcut() async throws {
+        try await wm.addLightningShortcut()
+    }
+
+    var linkMore: String {
+        return "https://help.blockstream.com/hc/en-us/articles/23020279153177"
+    }
 }

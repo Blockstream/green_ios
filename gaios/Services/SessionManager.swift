@@ -142,10 +142,6 @@ class SessionManager {
         }
     }
     
-    func enabled() -> Bool {
-        return true
-    }
-    
     func resolve(_ twoFactorCall: TwoFactorCall?) async throws -> [String: Any]? {
         let rm = ResolverManager(twoFactorCall,
                                  chain: self.gdkNetwork.chain,
@@ -253,10 +249,12 @@ class SessionManager {
     
     typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
 
-    func wrapperAsync<T: Codable, K: Codable>(fun: GdkFunc?, params: T) async throws -> K {
+    func wrapperAsync<T: Codable, K: Codable>(fun: GdkFunc?, params: T, funcName: String = #function) async throws -> K {
         let dict = params.toDict()
+        NSLog("GDK \(funcName) \(params.stringify() ?? "")")
         if let fun = try fun?(dict ?? [:]) {
             let res = try await resolve(fun)
+            NSLog("GDK \(funcName) \(res ?? [:])")
             let result = res?["result"] as? [String: Any]
             if let res = K.from(result ?? [:]) as? K {
                 return res

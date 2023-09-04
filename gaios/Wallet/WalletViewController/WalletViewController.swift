@@ -44,9 +44,9 @@ class WalletViewController: UIViewController {
             UserDefaults.standard.set(newValue, forKey: AppStorage.hideBalance)
         }
     }
+    var viewModel: WalletViewModel!
     private var sIdx: Int = 0
     private var userWillLogout = false
-    private var viewModel: WalletViewModel = WalletViewModel()
     private var cachedAccount: WalletItem?
     private var notificationObservers: [NSObjectProtocol] = []
     private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
@@ -725,15 +725,14 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
-            let account = self.viewModel.wm?.account
-            if account?.isHW ?? false {
-                Task { try? await BleViewModel.shared.disconnect() }
-            }
-            DispatchQueue.main.async {
+            Task {
+                let account = self.viewModel.wm?.account
+                if account?.isHW ?? false {
+                    try? await BleViewModel.shared.disconnect()
+                }
+                await WalletManager.current?.disconnect()
                 WalletsRepository.shared.delete(for: account?.id ?? "")
-                let storyboard = UIStoryboard(name: "Home", bundle: nil)
-                let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-                _ = UIApplication.shared.keyWindow?.rootViewController = nav
+                AccountNavigator.goLogout(account: nil)
             }
         })
     }
@@ -876,7 +875,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
         if account.id == viewModel.wm?.account.id ?? "" {
             return
         }
-        _ = AccountNavigator.goLogin(account: account, nv: navigationController)
+        AccountNavigator.goLogin(account: account)
     }
 
     // accounts drawer: select app settings
@@ -901,6 +900,8 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 }
 
 extension WalletViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+    
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .walletPrefs:

@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
-
 import gdk
+import greenaddress
 import hw
 import lightning
 
@@ -73,7 +73,10 @@ class WalletManager {
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
         self.registry = AssetsManager(testnet: !mainnet)
         self.account = account
-        if mainnet {
+        if account.isLightningShortcut {
+            addSession(for: prominentNetwork ?? .bitcoinSS)
+            addLightningSession(for: .lightning)
+        } else if mainnet {
             addSession(for: .bitcoinSS)
             addSession(for: .liquidSS)
             addSession(for: .bitcoinMS)
@@ -132,22 +135,36 @@ class WalletManager {
     var logged: Bool {
         activeSessions.count > 0
     }
-    
+
+    func loginWithLightningShortcut(credentials: Credentials) async throws {
+        guard let mainSession = prominentSession,
+              let lightningSession = lightningSession else {
+                fatalError()
+        }
+        try await mainSession.connect()
+        _ = try await mainSession.loginUser(credentials: credentials, hw: nil, restore: false)
+        try await mainSession.updateSubaccount(subaccount: 0, hidden: true)
+        _ = try await lightningSession.loginUser(credentials: credentials, hw: nil, restore: false)
+        if self.activeSessions.count == 0 {
+            throw LoginError.failed()
+        }
+        _ = try await self.subaccounts()
+        try? await self.loadRegistry()
+        AccountsRepository.shared.current = self.account
+    }
+
     func loginWithPin(pin: String, pinData: PinData, bip39passphrase: String?) async throws {
-        print("--- loginWithPin")
-        guard let mainSession = sessions[prominentNetwork.rawValue] else {
+        guard let mainSession = prominentSession else {
             fatalError()
         }
         try await mainSession.connect()
         let decryptData = DecryptWithPinParams(pin: pin, pinData: pinData)
-        print("--- decryptWithPin")
         var credentials = try await mainSession.decryptWithPin(decryptData)
         // for bip39passphrase login, singlesig is the prominent network
         if !bip39passphrase.isNilOrEmpty {
             self.prominentNetwork = self.testnet ? .testnetSS : .bitcoinSS
             credentials = Credentials(mnemonic: credentials.mnemonic, bip39Passphrase: bip39passphrase)
         }
-        print("--- login")
         try await self.login(credentials: credentials)
         AccountsRepository.shared.current = self.account
     }
@@ -172,8 +189,65 @@ class WalletManager {
         AccountsRepository.shared.current = self.account
         _ = try await self.subaccounts()
         try? await self.loadRegistry()
-}
-
+    }
+    
+    func loginLightningSession(session: LightningSessionManager, credentials: Credentials, fullRestore: Bool = false) async throws {
+        if !(AppSettings.shared.lightningEnabled && AppSettings.shared.experimental) {
+            return
+        }
+        let credentials = Credentials(mnemonic: session.getLightningMnemonic(credentials: credentials))
+        let walletId = session.walletIdentifier(credentials: credentials)
+        let walletHashId = walletId!.walletHashId
+        let existDatadir = session.existDatadir(walletHashId: walletHashId)
+        if !fullRestore && !existDatadir {
+            return
+        }
+        let restore = fullRestore || !existDatadir
+        let res = try await session.loginUser(credentials: credentials, hw: nil, restore: fullRestore)
+        let isFunded = try await session.discovery()
+        if !isFunded && restore {
+            if !(session.isRestoredNode ?? false) {
+                try? await session.disconnect()
+                session.removeDatadir(walletHashId: walletHashId)
+                LightningRepository.shared.remove(for: walletHashId)
+            }
+        }
+    }
+    
+    func loginGdkSession(session: SessionManager, credentials: Credentials? = nil, device: HWDevice? = nil, masterXpub: String? = nil, fullRestore: Bool = false) async throws{
+        let walletId = {
+            if let credentials = credentials {
+                return session.walletIdentifier(credentials: credentials)
+            } else if device != nil, let masterXpub = masterXpub {
+                return session.walletIdentifier(masterXpub: masterXpub)
+            }
+            return nil
+        }
+        if session.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
+            // disable liquid if is unsupported on hw
+            return
+        }
+        let walletHashId = walletId()!.walletHashId
+        let existDatadir = session.existDatadir(walletHashId: walletHashId)
+        if !fullRestore && !existDatadir && session.gdkNetwork.network != prominentSession?.gdkNetwork.network {
+            return
+        }
+        let removeDatadir = !existDatadir && session.gdkNetwork.network != self.prominentNetwork.network
+        let restore = fullRestore || !existDatadir
+        let res = try await session.loginUser(credentials: credentials, hw: device, restore: fullRestore)
+        self.account.xpubHashId = res.xpubHashId
+        if session.gdkNetwork.network == self.prominentNetwork.network {
+            self.account.walletHashId = res.walletHashId
+        }
+        if session.logged && (fullRestore || !existDatadir) {
+            let isFunded = try await session.discovery()
+            if !isFunded && removeDatadir {
+                try? await session.disconnect()
+                session.removeDatadir(walletHashId: walletHashId)
+            }
+        }
+    }
+    
     func login(credentials: Credentials? = nil, device: HWDevice? = nil, masterXpub: String? = nil, fullRestore: Bool = false) async throws {
         let walletId: ((_ session: SessionManager) -> WalletIdentifier?) = { session in
             if let credentials = credentials {
@@ -183,58 +257,16 @@ class WalletManager {
             }
             return nil
         }
-        let existDatadir: ((_ session: SessionManager) -> Bool) = { session in
-            session.existDatadir(walletHashId: walletId(session)!.walletHashId)
-        }
         guard let prominentSession = sessions[prominentNetwork.rawValue] else { fatalError() }
-        let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir(prominentSession)
-        let ifLogin: ((_ session: SessionManager) -> Bool) = {
-            if $0.gdkNetwork.lightning && !AppSettings.shared.experimental {
-                return false
-            }
-            if $0.gdkNetwork.lightning && device != nil {
-                return false
-            }
-            if $0.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
-                // disable liquid if is unsupported on hw
-                return false
-            }
-            if fullRestore && $0.enabled() {
-                return true
-            }
-            if $0.gdkNetwork.network == prominentSession.gdkNetwork.network {
-                return true
-            }
-            if existDatadir($0) {
-                return true
-            }
-            return false
-        }
+        let existDatadir = prominentSession.existDatadir(walletHashId: walletId(prominentSession)!.walletHashId)
+        let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir
         failureSessions = [:]
-        let loginTask: ((_ session: SessionManager) async throws -> ()) = { session in
-            let walletHashId = walletId(session)!.walletHashId
-            let removeDatadir = !existDatadir(session) && session.gdkNetwork.network != self.prominentNetwork.network
-            let restore = fullRestore || !existDatadir(session)
+        let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
-                let res = try await session.loginUser(credentials: credentials, hw: device, restore: restore)
-                self.account.xpubHashId = res.xpubHashId
-                if session.gdkNetwork.network == self.prominentNetwork.network {
-                    self.account.walletHashId = res.walletHashId
-                }
-                if session.logged && (fullRestore || !existDatadir(session)) {
-                    let isFunded = try await session.discovery()
-                    if !isFunded && removeDatadir {
-                        if let lightningSession = session as? LightningSessionManager {
-                            if !(lightningSession.isRestoredNode ?? false) {
-                                try? await lightningSession.disconnect()
-                                lightningSession.removeDatadir(walletHashId: walletHashId)
-                                LightningRepository.shared.remove(for: walletHashId)
-                            }
-                        } else {
-                            try? await session.disconnect()
-                            session.removeDatadir(walletHashId: walletHashId)
-                        }
-                    }
+                if session.networkType.lightning, let session = session as? LightningSessionManager, let credentials = credentials {
+                    try await self.loginLightningSession(session: session, credentials: credentials, fullRestore: fullRestore)
+                } else {
+                    try await self.loginGdkSession(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
                 }
             } catch {
                 try? await session.disconnect()
@@ -251,11 +283,8 @@ class WalletManager {
             }
         }
         failureSessions = [:]
-        let sessions = self.sessions.values
-            .filter { !$0.logged }
-            .filter { ifLogin($0) }
-        
-        print("--- login start sessions \(sessions.count)")
+        let sessions = self.sessions.values.filter { !$0.logged }
+        NSLog("--- login start sessions \(sessions.count)")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in sessions {
                 group.addTask { try? await loginTask(session) }
@@ -263,12 +292,12 @@ class WalletManager {
             for await _ in group {
             }
         }
-        print("--- login end")
+        NSLog("--- login end")
         if self.activeSessions.count == 0 {
             throw LoginError.failed()
         }
         _ = try await self.subaccounts()
-        print("--- subaccounts end")
+        NSLog("--- subaccounts end")
         try? await self.loadRegistry()
         //AccountsRepository.shared.current = self.account
     }
@@ -376,5 +405,41 @@ class WalletManager {
                session.networkConnect()
             }
         }
+    }
+    
+    func existLightningShortcut() -> Bool {
+        account.getLightningShortcutAccount() != nil
+    }
+    
+    func addLightningShortcut() async throws {
+        guard let mainCredentials = try await prominentSession?.getCredentials(password: "") else {
+            return
+        }
+        let settings = prominentSession?.settings
+        guard let mnemonic = getLightningMnemonic(credentials: mainCredentials) else {
+            return
+        }
+        let credentials = Credentials(mnemonic: mnemonic)
+        let session = SessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
+        try? await session.connect()
+        try? await session.register(credentials: credentials)
+        _ = try? await session.loginUser(credentials, restore: false)
+        if let settings = settings {
+            _ = try? await session.changeSettings(settings: settings)
+        }
+        let keychain = "\(account.keychain)-lightning-shortcut"
+        try AuthenticationTypeHandler.addAuthKeyCredentials(credentials: credentials, forNetwork: keychain)
+    }
+
+    func removeLightningShortcut() async {
+        let keychain = "\(account.keychain)-lightning-shortcut"
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyCredentials, forNetwork: keychain)
+    }
+
+    func getLightningMnemonic(credentials: Credentials) -> String? {
+        return Wally.bip85FromMnemonic(mnemonic: credentials.mnemonic ?? "",
+                          passphrase: credentials.bip39Passphrase,
+                          isTestnet: false,
+                          index: 0)
     }
 }

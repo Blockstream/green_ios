@@ -8,6 +8,7 @@ enum USSection: String, Codable, CaseIterable {
     case Security = "id_security"
     case Recovery = "id_recovery"
     case About = "id_about"
+    case Lightning = "id_lightning"
 }
 
 enum USItem: String, Codable, CaseIterable {
@@ -23,6 +24,7 @@ enum USItem: String, Codable, CaseIterable {
     case BackUpRecoveryPhrase = "id_back_up_recovery_phrase"
     case Version = "id_version"
     case SupportID = "id_support"
+
     var string: String { NSLocalizedString(self.rawValue, comment: "") }
 }
 

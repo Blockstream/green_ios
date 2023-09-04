@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
-
 import gdk
+import greenaddress
 
 enum AmpEducationalMode {
     case table
@@ -10,9 +10,8 @@ enum AmpEducationalMode {
 }
 
 class AccountViewModel {
-
-    private var wm: WalletManager { WalletManager.current! }
-    private var cachedBalance: AssetAmountList
+    var wm: WalletManager? { WalletManager.current }
+    var cachedBalance: AssetAmountList
     var cachedTransactions = [Transaction]()
     var account: WalletItem!
     var page = 0
@@ -23,7 +22,7 @@ class AccountViewModel {
     }
 
     var watchOnly: Bool {
-        wm.account.isWatchonly
+        wm?.account.isWatchonly ?? false
     }
 
     var satoshi: Int64 {
@@ -32,14 +31,14 @@ class AccountViewModel {
 
     var inboundCellModels: [LTInboundCellModel] {
         if isLightning {
-            let amount = wm.lightningSession?.nodeState?.inboundLiquiditySatoshi ?? 0
+            let amount = wm?.lightningSession?.nodeState?.inboundLiquiditySatoshi ?? 0
             return [LTInboundCellModel(amount: amount)]
         }
         return []
     }
 
     var sweepCellModels: [LTSweepCellModel] {
-        let amount = wm.lightningSession?.nodeState?.onchainBalanceSatoshi
+        let amount = wm?.lightningSession?.nodeState?.onchainBalanceSatoshi
         if isLightning, let amount = amount, amount > 0 {
             return [LTSweepCellModel(amount: amount)]
         }
@@ -65,6 +64,10 @@ class AccountViewModel {
 
     var isLightning: Bool {
         return account.type == .lightning
+    }
+
+    var isLightningShortcut: Bool {
+        return AccountsRepository.shared.current?.isLightningShortcut ?? false
     }
 
     var ampEducationalMode: AmpEducationalMode {
@@ -97,7 +100,7 @@ class AccountViewModel {
         }
         fetchingTxs = true
         do {
-            let txs = try await wm.transactions(subaccounts: [account], first: (restart == true) ? 0 : cachedTransactions.count)
+            let txs = try await wm?.transactions(subaccounts: [account], first: (restart == true) ? 0 : cachedTransactions.count) ?? []
             if txs.count == 0 || txs.sorted(by: >) == cachedTransactions.suffix(txs.count) {
                 fetchingTxs = false
                 return false
@@ -126,7 +129,8 @@ class AccountViewModel {
     }
 
     func getBalance() async throws {
-        if let balances = try? await wm.balances(subaccounts: [account]) {
+        if let balances = try? await wm?.balances(subaccounts: [account]) {
+            account.satoshi = balances
             cachedBalance = AssetAmountList(balances)
         }
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
@@ -134,26 +138,26 @@ class AccountViewModel {
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
-        if let subaccount = self.wm.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
+        if let subaccount = self.wm?.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
            let network = subaccount.network,
-           let session = self.wm.sessions[network] {
+           let session = self.wm?.sessions[network] {
             return session.blockHeight
         }
         return 0
     }
 
     func archiveSubaccount() async throws {
-        guard let session = wm.sessions[account.gdkNetwork.network] else {
+        guard let session = wm?.sessions[account.gdkNetwork.network] else {
             return
         }
         try await session.updateSubaccount(subaccount: account.pointer, hidden: true)
-        account = try await wm.subaccount(account: account)
+        account = try await wm?.subaccount(account: account)
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }
 
     func removeSubaccount() async throws {
-        guard let prominentSession = wm.prominentSession,
-                let session = wm.sessions[account.gdkNetwork.network] else {
+        guard let prominentSession = wm?.prominentSession,
+              let session = wm?.sessions[account.gdkNetwork.network] else {
             return
         }
         if let credentials = try await prominentSession.getCredentials(password: ""),
@@ -162,22 +166,22 @@ class AccountViewModel {
             try await session.disconnect()
             session.removeDatadir(walletHashId: walletId.walletHashId )
             LightningRepository.shared.remove(for: walletId.walletHashId)
-            _ = try await wm.subaccounts()
+            _ = try await wm?.subaccounts()
         }
     }
 
     func renameSubaccount(name: String) async throws {
-        guard let session = wm.sessions[account.gdkNetwork.network] else {
+        guard let session = wm?.sessions[account.gdkNetwork.network] else {
             return
         }
         try await session.renameSubaccount(subaccount: account.pointer, newName: name)
-        account = try await wm.subaccount(account: account)
+        account = try await wm?.subaccount(account: account)
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }
 
     func ltRecoverFundsViewModel() -> LTRecoverFundsViewModel {
         LTRecoverFundsViewModel(wallet: account,
-                                amount: wm.lightningSession?.nodeState?.onchainBalanceSatoshi,
+                                amount: wm?.lightningSession?.nodeState?.onchainBalanceSatoshi,
                                 type: .sweep)
     }
     
@@ -188,5 +192,38 @@ class AccountViewModel {
                                 onChainAddress: address,
                                 amount: amount,
                                 type: .refund)
+    }
+
+    func accountSettingsPrefs() -> [AccountPrefs] {
+        AccountPrefs.getPrefs(
+            isEphemeral: wm?.account.isEphemeral ?? false,
+            isLightning: isLightning,
+            isLightningShortcut: isLightningShortcut,
+            switchState: wm?.existLightningShortcut() ?? false)
+    }
+
+    func accountSettingsCell() -> [DialogListCellModel] {
+        AccountPrefs.getItems(
+            isEphemeral: wm?.account.isEphemeral ?? false,
+            isLightning: isLightning,
+            isLightningShortcut: isLightningShortcut,
+            switchState: wm?.existLightningShortcut() ?? false)
+    }
+
+    func existLightningShortcut() -> Bool {
+        wm?.existLightningShortcut() ?? false
+    }
+
+    func addLightningShortcut() async throws {
+        try await wm?.addLightningShortcut()
+    }
+
+    func removeLightningShortcut() async {
+        await wm?.removeLightningShortcut()
+    }
+
+    var headerIcon: UIImage {
+        UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!
+        .maskWithColor(color: .white)
     }
 }

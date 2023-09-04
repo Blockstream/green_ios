@@ -107,6 +107,13 @@
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="ic_arrow_card"/>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_lightning_beta" translatesAutoresizingMaskIntoConstraints="NO" id="Mkb-mz-wtl">
+                                <rect key="frame" x="292" y="0.0" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="C54-Ez-lhw"/>
+                                    <constraint firstAttribute="width" constant="50" id="Mqc-ej-pLH"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
@@ -114,9 +121,11 @@
                             <constraint firstItem="NZH-10-Akw" firstAttribute="leading" secondItem="nRc-gZ-y5Q" secondAttribute="trailing" constant="20" id="8PZ-9Q-enQ"/>
                             <constraint firstAttribute="trailing" secondItem="NZH-10-Akw" secondAttribute="trailing" constant="20" id="8jv-m1-do3"/>
                             <constraint firstItem="nRc-gZ-y5Q" firstAttribute="top" secondItem="crp-7D-wpe" secondAttribute="bottom" constant="10" id="H6b-ZC-0R1"/>
+                            <constraint firstAttribute="trailing" secondItem="Mkb-mz-wtl" secondAttribute="trailing" id="M4A-r7-eOf"/>
                             <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="nRc-gZ-y5Q" secondAttribute="bottom" constant="20" id="NR8-bd-8EW"/>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="130" id="Uv4-ha-GK2"/>
                             <constraint firstItem="NZH-10-Akw" firstAttribute="top" secondItem="n3K-Va-zHK" secondAttribute="top" constant="45" id="bP5-9G-Xad"/>
+                            <constraint firstItem="Mkb-mz-wtl" firstAttribute="top" secondItem="n3K-Va-zHK" secondAttribute="top" id="fnC-IV-ICG"/>
                             <constraint firstItem="CJj-WU-Wt8" firstAttribute="centerY" secondItem="8gv-zv-Ehr" secondAttribute="centerY" id="gW2-6w-eD5"/>
                             <constraint firstItem="crp-7D-wpe" firstAttribute="leading" secondItem="n3K-Va-zHK" secondAttribute="leading" constant="20" id="h1m-jB-Lq4"/>
                             <constraint firstItem="8gv-zv-Ehr" firstAttribute="leading" secondItem="n3K-Va-zHK" secondAttribute="leading" constant="20" id="hTz-Ns-23a"/>
@@ -142,6 +151,7 @@
                 <outlet property="bgType" destination="8gv-zv-Ehr" id="sYX-O4-itY"/>
                 <outlet property="bgTypeDesc" destination="CJj-WU-Wt8" id="5Ki-ax-hfS"/>
                 <outlet property="btnDisclose" destination="NZH-10-Akw" id="AGp-he-fsu"/>
+                <outlet property="imgBeta" destination="Mkb-mz-wtl" id="q9h-rU-SlI"/>
                 <outlet property="imgLight" destination="duY-W7-Pph" id="CEO-90-Tft"/>
                 <outlet property="imgMS" destination="y1b-aX-DXI" id="M1n-pR-HoF"/>
                 <outlet property="imgSS" destination="ruO-Nw-9Zu" id="3aE-4U-GHi"/>
@@ -150,22 +160,23 @@
                 <outlet property="lblType" destination="QAj-M9-x9P" id="KSk-ej-Ynp"/>
                 <outlet property="lblTypeDesc" destination="ayC-Yt-ilg" id="Xg1-Fq-12h"/>
             </connections>
-            <point key="canvasLocation" x="94.656488549618317" y="22.887323943661972"/>
+            <point key="canvasLocation" x="8" y="3"/>
         </tableViewCell>
     </objects>
     <resources>
         <image name="ic_arrow_card" width="16" height="15.333333015441895"/>
         <image name="ic_key_ms_policy" width="24.333333969116211" height="18.666666030883789"/>
         <image name="ic_key_ss_policy" width="17.666666030883789" height="17.666666030883789"/>
+        <image name="ic_lightning_beta" width="50" height="50"/>
         <image name="ic_ln_policy" width="15.666666984558105" height="19.666666030883789"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.12941176470588237" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gW60">
-            <color red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="1" blue="1" alpha="0.60000002384185791" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

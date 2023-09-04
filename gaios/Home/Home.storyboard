@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -177,6 +177,31 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pGV-SR-dx8">
+                                        <rect key="frame" x="24" y="80" width="370" height="630"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A1n-QF-xjG" userLabel="Next">
+                                                <rect key="frame" x="138.5" y="558" width="93" height="50"/>
+                                                <color key="backgroundColor" name="gGreenMatrix"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="e7o-LC-fVL"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                                <inset key="contentEdgeInsets" minX="30" minY="0.0" maxX="30" maxY="0.0"/>
+                                                <state key="normal" title="Login">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="clickLoginLightningShortcut:" destination="jB1-8d-0nD" eventType="touchUpInside" id="u8h-Q5-iaQ"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="A1n-QF-xjG" secondAttribute="bottom" constant="22" id="AwC-h9-SDe"/>
+                                            <constraint firstItem="A1n-QF-xjG" firstAttribute="centerX" secondItem="pGV-SR-dx8" secondAttribute="centerX" id="Waw-zB-5Tx"/>
+                                        </constraints>
+                                    </view>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3KP-bm-CE4">
                                         <rect key="frame" x="24" y="80" width="366" height="630"/>
                                         <subviews>
@@ -622,12 +647,15 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="pGV-SR-dx8" secondAttribute="trailing" constant="20" symbolic="YES" id="05h-gv-zAX"/>
+                                    <constraint firstAttribute="bottom" secondItem="pGV-SR-dx8" secondAttribute="bottom" constant="60" id="BWD-A9-1Ah"/>
                                     <constraint firstItem="Oln-w5-tlx" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="24" id="WdC-k3-k5X"/>
                                     <constraint firstAttribute="trailing" secondItem="Oln-w5-tlx" secondAttribute="trailing" constant="24" id="ZwK-34-WXD"/>
                                     <constraint firstItem="3KP-bm-CE4" firstAttribute="width" secondItem="Oln-w5-tlx" secondAttribute="width" id="bjb-J5-JpV"/>
                                     <constraint firstItem="tcs-1r-M68" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="20" id="cFu-kk-Ykh"/>
                                     <constraint firstItem="3KP-bm-CE4" firstAttribute="centerY" secondItem="Oln-w5-tlx" secondAttribute="centerY" id="efn-VT-6P4"/>
                                     <constraint firstItem="ITS-xt-sFy" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="36" id="fbD-oN-IM5"/>
+                                    <constraint firstItem="pGV-SR-dx8" firstAttribute="top" secondItem="GIB-RJ-50z" secondAttribute="top" constant="80" id="fkR-rX-AJV"/>
                                     <constraint firstAttribute="trailing" secondItem="ITS-xt-sFy" secondAttribute="trailing" constant="36" id="g0f-bD-RYP"/>
                                     <constraint firstItem="3KP-bm-CE4" firstAttribute="height" secondItem="Oln-w5-tlx" secondAttribute="height" id="o44-9Y-VEY"/>
                                     <constraint firstAttribute="bottom" secondItem="Oln-w5-tlx" secondAttribute="bottom" constant="60" id="s09-gp-aIx"/>
@@ -635,6 +663,7 @@
                                     <constraint firstItem="ITS-xt-sFy" firstAttribute="top" secondItem="GIB-RJ-50z" secondAttribute="top" constant="24" id="sza-PK-j9W"/>
                                     <constraint firstAttribute="trailing" secondItem="tcs-1r-M68" secondAttribute="trailing" constant="20" id="tUM-Hm-g0d"/>
                                     <constraint firstItem="3KP-bm-CE4" firstAttribute="centerX" secondItem="Oln-w5-tlx" secondAttribute="centerX" id="xqg-hr-bYn"/>
+                                    <constraint firstItem="pGV-SR-dx8" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="24" id="y0m-YQ-6SG"/>
                                     <constraint firstAttribute="bottom" secondItem="tcs-1r-M68" secondAttribute="bottom" id="z4G-zT-QWP"/>
                                 </constraints>
                             </view>
@@ -662,9 +691,12 @@
                         <outlet property="attempts" destination="qYl-e4-taf" id="Zm5-dz-EM2"/>
                         <outlet property="attemptsBg" destination="MJ6-CB-CoM" id="e92-1x-jOc"/>
                         <outlet property="attemptsView" destination="loc-Hq-fPx" id="P5h-fo-4Bc"/>
+                        <outlet property="btnLoginShortcut" destination="A1n-QF-xjG" id="eAG-ht-B6A"/>
                         <outlet property="btnWalletLock" destination="sNg-ko-Qr8" id="vCp-9K-mzx"/>
+                        <outlet property="btnsStack" destination="tcs-1r-M68" id="Vf5-WD-yHh"/>
                         <outlet property="cancelButton" destination="UCy-am-KIJ" id="ZK7-JX-4p5"/>
                         <outlet property="cardEnterPin" destination="Oln-w5-tlx" id="DaP-2v-bP4"/>
+                        <outlet property="cardLoginShortcut" destination="pGV-SR-dx8" id="Ikx-Pe-JeX"/>
                         <outlet property="cardWalletLock" destination="3KP-bm-CE4" id="Kog-tu-7Yx"/>
                         <outlet property="connectionSettingsButton" destination="wMp-yl-7Kf" id="7D8-tj-Qri"/>
                         <outlet property="deleteButton" destination="IZ4-20-y34" id="nfO-Tb-wD9"/>
@@ -738,10 +770,13 @@
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gBlackBg">
-            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.12941176470588237" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGreenMatrix">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

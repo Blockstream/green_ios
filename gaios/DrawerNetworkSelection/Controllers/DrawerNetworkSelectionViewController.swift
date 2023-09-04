@@ -21,6 +21,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
+    var isAnimating = false
 
     private var ephAccounts: [Account] {
         AccountsRepository.shared.ephAccounts.filter { account in
@@ -35,9 +36,13 @@ class DrawerNetworkSelectionViewController: UIViewController {
         setStyle()
 
         tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
-        tableView.register(UINib(nibName: "WalletListHDCell", bundle: nil), forCellReuseIdentifier: "WalletListHDCell")
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.DrawerMenuScreen.view
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animateShortcut()
     }
 
     func setContent() {
@@ -51,6 +56,38 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     func setStyle() {
         newWalletView.cornerRadius = 5.0
+    }
+
+    func tapForOverview(_ indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            let account = AccountsRepository.shared.swAccounts[indexPath.row]
+            self.delegate?.didSelectAccount(account: account)
+        case 1:
+            let account = ephAccounts[indexPath.row]
+            self.delegate?.didSelectAccount(account: account)
+        case 2:
+            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
+            self.delegate?.didSelectAccount(account: account)
+        default:
+            break
+        }
+        self.dismiss(animated: true, completion: nil)
+    }
+
+    func onTap(_ indexPath: IndexPath) {
+        tapForOverview(indexPath)
+    }
+    
+    func onTapOverview(_ indexPath: IndexPath) {
+        tapForOverview(indexPath)
+    }
+    
+    func onTapLightShort(_ indexPath: IndexPath) {
+        let account = AccountsRepository.shared.swAccounts[indexPath.row]
+        if let lightning = account.getLightningShortcutAccount() {
+            AccountNavigator.goLogin(account: lightning)
+        }
     }
 
     @IBAction func btnAddWallet(_ sender: Any) {
@@ -92,30 +129,45 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 0:
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                let selected = { () -> Bool in
-                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-                }
-                cell.configure(item: account, isSelected: selected())
+                cell.configure(item: account,
+                               isOverviewSelected: isOverviewSelected(account),
+                               isLightningSelected: isLightningSelected(account),
+                               indexPath: indexPath,
+                               onLongpress: nil,
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                )
                 cell.selectionStyle = .none
                 return cell
             }
         case 1: /// EPHEMERAL
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                let selected = { () -> Bool in
-                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-                }
-                cell.configure(item: account, isSelected: selected() /* , isEphemeral: true */ )
+                cell.configure(item: account,
+                               isOverviewSelected: isOverviewSelected(account),
+                               isLightningSelected: isLightningSelected(account),
+                               indexPath: indexPath,
+                               onLongpress: nil,
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                )
                 cell.selectionStyle = .none
                 return cell
             }
         case 2:
             let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                let selected = { () -> Bool in
-                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-                }
-                cell.configure(item: account, isSelected: selected())
+                cell.configure(item: account,
+                               isOverviewSelected: isOverviewSelected(account),
+                               isLightningSelected: isLightningSelected(account),
+                               indexPath: indexPath,
+                               onLongpress: nil,
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                )
                 cell.selectionStyle = .none
                 return cell
             }
@@ -124,6 +176,17 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         }
 
         return UITableViewCell()
+    }
+
+    func isOverviewSelected(_ account: Account) -> Bool {
+        WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
+    }
+
+    func isLightningSelected(_ account: Account) -> Bool {
+        if let account = account.getLightningShortcutAccount() {
+            return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
+        }
+        return false
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -166,20 +229,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case 0:
-            let account = AccountsRepository.shared.swAccounts[indexPath.row]
-            self.delegate?.didSelectAccount(account: account)
-        case 1:
-            let account = ephAccounts[indexPath.row]
-            self.delegate?.didSelectAccount(account: account)
-        case 2:
-            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
-            self.delegate?.didSelectAccount(account: account)
-        default:
-            break
-        }
-        self.dismiss(animated: true, completion: nil)
+
     }
 }
 
@@ -203,5 +253,37 @@ extension DrawerNetworkSelectionViewController {
         ])
 
         return section
+    }
+}
+
+extension DrawerNetworkSelectionViewController: UIScrollViewDelegate {
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate {
+            animateShortcut()
+        }
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        animateShortcut()
+    }
+
+    func animateShortcut() {
+
+        for cell in tableView.visibleCells {
+            if let c = cell as? WalletListCell, c.hasShortcut == true,
+               c.account?.id == DrawerAnimationManager.shared.accountId {
+                
+                DrawerAnimationManager.shared.accountId = nil
+                UIView.animate(withDuration: 0.5, animations: {
+                    c.shortcutView.backgroundColor = UIColor.gLightning()
+                }, completion: { completed in
+                    UIView.animate(withDuration: 1.0, animations: {
+                        c.shortcutView.backgroundColor = UIColor.clear
+                    }, completion: { completed in
+                        self.isAnimating = false
+                    })
+                })
+            }
+        }
     }
 }

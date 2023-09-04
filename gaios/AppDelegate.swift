@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MigratorManager.shared.migrate()
 
         // Set screen lock
-        AccountNavigator.goFirstPage(nv: nil)
+        AccountNavigator.goFirstPage()
         ScreenLockWindow.shared.setup()
         ScreenLocker.shared.startObserving()
 

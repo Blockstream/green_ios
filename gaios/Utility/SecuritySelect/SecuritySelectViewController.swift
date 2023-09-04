@@ -29,6 +29,7 @@ class SecuritySelectViewController: UIViewController {
     weak var delegate: SecuritySelectViewControllerDelegate?
     var visibilityState: Bool = false
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
+    var walletCreated: WalletItem?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -230,9 +231,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
             do {
                 let wallet = try await viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil)
                 if let wallet = wallet {
-                    DropAlert().success(message: "id_new_account_created".localized)
-                    self.navigationController?.popViewController(animated: true)
-                    self.delegate?.didCreatedWallet(wallet)
+                    self.didCreatedWallet(wallet)
                 }
             } catch {
                 self.showError(error)
@@ -332,9 +331,47 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
 }
 
 extension SecuritySelectViewController: SecuritySelectViewControllerDelegate {
+    @MainActor
     func didCreatedWallet(_ wallet: WalletItem) {
+        walletCreated = wallet
+        
+        let account = WalletManager.current?.account
+        if wallet.isLightning, let account = account, account.isEphemeral == false {
+            
+            let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController {
+                vc.vm = LTShortcutViewModel(account: account, action: .addFromCreate)
+                vc.delegate = self
+                vc.modalPresentationStyle = .overFullScreen
+                present(vc, animated: false, completion: nil)
+                return
+            }
+        }
+        DropAlert().success(message: "id_new_account_created".localized)
         self.navigationController?.popViewController(animated: true)
         self.delegate?.didCreatedWallet(wallet)
+    }
+}
+
+extension SecuritySelectViewController: LTShortcutViewControllerDelegate {
+    @MainActor
+    func onTap(_ action: LTShortcutUserAction) {
+        switch action {
+        case .learnMore:
+            if let url = URL(string: viewModel.linkMore) {
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
+        case .add:
+            Task { try? await viewModel.addLightningShortcut() }
+        case .remove, .later:
+            break
+        }
+        self.navigationController?.popViewController(animated: true)
+        if let wallet = walletCreated {
+            self.delegate?.didCreatedWallet(wallet)
+        }
     }
 }
 

@@ -9,7 +9,7 @@ public protocol LightningEventListener {
 
 class LogStreamListener: LogStream {
     func log(l: LogEntry){
-      print("BREEZ: \(l.line)");
+      //print("BREEZ: \(l.line)");
     }
 }
 
@@ -71,9 +71,9 @@ public class LightningBridge {
         try? setLogStream(logStream: LogStreamListener())
     }
 
-    public func connectToGreenlight(mnemonic: String, isRestore: Bool) -> Bool {
-        let partnerCredentials = isRestore ? nil : LightningBridge.CREDENTIALS
-        return start(mnemonic: mnemonic, partnerCredentials: partnerCredentials)
+    public func connectToGreenlight(mnemonic: String, checkCredentials: Bool) async throws {
+        let partnerCredentials = checkCredentials ? nil : LightningBridge.CREDENTIALS
+        try await start(mnemonic: mnemonic, partnerCredentials: partnerCredentials)
     }
 
     private func createConfig(_ partnerCredentials: GreenlightCredentials?) -> Config {
@@ -87,25 +87,25 @@ public class LightningBridge {
         return config
     }
 
-    private func start(mnemonic: String, partnerCredentials: GreenlightCredentials?) -> Bool {
+    private func start(mnemonic: String, partnerCredentials: GreenlightCredentials?) async throws {
         if breezSdk != nil {
-            return true
+            return
         }
-        breezSdk = try? connect(config: createConfig(partnerCredentials),
-                seed: mnemonicToSeed(phrase: mnemonic),
-                listener: self)
+        breezSdk = try connect(
+            config: createConfig(partnerCredentials),
+            seed: mnemonicToSeed(phrase: mnemonic),
+            listener: self)
         if breezSdk == nil {
-            return false
+            throw BreezSDK.SdkError.Generic(message: "id_connection_failed")
         }
         if let credentials = LightningBridge.CREDENTIALS {
             appGreenlightCredentials = AppGreenlightCredentials(gc: credentials)
         }
         _ = updateNodeInfo()
         _ = updateLspInformation()
-        return true
     }
     
-    public func stop(){
+    public func stop() {
         try? breezSdk?.disconnect()
         breezSdk = nil
     }

@@ -44,6 +44,7 @@ class AuthenticationTypeHandler {
         case AuthKeyPIN = "com.blockstream.green.auth_key_pin"
         case AuthKeyWOPassword = "com.blockstream.green.auth_key_wathonly_password"
         case AuthKeyLightning = "com.blockstream.green.auth_key_lightning"
+        case AuthKeyCredentials = "com.blockstream.green.auth_key_credentials"
     }
 
     static let PrivateKeyPathSize = 32
@@ -320,6 +321,15 @@ class AuthenticationTypeHandler {
 
     static func addWatchonlyMultisig(password: String, forNetwork: String) throws {
         try set(method: .AuthKeyWOPassword, data: [:], forNetwork: forNetwork)
+    }
+
+    static func addAuthKeyCredentials(credentials: Credentials, forNetwork: String) throws {
+        try set(method: .AuthKeyCredentials, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
+    }
+
+    static func getAuthKeyCredentials(forNetwork: String) throws -> Credentials {
+        let data = try get(method: AuthType.AuthKeyCredentials.rawValue, toDecrypt: false, forNetwork: forNetwork)
+        return Credentials.from(data) as! Credentials
     }
 
     public static func addBiometry(pinData: PinData, extraData: String, forNetwork: String) throws {
