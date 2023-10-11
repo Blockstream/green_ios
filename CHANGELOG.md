@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Bump BreezSdk to 0.2.5
+- Update GDK to Release 0.68.1
 
 ## [4.0.14] - 2023-10-05
 
