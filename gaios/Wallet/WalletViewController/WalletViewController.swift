@@ -224,8 +224,7 @@ class WalletViewController: UIViewController {
 
         // Sweep is only supported in watch-only for btc multisig wallets
         if viewModel.watchOnly {
-            if let account = AccountsRepository.shared.current,
-               !account.gdkNetwork.electrum && !account.gdkNetwork.liquid {
+            if let account = AccountsRepository.shared.current, !account.gdkNetwork.liquid {
                    btnSend.setTitle( "id_sweep".localized, for: .normal )
                    btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
                } else {
