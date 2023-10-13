@@ -1250,7 +1250,7 @@
 		81C602A422A553D3004E26E1 /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdSettings.xcconfig; sourceTree = "<group>"; };
 		81CF900D28EC7631003CC793 /* DevSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevSettings.xcconfig; sourceTree = "<group>"; };
-		81D404DE2A1D5F4C002631F5 /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = "gdk-iphone/share/gdk/GreenAddress.swift"; sourceTree = SOURCE_ROOT; };
+		81D404DE2A1D5F4C002631F5 /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = "libgdk/share/gdk/GreenAddress.swift"; sourceTree = SOURCE_ROOT; };
 		81D404E02A1D6138002631F5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		81D671EA26C8007600682508 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		81D671EE26C80D3400682508 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
@@ -4819,17 +4819,15 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
-				);
+				OTHER_LDFLAGS = "-lc++";
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_arm64/libgreenaddress_full.a",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphonesimulator/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_simulator_x86/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_simulator_arm64/libgreenaddress_full.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4838,7 +4836,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/libgdk/include";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4873,17 +4871,15 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
-				);
+				OTHER_LDFLAGS = "-lc++";
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_arm64/libgreenaddress_full.a",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphonesimulator/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_simulator_x86/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_simulator_arm64/libgreenaddress_full.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4892,7 +4888,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/libgdk/include";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4927,17 +4923,15 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
-				);
+				OTHER_LDFLAGS = "-lc++";
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_arm64/libgreenaddress_full.a",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphonesimulator/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_simulator_x86/libgreenaddress_full.a",
+					"$(SRCROOT)/libgdk/libs/ios_simulator_arm64/libgreenaddress_full.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4946,7 +4940,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/libgdk/include";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

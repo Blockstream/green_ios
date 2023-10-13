@@ -11,7 +11,6 @@ help_message() {
 
   Options:
     -c, --commit Download the provided commit
-    -s, --simulator Select iphone simulator platform
     -h, --help  Display this help message and exit
 
 _EOF_
@@ -19,15 +18,23 @@ _EOF_
 }
 
 # ----- Vars
-NAME="gdk-iphone"
-SHA256="1093cbee01c55c2546f50fa0e3ecb2fe0c468db50d4fe0416d79effde8417033"
+ARM_NAME="gdk-iphone"
+ARM_SIM_NAME="gdk-iphonesim-arm64"
+X86_SIM_NAME="gdk-iphonesim-x86_64"
+
+ARM_TARBALL="gdk-iphone.tar.gz"
+ARM_SIM_TARBALL="gdk-iphone-sim.tar.gz"
+X86_SIM_TARBALL="gdk-iphone-sim-x86_64.tar.gz"
+# The version of gdk to fetch and its sha256 checksum for integrity checking
 TAGNAME="release_0.68.1"
-TARBALL="${NAME}.tar.gz"
-URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-NAME_IPHONESIM="gdk-iphone-sim-x86_64"
-SHA256_IPHONESIM="e5e325e2945e02f39430c324f626ea15622060ad555a6b1ea7e635316dffca63"
-SIMULATOR=false
+ARM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${ARM_TARBALL}"
+ARM_SIM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${ARM_SIM_TARBALL}"
+X86_SIM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${X86_SIM_TARBALL}"
+ARM_SHA256="1093cbee01c55c2546f50fa0e3ecb2fe0c468db50d4fe0416d79effde8417033"
+ARM_SIM_SHA256="b65ec6ed8746976647676f3c546746eb0b304400c05b3639a6f63abb831854f9"
+X86_SIM_SHA256="62ddb50c605183e9172664e16fce8437a87919a05e038c8f3462c7bb76651533"
 VALIDATE_CHECKSUM=true
+COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
 
 # --- Argument handling
@@ -43,9 +50,6 @@ case $key in
     -c | --commit)
       COMMIT=${2}
       shift 2;;
-    -s | --simulator)
-      SIMULATOR=true
-      shift 1;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
@@ -70,31 +74,49 @@ fi
 
 # Clean up any previous install
 rm -rf gdk-iphone
+COMMON_MODULE_ROOT=$(pwd)/libgdk
+mkdir -p $COMMON_MODULE_ROOT/include
 
-if [[ $SIMULATOR == true ]]; then
-    NAME=${NAME_IPHONESIM}
-    SHA256=${SHA256_IPHONESIM}
-    TARBALL="${NAME}.tar.gz"
-    URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-fi
+download() {
+  IS_SIM=$1
+  NAME=$2
+  TARBALL=$3
+  URL=$4
+  SHA256=$5
+  PLATFORM=$6
+  # Fetch, validate and decompress gdk
+  echo "Downloading from $URL"
+  curl -sL -o ${TARBALL} "${URL}"
+  if [[ $VALIDATE_CHECKSUM = true ]]; then
+    echo "Validating checksum $SHA256"
+    echo "${SHA256} ${TARBALL}"
+    shasum -a 256 ${TARBALL}
+    echo "${SHA256}  ${TARBALL}" | shasum -a 256 --check
+  fi
 
-if [[ -n "$COMMIT" ]]; then
-  URL="${GCLOUD_URL}${COMMIT}/ios/${TARBALL}"
-  VALIDATE_CHECKSUM=false
-fi
+  tar xvf ${TARBALL}
 
-# Fetch, validate and decompress gdk
-echo "Downloading from $URL"
-curl -sL -o ${TARBALL} "${URL}"
-if [[ $VALIDATE_CHECKSUM = true ]]; then
-  echo "Validating checksum $SHA256"
-  echo "${SHA256}  ${TARBALL}" | shasum -a 256 --check
-fi
+  if [[ $IS_SIM = true ]]; then
+    mkdir -p $COMMON_MODULE_ROOT/libs/ios_simulator_$PLATFORM
+    cp $NAME/lib/iphonesimulator/libgreenaddress_full.a $COMMON_MODULE_ROOT/libs/ios_simulator_$PLATFORM
+  else
 
-tar xvf ${TARBALL}
-rm ${TARBALL}
+    # Copy header files
+    mkdir -p $COMMON_MODULE_ROOT/include
+    cp $NAME/include/gdk/*/*.h $COMMON_MODULE_ROOT/include/
+    cp $NAME/include/gdk/*.h $COMMON_MODULE_ROOT/include/
+    cp $NAME/include/gdk/module.modulemap $COMMON_MODULE_ROOT/include/
+    cp -r $NAME/share $COMMON_MODULE_ROOT/
 
-if [[ $SIMULATOR == true ]]; then
-    mv -f ${NAME} "gdk-iphone"
-fi
+    mkdir -p $COMMON_MODULE_ROOT/libs/ios_$PLATFORM
+    cp $NAME/lib/iphoneos/libgreenaddress_full.a $COMMON_MODULE_ROOT/libs/ios_$PLATFORM
+  fi
 
+  # Cleanup
+  rm ${TARBALL}
+  rm -fr $NAME
+}
+
+download false $ARM_NAME $ARM_TARBALL $ARM_URL $ARM_SHA256 "arm64"
+download true $ARM_SIM_NAME $ARM_SIM_TARBALL $ARM_SIM_URL $ARM_SIM_SHA256 "arm64"
+download true $X86_SIM_NAME $X86_SIM_TARBALL $X86_SIM_URL $X86_SIM_SHA256 "x86"

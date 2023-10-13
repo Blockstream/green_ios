@@ -1,7 +1,7 @@
 excluded:
    - gaiosTests
    - gaiosUITests
-   - gdk-iphone
+   - libgdk
    - tools
    - Pods
    - breez_sdk
