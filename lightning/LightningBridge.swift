@@ -189,8 +189,8 @@ public class LightningBridge {
         return try breezSdk?.lnurlAuth(reqData: requestData)
     }
 
-    public func withdrawLnurl(requestData: LnUrlWithdrawRequestData, amount: Long, description: String?) -> LnUrlWithdrawResult? {
-        return try? breezSdk?.withdrawLnurl(reqData: requestData, amountSats: amount, description: description)
+    public func withdrawLnurl(requestData: LnUrlWithdrawRequestData, amount: Long, description: String?) throws -> LnUrlWithdrawResult? {
+        return try breezSdk?.withdrawLnurl(reqData: requestData, amountSats: amount, description: description)
     }
 
     public func listLisps() -> [LspInformation]? {

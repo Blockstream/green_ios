@@ -582,6 +582,9 @@
 		81F328F729EC3D5C00D54F1D /* LightningRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F629EC3D5C00D54F1D /* LightningRepository.swift */; };
 		81F328FC29ED319300D54F1D /* ResolverManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328FB29ED319300D54F1D /* ResolverManager.swift */; };
 		81F328FE29ED32D000D54F1D /* GDKResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328FD29ED32D000D54F1D /* GDKResolver.swift */; };
+		81F5C9862ADD3C71004B020A /* LNWithdrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C9852ADD3C71004B020A /* LNWithdrawViewController.swift */; };
+		81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C9872ADD3F5F004B020A /* LTWithdrawNoteCell.swift */; };
+		81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
 		DD1C96BAC43AE08FD1433D9E /* libPods-gaiosUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
@@ -1271,6 +1274,9 @@
 		81F328F629EC3D5C00D54F1D /* LightningRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningRepository.swift; sourceTree = "<group>"; };
 		81F328FB29ED319300D54F1D /* ResolverManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolverManager.swift; sourceTree = "<group>"; };
 		81F328FD29ED32D000D54F1D /* GDKResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GDKResolver.swift; sourceTree = "<group>"; };
+		81F5C9852ADD3C71004B020A /* LNWithdrawViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNWithdrawViewController.swift; sourceTree = "<group>"; };
+		81F5C9872ADD3F5F004B020A /* LTWithdrawNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTWithdrawNoteCell.swift; sourceTree = "<group>"; };
+		81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNWithdrawAmountCell.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
@@ -2437,6 +2443,7 @@
 		34C8585329F90102004A3F83 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				81F5C98A2ADD4581004B020A /* LTWithdraw */,
 				34F568952A828CC00081BF0C /* LTRecoverFunds */,
 				3445498E29FBF7D9006725D2 /* LTSuccessViewController.swift */,
 				344915E42A0BA27100D35818 /* LTSuccessViewModel.swift */,
@@ -3137,6 +3144,24 @@
 			path = configs;
 			sourceTree = "<group>";
 		};
+		81F5C9892ADD456F004B020A /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				81F5C9872ADD3F5F004B020A /* LTWithdrawNoteCell.swift */,
+				81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		81F5C98A2ADD4581004B020A /* LTWithdraw */ = {
+			isa = PBXGroup;
+			children = (
+				81F5C9852ADD3C71004B020A /* LNWithdrawViewController.swift */,
+				81F5C9892ADD456F004B020A /* Cells */,
+			);
+			path = LTWithdraw;
+			sourceTree = "<group>";
+		};
 		FF29CA7022374D670035F95A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -3652,6 +3677,7 @@
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
 				6D0983F323FF033900289ACA /* DropAlert.swift in Sources */,
 				345C70882836254600EF3971 /* AssetsManager.swift in Sources */,
+				81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */,
 				3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				34B170E7292E864400A829B2 /* AddingCell.swift in Sources */,
@@ -3688,6 +3714,7 @@
 				34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */,
 				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
 				346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */,
+				81F5C9862ADD3C71004B020A /* LNWithdrawViewController.swift in Sources */,
 				3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */,
 				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
 				81961ABB29E4B9C600E9B94D /* Balance.swift in Sources */,
@@ -3751,6 +3778,7 @@
 				816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */,
 				81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */,
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
+				81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */,
 				345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				34927BC92971452C00D741DB /* AccountAssetViewModel.swift in Sources */,

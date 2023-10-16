@@ -977,6 +977,8 @@ extension WalletViewController: DialogScanViewControllerDelegate {
                 case .lnUrlAuth(let data):
                     // open LNURL-Auth page
                     ltAuthViewController(requestData: data)
+                case .lnUrlWithdraw(let data):
+                    ltWithdrawViewController(requestData: data)
                 default:
                     // open Send page
                     guard parser.account != nil else {
@@ -1006,6 +1008,14 @@ extension WalletViewController: DialogScanViewControllerDelegate {
     func ltAuthViewController(requestData: LnUrlAuthRequestData) {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTAuthViewController") as? LTAuthViewController {
+            vc.requestData = requestData
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func ltWithdrawViewController(requestData: LnUrlWithdrawRequestData) {
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTWithdrawViewController") as? LTWithdrawViewController {
             vc.requestData = requestData
             navigationController?.pushViewController(vc, animated: true)
         }
