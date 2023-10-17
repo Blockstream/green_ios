@@ -327,25 +327,28 @@ class LoginViewController: UIViewController {
         case LoginError.connectionFailed:
             DropAlert().error(message: "id_connection_failed".localized)
         case LoginError.walletNotFound:
-            let prettyError = "id_wallet_not_found"
-            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-            showReportError(account: account, wallet: nil, prettyError: prettyError, screenName: "Login")
+            let msg = "id_wallet_not_found"
+            DropAlert().error(message: msg.localized)
+            showReportError(account: account, wallet: nil, prettyError: msg.localized, screenName: "Login")
         case GaError.NotAuthorizedError(_):
             self.wrongPin()
-        case TwoFactorCallError.failure(let localizedDescription):
-            if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
+        case TwoFactorCallError.failure(let msg):
+            if msg.contains("id_connection_failed") {
+                DropAlert().error(message: msg.localized)
+            } else if msg.contains("login failed") || msg.contains("id_invalid_pin") {
+                let prettyError = "id_invalid_pin"
                 if enableFailingCounter {
                     wrongPin()
                 }
             } else {
-                showReportError(account: account, wallet: nil, prettyError: localizedDescription, screenName: "Login")
-                DropAlert().error(message: NSLocalizedString(localizedDescription, comment: ""))
-                AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: localizedDescription)
+                showReportError(account: account, wallet: nil, prettyError: msg.localized, screenName: "Login")
+                DropAlert().error(message: msg.localized)
+                AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError:  msg.localized)
             }
         default:
-            let prettyError = "id_login_failed"
-            showReportError(account: account, wallet: nil, prettyError: prettyError, screenName: "Login")
-            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+            let msg = "id_login_failed"
+            showReportError(account: account, wallet: nil, prettyError: msg.localized, screenName: "Login")
+            DropAlert().error(message: msg.localized)
         }
         self.pinCode = ""
         self.reloadPin()
