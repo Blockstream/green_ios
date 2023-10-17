@@ -83,9 +83,7 @@ class Parser {
         let session = lightningAccount?.lightningSession
         let lightningType = session?.lightBridge?.parseBoltOrLNUrl(input: input)
         switch lightningType {
-        case .bitcoinAddress(_), .none:
-            return (nil,nil)
-        case .lnUrlAuth(_), .lnUrlWithdraw(_), .nodeId(_), .url(_), .lnUrlError(_):
+        case .lnUrlAuth(_), .lnUrlWithdraw(_):
             return (lightningType, nil)
         case .lnUrlPay(_), .bolt11(_):
             let res = try? await session?.parseTxInput(input, satoshi: nil, assetId: nil)
@@ -94,6 +92,8 @@ class Parser {
             } else {
                 throw ParserError.InvalidTransaction(res?.errors.first ?? "id_operation_failure")
             }
+        default:
+            return (nil,nil)
         }
     }
 
@@ -197,8 +197,7 @@ class Parser {
                     break
                 }
             }
-        } else {
-            throw ParserError.InvalidInput("Invalid text")
         }
+        throw ParserError.InvalidInput("Invalid text")
     }
 }
