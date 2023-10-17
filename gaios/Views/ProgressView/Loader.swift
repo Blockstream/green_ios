@@ -102,6 +102,11 @@ extension UIViewController {
             }
         }
     }
+    
+    @MainActor
+    func updateLoader(message: String = "") {
+        loader?.message = NSMutableAttributedString(string: message)
+    }
 
     func progressLoaderMessage(title: String, subtitle: String) -> NSMutableAttributedString {
         let titleAttributes: [NSAttributedString.Key: Any] = [

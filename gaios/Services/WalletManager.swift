@@ -124,6 +124,10 @@ class WalletManager {
     var activeSessions: [String: SessionManager] {
         self.sessions.filter { $0.1.logged }
     }
+
+    var logged: Bool {
+        self.activeSessions.count > 0
+    }
     
     var hasMultisig: Bool {
         let multisigNetworks: [NetworkSecurityCase] =  [.bitcoinMS, .testnetMS, .liquidMS, .testnetLiquidMS]
@@ -131,10 +135,6 @@ class WalletManager {
     }
     
     var failureSessionsError = [String: Error]()
-    
-    var logged: Bool {
-        activeSessions.count > 0
-    }
 
     func loginWithPin(
         pin: String,
@@ -415,18 +415,24 @@ class WalletManager {
         }
     }
 
-    func pause() {
-        activeSessions.forEach { (_, session) in
-            if session.connected {
-                session.networkDisconnect()
+    func pause() async {
+        NSLog("pause networkDisconnect")
+        await withTaskGroup(of: Void.self) { group -> () in
+            for session in activeSessions.values {
+                if session.connected {
+                    group.addTask { await session.networkDisconnect() }
+                }
             }
         }
     }
 
-    func resume() {
-        activeSessions.forEach { (_, session) in
-            if session.connected {
-               session.networkConnect()
+    func resume() async {
+        NSLog("resume networkConnect")
+        await withTaskGroup(of: Void.self) { group -> () in
+            for session in activeSessions.values {
+                if session.connected {
+                    group.addTask { await session.networkConnect() }
+                }
             }
         }
     }

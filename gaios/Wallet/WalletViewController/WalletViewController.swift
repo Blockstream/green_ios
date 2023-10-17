@@ -175,16 +175,11 @@ class WalletViewController: UIViewController {
         case .AssetsUpdated:
             reload()
         case .Network:
-            guard let dict = details as? [String: Any],
-                  let connection = Connection.from(dict) as? Connection else { return }
-            if let error = connection.error {
-                DispatchQueue.main.async {
-                    DropAlert().warning(message: error)
+            if let details = details as? [String: Any],
+               let connection = Connection.from(details) as? Connection {
+                if connection.connected {
+                    reload()
                 }
-                return
-            }
-            if connection.connected && !(connection.loginRequired ?? false) {
-                reload()
             }
         case .Settings, .Ticker, .TwoFactorReset:
             reload()
@@ -297,8 +292,10 @@ class WalletViewController: UIViewController {
             await self?.reloadSections([.card], animated: true)
             try? await self?.viewModel.loadTransactions(max: 10)
             await self?.reloadSections([.transaction], animated: true)
+            await MainActor.run { [weak self] in
+                self?.isReloading = false
+            }
         }
-        isReloading = false
     }
 
     // open wallet selector drawer
@@ -885,7 +882,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: add new waller
     func didSelectAddWallet() {
-        _ = AccountNavigator.goAddWallet(nv: navigationController)
+        AccountNavigator.goAddWallet(nv: navigationController)
     }
 
     // accounts drawer: select another account
@@ -893,8 +890,11 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
         // don't switch if same account selected
         if account.id == viewModel.wm?.account.id ?? "" {
             return
+        } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
+            AccountNavigator.goLogged(account: account)
+        } else {
+            AccountNavigator.goLogin(account: account)
         }
-        AccountNavigator.goLogin(account: account)
     }
 
     // accounts drawer: select app settings

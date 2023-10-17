@@ -72,17 +72,22 @@ class DrawerNetworkSelectionViewController: UIViewController {
             return nil
         }
     }
-    
-    func onTap(_ indexPath: IndexPath) {
-        if let account = getAccountFromTableView(indexPath) {
+
+    func goAccount(account: Account) {
+        if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
+            AccountNavigator.goLogged(account: account)
+        } else {
             AccountNavigator.goLogin(account: account)
-            dismiss(animated: true, completion: nil)
         }
+    }
+
+    func onTap(_ indexPath: IndexPath) {
+        onTapOverview(indexPath)
     }
     
     func onTapOverview(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
-            AccountNavigator.goLogin(account: account)
+            goAccount(account: account)
             dismiss(animated: true, completion: nil)
         }
     }
@@ -90,7 +95,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     func onTapLightShort(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
             if let lightning = account.getDerivedLightningAccount() {
-                AccountNavigator.goLogin(account: lightning)
+                goAccount(account: lightning)
                 dismiss(animated: true, completion: nil)
             }
         }

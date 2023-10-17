@@ -12,12 +12,8 @@ class AccountNavigator {
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
-
-        // switch on selected active session
-        if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
-            goLogged(account: account)
-            return
-        } else if account.isDerivedLightning {
+        
+        if account.isDerivedLightning {
             vcLogin?.account = account
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         } else if account.isHW {
@@ -105,15 +101,14 @@ class AccountNavigator {
         appDelegate?.window??.rootViewController = nv
     }
 
-    @MainActor
-    static func goAddWallet(nv: UINavigationController?) -> UINavigationController {
+    static func goAddWallet(nv: UINavigationController?) {
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
-        let nv = nv ?? UINavigationController()
+        let nv = UINavigationController()
         let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
         nv.setViewControllers([home!, onboard!], animated: true)
-        return nv
+        UIApplication.shared.delegate?.window??.rootViewController = nv
     }
 
     static func instantiateViewController<K>(storyboard: String, identifier: String) -> K? {

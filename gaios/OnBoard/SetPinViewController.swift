@@ -111,7 +111,6 @@ class SetPinViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        ScreenLocker.shared.startObserving()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
     
         cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)

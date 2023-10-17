@@ -4,7 +4,7 @@ import UIKit
 class ScreenLocker {
 
     public static let shared = ScreenLocker()
-    private var countdownInterval: TimeInterval?
+    private var countdownInterval: CFAbsoluteTime?
     // Indicates whether or not the user is currently locked out of the app.
     private var isScreenLockLocked: Bool = false
 
@@ -19,7 +19,6 @@ class ScreenLocker {
                 activateBasedOnCountdown()
                 countdownInterval = nil
             }
-            ensureUI()
         }
     }
 
@@ -31,40 +30,12 @@ class ScreenLocker {
             } else {
                 activateBasedOnCountdown()
             }
-            ensureUI()
         }
     }
 
-    private var activeToken: NSObjectProtocol?
-    private var resignToken: NSObjectProtocol?
-    private var enterForegroundToken: NSObjectProtocol?
-    private var enterBackgroundToken: NSObjectProtocol?
-
-    func startObserving() {
-        // Initialize the screen lock state.
+    init() {
         clear()
         appIsInactiveOrBackground = UIApplication.shared.applicationState != UIApplication.State.active
-
-        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
-        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
-        enterForegroundToken = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main, using: applicationWillEnterForeground)
-        enterBackgroundToken = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main, using: applicationDidEnterBackground)
-    }
-
-    func stopObserving() {
-        hideLockWindow()
-        if let token = activeToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        if let token = resignToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        if let token = enterForegroundToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        if let token = enterBackgroundToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
 
     func clear() {
@@ -75,7 +46,7 @@ class ScreenLocker {
 
     func startCountdown() {
         if self.countdownInterval == nil {
-            self.countdownInterval = CACurrentMediaTime()
+            self.countdownInterval = CFAbsoluteTimeGetCurrent()
         }
     }
 
@@ -88,68 +59,73 @@ class ScreenLocker {
             // We became inactive, but never started a countdown.
             return
         }
-        let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval
-
-        Task {
-            for (id, wm) in WalletsRepository.shared.wallets {
-                if let settings = wm.prominentSession?.settings,
-                   Int(countdown) >= settings.altimeout * 60 {
-                    if id == wm.account.id {
-                        self.isScreenLockLocked = true
-                    }
-                    await WalletsRepository.shared.get(for: id)?.disconnect()
+        let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - countdownInterval
+        for (id, wm) in WalletsRepository.shared.wallets {
+            let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
+            if Int(countdown) >= altimeout * 60 {
+                if id == wm.account.id {
+                    self.isScreenLockLocked = true
                 }
             }
         }
     }
 
-    deinit {
-        stopObserving()
+    func applicationDidBecomeActive() {
+        appIsInactiveOrBackground = false
+        ensureUI()
     }
 
-    func applicationDidBecomeActive(_ notification: Notification) {
-        self.appIsInactiveOrBackground = false
+    func applicationWillResignActive() {
+        appIsInactiveOrBackground = true
+        ensureUI()
     }
 
-    func applicationWillResignActive(_ notification: Notification) {
-        self.appIsInactiveOrBackground = true
+    func applicationWillEnterForeground() {
+        appIsInBackground = false
+        ensureUI()
+        Task { [weak self] in
+            await self?.resumeNetworks()
+        }
     }
 
-    func applicationWillEnterForeground(_ notification: Notification) {
-        resumeNetworks()
-        self.appIsInBackground = false
-    }
+    var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
-    func applicationDidEnterBackground(_ notification: Notification) {
-        pauseNetworks()
-        self.appIsInBackground = true
+    func applicationDidEnterBackground() {
+        appIsInBackground = true
+        self.backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "Network Tasks") {
+            UIApplication.shared.endBackgroundTask(self.backgroundTaskID)
+            self.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
+        }
+        ensureUI()
+        Task {
+            await self.pauseNetworks()
+            guard backgroundTaskID != .invalid else { return }
+            await UIApplication.shared.endBackgroundTask(self.backgroundTaskID)
+            self.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
+        }
     }
 
     func showLockWindow() {
         // Hide Root Window
-        DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.window?.isHidden = true
-            ScreenLockWindow.shared.show()
-        }
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.window?.isHidden = true
+        ScreenLockWindow.shared.show()
     }
 
     func hideLockWindow() {
-        DispatchQueue.main.async {
-            ScreenLockWindow.shared.hide()
-            // Show Root Window
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.window?.isHidden = false
-            // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
-            // In the normal case, that means the ViewController will call `becomeFirstResponder`
-            // on the vc on top of its navigation stack.
-            appDelegate?.window?.makeKeyAndVisible()
-        }
+        ScreenLockWindow.shared.hide()
+        // Show Root Window
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.window?.isHidden = false
+        // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
+        // In the normal case, that means the ViewController will call `becomeFirstResponder`
+        // on the vc on top of its navigation stack.
+        appDelegate?.window?.makeKeyAndVisible()
     }
 
     func ensureUI() {
-        if self.isScreenLockLocked {
-            if self.appIsInactiveOrBackground {
+        if isScreenLockLocked {
+            if appIsInactiveOrBackground {
                 showLockWindow()
             } else {
                 unlock()
@@ -166,25 +142,34 @@ class ScreenLocker {
         if self.appIsInactiveOrBackground {
             return
         }
-        clear()
         DispatchQueue.main.async {
+            self.clear()
             let account = AccountsRepository.shared.current
             AccountNavigator.goLogout(account: account)
         }
     }
 
-    func resumeNetworks() {
-        WalletsRepository.shared.wallets.forEach { _, wm in
-            wm.resume()
-            if let session = wm.activeSessions.first?.value.session {
-                AnalyticsManager.shared.setupSession(session: session)
+    func resumeNetworks() async {
+        NSLog("ScreenLocker resumeNetworks")
+        let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - (countdownInterval ?? 0)
+        for wm in WalletsRepository.shared.wallets.values {
+            if wm.logged {
+                let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
+                if Int(countdown) >= altimeout * 60 {
+                    await wm.disconnect()
+                } else {
+                    await wm.resume()
+                }
             }
         }
     }
 
-    func pauseNetworks() {
-        WalletsRepository.shared.wallets.forEach { _, wm in
-            wm.pause()
+    func pauseNetworks() async {
+        NSLog("ScreenLocker pauseNetworks")
+        for wm in WalletsRepository.shared.wallets.values {
+            if wm.logged {
+                await wm.pause()
+            }
         }
     }
 }

@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+- Improve tor connectivity
+- Improve reconnection from background state
+
 ## [4.0.20] - 2023-11-29
 
 ### Added
@@ -33,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Improve QR Scanner
+- Improve Tor and auto-logout after timeout time in background 
 
 ## [4.0.16] - 2023-10-17
 

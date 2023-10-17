@@ -8,6 +8,7 @@ class WalletViewModel {
 
     var wm: WalletManager? { WalletManager.current }
     var session: SessionManager? { wm?.prominentSession }
+    var paused: Bool { !(wm?.activeSessions.filter { $0.value.paused }.isEmpty ?? false) }
     var isTxLoading = true // on init is always true
     var isBalanceLoading = true
 

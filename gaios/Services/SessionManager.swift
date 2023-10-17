@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-
 import gdk
 import greenaddress
 import hw
@@ -13,6 +12,20 @@ public enum LoginError: Error, Equatable {
     case failed(_ localizedDescription: String? = nil)
     case walletMismatch(_ localizedDescription: String? = nil)
     case hostUnblindingDisabled(_ localizedDescription: String? = nil)
+}
+
+
+actor SerialTasks<Success> {
+    private var previousTask: Task<Success, Error>?
+
+    func add(block: @Sendable @escaping () async throws -> Success) async throws -> Success {
+        let task = Task { [previousTask] in
+            let _ = await previousTask?.result
+            return try await block()
+        }
+        previousTask = task
+        return try await task.value
+    }
 }
 
 class SessionManager {
@@ -29,9 +42,10 @@ class SessionManager {
     var paused = false
     var gdkFailures = [String]()
     weak var hw: BLEDevice?
+    let uuid = UUID()
     
     // Serial reconnect queue for network events
-    static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
+    let reconnectionTasks = SerialTasks<Void>()
 
     var networkType: NetworkSecurityCase {
         NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
@@ -55,23 +69,30 @@ class SessionManager {
         if connected {
             return
         }
-        //self.networkConnect()
-        try await self.connect(network: self.gdkNetwork.network)
-        AnalyticsManager.shared.setupSession(session: self.session) // Update analytics endpoint with session tor/proxy
+        let settings = GdkSettings.read()
+        if settings?.tor ?? false {
+            await self.networkConnect()
+        }
+        try await reconnectionTasks.add {
+            try await self.connect(network: self.gdkNetwork.network)
+            AnalyticsManager.shared.setupSession(session: self.session) // Update analytics endpoint with session tor/proxy
+        }
     }
     
     public func disconnect() async throws {
         logged = false
         connected = false
         gdkFailures = []
-        SessionManager.reconnectionQueue.async {
+        paused = false
+        try? await reconnectionTasks.add {
             self.session = GDKSession()
         }
     }
     
-    private func connect(network: String, params: [String: Any]? = nil) async throws {
+    private func connect(network: String) async throws {
         do {
             gdkFailures = []
+            paused = false
             session?.setNotificationHandler(notificationCompletionHandler: newNotification)
             try session?.connect(netParams: GdkSettings.read()?.toNetworkParams(network).toDict() ?? [:])
             connected = true
@@ -476,19 +497,17 @@ class SessionManager {
         } catch { throw LoginError.connectionFailed() }
     }
 
-    func networkConnect() {
-        NSLog("tor_hint: connect")
-        SessionManager.reconnectionQueue.async {
-            NSLog("tor_hint: async connect")
+    func networkConnect() async {
+        try? await reconnectionTasks.add {
+            NSLog("tor_hint: async connect \(self.gdkNetwork.network)")
             try? self.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
         }
     }
 
-    func networkDisconnect() {
-        NSLog("tor_hint: disconnect")
+    func networkDisconnect() async {
         paused = true
-        SessionManager.reconnectionQueue.async {
-            NSLog("tor_hint: async disconnect")
+        try? await reconnectionTasks.add {
+            NSLog("tor_hint: async disconnect \(self.gdkNetwork.network)")
             try? self.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
         }
     }
@@ -550,7 +569,10 @@ extension SessionManager {
         case .Block:
             guard let height = data["block_height"] as? UInt32 else { break }
             blockHeight = height
-            post(event: .Block, userInfo: data)
+            if !paused {
+                // avoid to refresh contents if session is not resumed yet
+                post(event: .Block, userInfo: data)
+            }
         case .Subaccount:
             let txEvent = SubaccountEvent.from(data) as? SubaccountEvent
             post(event: .Block, userInfo: data)
@@ -593,10 +615,11 @@ extension SessionManager {
                 do {
                     NSLog("\(self.gdkNetwork.network) reconnect")
                     try await reconnect()
+                    NSLog("\(self.gdkNetwork.network) reconnected")
                     paused = false
                     post(event: EventType.Network, userInfo: data)
                 } catch {
-                    print("Error on reconnected with hw: \(error.localizedDescription)")
+                    NSLog("Error on reconnected: \(error.localizedDescription)")
                 }
             }
         case .Tor:
@@ -614,7 +637,9 @@ extension SessionManager {
 
     @MainActor
     func post(event: EventType, object: Any? = nil, userInfo: [String: Any] = [:]) {
+        var data = userInfo
+        data["session_id"] = uuid.uuidString
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue),
-                                        object: object, userInfo: userInfo)
+                                        object: object, userInfo: data)
     }
 }

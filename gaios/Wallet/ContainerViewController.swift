@@ -20,7 +20,6 @@ class ContainerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         networkToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
-        torToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: updateTor)
         self.networkView.isHidden = true
         view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view
 
@@ -52,37 +51,30 @@ class ContainerViewController: UIViewController {
             NotificationCenter.default.removeObserver(token)
             networkToken = nil
         }
-        if let token = torToken {
-            NotificationCenter.default.removeObserver(token)
-            torToken = nil
-        }
-    }
-
-    // tor notification handler
-    func updateTor(_ notification: Notification) {
-        DispatchQueue.main.async {
-            if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
-               let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
-                self.networkText.text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
-                self.networkView.backgroundColor = UIColor.errorRed()
-                self.networkView.isHidden = tor.progress == 100
-            }
-        }
     }
 
     // network notification handler
     func updateConnection(_ notification: Notification) {
         let currentState = notification.userInfo?["current_state"] as? String
         let waitMs = notification.userInfo?["wait_ms"] as? Int
+        let sessionId = notification.userInfo?["session_id"] as? String
         let connected = currentState == "connected"
-        // Show connection bar, only for tor
-        if AppSettings.shared.gdkSettings?.tor ?? false {
-            if connected {
-                self.connected()
-            } else {
-                self.offline()
-            }
+        let tor = AppSettings.shared.gdkSettings?.tor ?? false
+        if !isCurrentWallet(sessionId: sessionId ?? "") {
+            return
+        } else if connected {
+            self.connected()
+        } else if tor || waitMs ?? 0 > 3000 {
+            self.offline()
         }
+    }
+    
+    func isCurrentWallet(sessionId: String) -> Bool {
+        WalletManager.current?
+            .activeSessions
+            .values
+            .filter { $0.uuid.uuidString == sessionId }
+            .first != nil
     }
 
     // show network bar on offline mode
@@ -98,8 +90,13 @@ class ContainerViewController: UIViewController {
     func connected() {
         let sessions = WalletManager.current?.activeSessions ?? [:]
         let reconnected = sessions.filter { !$0.value.paused }
-        guard sessions.count == reconnected.count else { return }
+        if sessions.count != reconnected.count {
+            return
+        }
         DispatchQueue.main.async {
+            if self.networkView.isHidden {
+                return
+            }
             self.networkText.text = "id_you_are_now_connected".localized
             self.networkView.backgroundColor = UIColor.customMatrixGreen()
             self.networkView.isHidden = false

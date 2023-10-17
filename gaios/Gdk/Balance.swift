@@ -18,6 +18,10 @@ extension Balance {
     }
 
     static func from(details: [String: Any]) -> Balance? {
+        if session?.paused ?? false {
+            // avoid blocking gdk mutex
+            return nil
+        }
         if var res = try? session?.convertAmount(input: details) {
             res["asset_info"] = details["asset_info"]
             res["asset_id"] = details["asset_id"]

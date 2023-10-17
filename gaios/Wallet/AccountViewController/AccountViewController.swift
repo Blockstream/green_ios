@@ -101,6 +101,10 @@ class AccountViewController: UIViewController {
             return
         }
         isReloading = true
+        if !viewModel.active {
+            // avoid reload contents before session are valid
+            return
+        }
         Task.detached() { [weak self] in
             try? await self?.viewModel.getBalance()
             await self?.reloadSections([.disclose, .adding, .account, .assets], animated: true)
@@ -112,8 +116,10 @@ class AccountViewController: UIViewController {
                 _ = await self?.viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
                 await self?.reloadSections([.sweep, .inbound], animated: true)
             }
+            await MainActor.run { [weak self] in
+                self?.isReloading = false
+            }
         }
-        isReloading = false
     }
 
     @MainActor
@@ -445,12 +451,17 @@ class AccountViewController: UIViewController {
             if viewModel.cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
                 reload()
             }
+        case .AssetsUpdated:
+            reload()
         case .Network:
-            guard let connected = details["connected"] as? Bool else { return }
-            guard let loginRequired = details["login_required"] as? Bool else { return }
-            if connected == true && loginRequired == false {
-                reload()
+            if let details = details as? [String: Any],
+               let connection = Connection.from(details) as? Connection {
+                if connection.connected {
+                    reload()
+                }
             }
+        case .Settings, .Ticker, .TwoFactorReset:
+            reload()
         case .bip21Scheme:
             if URLSchemeManager.shared.isValid {
                 if let bip21 = URLSchemeManager.shared.bip21 {
@@ -1049,8 +1060,11 @@ extension AccountViewController: DrawerNetworkSelectionDelegate {
         // don't switch if same account selected
         if account.id == viewModel.wm?.account.id{
             return
+        } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
+            AccountNavigator.goLogged(account: account)
+        } else {
+            AccountNavigator.goLogin(account: account)
         }
-        AccountNavigator.goLogin(account: account)
     }
 
     // accounts drawer: select app settings

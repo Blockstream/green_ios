@@ -64,6 +64,46 @@ class LoginViewController: UIViewController {
         (account?.attempts ?? 0 >= self.MAXATTEMPTS  || account?.hasPin == false)
     }
 
+    @IBAction func tap1(_ sender: Any) {
+        tapNumber("1")
+    }
+    @IBAction func tap2(_ sender: Any) {
+        tapNumber("2")
+    }
+    @IBAction func tap3(_ sender: Any) {
+        tapNumber("3")
+    }
+    @IBAction func tap4(_ sender: Any) {
+        tapNumber("4")
+    }
+    @IBAction func tap5(_ sender: Any) {
+        tapNumber("5")
+    }
+    @IBAction func tap6(_ sender: Any) {
+        tapNumber("6")
+    }
+    @IBAction func tap7(_ sender: Any) {
+        tapNumber("7")
+    }
+    @IBAction func tap8(_ sender: Any) {
+        tapNumber("8")
+    }
+    @IBAction func tap9(_ sender: Any) {
+        tapNumber("9")
+    }
+    @IBAction func tapDelete(_ sender: Any) {
+        if pinCode.count > 0 {
+            pinCode.removeLast()
+            reloadPin()
+        }
+    }
+    @IBAction func tap0(_ sender: Any) {
+        tapNumber("0")
+    }
+    @IBAction func tapCancel(_ sender: Any) {
+        pinCode = ""
+        reloadPin()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -152,15 +192,7 @@ class LoginViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        ScreenLocker.shared.stopObserving()
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateNetwork), name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
-
-        cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
-        deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
-        for button in keyButton!.enumerated() {
-            button.element.addTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
-        }
         updateAttemptsLabel()
         reloadPin()
     }
@@ -183,15 +215,7 @@ class LoginViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        ScreenLocker.shared.startObserving()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
-
-        cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
-        deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
-        for button in keyButton!.enumerated() {
-            button.element.removeTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
-        }
     }
 
     @objc func menuButtonTapped(_ sender: Any) {
@@ -213,7 +237,7 @@ class LoginViewController: UIViewController {
                 text = NSLocalizedString("id_logging_in", comment: "")
             }
             DispatchQueue.main.async {
-                self.startLoader(message: text)
+                self.updateLoader(message: text)
             }
         }
     }
@@ -426,8 +450,8 @@ class LoginViewController: UIViewController {
         attemptsView.isHidden = emergencyRestore || pinattempts == 0
     }
 
-    @objc func keyClick(sender: UIButton) {
-        pinCode += (sender.titleLabel?.text)!
+    func tapNumber(_ number: String) {
+        pinCode += number
         reloadPin()
         guard pinCode.count == 6 else {
             return
@@ -455,17 +479,6 @@ class LoginViewController: UIViewController {
 
     @objc func back(sender: UIBarButtonItem) {
         navigationController?.popViewController(animated: true)
-    }
-
-    @objc func click(sender: UIButton) {
-        if sender == deleteButton {
-            if pinCode.count > 0 {
-                pinCode.removeLast()
-            }
-        } else if sender == cancelButton {
-            pinCode = ""
-        }
-        reloadPin()
     }
 
     @IBAction func clickLoginLightningShortcut(_ sender: Any) {

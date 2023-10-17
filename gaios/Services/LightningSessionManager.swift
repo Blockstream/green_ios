@@ -17,7 +17,22 @@ class LightningSessionManager: SessionManager {
     var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
 
     override func connect() async throws {
-        connected = true
+        paused = false
+    }
+
+    override func disconnect() async throws {
+        logged = false
+        connected = false
+        paused = false
+        lightBridge?.stop()
+    }
+    
+    override func networkConnect() async {
+        paused = false
+    }
+
+    override func networkDisconnect() async {
+        paused = true
     }
 
     private func initLightningBridge(_ params: Credentials) -> LightningBridge {
@@ -65,16 +80,6 @@ class LightningSessionManager: SessionManager {
 
     override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         _ = try await loginUser(credentials: credentials!, restore: false)
-    }
-
-    deinit {
-        lightBridge?.stop()
-    }
-
-    override func disconnect() async throws {
-        logged = false
-        connected = false
-        lightBridge?.stop()
     }
 
     override func walletIdentifier(credentials: Credentials) -> WalletIdentifier? {
