@@ -301,7 +301,7 @@ class WalletSettingsViewController: KeyboardViewController {
             spvEnabled: switchTxCheck.isOn,
             personalNodeEnabled: switchPSPVPersonalNode.isOn,
             btcElectrumSrv: fieldSPVbtcServer.text,
-            liquidElectrumSrv: fieldSPVbtcServer.text ?? "",
+            liquidElectrumSrv: fieldSPVliquidServer.text ?? "",
             testnetElectrumSrv: fieldSPVtestnetServer.text,
             liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text)
         AppSettings.shared.testnet = switchTestnet.isOn
