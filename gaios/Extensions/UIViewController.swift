@@ -49,6 +49,8 @@ extension UIViewController {
             return "id_operation_failure"
         case LoginError.connectionFailed:
             return "id_connection_failed"
+        case LoginError.failed:
+            return "id_login_failed"
         case LoginError.walletNotFound:
             return "id_wallet_not_found"
         case LoginError.hostUnblindingDisabled(let txt):
