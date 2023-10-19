@@ -39,34 +39,9 @@ Fetch the latest released gdk binaries (our cross-platform wallet library) with 
 
 You can also cross compile it from source.
 
+Use fastlane to build in prodution environment
 
-#### Cross-compile the native library (advanced):
-
-Get sources from the GDK repository
-
-```
-git clone https://github.com/Blockstream/gdk.git
-cd gdk
-```
-
-Build GDK dependencies for Mac OSX (virtualenv is optional if you already have python3 as default)
-
-```
-brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config swig gnu-getopt gnu-tar
-pip3 install virtualenv
-virtualenv -p python3 ./venv
-source ./venv/bin/activate
-pip install meson
-```
-
-Build the library for iphone:
-
-`./tools/build.sh --iphone static --lto=true --install $PWD/gdk-iphone`
-
-or for iphone simulators:
-
-`./tools/build.sh --iphonesim static --lto=true --install $PWD/gdk-iphone`
-
+`fastlane build_signed_prod_release`
 
 #### Install the app
 
