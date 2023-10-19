@@ -13,6 +13,15 @@ public struct TransactionEvent: Codable {
     public let satoshi: UInt64
 }
 
+public struct SubaccountEvent: Codable {
+    enum CodingKeys: String, CodingKey {
+        case eventType = "event_type"
+        case pointer = "pointer"
+    }
+    public let eventType: String
+    public let pointer: Int
+}
+
 public protocol EventProtocol {
     func title() -> String
     func description(wallets: [WalletItem], twoFactorConfig: TwoFactorConfig?) -> String

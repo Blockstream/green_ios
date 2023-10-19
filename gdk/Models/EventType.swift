@@ -3,6 +3,7 @@ import Foundation
 public enum EventType: String, CaseIterable, Codable {
     case Block = "block"
     case Transaction = "transaction"
+    case Subaccount = "subaccount"
     case TwoFactorReset = "twofactor_reset"
     case Settings = "settings"
     case AddressChanged = "address_changed"

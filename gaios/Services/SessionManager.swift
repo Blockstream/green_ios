@@ -504,6 +504,10 @@ extension SessionManager {
             guard let height = data["block_height"] as? UInt32 else { break }
             blockHeight = height
             post(event: .Block, userInfo: data)
+        case .Subaccount:
+            let txEvent = SubaccountEvent.from(data) as? SubaccountEvent
+            post(event: .Block, userInfo: data)
+            post(event: .Transaction, userInfo: data)
         case .Transaction:
             post(event: .Transaction, userInfo: data)
             let txEvent = TransactionEvent.from(data) as? TransactionEvent
@@ -517,7 +521,7 @@ extension SessionManager {
             }
         case .TwoFactorReset:
             Task { try? await loadTwoFactorConfig() }
-            self.post(event: .TwoFactorReset, userInfo: data)
+            post(event: .TwoFactorReset, userInfo: data)
         case .Settings:
             settings = Settings.from(data)
             post(event: .Settings, userInfo: data)
