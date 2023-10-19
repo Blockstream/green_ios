@@ -20,9 +20,13 @@ class DialogDetailCell: UITableViewCell {
         lblHint.text = ""
     }
 
-    func configure(_ title: String, _ hint: String) {
+    func configure(_ title: String, _ hint: String, _ truncate: Bool = false) {
         self.lblTitle.text = title
         self.lblHint.text = hint
+        if truncate {
+            lblHint.numberOfLines = 1
+            lblHint.lineBreakMode = .byTruncatingMiddle
+        }
     }
 
     func configureAmount(_ title: String, _ hint: String, _ hideBalance: Bool = false) {

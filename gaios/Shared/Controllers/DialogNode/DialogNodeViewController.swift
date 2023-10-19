@@ -4,9 +4,11 @@ import gdk
 
 protocol DialogNodeViewControllerProtocol {
     func onCloseChannels()
+    func navigateMnemonic()
 }
 
 enum DialogNodeAction {
+    case mnemonic
     case closeChannel
     case cancel
 }
@@ -21,8 +23,9 @@ class DialogNodeViewController: KeyboardViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var btnMnemonic: UIButton!
     @IBOutlet weak var btnCloseChannel: UIButton!
-    
+
     var viewModel: DialogNodeViewModel!
     var delegate: DialogNodeViewControllerProtocol?
     private var nodeCellTypes: [NodeCellType] { viewModel.cells }
@@ -104,8 +107,9 @@ class DialogNodeViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Node Info"
-        btnCloseChannel.setTitle("Close Channel", for: .normal)
+        lblTitle.text = "id_node_info".localized
+        btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
+        btnCloseChannel.setTitle("id_close_channel".localized, for: .normal)
     }
 
     func setStyle() {
@@ -113,7 +117,8 @@ class DialogNodeViewController: KeyboardViewController {
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        btnCloseChannel.setStyle(.primary)
+        btnMnemonic.setStyle(.primary)
+        btnCloseChannel.setStyle(.outlined)
     }
 
     func register() {
@@ -130,12 +135,13 @@ class DialogNodeViewController: KeyboardViewController {
         }, completion: { _ in
             self.dismiss(animated: false, completion: {
                 switch action {
+                case .mnemonic:
+                    self.delegate?.navigateMnemonic()
                 case .closeChannel:
                     self.delegate?.onCloseChannels()
                 default:
                     break
                 }
-                
             })
         })
     }
@@ -156,6 +162,10 @@ class DialogNodeViewController: KeyboardViewController {
         self.tableView.reloadData()
     }
 
+    @IBAction func btnMnemonic(_ sender: Any) {
+        dismiss(.mnemonic)
+    }
+    
     @IBAction func btnCloseChannel(_ sender: Any) {
         dismiss(.closeChannel)
     }
@@ -178,7 +188,7 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
 
             switch cellType {
             case .id:
-                cell.configure("ID", viewModel.id)
+                cell.configure("ID", viewModel.id, true)
             case .channelsBalance:
                 cell.configureAmount("id_account_balance".localized, viewModel.channelsBalance, hideBalance)
             case .inboundLiquidity:
@@ -190,7 +200,7 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
             case .maxReceivable:
                 cell.configureAmount("Max Receivable Amount".localized, viewModel.maxReceivable, hideBalance)
             case .connectedPeers:
-                cell.configureAmount("Connected Peers".localized, viewModel.connectedPeers, false)
+                cell.configure("Connected Peers".localized, viewModel.connectedPeers, true)
             }
             return cell
         }
@@ -203,6 +213,11 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
         case .id:
             UIPasteboard.general.string = viewModel.id
             DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        case .connectedPeers:
+            UIPasteboard.general.string = viewModel.connectedPeers
+            DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         default:
             break
         }

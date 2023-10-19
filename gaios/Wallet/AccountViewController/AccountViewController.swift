@@ -723,10 +723,8 @@ extension AccountViewController: DialogListViewControllerDelegate {
             } else {
                 switch index {
                 case 0:
-                    navigateToBip85Mnemonic()
-                case 1:
                     presentNodeInfo()
-                case 2:
+                case 1:
                     removeSubaccount()
                 default:
                     break
@@ -867,6 +865,11 @@ extension AccountViewController: DialogScanViewControllerDelegate {
     }
 }
 extension AccountViewController: DialogNodeViewControllerProtocol {
+
+    func navigateMnemonic() {
+        navigateToBip85Mnemonic()
+    }
+    
     func onCloseChannels() {
         startAnimating()
         let session = WalletManager.current?.lightningSession

@@ -4,7 +4,6 @@ enum AccountPrefs: Int, CaseIterable {
     case rename = 0
     case archive
     case enhanceSecurity
-    case recoveryPhrase
     case nodeInfo
     case remove
 
@@ -18,8 +17,6 @@ enum AccountPrefs: Int, CaseIterable {
             return "id_archive".localized
         case .enhanceSecurity:
             return "id_enhance_security".localized
-        case .recoveryPhrase:
-            return "id_show_recovery_phrase".localized
         case .nodeInfo:
             return "Node Info"
         }
@@ -33,8 +30,6 @@ enum AccountPrefs: Int, CaseIterable {
             return UIImage(named: "ic_dialog_arrow_down")!
         case .enhanceSecurity:
             return UIImage(named: "ic_dialog_shield_check")!
-        case .recoveryPhrase:
-            return UIImage(named: "ic_dialog_show_phrase")!
         case .nodeInfo:
             return UIImage(named: "ic_lightning_plain")!
         case .remove:
@@ -55,9 +50,6 @@ enum AccountPrefs: Int, CaseIterable {
                                               title: AccountPrefs.archive.name)]
             }
         } else {
-            items += [DialogListCellModel(type: .list,
-                                          icon: AccountPrefs.recoveryPhrase.icon,
-                                          title: AccountPrefs.recoveryPhrase.name)]
             items += [DialogListCellModel(type: .list,
                                           icon: AccountPrefs.nodeInfo.icon,
                                           title: AccountPrefs.nodeInfo.name)]
