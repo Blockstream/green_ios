@@ -29,7 +29,7 @@ extension AccountType {
         if lightning {
             return network
         } else {
-            return "\(network) / \(longText)"
+            return "\(network) / \(shortText)"
         }
     }
 }
