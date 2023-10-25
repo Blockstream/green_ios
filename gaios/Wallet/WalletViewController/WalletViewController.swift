@@ -275,16 +275,16 @@ class WalletViewController: UIViewController {
 
     // tableview refresh gesture
     @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
-        reload()
+        reload(discovery: true)
     }
 
-    func reload() {
+    func reload(discovery: Bool = false) {
         if isReloading {
             return
         }
         isReloading = true
         Task.detached() { [weak self] in
-            await self?.viewModel.loadSubaccounts()
+            await self?.viewModel.loadSubaccounts(discovery: discovery)
             await self?.reloadSections([.account], animated: true)
             try? await self?.viewModel.loadBalances()
             await self?.reloadSections([.account, .balance, .card], animated: true)

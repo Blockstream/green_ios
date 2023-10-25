@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Subaccount discovery on logged wallet
+
 ### Fixed
 - Improve tor connectivity
 - Improve reconnection from background state

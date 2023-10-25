@@ -52,7 +52,8 @@ class WalletViewModel {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
     }
 
-    func loadSubaccounts() async {
+    func loadSubaccounts(discovery: Bool = false) async {
+        _ = try? await wm?.subaccounts(discovery)
         self.accountCellModels = self.subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
     }
 
