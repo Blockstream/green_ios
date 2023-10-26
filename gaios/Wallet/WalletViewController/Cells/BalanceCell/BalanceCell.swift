@@ -22,6 +22,7 @@ class BalanceCell: UITableViewCell {
     private let iconW: CGFloat = 20.0
     private var hideBalance = false
 
+    @IBOutlet weak var btnExchangeAlign: NSLayoutConstraint!
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -89,6 +90,7 @@ class BalanceCell: UITableViewCell {
 
     func refreshVisibility() {
         model == nil ? loader.startAnimating() : loader.stopAnimating()
+        btnExchangeAlign.constant = model == nil ? 0 : -8
         lblBalanceValue.isHidden = model == nil
         lblBalanceFiat.isHidden = model == nil
         if hideBalance {
