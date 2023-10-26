@@ -13,6 +13,8 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var assetsBox: UIView!
     @IBOutlet weak var loader: UIActivityIndicatorView!
     @IBOutlet weak var btnExchange: UIButton!
+    @IBOutlet weak var btnExchangeAlign: NSLayoutConstraint!
+    @IBOutlet weak var lblLoadingAssets: UILabel!
 
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
@@ -22,7 +24,6 @@ class BalanceCell: UITableViewCell {
     private let iconW: CGFloat = 20.0
     private var hideBalance = false
 
-    @IBOutlet weak var btnExchangeAlign: NSLayoutConstraint!
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -30,6 +31,7 @@ class BalanceCell: UITableViewCell {
         lblBalanceTitle.text = "id_total_balance".localized
         lblBalanceTitle.font = .systemFont(ofSize: 18.0, weight: .bold)
         btnExchange.setImage(UIImage(named: "ic_coins_exchange")?.maskWithColor(color: .white.withAlphaComponent(0.4)), for: .normal)
+        lblLoadingAssets.text = "id_loading_assets".localized
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -78,6 +80,9 @@ class BalanceCell: UITableViewCell {
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         setImages(icons)
         iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
+        
+        ///future usage
+        lblLoadingAssets.isHidden = true
     }
 
     func setImages(_ images: [UIImage]) {
