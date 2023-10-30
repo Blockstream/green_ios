@@ -78,14 +78,12 @@ class AuthenticationTypeHandler {
         if status != errSecSuccess && status != errSecDuplicateItem {
             if #available(iOS 11.3, *) {
                 let err = SecCopyErrorMessageString(status, nil)
-                NSLog("Operation failed: \(String(describing: err))")
 #if DEBUG
-                NSLog("Stacktrace: \(Thread.callStackSymbols)")
+                NSLog("Operation failed: \(String(describing: err))")
 #endif
             } else {
-                NSLog("Operation failed: \(status). Check the error message through https://osstatus.com.")
 #if DEBUG
-                NSLog("Stacktrace: \(Thread.callStackSymbols)")
+                NSLog("Operation failed: \(status). Check the error message through https://osstatus.com.")
 #endif
             }
         }
@@ -95,9 +93,8 @@ class AuthenticationTypeHandler {
     fileprivate static func describeSecurityError(_ error: CFError) -> String {
         let err = CFErrorCopyDescription(error)
         let errorString = String(describing: err!)
-        NSLog("Operation failed: \(errorString)")
 #if DEBUG
-        NSLog("Stacktrace: \(Thread.callStackSymbols)")
+        NSLog("Operation failed: \(errorString)")
 #endif
         return errorString
     }
@@ -121,7 +118,6 @@ class AuthenticationTypeHandler {
         }
         guard access != nil else {
             let text = "Operation failed: Access control not supported."
-            NSLog(text)
             throw AuthError.ServiceNotAvailable(text)
         }
         return access!
@@ -171,7 +167,6 @@ class AuthenticationTypeHandler {
         let privateKey = try getPrivateKey(forNetwork: forNetwork)
         guard let pubkey = SecKeyCopyPublicKey(privateKey) else {
             let text = "Operation failed: key does not contain a public key."
-            NSLog(text)
             throw AuthError.ServiceNotAvailable(text)
         }
         return pubkey
@@ -182,10 +177,6 @@ class AuthenticationTypeHandler {
 
         let canDecrypt = SecKeyIsAlgorithmSupported(privateKey, SecKeyOperationType.decrypt, ECCEncryptionType)
         guard canDecrypt else {
-            NSLog("Operation failed: Decryption algorithm not supported.")
-#if DEBUG
-            NSLog("Stacktrace: \(Thread.callStackSymbols)")
-#endif
             throw AuthError.ServiceNotAvailable("Operation failed: Decryption algorithm not supported.")
         }
 
@@ -207,10 +198,6 @@ class AuthenticationTypeHandler {
 
         let canEncrypt = SecKeyIsAlgorithmSupported(publicKey, SecKeyOperationType.encrypt, ECCEncryptionType)
         guard canEncrypt else {
-            NSLog("Operation failed: Encryption algorithm not supported.")
-#if DEBUG
-            NSLog("Stacktrace: \(Thread.callStackSymbols)")
-#endif
             throw AuthError.ServiceNotAvailable("Operation failed: Encryption algorithm not supported.")
         }
 
