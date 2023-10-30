@@ -79,6 +79,12 @@ class AccountViewController: UIViewController {
             })
             notificationObservers.append(observer)
         }
+        if URLSchemeManager.shared.isValid {
+            if let bip21 = URLSchemeManager.shared.bip21 {
+                parse(value: bip21, account: viewModel.account)
+                URLSchemeManager.shared.url = nil
+            }
+        }
         reload()
     }
 

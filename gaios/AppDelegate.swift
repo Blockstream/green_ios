@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         URLSchemeManager.shared.sendingAppID = options[.sourceApplication] as? String
         URLSchemeManager.shared.url = url
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
             DropAlert().info(message: "id_you_have_clicked_a_uri_select_a".localized)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.bip21Scheme.rawValue),
                                                 object: nil, userInfo: nil)
