@@ -47,7 +47,6 @@ struct GdkSettings: Codable {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
         let proxyURI = String(format: "socks5://%@:%@/", gdkSettings?.socks5Hostname ?? "", gdkSettings?.socks5Port ?? "")
         let gdkNetwork = GdkNetworks.shared.get(network: network)
-        
         let electrumUrl: String? = {
             if let srv = gdkSettings?.btcElectrumSrv, gdkNetwork.mainnet && !gdkNetwork.liquid && !srv.isEmpty {
                 return srv
@@ -61,14 +60,13 @@ struct GdkSettings: Codable {
                 return nil
             }
         }()
-    
         return NetworkSettings(
             name: network,
             useTor: gdkSettings?.tor ?? false,
             proxy: (gdkSettings?.proxy ?? false) ? proxyURI : nil,
             userAgent: String(format: "green_ios_%@", version),
             spvEnabled: (gdkSettings?.spvEnabled ?? false) && !gdkNetwork.liquid,
-            electrumUrl: (gdkSettings?.personalNodeEnabled ?? false) ? electrumUrl : nil,
-            electrumOnionUrl: (gdkSettings?.personalNodeEnabled ?? false && gdkSettings?.tor ?? false) ? electrumUrl : nil)
+            electrumUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
+            electrumOnionUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil)
     }
 }
