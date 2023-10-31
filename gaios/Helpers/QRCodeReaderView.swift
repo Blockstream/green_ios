@@ -145,9 +145,7 @@ class QRCodeReaderView: UIView {
     func stopScan() {
 #if !(arch(i386) || arch(x86_64))
         if captureSession.isRunning {
-            DispatchQueue.global(qos: .background).async {
                 self.captureSession.stopRunning()
-            }
         }
 #endif
     }
@@ -196,9 +194,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             guard let stringValue = readableObject.stringValue else {
                 return
             }
-            DispatchQueue.main.async {
-                self.delegate?.onQRCodeReadSuccess(result: stringValue)
-            }
+            self.delegate?.onQRCodeReadSuccess(result: stringValue)
         }
     }
 }

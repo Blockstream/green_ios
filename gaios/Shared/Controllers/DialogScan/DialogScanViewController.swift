@@ -153,6 +153,8 @@ extension DialogScanViewController: QRCodeReaderDelegate {
 
     func onQRCodeReadSuccess(result: String) {
         qrScanView.stopScan()
-        dismiss(.scan(result: result))
+        DispatchQueue.main.async {
+            self.dismiss(.scan(result: result))
+        }
     }
 }

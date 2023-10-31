@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Update GDK to release 0.68.4
 
+### Fixed
+- Improve QR Scanner
+
 ## [4.0.16] - 2023-10-17
 
 ### Fixed
