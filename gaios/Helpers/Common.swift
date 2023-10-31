@@ -29,9 +29,6 @@ class Common {
             attachment.bounds = CGRect(x: 0.0, y: 0.0, width: size, height: size)
             let fullString = NSMutableAttributedString(string: "")
             fullString.append(NSAttributedString(attachment: attachment))
-            fullString.append(NSAttributedString(attachment: attachment))
-            fullString.append(NSAttributedString(attachment: attachment))
-            fullString.append(NSAttributedString(attachment: attachment))
             return fullString
         } else {
             return NSAttributedString(string: "*")
