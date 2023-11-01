@@ -165,9 +165,15 @@ class WalletViewController: UIViewController {
         case .AssetsUpdated:
             reload()
         case .Network:
-            guard let connected = details["connected"] as? Bool else { return }
-            guard let loginRequired = details["login_required"] as? Bool else { return }
-            if connected == true && loginRequired == false {
+            guard let dict = details as? [String: Any],
+                  let connection = Connection.from(dict) as? Connection else { return }
+            if let error = connection.error {
+                DispatchQueue.main.async {
+                    DropAlert().warning(message: error)
+                }
+                return
+            }
+            if connection.connected && !(connection.loginRequired ?? false) {
                 reload()
             }
         case .Settings, .Ticker, .TwoFactorReset:

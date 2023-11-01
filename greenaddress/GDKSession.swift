@@ -5,8 +5,8 @@ public class GDKSession: Session {
     public var netParams = [String: Any]()
 
     public override func connect(netParams: [String: Any]) throws {
-        try super.connect(netParams: netParams)
         self.netParams = netParams
+        try super.connect(netParams: netParams)
     }
 
     public override init() {

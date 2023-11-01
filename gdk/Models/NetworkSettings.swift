@@ -12,13 +12,13 @@ public struct NetworkSettings: Codable {
         case electrumOnionUrl = "electrum_onion_url"
     }
     
-    let name: String
-    let useTor: Bool?
-    let proxy: String?
-    let userAgent: String?
-    let spvEnabled: Bool?
-    let electrumUrl: String?
-    let electrumOnionUrl: String?
+    public let name: String
+    public let useTor: Bool?
+    public let proxy: String?
+    public let userAgent: String?
+    public let spvEnabled: Bool?
+    public let electrumUrl: String?
+    public let electrumOnionUrl: String?
     
     public init(
         name: String,

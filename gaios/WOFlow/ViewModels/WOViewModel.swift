@@ -68,8 +68,8 @@ class WOViewModel {
         let session = wm.prominentSession!
         let bioEnabled = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
         AnalyticsManager.shared.loginWalletStart()
-        try await session.connect()
         let data = try account.auth(bioEnabled ? .AuthKeyBiometric : .AuthKeyPIN)
+        try await session.connect()
         let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
         let credentials = try await session.decryptWithPin(decrypt)
         try await wm.loginWatchonly(credentials: credentials)

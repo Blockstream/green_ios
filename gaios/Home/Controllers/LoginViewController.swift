@@ -152,7 +152,8 @@ class LoginViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         ScreenLocker.shared.stopObserving()
-        NotificationCenter.default.addObserver(self, selector: #selector(progress), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateNetwork), name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
 
         cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
@@ -183,6 +184,7 @@ class LoginViewController: UIViewController {
         super.viewWillDisappear(animated)
         ScreenLocker.shared.startObserving()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
 
         cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
@@ -202,7 +204,7 @@ class LoginViewController: UIViewController {
         }
     }
 
-    @objc func progress(_ notification: NSNotification) {
+    @objc func progressTor(_ notification: NSNotification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
            let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
             var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
@@ -211,6 +213,16 @@ class LoginViewController: UIViewController {
             }
             DispatchQueue.main.async {
                 self.startLoader(message: text)
+            }
+        }
+    }
+
+    @objc func updateNetwork(_ notification: NSNotification) {
+        if let dict = notification.userInfo as? [String: Any],
+            let connection = Connection.from(dict) as? Connection,
+           let error = connection.error {
+            DispatchQueue.main.async {
+                DropAlert().warning(message: error)
             }
         }
     }

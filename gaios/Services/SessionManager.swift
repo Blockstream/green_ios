@@ -524,7 +524,14 @@ extension SessionManager {
             settings = Settings.from(data)
             post(event: .Settings, userInfo: data)
         case .Network:
-            guard let connection = Connection.from(data) as? Connection else { return }
+            guard var connection = Connection.from(data) as? Connection else { return }
+            let hasElectrumUrl = !(getPersonalElectrumServer()?.isEmpty ?? true)
+            if !logged && gdkNetwork.singlesig && hasElectrumUrl && connection.currentState == "disconnected" {
+                let msg = "Your Personal Electrum Server for %@ can\'t be reached. Check your settings or your internet connection.".localized
+                connection.error = String(format: msg, gdkNetwork.network)
+                self.post(event: EventType.Network, userInfo: connection.toDict() ?? [:])
+                return
+            }
             // avoid handling notification for unlogged session
             guard connected && logged else { return }
             // notify disconnected network state
@@ -551,6 +558,10 @@ extension SessionManager {
         default:
             break
         }
+    }
+
+    func getPersonalElectrumServer() -> String? {
+        return session?.netParams["electrum_url"] as? String
     }
 
     @MainActor
