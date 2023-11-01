@@ -184,7 +184,7 @@ class AccountViewModel {
                                 amount: wm?.lightningSession?.nodeState?.onchainBalanceSatoshi,
                                 type: .sweep)
     }
-    
+
     func ltRecoverFundsViewModel(tx: Transaction) -> LTRecoverFundsViewModel {
         let amount = tx.amounts["btc"].map {UInt64(abs($0))}
         let address = tx.inputs?.first?["address"] as? String

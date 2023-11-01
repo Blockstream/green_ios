@@ -68,7 +68,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btnNext: UIButton!
+    @IBOutlet weak var sliderNext: SliderView!
     private var headerH: CGFloat = 36.0
 
     var viewModel: LTRecoverFundsViewModel!
@@ -82,8 +82,8 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     func setContent() {
-        title = viewModel.type == .refund ? "id_refund".localized : "id_close_channel".localized
-        btnNext.setTitle("id_confirm".localized, for: .normal)
+        title = viewModel.type == .refund ? "id_refund".localized : "id_sweep".localized
+        sliderNext.delegate = self
     }
 
     func setStyle() {
@@ -91,11 +91,8 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     var btnNextIsEnabled: Bool {
-        get { btnNext.isEnabled }
-        set {
-            btnNext.setStyle(newValue ? .primary : .primaryGray)
-            btnNext.isEnabled = newValue
-        }
+        get { sliderNext.isUserInteractionEnabled }
+        set { sliderNext.isUserInteractionEnabled = newValue }
     }
 
     override func keyboardWillHide(notification: Notification) {
@@ -116,7 +113,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
         }
     }
     
-    @IBAction func btnNext(_ sender: Any) {
+   func send() {
         Task {
             startAnimating()
             do {
@@ -124,23 +121,39 @@ class LTRecoverFundsViewController: KeyboardViewController {
                 stopAnimating()
                 success()
             } catch {
-                stopAnimating()
-                showError(error)
+                failure(error)
             }
         }
     }
-    
+
+    @MainActor
+    func failure(_ error: Error) {
+        stopAnimating()
+        sliderNext.reset()
+        showError(error)
+    }
+
     @MainActor
     func success() {
-        if viewModel.type == .refund {
-            showAlert(title: "id_refund".localized, message: "id_refund_in_progress".localized) {
-                self.navigationController?.popToRootViewController(animated: true)
+        let storyboard = UIStoryboard(name: "Alert", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
+            if viewModel.type == .refund {
+                vc.viewModel = AlertViewModel(title: "id_refund".localized,
+                                              hint: "id_refund_in_progress".localized)
+            } else {
+                vc.viewModel = AlertViewModel(title: "id_sweep".localized,
+                                              hint: "id_transaction_send".localized)
             }
-        } else {
-            showAlert(title: "id_close_channel".localized, message: "id_channel_closure_initiated_you".localized) {
-                self.navigationController?.popToRootViewController(animated: true)
-            }
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
         }
+    }
+}
+
+extension LTRecoverFundsViewController: AlertViewControllerDelegate {
+    func onAlertOk() {
+        self.navigationController?.popToRootViewController(animated: true)
     }
 }
 
@@ -284,5 +297,16 @@ extension LTRecoverFundsViewController: LTRecoverFundsFeeDelegate {
     func didChange(feeSliderIndex: Int) {
         viewModel.feeSlider = feeSliderIndex
         tableView.reloadData()
+    }
+}
+
+extension LTRecoverFundsViewController: SliderViewDelegate {
+    func sliderThumbIsMoving(_ sliderView: SliderView) {
+    }
+
+    func sliderThumbDidStopMoving(_ position: Int) {
+        if position == 1 {
+            send()
+        }
     }
 }
