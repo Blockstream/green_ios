@@ -205,7 +205,11 @@ class ReceiveViewController: KeyboardViewController {
     @MainActor
     func failure(_ err: Error) {
         let txt = getError(err)
-        self.showError(txt)
+        showReportError(
+            account: AccountsRepository.shared.current,
+            wallet: self.viewModel.account,
+            prettyError: txt.localized,
+            screenName: "Receive")
     }
 
     func validate() {
