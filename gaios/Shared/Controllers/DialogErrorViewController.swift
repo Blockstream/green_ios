@@ -108,7 +108,7 @@ class DialogErrorViewController: DialogViewController {
         btnSend.setTitle("id_send".localized, for: .normal)
         btnCopy.setTitle("id_copy".localized, for: .normal)
         emailField.attributedPlaceholder = NSAttributedString(
-            string: "\("id_email".localized) (\("id_optional".localized.lowercased()))",
+            string: "\("id_email".localized)",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         lblFeedback.text = NSLocalizedString("id_feedback", comment: "")
     }
@@ -136,11 +136,14 @@ class DialogErrorViewController: DialogViewController {
 
     func refreshUI() {
         lblCounter.text = "\(messageTextView.text.count)/\(limit)"
+        let enableSend = isValidEmail(emailField.text ?? "")
+        btnSend.setStyle( enableSend ? .primary : .primaryGray)
+        btnSend.isEnabled = enableSend
     }
 
     func isValidEmail(_ email: String) -> Bool {
         if email == "" {
-            return true
+            return false
         }
         return email.isValidEmailAddr()
     }
