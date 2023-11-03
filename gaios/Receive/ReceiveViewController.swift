@@ -204,11 +204,15 @@ class ReceiveViewController: KeyboardViewController {
     
     @MainActor
     func failure(_ err: Error) {
-        let txt = getError(err)
+        let msg = getError(err)
+        if msg.contains("Swap in progress") {
+            showError("id_there_is_already_a_swap_in".localized)
+            return
+        }
         showReportError(
             account: AccountsRepository.shared.current,
             wallet: self.viewModel.account,
-            prettyError: txt.localized,
+            prettyError: msg.localized,
             screenName: "Receive")
     }
 
@@ -219,9 +223,9 @@ class ReceiveViewController: KeyboardViewController {
                 await MainActor.run {
                     if res ?? false {
                         dialogReceiveVerifyAddressViewController?.dismiss()
-                        DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
+                        DropAlert().success(message: "id_the_address_is_valid".localized)
                     } else {
-                        DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
+                        DropAlert().error(message: "id_the_addresses_dont_match".localized)
                     }
                 }
             } catch {

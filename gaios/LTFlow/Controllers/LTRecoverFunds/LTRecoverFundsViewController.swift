@@ -142,7 +142,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
                                               hint: "id_refund_in_progress".localized)
             } else {
                 vc.viewModel = AlertViewModel(title: "id_sweep".localized,
-                                              hint: "id_transaction_send".localized)
+                                              hint: "id_transaction_sent".localized)
             }
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen

@@ -369,7 +369,9 @@ public struct Transaction: Comparable {
     }
 
     public static func < (lhs: Transaction, rhs: Transaction) -> Bool {
-        if lhs.createdAtTs == rhs.createdAtTs {
+        if lhs.createdAtTs == 0 { return false }
+        else if rhs.createdAtTs == 0 { return false }
+        else if lhs.createdAtTs == rhs.createdAtTs {
             if (lhs.type == .incoming && rhs.type == .outgoing) && (lhs.blockHeight == rhs.blockHeight) {
                 return false
             }

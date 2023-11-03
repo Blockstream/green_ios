@@ -245,7 +245,7 @@ class LightningSessionManager: SessionManager {
     }
 
     override func getReceiveAddress(subaccount: UInt32) async throws -> Address {
-        guard let addr = lightBridge?.receiveOnchain() else {
+        guard let addr = try lightBridge?.receiveOnchain() else {
             throw GaError.GenericError()
         }
         return Address.from(swapInfo: addr)
@@ -267,7 +267,7 @@ class LightningSessionManager: SessionManager {
         if let swapList = lb.listRefundables() {
             txs += swapList.map { Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: true) }
         }
-        if let swapProgress = lb.swapProgress() {
+        if let swapProgress = try lb.swapProgress() {
             txs += [ Transaction.fromSwapInfo(swapProgress, subaccount: subaccount, isRefundableSwap: false) ]
         }
         return Transactions(list: txs.sorted().reversed())

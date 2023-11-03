@@ -161,16 +161,16 @@ public class LightningBridge {
         return refund
     }
 
-    public func swapProgress() -> SwapInfo? {
-        try? breezSdk?.inProgressSwap()
+    public func swapProgress() throws -> SwapInfo? {
+        try breezSdk?.inProgressSwap()
     }
 
     public func listRefundables() -> [SwapInfo]? {
         try? breezSdk?.listRefundables()
     }
 
-    public func receiveOnchain(request: ReceiveOnchainRequest = ReceiveOnchainRequest()) -> SwapInfo? {
-        return try? breezSdk?.receiveOnchain(req: request)
+    public func receiveOnchain(request: ReceiveOnchainRequest = ReceiveOnchainRequest()) throws -> SwapInfo? {
+        return try breezSdk?.receiveOnchain(req: request)
     }
 
     public func recommendedFees() -> RecommendedFees? {
