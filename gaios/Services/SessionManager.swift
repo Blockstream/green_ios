@@ -27,6 +27,7 @@ class SessionManager {
     var connected = false
     var logged = false
     var paused = false
+    var gdkFailures = [String]()
     weak var hw: BLEDevice?
     
     // Serial reconnect queue for network events
@@ -62,6 +63,7 @@ class SessionManager {
     public func disconnect() async throws {
         logged = false
         connected = false
+        gdkFailures = []
         SessionManager.reconnectionQueue.async {
             self.session = GDKSession()
         }
@@ -69,6 +71,7 @@ class SessionManager {
     
     private func connect(network: String, params: [String: Any]? = nil) async throws {
         do {
+            gdkFailures = []
             session?.setNotificationHandler(notificationCompletionHandler: newNotification)
             try session?.connect(netParams: GdkSettings.read()?.toNetworkParams(network).toDict() ?? [:])
             connected = true
@@ -524,12 +527,11 @@ extension SessionManager {
             settings = Settings.from(data)
             post(event: .Settings, userInfo: data)
         case .Network:
-            guard var connection = Connection.from(data) as? Connection else { return }
+            guard let connection = Connection.from(data) as? Connection else { return }
             let hasElectrumUrl = !(getPersonalElectrumServer()?.isEmpty ?? true)
             if !logged && gdkNetwork.singlesig && hasElectrumUrl && connection.currentState == "disconnected" {
                 let msg = "Your Personal Electrum Server for %@ can\'t be reached. Check your settings or your internet connection.".localized
-                connection.error = String(format: msg, gdkNetwork.network)
-                self.post(event: EventType.Network, userInfo: connection.toDict() ?? [:])
+                gdkFailures = [String(format: msg, gdkNetwork.chain)]
                 return
             }
             // avoid handling notification for unlogged session

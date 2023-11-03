@@ -130,7 +130,7 @@ class WalletManager {
         return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
     }
     
-    var failureSessions = [String: Error]()
+    var failureSessionsError = [String: Error]()
     
     var logged: Bool {
         activeSessions.count > 0
@@ -260,7 +260,7 @@ class WalletManager {
         guard let prominentSession = sessions[prominentNetwork.rawValue] else { fatalError() }
         let existDatadir = prominentSession.existDatadir(walletHashId: walletId(prominentSession)!.walletHashId)
         let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir
-        failureSessions = [:]
+        failureSessionsError = [:]
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
                 if session.networkType.lightning, let session = session as? LightningSessionManager, let credentials = credentials {
@@ -273,16 +273,16 @@ class WalletManager {
                 switch error {
                 case TwoFactorCallError.failure(let txt):
                     if txt.contains("HWW must enable host unblinding for singlesig wallets") {
-                        self.failureSessions[session.gdkNetwork.network] = LoginError.hostUnblindingDisabled(txt)
+                        self.failureSessionsError[session.gdkNetwork.network] = LoginError.hostUnblindingDisabled(txt)
                     } else if txt != "id_login_failed" {
-                        self.failureSessions[session.gdkNetwork.network] = error
+                        self.failureSessionsError[session.gdkNetwork.network] = error
                     }
                 default:
-                    self.failureSessions[session.gdkNetwork.network] = error
+                    self.failureSessionsError[session.gdkNetwork.network] = error
                 }
             }
         }
-        failureSessions = [:]
+        failureSessionsError = [:]
         let sessions = self.sessions.values.filter { !$0.logged }
         NSLog("--- login start sessions \(sessions.count)")
         await withTaskGroup(of: Void.self) { group -> () in

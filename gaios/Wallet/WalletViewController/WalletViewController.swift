@@ -72,6 +72,7 @@ class WalletViewController: UIViewController {
         }
         setContent()
         setStyle()
+        showAlertGdkFailures()
 
         AnalyticsManager.shared.recordView(.walletOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
         AnalyticsManager.shared.getSurvey { [weak self] widget in
@@ -80,6 +81,12 @@ class WalletViewController: UIViewController {
                     self?.surveyUI(widget)
                 }
             }
+        }
+    }
+
+    func showAlertGdkFailures() {
+        if let msg = viewModel.loadFailureMessage() {
+            showError(msg)
         }
     }
 

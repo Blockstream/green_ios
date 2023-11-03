@@ -157,7 +157,7 @@ class WalletViewModel {
             cards.append(AlertCardType.remoteAlert(remoteAlert))
         }
         // Failure login session
-        cards += wm.failureSessions
+        cards += wm.failureSessionsError
             .filter {
                 switch $0.value {
                 case TwoFactorCallError.failure(localizedDescription: let txt):
@@ -167,6 +167,16 @@ class WalletViewModel {
                 }
             }.map { AlertCardType.login($0.key, $0.value) }
         return cards
+    }
+
+    func loadFailureMessage() -> String? {
+        guard let wm = wm else { return nil }
+        for key in wm.activeSessions.keys {
+            if let msg = wm.activeSessions[key]?.gdkFailures.popLast() {
+                return msg
+            }
+        }
+        return nil
     }
 
     func reloadAlertCards() async {
