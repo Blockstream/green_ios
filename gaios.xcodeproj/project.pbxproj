@@ -1250,7 +1250,7 @@
 		81C602A422A553D3004E26E1 /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdSettings.xcconfig; sourceTree = "<group>"; };
 		81CF900D28EC7631003CC793 /* DevSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevSettings.xcconfig; sourceTree = "<group>"; };
-		81D404DE2A1D5F4C002631F5 /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = "libgdk/share/gdk/GreenAddress.swift"; sourceTree = SOURCE_ROOT; };
+		81D404DE2A1D5F4C002631F5 /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = libgdk/share/gdk/GreenAddress.swift; sourceTree = SOURCE_ROOT; };
 		81D404E02A1D6138002631F5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		81D671EA26C8007600682508 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		81D671EE26C80D3400682508 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
@@ -3363,8 +3363,9 @@
 		676FCF141F9D0CF800354E93 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1500;
 				ORGANIZATIONNAME = "Blockstream Corporation";
 				TargetAttributes = {
 					676FCF1B1F9D0CF800354E93 = {
@@ -4280,6 +4281,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -4342,6 +4344,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -4377,6 +4380,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				"ENABLE_HARDENED_RUNTIME[sdk=iphoneos*]" = YES;
 				"ENABLE_HARDENED_RUNTIME[sdk=iphonesimulator*]" = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				INFOPLIST_FILE = gaios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -4394,7 +4398,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "";
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
@@ -4418,6 +4421,7 @@
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GREENLIGHT_DEVICE_CERT = "";
 				INFOPLIST_FILE = gaios/Info.plist;
@@ -4436,7 +4440,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "";
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
@@ -4536,6 +4539,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
@@ -4581,6 +4585,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
@@ -4625,6 +4630,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
@@ -4666,6 +4672,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -4673,6 +4680,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -4683,6 +4691,8 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
@@ -4705,6 +4715,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -4712,6 +4723,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -4722,6 +4734,8 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4743,6 +4757,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -4750,6 +4765,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -4760,6 +4776,8 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4784,6 +4802,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
@@ -4837,6 +4856,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
@@ -4889,6 +4909,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
@@ -4938,6 +4959,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -4945,6 +4967,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
@@ -4957,6 +4980,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-lc++";
@@ -4983,6 +5008,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -4990,6 +5016,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
@@ -5002,6 +5029,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.lightning;
@@ -5026,6 +5055,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -5033,6 +5063,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
@@ -5045,6 +5076,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.lightning;
@@ -5102,6 +5135,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -5134,6 +5168,7 @@
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				INFOPLIST_FILE = gaios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -5151,7 +5186,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "";
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
