@@ -3,7 +3,7 @@ import Foundation
 struct TxChangeOutput: Codable {
     enum CodingKeys: String, CodingKey {
         case path = "path"
-        case recoveryxpub = "recoveryxpub"
+        case recoveryxpub = "recovery_xpub"
         case csvBlocks = "csv_blocks"
         case variant
     }
