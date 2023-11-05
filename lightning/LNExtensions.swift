@@ -4,9 +4,11 @@ import UIKit
 
 extension UInt64 {
     public var satoshi: UInt64 { self / 1000 }
+    public var milliSatoshi: UInt64 { self * 1000 }
 }
 extension Int64 {
     public var satoshi: Int64 { self / 1000 }
+    public var milliSatoshi: Int64 { self * 1000 }
 }
 
 extension LnInvoice {

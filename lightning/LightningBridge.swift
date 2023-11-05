@@ -135,30 +135,25 @@ public class LightningBridge {
     }
 
     public func parseBoltOrLNUrl(input: String?) -> InputType? {
-        print("Parse input: \(input)")
         guard let input = input else { return nil }
         return try? parseInput(s: input)
     }
 
     public func getTransactions() -> [Payment] {
-        let list = try? breezSdk?.listPayments(request: ListPaymentsRequest(filter: PaymentTypeFilter.all))
+        let list = try? breezSdk?.listPayments(req: ListPaymentsRequest(filter: PaymentTypeFilter.all))
         list?.forEach { print("Payment: \($0)") }
         return list ?? []
     }
 
     public func createInvoice(satoshi: Long, description: String, openingFeeParams: OpeningFeeParams? = nil) throws -> ReceivePaymentResponse? {
-        let payment = try breezSdk?.receivePayment(reqData: ReceivePaymentRequest(amountSats: satoshi, description: description, openingFeeParams: openingFeeParams))
-        print("createInvoice \(payment)")
-        return payment
+        try breezSdk?.receivePayment(req: ReceivePaymentRequest(amountMsat: satoshi * 1000, description: description, openingFeeParams: openingFeeParams))
     }
     public func openChannelFee(satoshi: Long) throws -> OpenChannelFeeResponse? {
         try? breezSdk?.openChannelFee(req: OpenChannelFeeRequest(amountMsat: satoshi * 1000))
     }
     
-    public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) throws -> String? {
-        let refund = try breezSdk?.refund(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte: satPerVbyte ?? UInt32(recommendedFees()?.economyFee ?? 0))
-        print("refund \(refund)")
-        return refund
+    public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) throws -> RefundResponse? {
+        return try breezSdk?.refund(req: RefundRequest(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte:  satPerVbyte ?? UInt32(recommendedFees()?.economyFee ?? 0)))
     }
 
     public func swapProgress() throws -> SwapInfo? {
@@ -177,12 +172,12 @@ public class LightningBridge {
         return try? breezSdk?.recommendedFees()
     }
 
-    public func sendPayment(bolt11: String, satoshi: UInt64? = nil) throws -> Payment? {
-        return try breezSdk?.sendPayment(bolt11: bolt11, amountSats: satoshi)
+    public func sendPayment(bolt11: String, satoshi: UInt64? = nil) throws -> SendPaymentResponse? {
+        return try breezSdk?.sendPayment(req: SendPaymentRequest(bolt11: bolt11, amountMsat: satoshi?.milliSatoshi))
     }
 
     public func payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String) throws -> LnUrlPayResult? {
-        return try breezSdk?.payLnurl(reqData: requestData, amountSats: amount, comment: comment)
+        return try breezSdk?.payLnurl(req: LnUrlPayRequest(data: requestData, amountMsat: amount.milliSatoshi, comment: comment))
     }
 
     public func authLnUrl(requestData: LnUrlAuthRequestData) throws -> LnUrlCallbackStatus? {
@@ -190,7 +185,7 @@ public class LightningBridge {
     }
 
     public func withdrawLnurl(requestData: LnUrlWithdrawRequestData, amount: Long, description: String?) throws -> LnUrlWithdrawResult? {
-        return try breezSdk?.withdrawLnurl(reqData: requestData, amountSats: amount, description: description)
+        return try breezSdk?.withdrawLnurl(request: LnUrlWithdrawRequest(data: requestData, amountMsat: amount.milliSatoshi, description: description))
     }
 
     public func listLisps() -> [LspInformation]? {
@@ -216,7 +211,7 @@ public class LightningBridge {
 
     public func sweep(toAddress: String, satPerVbyte: UInt?) throws -> SweepResponse? {
         let feeRateSatsPerVbyte = satPerVbyte.map {UInt64($0)} ?? recommendedFees()?.economyFee ?? 0
-        let res = try breezSdk?.sweep(request: SweepRequest(toAddress: toAddress, feeRateSatsPerVbyte: UInt32(feeRateSatsPerVbyte)))
+        let res = try breezSdk?.sweep(req: SweepRequest(toAddress: toAddress, feeRateSatsPerVbyte: UInt32(feeRateSatsPerVbyte)))
         _ = updateNodeInfo()
         return res
     }
