@@ -227,8 +227,8 @@ class WalletManager {
             self.account.walletHashId = res.walletHashId
         }
         if session.logged && (fullRestore || !existDatadir) {
-            let isFunded = try await session.discovery()
-            if !isFunded && removeDatadir {
+            let isFunded = try? await session.discovery()
+            if !(isFunded ?? false) && removeDatadir {
                 if let session = session as? LightningSessionManager, session.isRestoredNode ?? false {
                     return
                 }
@@ -323,7 +323,6 @@ class WalletManager {
         _ = try await self.subaccounts()
         NSLog("--- subaccounts end")
         try? await self.loadRegistry()
-        //AccountsRepository.shared.current = self.account
     }
 
     func loadSystemMessages() async throws -> [SystemMessage] {
