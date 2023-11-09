@@ -101,7 +101,7 @@ class LightningSessionManager: SessionManager {
         LightningRepository.shared.get(for: walletHashId) != nil
     }
 
-    override func removeDatadir(walletHashId: String) {
+    override func removeDatadir(walletHashId: String) async {
         let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
         try? FileManager.default.removeItem(atPath: workingDir)
         LightningRepository.shared.remove(for: walletHashId)

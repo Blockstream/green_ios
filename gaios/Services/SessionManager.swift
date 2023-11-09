@@ -147,22 +147,24 @@ class SessionManager {
         return false
     }
     
-    func removeDatadir(masterXpub: String) {
+    func removeDatadir(masterXpub: String) async {
         if let hash = walletIdentifier(masterXpub: masterXpub) {
-            removeDatadir(walletHashId: hash.walletHashId)
+            await removeDatadir(walletHashId: hash.walletHashId)
         }
     }
     
-    func removeDatadir(credentials: Credentials) {
+    func removeDatadir(credentials: Credentials) async {
         if let hash = walletIdentifier(credentials: credentials) {
-            removeDatadir(walletHashId: hash.walletHashId)
+            await removeDatadir(walletHashId: hash.walletHashId)
         }
     }
     
-    func removeDatadir(walletHashId: String) {
+    func removeDatadir(walletHashId: String) async {
         if let path = GdkInit.defaults().datadir {
             let dir = "\(path)/state/\(walletHashId)"
-            try? FileManager.default.removeItem(atPath: dir)
+            try? await reconnectionTasks.add {
+                try? FileManager.default.removeItem(atPath: dir)
+            }
         }
     }
     

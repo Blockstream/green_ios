@@ -166,16 +166,17 @@ class AccountViewModel {
             let derivedCredentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: derivedAccount.keychain)
             _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyCredentials, forNetwork: derivedAccount.keychain)
             if let walletId = session?.walletIdentifier(credentials: derivedCredentials) {
-                session?.removeDatadir(walletHashId: walletId.walletHashId)
+                await session?.removeDatadir(walletHashId: walletId.walletHashId)
                 LightningRepository.shared.remove(for: walletId.walletHashId)
             }
         }
-        
         // remove lightning session
-        if let prominentCredentials = try? await prominentSession?.getCredentials(password: ""),
+        if let prominentCredentials = try await prominentSession?.getCredentials(password: ""),
            let lightnigCredentials = wm?.deriveLightningCredentials(from: prominentCredentials),
-           let walletId = session?.walletIdentifier(credentials: lightnigCredentials) {
-            session?.removeDatadir(walletHashId: walletId.walletHashId)
+           let walletId = session?.walletIdentifier(credentials: lightnigCredentials)
+        {
+            try await session?.disconnect()
+            await session?.removeDatadir(walletHashId: walletId.walletHashId )
             LightningRepository.shared.remove(for: walletId.walletHashId)
         }
         try await session?.disconnect()

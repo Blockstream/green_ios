@@ -105,7 +105,7 @@ class SecuritySelectViewModel {
                         if txt.contains("HWW must enable host unblinding for singlesig wallets") {
                             try? await session.disconnect()
                             if let masterXpub = try? await BleViewModel.shared.ledger?.getMasterXpub() {
-                                session.removeDatadir(masterXpub: masterXpub)
+                                await session.removeDatadir(masterXpub: masterXpub)
                             }
                             throw LoginError.hostUnblindingDisabled("Account creation is not possible without exporting master blinding key.")
                         }

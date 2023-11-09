@@ -233,7 +233,7 @@ class WalletManager {
                     return
                 }
                 try? await session.disconnect()
-                session.removeDatadir(walletHashId: walletHashId)
+                await session.removeDatadir(walletHashId: walletHashId)
             }
         }
     }
