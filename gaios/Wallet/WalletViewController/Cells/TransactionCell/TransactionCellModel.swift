@@ -48,6 +48,11 @@ class TransactionCellModel {
     }
 
     func statusUI() -> PendingStateUI {
+        if tx.isRefundableSwap ?? false {
+            return PendingStateUI(style: .simple,
+                                  label: "id_refundable".localized,
+                                  progress: nil)
+        }
         if tx.isUnconfirmed(block: blockHeight) {
             return PendingStateUI(style: .unconfirmed,
                                   label: "id_unconfirmed".localized,

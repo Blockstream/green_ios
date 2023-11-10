@@ -99,7 +99,7 @@ extension Transaction {
     static func fromSwapInfo(_ swapInfo: SwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
         var tx = Transaction([:])
         tx.subaccount = subaccount
-        tx.blockHeight = 0
+        tx.blockHeight = isRefundableSwap ? UInt32.max : 0
         tx.canRBF = false
         tx.memo = ""
         tx.fee = 0
