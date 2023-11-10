@@ -91,14 +91,14 @@ public struct GdkNetworks {
                                            liquid: false,
                                            mainnet: true,
                                            development: false,
-                                           txExplorerUrl: nil,
+                                           txExplorerUrl: bitcoinSS.txExplorerUrl,
                                            serverType: "breez")
     public lazy var testnetLightning = GdkNetwork(name: NetworkSecurityCase.testnetLightning.name(),
                                                   network: NetworkSecurityCase.testnetLightning.network,
                                                   liquid: false,
                                                   mainnet: false,
                                                   development: false,
-                                                  txExplorerUrl: nil,
+                                                  txExplorerUrl: testnetSS.txExplorerUrl,
                                                   serverType: "breez")
 
     public mutating func get(networkType: NetworkSecurityCase) -> GdkNetwork {

@@ -296,7 +296,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         case TransactionSection.status:
             return 1
         case TransactionSection.detail:
-            return transaction.isLightning && !(transaction.isLightningSwap ?? false) ? 0 : 1
+            return 1
         case TransactionSection.note:
             return transaction.isLightning && transaction.memo == nil ? 0 : 1
         case TransactionSection.message:
