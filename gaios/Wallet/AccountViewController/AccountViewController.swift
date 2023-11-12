@@ -154,7 +154,7 @@ class AccountViewController: UIViewController {
         if viewModel.ampEducationalMode == .header {
             navigationItem.rightBarButtonItems?.append( UIBarButtonItem(customView: ampHelpBtn) )
         }
-        if AccountsRepository.shared.current?.isLightningShortcut ?? false {
+        if AccountsRepository.shared.current?.isDerivedLightning ?? false {
             drawerIcon(true)            
             let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
             navigationItem.leftBarButtonItem = leftItem
@@ -1000,10 +1000,10 @@ extension AccountViewController: LTShortcutViewControllerDelegate {
             print("learnMore")
         case .add:
             print("Add")
-            Task { try? await viewModel.addLightningShortcut() }
+            Task { try? await viewModel.addSWDerivedLightning() }
         case .remove:
             print("Remove")
-            Task { try? await viewModel.removeLightningShortcut() }
+            Task { try? await viewModel.removeDerivedLightning() }
         case .later:
             print("later")
         }

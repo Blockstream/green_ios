@@ -69,7 +69,7 @@ class WalletListCell: UITableViewCell {
             $0.setStyle(.txtBigger)
         }
         lblHint.setStyle(.txtSmaller)
-        self.hasShortcut = item.getLightningShortcutAccount() != nil
+        self.hasShortcut = item.getDerivedLightningAccount() != nil
         self.account = item
         let img: UIImage? = {
             if item.isWatchonly {

@@ -84,10 +84,11 @@ class SecuritySelectViewModel {
                 throw GaError.GenericError("Lightning account already exist")
             }
             try await session.connect()
-            guard let credentials = try await prominentSession.getCredentials(password: "") else {
+            guard let mainCredentials = try await prominentSession.getCredentials(password: "") else {
                 throw GaError.GenericError()
             }
-            try await wm.loginLightningSession(session: session, credentials: credentials, fullRestore: true)
+            let credentials = wm.deriveLightningCredentials(from: mainCredentials)
+            try await wm.loginSession(session: session, credentials: credentials, fullRestore: true)
             try await wm.subaccounts()
             return try await session.subaccount(0)
         } else if let session = getSession(for: network) {
@@ -208,8 +209,16 @@ class SecuritySelectViewModel {
         return "\(type.string)\(network)"
     }
 
-    func addLightningShortcut() async throws {
-        try await wm.addLightningShortcut()
+    func addSWDerivedLightning() async throws {
+        guard let mainCredentials = try await wm.prominentSession?.getCredentials(password: "") else {
+            return
+        }
+        let credentials = wm.deriveLightningCredentials(from: mainCredentials)
+        try await wm.addDerivedLightning(credentials: credentials)
+    }
+
+    func addHWDerivedLightning(_ credentials: Credentials) async throws {
+        try await wm.addDerivedLightning(credentials: credentials)
     }
 
     var linkMore: String {

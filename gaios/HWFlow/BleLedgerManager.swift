@@ -70,7 +70,7 @@ class BleLedgerManager {
         account = normalizeAccount(account)
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.hwDevice = BLEDevice(peripheral: bleLedger.peripheral, device: device, interface: bleLedger)
-        try await walletManager?.login(device: device, masterXpub: masterXpub)
+        try await walletManager?.loginHW(lightningCredentials: nil, device: device, masterXpub: masterXpub)
         AccountsRepository.shared.current = walletManager?.account
         return account
     }

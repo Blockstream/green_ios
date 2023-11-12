@@ -17,6 +17,9 @@ class AccountNavigator {
         if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
             goLogged(account: account)
             return
+        } else if account.isDerivedLightning {
+            vcLogin?.account = account
+            nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         } else if account.isHW {
             vcConnect?.account = account
             vcConnect?.bleViewModel = BleViewModel.shared
@@ -37,7 +40,7 @@ class AccountNavigator {
     static func goLogged(account: Account) {
         AccountsRepository.shared.current = account
         Task {
-            let isLightning = account.isLightningShortcut
+            let isLightning = account.isDerivedLightning
             let accountViewModel = isLightning ? await accountViewModel(account: account) : nil
             let walletViewModel = !isLightning ? WalletViewModel() : nil
             await MainActor.run {

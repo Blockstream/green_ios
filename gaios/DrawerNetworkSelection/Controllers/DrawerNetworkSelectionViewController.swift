@@ -8,6 +8,8 @@ protocol DrawerNetworkSelectionDelegate: AnyObject {
     func didSelectAbout()
 }
 
+
+
 class DrawerNetworkSelectionViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
@@ -58,38 +60,41 @@ class DrawerNetworkSelectionViewController: UIViewController {
         newWalletView.cornerRadius = 5.0
     }
 
-    func tapForOverview(_ indexPath: IndexPath) {
-        switch indexPath.section {
-        case 0:
-            let account = AccountsRepository.shared.swAccounts[indexPath.row]
-            self.delegate?.didSelectAccount(account: account)
-        case 1:
-            let account = ephAccounts[indexPath.row]
-            self.delegate?.didSelectAccount(account: account)
-        case 2:
-            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
-            self.delegate?.didSelectAccount(account: account)
+    func getAccountFromTableView(_ indexPath: IndexPath) -> Account? {
+        switch HomeSection(rawValue: indexPath.section) {
+        case .swWallet:
+            return AccountsRepository.shared.swAccounts[indexPath.row]
+        case .ephWallet:
+            return ephAccounts[indexPath.row]
+        case .hwWallet:
+            return AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
         default:
-            break
+            return nil
         }
-        self.dismiss(animated: true, completion: nil)
     }
-
+    
     func onTap(_ indexPath: IndexPath) {
-        tapForOverview(indexPath)
+        if let account = getAccountFromTableView(indexPath) {
+            AccountNavigator.goLogin(account: account)
+            dismiss(animated: true, completion: nil)
+        }
     }
     
     func onTapOverview(_ indexPath: IndexPath) {
-        tapForOverview(indexPath)
+        if let account = getAccountFromTableView(indexPath) {
+            AccountNavigator.goLogin(account: account)
+            dismiss(animated: true, completion: nil)
+        }
     }
     
     func onTapLightShort(_ indexPath: IndexPath) {
-        let account = AccountsRepository.shared.swAccounts[indexPath.row]
-        if let lightning = account.getLightningShortcutAccount() {
-            AccountNavigator.goLogin(account: lightning)
+        if let account = getAccountFromTableView(indexPath) {
+            if let lightning = account.getDerivedLightningAccount() {
+                AccountNavigator.goLogin(account: lightning)
+                dismiss(animated: true, completion: nil)
+            }
         }
     }
-
     @IBAction func btnAddWallet(_ sender: Any) {
         delegate?.didSelectAddWallet()
         self.dismiss(animated: true, completion: nil)
@@ -111,12 +116,12 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:
+        switch HomeSection(rawValue: section) {
+        case .swWallet:
             return AccountsRepository.shared.swAccounts.count
-        case 1:
+        case .ephWallet:
             return ephAccounts.count
-        case 2:
+        case .hwWallet:
             return AccountsRepository.shared.hwVisibleAccounts.count
         default:
             return 0
@@ -124,9 +129,8 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        switch indexPath.section {
-        case 0:
+        switch HomeSection(rawValue: indexPath.section) {
+        case .swWallet:
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
@@ -141,7 +145,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 cell.selectionStyle = .none
                 return cell
             }
-        case 1: /// EPHEMERAL
+        case .ephWallet:
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
@@ -156,7 +160,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 cell.selectionStyle = .none
                 return cell
             }
-        case 2:
+        case .hwWallet:
             let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
@@ -183,21 +187,30 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func isLightningSelected(_ account: Account) -> Bool {
-        if let account = account.getLightningShortcutAccount() {
+        if let account = account.getDerivedLightningAccount() {
             return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
         }
         return false
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 && AccountsRepository.shared.swAccounts.isEmpty {
+        switch HomeSection(rawValue: section) {
+        case .ephWallet:
+            if ephAccounts.isEmpty {
+                return 0.1
+            }
+        case .swWallet:
+            if AccountsRepository.shared.swAccounts.isEmpty {
+                return 0.1
+            }
+        case .hwWallet:
+            if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
+                return 0.1
+            }
+        case .remoteAlerts:
             return 0.1
-        }
-        if section == 1 && ephAccounts.isEmpty {
-            return 0.1
-        }
-        if section == 2 && AccountsRepository.shared.hwVisibleAccounts.isEmpty {
-            return 0.1
+        default:
+            break
         }
         return headerH
     }
@@ -207,18 +220,18 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch section {
-        case 0:
+        switch HomeSection(rawValue: section) {
+        case .swWallet:
             if AccountsRepository.shared.swAccounts.isEmpty {
                 return nil
             }
             return headerView(NSLocalizedString("id_digital_wallets", comment: ""))
-        case 1:
+        case .ephWallet:
             if ephAccounts.isEmpty {
                 return nil
             }
             return headerView(NSLocalizedString("id_ephemeral_wallets", comment: ""))
-        case 2:
+        case .hwWallet:
             if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
                 return nil
             }

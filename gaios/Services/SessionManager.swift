@@ -531,7 +531,7 @@ class SessionManager {
         var privateKey: Data?
         repeat {
             privateKey = secureRandomData(count: Wally.EC_PRIVATE_KEY_LEN)
-        } while(privateKey != nil && Wally.ecPrivateKeyVerify(privateKey: [UInt8](privateKey!)))
+        } while(privateKey != nil && !Wally.ecPrivateKeyVerify(privateKey: [UInt8](privateKey!)))
         return privateKey
     }
 }

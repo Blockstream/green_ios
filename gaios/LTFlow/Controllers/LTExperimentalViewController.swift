@@ -34,7 +34,7 @@ class LTExperimentalViewController: UIViewController {
     func setContent() {
         lblTitle.text = "id_experimental_feature".localized
         lblHint.text = "id_experimental_features_might".localized
-        btnContinue.setTitle("id_continue".localized, for: .normal)
+        btnContinue.setTitle("Ok, I understand".localized, for: .normal)
     }
 
     func setStyle() {

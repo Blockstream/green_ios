@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Scan BCUR animated qr code
 - Add watch-only import from Jade
+- Add delegated Lightning account for Jade (bip85)
 
 ### Changed
 - Update Breez SDK to 0.2.7

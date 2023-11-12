@@ -88,7 +88,11 @@ class BleJadeManager {
         account = normalizeAccount(account)
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.hwDevice = BLEDevice(peripheral: bleJade.peripheral, device: device, interface: bleJade)
-        try await walletManager?.login(device: device, masterXpub: masterXpub, fullRestore: fullRestore)
+        var derivedCredentials: Credentials?
+        if let derivedAccount = account.getDerivedLightningAccount() {
+            derivedCredentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: derivedAccount.keychain)
+        }
+        try await walletManager?.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
         AccountsRepository.shared.current = walletManager?.account
         return account
     }

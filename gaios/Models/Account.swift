@@ -40,9 +40,9 @@ struct Account: Codable, Equatable {
     var isEphemeral: Bool = false
     var askEphemeral: Bool?
     var ephemeralId: Int?
-    var isLightningShortcut: Bool = false
+    var isDerivedLightning: Bool = false
 
-    init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isLightningShortcut: Bool = false, password: String? = nil) {
+    init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -58,7 +58,7 @@ struct Account: Codable, Equatable {
         self.xpubHashId = xpubHashId
         self.uuid = uuid
         self.hidden = hidden
-        self.isLightningShortcut = isLightningShortcut
+        self.isDerivedLightning = isDerivedLightning
         self.password = password
         if isEphemeral {
             let ephAccounts = AccountsRepository.shared.ephAccounts
@@ -189,12 +189,13 @@ struct Account: Codable, Equatable {
         }
     }
     
-    func getLightningShortcutAccount() -> Account? {
+    func getDerivedLightningAccount() -> Account? {
         let account = Account(
                 id: "\(id)-lightning-shortcut",
                 name: name,
                 network: .bitcoinSS,
-                isLightningShortcut: true,
+                isJade: isJade, 
+                isDerivedLightning: true,
                 password: password
         )
         if AuthenticationTypeHandler.findAuth(method: .AuthKeyCredentials, forNetwork: account.keychain) {

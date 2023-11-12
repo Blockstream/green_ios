@@ -21,8 +21,10 @@ class LightningSessionManager: SessionManager {
     }
 
     private func initLightningBridge(_ params: Credentials) -> LightningBridge {
-        let walletHashId = walletIdentifier(credentials: params)?.walletHashId
-        let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId ?? "")/0"
+        guard let walletHashId = walletIdentifier(credentials: params)?.walletHashId else {
+            fatalError("Invalid wallet identifier")
+        }
+        let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
         return LightningBridge(testnet: !gdkNetwork.mainnet,
                                workingDir: URL(fileURLWithPath: workingDir),
                                eventListener: self)
@@ -91,13 +93,13 @@ class LightningSessionManager: SessionManager {
     }
 
     override func existDatadir(walletHashId: String) -> Bool {
-        let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
-        return FileManager.default.fileExists(atPath: workingDir)
+        LightningRepository.shared.get(for: walletHashId) != nil
     }
 
     override func removeDatadir(walletHashId: String) {
         let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
         try? FileManager.default.removeItem(atPath: workingDir)
+        LightningRepository.shared.remove(for: walletHashId)
     }
 
     override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String : Int64] {
@@ -271,13 +273,6 @@ class LightningSessionManager: SessionManager {
             txs += [ Transaction.fromSwapInfo(swapProgress, subaccount: subaccount, isRefundableSwap: false) ]
         }
         return Transactions(list: txs.sorted().reversed())
-    }
-
-    func getLightningMnemonic(credentials: Credentials) -> String? {
-        return Wally.bip85FromMnemonic(mnemonic: credentials.mnemonic ?? "",
-                          passphrase: credentials.bip39Passphrase,
-                          isTestnet: !gdkNetwork.mainnet,
-                          index: 0)
     }
     
     func closeChannels() throws {

@@ -284,13 +284,14 @@ public struct BcurEncodeParams: Codable {
     public let numWords: Int?
     public let index: Int?
     public let privateKey: String?
-    public let maxFragmentLen: Int = 100
-    public init(urType: String, data: String? = nil, numWords: Int? = nil, index: Int? = nil, privateKey: String? = nil) {
+    public let maxFragmentLen: Int?
+    public init(urType: String, data: String? = nil, numWords: Int? = nil, index: Int? = nil, privateKey: String? = nil, maxFragmentLen: Int = 48) {
         self.urType = urType
         self.data = data
         self.numWords = numWords
         self.index = index
         self.privateKey = privateKey
+        self.maxFragmentLen = maxFragmentLen
     }
 }
 

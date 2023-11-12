@@ -60,7 +60,7 @@ class LoginViewController: UIViewController {
 
     private var showLockPage: Bool {
         !emergencyRestore &&
-        !account.isLightningShortcut &&
+        !account.isDerivedLightning &&
         (account?.attempts ?? 0 >= self.MAXATTEMPTS  || account?.hasPin == false)
     }
 
@@ -100,6 +100,7 @@ class LoginViewController: UIViewController {
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         menuButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        menuButton.isHidden = account.isDerivedLightning
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
 
@@ -125,7 +126,7 @@ class LoginViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = account.isLightningShortcut ? "Lightning Shortcut".localized : "id_enter_pin".localized
+        lblTitle.text = account.isDerivedLightning ? "Lightning Shortcut".localized : "id_enter_pin".localized
         lblWalletLockHint1.text = "\("id_youve_entered_an_invalid_pin".localized)\n\("id_youll_need_your_recovery_phrase".localized)"
         lblWalletLockHint2.isHidden = true
         btnWalletLock.setTitle("id_restore_with_recovery_phrase".localized, for: .normal)
@@ -168,7 +169,7 @@ class LoginViewController: UIViewController {
         super.viewDidAppear(animated)
         if account.askEphemeral ?? false {
             loginWithPassphrase(isAlwaysAsk: account.askEphemeral ?? false)
-        } else if account.isLightningShortcut {
+        } else if account.isDerivedLightning {
             loginWithLightningShortcut()
         } else if account.hasBioPin {
             loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
@@ -281,7 +282,7 @@ class LoginViewController: UIViewController {
                 let wm = WalletsRepository.shared.getOrAdd(for: account)
                 try await auth()
                 let credentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: account.keychain)
-                _ = try await wm.loginWithLightningShortcut(credentials: credentials)
+                _ = try await wm.login(credentials: credentials, lightningCredentials: credentials)
                 AccountsRepository.shared.current = account
                 success(withPIN: false, account: account)
             } catch {
@@ -396,7 +397,7 @@ class LoginViewController: UIViewController {
     }
 
     func reload() {
-        if account.isLightningShortcut {
+        if account.isDerivedLightning {
             [cardEnterPin, cardWalletLock, btnsStack].forEach{
                 $0?.isHidden = true
             }

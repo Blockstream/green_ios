@@ -55,7 +55,7 @@ class DenominationExchangeViewModel {
         guard let session = wm.prominentSession,
             let settings = settings else { return }
         _ = try await session.changeSettings(settings: settings)
-        if let account = wm.account.getLightningShortcutAccount() {
+        if let account = wm.account.getDerivedLightningAccount() {
             let session = SessionManager(account.gdkNetwork)
             try? await session.connect()
             let credentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: account.keychain)

@@ -35,7 +35,7 @@ class ShowMnemonicsViewController: UIViewController {
                 self.credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "")
                 self.bip39Passphrase = credentials?.bip39Passphrase
                 if showBip85, let credentials = self.credentials {
-                    self.lightningMnemonic = try await WalletManager.current?.lightningSession?.getLightningMnemonic(credentials: credentials)
+                    self.lightningMnemonic = try await WalletManager.current?.getLightningMnemonic(credentials: credentials)
                 }
                 await MainActor.run {
                     self.collectionView.reloadData()

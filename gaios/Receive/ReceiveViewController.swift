@@ -146,8 +146,7 @@ class ReceiveViewController: KeyboardViewController {
             btnConfirm.isHidden = true
             btnShare.isHidden = false
         }
-        let userAccount = viewModel.wm.account
-        btnVerify.isHidden = !(userAccount.isHW == true && userAccount.isLedger == false)
+        btnVerify.isHidden = !(viewModel.wm.account.isJade && !viewModel.account.isLightning)
         btnOnChain.setTitle(viewModel.type == .bolt11 ? "id_show_onchain_address".localized : "id_show_lightning_invoice".localized, for: .normal)
         reloadNavigationBtns()
         tableView.reloadData()

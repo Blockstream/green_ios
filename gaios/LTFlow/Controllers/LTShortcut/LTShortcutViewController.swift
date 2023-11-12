@@ -56,10 +56,9 @@ class LTShortcutViewController: UIViewController {
             DrawerAnimationManager.shared.accountId = vm.account.id
             btnLater.setTitle(vm.btnCancel, for: .normal)
         case .addFromCreate:
-            btnLater.isHidden = false
             DrawerAnimationManager.shared.accountId = vm.account.id
-            btnLater.setTitle(vm.btnLater, for: .normal)
-            break
+            btnLater.isHidden = false
+            btnLater.setTitle(vm.account.isHW ? vm.btnCancel : vm.btnLater , for: .normal)
         case .remove:
             btnLater.isHidden = true
             btnLearnMore.isHidden = true

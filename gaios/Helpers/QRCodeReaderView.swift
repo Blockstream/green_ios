@@ -217,13 +217,11 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                 do {
                     validating = true
                     let value = buffer.removeFirst()
-                    NSLog(">> validate \(value)")
                     if let result = try await validate(value) {
-                        NSLog(">> success")
                         self.delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
                     }
                 } catch {
-                    NSLog(">> failure")
+                    print(error)
                 }
                 validating = false
             }

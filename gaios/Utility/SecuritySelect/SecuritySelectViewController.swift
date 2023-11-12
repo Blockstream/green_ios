@@ -30,6 +30,7 @@ class SecuritySelectViewController: UIViewController {
     var visibilityState: Bool = false
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
     var walletCreated: WalletItem?
+    var credentialsCreated: Credentials?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -225,6 +226,16 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func accountCreate(_ policy: PolicyCellType) {
+        // Derive key from jade for lightning wallet
+        if AccountsRepository.shared.current?.isJade ?? false {
+            if WalletManager.current?.lightningSession?.logged ?? false {
+                self.showError("Lightning account just present".localized)
+                return
+            }
+            ltExportJadeViewController()
+            return
+        }
+        // For not jade wallet
         let msg = "Creating \(policy.accountType.shortString) account...".localized
         self.startLoader(message: msg)
         Task {
@@ -247,6 +258,15 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         if let vc = dialogJadeCheckViewController {
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func ltExportJadeViewController() {
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTExportJadeViewController") as? LTExportJadeViewController {
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
@@ -278,6 +298,12 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 hideHWCheckDialog()
             }
         }
+    }
+}
+
+extension SecuritySelectViewController: LTExportJadeViewControllerDelegate {
+    func didExportedWallet(credentials: gdk.Credentials, wallet: gdk.WalletItem) {
+        didCreatedWallet(wallet, credentials: credentials)
     }
 }
 
@@ -328,12 +354,11 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         viewModel?.asset = AssetInfo.lbtcId
         reloadSections([.asset, .policy], animated: true)
     }
-}
 
-extension SecuritySelectViewController: SecuritySelectViewControllerDelegate {
     @MainActor
-    func didCreatedWallet(_ wallet: WalletItem) {
+    func didCreatedWallet(_ wallet: WalletItem, credentials: Credentials? = nil) {
         walletCreated = wallet
+        credentialsCreated = credentials
         
         let account = WalletManager.current?.account
         if wallet.isLightning, let account = account, account.isEphemeral == false {
@@ -364,13 +389,33 @@ extension SecuritySelectViewController: LTShortcutViewControllerDelegate {
                 }
             }
         case .add:
-            Task { try? await viewModel.addLightningShortcut() }
+            startLoader(message: "")
+            Task {
+                do {
+                    if let credentials = credentialsCreated {
+                        try await viewModel.addHWDerivedLightning(credentials)
+                    } else {
+                        try await viewModel.addSWDerivedLightning()
+                    }
+                    await MainActor.run {
+                        self.stopLoader()
+                        self.navigationController?.popViewController(animated: true)
+                        if let wallet = walletCreated {
+                            self.delegate?.didCreatedWallet(wallet)
+                        }
+                    }
+                } catch {
+                    self.stopLoader()
+                    self.showError(error)
+                }
+            }
         case .remove, .later:
+            self.stopLoader()
+            self.navigationController?.popViewController(animated: true)
+            if let wallet = walletCreated {
+                self.delegate?.didCreatedWallet(wallet)
+            }
             break
-        }
-        self.navigationController?.popViewController(animated: true)
-        if let wallet = walletCreated {
-            self.delegate?.didCreatedWallet(wallet)
         }
     }
 }

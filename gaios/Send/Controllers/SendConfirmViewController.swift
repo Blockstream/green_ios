@@ -100,10 +100,10 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func presentProgress() {
-        if viewModel.isHW {
-            presentHWSummary()
-        } else if viewModel.isLightning {
+        if viewModel.isLightning {
             presentLightning()
+        } else if viewModel.isHW {
+            presentHWSummary()
         } else {
             startAnimating()
         }
@@ -111,10 +111,10 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func dismissProgress(_ completion: @escaping (()->Void)) {
-        if viewModel.isHW {
-            dialogSendHWSummaryViewController?.dismiss(animated: true, completion: completion)
-        } else if viewModel.isLightning {
+        if viewModel.isLightning {
             ltConfirmingViewController?.dismiss(animated: true, completion: completion)
+        } else if viewModel.isHW {
+            dialogSendHWSummaryViewController?.dismiss(animated: true, completion: completion)
         } else {
             stopAnimating()
             completion()

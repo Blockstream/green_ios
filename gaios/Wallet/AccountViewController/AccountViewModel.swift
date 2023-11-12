@@ -67,7 +67,7 @@ class AccountViewModel {
     }
 
     var isLightningShortcut: Bool {
-        return AccountsRepository.shared.current?.isLightningShortcut ?? false
+        return AccountsRepository.shared.current?.isDerivedLightning ?? false
     }
 
     var ampEducationalMode: AmpEducationalMode {
@@ -196,30 +196,38 @@ class AccountViewModel {
 
     func accountSettingsPrefs() -> [AccountPrefs] {
         AccountPrefs.getPrefs(
-            isEphemeral: wm?.account.isEphemeral ?? false,
+            isEphemeral: wm?.account.isEphemeral ?? false, 
+            isHW: wm?.account.isHW ?? false,
             isLightning: isLightning,
             isLightningShortcut: isLightningShortcut,
-            switchState: wm?.existLightningShortcut() ?? false)
+            switchState: wm?.existDerivedLightning() ?? false)
     }
 
     func accountSettingsCell() -> [DialogListCellModel] {
         AccountPrefs.getItems(
             isEphemeral: wm?.account.isEphemeral ?? false,
+            isHW: wm?.account.isHW ?? false,
             isLightning: isLightning,
             isLightningShortcut: isLightningShortcut,
-            switchState: wm?.existLightningShortcut() ?? false)
+            switchState: wm?.existDerivedLightning() ?? false)
     }
 
     func existLightningShortcut() -> Bool {
-        wm?.existLightningShortcut() ?? false
+        wm?.existDerivedLightning() ?? false
     }
 
-    func addLightningShortcut() async throws {
-        try await wm?.addLightningShortcut()
+    func addSWDerivedLightning() async throws {
+        guard let mainCredentials = try await wm?.prominentSession?.getCredentials(password: "") else {
+            return
+        }
+        guard let credentials = wm?.deriveLightningCredentials(from: mainCredentials) else {
+            return
+        }
+        try await wm?.addDerivedLightning(credentials: credentials)
     }
 
-    func removeLightningShortcut() async {
-        await wm?.removeLightningShortcut()
+    func removeDerivedLightning() async {
+        await wm?.removeDerivedLightning()
     }
 
     var headerIcon: UIImage {

@@ -97,36 +97,36 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func tapForOverview(_ indexPath: IndexPath) {
-        switch indexPath.section {
-        case HomeSection.remoteAlerts.rawValue:
-            break
-        case HomeSection.swWallet.rawValue:
-            let account = AccountsRepository.shared.swAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account)
-        case HomeSection.ephWallet.rawValue:
-            let account = ephAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account)
-        case HomeSection.hwWallet.rawValue:
-            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account)
+    func getAccountFromTableView(_ indexPath: IndexPath) -> Account? {
+        switch HomeSection(rawValue: indexPath.section) {
+        case .swWallet:
+            return AccountsRepository.shared.swAccounts[indexPath.row]
+        case .ephWallet:
+            return ephAccounts[indexPath.row]
+        case .hwWallet:
+            return AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
         default:
-            break
+            return nil
         }
     }
-
+    
     func onTap(_ indexPath: IndexPath) {
-        tapForOverview(indexPath)
+        if let account = getAccountFromTableView(indexPath) {
+            AccountNavigator.goLogin(account: account)
+        }
     }
     
     func onTapOverview(_ indexPath: IndexPath) {
-        tapForOverview(indexPath)
+        if let account = getAccountFromTableView(indexPath) {
+            AccountNavigator.goLogin(account: account)
+        }
     }
     
     func onTapLightShort(_ indexPath: IndexPath) {
-        let account = AccountsRepository.shared.swAccounts[indexPath.row]
-        if let lightning = account.getLightningShortcutAccount() {
-            AccountNavigator.goLogin(account: lightning)
+        if let account = getAccountFromTableView(indexPath) {
+            if let lightning = account.getDerivedLightningAccount() {
+                AccountNavigator.goLogin(account: lightning)
+            }
         }
     }
 
@@ -135,7 +135,7 @@ class HomeViewController: UIViewController {
     }
 
     func isLightningSelected(_ account: Account) -> Bool {
-        if let account = account.getLightningShortcutAccount() {
+        if let account = account.getDerivedLightningAccount() {
             return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
         }
         return false
@@ -172,14 +172,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        switch section {
-        case HomeSection.remoteAlerts.rawValue:
+        switch HomeSection(rawValue: section) {
+        case .remoteAlerts:
             return remoteAlert != nil ? 1 : 0
-        case HomeSection.swWallet.rawValue:
+        case .swWallet:
             return AccountsRepository.shared.swAccounts.count
-        case HomeSection.ephWallet.rawValue:
+        case .ephWallet:
             return ephAccounts.count
-        case HomeSection.hwWallet.rawValue:
+        case .hwWallet:
             return AccountsRepository.shared.hwVisibleAccounts.count
         default:
             return 0
@@ -188,9 +188,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        switch indexPath.section {
+        switch HomeSection(rawValue: indexPath.section) {
 
-        case HomeSection.remoteAlerts.rawValue:
+        case .remoteAlerts:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
                 cell.configure(AlertCardCellModel(type: .remoteAlert(remoteAlert)),
                                onLeft: nil,
@@ -203,7 +203,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case HomeSection.swWallet.rawValue:
+        case .swWallet:
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
 
@@ -219,7 +219,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case HomeSection.ephWallet.rawValue:
+        case .ephWallet:
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
@@ -234,7 +234,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case HomeSection.hwWallet.rawValue:
+        case .hwWallet:
             let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
@@ -274,17 +274,23 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == HomeSection.ephWallet.rawValue && ephAccounts.isEmpty {
+        switch HomeSection(rawValue: section) {
+        case .ephWallet:
+            if ephAccounts.isEmpty {
+                return 0.1
+            }
+        case .swWallet:
+            if AccountsRepository.shared.swAccounts.isEmpty {
+                return 0.1
+            }
+        case .hwWallet:
+            if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
+                return 0.1
+            }
+        case .remoteAlerts:
             return 0.1
-        }
-        if section == HomeSection.swWallet.rawValue && AccountsRepository.shared.swAccounts.isEmpty {
-            return 0.1
-        }
-        if section == HomeSection.hwWallet.rawValue && AccountsRepository.shared.hwVisibleAccounts.isEmpty {
-            return 0.1
-        }
-        if section == HomeSection.remoteAlerts.rawValue {
-            return 0.1
+        default:
+            break
         }
         return headerH
     }
@@ -294,20 +300,20 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch section {
-        case HomeSection.remoteAlerts.rawValue:
+        switch HomeSection(rawValue: section) {
+        case .remoteAlerts:
             return nil
-        case HomeSection.swWallet.rawValue:
+        case .swWallet:
             if AccountsRepository.shared.swAccounts.isEmpty {
                 return nil
             }
             return headerView(NSLocalizedString("id_digital_wallets", comment: ""))
-        case HomeSection.ephWallet.rawValue:
+        case .ephWallet:
             if ephAccounts.isEmpty {
                 return nil
             }
             return headerView(NSLocalizedString("id_ephemeral_wallets", comment: ""))
-        case HomeSection.hwWallet.rawValue:
+        case .hwWallet:
             if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
                 return nil
             }

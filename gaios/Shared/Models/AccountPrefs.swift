@@ -65,6 +65,7 @@ enum AccountPrefs {
         }
     }
     static func getPrefs(isEphemeral: Bool,
+                         isHW: Bool,
                          isLightning: Bool,
                          isLightningShortcut: Bool,
                          switchState: Bool? = nil) -> [AccountPrefs] {
@@ -80,7 +81,7 @@ enum AccountPrefs {
         } else {
             prefs.append(.nodeInfo)
             prefs.append(.remove)
-            if !isEphemeral {
+            if !isEphemeral && !isHW {
                 prefs.append(.shortcut(state: switchState))
             }
         }
@@ -88,14 +89,17 @@ enum AccountPrefs {
     }
 
     static func getItems(isEphemeral: Bool,
+                         isHW: Bool,
                          isLightning: Bool,
                          isLightningShortcut: Bool,
                          switchState: Bool?) -> [DialogListCellModel] {
         
-        return AccountPrefs.getPrefs(isEphemeral: isEphemeral,
-                                     isLightning: isLightning,
-                                     isLightningShortcut: isLightningShortcut,
-                                     switchState: switchState).map {
+        return AccountPrefs.getPrefs(
+            isEphemeral: isEphemeral,
+            isHW: isHW,
+            isLightning: isLightning,
+            isLightningShortcut: isLightningShortcut,
+            switchState: switchState).map {
             DialogListCellModel(type: .list,
                                 icon: $0.icon,
                                 title: $0.name,
