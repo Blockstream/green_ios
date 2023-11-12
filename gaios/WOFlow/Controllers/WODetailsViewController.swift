@@ -197,8 +197,9 @@ extension WODetailsViewController: UITextViewDelegate {
 }
 
 extension WODetailsViewController: DialogScanViewControllerDelegate {
-    func didScan(value: String, index: Int?) {
-        textView.text = value
+    func didScan(value: ScanResult, index: Int?) {
+        textView.text = value.result
+        segment.selectedSegmentIndex = value.result.contains("(") ? 1 : 0
         refresh()
     }
     func didStop() {
@@ -231,7 +232,7 @@ extension WODetailsViewController: UIDocumentPickerDelegate {
             refresh()
         } catch {
             print(error)
-            showAlert(title: "id_error", message: "id_invalid_xpub".localized)
+            showError("id_invalid_xpub".localized)
             refresh()
         }
     }

@@ -878,8 +878,8 @@ extension AccountViewController: AccountArchivedViewControllerDelegate {
 
 extension AccountViewController: DialogScanViewControllerDelegate {
 
-    func didScan(value: String, index: Int?) {
-        parse(value: value, account: viewModel.account)
+    func didScan(value: ScanResult, index: Int?) {
+        parse(value: value.result, account: viewModel.account)
     }
     
     func parse(value: String, account: WalletItem) {

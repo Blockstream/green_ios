@@ -2,12 +2,12 @@ import Foundation
 import UIKit
 
 protocol DialogScanViewControllerDelegate: AnyObject {
-    func didScan(value: String, index: Int?)
+    func didScan(value: ScanResult, index: Int?)
     func didStop()
 }
 
 enum DialogScanAction {
-    case scan(result: String)
+    case scan(result: ScanResult)
     case stop
 }
 
@@ -151,7 +151,7 @@ extension DialogScanViewController: QRCodeReaderDelegate {
 
     func userDidGrant(_: Bool) { }
 
-    func onQRCodeReadSuccess(result: String) {
+    func onQRCodeReadSuccess(result: ScanResult) {
         qrScanView.stopScan()
         DispatchQueue.main.async {
             self.dismiss(.scan(result: result))

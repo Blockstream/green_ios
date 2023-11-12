@@ -354,8 +354,8 @@ extension WalletSettingsViewController: UITextFieldDelegate {
 }
 
 extension WalletSettingsViewController: DialogScanViewControllerDelegate {
-    func didScan(value: String, index: Int?) {
-        redeem(value)
+    func didScan(value: ScanResult, index: Int?) {
+        redeem(value.result)
     }
     func didStop() {
         //

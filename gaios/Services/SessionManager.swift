@@ -145,12 +145,14 @@ class SessionManager {
         }
     }
     
-    func resolve(_ twoFactorCall: TwoFactorCall?) async throws -> [String: Any]? {
-        let rm = ResolverManager(twoFactorCall,
-                                 chain: self.gdkNetwork.chain,
-                                 connected: { self.connected && self.logged && !self.paused },
-                                 hwDevice: hw?.interface,
-                                 session: self)
+    func resolve(_ twoFactorCall: TwoFactorCall?, bcurResolver: BcurResolver? = nil) async throws -> [String: Any]? {
+        let rm = ResolverManager(
+            twoFactorCall,
+            chain: self.gdkNetwork.chain,
+            connected: { self.connected && self.logged && !self.paused },
+            hwDevice: hw?.interface,
+            session: self,
+            bcurResolver: bcurResolver)
         return try await rm.run()
     }
     
@@ -252,11 +254,17 @@ class SessionManager {
     
     typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
 
-    func wrapperAsync<T: Codable, K: Codable>(fun: GdkFunc?, params: T, funcName: String = #function) async throws -> K {
+    func wrapperAsync<T: Codable, K: Codable>(
+        fun: GdkFunc?,
+        params: T,
+        funcName: String = #function,
+        bcurResolver: BcurResolver? = nil
+    )
+    async throws -> K {
         let dict = params.toDict()
         NSLog("GDK \(funcName) \(params.stringify() ?? "")")
         if let fun = try fun?(dict ?? [:]) {
-            let res = try await resolve(fun)
+            let res = try await resolve(fun, bcurResolver: bcurResolver)
             NSLog("GDK \(funcName) \(res ?? [:])")
             let result = res?["result"] as? [String: Any]
             if let res = K.from(result ?? [:]) as? K {
@@ -488,6 +496,11 @@ class SessionManager {
     func httpRequest(params: [String: Any]) -> [String: Any]? {
         return try? session?.httpRequest(params: params)
     }
+
+    func bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver ) async throws -> BcurDecodedData? {
+        return try await wrapperAsync(fun: self.session?.bcurDecode, params: params, bcurResolver: bcurResolver)
+    }
+
 }
 extension SessionManager {
     @MainActor

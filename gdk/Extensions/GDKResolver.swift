@@ -9,6 +9,10 @@ public protocol PopupResolverDelegate {
     func method(_ methods: [String]) async throws -> String
 }
 
+public protocol BcurResolver {
+    func requestData() async throws -> String
+}
+
 public enum ResolverError: Error {
     case failure(localizedDescription: String)
     case cancel(localizedDescription: String)
@@ -25,17 +29,20 @@ public class GDKResolver {
     let connected: () -> Bool
     let twoFactorCall: TwoFactorCall?
     let popupDelegate: PopupResolverDelegate?
+    let bcurDelegate: BcurResolver?
     let hwDelegate: HwResolverDelegate?
     let hwDevice: HWProtocol?
 
     public init(_ twoFactorCall: TwoFactorCall?,
                 popupDelegate: PopupResolverDelegate? = nil,
                 hwDelegate: HwResolverDelegate? = nil,
+                bcurDelegate: BcurResolver? = nil,
                 hwDevice: HWProtocol? = nil,
                 chain: String,
                 connected: @escaping() -> Bool = { true }) {
         self.twoFactorCall = twoFactorCall
         self.popupDelegate = popupDelegate
+        self.bcurDelegate = bcurDelegate
         self.hwDelegate = hwDelegate
         self.chain = chain
         self.connected = connected
@@ -82,6 +89,9 @@ public class GDKResolver {
                 let hwdevice = HWDevice.from(device) as? HWDevice {
                 let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain, hwDevice: hwDevice)
                 try self.twoFactorCall?.resolveCode(code: res.stringify())
+            } else if let bcurDelegate = bcurDelegate {
+                let code = try await bcurDelegate.requestData()
+                try self.twoFactorCall?.resolveCode(code: code)
             } else {
                 // Software wallet interface resolver
                 let resolveCode = ResolveCodeData.from(res) as? ResolveCodeData

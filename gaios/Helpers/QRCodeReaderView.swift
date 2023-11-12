@@ -1,8 +1,9 @@
 import AVFoundation
 import UIKit
+import gdk
 
 protocol QRCodeReaderDelegate: AnyObject {
-    func onQRCodeReadSuccess(result: String)
+    func onQRCodeReadSuccess(result: ScanResult)
     func userDidGrant(_: Bool)
 }
 
@@ -12,6 +13,10 @@ class QRCodeReaderView: UIView {
 
     var captureSession = AVCaptureSession()
     var captureMetadataOutput: AVCaptureMetadataOutput?
+    var buffer = [String]()
+    var previous: String?
+    var validating = false
+    var session: SessionManager?
 
     var cFrame: CGRect {
         return CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
@@ -194,8 +199,58 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             guard let stringValue = readableObject.stringValue else {
                 return
             }
-            self.delegate?.onQRCodeReadSuccess(result: stringValue)
+            if previous ?? "" == stringValue || buffer.contains(stringValue) {
+                return
+            }
+            previous = stringValue
+            buffer.append(stringValue)
+            NSLog(">> append \(stringValue)")
+            
+            if !stringValue.uppercased().starts(with: "UR:") {
+                self.delegate?.onQRCodeReadSuccess(result: ScanResult(result: stringValue, bcur: nil))
+                return
+            }
+            Task {
+                if validating == true {
+                    return
+                }
+                do {
+                    validating = true
+                    let value = buffer.removeFirst()
+                    NSLog(">> validate \(value)")
+                    if let result = try await validate(value) {
+                        NSLog(">> success")
+                        self.delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
+                    }
+                } catch {
+                    NSLog(">> failure")
+                }
+                validating = false
+            }
         }
+    }
+
+    func validate(_ text: String) async throws -> BcurDecodedData? {
+        if session == nil {
+            session = SessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
+        }
+        try await session?.connect()
+        return try await session?.bcurDecode(params: BcurDecodeParams(part: text), bcurResolver: self)
+    }
+}
+extension QRCodeReaderView: BcurResolver {
+    func requestData() async throws -> String {
+        NSLog(">> requestData")
+        for _ in 0...3 {
+            NSLog(">> sleep")
+            if !buffer.isEmpty {
+                let value = buffer.removeFirst()
+                NSLog(">> request \(value)")
+                return value
+            }
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+        throw TwoFactorCallError.failure(localizedDescription: "Invalid text")
     }
 }
 

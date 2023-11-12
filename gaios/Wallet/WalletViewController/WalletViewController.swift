@@ -976,9 +976,9 @@ extension WalletViewController: AccountViewControllerDelegate {
 
 extension WalletViewController: DialogScanViewControllerDelegate {
 
-    func didScan(value: String, index: Int?) {
+    func didScan(value: ScanResult, index: Int?) {
         let account = viewModel.accountCellModels[sIdx].account
-        parse(value: value, account: account)
+        parse(value: value.result, account: account)
     }
 
     func parse(value: String, account: WalletItem?) {

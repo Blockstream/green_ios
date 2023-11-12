@@ -250,6 +250,36 @@ public struct ResolveCodeData: Codable {
     let action: String?
 }
 
+public struct BcurDecodeParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case part
+    }
+    public let part: String
+    public init(part: String) {
+        self.part = part
+    }
+}
+
+public struct BcurDecodedData: Codable {
+    enum CodingKeys: String, CodingKey {
+        case urType = "ur_type"
+        case data
+        case psbt
+        case descriptor
+        case descriptors
+        case masterFingerprint = "master_fingerprint"
+    }
+    public let urType: String
+    public let data: String?
+    public let psbt: String?
+    public let descriptor: String?
+    public let descriptors: [String]?
+    public let masterFingerprint: String?
+    public var result: String {
+        descriptors?.joined(separator: ",") ?? descriptor ?? psbt ?? data ?? ""
+    }
+}
+
 public struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

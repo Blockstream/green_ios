@@ -336,8 +336,8 @@ extension SendViewController: DialogRecipientDeleteViewControllerDelegate {
     }
 }
 extension SendViewController: DialogScanViewControllerDelegate {
-    func didScan(value: String, index: Int?) {
-        addressDidChange(text: value)
+    func didScan(value: ScanResult, index: Int?) {
+        addressDidChange(text: value.result)
     }
     func didStop() {
     }

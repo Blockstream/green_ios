@@ -108,8 +108,8 @@ class AccountCreatePublicKeyViewController: UIViewController {
 }
 
 extension AccountCreatePublicKeyViewController: DialogScanViewControllerDelegate {
-    func didScan(value: String, index: Int?) {
-        textViewKey.text = value
+    func didScan(value: ScanResult, index: Int?) {
+        textViewKey.text = value.result
         triggerTextChange()
     }
     func didStop() {
