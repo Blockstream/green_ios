@@ -260,6 +260,40 @@ public struct BcurDecodeParams: Codable {
     }
 }
 
+public struct BcurEncodedData: Codable {
+    enum CodingKeys: String, CodingKey {
+        case parts
+    }
+    public let parts: [String]
+    public init(parts: [String]) {
+        self.parts = parts
+    }
+}
+
+public struct BcurEncodeParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case urType = "ur_type"
+        case data
+        case numWords = "num_words"
+        case index
+        case privateKey = "private_key"
+        case maxFragmentLen = "max_fragment_len"
+    }
+    public let urType: String
+    public let data: String?
+    public let numWords: Int?
+    public let index: Int?
+    public let privateKey: String?
+    public let maxFragmentLen: Int = 100
+    public init(urType: String, data: String? = nil, numWords: Int? = nil, index: Int? = nil, privateKey: String? = nil) {
+        self.urType = urType
+        self.data = data
+        self.numWords = numWords
+        self.index = index
+        self.privateKey = privateKey
+    }
+}
+
 public struct BcurDecodedData: Codable {
     enum CodingKeys: String, CodingKey {
         case urType = "ur_type"
@@ -268,6 +302,8 @@ public struct BcurDecodedData: Codable {
         case descriptor
         case descriptors
         case masterFingerprint = "master_fingerprint"
+        case encrypted
+        case publicΚey = "public_key"
     }
     public let urType: String
     public let data: String?
@@ -275,6 +311,8 @@ public struct BcurDecodedData: Codable {
     public let descriptor: String?
     public let descriptors: [String]?
     public let masterFingerprint: String?
+    public let encrypted: String?
+    public let publicΚey: String?
     public var result: String {
         descriptors?.joined(separator: ",") ?? descriptor ?? psbt ?? data ?? ""
     }

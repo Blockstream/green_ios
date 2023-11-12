@@ -6,6 +6,9 @@ public class Wally {
     public static let WALLY_EC_SIGNATURE_RECOVERABLE_LEN = EC_SIGNATURE_RECOVERABLE_LEN
     public static let WALLY_BLINDING_FACTOR_LEN = BLINDING_FACTOR_LEN
     public static let BIP39_WORD_LIST_LANG = "en"
+    public static let AES_BLOCK_LEN = 16
+    public static let HMAC_SHA256_LEN = 32
+    public static let EC_PRIVATE_KEY_LEN = 32
 
     public static func sigToDer(sig: [UInt8]) throws -> [UInt8] {
         let sigPtr = UnsafePointer(sig)
@@ -179,6 +182,42 @@ public class Wally {
     ) -> [UInt8]? {
         let output = wallyTx.pointee.outputs[index]
         return Array(UnsafeBufferPointer(start: output.value, count: output.value_len))
+    }
+    
+    public static func ecPrivateKeyVerify(
+        privateKey: [UInt8]
+    ) -> Bool {
+        let keyPtr: UnsafePointer<UInt8> = UnsafePointer(privateKey)
+        return wally_ec_private_key_verify(keyPtr, privateKey.count) == WALLY_OK
+    }
+    public static func bip85FromJade(
+        privateKey: [UInt8],
+        publicKey: [UInt8],
+        label: String,
+        payload: [UInt8]
+    ) -> String? {
+        let privPtr: UnsafePointer<UInt8> = UnsafePointer(privateKey)
+        let pubPtr: UnsafePointer<UInt8> = UnsafePointer(publicKey)
+        let payloadPtr: UnsafePointer<UInt8> = UnsafePointer(payload)
+        let labelPtr = strdup(label)!
+        let bip85Ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: payload.count)
+        var bip85Len: Int = 0
+        var wordlistPtr: OpaquePointer?
+        var resultPtr: UnsafeMutablePointer<CChar>?
+            
+        if wally_aes_cbc_with_ecdh_key(privPtr, privateKey.count, nil, 0, payloadPtr, payload.count, pubPtr, publicKey.count, labelPtr, label.count, UInt32(AES_FLAG_DECRYPT), bip85Ptr, payload.count, &bip85Len) != WALLY_OK {
+            return nil
+        }
+        if bip39_get_wordlist(strdup(Wally.BIP39_WORD_LIST_LANG)!, &wordlistPtr) != WALLY_OK {
+            return nil
+        }
+        if bip39_mnemonic_from_bytes(nil, bip85Ptr, bip85Len, &resultPtr) != WALLY_OK {
+            return nil
+        }
+        guard let resultPtr = resultPtr else {
+            return nil
+        }
+        return String(cString: resultPtr)
     }
 }
 

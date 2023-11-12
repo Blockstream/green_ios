@@ -234,7 +234,6 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
         if session == nil {
             session = SessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
         }
-        try await session?.connect()
         return try await session?.bcurDecode(params: BcurDecodeParams(part: text), bcurResolver: self)
     }
 }

@@ -497,10 +497,43 @@ class SessionManager {
         return try? session?.httpRequest(params: params)
     }
 
-    func bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver ) async throws -> BcurDecodedData? {
+    func bcurEncode(params: BcurEncodeParams) async throws -> BcurEncodedData? {
+        try await connect()
+        return try await wrapperAsync(fun: self.session?.bcurEncode, params: params)
+    }
+
+    func bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver) async throws -> BcurDecodedData? {
+        try await connect()
         return try await wrapperAsync(fun: self.session?.bcurDecode, params: params, bcurResolver: bcurResolver)
     }
 
+    func jadeBip8539Request() async -> (Data?, BcurEncodedData?) {
+        let privateKey = createEcKey()
+        let params = BcurEncodeParams(
+            urType: "jade-bip8539-request",
+            numWords: 12,
+            index: 0,
+            privateKey: privateKey?.hex
+        )
+        let data = try? await bcurEncode(params: params)
+        return (privateKey, data)
+    }
+
+    func jadeBip8539Reply(privateKey: Data, publicKey: Data, encrypted: Data) async -> String? {
+        return Wally.bip85FromJade(
+            privateKey: [UInt8](privateKey),
+            publicKey: [UInt8](publicKey),
+            label: "bip85_bip39_entropy",
+            payload: [UInt8](encrypted))
+    }
+    
+    func createEcKey() -> Data? {
+        var privateKey: Data?
+        repeat {
+            privateKey = secureRandomData(count: Wally.EC_PRIVATE_KEY_LEN)
+        } while(privateKey != nil && Wally.ecPrivateKeyVerify(privateKey: [UInt8](privateKey!)))
+        return privateKey
+    }
 }
 extension SessionManager {
     @MainActor
