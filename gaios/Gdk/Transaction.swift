@@ -64,7 +64,7 @@ extension Transaction {
         }
     }
 
-    static func fromPayment(_ payment: Payment, subaccount: Int) -> Transaction {
+    static func fromPayment(_ payment: BreezSDK.Payment, subaccount: Int) -> Transaction {
         var tx = Transaction([:])
         tx.subaccount = subaccount
         tx.blockHeight = UInt32(payment.paymentTime)
@@ -73,7 +73,12 @@ extension Transaction {
         tx.fee = payment.feeMsat / 1000
         tx.createdAtTs = payment.paymentTime * 1000000
         tx.feeRate = 0
-        tx.hash = payment.id
+        switch payment.details {
+        case .closedChannel(let data):
+            tx.hash = data.closingTxid ?? ""
+        case .ln(_):
+            tx.hash = payment.id
+        }
         tx.type = payment.paymentType == .received ? .incoming : .outgoing
         tx.amounts = ["btc": payment.amountSatoshi]
         tx.isLightningSwap = false
