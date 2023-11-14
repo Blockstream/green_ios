@@ -379,6 +379,7 @@ class WalletViewController: UIViewController {
         Task {
             viewModel.remoteAlert = nil
             await viewModel.reloadAlertCards()
+            reloadSections([WalletSection.card], animated: true)
         }
     }
 
