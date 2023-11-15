@@ -84,8 +84,10 @@ class SecuritySelectViewModel {
                 throw GaError.GenericError("Lightning account already exist")
             }
             try await session.connect()
-            guard let credentials = try await prominentSession.getCredentials(password: "") else { throw GaError.GenericError() }
-            try await session.register(credentials: credentials)
+            guard let credentials = try await prominentSession.getCredentials(password: "") else {
+                throw GaError.GenericError()
+            }
+            try await wm.loginLightningSession(session: session, credentials: credentials, fullRestore: true)
             try await wm.subaccounts()
             return try await session.subaccount(0)
         } else if let session = getSession(for: network) {
