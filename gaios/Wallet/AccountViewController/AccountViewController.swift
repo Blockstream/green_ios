@@ -97,21 +97,23 @@ class AccountViewController: UIViewController {
     }
 
     func reload() {
-        Task { [weak self] in
-            if self?.isReloading ?? true { return }
-            self?.isReloading = true
+        if isReloading {
+            return
+        }
+        isReloading = true
+        Task.detached() { [weak self] in
             try? await self?.viewModel.getBalance()
-            self?.reloadSections([.disclose, .adding, .account, .assets], animated: true)
-            if self?.viewModel.isLightning ?? false {
-                _ = self?.viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
-                self?.reloadSections([.sweep, .inbound], animated: true)
-            }
+            await self?.reloadSections([.disclose, .adding, .account, .assets], animated: true)
             let refresh = try? await self?.viewModel.getTransactions()
             if refresh ?? true {
-                self?.reloadSections([.transaction], animated: true)
+                await self?.reloadSections([.transaction], animated: true)
             }
-            self?.isReloading = false
+            if await self?.viewModel.isLightning ?? false {
+                _ = await self?.viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
+                await self?.reloadSections([.sweep, .inbound], animated: true)
+            }
         }
+        isReloading = false
     }
 
     @MainActor

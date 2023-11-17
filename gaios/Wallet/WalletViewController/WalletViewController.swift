@@ -281,19 +281,21 @@ class WalletViewController: UIViewController {
     }
 
     func reload() {
-        Task {
-            if isReloading { return }
-            isReloading = true
-            await viewModel.loadSubaccounts()
-            reloadSections([.account], animated: true)
-            try? await viewModel.loadBalances()
-            reloadSections([.account, .balance, .card], animated: true)
-            await viewModel.reloadAlertCards()
-            reloadSections([.card], animated: true)
-            try? await viewModel.loadTransactions(max: 10)
-            reloadSections([.transaction], animated: true)
-            isReloading = false
+        if isReloading {
+            return
         }
+        isReloading = true
+        Task.detached() { [weak self] in
+            await self?.viewModel.loadSubaccounts()
+            await self?.reloadSections([.account], animated: true)
+            try? await self?.viewModel.loadBalances()
+            await self?.reloadSections([.account, .balance, .card], animated: true)
+            await self?.viewModel.reloadAlertCards()
+            await self?.reloadSections([.card], animated: true)
+            try? await self?.viewModel.loadTransactions(max: 10)
+            await self?.reloadSections([.transaction], animated: true)
+        }
+        isReloading = false
     }
 
     // open wallet selector drawer

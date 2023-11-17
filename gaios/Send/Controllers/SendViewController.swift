@@ -32,20 +32,22 @@ class SendViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
         AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
-        
-        Task(priority: .high) { await viewModel.loadFees() }
-        if viewModel.transaction != nil {
-            Task {
-                startAnimating()
-                viewModel.reload()
-                refreshAmountCell()
-                reloadSections([.accountAsset, .amount, .address, .fee], animated: false)
-                await viewModel.loadFees()
-                try? await viewModel.wait()
-                validateTransaction()
-                stopAnimating()
-            }
+        Task.detached(priority: .high) { [weak self] in
+            await self?.loadFeesAndTransaction()
         }
+    }
+
+    func loadFeesAndTransaction() async {
+        startAnimating()
+        if !viewModel.account.isLightning {
+            await viewModel.loadFees()
+        }
+        viewModel.reload()
+        refreshAmountCell()
+        reloadSections([.accountAsset, .amount, .address, .fee], animated: false)
+        try? await viewModel.wait()
+        try? await validateTransaction()
+        stopAnimating()
     }
 
     func register() {
@@ -74,6 +76,7 @@ class SendViewController: KeyboardViewController {
         }
     }
 
+    @MainActor
     func updateBtnNext() {
         btnNext.setStyle(.primaryDisabled)
         if let tx = viewModel.transaction {
@@ -83,32 +86,30 @@ class SendViewController: KeyboardViewController {
         }
     }
 
-    func validateTransaction() {
-        Task {
-            let task = try await viewModel.validateTransaction()
-            switch await task?.result {
-            case .success(let tx):
-                if let error = tx?.error, !error.isEmpty {
-                    if !self.viewModel.inlineErrors.contains(error) {
-                        DropAlert().error(message: error.localized)
-                    }
+    func validateTransaction() async throws {
+        let task = try await viewModel.validateTransaction()
+        switch await task?.result {
+        case .success(let tx):
+            if let error = tx?.error, !error.isEmpty {
+                if !self.viewModel.inlineErrors.contains(error) {
+                    DropAlert().error(message: error.localized)
                 }
-            case .failure(let err):
-                switch err {
-                case TransactionError.invalid(let localizedDescription):
-                    DropAlert().error(message: localizedDescription)
-                case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                    DropAlert().error(message: "id_you_are_not_connected".localized)
-                default:
-                    DropAlert().error(message: err.localizedDescription)
-                }
-            case .none:
-                break
             }
-            self.refreshAmountCell()
-            self.updateBtnNext()
-            self.reloadSections([.accountAsset, .address, .fee], animated: false)
+        case .failure(let err):
+            switch err {
+            case TransactionError.invalid(let localizedDescription):
+                DropAlert().error(message: localizedDescription)
+            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
+                DropAlert().error(message: "id_you_are_not_connected".localized)
+            default:
+                DropAlert().error(message: err.localizedDescription)
+            }
+        case .none:
+            break
         }
+        self.refreshAmountCell()
+        self.updateBtnNext()
+        self.reloadSections([.accountAsset, .address, .fee], animated: false)
     }
 
     func cleanAmountCell() {
@@ -120,6 +121,7 @@ class SendViewController: KeyboardViewController {
             }})
     }
 
+    @MainActor
     func refreshAmountCell() {
         let vc = self.tableView.visibleCells
         vc.forEach({ item in
@@ -348,7 +350,7 @@ extension SendViewController: DialogCustomFeeViewControllerDelegate {
         viewModel.fee = nil
         viewModel.feeRate = fee ?? 1000
         viewModel.transactionPriority = .Custom
-        validateTransaction()
+        Task { try? await validateTransaction() }
     }
 }
 
@@ -366,7 +368,7 @@ extension SendViewController: FeeEditCellDelegate {
 
     func updatePriority(_ priority: TransactionPriority) {
         viewModel.transactionPriority = priority
-        validateTransaction()
+        Task { try? await validateTransaction() }
     }
 }
 
@@ -392,7 +394,7 @@ extension SendViewController: AccountAssetViewControllerDelegate {
             self.refreshAmountCell()
             self.reloadSections([.address, .amount], animated: false)
             if self.viewModel.satoshi != nil {
-                self.validateTransaction()
+                try? await validateTransaction()
             }
         }
     }
@@ -428,7 +430,7 @@ extension SendViewController: AddressEditCellDelegate {
             self.refreshAmountCell()
             self.reloadSections([.address, .amount], animated: false)
             if self.viewModel.satoshi != nil || self.viewModel.inputType == .sweep {
-                self.validateTransaction()
+                try? await self.validateTransaction()
             }
         }
     }
@@ -443,13 +445,13 @@ extension SendViewController: AmountEditCellDelegate {
         viewModel.sendAll = enabled
         viewModel.amount = nil
         reloadSections([.amount], animated: false)
-        validateTransaction()
+        Task { try? await validateTransaction() }
     }
 
     func amountDidChange(text: String, isFiat: Bool) {
         viewModel.isFiat = isFiat
         viewModel.amount = text
-        validateTransaction()
+        Task { try? await validateTransaction() }
     }
 
     func onFocus() {
