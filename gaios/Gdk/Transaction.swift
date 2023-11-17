@@ -75,9 +75,9 @@ extension Transaction {
         tx.feeRate = 0
         switch payment.details {
         case .closedChannel(let data):
-            tx.hash = data.closingTxid ?? ""
+            tx.hash = data.closingTxid
         case .ln(_):
-            tx.hash = payment.id
+            tx.hash = nil
         }
         tx.type = payment.paymentType == .received ? .incoming : .outgoing
         tx.amounts = ["btc": payment.amountSatoshi]

@@ -145,11 +145,11 @@ class TransactionViewController: UIViewController {
     }
 
     func urlForTx() -> URL? {
-        return URL(string: (wallet.gdkNetwork.txExplorerUrl ?? "") + self.transaction.hash)
+        return URL(string: (wallet.gdkNetwork.txExplorerUrl ?? "") + (self.transaction.hash ?? ""))
     }
 
     func urlForTxUnblinded() -> URL? {
-        return URL(string: (wallet.gdkNetwork.txExplorerUrl ?? "") + self.transaction.hash + self.transaction.blindingUrlString())
+        return URL(string: (wallet.gdkNetwork.txExplorerUrl ?? "") + (self.transaction.hash ?? "") + self.transaction.blindingUrlString())
     }
 
     func blidingDataString() -> String? {
@@ -296,7 +296,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         case TransactionSection.status:
             return 1
         case TransactionSection.detail:
-            return 1
+            return (transaction.isLightning && transaction.hash == nil) ? 0 : 1
         case TransactionSection.note:
             return transaction.isLightning && transaction.memo == nil ? 0 : 1
         case TransactionSection.message:
@@ -448,9 +448,10 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
 extension TransactionViewController: DialogEditViewControllerDelegate {
 
     func didSave(_ note: String) {
+        guard let txhash = self.transaction.hash else { return }
         self.startAnimating()
         Task {
-            try? await self.wallet.session?.session?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
+            try? await self.wallet.session?.session?.setTransactionMemo(txhash_hex: txhash, memo: note, memo_type: 0)
             self.transaction.memo = note
             self.delegate?.onMemoEdit()
             self.stopAnimating()

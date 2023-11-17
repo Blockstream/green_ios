@@ -98,8 +98,11 @@ class TransactionCellModel {
                 return tx.amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(tx.fee)) })
             }
         } else if tx.isLightning {
-            if let amount = tx.amounts.first {
-                return [amount.key: amount.value - Int64(tx.fee)]
+            let amount = tx.amounts.first?.value
+            if tx.hash != nil {
+                return ["btc": amount ?? 0]
+            } else {
+                return ["btc": amount ?? 0 - Int64(tx.fee)]
             }
         }
         return tx.amounts

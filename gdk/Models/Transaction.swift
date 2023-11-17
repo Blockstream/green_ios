@@ -174,8 +174,8 @@ public struct Transaction: Comparable {
         set { details["fee_rate"] = newValue }
     }
 
-    public var hash: String {
-        get { return get("txhash") ?? String() }
+    public var hash: String? {
+        get { return get("txhash") }
         set { details["txhash"] = newValue }
     }
 
@@ -343,7 +343,7 @@ public struct Transaction: Comparable {
             return txoBlindingData(data: data, isUnspent: true)
         }
         return BlindingData(version: 0,
-                            txid: hash,
+                            txid: hash ?? "",
                             type: type,
                             inputs: inputs ?? [],
                             outputs: outputs ?? [])
