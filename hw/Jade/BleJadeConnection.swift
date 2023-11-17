@@ -39,7 +39,7 @@ public class BleJadeConnection: HWConnectionProtocol {
                 print("\($0.uuid) \($0.properties) \($0.isNotifying)")
             }
         }
-        try await peripheral.setNotifyValue(true, forCharacteristicWithUUID: CLIENT_CHARACTERISTIC_CONFIG, ofServiceWithUUID: BleJadeConnection.SERVICE_UUID)
+        try await setNotifyValue()
         var buffer = Data()
         cancellable = peripheral.characteristicValueUpdatedPublisher
             //.map { print("Data '\($0.value)'"); return $0 }
@@ -54,6 +54,20 @@ public class BleJadeConnection: HWConnectionProtocol {
                     buffer = Data()
                 }
             })
+    }
+
+    func setNotifyValue() async throws {
+        var attempts = 0
+        repeat {
+            do {
+                try await peripheral.setNotifyValue(true, forCharacteristicWithUUID: CLIENT_CHARACTERISTIC_CONFIG, ofServiceWithUUID: BleJadeConnection.SERVICE_UUID)
+                return
+            } catch {
+                attempts += 1
+                try await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+            }
+        } while (attempts < 3)
+        throw HWError.Abort("Failure on bluetooth device initialization")
     }
 
     public func read() async throws -> Data? {
