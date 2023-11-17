@@ -39,6 +39,12 @@ class PolicyCell: UITableViewCell {
         super.prepareForReuse()
         imgLight.isHidden = true
         imgBeta.isHidden = true
+        [bgType, bgTypeDesc].forEach {
+            $0?.backgroundColor = UIColor.gGrayBtn()
+        }
+        [lblType, lblTypeDesc].forEach {
+            $0?.textColor = UIColor.gW60()
+        }
     }
 
     func configure(model: PolicyCellModel) {
