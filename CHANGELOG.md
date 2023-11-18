@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Update Breez SDK to 0.2.7
+- Update GDK to 0.69.0
 
 ## [4.0.18] - 2023-11-07
 
