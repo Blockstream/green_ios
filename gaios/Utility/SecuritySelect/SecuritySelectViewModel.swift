@@ -88,7 +88,7 @@ class SecuritySelectViewModel {
                 throw GaError.GenericError()
             }
             let credentials = wm.deriveLightningCredentials(from: mainCredentials)
-            try await wm.loginSession(session: session, credentials: credentials, fullRestore: true)
+            try await wm.loginSession(session: session, credentials: nil, lightningCredentials: credentials, fullRestore: true)
             try await wm.subaccounts()
             return try await session.subaccount(0)
         } else if let session = getSession(for: network) {

@@ -181,19 +181,12 @@ class WalletManager {
 
     func loginSession(
         session: SessionManager,
-        credentials: Credentials? = nil,
+        credentials: Credentials?,
+        lightningCredentials: Credentials?,
         device: HWDevice? = nil,
         masterXpub: String? = nil, 
         fullRestore: Bool = false)
     async throws{
-        let walletId = {
-            if let credentials = credentials {
-                return session.walletIdentifier(credentials: credentials)
-            } else if device != nil, let masterXpub = masterXpub {
-                return session.walletIdentifier(masterXpub: masterXpub)
-            }
-            return nil
-        }
         if session.gdkNetwork.lightning && !(AppSettings.shared.lightningEnabled && AppSettings.shared.experimental) {
             return
         }
@@ -201,13 +194,34 @@ class WalletManager {
             // disable liquid if is unsupported on hw
             return
         }
+        let loginCredentials = {
+            if let session = session as? LightningSessionManager, session.networkType.lightning {
+                return lightningCredentials
+            } else {
+                return credentials
+            }
+        }
+        let walletId = {
+            if let credentials = loginCredentials() {
+                return session.walletIdentifier(credentials: credentials)
+            } else if device != nil, let masterXpub = masterXpub {
+                return session.walletIdentifier(masterXpub: masterXpub)
+            }
+            return nil
+        }
         let walletHashId = walletId()!.walletHashId
-        let existDatadir = session.existDatadir(walletHashId: walletHashId)
+        var existDatadir = session.existDatadir(walletHashId: walletHashId)
+        if session.networkType.lightning && !existDatadir {
+            // Check legacy lightning dir using main credentials
+            if let credentials = credentials {
+                existDatadir = session.existDatadir(walletHashId: session.walletIdentifier(credentials: credentials)?.walletHashId ?? "")
+            }
+        }
         if !fullRestore && !existDatadir && session.gdkNetwork.network != prominentSession?.gdkNetwork.network {
             return
         }
         let removeDatadir = !existDatadir && session.gdkNetwork.network != self.prominentNetwork.network
-        let res = try await session.loginUser(credentials: credentials, hw: device, restore: fullRestore)
+        let res = try await session.loginUser(credentials: loginCredentials(), hw: device, restore: fullRestore)
         self.account.xpubHashId = res.xpubHashId
         if session.gdkNetwork.network == self.prominentNetwork.network {
             self.account.walletHashId = res.walletHashId
@@ -248,7 +262,7 @@ class WalletManager {
     
     func login(
         credentials: Credentials? = nil,
-        lightningCredentials: Credentials?,
+        lightningCredentials: Credentials? = nil,
         device: HWDevice? = nil,
         masterXpub: String? = nil,
         fullRestore: Bool = false)
@@ -267,15 +281,14 @@ class WalletManager {
         failureSessionsError = [:]
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
-                if session.networkType.lightning, let session = session as? LightningSessionManager {
-                    if let credentials = lightningCredentials {
-                        try await self.loginSession(session: session, credentials: credentials, fullRestore: fullRestore)
-                    }
-                } else {
-                    try await self.loginSession(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
-                }
+                try await self.loginSession(
+                    session: session,
+                    credentials: credentials,
+                    lightningCredentials: lightningCredentials,
+                    device: device,
+                    masterXpub: masterXpub,
+                    fullRestore: fullRestore)
             } catch {
-                print("*** error ***")
                 print(error)
                 try? await session.disconnect()
                 switch error {
