@@ -674,7 +674,7 @@ extension AccountViewController: UITableViewDataSourcePrefetching {
     func getTransactions() async {
         let refresh = try? await viewModel.getTransactions(restart: false, max: nil)
         if refresh ?? true {
-            reloadSections([.transaction], animated: true)
+            reloadSections([.transaction], animated: false)
         }
     }
 }
