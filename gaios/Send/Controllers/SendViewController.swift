@@ -38,10 +38,13 @@ class SendViewController: KeyboardViewController {
     }
 
     func loadFeesAndTransaction() async {
-        startAnimating()
         if !viewModel.account.isLightning {
             await viewModel.loadFees()
         }
+        if viewModel.transaction == nil {
+            return
+        }
+        startAnimating()
         viewModel.reload()
         refreshAmountCell()
         reloadSections([.accountAsset, .amount, .address, .fee], animated: false)
