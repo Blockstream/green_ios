@@ -222,8 +222,8 @@ class WalletManager {
         }
         let removeDatadir = !existDatadir && session.gdkNetwork.network != self.prominentNetwork.network
         let res = try await session.loginUser(credentials: loginCredentials(), hw: device, restore: fullRestore)
-        self.account.xpubHashId = res.xpubHashId
         if session.gdkNetwork.network == self.prominentNetwork.network {
+            self.account.xpubHashId = res.xpubHashId
             self.account.walletHashId = res.walletHashId
         }
         if session.logged && (fullRestore || !existDatadir) {
