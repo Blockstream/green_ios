@@ -8,6 +8,9 @@ extension Balance {
     static var ltest: String { AssetInfo.ltestId }
 
     static func isBtc(_ assetId: String?) -> Bool {
+        if assetId == nil {
+            return true
+        }
         return [AssetInfo.btcId, AssetInfo.lbtcId, AssetInfo.testId, AssetInfo.ltestId].contains(assetId ?? "")
     }
     static func getAsset(_ assetId: String) -> AssetInfo? {
@@ -61,9 +64,9 @@ extension Balance {
     }
 
     static func fromSatoshi(_ satoshi: Any, assetId: String) -> Balance? {
-        var details: [String: Any] = ["satoshi": satoshi,
-                                      "asset_id": assetId]
-        if let asset = getAsset(assetId), !isBtc(assetId) {
+        var details: [String: Any] = ["satoshi": satoshi]
+        if let asset = getAsset(assetId), assetId != "btc" {
+            details["asset_id"] = assetId
             details["asset_info"] = asset.encode()
         }
         return Balance.from(details: details)
