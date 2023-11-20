@@ -60,10 +60,12 @@ struct LTAmountCellModel {
     
     var maxLimitAmount: String? {
         if let maxLimit = maxLimit {
-            return Balance.fromSatoshi(UInt64(maxLimit), assetId: AssetInfo.btcId)?.toDenom(inputDenomination).0
+            let balance = Balance.fromSatoshi(UInt64(maxLimit), assetId: AssetInfo.btcId)
+            return isFiat ? balance?.toFiat().0 : balance?.toDenom(inputDenomination).0
         }
         return nil
     }
+
     var state: LTAmountCellState {
         guard let satoshi = satoshi else {
             return .disabled
