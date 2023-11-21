@@ -361,7 +361,8 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         credentialsCreated = credentials
         
         let account = WalletManager.current?.account
-        if wallet.isLightning, let account = account, account.isEphemeral == false {
+        if let account = account, wallet.isLightning &&
+            !account.isEphemeral && !(account.hidden ?? false) {
             
             let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController {

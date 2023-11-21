@@ -196,7 +196,7 @@ class AccountViewModel {
 
     func accountSettingsPrefs() -> [AccountPrefs] {
         AccountPrefs.getPrefs(
-            isEphemeral: wm?.account.isEphemeral ?? false, 
+            isEphemeral: wm?.account.isEphemeral ?? false || wm?.account.hidden ?? false,
             isHW: wm?.account.isHW ?? false,
             isLightning: isLightning,
             isLightningShortcut: isLightningShortcut,
@@ -205,7 +205,7 @@ class AccountViewModel {
 
     func accountSettingsCell() -> [DialogListCellModel] {
         AccountPrefs.getItems(
-            isEphemeral: wm?.account.isEphemeral ?? false,
+            isEphemeral: wm?.account.isEphemeral ?? false || wm?.account.hidden ?? false,
             isHW: wm?.account.isHW ?? false,
             isLightning: isLightning,
             isLightningShortcut: isLightningShortcut,
