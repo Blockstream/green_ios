@@ -125,11 +125,11 @@ class AmountEditCell: UITableViewCell {
         convertButton.isHidden = !AssetInfo.baseIds.contains(cellModel.assetId)
         pasteButton.isEnabled = cellModel.editable
         cancelButton.isEnabled = cellModel.editable
+        sendAll(enabled: cellModel.sendAll)
         sendallButton.isEnabled = cellModel.editable
         cancelButton.isHidden = amountTextField.text?.isEmpty ?? false
         pasteButton.isHidden = !(amountTextField.text?.isEmpty ?? false)
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
-        sendAll(enabled: cellModel.sendAll)
         balance(isFiat: cellModel.isFiat)
         ticker()
         sendallButton.isHidden = cellModel.isLightning
