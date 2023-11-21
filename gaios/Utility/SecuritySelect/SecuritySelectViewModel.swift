@@ -88,8 +88,8 @@ class SecuritySelectViewModel {
                 throw GaError.GenericError()
             }
             let credentials = wm.deriveLightningCredentials(from: mainCredentials)
-            try await wm.loginSession(session: session, credentials: nil, lightningCredentials: credentials, fullRestore: true)
-            try await wm.subaccounts()
+            let _ = try await session.loginUser(credentials: credentials, hw: nil, restore: true)
+            let _ = try await wm.subaccounts()
             return try await session.subaccount(0)
         } else if let session = getSession(for: network) {
             let params = params ?? CreateSubaccountParams(name: uniqueName(policy.accountType, liquid: asset != "btc"),

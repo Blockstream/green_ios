@@ -229,6 +229,9 @@ class WalletManager {
         if session.logged && (fullRestore || !existDatadir) {
             let isFunded = try await session.discovery()
             if !isFunded && removeDatadir {
+                if let session = session as? LightningSessionManager, session.isRestoredNode ?? false {
+                    return
+                }
                 try? await session.disconnect()
                 session.removeDatadir(walletHashId: walletHashId)
             }
