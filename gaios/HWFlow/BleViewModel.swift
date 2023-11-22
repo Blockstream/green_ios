@@ -154,6 +154,7 @@ class BleViewModel {
                 res = try await ledger?.login(account: account)
             }
             AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
+            AnalyticsManager.shared.activeWalletStart()
             return res
         } catch {
             let text = toBleError(error, network: nil).localizedDescription
