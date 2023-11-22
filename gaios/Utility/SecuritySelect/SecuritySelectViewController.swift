@@ -236,8 +236,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
             return
         }
         // For not jade wallet
-        let msg = "Creating \(policy.accountType.shortString) account...".localized
-        self.startLoader(message: msg)
+        startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.shortString))
         Task {
             do {
                 let wallet = try await viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil)

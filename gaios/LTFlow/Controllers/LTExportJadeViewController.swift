@@ -146,7 +146,7 @@ class LTExportJadeViewController: UIViewController {
 
 extension LTExportJadeViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
-        startLoader(message: "")
+        startLoader(message: String(format: "id_creating_your_s_account".localized, "id_lightning".localized.lowercased()))
         Task {
             do {
                 let credentials = try await viewModel.reply(
