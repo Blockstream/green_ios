@@ -48,6 +48,9 @@ class LTShortcutViewModel {
         return "Maybe later".localized
     }
     var btnCancel: String {
+        if account.isJade && action == .addFromCreate {
+            return "No, I'll repeat the setup".localized
+        }
         return "id_cancel".localized
     }
     var linkMore: String {

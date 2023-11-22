@@ -23,6 +23,7 @@ class LTShortcutViewController: UIViewController {
     @IBOutlet weak var btnLearnMore: UIButton!
     @IBOutlet weak var btnMain: UIButton!
     @IBOutlet weak var btnLater: UIButton!
+    @IBOutlet weak var lblJadeExtraNote: UILabel!
     
     weak var delegate: LTShortcutViewControllerDelegate?
 
@@ -49,7 +50,8 @@ class LTShortcutViewController: UIViewController {
         btnLearnMore.setTitle(vm.btnMore, for: .normal)
         btnMain.setTitle(vm.btnMain, for: .normal)
         btnLater.setTitle(vm.btnLater, for: .normal)
-        
+        lblJadeExtraNote.isHidden = true
+        lblJadeExtraNote.text = "You will need to export the account from Jade at your next login.".localized
         switch vm.action {
         case .addFromAccount:
             btnLater.isHidden = false
@@ -59,6 +61,10 @@ class LTShortcutViewController: UIViewController {
             DrawerAnimationManager.shared.accountId = vm.account.id
             btnLater.isHidden = false
             btnLater.setTitle(vm.account.isHW ? vm.btnCancel : vm.btnLater , for: .normal)
+            if vm.account.isHW {
+                lblJadeExtraNote.isHidden = false
+                btnLater.setStyle(.outlinedWhite)
+            }
         case .remove:
             btnLater.isHidden = true
             btnLearnMore.isHidden = true
