@@ -744,6 +744,9 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
+            if AppSettings.shared.gdkSettings?.tor ?? false {
+                self.startLoader(message: "id_logout".localized)
+            }
             Task {
                 let account = self.viewModel.wm?.account
                 if account?.isHW ?? false {
@@ -752,6 +755,7 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
                 await WalletManager.current?.disconnect()
                 WalletsRepository.shared.delete(for: account?.id ?? "")
                 AccountNavigator.goLogout(account: nil)
+                self.stopLoader()
             }
         })
     }
