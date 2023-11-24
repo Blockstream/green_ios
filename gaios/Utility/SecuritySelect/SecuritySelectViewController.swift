@@ -227,9 +227,9 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
     func accountCreate(_ policy: PolicyCellType) {
         // Derive key from jade for lightning wallet
-        if AccountsRepository.shared.current?.isJade ?? false {
+        if AccountsRepository.shared.current?.isJade ?? false && policy == .Lightning {
             if WalletManager.current?.lightningSession?.logged ?? false {
-                self.showError("Lightning account just present".localized)
+                self.showError("You already have a lightning account. Only one per wallet can be created".localized)
                 return
             }
             ltExportJadeViewController()
