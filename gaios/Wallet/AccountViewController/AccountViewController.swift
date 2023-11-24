@@ -101,7 +101,7 @@ class AccountViewController: UIViewController {
             return
         }
         isReloading = true
-        if !viewModel.active {
+        if viewModel.paused {
             // avoid reload contents before session are valid
             return
         }

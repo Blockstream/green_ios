@@ -356,9 +356,15 @@ class WalletManager {
             for session in (self?.activeSessions ?? [String: SessionManager]()).values {
                 group.addTask { try await session.subaccounts(refresh) }
             }
-            return try await group.reduce(into: [WalletItem]()) { partial, result in
+            let subaccounts = try await group.reduce(into: [WalletItem]()) { partial, result in
                 partial += result
             }.sorted()
+            for subaccount in subaccounts {
+                let prev = self?.subaccounts.first { $0.network == subaccount.network && $0.pointer == subaccount.pointer }
+                subaccount.satoshi = prev?.satoshi
+                subaccount.hasTxs = prev?.hasTxs ?? false
+            }
+            return subaccounts
         }
         return self.subaccounts
     }

@@ -74,7 +74,7 @@ class WalletViewModel {
 
     func loadBalances() async throws {
         let balances = try await wm?.balances(subaccounts: self.subaccounts)
-        let cachedBalance = await AssetAmountList(balances ?? [:])
+        let cachedBalance = AssetAmountList(balances ?? [:])
         self.accountCellModels = subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
         self.cachedBalance = cachedBalance
         let satoshi = cachedBalance.satoshi()

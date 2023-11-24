@@ -9,20 +9,20 @@ struct AccountCellModel {
     var lblType: String { account.type.path.uppercased() }
     var hasTxs: Bool { account.hasTxs }
     var networkType: NetworkSecurityCase { account.networkType }
-    var balanceStr: String {
+    var balanceStr: String? {
         let assetId = account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi, let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, denom) = converted.toValue()
             return "\(amount) \(denom)"
         }
-        return ""
+        return nil
     }
-    var fiatStr: String {
+    var fiatStr: String? {
         let assetId = account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi, let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, denom) = converted.toFiat()
             return "\(amount) \(denom)"
         }
-        return ""
+        return nil
     }
 }

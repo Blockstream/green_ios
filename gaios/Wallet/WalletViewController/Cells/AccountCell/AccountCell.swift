@@ -122,8 +122,12 @@ class AccountCell: UITableViewCell {
             lblFiat.attributedText = Common.obfuscate(color: .white, size: 12, length: 5)
             lblAmount.attributedText = Common.obfuscate(color: .white, size: 16, length: 5)
         } else {
-            lblFiat.text = model.fiatStr
-            lblAmount.text = model.balanceStr
+            if let fiat = model.fiatStr {
+                lblFiat.text = fiat
+            }
+            if let balance = model.balanceStr {
+                lblAmount.text = balance
+            }
         }
         let network = model.networkType
         let session = model.account.session

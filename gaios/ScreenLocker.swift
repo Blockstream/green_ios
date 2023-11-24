@@ -151,7 +151,11 @@ class ScreenLocker {
 
     func resumeNetworks() async {
         NSLog("ScreenLocker resumeNetworks")
-        let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - (countdownInterval ?? 0)
+        guard let countdownInterval = self.countdownInterval else {
+            // We became inactive, but never started a countdown.
+            return
+        }
+        let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - countdownInterval
         for wm in WalletsRepository.shared.wallets.values {
             if wm.logged {
                 let altimeout = wm.prominentSession?.settings?.altimeout ?? 5

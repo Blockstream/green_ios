@@ -279,6 +279,9 @@ class WalletViewController: UIViewController {
     }
 
     func reload(discovery: Bool = false) {
+        if viewModel.paused {
+            return
+        }
         if isReloading {
             return
         }

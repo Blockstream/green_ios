@@ -11,7 +11,7 @@ enum AmpEducationalMode {
 
 class AccountViewModel {
     var wm: WalletManager? { WalletManager.current }
-    var active: Bool { wm?.activeSessions.allSatisfy { !$0.value.paused } ?? false }
+    var paused: Bool { account.session?.paused ?? false }
     var cachedBalance: AssetAmountList
     var cachedTransactions = [Transaction]()
     var account: WalletItem!
