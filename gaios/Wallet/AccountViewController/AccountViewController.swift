@@ -291,7 +291,7 @@ class AccountViewController: UIViewController {
         Task {
             do {
                 startLoader()
-                try await viewModel.removeSubaccount()
+                try await viewModel.removeLightningSubaccount()
                 stopLoader()
                 delegate?.didArchiveAccount()
                 await MainActor.run { navigationController?.popViewController(animated: true) }

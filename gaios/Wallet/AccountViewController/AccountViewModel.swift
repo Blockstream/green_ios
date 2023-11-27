@@ -155,19 +155,30 @@ class AccountViewModel {
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }
 
-    func removeSubaccount() async throws {
-        guard let prominentSession = wm?.prominentSession,
-              let session = wm?.sessions[account.gdkNetwork.network] else {
-            return
+    func removeLightningSubaccount() async throws {
+        let prominentSession = wm?.prominentSession
+        let session = wm?.sessions[account.gdkNetwork.network]
+        
+        // remove lightning shortcut
+        let account = AccountsRepository.shared.current
+        if let derivedAccount = account?.getDerivedLightningAccount() {
+            let derivedCredentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: derivedAccount.keychain)
+            _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyCredentials, forNetwork: derivedAccount.keychain)
+            if let walletId = session?.walletIdentifier(credentials: derivedCredentials) {
+                session?.removeDatadir(walletHashId: walletId.walletHashId)
+                LightningRepository.shared.remove(for: walletId.walletHashId)
+            }
         }
-        if let credentials = try await prominentSession.getCredentials(password: ""),
-           let walletId = session.walletIdentifier(credentials: credentials)
-        {
-            try await session.disconnect()
-            session.removeDatadir(walletHashId: walletId.walletHashId )
+        
+        // remove lightning session
+        if let prominentCredentials = try? await prominentSession?.getCredentials(password: ""),
+           let lightnigCredentials = wm?.deriveLightningCredentials(from: prominentCredentials),
+           let walletId = session?.walletIdentifier(credentials: lightnigCredentials) {
+            session?.removeDatadir(walletHashId: walletId.walletHashId)
             LightningRepository.shared.remove(for: walletId.walletHashId)
-            _ = try await wm?.subaccounts()
         }
+        try await session?.disconnect()
+        _ = try await wm?.subaccounts()
     }
 
     func renameSubaccount(name: String) async throws {
