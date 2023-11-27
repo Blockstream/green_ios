@@ -61,21 +61,37 @@ class QRCodeReaderView: UIView {
         super.init(coder: aDecoder)
         setupView()
     }
+    
+    func getDevice() -> AVCaptureDevice? {
+        
+        var availDevice: AVCaptureDevice?
 
+        if let device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) {
+            availDevice = device
+        } else if let device = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) {
+            availDevice = device
+        } else if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
+            availDevice = device
+        } else {
+            availDevice = AVCaptureDevice.default(for: .video)
+        }
+        return availDevice
+    }
+    
     private func setupSession() {
         captureSession.beginConfiguration()
         defer {
             captureSession.commitConfiguration()
         }
-
-        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+        
+        guard let captureDevice = getDevice() else {
             return
         }
-
+        
         guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
             return
         }
-
+        
         guard captureSession.canAddInput(captureDeviceInput) else {
             return
         }
