@@ -95,7 +95,10 @@ class WalletViewController: UIViewController {
         navigationItem.leftBarButtonItem = nil
         navigationItem.rightBarButtonItems = []
         drawerIcon(false)
-        if viewModel.subaccounts.count > 0 {
+        if viewModel.watchOnly {
+            welcomeLayer.isHidden = true
+            loadNavigationBtns()
+        } else if viewModel.subaccounts.count > 0 {
             welcomeLayer.isHidden = true
             loadNavigationBtns()
             drawerIcon(true)
