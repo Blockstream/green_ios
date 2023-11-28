@@ -56,6 +56,9 @@ class DropAlert: UIView {
     }
 
     private func alert(with message: String, textColor: UIColor, backgroundColor: UIColor, delay: Double) {
+        if message.isEmpty {
+            return
+        }
         self.delay = delay
         show(message, textColor: textColor, backgroundColor: backgroundColor)
     }

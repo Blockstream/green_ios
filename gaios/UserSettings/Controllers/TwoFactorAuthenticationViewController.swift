@@ -73,7 +73,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lblReset2faTitle.text = NSLocalizedString("id_request_twofactor_reset", comment: "")
         lblReset2faCardTitle.text = NSLocalizedString("id_i_lost_my_2fa", comment: "")
         viewModel.networks.enumerated().forEach { (i, net) in
-            let title = NetworkSecurityCase(rawValue: net)?.chain.firstCapitalized
+            let title = net.chain.firstCapitalized
             networkSegmentedControl.setTitle(title, forSegmentAt: i)
         }
         btnRecoveryTransactions.setTitle("id_recovery_transactions".localized, for: .normal)
@@ -286,7 +286,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             }
         }
     }
-
+    
     @IBAction func btnReset2fa(_ sender: Any) {
         showResetTwoFactor()
     }
@@ -373,14 +373,14 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
                     vc.sms = true
-                    vc.session = session
+                    vc.network = session.networkType
                     navigationController?.pushViewController(vc, animated: true)
                 }
             case .phone:
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
                     vc.phoneCall = true
-                    vc.session = session
+                    vc.network = session.networkType
                     navigationController?.pushViewController(vc, animated: true)
                 }
             case .gauth:

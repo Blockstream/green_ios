@@ -11,8 +11,8 @@ class TwoFactorSettingsViewModel {
     // current multisig session
     var sessionBitcoin: SessionManager? { wm.sessions["mainnet"] }
     var sessionLiquid: SessionManager? { wm.sessions["liquid"] }
-    var networks: [String] { wm.testnet ? ["testnet", "testnet-liquid"] : ["mainnet", "liquid"] }
-    var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0] }}
+    var networks: [NetworkSecurityCase] { wm.testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS] }
+    var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0.network] }}
 
     private var csvTypes = [Settings.CsvTime]()
     private var csvValues = [Int]()
@@ -35,6 +35,9 @@ class TwoFactorSettingsViewModel {
                  TwoFactorItem(name: NSLocalizedString("id_authenticator_app", comment: ""), enabled: twoFactorConfig.gauth.enabled, confirmed: twoFactorConfig.gauth.confirmed, type: TwoFactorType.gauth) ]
     }
 
+    func isSmsOnly(_ items: [TwoFactorItem]) -> Bool {
+        (items.filter { $0.enabled == true && $0.confirmed == true && $0.type == .sms}).count == 1
+    }
 
     func disable(session: SessionManager, type: TwoFactorType) async throws {
         let config = TwoFactorConfigItem(enabled: false, confirmed: false, data: "")

@@ -203,7 +203,9 @@ class ReceiveViewController: KeyboardViewController {
     
     @MainActor
     func failure(_ err: Error) {
-        let msg = getError(err)
+        guard let msg = getError(err) else {
+            return
+        }
         if msg.contains("Swap in progress") {
             showError("id_there_is_already_a_swap_in".localized)
             return

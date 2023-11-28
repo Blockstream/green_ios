@@ -5,7 +5,7 @@ import greenaddress
 import hw
 
 public protocol PopupResolverDelegate {
-    func code(_ method: String, attemptsRemaining: Int?) async throws -> String
+    func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase) async throws -> String
     func method(_ methods: [String]) async throws -> String
 }
 
@@ -25,26 +25,29 @@ public enum TwoFactorCallError: Error {
 
 public class GDKResolver {
     
-    let chain: String
+    let network: NetworkSecurityCase
     let connected: () -> Bool
     let twoFactorCall: TwoFactorCall?
     let popupDelegate: PopupResolverDelegate?
     let bcurDelegate: BcurResolver?
     let hwDelegate: HwResolverDelegate?
     let hwDevice: HWProtocol?
+    let gdkSession: GDKSession?
 
     public init(_ twoFactorCall: TwoFactorCall?,
+                gdkSession: GDKSession?,
                 popupDelegate: PopupResolverDelegate? = nil,
                 hwDelegate: HwResolverDelegate? = nil,
                 bcurDelegate: BcurResolver? = nil,
                 hwDevice: HWProtocol? = nil,
-                chain: String,
+                network: NetworkSecurityCase,
                 connected: @escaping() -> Bool = { true }) {
         self.twoFactorCall = twoFactorCall
+        self.gdkSession = gdkSession
         self.popupDelegate = popupDelegate
         self.bcurDelegate = bcurDelegate
         self.hwDelegate = hwDelegate
-        self.chain = chain
+        self.network = network
         self.connected = connected
         self.hwDevice = hwDevice
     }
@@ -62,7 +65,7 @@ public class GDKResolver {
 
     private func resolving(_ res: [String: Any]) async throws {
         let status = res["status"] as? String
-        print("\(chain) \(res)")
+        print("\(network.chain) \(res)")
         switch status {
         case "done":
             break
@@ -87,7 +90,7 @@ public class GDKResolver {
                 let action = requiredData["action"] as? String,
                 let device = requiredData["device"] as? [String: Any],
                 let hwdevice = HWDevice.from(device) as? HWDevice {
-                let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain, hwDevice: hwDevice)
+                let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: network.chain, hwDevice: hwDevice)
                 try self.twoFactorCall?.resolveCode(code: res.stringify())
             } else if let bcurDelegate = bcurDelegate {
                 let code = try await bcurDelegate.requestData()
@@ -95,7 +98,18 @@ public class GDKResolver {
             } else {
                 // Software wallet interface resolver
                 let resolveCode = ResolveCodeData.from(res) as? ResolveCodeData
-                let code = try await self.popupDelegate?.code(resolveCode?.method ?? "", attemptsRemaining: Int(resolveCode?.attemptsRemaining ?? 3))
+                let res = try? self.gdkSession?.getTwoFactorConfig()
+                var enable2faCallMethod = false
+                if let config = TwoFactorConfig.from(res ?? [:]) as? TwoFactorConfig {
+                    enable2faCallMethod = config.enableMethods.count == 1 && config.enableMethods.contains("sms")
+                }
+                let code = try await self.popupDelegate?.code(
+                    resolveCode?.method ?? "",
+                    attemptsRemaining: Int(resolveCode?.attemptsRemaining ?? 3),
+                    enable2faCallMethod: enable2faCallMethod,
+                    network: network
+                )
+                
                 try await self.waitConnection()
                 try self.twoFactorCall?.resolveCode(code: code)
             }

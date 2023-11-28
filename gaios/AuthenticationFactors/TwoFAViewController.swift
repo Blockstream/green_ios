@@ -15,6 +15,7 @@ class TwoFAViewController: UIViewController {
     @IBOutlet weak var cardInfo: UIView!
     @IBOutlet weak var lblInfoTitle: UILabel!
     @IBOutlet weak var lblInfoHint: UILabel!
+    @IBOutlet weak var btnInfoEnableCall: UIButton!
     @IBOutlet weak var btnInfoRetry: UIButton!
     @IBOutlet weak var btnInfoSupport: UIButton!
     
@@ -24,9 +25,12 @@ class TwoFAViewController: UIViewController {
 
     var onCancel: (() -> Void)?
     var onCode: ((String) -> Void)?
+    var onEnable2faCall: (() -> Void)?
 
     var commontitle = ""
     var attemptsRemaining = 0
+
+    var enable2faCallMethod = false
 
     var orderedPlaceHolders: [UIView] {
         return placeholders.sorted { $0.tag < $1.tag }
@@ -39,6 +43,7 @@ class TwoFAViewController: UIViewController {
     enum TwoFAAction {
         case cancel
         case code(digits: String)
+        case enable2faCall
     }
 
     override func viewDidLoad() {
@@ -49,6 +54,8 @@ class TwoFAViewController: UIViewController {
         view.alpha = 0.0
         fill()
         cardInfo.isHidden = true
+        
+        btnInfoEnableCall.isHidden = !enable2faCallMethod
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -64,6 +71,7 @@ class TwoFAViewController: UIViewController {
         btnCancel.setTitle("id_cancel".localized, for: .normal)
         lblInfoTitle.text = "Are you not receiving your 2FA code?".localized
         lblInfoHint.text = "Try again, using another 2FA method.".localized
+        btnInfoEnableCall.setTitle("Enable 2FA Call method".localized, for: .normal)
         btnInfoRetry.setTitle("Try Again".localized, for: .normal)
         btnInfoSupport.setTitle("Contact Support".localized, for: .normal)
     }
@@ -82,8 +90,10 @@ class TwoFAViewController: UIViewController {
         }
         lblInfoTitle.setStyle(.txtBigger)
         lblInfoHint.setStyle(.txtCard)
-        btnInfoRetry.setStyle(.primary)
-        btnInfoSupport.setStyle(.outlinedWhite)
+
+        [btnInfoRetry, btnInfoSupport, btnInfoEnableCall].forEach {
+            $0?.setStyle(.inline)
+        }
     }
 
     func fill() {
@@ -118,6 +128,8 @@ class TwoFAViewController: UIViewController {
                     self.onCancel?()
                 case .code(let digits):
                     self.onCode?(digits)
+                case .enable2faCall:
+                    self.onEnable2faCall?()
                 }
             })
         })
@@ -165,6 +177,10 @@ class TwoFAViewController: UIViewController {
         guard digits.count > 0 else { return }
         digits.removeLast()
         fill()
+    }
+
+    @IBAction func btnInfoEnableCall(_ sender: Any) {
+        dismiss(.enable2faCall)
     }
 
     @IBAction func btnInfoRetry(_ sender: Any) {

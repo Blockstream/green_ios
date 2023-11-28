@@ -17,15 +17,18 @@ public struct TwoFactorConfigItem: Codable {
         case enabled
         case confirmed
         case data
+        case isSmsBackup = "is_sms_backup"
     }
     public let enabled: Bool
     public let confirmed: Bool
     public let data: String
+    public let isSmsBackup: Bool?
 
-    public init(enabled: Bool, confirmed: Bool, data: String) {
+    public init(enabled: Bool, confirmed: Bool, data: String, isSmsBackup: Bool = false) {
         self.enabled = enabled
         self.confirmed = confirmed
         self.data = data
+        self.isSmsBackup = isSmsBackup
     }
 }
 

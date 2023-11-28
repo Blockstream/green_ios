@@ -61,7 +61,7 @@ class LTAuthViewController: UIViewController {
                     DropAlert().error(message: data.reason)
                 }
             } catch {
-                self.showError(getError(error))
+                self.showError(error)
             }
             stopAnimating()
         }

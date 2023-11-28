@@ -138,7 +138,9 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error) {
-        let prettyError = getError(error)
+        guard let prettyError = getError(error) else {
+            return
+        }
         
         dismissProgress() {
             self.sliderView.isUserInteractionEnabled = true

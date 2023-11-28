@@ -31,14 +31,18 @@ extension UIViewController {
     }
     @MainActor
     func showError(_ err: Error) {
+        guard let msg = self.getError(err) else {
+            return
+        }
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: self.getError(err).localized, preferredStyle: .alert)
+            self.getError(err)
+            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: msg.localized, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
         }
     }
 
-    func getError(_ err: Error) -> String {
+    func getError(_ err: Error) -> String? {
         switch err {
         case AuthenticationTypeHandler.AuthError.CanceledByUser, AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
             return err.localizedDescription
@@ -69,6 +73,9 @@ extension UIViewController {
             return txt ?? "id_operation_failed"
         case TwoFactorCallError.cancel(let txt),
             TwoFactorCallError.failure(let txt):
+            if txt.isEmpty {
+                return nil
+            }
             return txt
         case TransactionError.invalid(let txt):
             return txt

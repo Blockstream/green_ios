@@ -148,7 +148,7 @@ class SessionManager {
     func resolve(_ twoFactorCall: TwoFactorCall?, bcurResolver: BcurResolver? = nil) async throws -> [String: Any]? {
         let rm = ResolverManager(
             twoFactorCall,
-            chain: self.gdkNetwork.chain,
+            network: networkType,
             connected: { self.connected && self.logged && !self.paused },
             hwDevice: hw?.interface,
             session: self,

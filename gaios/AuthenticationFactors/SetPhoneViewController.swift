@@ -15,7 +15,10 @@ class SetPhoneViewController: KeyboardViewController {
 
     var sms = false
     var phoneCall = false
-    var session: SessionManager!
+    var network = NetworkSecurityCase.bitcoinMS
+    var session: SessionManager { (WalletManager.current?.sessions[network.network])! }
+    var isSmsBackup = false
+
     private var connected = true
     private var updateToken: NSObjectProtocol?
 
@@ -26,7 +29,9 @@ class SetPhoneViewController: KeyboardViewController {
         headerTitle.setStyle(.txtBigger)
         countryCodeField.attributedPlaceholder = NSAttributedString(string: "id_country".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
-        nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
+
+        nextButton.setTitle(isSmsBackup ? "id_continue".localized : "id_get_code".localized, for: .normal)
+        
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primaryDisabled)
         textField.layer.cornerRadius = 5.0
@@ -88,11 +93,16 @@ class SetPhoneViewController: KeyboardViewController {
         self.startAnimating()
         Task {
             do {
-                let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
+                let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone, isSmsBackup: isSmsBackup)
                 try await session.changeSettingsTwoFactor(method: method, config: config)
-                try await session.loadTwoFactorConfig()
-                
-                self.navigationController?.popViewController(animated: true)
+                _ = try await session.loadTwoFactorConfig()
+                await MainActor.run {
+                    if self.isSmsBackup {
+                        DropAlert().success(message: "2FA Call is now enabled")
+                    }
+                    self.navigationController?.popViewController(animated: true)
+                    self.dismiss(animated: true)
+                }
             } catch {
                 if let twofaError = error as? TwoFactorCallError {
                     switch twofaError {
