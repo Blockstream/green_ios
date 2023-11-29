@@ -205,6 +205,14 @@ class SendConfirmViewController: KeyboardViewController {
             updateToken = nil
         }
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.sliderView.isUserInteractionEnabled = true
+        self.sliderView.reset()
+    }
+    
 }
 
 extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource {

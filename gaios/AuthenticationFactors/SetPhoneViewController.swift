@@ -101,7 +101,6 @@ class SetPhoneViewController: KeyboardViewController {
                         DropAlert().success(message: "2FA Call is now enabled")
                     }
                     self.navigationController?.popViewController(animated: true)
-                    self.dismiss(animated: true)
                 }
             } catch {
                 if let twofaError = error as? TwoFactorCallError {
