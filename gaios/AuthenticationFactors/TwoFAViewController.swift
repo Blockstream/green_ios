@@ -21,6 +21,7 @@ class TwoFAViewController: UIViewController {
     
     @IBOutlet var lblsDigit: [UILabel]!
     
+    @IBOutlet weak var lblAttempts: UILabel!
     var digits: [Int] = []
 
     var onCancel: (() -> Void)?
@@ -74,6 +75,7 @@ class TwoFAViewController: UIViewController {
         btnInfoEnableCall.setTitle("Enable 2FA Call method".localized, for: .normal)
         btnInfoRetry.setTitle("Try Again".localized, for: .normal)
         btnInfoSupport.setTitle("Contact Support".localized, for: .normal)
+        updateAttempts()
     }
 
     func setStyle() {
@@ -83,7 +85,7 @@ class TwoFAViewController: UIViewController {
             $0.borderColor = .white.withAlphaComponent(0.05)
         }
         lblTitle.setStyle(.txtBigger)
-        btnHelp.setStyle(.outlinedWhite)
+        btnHelp.setStyle(.inline)
         btnCancel.setStyle(.inline)
         orderedPlaceHolders.forEach {
             $0.cornerRadius = $0.frame.width / 2
@@ -94,6 +96,11 @@ class TwoFAViewController: UIViewController {
         [btnInfoRetry, btnInfoSupport, btnInfoEnableCall].forEach {
             $0?.setStyle(.inline)
         }
+        lblAttempts.setStyle(.txtSmaller)
+    }
+
+    func updateAttempts() {
+        lblAttempts.text =  String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), attemptsRemaining)
     }
 
     func fill() {
