@@ -284,6 +284,7 @@ class WalletManager {
         failureSessionsError = [:]
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
+                NSLog(">> login \(session.networkType.rawValue) begin")
                 try await self.loginSession(
                     session: session,
                     credentials: credentials,
@@ -291,8 +292,9 @@ class WalletManager {
                     device: device,
                     masterXpub: masterXpub,
                     fullRestore: fullRestore)
+                NSLog(">> login \(session.networkType.rawValue) success")
             } catch {
-                print(error)
+                NSLog(">> login \(session.networkType.rawValue) failure: \(error)")
                 try? await session.disconnect()
                 switch error {
                 case TwoFactorCallError.failure(let txt):
@@ -308,7 +310,7 @@ class WalletManager {
         }
         failureSessionsError = [:]
         let sessions = self.sessions.values.filter { !$0.logged }
-        NSLog("--- login start sessions \(sessions.count)")
+        NSLog(">> login start: \(sessions.count) sessions")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in sessions {
                 group.addTask { try? await loginTask(session) }
@@ -316,12 +318,12 @@ class WalletManager {
             for await _ in group {
             }
         }
-        NSLog("--- login end")
+        NSLog(">> login complete")
         if self.activeSessions.count == 0 {
             throw LoginError.failed()
         }
         _ = try await self.subaccounts()
-        NSLog("--- subaccounts end")
+        NSLog(">> subaccounts loaded")
         try? await self.loadRegistry()
     }
 

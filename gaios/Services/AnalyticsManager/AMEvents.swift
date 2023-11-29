@@ -198,6 +198,7 @@ extension AnalyticsManager {
         if let prettyError = prettyError {
             s[AnalyticsManager.strError] = prettyError
         }
+        endTrace(.failedTransaction)
         endEvent(.failedTransaction, sgmt: s)
     }
 

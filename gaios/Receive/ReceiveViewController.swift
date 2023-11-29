@@ -203,7 +203,7 @@ class ReceiveViewController: KeyboardViewController {
     
     @MainActor
     func failure(_ err: Error) {
-        guard let msg = getError(err) else {
+        guard let msg = err.description() else {
             return
         }
         if msg.contains("Swap in progress") {
@@ -214,7 +214,8 @@ class ReceiveViewController: KeyboardViewController {
             account: AccountsRepository.shared.current,
             wallet: self.viewModel.account,
             prettyError: msg.localized,
-            screenName: "Receive")
+            screenName: "Receive",
+            paymentHash: nil)
     }
 
     func validate() {

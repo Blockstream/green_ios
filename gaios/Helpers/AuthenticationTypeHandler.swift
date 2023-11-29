@@ -14,6 +14,9 @@ class AuthenticationTypeHandler {
         case ServiceNotAvailable(_ desc: String)
         case SecurityError(_ desc: String)
 
+        func description() -> String {
+            localizedDescription
+        }
         var localizedDescription: String {
             get {
                 switch self {

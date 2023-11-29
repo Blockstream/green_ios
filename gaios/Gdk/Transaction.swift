@@ -89,7 +89,12 @@ extension Transaction {
             case .message(let data):
                 tx.message = data.message
             case .aes(let data):
-                tx.plaintext = (data.description, data.plaintext)
+                switch data {
+                case .decrypted(let data):
+                    tx.plaintext = (data.description, data.plaintext)
+                case .errorStatus(let reason):
+                    tx.error = reason
+                }
             case .url(let data):
                 tx.url = (data.description, data.url)
             default:

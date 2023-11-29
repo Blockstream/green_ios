@@ -126,9 +126,10 @@ class LightningSessionManager: SessionManager {
         return tx
     }
 
-    override func sendTransaction(tx: Transaction) async throws {
+    override func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
         let invoiceOrLnUrl = tx.addressees.first?.address
-        let satoshi = tx.addressees.first?.satoshi ?? 0
+        let sat = tx.addressees.first?.satoshi
+        let satoshi = tx.anyAmouts ? UInt64(sat ?? 0) : nil
         let comment = tx.memo ?? ""
         switch lightBridge?.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
         case .bolt11(let invoice):
@@ -137,23 +138,33 @@ class LightningSessionManager: SessionManager {
             if invoice.isExpired {
                 throw TransactionError.invalid(localizedDescription: "Invoice Expired")
             }
-            let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: nil)
-            print("res \(res)")
+            do {
+                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: satoshi) {
+                    return SendTransactionSuccess.create(from: res.payment)
+                }
+            } catch {
+                let msg = error.description()?.localized ?? "id_operation_failure".localized
+                throw TransactionError.failure(localizedDescription: msg, paymentHash: invoice.paymentHash)
+            }
         case .lnUrlPay(let data):
-            let res = try lightBridge?.payLnUrl(requestData: data, amount: Long(satoshi), comment: comment)
-            print("res \(res)")
+            let res = try lightBridge?.payLnUrl(requestData: data, amount: satoshi ?? 0, comment: comment)
             switch res {
             case .endpointSuccess(let data):
                 print("payLnUrl success: \(data)")
+                return SendTransactionSuccess.create(from: data)
             case .endpointError(let data):
-                print("payLnUrl error: \(data.reason)")
+                print("payLnUrl endpointError: \(data.reason)")
                 throw TransactionError.invalid(localizedDescription: data.reason)
+            case .payError(let data):
+                print("payLnUrl payError: \(data.reason)")
+                throw TransactionError.failure(localizedDescription: data.reason, paymentHash: data.paymentHash)
             case .none:
-                throw TransactionError.invalid(localizedDescription: "id_error")
+                break
             }
         default:
-            throw TransactionError.invalid(localizedDescription: "id_error")
+            break
         }
+        throw TransactionError.invalid(localizedDescription: "id_error")
     }
 
     func generateLightningError(

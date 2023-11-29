@@ -157,6 +157,31 @@ public struct SignMessageResult: Codable {
     }
 }
 
+public struct SendTransactionSuccess: Codable {
+    enum CodingKeys: String, CodingKey {
+        case txHash = "txhash"
+        case sendAll = "send_all"
+        case signedTransaction = "signed_transaction"
+        case paymentId = "payment_id"
+        case message
+        case url
+    }
+    public let txHash: String?
+    public let sendAll: Bool?
+    public let signedTransaction: String?
+    public let paymentId: String?
+    public let message: String?
+    public let url: String?
+    public init(txHash: String? = nil, sendAll: Bool? = nil, signedTransaction: String? = nil, paymentId: String? = nil, message: String? = nil, url: String? = nil) {
+        self.txHash = txHash
+        self.sendAll = sendAll
+        self.signedTransaction = signedTransaction
+        self.paymentId = paymentId
+        self.message = message
+        self.url = url
+    }
+}
+
 public struct GetPreviousAddressesParams: Codable {
     enum CodingKeys: String, CodingKey {
         case subaccount

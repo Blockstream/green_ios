@@ -544,8 +544,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
-                                        self?.twoFactorResetMessageScreen(msg: msg)
-                                    }, onDismiss: nil)
+                        self?.twoFactorResetMessageScreen(msg: msg)
+                    }, onDismiss: nil)
                 case .reactivate:
                     cell.configure(alertCard,
                                    onLeft: nil,
@@ -555,8 +555,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
-                                        self?.systemMessageScreen(msg: msg)
-                                    },
+                        self?.systemMessageScreen(msg: msg)
+                    },
                                    onDismiss: nil)
                 case .fiatMissing:
                     cell.configure(alertCard,
@@ -599,6 +599,16 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
                                    onRight: handleAlertGesture,
+                                   onDismiss: nil)
+                case .lightningMaintenance:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .lightningServiceDisruption:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
                                    onDismiss: nil)
                 }
                 cell.selectionStyle = .none

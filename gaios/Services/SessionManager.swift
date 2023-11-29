@@ -439,12 +439,21 @@ class SessionManager {
         try await wrapperTransaction(fun: self.session?.signTransaction, tx: tx)
     }
 
-    func sendTransaction(tx: Transaction) async throws {
-        _ = try await wrapperTransaction(fun: self.session?.sendTransaction, tx: tx)
+    func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
+        let fun = try self.session?.sendTransaction(details: tx.details)
+        let res = try await resolve(fun)
+        let result = res?["result"] as? [String: Any]
+        if let res = SendTransactionSuccess.from(result ?? [:]) as? SendTransactionSuccess {
+            return res
+        }
+        throw GaError.GenericError()
     }
 
-    func broadcastTransaction(txHex: String) async throws {
-        _ = try self.session?.broadcastTransaction(tx_hex: txHex)
+    func broadcastTransaction(txHex: String) async throws -> SendTransactionSuccess {
+        if let txHash = try self.session?.broadcastTransaction(tx_hex: txHex) as? String {
+            return SendTransactionSuccess(txHash: txHash)
+        }
+        throw GaError.GenericError()
     }
 
     func getFeeEstimates() async throws -> [UInt64]? {

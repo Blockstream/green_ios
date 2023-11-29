@@ -4,6 +4,7 @@ import lightning
 
 public enum TransactionError: Error {
     case invalid(localizedDescription: String)
+    case failure(localizedDescription: String, paymentHash: String)
 }
 
 public enum TxType: Codable {

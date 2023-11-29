@@ -11,6 +11,8 @@ enum AlertCardType {
     case ephemeralWallet
     case remoteAlert(RemoteAlert)
     case login(String, Error)
+    case lightningMaintenance
+    case lightningServiceDisruption
 }
 
 class AlertCardCell: UITableViewCell {
@@ -128,20 +130,32 @@ class AlertCardCell: UITableViewCell {
             }()
             
             let networkName = NetworkSecurityCase(rawValue: network)?.name()
-            var errText = NSLocalizedString(errorString, comment: "")
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
-            lblHint.text = "In network \(networkName ?? ""): \(errText)"
+            lblHint.text = "In network \(networkName ?? ""): \(errorString.localized)"
             switch error {
             case LoginError.hostUnblindingDisabled(_):
-                lblHint.text = "\(errText)"
+                lblHint.text = "\(errorString.localized)"
                 btnRight.setTitle(NSLocalizedString("id_try_again", comment: ""), for: .normal)
                 btnRight.isHidden = false
                 btnsContainer.isHidden = false
             default:
                 break
             }
+        case .lightningMaintenance:
+            lblTitle.text = "Lightning account"
+            lblHint.text = "The Lightning service is currently unavailable for maintenance, but it will be back soon."
+            lblHint.text = NSLocalizedString("id_this_wallet_is_based_on_your", comment: "")
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
+        case .lightningServiceDisruption:
+            lblTitle.text = "Lightning account"
+            lblHint.text = "The Lightning service is currently unavailable. We apologize for the disruption, we are working to bring the service back online."
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
         }
     }
 

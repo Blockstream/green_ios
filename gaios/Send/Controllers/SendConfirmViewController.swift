@@ -26,9 +26,6 @@ class SendConfirmViewController: KeyboardViewController {
     private var dialogSendHWSummaryViewController: DialogSendHWSummaryViewController?
     private var ltConfirmingViewController: LTConfirmingViewController?
 
-    var inputType: TxType = .transaction // for analytics
-    var addressInputType: AnalyticsManager.AddressInputType? = .paste // for analytics
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -105,7 +102,7 @@ class SendConfirmViewController: KeyboardViewController {
         } else if viewModel.isHW {
             presentHWSummary()
         } else {
-            startAnimating()
+            startLoader(message: "id_sending".localized)
         }
     }
 
@@ -116,38 +113,43 @@ class SendConfirmViewController: KeyboardViewController {
         } else if viewModel.isHW {
             dialogSendHWSummaryViewController?.dismiss(animated: true, completion: completion)
         } else {
-            stopAnimating()
+            stopLoader()
             completion()
         }
     }
 
     func send() {
-        AnalyticsManager.shared.startSendTransaction()
-        AnalyticsManager.shared.startFailedTransaction()
         sliderView.isUserInteractionEnabled = false
         presentProgress()
-        Task {
+        Task.detached() { [weak self] in
             do {
-                try await self.viewModel.send()
-                executeOnDone()
+                if let res = try await self?.viewModel.send() {
+                    await self?.success(tx: res)
+                }
             } catch {
-                failure(error)
+                await self?.failure(error)
             }
         }
     }
 
     @MainActor
     func failure(_ error: Error) {
-        guard let prettyError = getError(error) else {
-            return
-        }
-        
         dismissProgress() {
             self.sliderView.isUserInteractionEnabled = true
             self.sliderView.reset()
+            guard let prettyError = error.description() else {
+                return
+            }
             switch error {
             case TwoFactorCallError.cancel(_):
                 break
+            case TransactionError.failure(_, let paymentHash):
+                self.showReportError(
+                    account: AccountsRepository.shared.current,
+                    wallet: self.viewModel.account,
+                    prettyError: prettyError.localized,
+                    screenName: "FailedTransaction",
+                    paymentHash: paymentHash)
             default:
                 self.showReportError(
                     account: AccountsRepository.shared.current,
@@ -156,38 +158,47 @@ class SendConfirmViewController: KeyboardViewController {
                     screenName: "FailedTransaction")
             }
         }
-        let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
-        let withMemo = !(self.viewModel.tx.memo?.isEmpty ?? true)
-        let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
-                                                                 addressInputType: self.addressInputType,
-                                                                 sendAll: isSendAll)
-        AnalyticsManager.shared.failedTransaction(
-            account: AccountsRepository.shared.current,
-            walletItem: self.viewModel.account,
-            transactionSgmt: transSgmt,
-            withMemo: withMemo,
-            prettyError: prettyError.localized)
     }
 
     @MainActor
-    func executeOnDone() {
-        let isSendAll = viewModel.tx.addressees.first?.isGreedy ?? false
-        let withMemo = !(viewModel.tx.memo?.isEmpty ?? true)
-        let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
-                                                                 addressInputType: addressInputType,
-                                                                 sendAll: isSendAll)
-        AnalyticsManager.shared.endSendTransaction(account: AccountsRepository.shared.current,
-                                                   walletItem: viewModel.account,
-                                                   transactionSgmt: transSgmt, withMemo: withMemo)
+    func success(tx: SendTransactionSuccess) {
         dismissProgress() {
             DropAlert().success(message: "id_transaction_sent".localized)
+            
+            // LN URL transaction
+            if tx.message != nil {
+                self.presentSuccessLnUrl(tx: tx) {
+                    self.navigationController?.popToRootViewController(animated: true)
+                }
+                return
+            }
             StoreReviewHelper
                 .shared
-                .request(isSendAll: isSendAll,
-                         account: AccountsRepository.shared.current,
-                         walletItem: self.viewModel.account)
+                .request(
+                    isSendAll: self.viewModel.sendAll,
+                    account: AccountsRepository.shared.current,
+                    walletItem: self.viewModel.account)
             self.navigationController?.popToRootViewController(animated: true)
         }
+    }
+    
+    func presentSuccessLnUrl(tx: SendTransactionSuccess, completion: @escaping() -> () = { }) {
+        let alert = UIAlertController(
+            title: "id_success".localized,
+            message: String(format: "Message from recipient: %@", tx.message ?? ""),
+            preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: (tx.url != nil ? "id_open" : "id_ok").localized, style: .default) { _ in
+            if let url = tx.url, let url = URL(string: url) {
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
+            completion()
+        })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in
+            completion()
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func updateConnection(_ notification: Notification) {

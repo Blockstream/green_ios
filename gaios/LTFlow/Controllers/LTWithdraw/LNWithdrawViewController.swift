@@ -76,10 +76,8 @@ class LTWithdrawViewController: KeyboardViewController {
                 }
             } catch {
                 switch error {
-                case BreezSDK.SdkError.Generic(let msg),
-                    BreezSDK.SdkError.LspConnectFailed(let msg),
-                    BreezSDK.SdkError.PersistenceFailure(let msg),
-                    BreezSDK.SdkError.ReceivePaymentFailed(let msg):
+                case BreezSDK.SdkError.Generic(let msg):
+                    //BreezSDK.SdkError.ServiceConnectivity(let msg):
                     DropAlert().error(message: msg.localized)
                 default:
                     DropAlert().error(message: "id_operation_failure".localized)

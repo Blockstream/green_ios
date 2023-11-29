@@ -31,65 +31,13 @@ extension UIViewController {
     }
     @MainActor
     func showError(_ err: Error) {
-        guard let msg = self.getError(err) else {
+        guard let msg = err.description() else {
             return
         }
         DispatchQueue.main.async {
-            self.getError(err)
             let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: msg.localized, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
-        }
-    }
-
-    func getError(_ err: Error) -> String? {
-        switch err {
-        case AuthenticationTypeHandler.AuthError.CanceledByUser, AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
-            return err.localizedDescription
-        case HWError.Abort(let txt), HWError.Declined(let txt), HWError.Disconnected(let txt):
-            return txt
-        case BleLedgerConnection.LedgerError.IOError,
-            BleLedgerConnection.LedgerError.InvalidParameter:
-            return "id_operation_failure"
-        case LoginError.connectionFailed:
-            return "id_connection_failed"
-        case LoginError.failed:
-            return "id_login_failed"
-        case LoginError.walletNotFound:
-            return "id_wallet_not_found"
-        case LoginError.hostUnblindingDisabled(let txt):
-            return txt ?? "id_operation_failed"
-        case LoginError.walletMismatch( _):
-            return "Wallet mismatch"
-        case LoginError.walletsJustRestored(_):
-            return "id_wallet_already_restored"
-        case LoginError.walletNotFound(_):
-            return "id_wallet_not_found"
-        case LoginError.invalidMnemonic(_):
-            return "id_invalid_mnemonic"
-        case GaError.NotAuthorizedError:
-            return "Not Authorized Error"
-        case GaError.GenericError(let txt):
-            return txt ?? "id_operation_failed"
-        case TwoFactorCallError.cancel(let txt),
-            TwoFactorCallError.failure(let txt):
-            if txt.isEmpty {
-                return nil
-            }
-            return txt
-        case TransactionError.invalid(let txt):
-            return txt
-        case BreezSDK.SdkError.Generic(let msg),
-            BreezSDK.SdkError.InitFailed(let msg),
-            BreezSDK.SdkError.LspConnectFailed(let msg),
-            BreezSDK.SdkError.LspOpenChannelNotSupported(let msg),
-            BreezSDK.SdkError.PersistenceFailure(let msg),
-            BreezSDK.SdkError.ReceivePaymentFailed(let msg),
-            BreezSDK.SdkError.SendPaymentFailed(let msg),
-            BreezSDK.SdkError.CalculateOpenChannelFeesFailed(let msg):
-            return msg
-        default:
-            return err.localizedDescription
         }
     }
 
@@ -110,12 +58,13 @@ extension UIViewController {
     }
 
     @MainActor
-    func showReportError(account: Account?, wallet: WalletItem?, prettyError: String, screenName: String) {
+    func showReportError(account: Account?, wallet: WalletItem?, prettyError: String, screenName: String, paymentHash: String? = nil) {
         let request = DialogErrorRequest(
             account: account,
             networkType: wallet?.networkType ?? .bitcoinSS,
             error: prettyError,
-            screenName: screenName)
+            screenName: screenName,
+            paymentHash: paymentHash)
         let alert = UIAlertController(
             title: "id_error".localized,
             message: prettyError,

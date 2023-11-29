@@ -576,6 +576,9 @@
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
 		81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */; };
 		81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35C292041F800B2196B /* EnrichedAsset.swift */; };
+		81EA2DC92B1DD45400A1F924 /* Lightning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA2DC82B1DD45400A1F924 /* Lightning.swift */; };
+		81EA2DCB2B1DDC3500A1F924 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA2DCA2B1DDC3500A1F924 /* Errors.swift */; };
+		81EA2DCD2B1DE1F600A1F924 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA2DCC2B1DE1F600A1F924 /* Errors.swift */; };
 		81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */; };
 		81F328EF29E93ED100D54F1D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328EE29E93ED100D54F1D /* AppSettings.swift */; };
 		81F328F229E954FE00D54F1D /* NetworkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F029E9545200D54F1D /* NetworkSettings.swift */; };
@@ -1272,6 +1275,9 @@
 		81E8C358291FDAF000B2196B /* DialogTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTableViewController.swift; sourceTree = "<group>"; };
 		81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewModel.swift; sourceTree = "<group>"; };
 		81E8C35C292041F800B2196B /* EnrichedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnrichedAsset.swift; sourceTree = "<group>"; };
+		81EA2DC82B1DD45400A1F924 /* Lightning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lightning.swift; sourceTree = "<group>"; };
+		81EA2DCA2B1DDC3500A1F924 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		81EA2DCC2B1DE1F600A1F924 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlerCardCellModel.swift; sourceTree = "<group>"; };
 		81F328EE29E93ED100D54F1D /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		81F328F029E9545200D54F1D /* NetworkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSettings.swift; sourceTree = "<group>"; };
@@ -3124,6 +3130,7 @@
 				81A8F92129E513920052B214 /* Modals */,
 				81A8F92229E515410052B214 /* LightningBridge.swift */,
 				813872952A04AF450092CFD2 /* LNExtensions.swift */,
+				81EA2DCA2B1DDC3500A1F924 /* Errors.swift */,
 			);
 			path = lightning;
 			sourceTree = "<group>";
@@ -3185,6 +3192,8 @@
 				3456AF11299A78BE00C1BCA6 /* UITextView.swift */,
 				3448B5CE29D59ADF008D5746 /* UITapGestureRecognizer.swift */,
 				8152772629F9B52F00853EA1 /* UIApplication.swift */,
+				81EA2DC82B1DD45400A1F924 /* Lightning.swift */,
+				81EA2DCC2B1DE1F600A1F924 /* Errors.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3703,6 +3712,7 @@
 				344915E52A0BA27100D35818 /* LTSuccessViewModel.swift in Sources */,
 				34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */,
 				3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */,
+				81EA2DCD2B1DE1F600A1F924 /* Errors.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
 				34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */,
 				345402E22A1E42E4002CB598 /* DialogDenominationViewController.swift in Sources */,
@@ -3861,6 +3871,7 @@
 				34675B0A29409D9900771D50 /* Common.swift in Sources */,
 				34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
+				81EA2DC92B1DD45400A1F924 /* Lightning.swift in Sources */,
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
 				81D671EB26C8007600682508 /* SessionManager.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
@@ -4148,6 +4159,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81EA2DCB2B1DDC3500A1F924 /* Errors.swift in Sources */,
 				81A8F92029E5138C0052B214 /* AppGreenlightCredentials.swift in Sources */,
 				81A8F92329E515410052B214 /* LightningBridge.swift in Sources */,
 				813872962A04AF450092CFD2 /* LNExtensions.swift in Sources */,
@@ -5346,7 +5358,7 @@
 			repositoryURL = "https://github.com/breez/breez-sdk-swift";
 			requirement = {
 				kind = revision;
-				revision = 3688df86ef40b666a972ce05cc4a9c51f6dac946;
+				revision = 0a88fb63a3fb60da9f35e10228205178e3bd9a94;
 			};
 		};
 		8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */ = {

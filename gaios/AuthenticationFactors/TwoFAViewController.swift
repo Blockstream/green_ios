@@ -199,7 +199,8 @@ class TwoFAViewController: UIViewController {
             account: AccountsRepository.shared.current,
             networkType: .bitcoinMS,
             error: "",
-            screenName: "2FA")
+            screenName: "2FA",
+            paymentHash: nil)
         showOpenSupportUrl(request)
         dismiss(.cancel)
     }

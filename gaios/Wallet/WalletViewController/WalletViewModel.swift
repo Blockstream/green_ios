@@ -196,6 +196,17 @@ class WalletViewModel {
                 cards.append(AlertCardType.systemMessage(msg))
             }
         }
+        if let lightningSession = wm.lightningSession {
+            let res = lightningSession.lightBridge?.serviceHealthCheck()
+            switch res?.status {
+            case .maintenance:
+                cards += [.lightningMaintenance]
+            case .serviceDisruption:
+                cards += [.lightningServiceDisruption]
+            default:
+                break
+            }
+        }
         self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
     }
 
@@ -215,8 +226,8 @@ class WalletViewModel {
     func reconnectHW(_ network: String) async throws {
         if let account = wm?.account {
             if let jade = BleViewModel.shared.jade {
-                try await jade.login(account: account, fullRestore: true)
-                try await wm?.subaccounts()
+                _ = try await jade.login(account: account, fullRestore: true)
+                _ = try await wm?.subaccounts()
                 await reload()
             }
         }

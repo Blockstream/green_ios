@@ -9,6 +9,7 @@ class DialogErrorRequest {
     var hw: String?
     var subject: String?
     var timestamp = Date().timeIntervalSince1970
+    var paymentHash: String?
     var msg: String {
         var text = error ?? ""
         if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
@@ -19,12 +20,13 @@ class DialogErrorRequest {
         return text
     }
 
-    init(account: Account?, networkType: NetworkSecurityCase?, error: String?, screenName: String?) {
+    init(account: Account?, networkType: NetworkSecurityCase?, error: String?, screenName: String?, paymentHash: String?) {
         self.network = networkType
         self.hw = account?.isJade ?? false ? "jade" : account?.isLedger ?? false ? "ledger" : nil
         self.error = error
         self.throwable = Thread.callStackSymbols.joined(separator: "\n")
         self.subject = "iOS Error Report"
+        self.paymentHash = paymentHash
         if let screenName = screenName {
             self.subject = "iOS Issue in \(screenName)"
         }
@@ -197,6 +199,9 @@ class DialogErrorViewController: DialogViewController {
                 error: request?.msg ?? "",
                 network: request?.network,
                 hw: request?.hw)
+            if let paymentHash = request?.paymentHash {
+                WalletManager.current?.lightningSession?.lightBridge?.reportIssue(paymentHash: paymentHash)
+            }
             dismiss(.send)
         }
     }

@@ -155,9 +155,9 @@ class SendViewController: KeyboardViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController, let tx = viewModel.transaction {
             vc.viewModel = SendConfirmViewModel(account: viewModel.account,
                                                 tx: tx,
-                                                inputDenomination: viewModel.inputDenomination)
-            vc.inputType = viewModel.inputType
-            vc.addressInputType = viewModel.addressInputType ?? .paste
+                                                inputDenomination: viewModel.inputDenomination,
+                                                inputType: viewModel.inputType,
+                                                addressInputType: viewModel.addressInputType ?? .paste)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
