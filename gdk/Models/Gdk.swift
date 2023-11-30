@@ -285,7 +285,7 @@ public struct BcurEncodeParams: Codable {
     public let index: Int?
     public let privateKey: String?
     public let maxFragmentLen: Int?
-    public init(urType: String, data: String? = nil, numWords: Int? = nil, index: Int? = nil, privateKey: String? = nil, maxFragmentLen: Int = 48) {
+    public init(urType: String, data: String? = nil, numWords: Int? = nil, index: Int? = nil, privateKey: String? = nil, maxFragmentLen: Int = 8) {
         self.urType = urType
         self.data = data
         self.numWords = numWords

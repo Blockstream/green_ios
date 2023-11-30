@@ -235,7 +235,8 @@ class LoginViewController: UIViewController {
                 let session = SessionManager(account.gdkNetwork)
                 try await session.connect()
                 let pinData = try self.account.auth(usingAuth)
-                let decrypt = DecryptWithPinParams(pin: withPIN ?? "", pinData: pinData)
+                let pin = withPIN ?? pinData.plaintextBiometric
+                let decrypt = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
                 let credentials = try await session.decryptWithPin(decrypt)
                 successDecrypt(credentials)
             } catch {
@@ -500,7 +501,7 @@ class LoginViewController: UIViewController {
             self.emergencyRestore = true
             self.reload()
             if self.account.hasBioPin {
-                self.loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+                self.decryptMnemonic(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
             }
         })
         self.present(alert, animated: true, completion: nil)
