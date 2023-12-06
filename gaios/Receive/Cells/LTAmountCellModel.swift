@@ -6,6 +6,7 @@ import lightning
 
 struct LTAmountCellModel {
     var satoshi: Int64?
+    var openChannelFee: Int64?
     var maxLimit: UInt64?
     var isFiat: Bool
     var inputDenomination: gdk.DenominationType
@@ -94,8 +95,11 @@ struct LTAmountCellModel {
         return Balance.fromSatoshi(0, assetId: AssetInfo.btcId)?.toDenom().1
     }()
 
-    var openChannelFee: Int64? {
-        let channelFee = try? breezSdk?.openChannelFee(satoshi: Long(satoshi ?? 0))?.feeMsat.satoshi
+    mutating func setOpenChannelFee(_ fee: Int64) {
+        openChannelFee = fee
+    }
+    func buildOpenChannelFee(_ satoshi: Int64) async -> Int64? {
+        let channelFee = try? breezSdk?.openChannelFee(satoshi: Long(satoshi))?.feeMsat.satoshi
         if let channelFee = channelFee {
             return Int64(channelFee)
         }

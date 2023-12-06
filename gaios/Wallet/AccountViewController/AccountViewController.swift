@@ -106,16 +106,20 @@ class AccountViewController: UIViewController {
             return
         }
         Task.detached() { [weak self] in
+            NSLog(">> getBalance")
             try? await self?.viewModel.getBalance()
             await self?.reloadSections([.disclose, .adding, .account, .assets], animated: true)
+            NSLog(">> getTransactions")
             let refresh = try? await self?.viewModel.getTransactions()
             if refresh ?? true {
                 await self?.reloadSections([.transaction], animated: true)
             }
+            NSLog(">> updateNodeInfo")
             if await self?.viewModel.isLightning ?? false {
                 _ = await self?.viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
                 await self?.reloadSections([.sweep, .inbound], animated: true)
             }
+            NSLog(">> MainActor")
             await MainActor.run { [weak self] in
                 self?.isReloading = false
             }

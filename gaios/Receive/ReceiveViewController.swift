@@ -203,7 +203,7 @@ class ReceiveViewController: KeyboardViewController {
     
     @MainActor
     func failure(_ err: Error) {
-        guard let msg = err.description() else {
+         guard let msg = err.description() else {
             return
         }
         if msg.contains("Swap in progress") {

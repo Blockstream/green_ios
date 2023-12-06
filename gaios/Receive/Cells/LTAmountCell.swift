@@ -82,6 +82,7 @@ class LTAmountCell: UITableViewCell {
             state = .disabled
         }
         reload()
+        updateState()
     }
 
     func reload() {
@@ -94,7 +95,6 @@ class LTAmountCell: UITableViewCell {
         let balance = "\(model?.maxLimitAmount ?? "") \(model?.denomText ?? "")"
         lblAmount.text = String(format: "id_max_limit_s".localized, balance)
         lblAsset.attributedText = model?.denomUnderlineText
-        updateState()
     }
 
     func toReceiveAmount(show: Bool) {
@@ -103,24 +103,38 @@ class LTAmountCell: UITableViewCell {
         }
     }
 
+    func getSatoshi(_ value: String) -> Int64? {
+        if model.isFiat {
+            let balance = Balance.fromFiat(value)
+            return balance?.satoshi
+        } else {
+            let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId, denomination: model.inputDenomination)
+            return balance?.satoshi
+        }
+    }
+    
     @objc func triggerTextChange() {
         if let value = textField.text {
-            if model.isFiat {
-                let balance = Balance.fromFiat(value)
-                model.satoshi = balance?.satoshi
-            } else {
-                let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId, denomination: model.inputDenomination)
-                model.satoshi = balance?.satoshi
+            Task.detached { [weak self] in
+                let satoshi = await self?.getSatoshi(value)
+                let fee = await self?.model.buildOpenChannelFee(satoshi ?? 0)
+                await MainActor.run { [weak self] in
+                    self?.model.satoshi = satoshi
+                    self?.model.setOpenChannelFee(fee ?? 0)
+                    self?.updateState()
+                    self?.reload()
+                    if let self = self {
+                        self.delegate?.textFieldDidChange(satoshi, isFiat: self.model.isFiat)
+                        self.delegate?.stateDidChange(self.model.state)
+                    }
+                }
             }
-            reload()
         }
-        delegate?.textFieldDidChange(model.satoshi, isFiat: model.isFiat)
-        delegate?.stateDidChange(model.state)
     }
     
     @objc func textFieldDidChange(_ textField: UITextField) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
-        perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
+        perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0)
     }
 
     @IBAction func onEdit(_ sender: Any) {
