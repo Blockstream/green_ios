@@ -11,6 +11,7 @@ struct CreateTransaction {
     var error: String?
     var privateKey: String?
     var previousTransaction: [String: Any]?
+    var anyAmounts: Bool?
     var assetId: String? {
         get { addressee?.assetId }
         set { addressee?.assetId = newValue }
@@ -43,6 +44,7 @@ struct CreateTransaction {
         if let previousTransaction = previousTransaction {
             tx.previousTransaction = previousTransaction
         }
+        tx.anyAmouts = anyAmounts ?? false
         return tx
     }
 }
@@ -88,7 +90,8 @@ class Parser {
         case .lnUrlPay(_), .bolt11(_):
             let res = try? await session?.parseTxInput(input, satoshi: nil, assetId: nil)
             if res?.isValid ?? false {
-                return (lightningType, CreateTransaction(addressee: res?.addressees.first))
+                let anyAmounts = res?.addressees.first?.satoshi ?? 0 == 0
+                return (lightningType, CreateTransaction(addressee: res?.addressees.first, anyAmounts: anyAmounts))
             } else {
                 throw ParserError.InvalidTransaction(res?.errors.first ?? "id_operation_failure")
             }

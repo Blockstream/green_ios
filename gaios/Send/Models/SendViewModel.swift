@@ -156,6 +156,9 @@ class SendViewModel {
             case .bumpFee:
                 tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
             case .bolt11:
+                if let addressee = tx.addressees.first {
+                    tx.addressees = [Addressee.from(address: addressee.address, satoshi: satoshi ?? 0, assetId: "btc", isGreedy: sendAll)]
+                }
                 break
             case .lnurl:
                 if var addressee = tx.addressees.first {
@@ -238,8 +241,9 @@ class SendViewModel {
         case .transaction, .lnurl:
             editableAmount = tx.addressees.count > 0 && !sendAll
         case .sweep, .bumpFee, .bolt11:
+            let satoshi = tx.addressees.first
             editableAddress = false
-            editableAmount = false
+            editableAmount = tx.anyAmouts
         }
     }
     

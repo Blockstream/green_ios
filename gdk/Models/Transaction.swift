@@ -218,6 +218,11 @@ public struct Transaction: Comparable {
         set { details["previous_transaction"] = newValue }
     }
 
+    public var anyAmouts: Bool {
+        get { get("any_amounts") ?? false }
+        set { details["any_amounts"] = newValue }
+    }
+
     // tx outputs in create transaction
     public var transactionOutputs: [TransactionOutput]? {
         get {
