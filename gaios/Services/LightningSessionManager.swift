@@ -273,10 +273,6 @@ class LightningSessionManager: SessionManager {
         if first > 0 {
             return Transactions(list: [])
         }
-        return try await transactions_(subaccount: subaccount, first: first)
-    }
-
-    func transactions_(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
         let subaccount = try await subaccounts().first.hashValue
         guard let lb = self.lightBridge else {
             return Transactions(list: [])

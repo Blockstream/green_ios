@@ -1,4 +1,5 @@
 import Foundation
+import gdk
 import UIKit
 import AsyncBluetooth
 
@@ -62,7 +63,7 @@ class AccountNavigator {
         let balance = try? await session.getBalance(subaccount: 0, numConfs: 0)
         let assetAmounts = AssetAmountList(balance ?? [:])
         let accountCellModel = AccountCellModel(account: subaccount, satoshi: balance?.first?.value ?? 0)
-        let accountViewModel = AccountViewModel(model: accountCellModel, account: subaccount, cachedBalance: assetAmounts)
+        let accountViewModel = AccountViewModel(model: accountCellModel, account: subaccount, cachedBalance: assetAmounts, cachedTransactions: [Transaction]())
         return accountViewModel
     }
 

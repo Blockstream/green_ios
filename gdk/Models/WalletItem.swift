@@ -34,6 +34,7 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
     public let userPath: [Int]?
     public var hasTxs: Bool = false
     public var satoshi: [String: Int64]?
+    public var transactions = [Transaction]()
 
     public var networkType: NetworkSecurityCase { NetworkSecurityCase(rawValue: network!)! }
     public var gdkNetwork: GdkNetwork { networkType.gdkNetwork }

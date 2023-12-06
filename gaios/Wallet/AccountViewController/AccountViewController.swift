@@ -109,10 +109,15 @@ class AccountViewController: UIViewController {
             NSLog(">> getBalance")
             try? await self?.viewModel.getBalance()
             await self?.reloadSections([.disclose, .adding, .account, .assets], animated: true)
+            NSLog(">> getCacheTransactions")
+            await self?.viewModel.getCachedTransactions()
+            let animatedTxs = await self?.viewModel.cachedTransactions.isEmpty ?? true
+            await self?.reloadSections([.transaction], animated: animatedTxs)
             NSLog(">> getTransactions")
             let refresh = try? await self?.viewModel.getTransactions()
             if refresh ?? true {
-                await self?.reloadSections([.transaction], animated: true)
+                let animatedTxs = await self?.viewModel.cachedTransactions.isEmpty ?? true
+                await self?.reloadSections([.transaction], animated: animatedTxs)
             }
             NSLog(">> updateNodeInfo")
             if await self?.viewModel.isLightning ?? false {

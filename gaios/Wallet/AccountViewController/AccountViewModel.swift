@@ -89,10 +89,17 @@ class AccountViewModel {
     var txCellModels = [TransactionCellModel]()
     var assetCellModels = [WalletAssetCellModel]()
 
-    init(model: AccountCellModel, account: WalletItem, cachedBalance: AssetAmountList) {
+    init(model: AccountCellModel, account: WalletItem, cachedBalance: AssetAmountList, cachedTransactions: [Transaction]) {
         self.accountCellModels = [model]
         self.account = account
         self.cachedBalance = cachedBalance
+        self.cachedTransactions = cachedTransactions
+    }
+
+    func getCachedTransactions() {
+        txCellModels = cachedTransactions
+            .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
+            .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
     }
 
     func getTransactions(restart: Bool = true, max: Int? = nil) async throws -> Bool {

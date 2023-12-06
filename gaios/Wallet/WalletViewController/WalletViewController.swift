@@ -364,7 +364,8 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
             let balance = AssetAmountList(model.account.satoshi ?? [:])
-            vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: balance)
+            let cachedTx = viewModel.cachedTransactions.filter { $0.subaccount == model.account.hashValue }
+            vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: balance, cachedTransactions: cachedTx)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
