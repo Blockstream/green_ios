@@ -94,8 +94,16 @@ class AccountNavigator {
             let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
             nv.setViewControllers([onboard!], animated: true)
         } else {
-            let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
-            nv.setViewControllers([home!], animated: true)
+            
+            let list = AccountsRepository.shared.accounts.filter{ $0.hidden == false}
+            if list.count == 1, let account = list.first {
+                
+                goLogin(account: account)
+                return
+            } else {
+                let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
+                nv.setViewControllers([home!], animated: true)
+            }
         }
         let appDelegate = UIApplication.shared.delegate
         appDelegate?.window??.rootViewController = nv
