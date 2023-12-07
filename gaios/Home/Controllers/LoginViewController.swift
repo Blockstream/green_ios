@@ -128,15 +128,12 @@ class LoginViewController: UIViewController {
         navigationItem.title = account.name
         navigationItem.setHidesBackButton(true, animated: false)
         let ntwBtn = UIButton(type: .system)
-        let img = UIImage(named: account.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
-        ntwBtn.setImage(img, for: .normal)
-        ntwBtn.imageView?.contentMode = .scaleAspectFit
+        ntwBtn.setTitle("id_wallets".localized, for: .normal)
         ntwBtn.addTarget(self, action: #selector(LoginViewController.back), for: .touchUpInside)
         ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 9, left: -10, bottom: 9, right: 0)
         navigationItem.leftBarButtonItems =
-            [UIBarButtonItem(image: UIImage.init(named: "backarrow2"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(LoginViewController.back)),
-             UIBarButtonItem(customView: ntwBtn)
-            ]
+        [UIBarButtonItem(image: UIImage.init(named: "backarrow2"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(LoginViewController.back)),
+         UIBarButtonItem(customView: ntwBtn)]
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         menuButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
