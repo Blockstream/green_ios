@@ -180,6 +180,7 @@ class LoginViewController: UIViewController {
         btnLoginShortcut.setStyle(.primary)
         alertCard.layer.cornerRadius = 6.0
         attemptsBg.layer.cornerRadius = 5.0
+        attemptsBg.backgroundColor = UIColor.gRedWarn()
         emergencyButton.setTitleColor(.white, for: .normal)
         emergencyButton.borderWidth = 1.0
         emergencyButton.borderColor = .white.withAlphaComponent(0.5)
