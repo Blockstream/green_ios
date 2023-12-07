@@ -88,6 +88,7 @@ class SecuritySelectViewModel {
                 throw GaError.GenericError()
             }
             let credentials = wm.deriveLightningCredentials(from: mainCredentials)
+            await session.removeDatadir(credentials: credentials)
             let _ = try await session.loginUser(credentials: credentials, hw: nil, restore: true)
             let _ = try await wm.subaccounts()
             return try await session.subaccount(0)
