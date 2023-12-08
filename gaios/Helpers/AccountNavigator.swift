@@ -15,7 +15,7 @@ class AccountNavigator {
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
         
         if account.isDerivedLightning {
-            vcLogin?.account = account
+            vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         } else if account.isHW {
             vcConnect?.account = account
@@ -26,7 +26,7 @@ class AccountNavigator {
             vcWatch?.account = account
             nv.setViewControllers([vcHome!, vcWatch!], animated: true)
         } else {
-            vcLogin?.account = account
+            vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         }
         let appDelegate = UIApplication.shared.delegate

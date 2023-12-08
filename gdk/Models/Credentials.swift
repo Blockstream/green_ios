@@ -12,7 +12,7 @@ public struct Credentials: Codable {
         case slip132ExtendedPubkeys = "slip132_extended_pubkeys"
     }
     public let mnemonic: String?
-    public let bip39Passphrase: String?
+    public var bip39Passphrase: String?
     public let pin: String?
     public let pinData: PinData?
     public let username: String?

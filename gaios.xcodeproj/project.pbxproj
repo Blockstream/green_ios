@@ -579,6 +579,7 @@
 		81EA2DC92B1DD45400A1F924 /* Lightning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA2DC82B1DD45400A1F924 /* Lightning.swift */; };
 		81EA2DCB2B1DDC3500A1F924 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA2DCA2B1DDC3500A1F924 /* Errors.swift */; };
 		81EA2DCD2B1DE1F600A1F924 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA2DCC2B1DE1F600A1F924 /* Errors.swift */; };
+		81EA2DCF2B21F3E600A1F924 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA2DCE2B21F3E500A1F924 /* LoginViewModel.swift */; };
 		81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */; };
 		81F328EF29E93ED100D54F1D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328EE29E93ED100D54F1D /* AppSettings.swift */; };
 		81F328F229E954FE00D54F1D /* NetworkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F029E9545200D54F1D /* NetworkSettings.swift */; };
@@ -1278,6 +1279,7 @@
 		81EA2DC82B1DD45400A1F924 /* Lightning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lightning.swift; sourceTree = "<group>"; };
 		81EA2DCA2B1DDC3500A1F924 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		81EA2DCC2B1DE1F600A1F924 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		81EA2DCE2B21F3E500A1F924 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlerCardCellModel.swift; sourceTree = "<group>"; };
 		81F328EE29E93ED100D54F1D /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		81F328F029E9545200D54F1D /* NetworkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSettings.swift; sourceTree = "<group>"; };
@@ -2264,6 +2266,7 @@
 			children = (
 				347FD0B025FFA98300BB3FAB /* HomeViewController.swift */,
 				34CEFD9D260202010098536C /* LoginViewController.swift */,
+				81EA2DCE2B21F3E500A1F924 /* LoginViewModel.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -3919,6 +3922,7 @@
 				3423C6E727C380DD001D9E2C /* DialogMnemonicLengthViewController.swift in Sources */,
 				3457F4AE292397A600EF33B5 /* DialogListViewModel.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView.swift in Sources */,
+				81EA2DCF2B21F3E600A1F924 /* LoginViewModel.swift in Sources */,
 				81F328F729EC3D5C00D54F1D /* LightningRepository.swift in Sources */,
 				819F1AEC2A0E6CAB00ECF999 /* PolicyCellType.swift in Sources */,
 				3497936D25F8B18C0029ECB1 /* RotationAnimation.swift in Sources */,
