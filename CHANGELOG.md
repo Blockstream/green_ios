@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [4.0.21] - 2023-12-08
 
 ### Added
 - Subaccount discovery on logged wallet
@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Improve tor connectivity
 - Improve reconnection from background state
+- Improve QR code scanner on triple camera iPhone
 
 ## [4.0.20] - 2023-11-29
 
