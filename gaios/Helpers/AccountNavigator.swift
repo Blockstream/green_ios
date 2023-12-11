@@ -96,7 +96,7 @@ class AccountNavigator {
         } else {
             
             let list = AccountsRepository.shared.accounts.filter{ $0.hidden == false}
-            if list.count == 1, let account = list.first {
+            if list.count == 1, let account = list.first, account.getDerivedLightningAccount() == nil {
                 
                 goLogin(account: account)
                 return
