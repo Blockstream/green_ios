@@ -33,7 +33,7 @@ extension AnalyticsManager {
         }
         if account?.isLedger ?? false {
             s[AnalyticsManager.strBrand] = "Ledger"
-            s[AnalyticsManager.strFirmware] = ""
+            s[AnalyticsManager.strFirmware] = BleViewModel.shared.ledger?.version ?? ""
             s[AnalyticsManager.strModel] = "Ledger Nano X"
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }

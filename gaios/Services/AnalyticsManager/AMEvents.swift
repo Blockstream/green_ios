@@ -255,15 +255,35 @@ extension AnalyticsManager {
     }
 
     func hwwConnect(account: Account?) {
-        let s = sessSgmt(account)
+        var s = sessSgmt(account)
+        
+        s.removeValue(forKey: "\(AnalyticsManager.strFirmware)")
+        s.removeValue(forKey: "\(AnalyticsManager.strModel)")
+        
         recordEvent(.connectHWW, sgmt: s)
     }
 
     func hwwConnected(account: Account?) {
         let s = sessSgmt(account)
+        
+        
+        //s[AnalyticsManager.strFirmware] = BleViewModel.shared.jade?.version?.jadeVersion ?? ""
+        //s[AnalyticsManager.strModel] = BleViewModel.shared.jade?.version?.boardType ?? ""
         recordEvent(.connectedHWW, sgmt: s)
     }
 
+    func hwwConnected(account: Account?, fwVersion: String?, model: String?) {
+        var s = sessSgmt(account)
+        
+        s.removeValue(forKey: "\(AnalyticsManager.strFirmware)")
+        s.removeValue(forKey: "\(AnalyticsManager.strModel)")
+        if let fwVersion = fwVersion, let model = model {
+            s[AnalyticsManager.strFirmware] = fwVersion
+            s[AnalyticsManager.strModel] = model
+        }
+        recordEvent(.connectedHWW, sgmt: s)
+    }
+    
     func initializeJade(account: Account?) {
         let s = sessSgmt(account)
         recordEvent(.jadeInitialize, sgmt: s)

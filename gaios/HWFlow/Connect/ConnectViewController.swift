@@ -68,6 +68,7 @@ class ConnectViewController: HWFlowBaseViewController {
         pairingState = .unknown
         Task {
             do {
+                AnalyticsManager.shared.hwwConnect(account: account)
                 await scanViewModel?.stopScan()
                 bleViewModel?.type = item.type
                 bleViewModel?.peripheralID = item.identifier
@@ -82,12 +83,20 @@ class ConnectViewController: HWFlowBaseViewController {
                     // only for jade, connect to pin server
                     try await bleViewModel?.jade?.connectPinServer()
                     let version = try await bleViewModel?.jade?.version()
+                    AnalyticsManager.shared.hwwConnected(account: account, 
+                                                         fwVersion: version?.jadeVersion,
+                                                         model: version?.boardType)
                     if version?.jadeHasPin ?? false {
                         progress("id_unlock_jade_to_continue".localized)
                     } else {
                         progress("id_follow_the_instructions_on_jade".localized)
                     }
                 } else {
+                    let _ = try await bleViewModel?.ledger?.getLedgerNetwork()
+                    let version = try await bleViewModel?.ledger?.version()
+                    AnalyticsManager.shared.hwwConnected(account: account,
+                                                         fwVersion: version ?? "",
+                                                         model: "Ledger Nano X")
                     progress("id_connect_your_ledger_to_use_it".localized)
                 }
                 for i in 0..<3 {
@@ -126,7 +135,6 @@ class ConnectViewController: HWFlowBaseViewController {
         print("peripheral.identifier \(item.identifier)")
         account.uuid = item.identifier
         AccountsRepository.shared.upsert(account)
-        AnalyticsManager.shared.hwwConnected(account: account)
         _ = AccountNavigator.goLogged(account: account)
     }
 

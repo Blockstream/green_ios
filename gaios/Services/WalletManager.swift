@@ -190,6 +190,9 @@ class WalletManager {
         if session.gdkNetwork.lightning && !AppSettings.shared.experimental {
             return
         }
+        if session.gdkNetwork.lightning && device?.isLedger ?? false {
+            return
+        }
         if session.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
             // disable liquid if is unsupported on hw
             return

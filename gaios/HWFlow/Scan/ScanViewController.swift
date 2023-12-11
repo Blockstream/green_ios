@@ -1,4 +1,5 @@
 import UIKit
+import gdk
 import CoreBluetooth
 import AsyncBluetooth
 import Combine
@@ -10,8 +11,8 @@ class ScanViewController: HWFlowBaseViewController {
     private var scanCancellable: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     var deviceType = DeviceType.Jade
-
     var scanViewModel: ScanViewModel!
+    var account: Account?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,7 +78,6 @@ class ScanViewController: HWFlowBaseViewController {
     func startScan() {
         Task {
             do {
-                scanViewModel?.reset()
                 try await scanViewModel?.scan(deviceType: deviceType)
             } catch {
                 switch error {
@@ -108,6 +108,7 @@ class ScanViewController: HWFlowBaseViewController {
     }
 
     func next() {
+        AnalyticsManager.shared.hwwConnected(account: account)
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingSuccessViewController") as? PairingSuccessViewController {
             vc.bleViewModel = BleViewModel.shared
@@ -189,8 +190,10 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
         let peripheral = scanViewModel.peripherals[indexPath.row]
         stopScan()
         startAnimating()
+        account = Account(name: peripheral.name, network: NetworkSecurityCase.bitcoinSS, isJade: peripheral.type == .Jade, isLedger: peripheral.type == .Ledger)
         Task {
             do {
+                AnalyticsManager.shared.hwwConnect(account: account)
                 BleViewModel.shared.type = peripheral.type
                 BleViewModel.shared.peripheralID = peripheral.identifier
                 try await BleViewModel.shared.connect()

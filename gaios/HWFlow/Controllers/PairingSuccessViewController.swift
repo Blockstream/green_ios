@@ -32,7 +32,6 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             rememberSwitch.isOn = !(account.hidden ?? false)
             rememberView.isHidden = true
         }
-        AnalyticsManager.shared.hwwConnect(account: AccountsRepository.shared.current)
     }
 
     func setContent() {

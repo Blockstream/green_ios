@@ -7,6 +7,7 @@ class BleLedgerManager {
     
     let bleLedger: BleLedger
     var walletManager: WalletManager?
+    var version: String?
     
     init(bleLedger: BleLedger) {
         self.bleLedger = bleLedger
@@ -22,9 +23,10 @@ class BleLedgerManager {
         try await bleLedger.close()
     }
 
-    public func version() async throws -> [String: Any] {
-        //try await bleLedger.version()
-        return [:]
+    public func version() async throws -> String? {
+        let fmw = try await bleLedger.firmware()
+        self.version = fmw["version"] as? String
+        return self.version
     }
 
     func getLedgerNetwork() async throws -> NetworkSecurityCase {

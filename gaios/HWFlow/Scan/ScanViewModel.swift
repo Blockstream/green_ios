@@ -24,7 +24,6 @@ class ScanViewModel: ObservableObject {
         if centralManager.isScanning {
             return
         }
-        reset()
         try await self.centralManager.waitUntilReady()
         let uuid = deviceType == .Jade ? BleJade.SERVICE_UUID : BleLedger.SERVICE_UUID
         let service = CBUUID(string: uuid.uuidString)

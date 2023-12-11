@@ -201,7 +201,7 @@ public class BleLedgerCommands: BleLedgerConnection {
         return ["isOSU": isOSU, "isBootloader": isBootloader, "managerAllowed": managerAllowed, "pinValidated": pinValidated]
     }
 
-    public func firmware() async throws -> Bool {
+    public func firmware() async throws -> [String: Any] {
         let buffer = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_FIRMWARE_VERSION, p1: 0, p2: 0)
         let compressedKeys = buffer[0] == 0x01
         let major = Int(((buffer[1] & 0xff) << 8) | buffer[2] & 0xff)
@@ -211,7 +211,8 @@ public class BleLedgerCommands: BleLedgerConnection {
         (major == 0x3001 && minor < 3) ||
         (major == 0x3001 && minor == 3 && patch < 7)
         print("compressedKeys \(compressedKeys) - major \(major) - minor \(minor) - patch \(patch)")
-        return isFirmwareOutdated
+        let version = "\(major).\(minor).\(patch)"
+        return ["isFirmwareOutdated": isFirmwareOutdated, "version": version]
     }
 
     public func application() async throws -> [String: Any] {

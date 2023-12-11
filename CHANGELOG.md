@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Navigation of all external web urls in app web view
 - Update Breez SDK to 0.2.10
+- Improve Bluetooth scanner
 
 ### Fixed
 - Show derived lightning mnemonic from Jade

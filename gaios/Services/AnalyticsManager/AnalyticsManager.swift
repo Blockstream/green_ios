@@ -207,14 +207,12 @@ class AnalyticsManager {
         case .notDetermined:
             break
         case .denied:
-            if previous == .authorized {
-                Countly.sharedInstance().cancelConsentForAllFeatures()
-                // change the deviceID
-                invalidateAnalyticsUUID()
-                invalidateCountlyOffset()
-                Countly.sharedInstance().setNewDeviceID(analyticsUUID, onServer: false)
-                Countly.sharedInstance().setNewOffset(countlyOffset)
-            }
+            Countly.sharedInstance().cancelConsentForAllFeatures()
+            // change the deviceID
+            invalidateAnalyticsUUID()
+            invalidateCountlyOffset()
+            Countly.sharedInstance().changeDeviceIDWithoutMerge(analyticsUUID)
+            Countly.sharedInstance().setNewOffset(countlyOffset)
             Countly.sharedInstance().giveConsent(forFeatures: deniedGroup)
             Countly.sharedInstance().disableLocationInfo()
             updateUserProperties()
