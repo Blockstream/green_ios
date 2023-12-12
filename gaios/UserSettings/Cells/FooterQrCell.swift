@@ -72,6 +72,6 @@ class FooterQrCell: UICollectionReusableView {
     }
 
     @IBAction func btnLearnMore(_ sender: Any) {
-        UIApplication.shared.open(ExternalUrls.passphraseReadMore, options: [:], completionHandler: nil)
+        SafeNavigationManager.shared.navigate(ExternalUrls.passphraseReadMore)
     }
 }

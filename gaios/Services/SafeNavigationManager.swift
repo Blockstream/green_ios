@@ -5,16 +5,20 @@ class SafeNavigationManager {
 
     static let shared = SafeNavigationManager()
 
-    func navigate(_ urlString: String?) {
+    public func navigate(_ urlString: String?) {
         guard let urlString = urlString, let url = URL(string: urlString) else {
             return
         }
-        navigate(url)
+        confirm(url)
     }
 
-    func navigate(_ url: URL) {
+    public func navigate(_ url: URL) {
+        confirm(url)
+    }
+    
+    private func confirm(_ url: URL) {
         guard GdkSettings.read()?.tor ?? false else {
-            UIApplication.shared.open( url )
+            browse(url)
             return
         }
 
@@ -26,10 +30,13 @@ class SafeNavigationManager {
         if let con = UIStoryboard(name: "Shared", bundle: .main)
             .instantiateViewController(
                 withIdentifier: "DialogSafeNavigationViewController") as? DialogSafeNavigationViewController {
-            con.onSelect = { (action: SafeNavigationAction) in
+            con.onSelect = { [weak self] (action: SafeNavigationAction) in
+                
+                appDelegate?.navigateWindow = nil
+                
                 switch action {
                 case .authorize:
-                    UIApplication.shared.open( url )
+                    self?.browse(url)
                 case .cancel:
                     break
                 case .copy:
@@ -37,9 +44,27 @@ class SafeNavigationManager {
                     DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
-                appDelegate?.navigateWindow = nil
             }
             appDelegate?.navigateWindow?.rootViewController = con
+        }
+        appDelegate?.navigateWindow?.makeKeyAndVisible()
+    }
+    
+    private func browse(_ url: URL) {
+
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.navigateWindow = UIWindow(frame: UIScreen.main.bounds)
+        appDelegate?.navigateWindow?.windowLevel = .alert
+        appDelegate?.navigateWindow?.tag = 999
+
+        if let vc = UIStoryboard(name: "Utility", bundle: .main)
+            .instantiateViewController(
+                withIdentifier: "BrowserViewController") as? BrowserViewController {
+            vc.url = url
+            vc.onClose = { () in
+                appDelegate?.navigateWindow = nil
+            }
+            appDelegate?.navigateWindow?.rootViewController = vc
         }
         appDelegate?.navigateWindow?.makeKeyAndVisible()
     }

@@ -269,7 +269,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @objc func helpBtnTap() {
-        UIApplication.shared.open(ExternalUrls.receiveTransactionHelp, options: [:], completionHandler: nil)
+        SafeNavigationManager.shared.navigate(ExternalUrls.receiveTransactionHelp)
     }
 
     func optRequestAmount() {

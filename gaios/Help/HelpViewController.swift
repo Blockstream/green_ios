@@ -107,7 +107,7 @@ extension HelpViewController: UITableViewDataSource, UITableViewDelegate {
         }
         if let url = URL(string: urlString) {
             if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                SafeNavigationManager.shared.navigate(url)
             }
         }
     }

@@ -301,7 +301,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     @IBAction func btnRecoveryTool(_ sender: Any) {
         if let url = URL(string: "https://github.com/greenaddress/garecovery") {
-            UIApplication.shared.open(url)
+            SafeNavigationManager.shared.navigate(url)
         }
     }
 

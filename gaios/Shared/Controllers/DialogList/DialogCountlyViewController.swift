@@ -198,7 +198,7 @@ class DialogCountlyViewController: UIViewController {
     }
 
     @IBAction func btnMore(_ sender: Any) {
-        UIApplication.shared.open(ExternalUrls.analyticsReadMore, options: [:], completionHandler: nil)
+        SafeNavigationManager.shared.navigate(ExternalUrls.analyticsReadMore)
     }
 
     @IBAction func btnDeny(_ sender: Any) {

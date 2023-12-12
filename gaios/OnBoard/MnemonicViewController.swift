@@ -411,7 +411,7 @@ extension MnemonicViewController: MnemonicCellDelegate {
 
 extension MnemonicViewController: DialogRecoveryHelpViewControllerDelegate {
     func didTapHelpCenter() {
-        UIApplication.shared.open(ExternalUrls.mnemonicNotWorking)
+        SafeNavigationManager.shared.navigate(ExternalUrls.mnemonicNotWorking)
     }
 
     func didCancel() { }

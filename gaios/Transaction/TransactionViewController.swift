@@ -190,7 +190,7 @@ class TransactionViewController: UIViewController {
         guard let url = exUrl else { return }
         let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!
         if viewInExplorerPreference {
-            UIApplication.shared.open(url, options: [:])
+            SafeNavigationManager.shared.navigate(url)
             return
         }
         let message = String(format: NSLocalizedString("id_are_you_sure_you_want_to_view", comment: ""), host)
@@ -198,11 +198,11 @@ class TransactionViewController: UIViewController {
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_only_this_time", comment: ""), style: .default) { (_: UIAlertAction) in
-            UIApplication.shared.open(url, options: [:])
+            SafeNavigationManager.shared.navigate(url)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_always", comment: ""), style: .default) { (_: UIAlertAction) in
             self.viewInExplorerPreference = true
-            UIApplication.shared.open(url, options: [:])
+            SafeNavigationManager.shared.navigate(url)
         })
         present(alert, animated: true, completion: nil)
     }

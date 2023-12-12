@@ -385,7 +385,7 @@ class AccountViewController: UIViewController {
 
     @objc func ampHelp() {
         if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-") {
-            UIApplication.shared.open(url)
+            SafeNavigationManager.shared.navigate(url)
         }
     }
 

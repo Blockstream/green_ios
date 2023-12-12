@@ -197,7 +197,7 @@ extension DialogDetailViewController: UITableViewDelegate, UITableViewDataSource
         if assetDetailCellTypes[indexPath.row] == .issuer && isLBTC {
             if let url = URL(string: "https://docs.blockstream.com/liquid/technical_overview.html#watchmen") {
                 if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    SafeNavigationManager.shared.navigate(url)
                 }
             }
         }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -640,14 +640,90 @@
             </objects>
             <point key="canvasLocation" x="3185" y="2908"/>
         </scene>
+        <!--Browser View Controller-->
+        <scene sceneID="Xot-a5-ChD">
+            <objects>
+                <viewController storyboardIdentifier="BrowserViewController" id="xIH-rU-zvk" customClass="BrowserViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Saa-UP-AGn">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DYX-Gc-f74">
+                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cKR-Vg-r3b">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="64"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WYZ-5T-OGZ">
+                                                <rect key="frame" x="339" y="10" width="44" height="44"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="44" id="AIw-Va-5Gc"/>
+                                                    <constraint firstAttribute="height" constant="44" id="ksv-fs-g0i"/>
+                                                </constraints>
+                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <inset key="contentEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" image="cancel"/>
+                                                <connections>
+                                                    <action selector="btnClose:" destination="xIH-rU-zvk" eventType="touchUpInside" id="yu7-Z3-IHr"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" name="gBlackBg"/>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="WYZ-5T-OGZ" secondAttribute="trailing" constant="10" id="aYS-14-OaB"/>
+                                            <constraint firstItem="WYZ-5T-OGZ" firstAttribute="centerY" secondItem="cKR-Vg-r3b" secondAttribute="centerY" id="g5n-kL-Bia"/>
+                                            <constraint firstAttribute="height" constant="64" id="jSH-uy-uvu"/>
+                                        </constraints>
+                                    </view>
+                                    <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KkP-ik-YAK">
+                                        <rect key="frame" x="0.0" y="64" width="393" height="695"/>
+                                        <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <wkWebViewConfiguration key="configuration">
+                                            <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                            <wkPreferences key="preferences"/>
+                                        </wkWebViewConfiguration>
+                                    </wkWebView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="KkP-ik-YAK" firstAttribute="top" secondItem="cKR-Vg-r3b" secondAttribute="bottom" id="2xd-A6-Hkf"/>
+                                    <constraint firstAttribute="trailing" secondItem="KkP-ik-YAK" secondAttribute="trailing" id="3Ty-8r-VEy"/>
+                                    <constraint firstAttribute="trailing" secondItem="cKR-Vg-r3b" secondAttribute="trailing" id="EWr-6b-iv3"/>
+                                    <constraint firstItem="cKR-Vg-r3b" firstAttribute="leading" secondItem="DYX-Gc-f74" secondAttribute="leading" id="NpJ-td-9Fo"/>
+                                    <constraint firstItem="cKR-Vg-r3b" firstAttribute="top" secondItem="DYX-Gc-f74" secondAttribute="top" id="Q1F-l6-7tw"/>
+                                    <constraint firstItem="KkP-ik-YAK" firstAttribute="leading" secondItem="DYX-Gc-f74" secondAttribute="leading" id="SG2-7n-EKI"/>
+                                    <constraint firstAttribute="bottom" secondItem="KkP-ik-YAK" secondAttribute="bottom" id="SNO-hB-C70"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="5WC-Ld-ZTb"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="5WC-Ld-ZTb" firstAttribute="trailing" secondItem="DYX-Gc-f74" secondAttribute="trailing" id="HhU-e9-B2Y"/>
+                            <constraint firstItem="DYX-Gc-f74" firstAttribute="leading" secondItem="5WC-Ld-ZTb" secondAttribute="leading" id="TkF-ux-wRH"/>
+                            <constraint firstItem="DYX-Gc-f74" firstAttribute="bottom" secondItem="5WC-Ld-ZTb" secondAttribute="bottom" id="bax-UA-U8z"/>
+                            <constraint firstItem="5WC-Ld-ZTb" firstAttribute="top" secondItem="DYX-Gc-f74" secondAttribute="top" id="cwO-QR-Qhb"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="btnClose" destination="WYZ-5T-OGZ" id="uVU-Sg-Nc3"/>
+                        <outlet property="webView" destination="KkP-ik-YAK" id="f6t-Jt-uca"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Pjl-Hu-bzE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3185" y="3581"/>
+        </scene>
     </scenes>
     <resources>
         <image name="bg_actions" width="375" height="192"/>
+        <image name="cancel" width="14" height="14"/>
         <image name="ic_amp_warn" width="15.333333015441895" height="16"/>
         <image name="ic_qr" width="60" height="60"/>
         <image name="ic_search" width="16.666666030883789" height="16.666666030883789"/>
         <namedColor name="gBlackBg">
-            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayBtn">
             <color red="0.18000000715255737" green="0.18799999356269836" blue="0.20000000298023224" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

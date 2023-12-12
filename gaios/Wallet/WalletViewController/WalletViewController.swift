@@ -578,7 +578,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                    onLeft: nil,
                                    onRight: {
                                         if let link = remoteAlert.link, let url = URL(string: link) {
-                                            UIApplication.shared.open(url)
+                                            SafeNavigationManager.shared.navigate(url)
                                         }
                                     },
                                    onDismiss: {[weak self] in

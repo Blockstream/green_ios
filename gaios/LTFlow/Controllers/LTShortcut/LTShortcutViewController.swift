@@ -100,10 +100,9 @@ class LTShortcutViewController: UIViewController {
     @IBAction func btnLearnMore(_ sender: Any) {
         if let url = URL(string: vm.linkMore) {
             if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                SafeNavigationManager.shared.navigate(url)
             }
         }
-        dismiss(.learnMore)
     }
     @IBAction func btnMain(_ sender: Any) {
         dismiss(vm.action == .remove ? .remove : .add)

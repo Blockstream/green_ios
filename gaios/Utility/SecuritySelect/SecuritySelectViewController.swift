@@ -385,7 +385,7 @@ extension SecuritySelectViewController: LTShortcutViewControllerDelegate {
         case .learnMore:
             if let url = URL(string: viewModel.linkMore) {
                 if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    SafeNavigationManager.shared.navigate(url)
                 }
             }
         case .add:
