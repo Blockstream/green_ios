@@ -74,15 +74,10 @@ class LTAmountCell: UITableViewCell {
         textField.text = model.amountText
         lblAsset.attributedText = model.denomUnderlineText
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        if enabled {
-//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-//                self.textField.becomeFirstResponder()
-//            }
-        } else {
+        if !enabled {
             state = .disabled
         }
-        reload()
-        updateState()
+        triggerTextChange()
     }
 
     func reload() {
@@ -131,7 +126,7 @@ class LTAmountCell: UITableViewCell {
             }
         }
     }
-    
+
     @objc func textFieldDidChange(_ textField: UITextField) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0)
