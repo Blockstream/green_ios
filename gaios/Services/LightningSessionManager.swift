@@ -128,8 +128,7 @@ class LightningSessionManager: SessionManager {
 
     override func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
         let invoiceOrLnUrl = tx.addressees.first?.address
-        let sat = tx.addressees.first?.satoshi
-        let satoshi = tx.anyAmouts ? UInt64(sat ?? 0) : nil
+        let satoshi = tx.addressees.first?.satoshi
         let comment = tx.memo ?? ""
         switch lightBridge?.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
         case .bolt11(let invoice):
@@ -139,7 +138,7 @@ class LightningSessionManager: SessionManager {
                 throw TransactionError.invalid(localizedDescription: "Invoice Expired")
             }
             do {
-                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: satoshi) {
+                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: satoshi != nil ? UInt64(satoshi ?? 0) : nil) {
                     return SendTransactionSuccess.create(from: res.payment)
                 }
             } catch {
@@ -147,7 +146,7 @@ class LightningSessionManager: SessionManager {
                 throw TransactionError.failure(localizedDescription: msg, paymentHash: invoice.paymentHash)
             }
         case .lnUrlPay(let data):
-            let res = try lightBridge?.payLnUrl(requestData: data, amount: satoshi ?? 0, comment: comment)
+            let res = try lightBridge?.payLnUrl(requestData: data, amount: UInt64(satoshi ?? 0), comment: comment)
             switch res {
             case .endpointSuccess(let data):
                 print("payLnUrl success: \(data)")
