@@ -26,10 +26,4 @@ struct AppSettings: Codable {
         UserDefaults.standard.set(newValue, forKey: "network_settings")
         UserDefaults.standard.synchronize()
     }
-    
-    var lightningCodeOverride = false
-    var lightningEnabled: Bool {
-        let featureLightning = AnalyticsManager.shared.getRemoteConfigValue(key: "feature_lightning") as? Bool
-        return featureLightning ?? false || lightningCodeOverride
-    }
 }

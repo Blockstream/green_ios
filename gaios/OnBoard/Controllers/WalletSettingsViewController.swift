@@ -139,15 +139,6 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVliquidServer.placeholder = GdkSettings.liquidElectrumSrvDefaultEndPoint
         fieldSPVtestnetServer.placeholder = GdkSettings.testnetElectrumSrvDefaultEndPoint
         fieldSPVliquidTestnetServer.placeholder = GdkSettings.liquidTestnetElectrumSrvDefaultEndPoint
-        loadNavigationBtns()
-    }
-
-    func loadNavigationBtns() {
-        let redeemBtn = UIButton(type: .system)
-        redeemBtn.setTitleColor(UIColor.gGreenMatrix(), for: .normal)
-        redeemBtn.setTitle("Redeem".localized, for: .normal)
-        redeemBtn.addTarget(self, action: #selector(onTapRedeem), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: redeemBtn)]
     }
     
     func setStyle() {
@@ -171,34 +162,6 @@ class WalletSettingsViewController: KeyboardViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    func redeemScan() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func redeemType() {
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTInvitationViewController") as? LTInvitationViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    @objc func onTapRedeem(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Redeem", type: .redeemPrefs, items: RedeemPrefs.getItems())
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
     func reload() {
         let appSettings = AppSettings.shared
         guard let gdkSettings = appSettings.gdkSettings else { return }
@@ -209,7 +172,7 @@ class WalletSettingsViewController: KeyboardViewController {
            !socks5.isEmpty && !port.isEmpty {
             fieldProxyIp.text = "\(socks5):\(port)"
         }
-        cardExperimental.isHidden = !(appSettings.lightningEnabled || appSettings.experimental)
+        cardExperimental.isHidden = false
         switchExperimental.setOn(appSettings.experimental, animated: true)
         switchTestnet.setOn(appSettings.testnet, animated: true)
         switchTxCheck.setOn(gdkSettings.spvEnabled ?? false, animated: true)
@@ -249,20 +212,6 @@ class WalletSettingsViewController: KeyboardViewController {
         let contentInset: UIEdgeInsets = UIEdgeInsets.zero
         scrollView.contentInset = contentInset
         super.keyboardWillHide(notification: notification)
-    }
-
-    func redeem(_ value: String) {
-        // invitation code
-        let data = Data(base64Encoded: value)
-        let code = data != nil ? String(data: data!, encoding: .utf8) : nil
-        let codes = AnalyticsManager.shared.getRemoteConfigValue(key: "feature_lightning_codes") as? [String]
-        let valid = codes?.contains(code ?? value) ?? false
-        if valid {
-            AppSettings.shared.lightningCodeOverride = valid
-        } else {
-            showError("Invite code invalid or expired".localized)
-        }
-        reload()
     }
 
     @IBAction func switchProxyChange(_ sender: UISwitch) {
@@ -350,36 +299,5 @@ extension WalletSettingsViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
-    }
-}
-
-extension WalletSettingsViewController: DialogScanViewControllerDelegate {
-    func didScan(value: ScanResult, index: Int?) {
-        redeem(value.result)
-    }
-    func didStop() {
-        //
-    }
-}
-
-extension WalletSettingsViewController: LTInvitationViewControllerDelegate {
-    func didConfirm(txt: String) {
-        redeem(txt)
-    }
-    
-    func didCancel() {}
-}
-
-extension WalletSettingsViewController: DialogListViewControllerDelegate {
-    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) { }
-    func didSelectIndex(_ index: Int, with type: DialogType) {
-        switch RedeemPrefs(rawValue: index) {
-        case .scan:
-            redeemScan()
-        case .type:
-            redeemType()
-        default:
-            break
-        }
     }
 }

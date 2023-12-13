@@ -141,7 +141,7 @@ class AccountCell: UITableViewCell {
         btcImg.image = backgroundImage(network: network)
         imgMS.image = backgroundIcon(network: network)
         
-        ltExperimental.isHidden = !(model.networkType.lightning && AppSettings.shared.lightningEnabled)
+        ltExperimental.isHidden = !model.networkType.lightning
         lblLtEXperimental.text = "id_experimental".localized
         ltIconExp.image = UIImage(named: "ic_lightning_info")?.maskWithColor(color: .white)
         lblLtExpBg.layer.cornerRadius = 4.0

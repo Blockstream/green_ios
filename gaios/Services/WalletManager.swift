@@ -187,7 +187,7 @@ class WalletManager {
         masterXpub: String? = nil, 
         fullRestore: Bool = false)
     async throws{
-        if session.gdkNetwork.lightning && !(AppSettings.shared.lightningEnabled && AppSettings.shared.experimental) {
+        if session.gdkNetwork.lightning && !AppSettings.shared.experimental {
             return
         }
         if session.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
