@@ -111,11 +111,11 @@ extension Transaction {
         tx.subaccount = subaccount
         tx.blockHeight = isRefundableSwap ? UInt32.max : 0
         tx.canRBF = false
-        tx.memo = ""
+        tx.memo = nil
         tx.fee = 0
         tx.feeRate = 0
-        tx.createdAtTs = swapInfo.createdAt
-        tx.hash = swapInfo.paymentHash.hex
+        tx.createdAtTs = swapInfo.createdAt * 1_000_000
+        tx.hash = swapInfo.refundTxIds.first
         tx.type = .mixed
         tx.inputs = [["address": swapInfo.bitcoinAddress]]
         tx.outputs = []

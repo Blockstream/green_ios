@@ -53,10 +53,14 @@ class TransactionCell: UITableViewCell {
                         txtLeft = model.status ?? ""
                     }
                 }
+                var style: MultiLabelStyle = amount.value > 0 ? .amountIn : .amountOut
+                if model.tx.isRefundableSwap ?? false {
+                    style = .swapFailure
+                }
                 addStackRow(MultiLabelViewModel(txtLeft: txtLeft,
                                                 txtRight: txtRight,
                                                 hideBalance: hideBalance,
-                                                style: amount.value > 0 ? .amountIn : .amountOut ))
+                                                style: style))
             }
         }
         addStackRow(MultiLabelViewModel(txtLeft: model.statusUI().label,
@@ -72,7 +76,7 @@ class TransactionCell: UITableViewCell {
         }
 
         progressBar.progress = model.statusUI().progress ?? 0
-        if model.statusUI().style == .unconfirmed {
+        if model.statusUI().style == .unconfirmed || model.statusUI().style == .swapInProgress {
             progressLoop()
         }
         activity.isHidden = true

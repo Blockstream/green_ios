@@ -190,6 +190,7 @@
 		345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */; };
 		345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70852836233800EF3971 /* AnalyticsManager.swift */; };
 		345C70882836254600EF3971 /* AssetsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70872836254600EF3971 /* AssetsManager.swift */; };
+		345D5A192B2B10F400EE4254 /* TransactionInitRefund.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345D5A182B2B10F400EE4254 /* TransactionInitRefund.swift */; };
 		345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */; };
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
@@ -862,6 +863,7 @@
 		345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WODetailsViewController.swift; sourceTree = "<group>"; };
 		345C70852836233800EF3971 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		345C70872836254600EF3971 /* AssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManager.swift; sourceTree = "<group>"; };
+		345D5A182B2B10F400EE4254 /* TransactionInitRefund.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionInitRefund.swift; sourceTree = "<group>"; };
 		345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimator.swift; sourceTree = "<group>"; };
 		345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerPresentationController.swift; sourceTree = "<group>"; };
 		345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DrawerNetworkSelection.storyboard; sourceTree = "<group>"; };
@@ -1462,6 +1464,7 @@
 				3418BAB92742ABE100F9B2D0 /* TransactionStatusCell.swift */,
 				3418BABB2743984400F9B2D0 /* TransactionDetailCell.swift */,
 				3448B5CC29D48B32008D5746 /* TransactionDetailNoteCell.swift */,
+				345D5A182B2B10F400EE4254 /* TransactionInitRefund.swift */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -3924,6 +3927,7 @@
 				818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */,
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				811EFEE72A2BAFFB0054EBFE /* GdkSettings.swift in Sources */,
+				345D5A192B2B10F400EE4254 /* TransactionInitRefund.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
 				34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */,
 				3469A2482887D56E00B2F640 /* Date.swift in Sources */,

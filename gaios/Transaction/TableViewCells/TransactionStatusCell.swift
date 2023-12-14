@@ -43,7 +43,7 @@ class TransactionStatusCell: UITableViewCell {
 
         lblStatusTitle.text = "id_transaction_status".localized
         lblDate.text = transaction.date(dateStyle: .long, timeStyle: .short)
-
+        lblDate.isHidden = transaction.createdAtTs == 0
         lblDate.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblStatus.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
 
@@ -53,7 +53,10 @@ class TransactionStatusCell: UITableViewCell {
         let isLightning = transaction.subaccountItem?.gdkNetwork.lightning ?? false
 
         var status: TransactionStatus = .unconfirmed
-        if transaction.isUnconfirmed(block: blockHeight) {
+        if transaction.isRefundableSwap ?? false {
+            lblStatus.text = NSLocalizedString("Failed", comment: "")
+            lblStatus.textColor = UIColor.gRedWarn()
+        } else if transaction.isUnconfirmed(block: blockHeight) {
             lblStatus.text = NSLocalizedString("id_unconfirmed", comment: "")
             lblStatus.textColor = UIColor.errorRed()
         } else if !isLightning && transaction.isLiquid && blockHeight < transaction.blockHeight + 1 {
@@ -77,17 +80,23 @@ class TransactionStatusCell: UITableViewCell {
         // status widget
         lblStep.isHidden = true
         iconCheck.isHidden = true
+        
         if !shouldShowSpvStatus(tx: transaction) {
-            lblStep.isHidden = status == .confirmed
-            arc.subviews.forEach { $0.removeFromSuperview() }
-            iconCheck.isHidden = !(status == .confirmed)
-
-            arc.subviews.forEach { $0.removeFromSuperview() }
-            if status != .confirmed {
-                lblStep.text = "\(step)/\(steps)"
-                arc.addSubview(ArcView(frame: arc.frame, step: Int(step), steps: Int(steps)))
+            if transaction.isLightning && transaction.isRefundableSwap ?? false {
+                lblStep.isHidden = true
+                iconCheck.isHidden = true
             } else {
-                arc.addSubview(ArcView(frame: arc.frame, step: Int(steps), steps: Int(steps)))
+                lblStep.isHidden = status == .confirmed
+                arc.subviews.forEach { $0.removeFromSuperview() }
+                iconCheck.isHidden = !(status == .confirmed)
+                
+                arc.subviews.forEach { $0.removeFromSuperview() }
+                if status != .confirmed {
+                    lblStep.text = "\(step)/\(steps)"
+                    arc.addSubview(ArcView(frame: arc.frame, step: Int(step), steps: Int(steps)))
+                } else {
+                    arc.addSubview(ArcView(frame: arc.frame, step: Int(steps), steps: Int(steps)))
+                }
             }
         } else {
             setSpvVerifyIcon(tx: transaction)

@@ -48,12 +48,21 @@ class TransactionCellModel {
     }
 
     func statusUI() -> PendingStateUI {
-        if tx.isRefundableSwap ?? false {
-            return PendingStateUI(style: .simple,
-                                  label: "id_refundable".localized,
-                                  progress: nil)
-        }
-        if tx.isUnconfirmed(block: blockHeight) {
+        if tx.isLightningSwap ?? false {
+            if tx.isInProgressSwap ?? false {
+                return PendingStateUI(style: .swapInProgress,
+                                      label: "id_in_progress".localized,
+                                      progress: nil)
+            } else if tx.isRefundableSwap ?? false {
+                return PendingStateUI(style: .swapRefundable,
+                                      label: "id_refundable".localized,
+                                      progress: nil)
+            } else {
+                return PendingStateUI(style: .swapFailure,
+                                      label: "id_failure".localized,
+                                      progress: nil)
+            }
+        } else if tx.isUnconfirmed(block: blockHeight) {
             return PendingStateUI(style: .unconfirmed,
                                   label: "id_unconfirmed".localized,
                                   progress: nil)

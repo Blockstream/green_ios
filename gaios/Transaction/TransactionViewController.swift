@@ -11,6 +11,7 @@ enum TransactionSection: Int, CaseIterable {
     case message = 5
     case url = 6
     case plaintext = 7
+    case refund = 8
 }
 
 protocol TransactionViewControllerDelegate: AnyObject {
@@ -87,19 +88,6 @@ class TransactionViewController: UIViewController {
 
     func navBarSetup() {
         title = "id_details".localized
-//        var status = NSLocalizedString("id_sent", comment: "")
-//        if transaction.type == .redeposit {
-//            status = NSLocalizedString("id_redeposited", comment: "")
-//        } else if transaction.type == .incoming {
-//            status = NSLocalizedString("id_received_on", comment: "")
-//        }
-//        let leftBarItem = ((Bundle.main.loadNibNamed("TransactionBarItem", owner: self, options: nil)![0] as? TransactionBarItem)!)
-//        leftBarItem.configure(status: status, account: "") {
-//            [weak self] in
-//            self?.navigationController?.popViewController(animated: true)
-//        }
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftBarItem)
-
         let shareBtn = UIButton(type: .system)
         shareBtn.setImage(UIImage(named: "ic_export"), for: .normal)
         shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
@@ -275,6 +263,25 @@ class TransactionViewController: UIViewController {
             }
         }
     }
+
+    func initiateRefund() {
+        pushLTRecoverFundsViewController(transaction)
+    }
+
+    func pushLTRecoverFundsViewController(_ tx: Transaction) {
+        let amount = tx.amounts["btc"].map {UInt64(abs($0))}
+        let address = tx.inputs?.first?.address as? String
+        let model = LTRecoverFundsViewModel(wallet: tx.subaccountItem,
+                                            onChainAddress: address,
+                                            amount: amount,
+                                            type: .refund)
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
+            vc.viewModel = model
+            vc.modalPresentationStyle = .overFullScreen
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }
 
 extension TransactionViewController: UITableViewDelegate, UITableViewDataSource {
@@ -288,23 +295,26 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let tx = transaction else { return 0 }
         switch sections[section] {
         case TransactionSection.amount:
             return assetAmountList.amounts.count
         case TransactionSection.fee:
-            return (transaction.isLightning && transaction.type == .incoming) ? 0 : 1
+            return (tx.isLightning && tx.type == .incoming || tx.isRefundableSwap ?? false) ? 0 : 1
         case TransactionSection.status:
             return 1
         case TransactionSection.detail:
-            return (transaction.isLightning && transaction.hash == nil) ? 0 : 1
+            return (tx.isLightning && tx.hash == nil) ? 0 : 1
         case TransactionSection.note:
-            return transaction.isLightning && transaction.memo == nil ? 0 : 1
+            return tx.isLightning && tx.memo == nil ? 0 : 1
         case TransactionSection.message:
-            return transaction.isLightning && transaction.message != nil ? 1 : 0
+            return tx.isLightning && tx.message != nil ? 1 : 0
         case TransactionSection.url:
-            return transaction.isLightning && transaction.url != nil ? 1 : 0
+            return tx.isLightning && tx.url != nil ? 1 : 0
         case TransactionSection.plaintext:
-            return transaction.isLightning && transaction.plaintext != nil ? 1 : 0
+            return tx.isLightning && tx.plaintext != nil ? 1 : 0
+        case TransactionSection.refund:
+            return tx.isLightning && tx.isRefundableSwap ?? false ? 1 : 0
         }
     }
 
@@ -410,6 +420,14 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                     text: plaintext.1,
                     noteAction: nil
                 )
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .refund:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionInitRefundCell") as? TransactionInitRefundCell {
+                cell.configure { [weak self] in
+                    self?.initiateRefund()
+                }
                 cell.selectionStyle = .none
                 return cell
             }

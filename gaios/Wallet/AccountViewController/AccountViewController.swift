@@ -402,15 +402,6 @@ class AccountViewController: UIViewController {
         SafeNavigationManager.shared.navigate( ExternalUrls.helpReceiveCapacity )
     }
 
-    func pushLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
-        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
-            vc.viewModel = model
-            vc.modalPresentationStyle = .overFullScreen
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
     func presentDialogDetailViewController(_ model: WalletAssetCellModel) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDetailViewController") as? DialogDetailViewController {
@@ -584,6 +575,15 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         return UITableViewCell()
     }
 
+    func pushLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
+            vc.viewModel = model
+            vc.modalPresentationStyle = .overFullScreen
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch AccountSection(rawValue: section) {
         case .transaction: // , .assets:
@@ -662,10 +662,10 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .transaction:
             if let tx = viewModel?.txCellModels[indexPath.row].tx {
                 if tx.isLightningSwap ?? false {
-                    if tx.isRefundableSwap ?? false {
-                        pushLTRecoverFundsViewController(viewModel.ltRecoverFundsViewModel(tx: tx))
-                    } else {
+                    if tx.isInProgressSwap ?? false {
                         DropAlert().warning(message: "Swap in progress")
+                    } else {
+                        pushTransactionViewController(tx)
                     }
                 } else {
                     pushTransactionViewController(tx)

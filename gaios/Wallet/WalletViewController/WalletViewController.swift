@@ -744,10 +744,10 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .transaction:
             let tx = viewModel.txCellModels[indexPath.row].tx
             if tx.isLightningSwap ?? false {
-                if tx.isRefundableSwap ?? false {
-                    pushLTRecoverFundsViewController(tx)
-                } else {
+                if tx.isInProgressSwap ?? false {
                     DropAlert().warning(message: "id_swap_is_in_progress".localized)
+                } else {
+                    pushTransactionViewController(tx)
                 }
             } else {
                 pushTransactionViewController(tx)
@@ -764,21 +764,6 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
             vc.transaction = tx
             vc.wallet = tx.subaccountItem
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func pushLTRecoverFundsViewController(_ tx: Transaction) {
-        let amount = tx.amounts["btc"].map {UInt64(abs($0))}
-        let address = tx.inputs?.first?["address"] as? String
-        let model = LTRecoverFundsViewModel(wallet: tx.subaccountItem,
-                                            onChainAddress: address,
-                                            amount: amount,
-                                            type: .refund)
-        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
-            vc.viewModel = model
-            vc.modalPresentationStyle = .overFullScreen
             navigationController?.pushViewController(vc, animated: true)
         }
     }

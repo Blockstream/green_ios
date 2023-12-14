@@ -2,7 +2,7 @@ import UIKit
 import gdk
 
 class TransactionAmountCell: UITableViewCell {
-
+    
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblAsset: UILabel!
@@ -13,35 +13,43 @@ class TransactionAmountCell: UITableViewCell {
     @IBOutlet weak var copyRecipientIcon: UIImageView!
     @IBOutlet weak var copyAmountIcon: UIImageView!
     @IBOutlet weak var recipientView: UIView!
-
+    
     var copyAmount: ((String) -> Void)?
     var copyRecipient: ((String) -> Void)?
-
+    
     private var btc: String {
         return WalletManager.current?.account.gdkNetwork.getFeeAsset() ?? ""
     }
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.layer.cornerRadius = 5.0
-
+        
         lblTitle.setStyle(.sectionTitle)
         lblRecipient.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblAmount.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblAsset.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblFiat.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-
+    
     override func prepareForReuse() {
         lblAmount.text = ""
         lblAsset.text = ""
         self.icon.image = UIImage()
         lblFiat.isHidden = true
         lblRecipient.isHidden = true
+    }
+    
+    func color(_ tx: Transaction, value: Int64) -> UIColor {
+        var color: UIColor = value > 0 ? .customMatrixGreen() : .white
+        if tx.isRefundableSwap ?? false {
+            color = .gRedWarn()
+        }
+        return color
     }
 
     // swiftlint:disable function_parameter_count
@@ -50,18 +58,18 @@ class TransactionAmountCell: UITableViewCell {
 
         self.copyAmount = copyAmount
         self.copyRecipient = copyRecipient
+        let color = color(tx, value: value)
+        let address = address(tx)
 
         copyRecipientIcon.image = copyRecipientIcon.image?.maskWithColor(color: .white)
-        let color: UIColor = value > 0 ? .customMatrixGreen() : .white
         copyAmountIcon.image = copyAmountIcon.image?.maskWithColor(color: color)
         lblTitle.text = NSLocalizedString(value > 0 ? "id_received_on" : "id_sent_to", comment: "")
-        let address = address(tx)
         lblRecipient.text = address
-        if address == nil { lblTitle.text = NSLocalizedString(value > 0 ? "id_received" : "id_sent", comment: "")}
-        lblRecipient.isHidden = tx.isLiquid
+        lblTitle.text = value > 0 ? "id_received".localized : "id_sent".localized
+        lblRecipient.isHidden = address == nil
+        recipientView.isHidden = address == nil
         lblFiat.textColor = color
         copyRecipientIcon.isHidden = tx.isLiquid
-        recipientView.isHidden = tx.isLiquid || isLightning
         lblAmount.textColor = color
         lblFiat.isHidden = id != tx.feeAsset
         lblAsset.textColor = color
@@ -89,6 +97,13 @@ class TransactionAmountCell: UITableViewCell {
     func address(_ tx: Transaction) -> String? {
         if tx.isLiquid {
             return nil
+        }
+        if tx.isLightning {
+            if tx.isRefundableSwap ?? false || tx.isInProgressSwap ?? false {
+                return tx.inputs?.first?.address
+            } else {
+                return nil
+            }
         }
         switch tx.type {
         case .outgoing:
