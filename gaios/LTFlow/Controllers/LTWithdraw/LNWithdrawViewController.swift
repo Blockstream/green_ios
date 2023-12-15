@@ -25,7 +25,7 @@ class LTWithdrawViewController: KeyboardViewController {
         super.viewDidLoad()
         title = "id_withdraw".localized
         lblTitle.text = String(format: "id_you_are_redeeming_funds_from_s".localized, requestData?.domain ?? "")
-        btnNext.setTitle("id_redeem".localized, for: .normal)
+        btnNext.setTitle("id_withdraw".localized, for: .normal)
 
     }
 
@@ -57,15 +57,15 @@ class LTWithdrawViewController: KeyboardViewController {
     }
 
     @IBAction func tapNext(_ sender: Any) {
-        guard let requestData = requestData else { return }
         let description = lblTitle.text
+        guard let requestData = requestData else { return }
         guard let amount = self.amount else { return }
-
-        startAnimating()
+        startLoader()
         Task {
             do {
                 let lightBridge = WalletManager.current?.lightningSession?.lightBridge
                 let res = try lightBridge?.withdrawLnurl(requestData: requestData, amount: amount, description: description)
+                stopLoader()
                 switch res {
                 case .ok:
                     presentAlertSuccess()
@@ -75,6 +75,7 @@ class LTWithdrawViewController: KeyboardViewController {
                     DropAlert().error(message: "id_operation_failure".localized)
                 }
             } catch {
+                stopLoader()
                 switch error {
                 case BreezSDK.SdkError.Generic(let msg):
                     //BreezSDK.SdkError.ServiceConnectivity(let msg):
@@ -83,7 +84,6 @@ class LTWithdrawViewController: KeyboardViewController {
                     DropAlert().error(message: "id_operation_failure".localized)
                 }
             }
-            stopAnimating()
         }
     }
 }
