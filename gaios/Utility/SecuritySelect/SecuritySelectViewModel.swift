@@ -87,7 +87,7 @@ class SecuritySelectViewModel {
             guard let mainCredentials = try await prominentSession.getCredentials(password: "") else {
                 throw GaError.GenericError()
             }
-            let credentials = wm.deriveLightningCredentials(from: mainCredentials)
+            let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
             await session.removeDatadir(credentials: credentials)
             let _ = try await session.loginUser(credentials: credentials, hw: nil, restore: true)
             let _ = try await wm.subaccounts()
@@ -214,7 +214,7 @@ class SecuritySelectViewModel {
         guard let mainCredentials = try await wm.prominentSession?.getCredentials(password: "") else {
             return
         }
-        let credentials = wm.deriveLightningCredentials(from: mainCredentials)
+        let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
         try await wm.addDerivedLightning(credentials: credentials)
     }
 

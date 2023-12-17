@@ -45,7 +45,7 @@ class LoginViewModel {
             account = updateEphemeralAccount(from: credentials)
         }
         let wm = WalletsRepository.shared.getOrAdd(for: account)
-        let lightningCredentials = Credentials(mnemonic: wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
+        let lightningCredentials = Credentials(mnemonic: try wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
         try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials)
         account = wm.account
         if withPIN != nil {

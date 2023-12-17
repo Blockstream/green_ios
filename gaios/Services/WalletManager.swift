@@ -152,7 +152,7 @@ class WalletManager {
             self.prominentNetwork = self.testnet ? .testnetSS : .bitcoinSS
             credentials = Credentials(mnemonic: credentials.mnemonic, bip39Passphrase: bip39passphrase)
         }
-        let lightningCredentials = Credentials(mnemonic: getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
+        let lightningCredentials = Credentials(mnemonic: try getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
         try await self.login(credentials: credentials, lightningCredentials: lightningCredentials)
         AccountsRepository.shared.current = self.account
     }
@@ -466,16 +466,19 @@ class WalletManager {
         account.removeLightningCredentials()
     }
 
-    func getLightningMnemonic(credentials: Credentials) -> String? {
-        return Wally.bip85FromMnemonic(mnemonic: credentials.mnemonic ?? "",
+    func getLightningMnemonic(credentials: Credentials) throws -> String? {
+        guard let mnemonic = credentials.mnemonic else {
+            throw GaError.GenericError("No such mnemonic")
+        }
+        return Wally.bip85FromMnemonic(mnemonic: mnemonic,
                           passphrase: credentials.bip39Passphrase,
                           isTestnet: false,
                           index: 0)
     }
     
-    func deriveLightningCredentials(from credentials: Credentials) -> Credentials {
+    func deriveLightningCredentials(from credentials: Credentials) throws -> Credentials {
         Credentials(
-            mnemonic: getLightningMnemonic(credentials: credentials),
+            mnemonic: try getLightningMnemonic(credentials: credentials),
             bip39Passphrase: credentials.bip39Passphrase)
     }
 }

@@ -27,7 +27,7 @@ class SetPinViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: defaultAccount)
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)
-        let lightningCredentials = wm.deriveLightningCredentials(from: self.credentials)
+        let lightningCredentials = try wm.deriveLightningCredentials(from: self.credentials)
         try await wm.login(credentials: self.credentials, lightningCredentials: lightningCredentials)
         if let network = wm.activeNetworks.first(where: { $0.multisig }) {
             wm.account.networkType = network

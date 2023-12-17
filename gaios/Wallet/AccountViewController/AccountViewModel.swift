@@ -179,7 +179,7 @@ class AccountViewModel {
         }
         // remove lightning session
         if let prominentCredentials = try await prominentSession?.getCredentials(password: ""),
-           let lightnigCredentials = wm?.deriveLightningCredentials(from: prominentCredentials),
+           let lightnigCredentials = try? wm?.deriveLightningCredentials(from: prominentCredentials),
            let walletId = session?.walletIdentifier(credentials: lightnigCredentials)
         {
             try await session?.disconnect()
@@ -240,7 +240,7 @@ class AccountViewModel {
         guard let mainCredentials = try await wm?.prominentSession?.getCredentials(password: "") else {
             return
         }
-        guard let credentials = wm?.deriveLightningCredentials(from: mainCredentials) else {
+        guard let credentials = try? wm?.deriveLightningCredentials(from: mainCredentials) else {
             return
         }
         try await wm?.addDerivedLightning(credentials: credentials)
