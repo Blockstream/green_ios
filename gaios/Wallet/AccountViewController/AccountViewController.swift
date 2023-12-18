@@ -839,6 +839,8 @@ extension AccountViewController: DialogListViewControllerDelegate {
                     break
                 case .logout:
                     logout()
+                case .settings:
+                    settings()
                 }
             }
         case .enable2faPrefs:
@@ -865,6 +867,17 @@ extension AccountViewController: DialogListViewControllerDelegate {
             }
         default:
             break
+        }
+    }
+    func settings() {
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+        if let nvc = nvc as? UINavigationController {
+            if let vc = nvc.viewControllers.first as? UserSettingsViewController {
+                vc.delegate = self
+                nvc.modalPresentationStyle = .fullScreen
+                present(nvc, animated: true, completion: nil)
+            }
         }
     }
 }
@@ -1094,5 +1107,29 @@ extension AccountViewController: DrawerNetworkSelectionDelegate {
                 self.present(vc, animated: false, completion: nil)
             }
         })
+    }
+}
+
+extension AccountViewController: UserSettingsViewControllerDelegate {
+    func userLogout() {
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            if AppSettings.shared.gdkSettings?.tor ?? false {
+                self.startLoader(message: "id_logout".localized)
+            }
+            Task {
+                let account = self.viewModel.wm?.account
+                if account?.isHW ?? false {
+                    try? await BleViewModel.shared.disconnect()
+                }
+                await WalletManager.current?.disconnect()
+                WalletsRepository.shared.delete(for: account?.id ?? "")
+                AccountNavigator.goLogout(account: nil)
+                self.stopLoader()
+            }
+        })
+    }
+
+    func refresh() {
+        reload()
     }
 }

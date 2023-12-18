@@ -9,6 +9,7 @@ enum AccountPrefs {
     case remove
     case shortcut(state: Bool?)
     case logout
+    case settings
 
     var name: String {
         switch self {
@@ -26,6 +27,8 @@ enum AccountPrefs {
             return "Lightning shortcut".localized
         case .logout:
             return "id_logout".localized
+        case .settings:
+            return "id_settings".localized
         }
     }
 
@@ -54,6 +57,8 @@ enum AccountPrefs {
             return UIImage(named: "ic_lightning_shortcut_mini")!
         case .logout:
             return UIImage(named: "ic_logout")!
+        case .settings:
+            return UIImage(named: "ic_dialog_gear_six")!
         }
     }
     var switchState: Bool? {
@@ -71,6 +76,7 @@ enum AccountPrefs {
                          switchState: Bool? = nil) -> [AccountPrefs] {
         var prefs: [AccountPrefs] = []
         if isLightningShortcut {
+            prefs.append(.settings)
             prefs.append(.logout)
         } else if !isLightning {
             prefs.append(.rename)

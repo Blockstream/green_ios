@@ -14,6 +14,7 @@ class UserSettingsViewModel {
     var isWatchonly: Bool { wm?.account.isWatchonly ?? false }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { wm?.account.isHW ?? false }
+    var isDerivedLightning: Bool { wm?.account.isDerivedLightning ?? false }
     var multiSigSession: SessionManager? { wm?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
     // reload all contents
@@ -116,7 +117,9 @@ class UserSettingsViewModel {
             subtitle: "",
             section: .General,
             type: .WatchOnly)
-        if isWatchonly && isSinglesig {
+        if isDerivedLightning {
+            return [unifiedDenominationExchange]
+        } else if isWatchonly && isSinglesig {
             return [unifiedDenominationExchange]
         }
         return [unifiedDenominationExchange, archievedAccounts, watchOnly]
@@ -155,14 +158,12 @@ class UserSettingsViewModel {
             .Recovery: getRecovery(),
             .About: getAbout()]
 
-        if isWatchonly {
-            if isSinglesig {
-                sections = [ .Logout, .General, .About ]
-                items = [ .Logout: getLogout(), .General: getGeneral(), .About: getAbout()]
-            } else {
-                sections = [ .Logout, .About ]
-                items = [ .Logout: getLogout(), .About: getAbout()]
-            }
+        if isDerivedLightning || (isWatchonly && isSinglesig) {
+            sections = [ .Logout, .General, .About ]
+            items = [ .Logout: getLogout(), .General: getGeneral(), .About: getAbout()]
+        } else if isWatchonly && !isSinglesig {
+            sections = [ .Logout, .About ]
+            items = [ .Logout: getLogout(), .About: getAbout()]
         }
         cellModels = items.mapValues { $0.map { UserSettingsCellModel($0) } }
     }
