@@ -90,6 +90,10 @@ class AccountsRepository {
         account.removePinKeychainData()
         account.removeBioKeychainData()
         account.removeLightningCredentials()
+        account.removeLightningShortcut()
+        if let derivedAccount = account.getDerivedLightningAccount() {
+            derivedAccount.removeLightningCredentials()
+        }
     }
 
     func removeAll() {

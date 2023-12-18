@@ -154,6 +154,10 @@ struct Account: Codable, Equatable {
     func removePinKeychainData() {
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: keychain)
     }
+    
+    func removeLightningShortcut() {
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyCredentials, forNetwork: keychain)
+    }
 
     func removeLightningCredentials() {
         if let walletHashId = walletHashId {

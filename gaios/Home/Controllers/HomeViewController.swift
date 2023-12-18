@@ -118,10 +118,6 @@ class HomeViewController: UIViewController {
             AccountNavigator.goLogin(account: account)
         }
     }
-
-    func onTap(_ indexPath: IndexPath) {
-        onTapOverview(indexPath)
-    }
     
     func onTapOverview(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
@@ -133,6 +129,20 @@ class HomeViewController: UIViewController {
         if let account = getAccountFromTableView(indexPath) {
             if let lightning = account.getDerivedLightningAccount() {
                 goAccount(account: lightning)
+            }
+        }
+    }
+    
+    func onTapLongPressOverview(_ indexPath: IndexPath, cell: UITableViewCell) {
+        if let account = getAccountFromTableView(indexPath) {
+            popover(for: cell, account: account)
+        }
+    }
+
+    func onTapLongPressLightShort(_ indexPath: IndexPath, cell: UITableViewCell) {
+        if let account = getAccountFromTableView(indexPath) {
+            if let lightning = account.getDerivedLightningAccount() {
+                popover(for: cell, account: lightning)
             }
         }
     }
@@ -213,13 +223,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case .swWallet:
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-
                 cell.configure(item: account,
                                isOverviewSelected: isOverviewSelected(account),
                                isLightningSelected: isLightningSelected(account),
                                indexPath: indexPath,
-                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) },
-                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
+                               onLongpressOverview: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
+                               onLongpressLightShort: { [weak self] indexPath in self?.onTapLongPressLightShort(indexPath, cell: cell) },
+                               onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) },
                                onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
                                onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
                 )
@@ -234,7 +245,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                                isLightningSelected: isLightningSelected(account),
                                indexPath: indexPath,
                                onLongpress: nil,
-                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
+                               onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) },
                                onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
                                onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
                 )
@@ -244,14 +255,17 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case .hwWallet:
             let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                cell.configure(item: account,
-                               isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: isLightningSelected(account),
-                               indexPath: indexPath,
-                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) },
-                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
-                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                cell.configure(
+                    item: account,
+                    isOverviewSelected: isOverviewSelected(account),
+                    isLightningSelected: isLightningSelected(account),
+                    indexPath: indexPath,
+                    onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
+                    onLongpressOverview: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
+                    onLongpressLightShort: { [weak self] indexPath in self?.onTapLongPressLightShort(indexPath, cell: cell) },
+                    onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                    onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
+                    onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -269,7 +283,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuHomeViewController") as? PopoverMenuHomeViewController {
             popover.delegate = self
             popover.index = account.id
-            popover.menuOptions = [.edit, .delete]
+            if account.isDerivedLightning {
+                popover.menuOptions = [.delete]
+            } else {
+                popover.menuOptions = [.edit, .delete]
+            }
             popover.modalPresentationStyle = .popover
             let popoverPresentationController = popover.popoverPresentationController
             popoverPresentationController?.backgroundColor = UIColor.customModalDark()

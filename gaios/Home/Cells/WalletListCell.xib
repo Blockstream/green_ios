@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -302,6 +302,7 @@
             </tableViewCellContentView>
             <connections>
                 <outlet property="bg" destination="1WC-We-6dZ" id="net-nE-dTs"/>
+                <outlet property="buttonView" destination="JdC-zz-Alv" id="tCF-Yc-v36"/>
                 <outlet property="circleImageOverview" destination="aC3-o4-m1L" id="dVp-Qa-JZ0"/>
                 <outlet property="circleImageShortcut" destination="EqB-NE-mGo" id="4IJ-xM-dhP"/>
                 <outlet property="circleImageView" destination="Swq-td-hT2" id="M6q-Ke-4Sw"/>
@@ -313,6 +314,7 @@
                 <outlet property="lblOverviewTitle" destination="SxZ-xD-7NI" id="pOM-If-ywl"/>
                 <outlet property="lblShortcutTitle" destination="XkS-fR-M8S" id="3oI-oP-ywl"/>
                 <outlet property="lblTitle" destination="uqv-QH-tXw" id="FKT-8O-VwE"/>
+                <outlet property="overView" destination="pUj-2U-Cng" id="mlv-yG-ERy"/>
                 <outlet property="shortcutStack" destination="8kK-G9-mjO" id="eE5-ur-aw7"/>
                 <outlet property="shortcutView" destination="qz1-Ee-7A8" id="ZV6-Dc-tha"/>
             </connections>

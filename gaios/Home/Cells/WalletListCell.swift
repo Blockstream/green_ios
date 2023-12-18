@@ -17,9 +17,12 @@ class WalletListCell: UITableViewCell {
     @IBOutlet weak var circleImageOverview: UIImageView!
     @IBOutlet weak var circleImageShortcut: UIImageView!
     @IBOutlet weak var shortcutView: UIView!
+    @IBOutlet weak var buttonView: UIButton!
+    @IBOutlet weak var overView: UIView!
 
-    var onLongpress: (() -> Void)?
-
+    var onLongpress: ((IndexPath) -> Void)?
+    var onLongpressOverview: ((IndexPath) -> Void)?
+    var onLongpressLightShort: ((IndexPath) -> Void)?
     var onTap: ((IndexPath) -> Void)?
     var onTapOverview: ((IndexPath) -> Void)?
     var onTapLightShort: ((IndexPath) -> Void)?
@@ -32,8 +35,12 @@ class WalletListCell: UITableViewCell {
         super.awakeFromNib()
         bg.cornerRadius = 7.0
 
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
-        self.addGestureRecognizer(longPressRecognizer)
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressed))
+        let longPressOverviewRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressedOverview))
+        let longPressLightShortRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressedLightShort))
+        buttonView.addGestureRecognizer(longPressRecognizer)
+        overView.addGestureRecognizer(longPressOverviewRecognizer)
+        shortcutView.addGestureRecognizer(longPressLightShortRecognizer)
 
         shortcutView.layer.cornerRadius = 7.0
         shortcutView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
@@ -58,7 +65,9 @@ class WalletListCell: UITableViewCell {
                    isOverviewSelected: Bool = false,
                    isLightningSelected: Bool = false,
                    indexPath: IndexPath,
-                   onLongpress: (() -> Void)? = nil,
+                   onLongpress: ((IndexPath) -> Void)? = nil,
+                   onLongpressOverview: ((IndexPath) -> Void)? = nil,
+                   onLongpressLightShort: ((IndexPath) -> Void)? = nil,
                    onTap: ((IndexPath) -> Void)? = nil,
                    onTapOverview: ((IndexPath) -> Void)? = nil,
                    onTapLightShort: ((IndexPath) -> Void)? = nil
@@ -99,7 +108,6 @@ class WalletListCell: UITableViewCell {
         }
         iconPassphrase.isHidden = !item.isEphemeral
         iconHW.isHidden = !item.isHW
-        self.onLongpress = onLongpress
 
         shortcutStack.subviews.forEach { $0.isHidden = true }
         if hasShortcut == true {
@@ -115,12 +123,32 @@ class WalletListCell: UITableViewCell {
         self.onTap = onTap
         self.onTapOverview = onTapOverview
         self.onTapLightShort = onTapLightShort
+        self.onLongpress = onLongpress
+        self.onLongpressOverview = onLongpressOverview
+        self.onLongpressLightShort = onLongpressLightShort
     }
 
-    @objc func longPressed(sender: UILongPressGestureRecognizer) {
-
+    @objc func onLongPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == UIGestureRecognizer.State.began {
-            onLongpress?()
+            if let indexPath = indexPath {
+                onLongpress?(indexPath)
+            }
+        }
+    }
+
+    @objc func onLongPressedOverview(sender: UILongPressGestureRecognizer) {
+        if sender.state == UIGestureRecognizer.State.began {
+            if let indexPath = indexPath {
+                onLongpressOverview?(indexPath)
+            }
+        }
+    }
+
+    @objc func onLongPressedLightShort(sender: UILongPressGestureRecognizer) {
+        if sender.state == UIGestureRecognizer.State.began {
+            if let indexPath = indexPath {
+                onLongpressLightShort?(indexPath)
+            }
         }
     }
 
