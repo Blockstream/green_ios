@@ -73,11 +73,28 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
 
     func codeCustomDialog(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase) {
         let methodDesc: String
-        if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
+        var methodEnum: TwoFactorType?
+        if method == TwoFactorType.email.rawValue {
+            methodDesc = "id_email"
+            methodEnum = .email
+        }
+        else if method == TwoFactorType.phone.rawValue {
+            methodDesc = "id_phone_call"
+            methodEnum = .phone
+        }
+        else if method == TwoFactorType.sms.rawValue {
+            methodDesc = "id_sms"
+            methodEnum = .sms
+        }
+        else { 
+            methodDesc = "id_authenticator_app"
+            methodEnum = .gauth
+        }
         
         let twoFAFlow = UIStoryboard(name: "TwoFAFlow", bundle: nil)
         guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFAViewController") as? TwoFAViewController else { return }
             
+        vc.methodEnum = methodEnum
         vc.commontitle = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
         vc.attemptsRemaining = attemptsRemaining ?? 3
         vc.enable2faCallMethod = enable2faCallMethod

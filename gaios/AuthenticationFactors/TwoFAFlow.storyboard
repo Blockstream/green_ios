@@ -110,17 +110,17 @@
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8RW-r7-8dp">
                                                         <rect key="frame" x="0.0" y="0.0" width="335" height="615"/>
                                                         <subviews>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_2fa_code" translatesAutoresizingMaskIntoConstraints="NO" id="eyM-6a-Pn8">
-                                                                <rect key="frame" x="12.5" y="0.0" width="310" height="186.5"/>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_2fa_code" translatesAutoresizingMaskIntoConstraints="NO" id="eyM-6a-Pn8">
+                                                                <rect key="frame" x="3.5" y="20" width="328" height="171.5"/>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJp-6G-DsS">
-                                                                <rect key="frame" x="25" y="196.5" width="285" height="20.5"/>
+                                                                <rect key="frame" x="25" y="201.5" width="285" height="20.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="awd-Dw-nUn">
-                                                                <rect key="frame" x="0.0" y="217" width="335" height="301"/>
+                                                                <rect key="frame" x="0.0" y="222" width="335" height="301"/>
                                                                 <subviews>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="Olq-ik-MTO">
                                                                         <rect key="frame" x="50" y="10" width="235" height="50"/>
@@ -475,7 +475,7 @@
                                                                 </constraints>
                                                             </view>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="1co-r1-Bcz">
-                                                                <rect key="frame" x="36" y="518" width="263" height="17"/>
+                                                                <rect key="frame" x="36" y="523" width="263" height="17"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="lbl_attempts" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jRg-K5-MKw">
                                                                         <rect key="frame" x="0.0" y="0.0" width="263" height="17"/>
@@ -486,7 +486,7 @@
                                                                 </subviews>
                                                             </stackView>
                                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="n98-Sv-4oc">
-                                                                <rect key="frame" x="36" y="540" width="263" height="50"/>
+                                                                <rect key="frame" x="36" y="545" width="263" height="50"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GBx-Ph-qDf">
                                                                         <rect key="frame" x="0.0" y="0.0" width="126.5" height="50"/>
@@ -523,7 +523,8 @@
                                                         <constraints>
                                                             <constraint firstAttribute="trailing" secondItem="AJp-6G-DsS" secondAttribute="trailing" constant="25" id="9mC-yK-wi8"/>
                                                             <constraint firstItem="1co-r1-Bcz" firstAttribute="trailing" secondItem="n98-Sv-4oc" secondAttribute="trailing" id="CNH-ot-Sf5"/>
-                                                            <constraint firstItem="eyM-6a-Pn8" firstAttribute="top" secondItem="8RW-r7-8dp" secondAttribute="top" id="PLS-Tn-yL7"/>
+                                                            <constraint firstItem="eyM-6a-Pn8" firstAttribute="width" secondItem="8RW-r7-8dp" secondAttribute="width" multiplier="0.98" id="Fvr-L4-lmK"/>
+                                                            <constraint firstItem="eyM-6a-Pn8" firstAttribute="top" secondItem="8RW-r7-8dp" secondAttribute="top" constant="20" id="PLS-Tn-yL7"/>
                                                             <constraint firstItem="1co-r1-Bcz" firstAttribute="top" secondItem="awd-Dw-nUn" secondAttribute="bottom" id="TqP-eZ-fxX"/>
                                                             <constraint firstItem="1co-r1-Bcz" firstAttribute="leading" secondItem="n98-Sv-4oc" secondAttribute="leading" id="Vd3-Uk-iUt"/>
                                                             <constraint firstAttribute="trailing" secondItem="awd-Dw-nUn" secondAttribute="trailing" id="bKe-QI-cd5"/>
@@ -535,7 +536,7 @@
                                                             <constraint firstItem="AJp-6G-DsS" firstAttribute="leading" secondItem="8RW-r7-8dp" secondAttribute="leading" constant="25" id="onR-1Z-Tkf"/>
                                                             <constraint firstItem="awd-Dw-nUn" firstAttribute="leading" secondItem="8RW-r7-8dp" secondAttribute="leading" id="r2p-PP-uHz"/>
                                                             <constraint firstItem="n98-Sv-4oc" firstAttribute="leading" secondItem="8RW-r7-8dp" secondAttribute="leading" constant="36" id="uEc-rw-B6k"/>
-                                                            <constraint firstAttribute="bottom" secondItem="n98-Sv-4oc" secondAttribute="bottom" constant="25" id="xEt-6Q-lVl"/>
+                                                            <constraint firstAttribute="bottom" secondItem="n98-Sv-4oc" secondAttribute="bottom" constant="20" id="xEt-6Q-lVl"/>
                                                         </constraints>
                                                     </view>
                                                 </subviews>
@@ -586,6 +587,7 @@
                         <outlet property="btnInfoSupport" destination="Be9-vc-kw1" id="6QH-8T-FzH"/>
                         <outlet property="cardInfo" destination="i1O-1C-B8N" id="nck-9L-iii"/>
                         <outlet property="cardView" destination="8RW-r7-8dp" id="aEd-Rf-DIu"/>
+                        <outlet property="icon" destination="eyM-6a-Pn8" id="hHY-uc-8bv"/>
                         <outlet property="lblAttempts" destination="jRg-K5-MKw" id="lrF-13-5hc"/>
                         <outlet property="lblInfoHint" destination="AaM-Kb-t8S" id="EiZ-M6-4N4"/>
                         <outlet property="lblInfoTitle" destination="Tmp-qx-6bC" id="6gp-YZ-Q5N"/>

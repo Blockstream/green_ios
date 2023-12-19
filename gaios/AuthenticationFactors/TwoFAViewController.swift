@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import gdk
 
 class TwoFAViewController: UIViewController {
 
@@ -19,6 +20,7 @@ class TwoFAViewController: UIViewController {
     @IBOutlet weak var btnInfoRetry: UIButton!
     @IBOutlet weak var btnInfoSupport: UIButton!
     
+    @IBOutlet weak var icon: UIImageView!
     @IBOutlet var lblsDigit: [UILabel]!
     
     @IBOutlet weak var lblAttempts: UILabel!
@@ -28,6 +30,7 @@ class TwoFAViewController: UIViewController {
     var onCode: ((String) -> Void)?
     var onEnable2faCall: (() -> Void)?
 
+    var methodEnum: TwoFactorType?
     var commontitle = ""
     var attemptsRemaining = 0
 
@@ -57,6 +60,19 @@ class TwoFAViewController: UIViewController {
         cardInfo.isHidden = true
         
         btnInfoEnableCall.isHidden = !enable2faCallMethod
+        
+        if let method = methodEnum {
+            switch method {
+            case .email:
+                icon.image = UIImage(named: "ic_2fa_code_email")!
+            case .gauth:
+                icon.image = UIImage(named: "ic_2fa_code_auth")!
+            case .phone:
+                icon.image = UIImage(named: "ic_2fa_code_call")!
+            case .sms:
+                icon.image = UIImage(named: "ic_2fa_code_sms")!
+            }
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
