@@ -233,6 +233,8 @@ class WalletViewModel {
         }
     }
 
+    
+    /// can we reuse this?
     func callAnalytics() {
 
         if analyticsDone == true { return }

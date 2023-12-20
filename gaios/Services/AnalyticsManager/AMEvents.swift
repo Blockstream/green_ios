@@ -42,6 +42,10 @@ enum AnalyticsEventName: String {
     case jadeOtaComplete = "ota_complete"
 
     case qrScan = "qr_scan"
+    
+    case accountEmptied = "account_emptied"
+    case preferredUnits = "preferred_units"
+    case hideAmount = "hide_amount"
 }
 
 extension AnalyticsManager {
@@ -321,6 +325,25 @@ extension AnalyticsManager {
             s[AnalyticsManager.strScreen] = screen.rawValue
             recordEvent(.qrScan, sgmt: s)
         }
+    }
+
+    func accountEmptied(account: Account?, walletData: WalletData) {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
+        s[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
+        s[AnalyticsManager.strAccounts] = "\(walletData.accounts)"
+        s[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
+        recordEvent(.accountEmptied, sgmt: s)
+    }
+
+    func preferredUnits(account: Account?) {
+        let s = sessSgmt(account)
+        recordEvent(.preferredUnits, sgmt: s)
+    }
+
+    func hideAmount(account: Account?) {
+        let s = sessSgmt(account)
+        recordEvent(.hideAmount, sgmt: s)
     }
 }
 

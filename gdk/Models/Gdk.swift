@@ -167,7 +167,7 @@ public struct SendTransactionSuccess: Codable {
         case url
     }
     public let txHash: String?
-    public let sendAll: Bool?
+    public var sendAll: Bool?
     public let signedTransaction: String?
     public let paymentId: String?
     public let message: String?

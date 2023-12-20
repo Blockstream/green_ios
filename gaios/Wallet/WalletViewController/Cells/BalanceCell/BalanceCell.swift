@@ -115,6 +115,7 @@ class BalanceCell: UITableViewCell {
     }
 
     @IBAction func btnEye(_ sender: Any) {
+        if !hideBalance { AnalyticsManager.shared.hideAmount(account: AccountsRepository.shared.current) }
         hideBalance = !hideBalance
         onHide?(hideBalance)
         refreshVisibility()
@@ -125,6 +126,7 @@ class BalanceCell: UITableViewCell {
     }
 
     @IBAction func onExchange(_ sender: Any) {
+        AnalyticsManager.shared.preferredUnits(account: AccountsRepository.shared.current)
         onExchange?()
     }
 }
