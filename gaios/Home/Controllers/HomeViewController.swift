@@ -77,6 +77,12 @@ class HomeViewController: UIViewController {
     }
 
     func walletDelete(_ index: String) {
+        if let account = AccountsRepository.shared.get(for: index), account.isDerivedLightning {
+            AccountsRepository.shared.remove(account)
+            AnalyticsManager.shared.deleteWallet()
+            tableView.reloadData()
+            return
+        }
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDeleteViewController") as? DialogDeleteViewController {
             vc.modalPresentationStyle = .overFullScreen
