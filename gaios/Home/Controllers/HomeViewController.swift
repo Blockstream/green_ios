@@ -289,8 +289,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuHomeViewController") as? PopoverMenuHomeViewController {
             popover.delegate = self
             popover.index = account.id
+            popover.isDerivedLightning = account.isDerivedLightning
+            
             if account.isDerivedLightning {
-                popover.menuOptions = [.delete]
+                popover.menuOptions = [.delete]    
             } else {
                 popover.menuOptions = [.edit, .delete]
             }

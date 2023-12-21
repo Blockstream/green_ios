@@ -20,6 +20,7 @@ class PopoverMenuHomeViewController: UIViewController {
     private var kvoContext = 0
     var menuOptions: [MenuWalletOption] = []
     var index: String?
+    var isDerivedLightning = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +61,7 @@ extension PopoverMenuHomeViewController: UITableViewDataSource, UITableViewDeleg
             case .edit:
                 cell.textLabel?.text = "id_rename_wallet".localized
             case .delete:
-                cell.textLabel?.text = "id_remove_wallet".localized
+                cell.textLabel?.text = isDerivedLightning ? "Remove Lightning Shortcut".localized : "id_remove_wallet".localized
             }
             return cell
         }
