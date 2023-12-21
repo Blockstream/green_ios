@@ -155,6 +155,36 @@ class WalletViewController: UIViewController {
         welcomeLayerVisibility()
     }
 
+    func emptiedWalletEvent() async {
+        
+        guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
+        
+        if AnalyticsManager.shared.emptiedWallet == model.account {
+            
+            var accountsFunded: Int = 0
+            viewModel.subaccounts.forEach { item in
+                let assets = item.satoshi ?? [:]
+                for (_, value) in assets where value > 0 {
+                    accountsFunded += 1
+                    break
+                }
+            }
+            let walletFunded: Bool = accountsFunded > 0
+            let accounts: Int = viewModel.subaccounts.count
+            let accountsTypes: String = Array(Set(viewModel.subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
+
+            if walletFunded == false {
+                AnalyticsManager.shared.emptiedWallet = nil
+                AnalyticsManager.shared.accountEmptied(account: AccountsRepository.shared.current,
+                                                       walletItem: model.account,
+                                                       walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
+                                                                                               accountsFunded: accountsFunded,
+                                                                                               accounts: accounts,
+                                                                                               accountsTypes: accountsTypes))
+            }
+        }
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         notificationObservers.forEach { observer in
@@ -299,6 +329,7 @@ class WalletViewController: UIViewController {
             await MainActor.run { [weak self] in
                 self?.isReloading = false
             }
+            await self?.emptiedWalletEvent()
         }
     }
 

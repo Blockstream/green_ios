@@ -65,7 +65,7 @@ class SendConfirmViewModel {
                 transactionSgmt: transSgmt,
                 withMemo: withMemo)
             
-            if sendAll { sendAllEvent() }
+            if sendAll { AnalyticsManager.shared.emptiedWallet = account }
 
             return res
         } catch {
@@ -76,28 +76,6 @@ class SendConfirmViewModel {
                 withMemo: withMemo,
                 prettyError: error.description()?.localized)
             throw error
-        }
-    }
-
-    func sendAllEvent() {
-        let wm = WalletManager.current
-        if let subaccounts = wm?.subaccounts {
-            var accountsFunded: Int = 0
-            wm!.subaccounts.forEach { item in
-                let assets = item.satoshi ?? [:]
-                for (_, value) in assets where value > 0 {
-                        accountsFunded += 1
-                        break
-                }
-            }
-            let walletFunded: Bool = accountsFunded > 0
-            let accounts: Int = subaccounts.count
-            let accountsTypes: String = Array(Set(subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
-            AnalyticsManager.shared.accountEmptied(account: AccountsRepository.shared.current,
-                                                   walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
-                                                                                         accountsFunded: accountsFunded,
-                                                                                         accounts: accounts,
-                                                                                         accountsTypes: accountsTypes))
         }
     }
 }

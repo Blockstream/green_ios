@@ -327,12 +327,15 @@ extension AnalyticsManager {
         }
     }
 
-    func accountEmptied(account: Account?, walletData: WalletData) {
+    func accountEmptied(account: Account?, walletItem: WalletItem, walletData: WalletData) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
         s[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
         s[AnalyticsManager.strAccounts] = "\(walletData.accounts)"
         s[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
+        s[AnalyticsManager.strAccountType] = walletItem.type.rawValue
+        s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
+        
         recordEvent(.accountEmptied, sgmt: s)
     }
 

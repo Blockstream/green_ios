@@ -393,4 +393,6 @@ class AnalyticsManager {
                                 comment: comment,
                                 userCanBeContacted: true)
     }
+
+    var emptiedWallet: WalletItem?
 }
