@@ -38,14 +38,7 @@ class AccountsRepository {
         set {
             currentId = newValue?.id ?? ""
             if let account = newValue {
-                if account.isDerivedLightning {
-                } else if account.isEphemeral {
-                    if !ephAccounts.contains(where: { $0.id == account.id }) {
-                        ephAccounts += [account]
-                    }
-                } else {
-                    upsert(account)
-                }
+                upsert(account)
             }
         }
     }
@@ -74,6 +67,11 @@ class AccountsRepository {
 
     func upsert(_ account: Account) {
         if account.isDerivedLightning {
+            return
+        } else if account.isEphemeral {
+            if !ephAccounts.contains(where: { $0.id == account.id }) {
+                ephAccounts += [account]
+            }
             return
         }
         var currentList = accounts
