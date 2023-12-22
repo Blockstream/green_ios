@@ -186,7 +186,8 @@ class WalletViewController: UIViewController {
         case .bip21Scheme:
             if URLSchemeManager.shared.isValid {
                 if let bip21 = URLSchemeManager.shared.bip21 {
-                    parse(value: bip21, account: nil)
+                    let account = viewModel.accountCellModels[safe: sIdx]
+                    parse(value: bip21, account: account?.account)
                     URLSchemeManager.shared.url = nil
                 }
             }
