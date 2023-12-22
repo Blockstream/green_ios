@@ -124,10 +124,10 @@ class SendConfirmViewController: KeyboardViewController {
         Task.detached() { [weak self] in
             do {
                 if let res = try await self?.viewModel.send() {
-                    await self?.success(tx: res)
+                    await MainActor.run { [weak self] in self?.success(tx: res) }
                 }
             } catch {
-                await self?.failure(error)
+                await MainActor.run { [weak self] in self?.failure(error) }
             }
         }
     }
