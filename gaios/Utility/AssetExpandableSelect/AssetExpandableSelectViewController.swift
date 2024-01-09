@@ -76,7 +76,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     func numberOfSections(in tableView: UITableView) -> Int {
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        return viewModel.enableAnyAsset ? cnt + 1 : cnt
+        return cnt + (viewModel?.anyAssetTypes().count ?? 0)
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -110,9 +110,12 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
 
         var assetInfo = AssetInfo.lbtc
+        
+        let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
+        
         if viewModel.selectedSection == section {
             let cnt = viewModel.assetSelectCellModelsFilter.count
-            if cnt == section && viewModel.enableAnyAsset {
+            if anyAssetTypes.count > 0 && (cnt == section || cnt+1 == section) {
             } else {
                 let cellModel = viewModel.assetSelectCellModelsFilter[section]
                 assetInfo = cellModel.asset ?? AssetInfo.lbtc
@@ -130,23 +133,21 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
+        let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
+        
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        if cnt == section && viewModel.enableAnyAsset {
-            if let accountView = Bundle.main.loadNibNamed("AnyAssetExpandableView", owner: self, options: nil)?.first as? AnyAssetExpandableView {
-                accountView.configure(open: viewModel.selectedSection == section,
-                                      hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
-                                      onCreate: {[weak self] in
-                    self?.onCreate(asset: nil)
-                })
-
-                let handler = UIButton(frame: accountView.tapView.frame)
-                handler.tag = section
-                handler.borderColor = .red
-                handler.addTarget(self,
-                                        action: #selector(hideSection(sender:)),
-                                        for: .touchUpInside)
-                accountView.addSubview(handler)
-                return accountView
+        
+        if anyAssetTypes.count == 1 {
+            if cnt == section {
+                return anyAssetExpandableView(anyAssetType: anyAssetTypes[0], section: section)
+            }
+        }
+        if anyAssetTypes.count == 2 {
+            if cnt == section {
+                return anyAssetExpandableView(anyAssetType: anyAssetTypes[0], section: section)
+            }
+            if cnt+1 == section {
+                return anyAssetExpandableView(anyAssetType: anyAssetTypes[1], section: section)
             }
         }
         if let accountView = Bundle.main.loadNibNamed("AssetExpandableView", owner: self, options: nil)?.first as? AssetExpandableView {
@@ -170,8 +171,32 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
         return nil
     }
 
+    func anyAssetExpandableView(anyAssetType: AnyAssetType, section: Int) -> AnyAssetExpandableView? {
+        if let accountView = Bundle.main.loadNibNamed("AnyAssetExpandableView", owner: self, options: nil)?.first as? AnyAssetExpandableView {
+            accountView.configure(type: anyAssetType,
+                                  open: viewModel.selectedSection == section,
+                                  hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
+                                  onCreate: {[weak self] in
+                self?.onCreate(asset: nil)
+            })
+
+            let handler = UIButton(frame: accountView.tapView.frame)
+            handler.tag = section
+            handler.borderColor = .red
+            handler.addTarget(self,
+                                    action: #selector(hideSection(sender:)),
+                                    for: .touchUpInside)
+            accountView.addSubview(handler)
+            return accountView
+        }
+        return nil
+    }
+
     @objc
     private func hideSection(sender: UIButton) {
+        
+        let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
+        
         let section = sender.tag
         if viewModel.selectedSection == section {
             viewModel.selectedSection = -1
@@ -185,7 +210,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
                     
                     viewModel.selectedSection = section
                     let cnt = viewModel.assetSelectCellModelsFilter.count
-                    if cnt == section && viewModel.enableAnyAsset {
+                    if anyAssetTypes.count > 0 && (cnt == section || cnt+1 == section) {
                         viewModel.loadAccountsForAsset(nil)
                     } else {
                         if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
@@ -198,7 +223,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
                 Task {
                     viewModel.selectedSection = section
                     let cnt = viewModel.assetSelectCellModelsFilter.count
-                    if cnt == section && viewModel.enableAnyAsset {
+                    if anyAssetTypes.count > 0 && (cnt == section || cnt+1 == section) {
                         viewModel.loadAccountsForAsset(nil)
                     } else {
                         if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
@@ -217,9 +242,12 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
+        
         var assetId = AssetInfo.lbtcId
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        if !(cnt == indexPath.section && viewModel.enableAnyAsset) {
+        if !(anyAssetTypes.count > 0 && (cnt == indexPath.section || cnt+1 == indexPath.section)) {
             if let asset = viewModel.assetSelectCellModelsFilter[indexPath.section].asset {
                 assetId = asset.assetId
             }
@@ -285,7 +313,10 @@ extension AssetExpandableSelectViewController: SecuritySelectViewControllerDeleg
     func getAssetId() -> String {
         let defaultAssetId = viewModel.wm.testnet ? AssetInfo.ltestId : AssetInfo.lbtcId
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        if cnt == 0 && viewModel.selectedSection == 0 && viewModel.enableAnyAsset {
+        
+        let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
+        
+        if cnt == 0 && viewModel.selectedSection == 0 && anyAssetTypes.count > 0 {
             return defaultAssetId
         } else {
             if let asset = viewModel.assetSelectCellModelsFilter[safe: viewModel.selectedSection]?.asset?.assetId {

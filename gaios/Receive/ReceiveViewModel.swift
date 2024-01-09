@@ -172,7 +172,11 @@ class ReceiveViewModel {
                 (showBtc && $0.assetId == AssetInfo.btcId)
             }
         let list = AssetAmountList.from(assetIds: assets?.map { $0.assetId } ?? [])
-        return AssetSelectViewModel(assets: list, enableAnyAsset: isLiquid)
+        
+        ///TODO: handle amp case
+        return AssetSelectViewModel(assets: list,
+                                    enableAnyLiquidAsset: isLiquid,
+                                    enableAnyAmpAsset: isLiquid)
     }
 
     func getAssetExpandableSelectViewModel() -> AssetExpandableSelectViewModel {
@@ -188,7 +192,10 @@ class ReceiveViewModel {
             }
         }
         let list = AssetAmountList.from(assetIds: assets.map { $0.assetId })
-        return AssetExpandableSelectViewModel(assets: list, enableAnyAsset: true /* isLiquid */, onlyFunded: false)
+        return AssetExpandableSelectViewModel(assets: list, 
+                                              enableAnyLiquidAsset: true /* isLiquid */,
+                                              enableAnyAmpAsset: true /* isLiquid */,
+                                              onlyFunded: false)
     }
 
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel {

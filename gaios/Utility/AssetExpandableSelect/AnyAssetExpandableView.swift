@@ -10,15 +10,28 @@ class AnyAssetExpandableView: UIView {
     @IBOutlet weak var createNew: UIView!
     @IBOutlet weak var btnDisclose: UIButton!
     @IBOutlet weak var lblTitle: UILabel!
-
+    @IBOutlet weak var anyAssetIcon: UIImageView!
+    
+    var anyAssetType: AnyAssetType?
+    
     var reload: (() -> Void)?
     var onCreate: (() -> Void)?
 
-    func configure(open: Bool,
+    func configure(type: AnyAssetType,
+                   open: Bool,
                    hasAccounts: Bool,
                    onCreate: (() -> Void)?
     ) {
-        title.text = "id_receive_any_liquid_asset".localized
+        anyAssetType = type
+        
+        switch type {
+        case .liquid:
+            self.title.text = "id_receive_any_liquid_asset".localized
+            anyAssetIcon.image = UIImage(named: "default_asset_liquid_icon")!
+        case .amp:
+            self.title.text = "Receive any Amp Asset".localized
+            anyAssetIcon.image = UIImage(named: "default_asset_amp_icon")!
+        }
 
         lblAccountTip.text = "id_you_need_a_liquid_account_in".localized
         accountTip.isHidden = !open

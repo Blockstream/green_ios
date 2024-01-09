@@ -160,9 +160,9 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
         switch SecuritySelectSection(rawValue: section) {
         case .asset:
-            return headerView( "Asset" )
+            return headerView( "id_asset".localized )
         case .policy:
-            return headerView( "Security Policy" )
+            return headerView( "Security Policy".localized )
         default:
             return nil
         }
@@ -191,7 +191,11 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 let assetIds = WalletManager.current?.registry.all.map { ($0.assetId, Int64(0)) }
                 let dict = Dictionary(uniqueKeysWithValues: assetIds ?? [])
                 let list = AssetAmountList(dict)
-                vc.viewModel = AssetSelectViewModel(assets: list, enableAnyAsset: true)
+                
+                ///TODO: handle amp case
+                vc.viewModel = AssetSelectViewModel(assets: list,
+                                                    enableAnyLiquidAsset: true,
+                                                    enableAnyAmpAsset: true)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
@@ -349,13 +353,21 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
         reloadSections([.asset, .policy], animated: true)
+        navigationController?.popViewController(animated: true)
     }
 
-    func didSelectAnyAsset() {
+    func didSelectAnyAsset(_ type: AnyAssetType) {
         /// handle any asset case
-        print("didSelectAnyAsset")
-        viewModel?.asset = AssetInfo.lbtcId
-        reloadSections([.asset, .policy], animated: true)
+        switch type {
+        case .liquid:
+            viewModel?.asset = AssetInfo.lbtcId
+            reloadSections([.asset, .policy], animated: true)
+        case .amp:
+            /// TODO: handle amp case
+            print("TODO: handle amp case")
+            break
+        }
+        navigationController?.popViewController(animated: true)
     }
 
     @MainActor

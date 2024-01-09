@@ -7,7 +7,8 @@ class AssetExpandableSelectViewModel {
 
     var selectedSection: Int = -1
     var allSections: [Int] = []
-    var enableAnyAsset = true
+    private var enableAnyLiquidAsset: Bool
+    private var enableAnyAmpAsset: Bool
     var onlyFunded = true
     var assets: AssetAmountList {
         didSet {
@@ -21,10 +22,18 @@ class AssetExpandableSelectViewModel {
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
     let wm = WalletManager.current!
 
-    init(assets: AssetAmountList, enableAnyAsset: Bool, onlyFunded: Bool) {
+    init(assets: AssetAmountList, enableAnyLiquidAsset: Bool, enableAnyAmpAsset: Bool, onlyFunded: Bool) {
         self.assets = assets
-        self.enableAnyAsset = enableAnyAsset
+        self.enableAnyLiquidAsset = enableAnyLiquidAsset
+        self.enableAnyAmpAsset = enableAnyAmpAsset
         self.onlyFunded = onlyFunded
+    }
+
+    func anyAssetTypes() -> [AnyAssetType] {
+        var data: [AnyAssetType] = []
+        if enableAnyLiquidAsset == true { data.append(.liquid) }
+        if enableAnyAmpAsset == true { data.append(.amp) }
+        return data
     }
 
     func search(_ txt: String?) {

@@ -5,10 +5,12 @@ class AssetSelectViewModel {
 
     var assets: AssetAmountList?
     var reload: (() -> Void)?
-    var enableAnyAsset: Bool
-
+    private var enableAnyLiquidAsset: Bool
+    private var enableAnyAmpAsset: Bool
+    
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
+    
     private var wm: WalletManager { WalletManager.current! }
 
     func search(_ txt: String?) {
@@ -32,9 +34,17 @@ class AssetSelectViewModel {
         return nil
     }
 
-    init(assets: AssetAmountList, enableAnyAsset: Bool) {
+    func anyAssetTypes() -> [AnyAssetType] {
+        var data: [AnyAssetType] = []
+        if enableAnyLiquidAsset == true { data.append(.liquid) }
+        if enableAnyAmpAsset == true { data.append(.amp) }
+        return data
+    }
+    
+    init(assets: AssetAmountList, enableAnyLiquidAsset: Bool, enableAnyAmpAsset: Bool) {
         self.assets = assets
-        self.enableAnyAsset = enableAnyAsset
+        self.enableAnyLiquidAsset = enableAnyLiquidAsset
+        self.enableAnyAmpAsset = enableAnyAmpAsset
         assetSelectCellModels = self.assets?.amounts.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) } ?? []
         assetSelectCellModelsFilter = assetSelectCellModels
         reload?()

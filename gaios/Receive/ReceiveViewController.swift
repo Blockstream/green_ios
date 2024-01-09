@@ -452,17 +452,25 @@ extension ReceiveViewController: AssetExpandableSelectViewControllerDelegate {
 }
 
 extension ReceiveViewController: AssetSelectViewControllerDelegate {
-    func didSelectAnyAsset() {
-        /// handle any asset case
-        viewModel?.asset = AssetInfo.lbtcId
-        reload()
-        newAddress()
+    func didSelectAnyAsset(_ type: AnyAssetType) {
+
+        switch type {
+        case .liquid:
+            viewModel?.asset = AssetInfo.lbtcId
+            reload()
+            newAddress()
+        case .amp:
+            ///TODO: handle amp case
+            print("TODO: handle amp case")
+        }
+        navigationController?.popViewController(animated: true)
     }
 
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
         reload()
         newAddress()
+        navigationController?.popViewController(animated: true)
     }
 }
 extension ReceiveViewController: AccountSelectViewControllerDelegate {
