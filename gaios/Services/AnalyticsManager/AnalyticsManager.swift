@@ -394,5 +394,5 @@ class AnalyticsManager {
                                 userCanBeContacted: true)
     }
 
-    var emptiedWallet: WalletItem?
+    var emptiedAccount: WalletItem?
 }

@@ -155,11 +155,11 @@ class WalletViewController: UIViewController {
         welcomeLayerVisibility()
     }
 
-    func emptiedWalletEvent() async {
+    func emptiedAccountEvent() async {
         
         guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
         
-        if AnalyticsManager.shared.emptiedWallet == model.account {
+        if AnalyticsManager.shared.emptiedAccount == model.account {
             
             var accountsFunded: Int = 0
             viewModel.subaccounts.forEach { item in
@@ -172,9 +172,18 @@ class WalletViewController: UIViewController {
             let walletFunded: Bool = accountsFunded > 0
             let accounts: Int = viewModel.subaccounts.count
             let accountsTypes: String = Array(Set(viewModel.subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
-
-            if walletFunded == false {
-                AnalyticsManager.shared.emptiedWallet = nil
+            
+            var totValue: Int64 = 0
+            viewModel.subaccounts.forEach { item in
+                if item == AnalyticsManager.shared.emptiedAccount {
+                    let assets = item.satoshi ?? [:]
+                    for (_, value) in assets where value > 0 {
+                        totValue += value
+                    }
+                }
+            }
+            if totValue == 0 {
+                AnalyticsManager.shared.emptiedAccount = nil
                 AnalyticsManager.shared.accountEmptied(account: AccountsRepository.shared.current,
                                                        walletItem: model.account,
                                                        walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
@@ -329,7 +338,7 @@ class WalletViewController: UIViewController {
             await MainActor.run { [weak self] in
                 self?.isReloading = false
             }
-            await self?.emptiedWalletEvent()
+            await self?.emptiedAccountEvent()
         }
     }
 

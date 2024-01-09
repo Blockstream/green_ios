@@ -65,7 +65,7 @@ class SendConfirmViewModel {
                 transactionSgmt: transSgmt,
                 withMemo: withMemo)
             
-            if sendAll { AnalyticsManager.shared.emptiedWallet = account }
+            if sendAll { AnalyticsManager.shared.emptiedAccount = account }
 
             return res
         } catch {
