@@ -40,6 +40,7 @@ class BalanceCell: UITableViewCell {
 
     func configure(model: BalanceCellModel?,
                    hideBalance: Bool,
+                   hideBtnExchange: Bool,
                    onHide: ((Bool) -> Void)?,
                    onAssets: (() -> Void)?,
                    onConvert: (() -> Void)?,
@@ -48,7 +49,8 @@ class BalanceCell: UITableViewCell {
         self.model = model
         lblBalanceValue.text = ""
         lblBalanceFiat.text = ""
-        
+        btnExchange.isHidden = hideBtnExchange
+
         let assetsCount = model?.cachedBalance.nonZeroAmounts().count ?? 0
         assetsBox.isHidden = assetsCount < 2
         

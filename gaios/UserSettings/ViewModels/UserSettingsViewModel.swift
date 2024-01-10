@@ -158,10 +158,10 @@ class UserSettingsViewModel {
             .Recovery: getRecovery(),
             .About: getAbout()]
 
-        if isDerivedLightning || (isWatchonly && isSinglesig) {
+        if isDerivedLightning {
             sections = [ .Logout, .General, .About ]
             items = [ .Logout: getLogout(), .General: getGeneral(), .About: getAbout()]
-        } else if isWatchonly && !isSinglesig {
+        } else if isWatchonly {
             sections = [ .Logout, .About ]
             items = [ .Logout: getLogout(), .About: getAbout()]
         }
