@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Watch-only wallets: fix denomination warn
+- Improve QRCode density area
 
 ### Fixed
 - Minor bugs fixes in lightning

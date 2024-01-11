@@ -118,20 +118,20 @@ extension UInt32 {
 }
 
 extension Array where Element == UInt8 {
-    var data: Data? { Data(self) }
-    var hex: String? { self.data?.hex }
+    public var data: Data? { Data(self) }
+    public var hex: String? { self.data?.hex }
 }
 
 extension Data {
-    var bytes: [UInt8] { [UInt8](self) }
-    var hex: String { self.map { String(format: "%02hhx", $0) }.joined() }
-    func chunked(into size: Int) -> [Data] {
+    public var bytes: [UInt8] { [UInt8](self) }
+    public var hex: String { self.map { String(format: "%02hhx", $0) }.joined() }
+    public func chunked(into size: Int) -> [Data] {
         bytes.chunked(into: size).map { Data($0) }
     }
 }
 
 extension Array {
-    func chunked(into size: Int) -> [[Element]] {
+    public func chunked(into size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }

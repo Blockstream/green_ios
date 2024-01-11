@@ -8,7 +8,7 @@ class QRImageGenerator {
 
         let filter = CIFilter(name: "CIQRCodeGenerator")
         filter!.setValue(data, forKey: "inputMessage")
-        filter!.setValue("Q", forKey: "inputCorrectionLevel")
+        filter!.setValue("L", forKey: "inputCorrectionLevel")
 
         let colorFilter = CIFilter(name: "CIFalseColor")
         colorFilter!.setValue(filter!.outputImage, forKey: "inputImage")

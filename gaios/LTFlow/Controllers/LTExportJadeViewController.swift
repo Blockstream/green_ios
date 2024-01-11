@@ -52,18 +52,16 @@ class LTExportJadeViewController: UIViewController {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var qrCodeImageView: UIImageView!
-    @IBOutlet weak var qrCodeBigImageView: UIImageView!
-    @IBOutlet weak var overlayView: UIView!
     
     var delegate: LTExportJadeViewControllerDelegate?
-    private var isActive = false
-    private var currentIndex = 0
     private let viewModel = LTExportJadeViewModel()
+    private var bcur: BcurEncodedData?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setStyle()
         setContent()
+        indicator.startAnimating()
         Task { await load() }
     }
 
@@ -76,47 +74,22 @@ class LTExportJadeViewController: UIViewController {
         qrCodeImageView.addGestureRecognizer(tapQRcodeSmall)
         qrCodeImageView.isUserInteractionEnabled = true
         qrCodeImageView.contentMode = .scaleAspectFit
-        qrCodeBigImageView.contentMode = .scaleAspectFit
-        let tapQRcodeBig = UITapGestureRecognizer(target: self, action: #selector(hideFullScreen))
-        overlayView.addGestureRecognizer(tapQRcodeBig)
-        overlayView.isUserInteractionEnabled = true
     }
 
     func setStyle() {
         subtitleLabel.setStyle(.txtBigger)
         descriptionLabel.setStyle(.txt)
         nextButton.setStyle(.primary)
-        overlayView.isHidden = true
-        overlayView.backgroundColor = .black.withAlphaComponent(0.6)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        isActive = true
-        indicator.startAnimating()
-        
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        isActive = false
     }
 
     func load() async {
-        let bcurParts = await viewModel.request()
-        currentIndex = 0
-        while isActive {
-            if currentIndex >= bcurParts?.parts.count ?? 0 {
-                currentIndex = 0
+        if let bcurParts = await viewModel.request() {
+            await MainActor.run {
+                bcur = bcurParts
+                qrCodeImageView.bcurQrCode(bcur: bcurParts)
+                indicator.stopAnimating()
+                indicator.isHidden = true
             }
-            if let part = bcurParts?.parts[currentIndex] {
-                await MainActor.run {
-                    qrCodeImageView.image = QRImageGenerator.imageForTextWhite(text: part, frame: qrCodeImageView.frame)
-                    qrCodeBigImageView.image = QRImageGenerator.imageForTextWhite(text: part, frame: qrCodeBigImageView.frame)
-                    indicator.stopAnimating()
-                    indicator.isHidden = true
-                }
-            }
-            currentIndex += 1
-            try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
         }
     }
 
@@ -131,11 +104,12 @@ class LTExportJadeViewController: UIViewController {
 
     @objc func showQRFullScreen()
     {
-        overlayView.isHidden = false
-    }
-    @objc func hideFullScreen()
-    {
-        overlayView.isHidden = true
+        let stb = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
+            vc.qrBcur = bcur
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     @IBAction func tapNextButton(_ sender: Any) {

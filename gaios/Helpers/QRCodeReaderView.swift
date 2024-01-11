@@ -8,7 +8,7 @@ protocol QRCodeReaderDelegate: AnyObject {
 }
 
 class QRCodeReaderView: UIView {
-
+    
     private let sessionQueue = DispatchQueue(label: "capture session queue", qos: .userInteractive)
 
     var captureSession = AVCaptureSession()
@@ -224,6 +224,8 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             
             if !stringValue.uppercased().starts(with: "UR:") {
                 self.delegate?.onQRCodeReadSuccess(result: ScanResult(result: stringValue, bcur: nil))
+                previous = nil
+                buffer = []
                 return
             }
             Task {
@@ -233,13 +235,20 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                 do {
                     validating = true
                     let value = buffer.removeFirst()
+                    NSLog(">> value \(value)")
+                    
                     if let result = try await validate(value) {
-                        self.delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
+                        delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
+                        previous = nil
+                        buffer = []
+                        validating = false
                     }
                 } catch {
                     print(error)
+                    previous = nil
+                    buffer = []
+                    validating = false
                 }
-                validating = false
             }
         }
     }
@@ -250,19 +259,22 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
         }
         return try await session?.bcurDecode(params: BcurDecodeParams(part: text), bcurResolver: self)
     }
+    
 }
 extension QRCodeReaderView: BcurResolver {
     func requestData() async throws -> String {
         NSLog(">> requestData")
         for _ in 0...3 {
-            NSLog(">> sleep")
             if !buffer.isEmpty {
                 let value = buffer.removeFirst()
                 NSLog(">> request \(value)")
                 return value
             }
+            NSLog(">> sleep")
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
+        NSLog(">> TwoFactorCallError")
+        validating = false
         throw TwoFactorCallError.failure(localizedDescription: "Invalid text")
     }
 }

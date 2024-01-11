@@ -452,6 +452,7 @@
 		816184622A3B788C007D6569 /* BleJade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184612A3B788C007D6569 /* BleJade.swift */; };
 		816184652A3B8AC1007D6569 /* BleJadeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184642A3B8AC1007D6569 /* BleJadeManager.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
+		8162A1C92B500CF70065D9EB /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162A1C82B500CF70065D9EB /* UIImageView.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		81664BED2A31219500A0131D /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81664BEC2A31219500A0131D /* BreezSDK */; };
@@ -1148,6 +1149,7 @@
 		816184612A3B788C007D6569 /* BleJade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJade.swift; sourceTree = "<group>"; };
 		816184642A3B8AC1007D6569 /* BleJadeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeManager.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
+		8162A1C82B500CF70065D9EB /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
 		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
 		81683F8F26BC022C0058982E /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
@@ -3197,6 +3199,7 @@
 				8152772629F9B52F00853EA1 /* UIApplication.swift */,
 				81EA2DC82B1DD45400A1F924 /* Lightning.swift */,
 				81EA2DCC2B1DE1F600A1F924 /* Errors.swift */,
+				8162A1C82B500CF70065D9EB /* UIImageView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3878,6 +3881,7 @@
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
 				81D671EB26C8007600682508 /* SessionManager.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
+				8162A1C92B500CF70065D9EB /* UIImageView.swift in Sources */,
 				81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */,
 				81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */,
 				81A773032A80FD1100C9FC5C /* LTSweepCell.swift in Sources */,

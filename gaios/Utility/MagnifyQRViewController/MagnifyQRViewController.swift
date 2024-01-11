@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import gdk
 
 class MagnifyQRViewController: UIViewController {
 
@@ -9,13 +10,13 @@ class MagnifyQRViewController: UIViewController {
     @IBOutlet weak var qr: UIImageView!
 
     var qrTxt: String?
+    var qrBcur: BcurEncodedData?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setStyle()
         setContent()
-        view.alpha = 0.0
 
         let tapRecognizer =
         UITapGestureRecognizer(target: self, action: #selector(onTap))
@@ -37,10 +38,10 @@ class MagnifyQRViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let uri = qrTxt {
-            let dim = min(qr.frame.size.width, qr.frame.size.height)
-            let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
-            qr.image = QRImageGenerator.imageForTextWhite(text: uri, frame: frame)
+        if let text = qrTxt {
+            qr.qrCode(text: text)
+        } else if let bcur = qrBcur {
+            qr.bcurQrCode(bcur: bcur)
         } else {
             qr.image = UIImage()
         }
