@@ -53,6 +53,9 @@ class LTExportJadeViewController: UIViewController {
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var qrCodeImageView: UIImageView!
     
+    @IBOutlet weak var btnLearnMore: UIButton!
+    @IBOutlet weak var btnQREnlarge: UIButton!
+    
     var delegate: LTExportJadeViewControllerDelegate?
     private let viewModel = LTExportJadeViewModel()
     private var bcur: BcurEncodedData?
@@ -68,18 +71,22 @@ class LTExportJadeViewController: UIViewController {
     func setContent() {
         title = "Export Lightning Key to Green".localized
         subtitleLabel.text = "Scan QR with Jade".localized
-        descriptionLabel.text = "Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon't worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning."
+        descriptionLabel.text = "Securely import from your Jade a dedicated key for lightning.".localized
         nextButton.setTitle("id_next".localized, for: .normal)
         let tapQRcodeSmall = UITapGestureRecognizer(target: self, action: #selector(showQRFullScreen))
         qrCodeImageView.addGestureRecognizer(tapQRcodeSmall)
         qrCodeImageView.isUserInteractionEnabled = true
         qrCodeImageView.contentMode = .scaleAspectFit
+        btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
+        btnQREnlarge.setTitle("Increase QR Size".localized, for: .normal)
     }
 
     func setStyle() {
-        subtitleLabel.setStyle(.txtBigger)
-        descriptionLabel.setStyle(.txt)
+        subtitleLabel.setStyle(.title)
+        descriptionLabel.setStyle(.txtCard)
         nextButton.setStyle(.primary)
+        btnLearnMore.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+        btnQREnlarge.setStyle(.qrEnlarge)
     }
 
     func load() async {
@@ -112,6 +119,16 @@ class LTExportJadeViewController: UIViewController {
         }
     }
 
+    @IBAction func btnLearnMore(_ sender: Any) {
+        if let url = URL(string: ExternalUrls.lightningJadeHelp) {
+            SafeNavigationManager.shared.navigate( url )
+        }
+    }
+
+    @IBAction func btnQREnlarge(_ sender: Any) {
+        showQRFullScreen()
+    }
+    
     @IBAction func tapNextButton(_ sender: Any) {
         dialogScanViewController()
     }

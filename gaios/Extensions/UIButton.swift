@@ -14,6 +14,7 @@ enum ButtonStyle {
     case destructiveOutlined
     case warnWhite
     case warnRed
+    case qrEnlarge
 }
 
 @IBDesignable
@@ -217,6 +218,9 @@ extension UIButton {
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.white.cgColor
             setTitleColor(.white, for: .normal)
+        case .qrEnlarge:
+            backgroundColor = UIColor.gGrayBtn()
+            cornerRadius = 5.0
         }
     }
 }
