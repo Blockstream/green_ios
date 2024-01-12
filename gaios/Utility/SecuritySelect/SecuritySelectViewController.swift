@@ -42,6 +42,9 @@ class SecuritySelectViewController: UIViewController {
 
         setContent()
         setStyle()
+
+        let account = AccountsRepository.shared.current
+        AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(account))
     }
 
     func unarchiveCreateDialog(completion: @escaping (Bool) -> ()) {

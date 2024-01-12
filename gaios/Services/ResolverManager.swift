@@ -103,7 +103,7 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
                 appDelegate.resolve2faOff()
             }
-            self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
+            self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled"))
         }
         
         vc.onCode = { [weak self] code in
@@ -165,7 +165,7 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
                 appDelegate.resolve2faOff()
             }
-            self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
+            self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled"))
         }
         
         vc.onType = { [weak self] tfType in

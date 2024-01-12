@@ -74,7 +74,7 @@ class SendConfirmViewModel {
                 walletItem: account,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo,
-                prettyError: error.description()?.localized)
+                prettyError: error.description())
             throw error
         }
     }

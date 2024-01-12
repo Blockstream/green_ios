@@ -21,13 +21,13 @@ class AuthenticationTypeHandler {
             get {
                 switch self {
                 case .CanceledByUser:
-                    return NSLocalizedString("id_action_canceled", comment: "")
+                    return "id_action_canceled"
                 case .NotSupported:
-                    return NSLocalizedString("id_your_ios_device_might_not_be", comment: "")
+                    return "id_your_ios_device_might_not_be"
                 case .PasscodeNotSet:
-                    return NSLocalizedString("id_set_up_a_passcode_for_your_ios", comment: "")
+                    return "id_set_up_a_passcode_for_your_ios"
                 case .ConnectionFailed:
-                    return NSLocalizedString("id_connection_failed", comment: "")
+                    return "id_connection_failed"
                 case .KeychainError(let status):
                     if #available(iOS 11.3, *) {
                         let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString

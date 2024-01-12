@@ -15,7 +15,7 @@ extension UIViewController {
     @MainActor
     func showAlert(title: String, message: String, completion: @escaping() -> () = { }) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+            let alert = UIAlertController(title: title, message: message.localized, preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in completion() })
             self.present(alert, animated: true, completion: nil)
         }
@@ -24,7 +24,7 @@ extension UIViewController {
     @MainActor
     func showError(_ message: String) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: message, preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: message.localized, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
         }
@@ -67,7 +67,7 @@ extension UIViewController {
             paymentHash: paymentHash)
         let alert = UIAlertController(
             title: "id_error".localized,
-            message: prettyError,
+            message: prettyError.localized,
             preferredStyle: .alert)
         if AppSettings.shared.gdkSettings?.tor ?? false {
             alert.addAction(UIAlertAction(title: "Contact Support".localized, style: .default) { _ in
