@@ -121,7 +121,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .policy:
             if let cell = tableView.dequeueReusableCell(withIdentifier: PolicyCell.identifier, for: indexPath) as? PolicyCell,
                let model = viewModel {
-                cell.configure(model: model.getPolicyCellModels()[indexPath.row])
+                cell.configure(model: model.getPolicyCellModels()[indexPath.row], hasLightning: viewModel.hasLightning())
                 cell.selectionStyle = .none
                 return cell
             }
@@ -210,6 +210,10 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 }
             } else {
                 if policy == .Lightning {
+                    if viewModel.hasLightning() {
+                        UINotificationFeedbackGenerator().notificationOccurred(.error)
+                        return
+                    }
                     let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
                     if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
                         vc.delegate = self

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -136,12 +136,44 @@
                             <constraint firstItem="NTH-LQ-c3M" firstAttribute="leading" secondItem="crp-7D-wpe" secondAttribute="trailing" constant="8" id="xNq-RA-ftT"/>
                         </constraints>
                     </view>
+                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KzT-JZ-vgg">
+                        <rect key="frame" x="25" y="0.0" width="342" height="135"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="BaA-0L-Ixo">
+                                <rect key="frame" x="25" y="44.333333333333343" width="292" height="46.666666666666657"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_disable_title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HTN-i1-lZQ">
+                                        <rect key="frame" x="86" y="0.0" width="120.33333333333331" height="19.333333333333332"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_disable_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cyo-9B-dLp">
+                                        <rect key="frame" x="86" y="27.333333333333336" width="120" height="19.333333333333336"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="BaA-0L-Ixo" secondAttribute="trailing" constant="25" id="8H2-wH-aHS"/>
+                            <constraint firstItem="BaA-0L-Ixo" firstAttribute="leading" secondItem="KzT-JZ-vgg" secondAttribute="leading" constant="25" id="PV0-ml-wxG"/>
+                            <constraint firstItem="BaA-0L-Ixo" firstAttribute="centerY" secondItem="KzT-JZ-vgg" secondAttribute="centerY" id="xGQ-0p-XMd"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <color key="backgroundColor" name="gBlackBg"/>
                 <constraints>
+                    <constraint firstItem="KzT-JZ-vgg" firstAttribute="leading" secondItem="n3K-Va-zHK" secondAttribute="leading" id="25u-YY-nfN"/>
                     <constraint firstAttribute="bottom" secondItem="n3K-Va-zHK" secondAttribute="bottom" constant="10" id="V5n-wt-ZBA"/>
                     <constraint firstItem="n3K-Va-zHK" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="d1I-af-QWj"/>
+                    <constraint firstItem="KzT-JZ-vgg" firstAttribute="bottom" secondItem="n3K-Va-zHK" secondAttribute="bottom" id="gib-LN-a17"/>
+                    <constraint firstItem="KzT-JZ-vgg" firstAttribute="top" secondItem="n3K-Va-zHK" secondAttribute="top" id="hB8-e8-yKt"/>
                     <constraint firstItem="n3K-Va-zHK" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="isw-n9-Oq0"/>
+                    <constraint firstItem="KzT-JZ-vgg" firstAttribute="trailing" secondItem="n3K-Va-zHK" secondAttribute="trailing" id="lrU-eg-uyZ"/>
                     <constraint firstAttribute="trailing" secondItem="n3K-Va-zHK" secondAttribute="trailing" constant="25" id="xBb-cT-aAS"/>
                 </constraints>
             </tableViewCellContentView>
@@ -151,10 +183,13 @@
                 <outlet property="bgType" destination="8gv-zv-Ehr" id="sYX-O4-itY"/>
                 <outlet property="bgTypeDesc" destination="CJj-WU-Wt8" id="5Ki-ax-hfS"/>
                 <outlet property="btnDisclose" destination="NZH-10-Akw" id="AGp-he-fsu"/>
+                <outlet property="disableView" destination="KzT-JZ-vgg" id="F0a-qv-EFa"/>
                 <outlet property="imgBeta" destination="Mkb-mz-wtl" id="q9h-rU-SlI"/>
                 <outlet property="imgLight" destination="duY-W7-Pph" id="CEO-90-Tft"/>
                 <outlet property="imgMS" destination="y1b-aX-DXI" id="M1n-pR-HoF"/>
                 <outlet property="imgSS" destination="ruO-Nw-9Zu" id="3aE-4U-GHi"/>
+                <outlet property="lblDisableHint" destination="cyo-9B-dLp" id="yfh-36-W5h"/>
+                <outlet property="lblDisableTitle" destination="HTN-i1-lZQ" id="mWw-lm-eWx"/>
                 <outlet property="lblHint" destination="nRc-gZ-y5Q" id="Ura-0g-Nsy"/>
                 <outlet property="lblName" destination="crp-7D-wpe" id="kuu-8r-OpX"/>
                 <outlet property="lblType" destination="QAj-M9-x9P" id="KSk-ej-Ynp"/>
@@ -170,7 +205,7 @@
         <image name="ic_lightning_beta" width="50" height="50"/>
         <image name="ic_ln_policy" width="15.666666984558105" height="19.666666030883789"/>
         <namedColor name="gBlackBg">
-            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
             <color red="0.12941176470588237" green="0.12941176470588237" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
