@@ -3,11 +3,13 @@ import UIKit
 import gdk
 
 protocol DialogNodeViewControllerProtocol {
+    func onSendAll()
     func navigateMnemonic()
 }
 
 enum DialogNodeAction {
     case mnemonic
+    case sendAll
     case cancel
 }
 
@@ -22,6 +24,7 @@ class DialogNodeViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var btnMnemonic: UIButton!
+    @IBOutlet weak var btnCloseChannel: UIButton!
 
     var viewModel: DialogNodeViewModel!
     var delegate: DialogNodeViewControllerProtocol?
@@ -48,26 +51,28 @@ class DialogNodeViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         register()
         setContent()
         setStyle()
-        
+
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
-        
+
         view.alpha = 0.0
         anchorBottom.constant = -cardView.frame.size.height
-        
+
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
-        swipeDown.direction = .down
-        self.view.addGestureRecognizer(swipeDown)
+            swipeDown.direction = .down
+            self.view.addGestureRecognizer(swipeDown)
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        tappableBg.addGestureRecognizer(tapToClose)
-        
+            tappableBg.addGestureRecognizer(tapToClose)
+
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
             self?.tableViewHeight.constant = table.contentSize.height
         }
+
+        btnCloseChannel.isHidden = viewModel.hideBtnSendAll
     }
 
     deinit {
@@ -104,6 +109,8 @@ class DialogNodeViewController: KeyboardViewController {
     func setContent() {
         lblTitle.text = "id_node_info".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
+        btnCloseChannel.setTitle("Empty Lightning Account".localized, for: .normal)
+        btnCloseChannel.isHidden = !Bundle.main.dev
     }
 
     func setStyle() {
@@ -112,6 +119,7 @@ class DialogNodeViewController: KeyboardViewController {
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         btnMnemonic.setStyle(.primary)
+        btnCloseChannel.setStyle(.outlined)
     }
 
     func register() {
@@ -130,6 +138,8 @@ class DialogNodeViewController: KeyboardViewController {
                 switch action {
                 case .mnemonic:
                     self.delegate?.navigateMnemonic()
+                case .sendAll:
+                    self.delegate?.onSendAll()
                 default:
                     break
                 }
@@ -155,6 +165,10 @@ class DialogNodeViewController: KeyboardViewController {
 
     @IBAction func btnMnemonic(_ sender: Any) {
         dismiss(.mnemonic)
+    }
+    
+    @IBAction func btnCloseChannel(_ sender: Any) {
+        dismiss(.sendAll)
     }
 }
 

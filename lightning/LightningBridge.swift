@@ -139,10 +139,11 @@ public class LightningBridge {
         return try? parseInput(s: input)
     }
     
-    public func getTransactions() -> [Payment] {
-        let list = try? breezSdk?.listPayments(req: ListPaymentsRequest())
-        list?.forEach { print("Payment: \($0)") }
-        return list ?? []
+    public func getListPayments() throws -> [Payment] {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        return try breezSdk.listPayments(req: ListPaymentsRequest())
     }
     
     public func createInvoice(satoshi: Long, description: String, openingFeeParams: OpeningFeeParams? = nil) throws -> ReceivePaymentResponse? {
@@ -152,23 +153,43 @@ public class LightningBridge {
         try? breezSdk?.openChannelFee(req: OpenChannelFeeRequest(amountMsat: satoshi * 1000))
     }
     
-    public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) throws -> RefundResponse? {
-        return try breezSdk?.refund(req: RefundRequest(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte:  satPerVbyte ?? UInt32(recommendedFees()?.economyFee ?? 0)))
+    public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) async throws -> RefundResponse {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        var satPerVbyte = satPerVbyte.map {UInt64($0)}
+        if satPerVbyte == nil {
+            satPerVbyte = await recommendedFees()?.economyFee
+        }
+        return try breezSdk.refund(req: RefundRequest(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte:  UInt32(satPerVbyte ?? 0)))
     }
     
     public func swapProgress() throws -> SwapInfo? {
-        try breezSdk?.inProgressSwap()
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        return try breezSdk.inProgressSwap()
     }
     
-    public func listRefundables() -> [SwapInfo]? {
-        try? breezSdk?.listRefundables()
+    public func listReverseSwapProgress() throws -> [ReverseSwapInfo] {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        return try breezSdk.inProgressReverseSwaps()
+    }
+    
+    public func listRefundables() throws -> [SwapInfo] {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        return try breezSdk.listRefundables()
     }
     
     public func receiveOnchain(request: ReceiveOnchainRequest = ReceiveOnchainRequest()) throws -> SwapInfo? {
         return try breezSdk?.receiveOnchain(req: request)
     }
     
-    public func recommendedFees() -> RecommendedFees? {
+    public func recommendedFees() async -> RecommendedFees? {
         return try? breezSdk?.recommendedFees()
     }
     
@@ -208,12 +229,42 @@ public class LightningBridge {
         try breezSdk?.closeLspChannels()
         _ = updateNodeInfo()
     }
-    
-    public func sweep(toAddress: String, satPerVbyte: UInt32?) throws -> RedeemOnchainFundsResponse? {
-        let satPerVbyte = satPerVbyte.map {UInt64($0)} ?? recommendedFees()?.economyFee ?? 0
-        let res = try breezSdk?.redeemOnchainFunds(req: RedeemOnchainFundsRequest(toAddress: toAddress, satPerVbyte: UInt32(satPerVbyte)))
+
+    public func sweep(toAddress: String, satPerVbyte: UInt32?) async throws -> RedeemOnchainFundsResponse? {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        var satPerVbyte = satPerVbyte.map {UInt64($0)}
+        if satPerVbyte == nil {
+            satPerVbyte = await recommendedFees()?.economyFee
+        }
+        let res = try breezSdk.redeemOnchainFunds(req: RedeemOnchainFundsRequest(toAddress: toAddress, satPerVbyte: UInt32(satPerVbyte ?? 0)))
         _ = updateNodeInfo()
         return res
+    }
+
+    public func maxReverseSwapAmount() async -> UInt64? {
+        return try? breezSdk?.maxReverseSwapAmount().totalSat
+    }
+
+    public func sendAllOnChain(toAddress: String, satPerVbyte: UInt?) async throws -> SendOnchainResponse {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        let maxAmount = try breezSdk.maxReverseSwapAmount()
+        return try await sendOnChain(toAddress: toAddress, sendAmountSat: maxAmount.totalSat, satPerVbyte: satPerVbyte)
+    }
+
+    public func sendOnChain(toAddress: String, sendAmountSat: UInt64, satPerVbyte: UInt?) async throws -> SendOnchainResponse {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        let currentFees = try breezSdk.fetchReverseSwapFees(req: ReverseSwapFeesRequest(sendAmountSat: sendAmountSat))
+        var satPerVbyte = satPerVbyte.map {UInt64($0)}
+        if satPerVbyte == nil {
+            satPerVbyte = await recommendedFees()?.economyFee
+        }
+        return try breezSdk.sendOnchain(req: SendOnchainRequest(amountSat: sendAmountSat, onchainRecipientAddress: toAddress, pairHash: currentFees.feesHash, satPerVbyte: UInt32(satPerVbyte ?? 0)))
     }
 
     public func serviceHealthCheck() -> ServiceHealthCheckResponse? {
@@ -242,6 +293,17 @@ public class LightningBridge {
                 satPerVbyte: satPerVbyte ?? UInt32(breezSdk?.recommendedFees().economyFee ?? 0)
             )
         )
+    }
+
+    public func prepareSendAllOnChain(toAddress: String, satPerVbyte: UInt?) async throws {
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        let sendAmountSat = try breezSdk.maxReverseSwapAmount().totalSat
+        let currentFee = try breezSdk.fetchReverseSwapFees(req: ReverseSwapFeesRequest(sendAmountSat: sendAmountSat))
+        if sendAmountSat < currentFee.min {
+            throw BreezSDK.SdkError.Generic(message: "Amount is too low")
+        }
     }
 }
 

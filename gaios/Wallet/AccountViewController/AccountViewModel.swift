@@ -199,13 +199,19 @@ class AccountViewModel {
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }
 
-    func ltRecoverFundsViewModel() -> LTRecoverFundsViewModel {
+    func ltRecoverFundsViewModelSweep() -> LTRecoverFundsViewModel {
         LTRecoverFundsViewModel(wallet: account,
                                 amount: wm?.lightningSession?.nodeState?.onchainBalanceSatoshi,
                                 type: .sweep)
     }
-
-    func ltRecoverFundsViewModel(tx: Transaction) -> LTRecoverFundsViewModel {
+    
+    func ltRecoverFundsViewModelSendAll() -> LTRecoverFundsViewModel {
+        LTRecoverFundsViewModel(wallet: account,
+                                amount: nil,
+                                type: .sendAll)
+    }
+    
+    func ltRecoverFundsViewModelRefund(tx: Transaction) -> LTRecoverFundsViewModel {
         let amount = tx.amounts["btc"].map {UInt64(abs($0))}
         let address = tx.inputs?.first?["address"] as? String
         return LTRecoverFundsViewModel(wallet: account,

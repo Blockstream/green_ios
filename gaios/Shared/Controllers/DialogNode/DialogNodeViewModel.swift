@@ -21,7 +21,7 @@ class DialogNodeViewModel {
         return NodeCellType.allCases
     }
 
-    var hideBtnClose: Bool {
+    var hideBtnSendAll: Bool {
         return (lightningSession.nodeState?.channelsBalanceSatoshi ?? 0 == 0)
     }
 

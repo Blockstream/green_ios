@@ -125,4 +125,24 @@ extension Transaction {
         tx.isRefundableSwap = isRefundableSwap
         return tx
     }
+    
+    static func fromReverseSwapInfo(_ swapInfo: ReverseSwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
+        var tx = Transaction([:])
+        tx.subaccount = subaccount
+        tx.blockHeight = isRefundableSwap ? UInt32.max : 0
+        tx.canRBF = false
+        tx.memo = ""
+        tx.fee = 0
+        tx.feeRate = 0
+        tx.createdAtTs = isRefundableSwap ? Int64.max : 0
+        tx.hash = swapInfo.lockupTxid
+        tx.type = .mixed
+        tx.inputs = [["address": swapInfo.claimPubkey]]
+        tx.outputs = []
+        tx.amounts = ["btc": Int64(swapInfo.onchainAmountSat)]
+        tx.isLightningSwap = true
+        tx.isInProgressSwap = swapInfo.status == .inProgress
+        tx.isRefundableSwap = isRefundableSwap
+        return tx
+    }
 }

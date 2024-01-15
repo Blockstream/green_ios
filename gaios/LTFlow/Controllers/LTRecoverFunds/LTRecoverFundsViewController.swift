@@ -7,6 +7,7 @@ import greenaddress
 enum LTRecoverFundsType {
     case sweep
     case refund
+    case sendAll
 }
 
 struct LTRecoverFundsViewModel {
@@ -39,6 +40,7 @@ struct LTRecoverFundsViewModel {
     var amountToBeRefundedFiatText: String { Balance.fromSatoshi(amountToBeRefunded ?? 0, assetId: AssetInfo.btcId)?.toFiatText() ?? "" }
     var feeText: String { Balance.fromSatoshi(fee ?? 0, assetId: AssetInfo.btcId)?.toText() ?? "" }
     var feeFiatText: String { Balance.fromSatoshi(fee ?? 0, assetId: AssetInfo.btcId)?.toFiatText() ?? "" }
+    var maxReverseSwapAmount: UInt64?
 
     func recover() async throws {
         guard let lightBridge = session?.lightBridge else { return }
@@ -47,10 +49,14 @@ struct LTRecoverFundsViewModel {
         case .refund:
             guard let onChainAddress = onChainAddress else { throw BreezSDK.SdkError.Generic(message: "id_invalid_address") }
             let fee = currentFee.map {UInt32($0)}
-            try await lightBridge.refund(swapAddress: onChainAddress, toAddress: address, satPerVbyte: fee)
+            _ = try await lightBridge.refund(swapAddress: onChainAddress, toAddress: address, satPerVbyte: fee)
         case .sweep:
             let fee = currentFee.map {UInt32($0)}
-            try await lightBridge.sweep(toAddress: address, satPerVbyte: fee)
+            _ = try await lightBridge.sweep(toAddress: address, satPerVbyte: fee)
+        case .sendAll:
+            let fee = currentFee.map {UInt($0)}
+            _ = try await lightBridge.sendAllOnChain(toAddress: address, satPerVbyte: fee)
+            AnalyticsManager.shared.emptiedAccount = wallet
         }
     }
     
@@ -67,6 +73,9 @@ struct LTRecoverFundsViewModel {
         guard let lightBridge = session?.lightBridge else { return }
         if recommendedFees == nil {
             recommendedFees = await lightBridge.recommendedFees()
+        }
+        if maxReverseSwapAmount == nil {
+            maxReverseSwapAmount = await lightBridge.maxReverseSwapAmount()
         }
         guard let currentFee = currentFee else {
             throw BreezSDK.SdkError.Generic(message: "id_invalid fee")
@@ -89,6 +98,10 @@ struct LTRecoverFundsViewModel {
                 }
                 amountToBeRefunded = (amount ?? 0) - (res?.txFeeSat ?? 0)
                 fee = res?.txFeeSat
+            }
+        case .sendAll:
+            if let address = address {
+                try await lightBridge.prepareSendAllOnChain(toAddress: address, satPerVbyte: UInt(currentFee))
             }
         }
     }
@@ -119,7 +132,14 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     func setContent() {
-        title = viewModel.type == .refund ? "id_refund".localized : "id_sweep".localized
+        switch viewModel.type {
+        case .refund:
+            title = "id_refund".localized
+        case .sweep:
+            title = "id_sweep".localized
+        case .sendAll:
+            title = "Empty Lightning Account".localized
+        }
         sliderNext.delegate = self
     }
 
@@ -156,12 +176,11 @@ class LTRecoverFundsViewController: KeyboardViewController {
             } catch {
                 self?.failure(error)
             }
-        }
+       }
     }
 
     @MainActor
     func failure(_ error: Error) {
-        stopAnimating()
         sliderNext.reset()
         showError(error)
     }
@@ -171,11 +190,15 @@ class LTRecoverFundsViewController: KeyboardViewController {
         stopAnimating()
         let storyboard = UIStoryboard(name: "Alert", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
-            if viewModel.type == .refund {
+            switch viewModel.type {
+            case .refund:
                 vc.viewModel = AlertViewModel(title: "id_refund".localized,
                                               hint: "id_refund_in_progress".localized)
-            } else {
+            case .sweep:
                 vc.viewModel = AlertViewModel(title: "id_sweep".localized,
+                                              hint: "id_transaction_sent".localized)
+            case .sendAll:
+                vc.viewModel = AlertViewModel(title: "Empty Lightning Account".localized,
                                               hint: "id_transaction_sent".localized)
             }
             vc.delegate = self
@@ -226,7 +249,8 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
             }
         case .amount:
             if let cell = tableView.dequeueReusableCell(withIdentifier: LTRecoverFundsAmountCell.identifier) as? LTRecoverFundsAmountCell {
-                cell.configure(amount: viewModel.amountText)
+                viewModel.amount = viewModel.type == .sendAll ? viewModel.maxReverseSwapAmount ?? 0 : viewModel.amount ?? 0
+                cell.configure(amount: viewModel.amountText, isEditing: viewModel.type != .sendAll)
                 cell.selectionStyle = .none
                 return cell
             }

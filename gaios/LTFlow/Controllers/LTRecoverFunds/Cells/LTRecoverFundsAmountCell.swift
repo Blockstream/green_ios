@@ -17,8 +17,10 @@ class LTRecoverFundsAmountCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(amount: String) {
+    func configure(amount: String, isEditing: Bool) {
         amountTextField.text = "\(amount)"
+        amountTextField.isUserInteractionEnabled = isEditing
+        amountTextField.isEnabled = isEditing
         denominationLabel.text = ""
     }
 }

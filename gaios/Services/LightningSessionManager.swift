@@ -270,19 +270,26 @@ class LightningSessionManager: SessionManager {
     }
 
     override func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
+        // ignore pagination
         if first > 0 {
             return Transactions(list: [])
         }
-        let subaccount = try await subaccounts().first.hashValue
+        // check valid breez api
         guard let lb = self.lightBridge else {
             return Transactions(list: [])
         }
-        var txs = lb.getTransactions().compactMap { Transaction.fromPayment($0, subaccount: subaccount) }
-        if let swapList = lb.listRefundables() {
-            txs += swapList.map { Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: true) }
-        }
-        if let swapProgress = try lb.swapProgress() {
-            txs += [ Transaction.fromSwapInfo(swapProgress, subaccount: subaccount, isRefundableSwap: false) ]
+        let subaccount = try await subaccounts().first.hashValue
+        // get list payments
+        var txs = try lb.getListPayments().compactMap { Transaction.fromPayment($0, subaccount: subaccount) }
+        // get list refundables
+        txs += try lb.listRefundables().compactMap { Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: true) }
+        // get list reverse swap
+        txs += try lb.listReverseSwapProgress().compactMap { Transaction.fromReverseSwapInfo($0, subaccount: subaccount, isRefundableSwap: false) }
+        // get swap in progress
+        if let sp = try lb.swapProgress() {
+            txs += [sp].compactMap {
+                Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: false)
+            }
         }
         return Transactions(list: txs.sorted().reversed())
     }

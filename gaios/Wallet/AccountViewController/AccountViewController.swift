@@ -542,7 +542,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: LTSweepCell.identifier, for: indexPath) as? LTSweepCell {
                 cell.configure(model: viewModel.sweepCellModels[indexPath.row], onInfo: { [weak self] in
                     if let self = self {
-                        self.pushLTRecoverFundsViewController(self.viewModel.ltRecoverFundsViewModel())
+                        self.pushLTRecoverFundsViewController(self.viewModel.ltRecoverFundsViewModelSweep())
                     }
                 })
                 cell.selectionStyle = .none
@@ -857,11 +857,6 @@ extension AccountViewController: DialogListViewControllerDelegate {
                     return
                 }
                 navigateTo2fa(viewModel.account)
-//                let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-//                if let vc = storyboard.instantiateViewController(withIdentifier: "MultisigSettingsViewController") as? MultisigSettingsViewController {
-//                    vc.session = viewModel.account.session
-//                    navigationController?.pushViewController(vc, animated: true)
-//                }
             default:
                 break
             }
@@ -994,19 +989,8 @@ extension AccountViewController: DialogNodeViewControllerProtocol {
         navigateToBip85Mnemonic()
     }
     
-    func onCloseChannels() {
-        startAnimating()
-        let session = WalletManager.current?.lightningSession
-        Task {
-            do {
-                try session?.lightBridge?.closeLspChannels()
-                stopAnimating()
-                presentAlertClosedChannels()
-            } catch {
-                stopAnimating()
-                showError(error)
-            }
-        }
+    func onSendAll() {
+        pushLTRecoverFundsViewController(viewModel.ltRecoverFundsViewModelSendAll())
     }
     
     @MainActor
