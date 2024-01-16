@@ -54,9 +54,7 @@ class SecuritySelectViewModel {
     }
 
     func hasLightning() -> Bool {
-        let activeNetworks = wm.activeNetworks
-            .filter { net in !(wm.subaccounts.filter { !$0.hidden && $0.networkType == net }.isEmpty ) }
-        return activeNetworks.filter { [.lightning, .testnetLightning].contains($0) }.count > 0
+        return wm.lightningSubaccount != nil
     }
 
     /// cell models
