@@ -156,41 +156,39 @@ class WalletViewController: UIViewController {
     }
 
     func emptiedAccountEvent() async {
+        guard let emptiedAccount = AnalyticsManager.shared.emptiedAccount else {
+            return
+        }
         
-        guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
+        var accountsFunded: Int = 0
+        viewModel.subaccounts.forEach { item in
+            let assets = item.satoshi ?? [:]
+            for (_, value) in assets where value > 0 {
+                accountsFunded += 1
+                break
+            }
+        }
+        let walletFunded: Bool = accountsFunded > 0
+        let accounts: Int = viewModel.subaccounts.count
+        let accountsTypes: String = Array(Set(viewModel.subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
         
-        if AnalyticsManager.shared.emptiedAccount == model.account {
-            
-            var accountsFunded: Int = 0
-            viewModel.subaccounts.forEach { item in
+        var totValue: Int64 = 0
+        viewModel.subaccounts.forEach { item in
+            if item == emptiedAccount {
                 let assets = item.satoshi ?? [:]
                 for (_, value) in assets where value > 0 {
-                    accountsFunded += 1
-                    break
+                    totValue += value
                 }
             }
-            let walletFunded: Bool = accountsFunded > 0
-            let accounts: Int = viewModel.subaccounts.count
-            let accountsTypes: String = Array(Set(viewModel.subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
-            
-            var totValue: Int64 = 0
-            viewModel.subaccounts.forEach { item in
-                if item == AnalyticsManager.shared.emptiedAccount {
-                    let assets = item.satoshi ?? [:]
-                    for (_, value) in assets where value > 0 {
-                        totValue += value
-                    }
-                }
-            }
-            if totValue == 0 {
-                AnalyticsManager.shared.emptiedAccount = nil
-                AnalyticsManager.shared.accountEmptied(account: AccountsRepository.shared.current,
-                                                       walletItem: model.account,
-                                                       walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
-                                                                                               accountsFunded: accountsFunded,
-                                                                                               accounts: accounts,
-                                                                                               accountsTypes: accountsTypes))
-            }
+        }
+        if totValue == 0 {
+            AnalyticsManager.shared.emptiedAccount = nil
+            AnalyticsManager.shared.accountEmptied(account: AccountsRepository.shared.current,
+                                                   walletItem: emptiedAccount,
+                                                   walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
+                                                                                           accountsFunded: accountsFunded,
+                                                                                           accounts: accounts,
+                                                                                           accountsTypes: accountsTypes))
         }
     }
 
