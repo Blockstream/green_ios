@@ -54,6 +54,7 @@ enum ExternalUrls {
     static let helpRecoveryTransactions = "https://help.blockstream.com/hc/en-us/articles/900004249546-The-upgrade-from-nLockTime-to-CheckSequenceVerify"
     static let pinServerSupport = "https://help.blockstream.com/hc/en-us/requests/new?tf_900008231623=ios&tf_subject=Non-default%20PIN%20server&&tf_900003758323=blockstream_jade&tf_900006375926=jade&tf_900009625166="
     static let lightningJadeHelp = "https://help.blockstream.com/hc/en-us/articles/27446807737497"
+    static let helpBlockstream = URL(string: "https://help.blockstream.com")!
 }
 
 enum RiveModel {

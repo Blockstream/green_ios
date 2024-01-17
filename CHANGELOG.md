@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improve account and asset selector
+- Adjust 2FA SMS activation
 
 ## [4.0.23] - 2024-01-11
 

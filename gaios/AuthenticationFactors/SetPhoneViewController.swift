@@ -5,11 +5,15 @@ import gdk
 
 class SetPhoneViewController: KeyboardViewController {
 
-    @IBOutlet weak var headerTitle: UILabel!
+    @IBOutlet weak var iconNetwork: UIImageView!
+    @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var lblHint: UILabel!
+    @IBOutlet weak var countryCodeView: UIView!
+    @IBOutlet weak var phoneView: UIView!
+
     @IBOutlet weak var countryCodeField: UITextField!
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var btnCountryPicker: UIButton!
 
@@ -22,20 +26,39 @@ class SetPhoneViewController: KeyboardViewController {
     private var connected = true
     private var updateToken: NSObjectProtocol?
 
+    @IBOutlet weak var lblAgree: UILabel!
+    @IBOutlet weak var lblFrequency: UILabel!
+    @IBOutlet weak var lblHelp: UILabel!
+    
+    var icon: UIImage {
+        get {
+            switch network {
+            case .bitcoinMS:
+                return UIImage(named: "ntw_btc")!
+            case .liquidMS:
+                return UIImage(named: "ntw_liquid")!
+            case .testnetLiquidMS:
+                return UIImage(named: "ntw_testnet_liquid")!
+            default:
+                return UIImage(named: "ntw_testnet")!
+            }
+        }
+    }
+    
+    let strIAgree = "By continuing you agree to Blockstream's ToS and Privacy Policy".localized
+    let strTos = "ToS".localized
+    let strPrivacy = "Privacy Policy".localized
+
+    let strFrequency = "Message frequency varies according to the number of 2FA SMS requests you make.".localized
+    
+    let strHelp = "For help visit help.blockstream.com To unsubscribe turn off SMS 2FA from the app. Standard messages and data rates may apply.".localized
+    let strBlockcom = "help.blockstream.com".localized
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "id_twofactor_settings".localized
-        headerTitle.text = "id_insert_your_phone_number_to".localized
-        headerTitle.setStyle(.txtBigger)
-        countryCodeField.attributedPlaceholder = NSAttributedString(string: "id_country".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
-        textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
-
-        nextButton.setTitle(isSmsBackup ? "id_continue".localized : "id_get_code".localized, for: .normal)
         
-        nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        nextButton.setStyle(.primaryDisabled)
-        textField.layer.cornerRadius = 5.0
-        countryCodeField.layer.cornerRadius = 5.0
+        setContent()
+        setStyle()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -47,7 +70,6 @@ class SetPhoneViewController: KeyboardViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        countryCodeField.becomeFirstResponder()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -57,9 +79,81 @@ class SetPhoneViewController: KeyboardViewController {
         }
     }
 
-    override func keyboardWillShow(notification: Notification) {
-        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        buttonConstraint.constant = keyboardFrame.height
+    func setContent() {
+        
+        iconNetwork.image = icon
+        title = "Two-Factor Setup".localized
+        lblTitle.text = "Multisig".localized
+        lblHint.text = "id_insert_your_phone_number_to".localized
+        countryCodeField.attributedPlaceholder = NSAttributedString(string: "id_country".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
+        textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
+
+        nextButton.setTitle("Setup 2FA".localized, for: .normal)
+        
+        [lblAgree, lblFrequency, lblHelp].forEach{
+            $0?.isHidden = !sms
+        }
+    }
+    
+    func setStyle() {
+        
+        lblTitle.setStyle(.txtBigger)
+        lblHint.setStyle(.txtCard)
+        nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+        nextButton.setStyle(.primaryDisabled)
+        [countryCodeView, phoneView].forEach {
+            $0.layer.cornerRadius = 5.0
+        }
+        
+        let pStyle = NSMutableParagraphStyle()
+        pStyle.lineSpacing = 7.0
+        pStyle.alignment = .center
+        
+        let cAttr: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.gW40(),
+            .font: UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        ]
+        let gAttr: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.gGreenMatrix(),
+            .font: UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        ]
+        let attrStr = NSMutableAttributedString(string: strIAgree)
+        attrStr.addAttribute (
+            NSAttributedString.Key.paragraphStyle,
+            value: pStyle,
+            range: NSRange(location: 0, length: attrStr.length))
+        attrStr.setAttributes(cAttr, for: strIAgree)
+        attrStr.setAttributes(gAttr, for: strTos)
+        attrStr.setAttributes(gAttr, for: strPrivacy)
+        lblAgree.attributedText = attrStr
+        lblAgree.isUserInteractionEnabled = true
+        lblAgree.lineBreakMode = .byWordWrapping
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(onTapLblAgree(_:)))
+        tapGesture.numberOfTouchesRequired = 1
+        lblAgree.addGestureRecognizer(tapGesture)
+
+        let attrStr2 = NSMutableAttributedString(string: strFrequency)
+        attrStr2.addAttribute (
+            NSAttributedString.Key.paragraphStyle,
+            value: pStyle,
+            range: NSRange(location: 0, length: attrStr2.length))
+        attrStr2.setAttributes(cAttr, for: strFrequency)
+        lblFrequency.attributedText = attrStr2
+        lblFrequency.lineBreakMode = .byWordWrapping
+        
+        let attrStr3 = NSMutableAttributedString(string: strHelp)
+        attrStr3.addAttribute (
+            NSAttributedString.Key.paragraphStyle,
+            value: pStyle,
+            range: NSRange(location: 0, length: attrStr3.length))
+        attrStr3.setAttributes(cAttr, for: strHelp)
+        attrStr3.setAttributes(gAttr, for: strBlockcom)
+        lblHelp.attributedText = attrStr3
+        lblHelp.isUserInteractionEnabled = true
+        lblHelp.lineBreakMode = .byWordWrapping
+        let tapGesture2 = UITapGestureRecognizer.init(target: self, action: #selector(onTapLblHelp(_:)))
+        tapGesture.numberOfTouchesRequired = 1
+        lblHelp.addGestureRecognizer(tapGesture2)
     }
 
     func updateConnection(_ notification: Notification) {
@@ -70,6 +164,29 @@ class SetPhoneViewController: KeyboardViewController {
         }
     }
 
+    @objc func onTapLblAgree(_ gesture: UITapGestureRecognizer) {
+        guard let text = lblAgree.text else { return }
+        let rangeTerms = (text.lowercased() as NSString).range(of: strTos.lowercased())
+        let rangePrivacy = (text.lowercased() as NSString).range(of: strPrivacy.lowercased())
+        if gesture.didTapAttributedTextInLabel(label: lblAgree, inRange: rangeTerms) {
+            navigate(ExternalUrls.aboutTermsOfService)
+        } else if gesture.didTapAttributedTextInLabel(label: lblAgree, inRange: rangePrivacy) {
+            navigate(ExternalUrls.aboutPrivacyPolicy)
+        }
+    }
+    
+    @objc func onTapLblHelp(_ gesture: UITapGestureRecognizer) {
+        guard let text = lblHelp.text else { return }
+        let rangeBlockcom = (text.lowercased() as NSString).range(of: strBlockcom.lowercased())
+        if gesture.didTapAttributedTextInLabel(label: lblHelp, inRange: rangeBlockcom) {
+            navigate(ExternalUrls.helpBlockstream)
+        }
+    }
+
+    func navigate(_ url: URL) {
+        SafeNavigationManager.shared.navigate(url)
+    }
+    
     @objc func onTapCountry(textField: UITextField) {
         print("country")
     }
