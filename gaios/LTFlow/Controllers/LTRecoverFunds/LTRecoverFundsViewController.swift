@@ -48,7 +48,7 @@ struct LTRecoverFundsViewModel {
             throw GaError.GenericError("Invalid Address")
         }
     }
-    
+
     func recoverFunds() async throws {
         switch type {
         case .refund:

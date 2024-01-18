@@ -187,8 +187,6 @@
 		3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3458AB0F292D1F0B006EC7FB /* AnyAssetCell.xib */; };
 		3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3458AB11292D1F25006EC7FB /* AnyAssetCell.swift */; };
 		3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3458AB13292D2822006EC7FB /* AssetExpandableView.xib */; };
-		3458AB18292D289F006EC7FB /* AnyAssetExpandableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3458AB17292D289F006EC7FB /* AnyAssetExpandableView.swift */; };
-		3458AB1A292D28A9006EC7FB /* AnyAssetExpandableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3458AB19292D28A9006EC7FB /* AnyAssetExpandableView.xib */; };
 		345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */; };
 		345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70852836233800EF3971 /* AnalyticsManager.swift */; };
 		345C70882836254600EF3971 /* AssetsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70872836254600EF3971 /* AssetsManager.swift */; };
@@ -210,11 +208,6 @@
 		3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */; };
 		3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */; };
 		346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752EA291E316E00256132 /* ReceiveViewModel.swift */; };
-		346752EF291E559900256132 /* AccountSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752EE291E559900256132 /* AccountSelectViewController.swift */; };
-		346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F0291E55A600256132 /* AccountSelectViewModel.swift */; };
-		346752F3291E55BF00256132 /* AccountSelectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F2291E55BF00256132 /* AccountSelectCell.swift */; };
-		346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F4291E55CC00256132 /* AccountSelectCellModel.swift */; };
-		346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 346752F6291E5D0100256132 /* AccountSelectCell.xib */; };
 		34675B0A29409D9900771D50 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34675B0929409D9900771D50 /* Common.swift */; };
 		3468AFF02A96648300EDFC34 /* LTInvitationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3468AFEF2A96648300EDFC34 /* LTInvitationViewController.swift */; };
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
@@ -866,8 +859,6 @@
 		3458AB0F292D1F0B006EC7FB /* AnyAssetCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AnyAssetCell.xib; path = gaios/Utility/AssetSelect/AssetSelectCell/AnyAssetCell.xib; sourceTree = SOURCE_ROOT; };
 		3458AB11292D1F25006EC7FB /* AnyAssetCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnyAssetCell.swift; path = gaios/Utility/AssetSelect/AssetSelectCell/AnyAssetCell.swift; sourceTree = SOURCE_ROOT; };
 		3458AB13292D2822006EC7FB /* AssetExpandableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetExpandableView.xib; sourceTree = "<group>"; };
-		3458AB17292D289F006EC7FB /* AnyAssetExpandableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyAssetExpandableView.swift; sourceTree = "<group>"; };
-		3458AB19292D28A9006EC7FB /* AnyAssetExpandableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AnyAssetExpandableView.xib; sourceTree = "<group>"; };
 		345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WODetailsViewController.swift; sourceTree = "<group>"; };
 		345C70852836233800EF3971 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		345C70872836254600EF3971 /* AssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManager.swift; sourceTree = "<group>"; };
@@ -889,11 +880,6 @@
 		3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinServerWarnViewController.swift; sourceTree = "<group>"; };
 		346752EA291E316E00256132 /* ReceiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewModel.swift; sourceTree = "<group>"; };
-		346752EE291E559900256132 /* AccountSelectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectViewController.swift; sourceTree = "<group>"; };
-		346752F0291E55A600256132 /* AccountSelectViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectViewModel.swift; sourceTree = "<group>"; };
-		346752F2291E55BF00256132 /* AccountSelectCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectCell.swift; sourceTree = "<group>"; };
-		346752F4291E55CC00256132 /* AccountSelectCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectCellModel.swift; sourceTree = "<group>"; };
-		346752F6291E5D0100256132 /* AccountSelectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectCell.xib; sourceTree = "<group>"; };
 		34675B0929409D9900771D50 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		3468AFEF2A96648300EDFC34 /* LTInvitationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTInvitationViewController.swift; sourceTree = "<group>"; };
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
@@ -1504,9 +1490,7 @@
 				343BC9452AA700BF00F0FEE5 /* GreenPicker */,
 				34DBF1792A442F4D00066479 /* MagnifyQRViewController */,
 				34927BC52971449D00D741DB /* AccountAssetSelectViewController */,
-				34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */,
 				3457F4BB292408BE00EF33B5 /* AssetExpandableSelect */,
-				346752EC291E557000256132 /* AccountSelect */,
 				3420471E291C127E00EDE945 /* AssetSelect */,
 				3420471D291C126B00EDE945 /* SecuritySelect */,
 				3420471B291BFFEF00EDE945 /* Utility.storyboard */,
@@ -1869,10 +1853,7 @@
 		3457F4BB292408BE00EF33B5 /* AssetExpandableSelect */ = {
 			isa = PBXGroup;
 			children = (
-				3458AB17292D289F006EC7FB /* AnyAssetExpandableView.swift */,
-				3458AB19292D28A9006EC7FB /* AnyAssetExpandableView.xib */,
-				34C67E712924D1B000A50F89 /* AssetExpandableView.swift */,
-				3458AB13292D2822006EC7FB /* AssetExpandableView.xib */,
+				34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */,
 				3457F4C02924092A00EF33B5 /* Cells */,
 				3457F4BC2924090400EF33B5 /* AssetExpandableSelectViewController.swift */,
 				3457F4BE2924091600EF33B5 /* AssetExpandableSelectViewModel.swift */,
@@ -1883,6 +1864,8 @@
 		3457F4C02924092A00EF33B5 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				34C67E712924D1B000A50F89 /* AssetExpandableView.swift */,
+				3458AB13292D2822006EC7FB /* AssetExpandableView.xib */,
 				34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */,
 				34C67E752924F57F00A50F89 /* AccountSelectSubCell.swift */,
 				34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */,
@@ -2011,26 +1994,6 @@
 				81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */,
 				812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */,
 				812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
-		346752EC291E557000256132 /* AccountSelect */ = {
-			isa = PBXGroup;
-			children = (
-				346752EE291E559900256132 /* AccountSelectViewController.swift */,
-				346752F0291E55A600256132 /* AccountSelectViewModel.swift */,
-				346752ED291E558400256132 /* Cells */,
-			);
-			path = AccountSelect;
-			sourceTree = "<group>";
-		};
-		346752ED291E558400256132 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				346752F4291E55CC00256132 /* AccountSelectCellModel.swift */,
-				346752F2291E55BF00256132 /* AccountSelectCell.swift */,
-				346752F6291E5D0100256132 /* AccountSelectCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -2399,7 +2362,8 @@
 				34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */,
 				34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */,
 			);
-			path = AccountCreateFooterView;
+			name = AccountCreateFooterView;
+			path = ../AccountCreateFooterView;
 			sourceTree = "<group>";
 		};
 		34BF09DC2A658B9C00523E4C /* DialogQR */ = {
@@ -3531,7 +3495,6 @@
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
 				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
 				3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */,
-				346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */,
 				818BA71F2A30B45200DFB03A /* green.pem in Resources */,
 				34B170E3292E861E00A829B2 /* AddingCell.xib in Resources */,
 				3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */,
@@ -3553,7 +3516,6 @@
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				3415CB152A67DBB700B66882 /* AddressAuthHeader.xib in Resources */,
-				3458AB1A292D28A9006EC7FB /* AnyAssetExpandableView.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
@@ -3652,7 +3614,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				346752EF291E559900256132 /* AccountSelectViewController.swift in Sources */,
 				3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */,
 				3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */,
 				81961AB629E4B80F00E9B94D /* Settings.swift in Sources */,
@@ -3674,7 +3635,6 @@
 				345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
 				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
-				346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
@@ -3712,7 +3672,6 @@
 				3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */,
 				34CED82D2A9F3BC000DD0683 /* LTShortcutViewModel.swift in Sources */,
 				344915DE2A090CA800D35818 /* LTInboundCell.swift in Sources */,
-				3458AB18292D289F006EC7FB /* AnyAssetExpandableView.swift in Sources */,
 				819F1AF02A12839D00ECF999 /* AmountEditCell.swift in Sources */,
 				34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */,
 				344915E52A0BA27100D35818 /* LTSuccessViewModel.swift in Sources */,
@@ -3730,7 +3689,6 @@
 				81961AB729E4B91E00E9B94D /* AssetAmountList.swift in Sources */,
 				34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */,
 				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
-				346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */,
 				81F5C9862ADD3C71004B020A /* LNWithdrawViewController.swift in Sources */,
 				3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */,
 				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
@@ -4023,7 +3981,6 @@
 				34019C2928D35F3F00E64BEE /* DrawerBarItem.swift in Sources */,
 				3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */,
 				34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */,
-				346752F3291E55BF00256132 /* AccountSelectCell.swift in Sources */,
 				343BC94D2AA702F600F0FEE5 /* GreenPickerCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -306,20 +306,10 @@ class ReceiveViewController: KeyboardViewController {
         AnalyticsManager.shared.changeAsset(account: AccountsRepository.shared.current)
         let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if previousViewController is WalletViewController {
-            // from WalletViewController, show assets and account selection
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
                 vc.viewModel = viewModel.getAssetExpandableSelectViewModel()
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
-            }
-        } else {
-            // from AccountViewController, show only assets selection
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                vc.viewModel = viewModel.getAssetSelectViewModel()
-                vc.delegate = self
-                navigationController?.pushViewController(vc, animated: true)
-            }
         }
     }
 
@@ -473,15 +463,6 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
         navigationController?.popViewController(animated: true)
     }
 }
-extension ReceiveViewController: AccountSelectViewControllerDelegate {
-    func didSelectAccount(_ account: WalletItem) {
-        viewModel?.account = account
-        viewModel.type = account.gdkNetwork.lightning ? .bolt11 : .address
-        reload()
-        newAddress()
-    }
-}
-
 extension ReceiveViewController: DialogAmountViewControllerDelegate {
     func didConfirm(satoshi: Int64?) {
         self.viewModel.satoshi = satoshi

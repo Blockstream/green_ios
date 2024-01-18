@@ -27,14 +27,6 @@ class AssetSelectCell: UITableViewCell {
 
         ampSubview.isHidden = true
         assetSubview.borderWidth = 0.0
-
-        if let ampWarn = model.ampWarn {
-            lblAmp.text = ampWarn
-            ampSubview.isHidden = false
-            assetSubview.borderWidth = 2.0
-            assetSubview.borderColor = UIColor.gGreenMatrix()
-        }
-
         iconEdit.isHidden = !showEditIcon
     }
 }
