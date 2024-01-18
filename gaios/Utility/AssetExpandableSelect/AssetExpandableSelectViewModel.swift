@@ -71,8 +71,11 @@ class AssetExpandableSelectViewModel {
     func search(_ txt: String?) {
         assetSelectCellModelsFilter = []
         assetSelectCellModels.forEach {
-            if let txt = txt, txt.count > 0 {
-                if ($0.asset?.name ?? "") .lowercased().contains(txt.lowercased()) {
+            if let txt = txt?.lowercased(), txt.count > 0 {
+                if let asset = $0.asset,
+                   (asset.name?.lowercased() ?? "").contains(txt) ||
+                   (asset.ticker?.lowercased() ?? "").contains(txt) ||
+                   asset.assetId.lowercased().contains(txt) {
                     self.assetSelectCellModelsFilter.append($0)
                 }
             } else {

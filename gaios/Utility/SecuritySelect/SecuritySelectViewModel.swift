@@ -8,17 +8,25 @@ import greenaddress
 
 class SecuritySelectViewModel {
 
-    var assetCellModel: AssetSelectCellModel?
-    var asset: String {
-        didSet {
-            assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
+    var asset: String? = nil
+    var anyLiquidAsset: Bool = false
+    var anyLiquidAmpAsset: Bool = false
+    var assetCellModel: AssetSelectCellModel? {
+        if anyLiquidAmpAsset {
+            return AssetSelectCellModel(anyAmp: true)
+        } else if anyLiquidAsset {
+            return AssetSelectCellModel(anyLiquid: true)
+        } else if let asset = asset {
+            return AssetSelectCellModel(assetId: asset, satoshi: 0)
         }
+        return nil
     }
     private var wm: WalletManager { WalletManager.current! }
 
-    init(asset: String) {
+    init(asset: String? = nil, anyLiquidAsset: Bool = false, anyLiquidAmpAsset: Bool = false) {
         self.asset = asset
-        self.assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
+        self.anyLiquidAsset = anyLiquidAsset
+        self.anyLiquidAmpAsset = anyLiquidAmpAsset
     }
 
     var unarchiveCreateDialog: (( @escaping (Bool) -> ()) -> ())?
@@ -45,8 +53,10 @@ class SecuritySelectViewModel {
     }
     
     func isAdvancedEnable() -> Bool {
-        let asset = WalletManager.current?.registry.info(for: asset)
-        if asset?.amp ?? false {
+        if anyLiquidAmpAsset {
+            return false
+        }
+        if let asset = asset, let asset = WalletManager.current?.registry.info(for: asset), asset.amp ?? false {
             return false
         } else {
             return true
@@ -59,23 +69,27 @@ class SecuritySelectViewModel {
 
     /// cell models
     func getPolicyCellModels() -> [PolicyCellModel] {
-        let policies = policiesForAsset(for: asset, extended: showAll)
+        let policies = policiesForAsset(extended: showAll)
         return policies.map { PolicyCellModel.from(policy: $0) }
     }
 
-    func policiesForAsset(for assetId: String, extended: Bool) -> [PolicyCellType] {
-        let asset = WalletManager.current?.registry.info(for: asset)
-        if asset?.amp ?? false { // amp liquid asset
+    func policiesForAsset(extended: Bool) -> [PolicyCellType] {
+        if anyLiquidAmpAsset { // any amp liquid asset
             return [.Amp]
-        } else if AssetInfo.btcId == assetId { // btc
+        } else if anyLiquidAsset { // any liquid asset
+            return listLiquid(extended: extended)
+        } else if AssetInfo.btcId == asset { // btc
             return listBitcoin(extended: extended)
+        } else if let asset = asset, let asset = WalletManager.current?.registry.info(for: asset), asset.amp ?? false { // amp liquid asset
+            return [.Amp]
         } else { // liquid
             return listLiquid(extended: extended)
         }
     }
 
-    func create(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) async throws -> WalletItem? {
-        let network = policy.getNetwork(testnet: wm.testnet, liquid: asset != "btc")!
+    func create(policy: PolicyCellType, params: CreateSubaccountParams?) async throws -> WalletItem? {
+        let isLiquid = anyLiquidAsset || anyLiquidAmpAsset || asset != "btc"
+        let network = policy.getNetwork(testnet: wm.testnet, liquid: isLiquid)!
         let prominentSession = wm.prominentSession!
         if network.lightning {
             if wm.account.isHW {
@@ -97,7 +111,7 @@ class SecuritySelectViewModel {
             let _ = try await wm.subaccounts()
             return try await session.subaccount(0)
         } else if let session = getSession(for: network) {
-            let params = params ?? CreateSubaccountParams(name: uniqueName(policy.accountType, liquid: asset != "btc"),
+            let params = params ?? CreateSubaccountParams(name: uniqueName(policy.accountType, liquid: isLiquid),
                                                           type: policy.accountType,
                                                           recoveryMnemonic: nil,
                                                           recoveryXpub: nil)

@@ -21,6 +21,7 @@ class AssetExpandableView: UIView {
             bg.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         } else {
             bg.borderWidth = 0.0
+            bg.cornerRadius = 5.0
         }
         ampTip.cornerRadius = 5.0
         // Any liquid asset

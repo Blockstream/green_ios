@@ -6,7 +6,7 @@ protocol AssetExpandableSelectViewControllerDelegate: AnyObject {
     func didSelectReceiver(assetId: String, account: WalletItem)
 }
 
-class AssetExpandableSelectViewController: UIViewController {
+class AssetExpandableSelectViewController: KeyboardViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchCard: UIView!
@@ -38,7 +38,7 @@ class AssetExpandableSelectViewController: UIViewController {
 
     func setContent() {
         title = "id_select_asset".localized
-        searchField.attributedPlaceholder = NSAttributedString(string: "id_search".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
+        searchField.attributedPlaceholder = NSAttributedString(string: "Search Asset".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
     }
 
     func setStyle() {
@@ -51,11 +51,20 @@ class AssetExpandableSelectViewController: UIViewController {
         tableView.reloadData()
     }
 
-    func onCreate(assetId: String?) {
+    func onCreate(section: AssetExpandableSection) {
         AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-            vc.viewModel = SecuritySelectViewModel(asset: assetId ?? GdkNetworks.shared.liquidSS.policyAsset ?? "btc")
+            switch section {
+            case .anyLiquid:
+                vc.viewModel = SecuritySelectViewModel(anyLiquidAsset: true)
+            case .anyAmp:
+                vc.viewModel = SecuritySelectViewModel(anyLiquidAmpAsset: true)
+            case .asset(let assetId):
+                vc.viewModel = SecuritySelectViewModel(asset: assetId)
+            case .none:
+                vc.viewModel = SecuritySelectViewModel(asset: GdkNetworks.shared.liquidSS.policyAsset ?? AssetInfo.btcId)
+            }
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -97,26 +106,21 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        
+        if viewModel.getSection(index: section) != viewModel.selected {
+            return 0.1
+        }
         return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if viewModel.getSection(index: section) != viewModel.selected {
-            return nil
-        }
-        var assetId = AssetInfo.lbtcId
-        switch viewModel.getSection(index: section) {
-        case .asset(let id):
-            assetId = id
-        default:
-            break
-        }
+        let section = viewModel.getSection(index: section)
+        if section != viewModel.selected { return nil }
+        let enableCreate = !(AccountsRepository.shared.current?.isWatchonly ?? false)
         if let createView = Bundle.main.loadNibNamed("AccountCreateFooterView", owner: self, options: nil)?.first as? AccountCreateFooterView {
             createView.configure(
-                enableCreate: AccountsRepository.shared.current?.isWatchonly ?? false,
+                enableCreate: enableCreate,
                 hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
-                onTap: { [weak self] in self?.onCreate(assetId: assetId) })
+                onTap: { [weak self] in self?.onCreate(section: section) })
             return createView
         }
         return nil
@@ -142,6 +146,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     @objc
     private func didSelectSection(sender: UIButton) {
+        dismissKeyboard()
         let section = viewModel.getSection(index: sender.tag)
         let tapSelected = viewModel.selected == section
         // close previous section

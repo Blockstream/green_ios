@@ -16,7 +16,7 @@ class AssetSelectCellModel {
         self.anyAmp = anyAmp
     }
     init(anyLiquid: Bool) {
-        self.anyLiquid = anyAmp
+        self.anyLiquid = anyLiquid
     }
     init(section: AssetExpandableSection) {
         switch section {

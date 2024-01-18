@@ -247,7 +247,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.shortString))
         Task {
             do {
-                let wallet = try await viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil)
+                let wallet = try await viewModel.create(policy: policy, params: nil)
                 if let wallet = wallet {
                     self.didCreatedWallet(wallet)
                 }
@@ -282,14 +282,14 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         dialogJadeCheckViewController?.dismiss()
     }
     
-    func createSubaccount(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) {
+    func createSubaccount(policy: PolicyCellType, params: CreateSubaccountParams?) {
         let isHW = AccountsRepository.shared.current?.isHW ?? false
         Task {
             if isHW {
                 showHWCheckDialog()
             }
             do {
-                let wallet = try await viewModel.create(policy: policy, asset: asset, params: params)
+                let wallet = try await viewModel.create(policy: policy, params: params)
                 await MainActor.run {
                     DropAlert().success(message: "id_new_account_created".localized)
                     navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
@@ -360,11 +360,11 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         /// handle any asset case
         switch type {
         case .liquid:
-            viewModel?.asset = AssetInfo.lbtcId
+            viewModel?.anyLiquidAsset = true
             reloadSections([.asset, .policy], animated: true)
         case .amp:
-            /// TODO: handle amp case
-            print("TODO: handle amp case")
+            viewModel?.anyLiquidAmpAsset = true
+            reloadSections([.asset, .policy], animated: true)
             break
         }
         navigationController?.popViewController(animated: true)
@@ -444,7 +444,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: nil,
                                             recoveryXpub: key)
-        createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
+        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
@@ -454,7 +454,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
+        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
@@ -464,7 +464,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
+        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 }
 

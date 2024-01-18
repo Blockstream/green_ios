@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -154,11 +154,21 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Chj-4e-TQB">
-                                <rect key="frame" x="25" y="69" width="343" height="54"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Chj-4e-TQB">
+                                <rect key="frame" x="25" y="69" width="343" height="64"/>
                                 <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fIx-HR-OSV">
+                                        <rect key="frame" x="289" y="10" width="44" height="44"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="44" id="6jK-nc-xNr"/>
+                                            <constraint firstAttribute="height" constant="44" id="KxO-GB-Jtx"/>
+                                        </constraints>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" image="ic_search"/>
+                                    </button>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eZk-JQ-Fia">
-                                        <rect key="frame" x="20" y="9" width="259" height="36"/>
+                                        <rect key="frame" x="20" y="14" width="259" height="36"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="36" id="qBF-LF-i1d"/>
@@ -170,16 +180,6 @@
                                             <action selector="onEditingChange:" destination="X77-bL-K6T" eventType="editingChanged" id="8jM-pF-YDp"/>
                                         </connections>
                                     </textField>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fIx-HR-OSV">
-                                        <rect key="frame" x="289" y="5" width="44" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="44" id="6jK-nc-xNr"/>
-                                            <constraint firstAttribute="height" constant="44" id="KxO-GB-Jtx"/>
-                                        </constraints>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="ic_search"/>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" name="gGrayCard"/>
                                 <constraints>
@@ -187,12 +187,12 @@
                                     <constraint firstItem="eZk-JQ-Fia" firstAttribute="centerY" secondItem="Chj-4e-TQB" secondAttribute="centerY" id="8Np-4L-XeT"/>
                                     <constraint firstItem="fIx-HR-OSV" firstAttribute="centerY" secondItem="Chj-4e-TQB" secondAttribute="centerY" id="M3Z-SV-bUg"/>
                                     <constraint firstAttribute="trailing" secondItem="fIx-HR-OSV" secondAttribute="trailing" constant="10" id="fXr-1V-3rI"/>
-                                    <constraint firstAttribute="height" constant="54" id="ntq-Rh-EeZ"/>
+                                    <constraint firstAttribute="height" constant="64" id="ntq-Rh-EeZ"/>
                                     <constraint firstItem="eZk-JQ-Fia" firstAttribute="leading" secondItem="Chj-4e-TQB" secondAttribute="leading" constant="20" id="zD8-ea-MaD"/>
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="mnF-r3-Jbd">
-                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <rect key="frame" x="0.0" y="153" width="393" height="665"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="X77-bL-K6T" id="NP9-6n-uxF"/>
@@ -203,13 +203,13 @@
                         <viewLayoutGuide key="safeArea" id="cHa-ON-0ZZ"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
+                            <constraint firstItem="mnF-r3-Jbd" firstAttribute="top" secondItem="Chj-4e-TQB" secondAttribute="bottom" constant="20" id="H1Y-s5-d8s"/>
                             <constraint firstItem="Chj-4e-TQB" firstAttribute="top" secondItem="cHa-ON-0ZZ" secondAttribute="top" constant="10" id="HaP-rX-xq9"/>
                             <constraint firstItem="mnF-r3-Jbd" firstAttribute="leading" secondItem="cHa-ON-0ZZ" secondAttribute="leading" id="UYD-0e-43t"/>
                             <constraint firstItem="Chj-4e-TQB" firstAttribute="leading" secondItem="cHa-ON-0ZZ" secondAttribute="leading" constant="25" id="Xbp-fQ-ODQ"/>
                             <constraint firstItem="cHa-ON-0ZZ" firstAttribute="trailing" secondItem="mnF-r3-Jbd" secondAttribute="trailing" id="jcs-Cw-xOa"/>
                             <constraint firstItem="cHa-ON-0ZZ" firstAttribute="trailing" secondItem="Chj-4e-TQB" secondAttribute="trailing" constant="25" id="pza-S2-iEs"/>
                             <constraint firstItem="cHa-ON-0ZZ" firstAttribute="bottom" secondItem="mnF-r3-Jbd" secondAttribute="bottom" id="qc1-rA-TKf"/>
-                            <constraint firstItem="mnF-r3-Jbd" firstAttribute="top" secondItem="cHa-ON-0ZZ" secondAttribute="top" id="vDG-8s-pfy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Hac-es-gma">
@@ -224,7 +224,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iHB-Gy-Lbu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3185" y="2240"/>
+            <point key="canvasLocation" x="3183.969465648855" y="2239.4366197183099"/>
         </scene>
         <!--Account Asset View Controller-->
         <scene sceneID="uGZ-NQ-Mac">
@@ -434,7 +434,7 @@
                                                                                 </constraints>
                                                                             </view>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F1G-l1-9Ag">
-                                                                                <rect key="frame" x="0.0" y="52" width="393" height="523.33333333333337"/>
+                                                                                <rect key="frame" x="0.0" y="52.000000000000057" width="393" height="523.33333333333348"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="pnX-Bd-wI6" id="WXX-qy-nuM"/>
