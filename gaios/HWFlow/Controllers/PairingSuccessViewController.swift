@@ -30,7 +30,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         if let account = AccountsRepository.shared.accounts.filter({
             $0.isHW && ($0.uuid == bleViewModel?.peripheralID) || ($0.name == bleViewModel?.peripheral?.name) }).first {
             rememberSwitch.isOn = !(account.hidden ?? false)
-            rememberView.isHidden = true
+//            rememberView.isHidden = true
         }
     }
 
