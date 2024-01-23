@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improve account and asset selector
 - Adjust 2FA SMS activation
 
+### Fixed
+- Send screen: improved address typing and send all UX 
+
 ## [4.0.23] - 2024-01-11
 
 ### Changed

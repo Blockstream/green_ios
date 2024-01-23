@@ -32,6 +32,7 @@ class SendViewModel {
     var isFiat: Bool = false
     var editableAddress: Bool = true
     var editableAmount: Bool = false
+    var enableSendAll: Bool = false
     var addressInputType: AnalyticsManager.AddressInputType?
     
     var transactionPriority: TransactionPriority = .Medium {
@@ -237,13 +238,15 @@ class SendViewModel {
         }
         editableAddress = true
         editableAmount = true
+        enableSendAll = false
         switch inputType {
         case .transaction, .lnurl:
             editableAmount = tx.addressees.count > 0 && !sendAll
+            enableSendAll = true
         case .sweep, .bumpFee, .bolt11:
-            let satoshi = tx.addressees.first
             editableAddress = false
             editableAmount = tx.anyAmouts
+            enableSendAll = tx.anyAmouts
         }
     }
     
@@ -269,7 +272,7 @@ class SendViewModel {
 
     var amountCellModel: AmountEditCellModel {
         let balance = account.satoshi?[assetId ?? feeAsset]
-        return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editableAmount, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning, inputDenomination: inputDenomination)
+        return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editableAmount, enableSendAll: enableSendAll, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning, inputDenomination: inputDenomination)
     }
 
     var addressEditCellModel: AddressEditCellModel {
@@ -279,6 +282,7 @@ class SendViewModel {
     func validateInput() async throws {
         guard let input = input, !input.isEmpty else {
             editableAmount = false
+            enableSendAll = false
             return
         }
         if inputType == .bumpFee {

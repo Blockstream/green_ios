@@ -84,8 +84,13 @@ class AddressEditCell: UITableViewCell {
         delegate?.qrcodeScanner()
     }
 
-    @IBAction func addressDidChange(_ sender: Any) {
+    @IBAction func addressDidEndEditing(_ sender: Any) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
+    }
+
+    @IBAction func addressDidChange(_ sender: Any) {
+//        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
+//        perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
     }
 }

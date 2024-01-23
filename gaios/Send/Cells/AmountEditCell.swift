@@ -15,6 +15,7 @@ struct AmountEditCellModel {
     let balance: Int64?
     let assetId: String
     let editable: Bool
+    let enableSendAll: Bool
     var sendAll: Bool = false
     var isFiat: Bool = false
     var isLightning: Bool = false
@@ -126,7 +127,7 @@ class AmountEditCell: UITableViewCell {
         pasteButton.isEnabled = cellModel.editable
         cancelButton.isEnabled = cellModel.editable
         sendAll(enabled: cellModel.sendAll)
-        sendallButton.isEnabled = cellModel.editable
+        sendallButton.isEnabled = cellModel.enableSendAll
         cancelButton.isHidden = amountTextField.text?.isEmpty ?? false
         pasteButton.isHidden = !(amountTextField.text?.isEmpty ?? false)
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
@@ -160,7 +161,9 @@ class AmountEditCell: UITableViewCell {
             amountTextField.text = ""
         } else {
             sendallButton.setStyle(.outlinedGray)
-            sendallButton.isEnabled = true
+        }
+        [pasteButton, cancelButton].forEach {
+            $0?.isEnabled = !enabled && (cellModel?.enableSendAll ?? false)
         }
     }
 
