@@ -49,7 +49,7 @@ struct LTRecoverFundsViewModel {
             let fee = currentFee.map {UInt32($0)}
             try await lightBridge.refund(swapAddress: onChainAddress, toAddress: address, satPerVbyte: fee)
         case .sweep:
-            let fee = currentFee.map {UInt($0)}
+            let fee = currentFee.map {UInt32($0)}
             try await lightBridge.sweep(toAddress: address, satPerVbyte: fee)
         }
     }
@@ -83,12 +83,12 @@ struct LTRecoverFundsViewModel {
             }
         case .sweep:
             if let address = address {
-                let res = try await lightBridge.prepareSweep(toAddress: address, satPerVbyte: currentFee)
-                if amount ?? 0 < res?.sweepTxFeeSat ?? 0 {
+                let res = try await lightBridge.prepareSweep(toAddress: address, satPerVbyte: UInt32(currentFee))
+                if amount ?? 0 < res?.txFeeSat ?? 0 {
                     throw BreezSDK.SdkError.Generic(message: "id_insufficient_funds")
                 }
-                amountToBeRefunded = (amount ?? 0) - (res?.sweepTxFeeSat ?? 0)
-                fee = res?.sweepTxFeeSat ?? 0
+                amountToBeRefunded = (amount ?? 0) - (res?.txFeeSat ?? 0)
+                fee = res?.txFeeSat
             }
         }
     }

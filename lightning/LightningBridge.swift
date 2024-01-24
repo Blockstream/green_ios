@@ -209,9 +209,9 @@ public class LightningBridge {
         _ = updateNodeInfo()
     }
     
-    public func sweep(toAddress: String, satPerVbyte: UInt?) throws -> SweepResponse? {
+    public func sweep(toAddress: String, satPerVbyte: UInt32?) throws -> RedeemOnchainFundsResponse? {
         let satPerVbyte = satPerVbyte.map {UInt64($0)} ?? recommendedFees()?.economyFee ?? 0
-        let res = try breezSdk?.sweep(req: SweepRequest(toAddress: toAddress, satPerVbyte: UInt32(satPerVbyte)))
+        let res = try breezSdk?.redeemOnchainFunds(req: RedeemOnchainFundsRequest(toAddress: toAddress, satPerVbyte: UInt32(satPerVbyte)))
         _ = updateNodeInfo()
         return res
     }
@@ -235,11 +235,11 @@ public class LightningBridge {
         )
     }
 
-    public func prepareSweep(toAddress: String, satPerVbyte: UInt64?) async throws -> PrepareSweepResponse? {
-        try breezSdk?.prepareSweep(
-            req: PrepareSweepRequest(
+    public func prepareSweep(toAddress: String, satPerVbyte: UInt32?) async throws -> PrepareRedeemOnchainFundsResponse? {
+        try breezSdk?.prepareRedeemOnchainFunds(
+            req: PrepareRedeemOnchainFundsRequest(
                 toAddress: toAddress,
-                satPerVbyte: satPerVbyte ?? UInt64(breezSdk?.recommendedFees().economyFee ?? 0)
+                satPerVbyte: satPerVbyte ?? UInt32(breezSdk?.recommendedFees().economyFee ?? 0)
             )
         )
     }
