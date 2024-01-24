@@ -8,6 +8,8 @@ class LTRecoverFundsFeeCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblFeeAmount: UILabel!
+    @IBOutlet weak var lblGlobalFeeAmount: UILabel!
+    @IBOutlet weak var lblGlobalFeeFiatAmount: UILabel!
     @IBOutlet weak var feeSlider: UISlider!
 
     class var identifier: String { return String(describing: self) }
@@ -29,7 +31,9 @@ class LTRecoverFundsFeeCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(feeRate: String, feeSliderIndex: Int, feeSliderMaxIndex: Int = 3) {
+    func configure(fee: String, fiatFee: String,  feeRate: String, feeSliderIndex: Int, feeSliderMaxIndex: Int = 3) {
+        lblGlobalFeeAmount.text = fee
+        lblGlobalFeeFiatAmount.text = fiatFee
         lblFeeAmount.text = feeRate
         self.feeSliderMaxIndex = feeSliderMaxIndex
         setFeeSlider(feeSliderIndex)

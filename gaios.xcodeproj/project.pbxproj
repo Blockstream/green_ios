@@ -423,6 +423,8 @@
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
 		811EFEE72A2BAFFB0054EBFE /* GdkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */; };
+		812528CE2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812528CD2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift */; };
+		812528D02B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812528CF2B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift */; };
 		8127DB1C2AFF7396002489AC /* ScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8127DB1B2AFF7396002489AC /* ScanResult.swift */; };
 		812DBDBA29724E8C002992D6 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDB929724E8C002992D6 /* WatchOnlySettings.swift */; };
 		812DBDBC29724F69002992D6 /* WatchOnlySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDBB29724F69002992D6 /* WatchOnlySettingsViewController.swift */; };
@@ -1111,6 +1113,8 @@
 		811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkSettings.swift; sourceTree = "<group>"; };
 		81205D6821C3B7EB005180CF /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		8124524125D6B0DD00537238 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
+		812528CD2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoverFundsSummaryCell.swift; sourceTree = "<group>"; };
+		812528CF2B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoveryFundsErrorCell.swift; sourceTree = "<group>"; };
 		81268E7B291BC8190079C13D /* AssetAmountList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountList.swift; sourceTree = "<group>"; };
 		8127DB1B2AFF7396002489AC /* ScanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResult.swift; sourceTree = "<group>"; };
 		812DBDB929724E8C002992D6 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
@@ -2410,8 +2414,8 @@
 		34C8585329F90102004A3F83 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				81F5C98A2ADD4581004B020A /* LTWithdraw */,
 				34CED82B2A9F3B9900DD0683 /* LTShortcut */,
+				81F5C98A2ADD4581004B020A /* LTWithdraw */,
 				34F568952A828CC00081BF0C /* LTRecoverFunds */,
 				3445498E29FBF7D9006725D2 /* LTSuccessViewController.swift */,
 				344915E42A0BA27100D35818 /* LTSuccessViewModel.swift */,
@@ -2586,6 +2590,8 @@
 				34F568972A828D330081BF0C /* LTRecoverFundsAddressCell.swift */,
 				34F568992A828D490081BF0C /* LTRecoverFundsAmountCell.swift */,
 				34F5689B2A828D610081BF0C /* LTRecoverFundsFeeCell.swift */,
+				812528CD2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift */,
+				812528CF2B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -3617,6 +3623,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				812528CE2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift in Sources */,
 				3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */,
 				3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */,
 				81961AB629E4B80F00E9B94D /* Settings.swift in Sources */,
@@ -3825,6 +3832,7 @@
 				3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */,
 				34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */,
 				349D1EDB274250540095B5CA /* TransactionViewController.swift in Sources */,
+				812528D02B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				81A591A129157B1E001D1A65 /* MultisigSettingsCell.swift in Sources */,
 				34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */,

@@ -1,24 +1,22 @@
 import UIKit
 
-class LTRecoverFundsAmountCell: UITableViewCell {
+class LTRecoverFundsSummaryCell: UITableViewCell {
 
-    @IBOutlet weak var bg: UIView!
     @IBOutlet weak var amountTextField: UITextField!
-    @IBOutlet weak var denominationLabel: UILabel!
+    @IBOutlet weak var FiatTextLabel: UILabel!
 
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(amount: String) {
+    func configure(amount: String, fiat: String) {
         amountTextField.text = "\(amount)"
-        denominationLabel.text = ""
+        FiatTextLabel.text = "\(fiat)"
     }
 }

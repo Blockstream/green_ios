@@ -224,6 +224,25 @@ public class LightningBridge {
         let report = ReportIssueRequest.paymentFailure(data: ReportPaymentFailureDetails(paymentHash: paymentHash, comment: nil))
         try? breezSdk?.reportIssue(req: report)
     }
+    
+    public func prepareRefund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) async throws -> PrepareRefundResponse? {
+        try breezSdk?.prepareRefund(
+            req: PrepareRefundRequest(
+                swapAddress: swapAddress,
+                toAddress: toAddress,
+                satPerVbyte: satPerVbyte ?? UInt32(breezSdk?.recommendedFees().economyFee ?? 0)
+            )
+        )
+    }
+
+    public func prepareSweep(toAddress: String, satPerVbyte: UInt64?) async throws -> PrepareSweepResponse? {
+        try breezSdk?.prepareSweep(
+            req: PrepareSweepRequest(
+                toAddress: toAddress,
+                satPerVbyte: satPerVbyte ?? UInt64(breezSdk?.recommendedFees().economyFee ?? 0)
+            )
+        )
+    }
 }
 
 extension LightningBridge: EventListener {

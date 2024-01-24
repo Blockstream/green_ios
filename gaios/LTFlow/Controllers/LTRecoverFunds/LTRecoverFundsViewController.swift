@@ -18,43 +18,78 @@ struct LTRecoverFundsViewModel {
     var feeSlider: Int = 0
     var session: LightningSessionManager? { wallet?.lightningSession }
     var recommendedFees: RecommendedFees?
-    var fee: UInt64? {
+    var currentFee: UInt64? {
         if let fees = recommendedFees {
             let rules = [fees.economyFee, fees.hourFee, fees.halfHourFee, fees.fastestFee]
             return rules[feeSlider]
         }
         return recommendedFees?.economyFee
     }
-    var feeAmountRate: String? { feeRateWithUnit((fee ?? 0) * 1000) }
+    var error: String?
+    var fee: UInt64?
+    var amountToBeRefunded: UInt64?
+    var feeAmountRate: String? { feeRateWithUnit((currentFee ?? 0) * 1000) }
     func feeRateWithUnit(_ value: UInt64) -> String {
         let feePerByte = Double(value) / 1000.0
         return String(format: "%.2f sats / vbyte", feePerByte)
     }
-    
-    func sweep() async throws {
-        if let address = address {
-            let fee = fee.map {UInt($0)}
-            try await session?.lightBridge?.sweep(toAddress: address, satPerVbyte: fee)
-        } else {
-            throw GaError.GenericError("Invalid Address")
-        }
-    }
+    var amountText: String { Balance.fromSatoshi(amount ?? 0, assetId: AssetInfo.btcId)?.toText() ?? "" }
+    var fiatText: String { Balance.fromSatoshi(amount ?? 0, assetId: AssetInfo.btcId)?.toFiatText() ?? "" }
+    var amountToBeRefundedText: String { Balance.fromSatoshi(amountToBeRefunded ?? 0, assetId: AssetInfo.btcId)?.toText() ?? "" }
+    var amountToBeRefundedFiatText: String { Balance.fromSatoshi(amountToBeRefunded ?? 0, assetId: AssetInfo.btcId)?.toFiatText() ?? "" }
+    var feeText: String { Balance.fromSatoshi(fee ?? 0, assetId: AssetInfo.btcId)?.toText() ?? "" }
+    var feeFiatText: String { Balance.fromSatoshi(fee ?? 0, assetId: AssetInfo.btcId)?.toFiatText() ?? "" }
 
-    func refund() async throws {
-        if let swapAddress = onChainAddress, let address = address {
-            let fee = fee.map {UInt32($0)}
-            try await session?.lightBridge?.refund(swapAddress: swapAddress, toAddress: address, satPerVbyte: fee)
-        } else {
-            throw GaError.GenericError("Invalid Address")
-        }
-    }
-
-    func recoverFunds() async throws {
+    func recover() async throws {
+        guard let lightBridge = session?.lightBridge else { return }
+        guard let address = address else { throw BreezSDK.SdkError.Generic(message: "id_invalid_address") }
         switch type {
         case .refund:
-            try await refund()
+            guard let onChainAddress = onChainAddress else { throw BreezSDK.SdkError.Generic(message: "id_invalid_address") }
+            let fee = currentFee.map {UInt32($0)}
+            try await lightBridge.refund(swapAddress: onChainAddress, toAddress: address, satPerVbyte: fee)
         case .sweep:
-            try await sweep()
+            let fee = currentFee.map {UInt($0)}
+            try await lightBridge.sweep(toAddress: address, satPerVbyte: fee)
+        }
+    }
+    
+    mutating func prepare() async {
+        do {
+            try await _prepare()
+            error = nil
+        } catch {
+            self.error = error.description()
+        }
+    }
+    
+    mutating func _prepare() async throws {
+        guard let lightBridge = session?.lightBridge else { return }
+        if recommendedFees == nil {
+            recommendedFees = await lightBridge.recommendedFees()
+        }
+        guard let currentFee = currentFee else {
+            throw BreezSDK.SdkError.Generic(message: "id_invalid fee")
+        }
+        switch type {
+        case .refund:
+            if let swapAddress = onChainAddress, let address = address {
+                let res = try await lightBridge.prepareRefund(swapAddress: swapAddress, toAddress: address, satPerVbyte: UInt32(currentFee))
+                if amount ?? 0 < res?.refundTxFeeSat ?? 0 {
+                    throw BreezSDK.SdkError.Generic(message: "id_insufficient_funds")
+                }
+                amountToBeRefunded = (amount ?? 0) - (res?.refundTxFeeSat ?? 0)
+                fee = res?.refundTxFeeSat ?? 0
+            }
+        case .sweep:
+            if let address = address {
+                let res = try await lightBridge.prepareSweep(toAddress: address, satPerVbyte: currentFee)
+                if amount ?? 0 < res?.sweepTxFeeSat ?? 0 {
+                    throw BreezSDK.SdkError.Generic(message: "id_insufficient_funds")
+                }
+                amountToBeRefunded = (amount ?? 0) - (res?.sweepTxFeeSat ?? 0)
+                fee = res?.sweepTxFeeSat ?? 0
+            }
         }
     }
 }
@@ -65,6 +100,8 @@ class LTRecoverFundsViewController: KeyboardViewController {
         case address
         case amount
         case fee
+        case summary
+        case error
     }
 
     @IBOutlet weak var tableView: UITableView!
@@ -78,7 +115,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
 
         setContent()
         setStyle()
-        reload()
+        prepare()
     }
 
     func setContent() {
@@ -103,25 +140,21 @@ class LTRecoverFundsViewController: KeyboardViewController {
         tableView.setContentOffset(CGPoint(x: 0.0, y: 0.0), animated: true)
     }
     
-    func reload() {
-        Task.detached() { [weak self] in
-            let fees = try? await self?.viewModel?.session?.lightBridge?.recommendedFees()
-            await MainActor.run { [weak self] in
-                self?.viewModel?.recommendedFees = fees
-                self?.tableView.reloadData()
-            }
+    func prepare() {
+        Task { [weak self] in
+            await self?.viewModel.prepare()
+            await MainActor.run { self?.tableView.reloadData() }
         }
     }
     
-   func send() {
-        Task {
-            startAnimating()
+    func send() {
+        startAnimating()
+        Task { [weak self] in
             do {
-                try await viewModel.recoverFunds()
-                stopAnimating()
-                success()
+                try await self?.viewModel.recover()
+                self?.success()
             } catch {
-                failure(error)
+                self?.failure(error)
             }
         }
     }
@@ -135,6 +168,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
 
     @MainActor
     func success() {
+        stopAnimating()
         let storyboard = UIStoryboard(name: "Alert", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
             if viewModel.type == .refund {
@@ -171,6 +205,10 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
             return 1
         case .fee:
             return 1
+        case .summary:
+            return 1
+        case .error:
+            return viewModel.error != nil ? 1 : 0
         case .none:
             return 0
         }
@@ -188,14 +226,26 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
             }
         case .amount:
             if let cell = tableView.dequeueReusableCell(withIdentifier: LTRecoverFundsAmountCell.identifier) as? LTRecoverFundsAmountCell {
-                cell.configure(amount: viewModel.amount ?? 0)
+                cell.configure(amount: viewModel.amountText)
                 cell.selectionStyle = .none
                 return cell
             }
         case .fee:
             if let cell = tableView.dequeueReusableCell(withIdentifier: LTRecoverFundsFeeCell.identifier) as? LTRecoverFundsFeeCell {
-                cell.configure(feeRate: viewModel.feeAmountRate ?? "", feeSliderIndex: viewModel.feeSlider, feeSliderMaxIndex: 3)
+                cell.configure(fee: viewModel.feeText, fiatFee: viewModel.feeFiatText, feeRate: viewModel.feeAmountRate ?? "", feeSliderIndex: viewModel.feeSlider, feeSliderMaxIndex: 3)
                 cell.delegate = self
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .summary:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: LTRecoverFundsSummaryCell.identifier) as? LTRecoverFundsSummaryCell {
+                cell.configure(amount: viewModel.amountToBeRefundedText, fiat: viewModel.amountToBeRefundedFiatText)
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .error:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: LTRecoverFundsErrorCell.identifier) as? LTRecoverFundsErrorCell {
+                cell.configure(text: viewModel.error?.localized ?? "")
                 cell.selectionStyle = .none
                 return cell
             }
@@ -213,6 +263,10 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
         case .amount:
             return UITableView.automaticDimension
         case .fee:
+            return UITableView.automaticDimension
+        case .summary:
+            return UITableView.automaticDimension
+        case .error:
             return UITableView.automaticDimension
         default:
             return 0.1
@@ -235,7 +289,11 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
             return headerView("id_amount".localized)
         case .fee:
             return headerView("id_network_fee".localized)
-        case .none:
+        case .summary:
+            return headerView("Amount to be refounded".localized)
+        case .error:
+            return nil
+        default:
             return nil
         }
     }
@@ -269,7 +327,7 @@ extension LTRecoverFundsViewController: LTRecoverFundsAddressCellDelegate {
     func didChange(address: String) {
         viewModel.address = address
         btnNextIsEnabled = !address.isEmpty
-        tableView.reloadData()
+        prepare()
     }
     
     func qrcodeScanner() {
@@ -287,7 +345,7 @@ extension LTRecoverFundsViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
         viewModel.address = value.result
         btnNextIsEnabled = !value.result.isEmpty
-        tableView.reloadData()
+        prepare()
     }
     func didStop() {
     }
@@ -296,7 +354,7 @@ extension LTRecoverFundsViewController: DialogScanViewControllerDelegate {
 extension LTRecoverFundsViewController: LTRecoverFundsFeeDelegate {
     func didChange(feeSliderIndex: Int) {
         viewModel.feeSlider = feeSliderIndex
-        tableView.reloadData()
+        prepare()
     }
 }
 
