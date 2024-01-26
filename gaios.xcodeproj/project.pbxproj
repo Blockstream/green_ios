@@ -421,6 +421,7 @@
 		81004E31292B6E1D001C2E4D /* MnemonicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81004E30292B6E1D001C2E4D /* MnemonicViewModel.swift */; };
 		81073D7821E8B27700E08F86 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81073D7A21E8B27700E08F86 /* Localizable.strings */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
+		81196E9D2B739F7900537A6E /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81196E9C2B739F7900537A6E /* CBOR.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
 		811EFEE72A2BAFFB0054EBFE /* GdkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */; };
 		812528CE2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812528CD2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift */; };
@@ -1108,6 +1109,7 @@
 		810E052827B45AA700F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
 		810E052927B45AA800F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
+		81196E9C2B739F7900537A6E /* CBOR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBOR.swift; sourceTree = "<group>"; };
 		811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorConfig.swift; sourceTree = "<group>"; };
 		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkSettings.swift; sourceTree = "<group>"; };
@@ -2993,6 +2995,7 @@
 				81961B1E29E4EEFE00E9B94D /* String.swift */,
 				8190D4C52A268F93003D31B4 /* Number.swift */,
 				8161845C2A3B6467007D6569 /* AnyPublisher.swift */,
+				81196E9C2B739F7900537A6E /* CBOR.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -4106,6 +4109,7 @@
 				81D404E12A1D6138002631F5 /* Utils.swift in Sources */,
 				8190D4C62A268F93003D31B4 /* Number.swift in Sources */,
 				81961B0F29E4EE3C00E9B94D /* HWProtocol.swift in Sources */,
+				81196E9D2B739F7900537A6E /* CBOR.swift in Sources */,
 				817A0B332A40428500E2F80D /* BleLedger.swift in Sources */,
 				81961B1029E4EE3C00E9B94D /* HWDevice.swift in Sources */,
 				81961B1129E4EE3C00E9B94D /* TxInput.swift in Sources */,

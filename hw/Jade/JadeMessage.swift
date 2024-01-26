@@ -164,6 +164,13 @@ public struct JadeHandshakeComplete: Codable {
     let hmacEncryptedData: String
 }
 
+public struct JadeHttpData: Codable {
+    enum CodingKeys: String, CodingKey {
+        case data
+    }
+    let data: String
+}
+
 public struct JadeHandshakeInit: Codable {
     enum CodingKeys: String, CodingKey {
         case sig
@@ -302,41 +309,10 @@ public struct JadeResponse<T: Codable>: Decodable, Encodable {
         case result
     }
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
-        if container.contains(.error) {
-            error = try container.decode(JadeResponseError.self, forKey: .error)
-        } else {
-            error = nil
-        }
-        if container.contains(.result) {
-            do {
-                result = try container.decode(T.self, forKey: .result)
-            } catch {
-                print(error)
-                throw error
-            }
-        } else {
-            result = nil
-        }
-    }
-
     public init(id: String, error: JadeResponseError?, result: T? = nil) {
         self.id = id
         self.error = error
         self.result = result
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        if error != nil {
-            try container.encode(error, forKey: .error)
-        }
-        if result != nil {
-            try container.encode(result, forKey: .result)
-        }
     }
 
     public var encoded: Data? {
