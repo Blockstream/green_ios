@@ -12,11 +12,14 @@ public protocol JadeGdkRequest: AnyObject {
 
 public class BleJade: BleJadeCommands, HWProtocol {
 
-    public static let MIN_ALLOWED_FW_VERSION = "0.1.24"
+
     public static let FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
     public static let FW_SERVER_ONION = "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion"
     public static let PIN_SERVER_HTTPS = "https://jadepin.blockstream.com"
     public static let PIN_SERVER_ONION = "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion"
+    public static let PIN_SERVERv2_HTTPS = "https://j8d.io"
+
+    public static let MIN_ALLOWED_FW_VERSION = "0.1.24"
     public static let FW_JADE_PATH = "/bin/jade/"
     public static let FW_JADEDEV_PATH = "/bin/jadedev/"
     public static let FW_JADE1_1_PATH = "/bin/jade1.1/"
@@ -28,6 +31,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
     public weak var gdkRequestDelegate: JadeGdkRequest?
 
     public let blockstreamUrls = [
+        BleJade.PIN_SERVERv2_HTTPS,
         BleJade.FW_SERVER_HTTPS,
         BleJade.FW_SERVER_ONION,
         BleJade.PIN_SERVER_HTTPS,
