@@ -5,6 +5,7 @@ import gdk
 
 class TwoFactorLimitViewController: KeyboardViewController {
 
+    @IBOutlet weak var bg: UIView!
     @IBOutlet weak var limitTextField: UITextField!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var fiatButton: UIButton!
@@ -49,7 +50,6 @@ class TwoFactorLimitViewController: KeyboardViewController {
         title = NSLocalizedString("id_twofactor_threshold", comment: "")
         nextButton.setTitle(NSLocalizedString("id_set_twofactor_threshold", comment: ""), for: .normal)
         nextButton.addTarget(self, action: #selector(nextClick), for: .touchUpInside)
-        fiatButton.addTarget(self, action: #selector(currencySwitchClick), for: .touchUpInside)
         limitTextField.becomeFirstResponder()
         limitTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         setStyle()
@@ -58,6 +58,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     func setStyle() {
         nextButton.setStyle(.primary)
+        descriptionLabel.setStyle(.txtCard)
+        bg.cornerRadius = 5.0
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -74,9 +76,9 @@ class TwoFactorLimitViewController: KeyboardViewController {
         } else {
             let denom = denomination.rawValue
             let value: String? = limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)
-            let assetId = session.gdkNetwork.getFeeAsset()
-            let (amount, _) = Balance.fromDenomination(value ?? "0", assetId: assetId)?.toFiat() ?? ("", "")
-            descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
+//            let assetId = session.gdkNetwork.getFeeAsset()
+//            let (amount, _) = Balance.fromDenomination(value ?? "0", assetId: assetId)?.toFiat() ?? ("", "")
+            descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(value ?? "0") \(denom)")
         }
         refresh()
     }
@@ -87,22 +89,18 @@ class TwoFactorLimitViewController: KeyboardViewController {
             let denomination = isFiat ? balance.toFiat().1 : balance.toDenom().1
             convertedLabel.text = "≈ \(amount) \(denom)"
             fiatButton.setTitle(denomination, for: UIControl.State.normal)
-            fiatButton.backgroundColor = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
+            fiatButton.backgroundColor = UIColor.clear
         }
-    }
-
-    @objc func currencySwitchClick(_ sender: UIButton) {
-        if let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: session.gdkNetwork.getFeeAsset()) {
-            let amount = isFiat ? balance.toFiat().0 : balance.toDenom().0
-            limitTextField.text = amount
-        }
-        isFiat = !isFiat
-        refresh()
+        nextButton.setStyle(amount == nil ? .primaryDisabled : .primary)
     }
 
     @objc func nextClick(_ sender: UIButton) {
         guard amount != nil else { return }
-        let details = isFiat ? ["is_fiat": isFiat, "fiat": amount!] : ["is_fiat": isFiat, denomination.rawValue: amount!]
+        if isFiat {
+            showError("Set 2FA limits in \(denomination.rawValue)")
+            return
+        }
+        let details = isFiat ? ["is_fiat": isFiat, "fiat": amount!] : ["is_fiat": isFiat, "satoshi": satoshi ?? 0]
         self.startAnimating()
         Task {
             do {

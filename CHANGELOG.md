@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improve lightning sweep and refund
 - Adjust 2FA SMS activation
 - Update Breez SDK to 0.2.15 
+- Disable 2FA limits in fiat
 
 ### Fixed
 - Send screen: improved address typing and send all UX 
