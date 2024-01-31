@@ -190,7 +190,7 @@ class WalletManager {
         if session.gdkNetwork.lightning && !AppSettings.shared.experimental {
             return
         }
-        if session.gdkNetwork.lightning && device?.isLedger ?? false {
+        if session.gdkNetwork.lightning && device != nil && lightningCredentials == nil {
             return
         }
         if session.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
