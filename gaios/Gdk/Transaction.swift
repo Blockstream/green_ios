@@ -53,7 +53,7 @@ extension Transaction {
     func isPending(block: UInt32) -> Bool {
         if isLightning {
             return isPendingCloseChannel ?? false || (blockHeight <= 0)
-        } else if blockHeight == 0 {
+        } else if blockHeight == 0 || blockHeight == UInt32.max {
             return true
         } else if isLiquid && block < blockHeight + 1 && block >= blockHeight {
             return true
