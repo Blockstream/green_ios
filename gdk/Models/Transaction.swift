@@ -64,10 +64,10 @@ public struct Addressee: Codable {
                          type: .bolt11)
     }
 
-    public static func fromRequestData(_ requestData: LnUrlPayRequestData, input: String, satoshi: UInt64) -> Addressee {
+    public static func fromRequestData(_ requestData: LnUrlPayRequestData, input: String, satoshi: UInt64?) -> Addressee {
         return Addressee(
             address: input,
-            satoshi: -Int64((requestData.sendableSatoshi(userSatoshi: satoshi) ?? 0)),
+            satoshi: satoshi == nil ? nil : -Int64((requestData.sendableSatoshi(userSatoshi: satoshi) ?? 0)),
             assetId: nil,
             hasLockedAmount: requestData.isAmountLocked,
             minAmount: requestData.minSendableSatoshi,

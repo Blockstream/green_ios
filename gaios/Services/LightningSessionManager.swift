@@ -255,7 +255,7 @@ class LightningSessionManager: SessionManager {
             let addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
         case .lnUrlPay(let data):
-            let addr = Addressee.fromRequestData(data, input: input, satoshi: 0)
+            let addr = Addressee.fromRequestData(data, input: input, satoshi: nil)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
         case .lnUrlAuth(_), .lnUrlWithdraw(_), .nodeId(_), .url(_), .lnUrlError(_):
             return ValidateAddresseesResult(isValid: false, errors: ["Unsupported"], addressees: [])
