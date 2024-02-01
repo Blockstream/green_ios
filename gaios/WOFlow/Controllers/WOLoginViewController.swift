@@ -166,6 +166,7 @@ class WOLoginViewController: KeyboardViewController {
     func success() {
         stopLoader()
         AccountNavigator.goLogged(account: account)
+        AnalyticsManager.shared.importWallet(account: account)
     }
     
     @MainActor

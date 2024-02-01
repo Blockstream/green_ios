@@ -1,17 +1,15 @@
 import UIKit
 
-class SelectOnBoardTypeViewController: UIViewController {
+class GetStartedOnBoardViewController: UIViewController {
 
     enum ActionToButton {
-        case newWallet
-        case useHardware
+        case getStarted
     }
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnCheckTerms: CheckButton!
-    @IBOutlet weak var btnNewWallet: UIButton!
-    @IBOutlet weak var btnUseHardware: UIButton!
+    @IBOutlet weak var btnGetStarted: UIButton!
     @IBOutlet weak var btnAppSettings: UIButton!
     @IBOutlet weak var labelAgree: UILabel!
 
@@ -51,8 +49,7 @@ class SelectOnBoardTypeViewController: UIViewController {
     func setContent() {
         lblTitle.text = "id_simple__secure_selfcustody".localized
         lblHint.text = "Everything you need to take control of your bitcoin."
-        btnNewWallet.setTitle("id_add_wallet".localized, for: .normal)
-        btnUseHardware.setTitle("id_use_hardware_device".localized, for: .normal)
+        btnGetStarted.setTitle("Get Started".localized, for: .normal)
         btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
@@ -61,8 +58,7 @@ class SelectOnBoardTypeViewController: UIViewController {
         lblTitle.textColor = .white
         lblHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         lblHint.textColor = .white.withAlphaComponent(0.6)
-        btnNewWallet.setStyle(.primary)
-        btnUseHardware.setStyle(.outlinedWhite)
+        btnGetStarted.setStyle(.primary)
         btnAppSettings.setStyle(.inline)
         btnAppSettings.setTitleColor(.white, for: .normal)
 
@@ -89,15 +85,12 @@ class SelectOnBoardTypeViewController: UIViewController {
 
     func updateUI() {
         btnCheckTerms.isSelected = iAgree
-        btnNewWallet.isEnabled = iAgree
-        btnUseHardware.isEnabled = iAgree
+        btnGetStarted.isEnabled = iAgree
 
         if iAgree {
-            btnNewWallet.setStyle(.primary)
-            btnUseHardware.setStyle(.outlinedWhite)
+            btnGetStarted.setStyle(.primary)
         } else {
-            btnNewWallet.setStyle(.primaryDisabled)
-            btnUseHardware.setStyle(.outlinedWhiteDisabled)
+            btnGetStarted.setStyle(.primaryDisabled)
         }
     }
 
@@ -117,6 +110,7 @@ class SelectOnBoardTypeViewController: UIViewController {
     }
 
     func onNext(_ action: ActionToButton) {
+        
         if AnalyticsManager.shared.consent == .notDetermined {
             actionToButton = action
 
@@ -129,16 +123,10 @@ class SelectOnBoardTypeViewController: UIViewController {
             return
         }
         switch action {
-        case .newWallet:
-            let onBFlow = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = onBFlow.instantiateViewController(withIdentifier: "StartOnBoardViewController") as? StartOnBoardViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        case .useHardware:
-            let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
+        case .getStarted:
+            let onBoardFlow = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = onBoardFlow.instantiateViewController(withIdentifier: "HowToSecureViewController")
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
@@ -148,14 +136,8 @@ class SelectOnBoardTypeViewController: UIViewController {
         updateUI()
     }
 
-    @IBAction func btnNewWallet(_ sender: Any) {
-        AnalyticsManager.shared.addWallet()
-        onNext(.newWallet)
-    }
-
-    @IBAction func btnUseHardware(_ sender: Any) {
-        AnalyticsManager.shared.hwwWallet()
-        onNext(.useHardware)
+    @IBAction func btnGetStarted(_ sender: Any) {
+        onNext(.getStarted)
     }
 
     @IBAction func btnSettings(_ sender: Any) {
@@ -166,7 +148,7 @@ class SelectOnBoardTypeViewController: UIViewController {
     }
 }
 
-extension SelectOnBoardTypeViewController: DialogCountlyViewControllerDelegate {
+extension GetStartedOnBoardViewController: DialogCountlyViewControllerDelegate {
     func didChangeConsent() {
         switch AnalyticsManager.shared.consent {
         case .notDetermined:

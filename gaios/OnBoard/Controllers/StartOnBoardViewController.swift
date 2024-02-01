@@ -3,7 +3,6 @@ import UIKit
 enum ActionOnButton {
     case new
     case restore
-    case watchOnly
 }
 
 class StartOnBoardViewController: UIViewController {
@@ -13,7 +12,6 @@ class StartOnBoardViewController: UIViewController {
 
     @IBOutlet weak var btnNewWallet: UIButton!
     @IBOutlet weak var btnRestoreWallet: UIButton!
-    @IBOutlet weak var btnWatchOnly: UIButton!
 
     static var flowType: OnBoardingFlowType = .add
     static var chainType: OnBoardingChainType = .mainnet
@@ -38,16 +36,16 @@ class StartOnBoardViewController: UIViewController {
         lblHint.text = "id_your_keys_secure_your_coins_on".localized
         btnNewWallet.setTitle(NSLocalizedString("id_new_wallet", comment: ""), for: .normal)
         btnRestoreWallet.setTitle(NSLocalizedString("id_restore_wallet", comment: ""), for: .normal)
-        btnWatchOnly.setTitle(NSLocalizedString("id_watchonly", comment: ""), for: .normal)
     }
 
     func setStyle() {
+        lblTitle.setStyle(.title)
+        lblHint.setStyle(.txtCard)
     }
 
     func updateUI() {
         btnNewWallet.setStyle(.primary)
-        btnRestoreWallet.setStyle(.primary)
-        btnWatchOnly.setStyle(.outlinedWhite)
+        btnRestoreWallet.setStyle(.outlinedWhite)
     }
 
     func onNext(_ action: ActionOnButton) {
@@ -57,8 +55,6 @@ class StartOnBoardViewController: UIViewController {
             OnBoardManager.shared.flowType = .add
         case .restore:
             OnBoardManager.shared.flowType = .restore
-        case .watchOnly:
-            OnBoardManager.shared.flowType = .watchonly
         }
         let testnetAvailable = AppSettings.shared.testnet
         if testnetAvailable {
@@ -89,9 +85,7 @@ class StartOnBoardViewController: UIViewController {
             let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController")
             navigationController?.pushViewController(vc, animated: true)
         case .watchonly:
-            let storyboard = UIStoryboard(name: "WOFlow", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "WOSelectViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            break
         }
     }
 
@@ -101,11 +95,8 @@ class StartOnBoardViewController: UIViewController {
     }
 
     @IBAction func btnRestoreWallet(_ sender: Any) {
+        AnalyticsManager.shared.restoreWallet()
         onNext(.restore)
-    }
-
-    @IBAction func btnWatchOnly(_ sender: Any) {
-        onNext(.watchOnly)
     }
 }
 

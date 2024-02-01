@@ -10,7 +10,7 @@ enum AnalyticsEventName: String {
     case walletLoginTor = "wallet_login_tor"
     case lightningLogin = "lightning_login"
     case walletCreate = "wallet_create"
-    case walletRestore = "wallet_restore"
+    case walletImport = "wallet_import"
     case renameWallet = "wallet_rename"
     case deleteWallet = "wallet_delete"
     case renameAccount = "account_rename"
@@ -27,6 +27,8 @@ enum AnalyticsEventName: String {
     case walletAdd = "wallet_add"
     case walletNew = "wallet_new"
     case walletHWW = "wallet_hww"
+    case walletWO = "wallet_wo"
+    case walletRestore = "wallet_restore"
     case accountFirst = "account_first"
     case balanceConvert = "balance_convert"
     case assetChange = "asset_change"
@@ -138,13 +140,13 @@ extension AnalyticsManager {
         AnalyticsManager.shared.userPropertiesDidChange()
         recordEvent(.walletCreate, sgmt: s)
     }
-
-    func restoreWallet(account: Account?) {
+    
+    func importWallet(account: Account?) {
         let s = sessSgmt(account)
         AnalyticsManager.shared.userPropertiesDidChange()
-        recordEvent(.walletRestore, sgmt: s)
+        recordEvent(.walletImport, sgmt: s)
     }
-
+    
     func createAccount(account: Account?, walletItem: WalletItem?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.createAccount, sgmt: s)
@@ -228,6 +230,14 @@ extension AnalyticsManager {
         recordEvent(.walletHWW)
     }
 
+    func woWallet() {
+        recordEvent(.walletWO)
+    }
+    
+    func restoreWallet() {
+        recordEvent(.walletRestore)
+    }
+    
     func onAccountFirst(account: Account?) {
         let s = sessSgmt(account)
         recordEvent(.accountFirst, sgmt: s)

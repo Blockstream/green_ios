@@ -92,7 +92,7 @@ class AccountNavigator {
     static func goFirstPage() {
         let nv = UINavigationController()
         if AccountsRepository.shared.accounts.isEmpty {
-            let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
+            let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
             nv.setViewControllers([onboard!], animated: true)
         } else {
             
@@ -115,7 +115,7 @@ class AccountNavigator {
         nv?.dismiss(animated: false, completion: nil)
         let nv = UINavigationController()
         let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
-        let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
+        let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
         nv.setViewControllers([home!, onboard!], animated: true)
         UIApplication.shared.delegate?.window??.rootViewController = nv
     }

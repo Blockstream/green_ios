@@ -166,7 +166,7 @@ class HomeViewController: UIViewController {
 
     @IBAction func btnNewWallet(_ sender: Any) {
         let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "SelectOnBoardTypeViewController") as? SelectOnBoardTypeViewController {
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "GetStartedOnBoardViewController") as? GetStartedOnBoardViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }

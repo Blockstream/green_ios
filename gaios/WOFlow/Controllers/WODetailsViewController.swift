@@ -158,6 +158,7 @@ class WODetailsViewController: KeyboardViewController {
     func success(account: Account) {
         stopLoader()
         AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
+        AnalyticsManager.shared.importWallet(account: account)
     }
     
     @MainActor

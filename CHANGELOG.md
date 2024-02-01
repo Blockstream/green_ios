@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Fix About and Close Channel buttons
 
+### Changed
+- UI improvement in onboarding
+
 ## [4.0.24] - 2024-02-07
 
 ### Added

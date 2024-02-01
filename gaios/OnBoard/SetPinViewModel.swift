@@ -38,7 +38,7 @@ class SetPinViewModel {
         try await checkWalletsJustRestored(wm: wm)
         try await wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!)
         AccountsRepository.shared.current = wm.account
-        AnalyticsManager.shared.restoreWallet(account: wm.account)
+        AnalyticsManager.shared.importWallet(account: wm.account)
     }
     
     func checkWalletMismatch(wm: WalletManager) async throws {

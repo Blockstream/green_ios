@@ -195,7 +195,7 @@
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
 		345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */; };
-		345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345ED1F329C088DC00BD9071 /* SelectOnBoardTypeViewController.swift */; };
+		345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345ED1F329C088DC00BD9071 /* GetStartedOnBoardViewController.swift */; };
 		345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345FC45B29ED480E009FCF43 /* WOFlow.storyboard */; };
 		345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */; };
 		345FC46829ED4D83009FCF43 /* WOTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC46629ED4D83009FCF43 /* WOTypeCell.swift */; };
@@ -250,6 +250,11 @@
 		3491C9942912B4C70063C055 /* AssetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491C9932912B4C70063C055 /* AssetsViewModel.swift */; };
 		34927BC72971452300D741DB /* AccountAssetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34927BC62971452300D741DB /* AccountAssetViewController.swift */; };
 		34927BC92971452C00D741DB /* AccountAssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34927BC82971452C00D741DB /* AccountAssetViewModel.swift */; };
+		34955C0A2B67B34B0056DE90 /* HowToSecureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C092B67B34B0056DE90 /* HowToSecureViewController.swift */; };
+		34955C0E2B67B7200056DE90 /* HowToSecureCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34955C0D2B67B7200056DE90 /* HowToSecureCell.xib */; };
+		34955C102B67B7560056DE90 /* HowToSecureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */; };
+		34955C122B67B8380056DE90 /* HowToSecureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */; };
+		34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */; };
 		3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3497935325F8B18C0029ECB1 /* OnBoard.storyboard */; };
 		3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */; };
 		3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497935B25F8B18C0029ECB1 /* SetPinViewController.swift */; };
@@ -871,7 +876,7 @@
 		345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerPresentationController.swift; sourceTree = "<group>"; };
 		345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DrawerNetworkSelection.storyboard; sourceTree = "<group>"; };
 		345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerNetworkSelectionViewController.swift; sourceTree = "<group>"; };
-		345ED1F329C088DC00BD9071 /* SelectOnBoardTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectOnBoardTypeViewController.swift; sourceTree = "<group>"; };
+		345ED1F329C088DC00BD9071 /* GetStartedOnBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetStartedOnBoardViewController.swift; sourceTree = "<group>"; };
 		345FC45B29ED480E009FCF43 /* WOFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = WOFlow.storyboard; sourceTree = "<group>"; };
 		345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOSelectViewController.swift; sourceTree = "<group>"; };
 		345FC46629ED4D83009FCF43 /* WOTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOTypeCell.swift; sourceTree = "<group>"; };
@@ -926,6 +931,11 @@
 		3491C9932912B4C70063C055 /* AssetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewModel.swift; sourceTree = "<group>"; };
 		34927BC62971452300D741DB /* AccountAssetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountAssetViewController.swift; sourceTree = "<group>"; };
 		34927BC82971452C00D741DB /* AccountAssetViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountAssetViewModel.swift; sourceTree = "<group>"; };
+		34955C092B67B34B0056DE90 /* HowToSecureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureViewController.swift; sourceTree = "<group>"; };
+		34955C0D2B67B7200056DE90 /* HowToSecureCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HowToSecureCell.xib; sourceTree = "<group>"; };
+		34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureCell.swift; sourceTree = "<group>"; };
+		34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureViewModel.swift; sourceTree = "<group>"; };
+		34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureCellModel.swift; sourceTree = "<group>"; };
 		3497935325F8B18C0029ECB1 /* OnBoard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = OnBoard.storyboard; sourceTree = "<group>"; };
 		3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettingsViewController.swift; sourceTree = "<group>"; };
 		3497935B25F8B18C0029ECB1 /* SetPinViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetPinViewController.swift; sourceTree = "<group>"; };
@@ -2102,6 +2112,26 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		34955C0B2B67B6BA0056DE90 /* HowToSecure */ = {
+			isa = PBXGroup;
+			children = (
+				34955C0C2B67B6CB0056DE90 /* Cells */,
+				34955C092B67B34B0056DE90 /* HowToSecureViewController.swift */,
+				34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */,
+			);
+			path = HowToSecure;
+			sourceTree = "<group>";
+		};
+		34955C0C2B67B6CB0056DE90 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */,
+				34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */,
+				34955C0D2B67B7200056DE90 /* HowToSecureCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		3497935125F8B18C0029ECB1 /* OnBoard */ = {
 			isa = PBXGroup;
 			children = (
@@ -2119,11 +2149,12 @@
 		3497935425F8B18C0029ECB1 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				34955C0B2B67B6BA0056DE90 /* HowToSecure */,
 				34A75B62292B6984007995D7 /* OnBoardInfo */,
 				3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */,
 				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
 				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
-				345ED1F329C088DC00BD9071 /* SelectOnBoardTypeViewController.swift */,
+				345ED1F329C088DC00BD9071 /* GetStartedOnBoardViewController.swift */,
 				3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */,
 			);
 			path = Controllers;
@@ -3525,6 +3556,7 @@
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
 				3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */,
 				34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */,
+				34955C0E2B67B7200056DE90 /* HowToSecureCell.xib in Resources */,
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				3415CB152A67DBB700B66882 /* AddressAuthHeader.xib in Resources */,
@@ -3645,7 +3677,7 @@
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				81961AB929E4B93F00E9B94D /* Transaction.swift in Sources */,
 				816184652A3B8AC1007D6569 /* BleJadeManager.swift in Sources */,
-				345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */,
+				345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
 				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
@@ -3659,6 +3691,7 @@
 				34BF09DE2A658BB800523E4C /* DialogQRViewController.swift in Sources */,
 				3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */,
 				81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */,
+				34955C0A2B67B34B0056DE90 /* HowToSecureViewController.swift in Sources */,
 				34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */,
 				81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */,
 				6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */,
@@ -3666,6 +3699,7 @@
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
 				6D0983F323FF033900289ACA /* DropAlert.swift in Sources */,
 				345C70882836254600EF3971 /* AssetsManager.swift in Sources */,
+				34955C122B67B8380056DE90 /* HowToSecureViewModel.swift in Sources */,
 				81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */,
 				3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
@@ -3814,6 +3848,7 @@
 				3420471A291B9AA700EDE945 /* PolicyCellModel.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */,
+				34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */,
 				8189230429F67F5500551824 /* WOViewModel.swift in Sources */,
 				818BA7152A2F913C00DFB03A /* CentralManager.swift in Sources */,
 				34F980AA2914286300C12D48 /* AccountViewModel.swift in Sources */,
@@ -3978,6 +4013,7 @@
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */,
 				3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */,
+				34955C102B67B7560056DE90 /* HowToSecureCell.swift in Sources */,
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */,
 				3470646B2A42C1710096313C /* RecoveryTransactionsViewModel.swift in Sources */,
