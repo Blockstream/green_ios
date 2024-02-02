@@ -202,6 +202,8 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configureAmount("Max Receivable Amount".localized, viewModel.maxReceivable, hideBalance)
             case .connectedPeers:
                 cell.configure("Connected Peers".localized, viewModel.connectedPeers, true)
+            case .blockHeight:
+                cell.configure("Block Height".localized, "\(viewModel.blockHeight ?? 0)", false)
             }
             return cell
         }

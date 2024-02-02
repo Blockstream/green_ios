@@ -19,6 +19,8 @@ struct LnurlInvoiceMessage: Codable {
 protocol SDKBackgroundTask: EventListener {
     func start(breezSDK: BlockingBreezServices)
     func onShutdown()
+    func displayPushNotification(text: String)
+    func displayFailedPushNotification()
 }
 
 #if DEBUG && true
@@ -46,14 +48,15 @@ class NotificationService: UNNotificationServiceExtension {
         log.info("Notification received")
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        
         if let currentTask = self.getTaskFromNotification() {
             self.currentTask = currentTask
-            
             Task() {
                 do {
+                    guard let xpub = bestAttemptContent?.userInfo["app_data"] as? String else {
+                        throw SdkError.Generic(message: "No xpub found")
+                    }
                     log.info("Get lightning account mnemonic")
-                    let credentials = try self.getCredentials()
+                    let credentials = try self.getCredentials(xpub: xpub)
                     log.info("Breez SDK is not connected, connecting....")
                     try await breezConnect(credentials: credentials, listener: currentTask)
                     log.info("Breez SDK connected successfully")
@@ -61,25 +64,32 @@ class NotificationService: UNNotificationServiceExtension {
                         currentTask.start(breezSDK: breezSdk)
                     }
                 } catch {
-                    log.error("Breez SDK connection failed \(error)")
+                    log.error("Breez SDK connection failed \(error.description() ?? "")")
+                    currentTask.displayFailedPushNotification()
                     Task { await self.shutdown() }
                 }
             }
         }
     }
-    
-    func getCredentials() throws -> Credentials {
-        log.trace("restoreMnemonic")
-        let lightningShortcutsAccounts = AccountsRepository.shared.accounts.compactMap { $0.getDerivedLightningAccount() }
-        guard let account = lightningShortcutsAccounts.first else {
+
+    func getCredentials(xpub: String) throws -> Credentials {
+        let accounts = AccountsRepository.shared.accounts
+        let lightningShortcutsAccount = accounts
+            .compactMap { $0.getDerivedLightningAccount() }
+            .filter { $0.xpubHashId == xpub }
+            .first
+        guard let account = lightningShortcutsAccount else {
             throw SdkError.Generic(message: "Wallet not found")
         }
-        return try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: account.keychain)
+        log.info("\(account.name) lightning account")
+        return try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: account.keychain)
     }
-    
+
     func breezConnect(credentials: Credentials, listener: EventListener) async throws {
+        GdkInit.defaults().run()
         self.lightningSession = LightningSessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
         self.lightningSession?.listener = listener
+        let walletIdentifier =  try self.lightningSession?.walletIdentifier(credentials: credentials)
         _ = try await self.lightningSession?.loginUser(credentials: credentials, restore: false)
     }
 
@@ -87,7 +97,6 @@ class NotificationService: UNNotificationServiceExtension {
         try await self.lightningSession?.disconnect()
     }
     
-
     func getTaskFromNotification() -> SDKBackgroundTask? {
         guard let content = bestAttemptContent else {
             return nil
@@ -95,14 +104,23 @@ class NotificationService: UNNotificationServiceExtension {
         guard let notificationType = content.userInfo["notification_type"] as? String else {
             return nil
         }
+        guard let notificationXpub = content.userInfo["app_data"] as? String else {
+            return nil
+        }
         log.info("Notification payload: \(content.userInfo)")
         log.info("Notification type: \(notificationType)")
         
         switch(notificationType) {
-            case "payment_received":
+        case "tx_received":
+            log.info("creating task for tx received")
+            return TxReceiverTask(logger: log, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+        case "payment_received":
             log.info("creating task for payment received")
             return PaymentReceiverTask(logger: log, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
-        case "lnurlpay_info":
+        default:
+            return nil
+        // TODO other cases
+        /*case "lnurlpay_info":
             guard let messageData = content.userInfo["notification_payload"] as? String else {
                 contentHandler!(content)
                 return nil
@@ -135,19 +153,19 @@ class NotificationService: UNNotificationServiceExtension {
                 return nil
             }
         default:
-            return nil
+            return nil*/
         }
     }
     
     override func serviceExtensionTimeWillExpire() {
-        log.info("serviceExtensionTimeWillExpire()")
+        log.error("serviceExtensionTimeWillExpire()")
         
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
         // otherwise the original push payload will be used.
         Task { await self.shutdown() }
     }
-    
+
     private func shutdown() async -> Void {
         log.info("shutting down...")
         try? await breezDisconnect()
@@ -166,7 +184,7 @@ class SDKLogListener : LogStream {
     
     func log(l: LogEntry) {
         if l.level != "TRACE" {
-            logger.debug("greenlight: [\(l.level)] \(l.line)")
+            logger.info("greenlight: [\(l.level)] \(l.line)")
         }
     }
 }

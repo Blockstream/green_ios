@@ -8,6 +8,10 @@ public struct WalletIdentifier: Codable {
     }
     public let walletHashId: String
     public let xpubHashId: String
+    public init(walletHashId: String, xpubHashId: String) {
+        self.walletHashId = walletHashId
+        self.xpubHashId = xpubHashId
+    }
 }
 
 public struct SystemMessage: Codable {
@@ -357,7 +361,6 @@ public struct GdkInit: Codable {
     public let registrydir: String?
     public let logLevel: String
     public let optimizeExpiredCsv: Bool?
-    public var breezSdkDir: String { "\(datadir ?? "")/breezSdk" }
 
     public static func defaults() -> GdkInit {
         let appSupportDir = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)

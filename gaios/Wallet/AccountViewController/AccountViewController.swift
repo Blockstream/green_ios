@@ -1037,7 +1037,7 @@ extension AccountViewController: LTShortcutViewControllerDelegate {
             print("Done")
         case .remove:
             print("Remove")
-            Task { await viewModel.removeDerivedLightning() }
+            Task { await viewModel.removeLightningShortcut() }
         }
     }
 }

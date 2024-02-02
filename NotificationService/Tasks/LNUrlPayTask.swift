@@ -70,12 +70,12 @@ class LnurlPayTask {
     func onEvent(e: BreezEvent) {}
     
     func onShutdown() {
-        displayPushNotification(title: self.failNotificationTitle)
+        displayPushNotification(text: self.failNotificationTitle)
     }
     
     func replyServer(encodable: Encodable, replyURL: String) {
         guard let serverReplyURL = URL(string: replyURL) else {
-            self.displayPushNotification(title: self.failNotificationTitle)
+            self.displayPushNotification(text: self.failNotificationTitle)
             return
         }
         var request = URLRequest(url: serverReplyURL)
@@ -85,9 +85,9 @@ class LnurlPayTask {
             let statusCode = (response as? HTTPURLResponse)?.statusCode
 
             if statusCode == 200 {
-                self.displayPushNotification(title: self.successNotifiationTitle)
+                self.displayPushNotification(text: self.successNotifiationTitle)
             } else {
-                self.displayPushNotification(title: self.failNotificationTitle)
+                self.displayPushNotification(text: self.failNotificationTitle)
                 return
             }
         }
@@ -96,7 +96,7 @@ class LnurlPayTask {
     
     func fail(withError: String, replyURL: String) {
         guard let serverReplyURL = URL(string: replyURL) else {
-            self.displayPushNotification(title: self.failNotificationTitle)
+            self.displayPushNotification(text: self.failNotificationTitle)
             return
         }
         var request = URLRequest(url: serverReplyURL)
@@ -107,11 +107,15 @@ class LnurlPayTask {
             self.logger.info("\(serverReplyURL) \(res?.statusCode ?? 0)")
         }
         task.resume()
-        self.displayPushNotification(title: self.failNotificationTitle)
+        self.displayPushNotification(text: self.failNotificationTitle)
     }
-    
-    func displayPushNotification(title: String) {
-        self.logger.info("displayPushNotification \(title)")
+
+    public func displayFailedPushNotification() {
+        displayPushNotification(text: self.failNotificationTitle)
+    }
+
+    func displayPushNotification(text: String) {
+        self.logger.info("displayPushNotification \(text)")
         
         
         guard
@@ -121,7 +125,8 @@ class LnurlPayTask {
             return
         }
 
-        bestAttemptContent.title = title
+        bestAttemptContent.title = "Green Lightning"
+        bestAttemptContent.body = text.localized
         contentHandler(bestAttemptContent)
     }
 }

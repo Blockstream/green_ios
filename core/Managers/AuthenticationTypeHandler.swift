@@ -46,8 +46,8 @@ public class AuthenticationTypeHandler {
         case AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
         case AuthKeyPIN = "com.blockstream.green.auth_key_pin"
         case AuthKeyWOPassword = "com.blockstream.green.auth_key_wathonly_password"
-        case AuthKeyLightning = "com.blockstream.green.auth_key_lightning"
-        case AuthKeyCredentials = "com.blockstream.green.auth_key_credentials"
+        case AuthCertLightning = "com.blockstream.green.auth_key_lightning"
+        case AuthKeyLightning = "com.blockstream.green.auth_key_credentials"
     }
 
     static let PrivateKeyPathSize = 32
@@ -163,7 +163,9 @@ public class AuthenticationTypeHandler {
         guard status == errSecSuccess else {
             throw AuthError.KeychainError(status)
         }
-        return (privateKey as! SecKey)
+        // swiftlint:disable force_cast
+        return privateKey as! SecKey
+        // swiftlint:enable force_cast
     }
 
     fileprivate static func getPublicKey(forNetwork: String) throws -> SecKey {
@@ -214,16 +216,29 @@ public class AuthenticationTypeHandler {
         return (encrypted! as Data).base64EncodedString()
     }
 
-    fileprivate static func queryFor(method: String, forNetwork: String) -> [CFString: Any] {
-        let q: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
-                                  kSecAttrAccessible: kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
-                                  kSecAttrService: method,
-                                  kSecAttrAccount: forNetwork]
+    fileprivate static func queryFor(method: AuthType, forNetwork: String, version: Int) -> [CFString: Any] {
+        var q: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: method.rawValue,
+            kSecAttrAccount: forNetwork]
+        if version == 0 {
+            q[kSecAttrAccessible] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
+        } else if version == 1 {
+            q[kSecAttrAccessGroup] = Bundle.main.appGroup
+            switch method {
+            case .AuthKeyBiometric:
+                q[kSecAttrAccessible] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
+            case .AuthKeyLightning, .AuthCertLightning:
+                q[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlock
+            case .AuthKeyPIN, .AuthKeyWOPassword:
+                q[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
+            }
+        }
         return q
     }
 
-    fileprivate static func queryForData(method: String, forNetwork: String) -> [CFString: Any] {
-        return queryFor(method: method, forNetwork: forNetwork)
+    fileprivate static func queryForData(method: AuthType, forNetwork: String, version: Int) -> [CFString: Any] {
+        return queryFor(method: method, forNetwork: forNetwork, version: version)
                         .merging([kSecReturnData: kCFBooleanTrue ?? true]) { (current, _) in current }
     }
 
@@ -234,7 +249,7 @@ public class AuthenticationTypeHandler {
         guard let data = try? JSONSerialization.data(withJSONObject: data) else {
             throw AuthError.ServiceNotAvailable("Operation failed: Invalid json on serialization.")
         }
-        let q = queryFor(method: method.rawValue, forNetwork: forNetwork)
+        let q = queryFor(method: method, forNetwork: forNetwork, version: 1)
         let qAdd = q.merging([kSecValueData: data]) { (current, _) in current }
         var status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         if status == errSecDuplicateItem {
@@ -246,8 +261,8 @@ public class AuthenticationTypeHandler {
         }
     }
 
-    fileprivate static func get_(method: String, forNetwork: String) throws -> [String: Any] {
-        let q = queryForData(method: method, forNetwork: forNetwork)
+    fileprivate static func get_(method: AuthType, forNetwork: String, version: Int = 1) throws -> [String: Any] {
+        let q = queryForData(method: method, forNetwork: forNetwork, version: version)
         var result: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &result))
         guard status == errSecSuccess, result != nil, let resultData = result as? Data else {
@@ -259,27 +274,36 @@ public class AuthenticationTypeHandler {
         return data
     }
 
-    fileprivate static func get(method: String, toDecrypt: Bool, forNetwork: String) throws -> [String: Any] {
-        let data = try get_(method: method, forNetwork: forNetwork)
-        var extended = data
+    fileprivate static func get(method: AuthType, toDecrypt: Bool, forNetwork: String) throws -> [String: Any] {
+        var data = [String: Any]()
+        do {
+            data = try get_(method: method, forNetwork: forNetwork)
+        } catch {
+            data = try get_(method: method, forNetwork: forNetwork, version: 0)
+        }
         if toDecrypt {
-            precondition(method == AuthType.AuthKeyBiometric.rawValue)
+            precondition(method == AuthType.AuthKeyBiometric)
             let encryptedBiometric = data["encrypted_biometric"] as? String
             let decoded = Data(base64Encoded: encryptedBiometric!)
             let plaintext = try decrypt(base64Encoded: decoded!, forNetwork: forNetwork)
-            extended["plaintext_biometric"] = plaintext
+            data["plaintext_biometric"] = plaintext
         }
-        return extended
+        return data
     }
 
     public static func getAuth(method: AuthType, forNetwork: String) throws -> PinData {
-        let pinData = try get(method: method.rawValue, toDecrypt: method == .AuthKeyBiometric, forNetwork: forNetwork)
+        let pinData = try get(method: method, toDecrypt: method == .AuthKeyBiometric, forNetwork: forNetwork)
         let jsonData = try JSONSerialization.data(withJSONObject: pinData)
         return try JSONDecoder().decode(PinData.self, from: jsonData)
     }
 
     public static func findAuth(method: AuthType, forNetwork: String) -> Bool {
-        return (try? get_(method: method.rawValue, forNetwork: forNetwork)) != nil
+        do {
+            _ = try get_(method: method, forNetwork: forNetwork)
+            return true
+        } catch {
+            return (try? get_(method: method, forNetwork: forNetwork, version: 0)) != nil
+        }
     }
 
     public static func removePrivateKey(forNetwork: String) throws {
@@ -299,27 +323,30 @@ public class AuthenticationTypeHandler {
     }
 
     public static func removeAuth(method: AuthType, forNetwork: String) -> Bool {
-        let q = queryForData(method: method.rawValue, forNetwork: forNetwork)
-        return callWrapper(fun: SecItemDelete(q as CFDictionary)) == errSecSuccess
+        let q0 = queryForData(method: method, forNetwork: forNetwork, version: 0)
+        _ = callWrapper(fun: SecItemDelete(q0 as CFDictionary)) == errSecSuccess
+        let q1 = queryForData(method: method, forNetwork: forNetwork, version: 1)
+        return callWrapper(fun: SecItemDelete(q1 as CFDictionary)) == errSecSuccess
     }
 
     public static func addPIN(pinData: PinData, forNetwork: String) throws {
-        let data = try? JSONEncoder().encode(pinData)
-        let extended = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        try set(method: .AuthKeyPIN, data: extended ?? [:], forNetwork: forNetwork)
+        try set(method: .AuthKeyPIN, data: pinData.toDict() ?? [:], forNetwork: forNetwork)
     }
 
     public static func addWatchonlyMultisig(password: String, forNetwork: String) throws {
         try set(method: .AuthKeyWOPassword, data: [:], forNetwork: forNetwork)
     }
 
-    public static func addAuthKeyCredentials(credentials: Credentials, forNetwork: String) throws {
-        try set(method: .AuthKeyCredentials, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
+    public static func addAuthKeyLightning(credentials: Credentials, forNetwork: String) throws {
+        try set(method: .AuthKeyLightning, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
     }
 
-    public static func getAuthKeyCredentials(forNetwork: String) throws -> Credentials {
-        let data = try get(method: AuthType.AuthKeyCredentials.rawValue, toDecrypt: false, forNetwork: forNetwork)
-        return Credentials.from(data) as! Credentials
+    public static func getAuthKeyLightning(forNetwork: String) throws -> Credentials {
+        let data = try get(method: AuthType.AuthKeyLightning, toDecrypt: false, forNetwork: forNetwork)
+        guard let credentials = Credentials.from(data) as? Credentials else {
+            throw AuthError.SecurityError("Invalid credentials")
+        }
+        return credentials
     }
 
     public static func addBiometry(pinData: PinData, extraData: String, forNetwork: String) throws {
@@ -333,13 +360,16 @@ public class AuthenticationTypeHandler {
         try set(method: .AuthKeyBiometric, data: pindata.toDict() ?? [:], forNetwork: forNetwork)
     }
 
-    public static func addAuthLightning(forNetwork: String, credentials: AppGreenlightCredentials) throws {
-        try set(method: .AuthKeyLightning, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
+    public static func addCertLightning(forNetwork: String, credentials: AppGreenlightCredentials) throws {
+        try set(method: .AuthCertLightning, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
     }
 
-    public static func getAuthLightning(forNetwork: String) throws -> AppGreenlightCredentials {
-        let type = AuthType.AuthKeyLightning
-        let data = try get(method: type.rawValue, toDecrypt: false, forNetwork: forNetwork)
-        return AppGreenlightCredentials.from(data) as! AppGreenlightCredentials
+    public static func getCertLightning(forNetwork: String) throws -> AppGreenlightCredentials {
+        let type = AuthType.AuthCertLightning
+        let data = try get(method: type, toDecrypt: false, forNetwork: forNetwork)
+        guard let credentials = AppGreenlightCredentials.from(data) as? AppGreenlightCredentials else {
+            throw AuthError.SecurityError("Invalid credentials")
+        }
+        return credentials
     }
 }

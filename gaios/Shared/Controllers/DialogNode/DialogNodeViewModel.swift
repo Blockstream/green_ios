@@ -9,6 +9,7 @@ enum NodeCellType: CaseIterable {
     case maxSinglePaymentAmount
     case maxReceivable
     case connectedPeers
+    case blockHeight
 }
 
 class DialogNodeViewModel {
@@ -51,6 +52,9 @@ class DialogNodeViewModel {
 
     var connectedPeers: String {
         return lightningSession.nodeState?.connectedPeers.joined(separator: ", ") ?? ""
+    }
+    var blockHeight: UInt32? {
+        return lightningSession.nodeState?.blockHeight
     }
 
     init(lightningSession: LightningSessionManager) {

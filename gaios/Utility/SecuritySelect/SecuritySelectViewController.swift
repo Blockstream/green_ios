@@ -386,9 +386,9 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
             Task {
                 do {
                     if let credentials = credentialsCreated {
-                        try await viewModel.addHWDerivedLightning(credentials)
+                        try await viewModel.addHWShortcutLightning(credentials)
                     } else {
-                        try await viewModel.addSWDerivedLightning()
+                        try await viewModel.addSWShortcutLightning()
                     }
                     await MainActor.run {
                         self.stopLoader()

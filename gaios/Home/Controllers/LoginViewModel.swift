@@ -49,7 +49,8 @@ class LoginViewModel {
         var wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
         let lightningCredentials = Credentials(mnemonic: try wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
-        try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials)
+        let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
+        try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
         account = wm.account
         if withPIN != nil {
             account.attempts = 0
@@ -60,7 +61,7 @@ class LoginViewModel {
     fileprivate func updateEphemeralAccount(from credentials: Credentials) -> Account {
         let networkType = account.networkType.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
         let session = SessionManager(networkType.gdkNetwork)
-        let walletId = session.walletIdentifier(credentials: credentials)
+        let walletId = try? session.walletIdentifier(credentials: credentials)
         if !credentials.bip39Passphrase.isNilOrEmpty {
             if let account = AccountsRepository.shared.ephAccounts.first(where: { $0.xpubHashId == walletId?.xpubHashId }) {
                 return account
@@ -78,8 +79,8 @@ class LoginViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
         try await auth()
-        let credentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: account.keychain)
-        _ = try await wm.login(credentials: credentials, lightningCredentials: credentials)
+        let credentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: account.keychain)
+        _ = try await wm.login(credentials: credentials, lightningCredentials: credentials, parentWalletId: account.walletIdentifier)
         AccountsRepository.shared.current = account
     }
     

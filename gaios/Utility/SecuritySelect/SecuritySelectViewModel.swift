@@ -228,16 +228,16 @@ class SecuritySelectViewModel {
         return "\(type.string)\(network)"
     }
 
-    func addSWDerivedLightning() async throws {
+    func addSWShortcutLightning() async throws {
         guard let mainCredentials = try await wm.prominentSession?.getCredentials(password: "") else {
             return
         }
         let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
-        try await wm.addDerivedLightning(credentials: credentials)
+        try await wm.addLightningShortcut(credentials: credentials)
     }
 
-    func addHWDerivedLightning(_ credentials: Credentials) async throws {
-        try await wm.addDerivedLightning(credentials: credentials)
+    func addHWShortcutLightning(_ credentials: Credentials) async throws {
+        try await wm.addLightningShortcut(credentials: credentials)
     }
 
     var linkMore: String {

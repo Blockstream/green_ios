@@ -91,7 +91,7 @@ class BleJadeManager {
         let version = try await version()
         let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
         let masterXpub = try await bleJade.xpubs(network: account.gdkNetwork.chain, path: [])
-        let walletId = SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
+        let walletId = try? SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
         var account = account
         account.xpubHashId = walletId?.xpubHashId
         account = normalizeAccount(account)
@@ -100,7 +100,7 @@ class BleJadeManager {
         walletManager?.hwDevice = BLEDevice(peripheral: bleJade.peripheral, device: device, interface: bleJade)
         var derivedCredentials: Credentials?
         if let derivedAccount = account.getDerivedLightningAccount() {
-            derivedCredentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: derivedAccount.keychain)
+            derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain)
         }
         try await walletManager?.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
         AccountsRepository.shared.current = walletManager?.account

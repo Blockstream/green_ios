@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Import and export of liquid accounts with ct-descriptors
 - Allow changing btc unit in watch-only wallets
+- Lightning notifications
 
 ### Fixed
 - Fix About and Close Channel buttons

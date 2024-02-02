@@ -66,14 +66,14 @@ class BleLedgerManager {
     func login(account: Account) async throws -> Account {
         let device: HWDevice = .defaultLedger()
         let masterXpub = try await bleLedger.xpubs(network: account.gdkNetwork.chain, path: [])
-        let walletId = SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
+        let walletId = try? SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
         var account = account
         account.xpubHashId = walletId?.xpubHashId
         account = normalizeAccount(account)
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.popupResolver = await PopupResolver()
         walletManager?.hwDevice = BLEDevice(peripheral: bleLedger.peripheral, device: device, interface: bleLedger)
-        try await walletManager?.loginHW(lightningCredentials: nil, device: device, masterXpub: masterXpub)
+        try await walletManager?.loginHW(lightningCredentials: nil, device: device, masterXpub: masterXpub, fullRestore: false)
         AccountsRepository.shared.current = walletManager?.account
         return account
     }

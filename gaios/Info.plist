@@ -126,5 +126,11 @@
 	<false/>
 	<key>ZENDESK_CLIENT_ID</key>
 	<string>$(ZENDESK_CLIENT_ID)</string>
+	<key>APPGROUP</key>
+	<string>$(APPGROUP)</string>
+	<key>GOOGLE_SERVICE_INFO</key>
+	<string>$(GOOGLE_SERVICE_INFO)</string>
+	<key>NOTIFICATION_SERVICE</key>
+	<string>$(NOTIFICATION_SERVICE)</string>
 </dict>
 </plist>

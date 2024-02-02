@@ -107,30 +107,30 @@ public class SessionManager {
         }
     }
     
-    public func walletIdentifier(credentials: Credentials) -> WalletIdentifier? {
-        let res = try? self.session?.getWalletIdentifier(
+    public func walletIdentifier(credentials: Credentials) throws -> WalletIdentifier? {
+        let res = try self.session?.getWalletIdentifier(
             net_params: GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict() ?? [:],
             details: credentials.toDict() ?? [:])
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
     
-    public func walletIdentifier(masterXpub: String) -> WalletIdentifier? {
+    public func walletIdentifier(masterXpub: String) throws -> WalletIdentifier? {
         let details = ["master_xpub": masterXpub]
-        let res = try? self.session?.getWalletIdentifier(
+        let res = try self.session?.getWalletIdentifier(
             net_params: GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict() ?? [:],
             details: details)
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
     
     public func existDatadir(masterXpub: String) -> Bool  {
-        if let hash = walletIdentifier(masterXpub: masterXpub) {
+        if let hash = try? walletIdentifier(masterXpub: masterXpub) {
             return existDatadir(walletHashId: hash.walletHashId)
         }
         return false
     }
     
     public func existDatadir(credentials: Credentials) -> Bool  {
-        if let hash = walletIdentifier(credentials: credentials) {
+        if let hash = try? walletIdentifier(credentials: credentials) {
             return existDatadir(walletHashId: hash.walletHashId)
         }
         return false
@@ -149,13 +149,13 @@ public class SessionManager {
     }
     
     public func removeDatadir(masterXpub: String) async {
-        if let hash = walletIdentifier(masterXpub: masterXpub) {
+        if let hash = try? walletIdentifier(masterXpub: masterXpub) {
             await removeDatadir(walletHashId: hash.walletHashId)
         }
     }
     
     public func removeDatadir(credentials: Credentials) async {
-        if let hash = walletIdentifier(credentials: credentials) {
+        if let hash = try? walletIdentifier(credentials: credentials) {
             await removeDatadir(walletHashId: hash.walletHashId)
         }
     }

@@ -16,7 +16,7 @@ class SetPinViewModel {
     
     func getXpubHashId(session: SessionManager) async throws -> String? {
         try await session.connect()
-        let walletId = session.walletIdentifier(credentials: self.credentials)
+        let walletId = try session.walletIdentifier(credentials: self.credentials)
         return walletId?.xpubHashId
     }
     
@@ -29,7 +29,8 @@ class SetPinViewModel {
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)
         let lightningCredentials = try wm.deriveLightningCredentials(from: self.credentials)
-        try await wm.login(credentials: self.credentials, lightningCredentials: lightningCredentials)
+        let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
+        try await wm.login(credentials: self.credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
         wm.account.attempts = 0
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)

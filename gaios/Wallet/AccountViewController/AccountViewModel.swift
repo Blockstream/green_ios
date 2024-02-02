@@ -170,9 +170,9 @@ class AccountViewModel {
         // remove lightning shortcut
         let account = AccountsRepository.shared.current
         if let derivedAccount = account?.getDerivedLightningAccount() {
-            let derivedCredentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: derivedAccount.keychain)
-            _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyCredentials, forNetwork: derivedAccount.keychain)
-            if let walletId = session?.walletIdentifier(credentials: derivedCredentials) {
+            let derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain)
+            _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: derivedAccount.keychain)
+            if let walletId = try? session?.walletIdentifier(credentials: derivedCredentials) {
                 await session?.removeDatadir(walletHashId: walletId.walletHashId)
                 LightningRepository.shared.remove(for: walletId.walletHashId)
             }
@@ -180,7 +180,7 @@ class AccountViewModel {
         // remove lightning session
         if let prominentCredentials = try await prominentSession?.getCredentials(password: ""),
            let lightnigCredentials = try? wm?.deriveLightningCredentials(from: prominentCredentials),
-           let walletId = session?.walletIdentifier(credentials: lightnigCredentials)
+           let walletId = try? session?.walletIdentifier(credentials: lightnigCredentials)
         {
             try await session?.disconnect()
             await session?.removeDatadir(walletHashId: walletId.walletHashId )
@@ -242,18 +242,18 @@ class AccountViewModel {
         wm?.existDerivedLightning() ?? false
     }
 
-    func addSWDerivedLightning() async throws {
+    func addLightningShortcut() async throws {
         guard let mainCredentials = try await wm?.prominentSession?.getCredentials(password: "") else {
             return
         }
         guard let credentials = try? wm?.deriveLightningCredentials(from: mainCredentials) else {
             return
         }
-        try await wm?.addDerivedLightning(credentials: credentials)
+        try await wm?.addLightningShortcut(credentials: credentials)
     }
 
-    func removeDerivedLightning() async {
-        await wm?.removeDerivedLightning()
+    func removeLightningShortcut() async {
+        await wm?.removeLightningShortcut()
     }
 
     var headerIcon: UIImage {

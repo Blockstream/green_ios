@@ -22,7 +22,11 @@ public class MigratorManager {
             // upgrade from app < v4.0.0
             migrateDatadir()
         }
-        UserDefaults.standard.set(1, forKey: MigrationFlag.appDataVersion.rawValue)
+        if appDataVersion < 2 {
+            // upgrade from app < v4.0.25
+            updateKeychainPolicy()
+        }
+        UserDefaults.standard.set(2, forKey: MigrationFlag.appDataVersion.rawValue)
     }
 
     private func migrateDatadir() { // from "4.0.0"
@@ -62,5 +66,19 @@ public class MigratorManager {
             }
         }
         AccountsRepository.shared.removeAll()
+    }
+
+    func updateKeychainPolicy() { // from  "4.0.25"
+        let keychainStorage = AccountsRepository.shared.storage
+        var query = keychainStorage.query.merging(
+            [kSecMatchLimit as String: kSecMatchLimitOne, kSecReturnData as String: kCFBooleanTrue ?? true],
+            uniquingKeysWith: {_, new in new})
+        query.removeValue(forKey: kSecAttrAccessGroup as String)
+        var retrivedData: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &retrivedData)
+        guard status == errSecSuccess, let data = retrivedData as? Data else {
+            return
+        }
+        try? keychainStorage.write(data)
     }
 }

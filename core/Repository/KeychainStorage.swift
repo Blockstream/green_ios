@@ -6,18 +6,22 @@ public class KeychainStorage {
 
     let attrAccount: String
     let attrService: String
+    let query: [String: Any]
 
     init(account: String, service: String) {
         attrAccount = account
         attrService = service
+        query = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: attrAccount,
+            kSecAttrService as String: attrService,
+            kSecAttrAccessGroup as String: Bundle.main.appGroup]
     }
 
     func removeAll() throws {
-        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
-                                    kSecAttrAccount as String: attrAccount,
-                                    kSecAttrService as String: attrService,
-                                    kSecMatchLimit as String: kSecMatchLimitOne,
-                                    kSecReturnData as String: kCFBooleanTrue ?? true]
+        let query = query.merging(
+            [kSecMatchLimit as String: kSecMatchLimitOne, kSecReturnData as String: kCFBooleanTrue ?? true],
+            uniquingKeysWith: {_, new in new})
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess else {
             throw GaError.GenericError()
@@ -25,37 +29,30 @@ public class KeychainStorage {
     }
 
     func write(_ data: Data) throws {
-        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
-                                    kSecAttrAccount as String: attrAccount,
-                                    kSecAttrService as String: attrService,
-                                    kSecValueData as String: data]
+        let query = query.merging(
+            [kSecValueData as String: data],
+            uniquingKeysWith: {_, new in new})
         var status = SecItemAdd(query as CFDictionary, nil)
         if status == errSecDuplicateItem {
             status = SecItemDelete(query as CFDictionary)
             status = SecItemAdd(query as CFDictionary, nil)
         }
         guard status == errSecSuccess else {
-            if #available(iOS 11.3, *) {
-                let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
-                print("Operation failed: \(status) \(text))")
-            }
+            let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
+            print("Operation failed: \(status) \(text))")
             throw GaError.GenericError()
         }
     }
 
     func read() throws -> Data {
-        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
-                                    kSecAttrAccount as String: attrAccount,
-                                    kSecAttrService as String: attrService,
-                                    kSecMatchLimit as String: kSecMatchLimitOne,
-                                    kSecReturnData as String: kCFBooleanTrue ?? true]
+        let query = query.merging(
+            [kSecMatchLimit as String: kSecMatchLimitOne, kSecReturnData as String: kCFBooleanTrue ?? true],
+            uniquingKeysWith: {_, new in new})
         var retrivedData: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &retrivedData)
         guard status == errSecSuccess else {
-            if #available(iOS 11.3, *) {
-                let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
-                print("Operation failed: \(status) \(text))")
-            }
+            let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
+            print("Operation failed: \(status) \(text))")
             throw GaError.GenericError()
         }
         guard let data = retrivedData as? Data else { throw GaError.GenericError() }

@@ -155,7 +155,7 @@ public struct Account: Codable, Equatable {
     }
     
     public func removeLightningShortcut() {
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyCredentials, forNetwork: keychain)
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: keychain)
     }
 
     public func removeLightningCredentials() {
@@ -198,12 +198,16 @@ public struct Account: Codable, Equatable {
                 name: name,
                 network: .bitcoinSS,
                 isJade: isJade, 
-                isDerivedLightning: true,
+                xpubHashId: xpubHashId, isDerivedLightning: true,
                 password: password
         )
-        if AuthenticationTypeHandler.findAuth(method: .AuthKeyCredentials, forNetwork: account.keychain) {
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyLightning, forNetwork: account.keychain) {
             return account
         }
         return nil
+    }
+    
+    var walletIdentifier: WalletIdentifier? {
+        return WalletIdentifier(walletHashId: walletHashId ?? "", xpubHashId: xpubHashId ?? "")
     }
 }

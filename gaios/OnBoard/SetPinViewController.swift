@@ -192,7 +192,15 @@ class SetPinViewController: UIViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .verify:
-            Task { await setPin(pinCode) }
+            if AppSettings.shared.experimental {
+                startLoader()
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.registerForPushNotifications(application: UIApplication.shared, completion: {
+                    self.setPin(self.pinCode)
+                })
+            } else {
+                setPin(pinCode)
+            }
         }
     }
 
@@ -200,39 +208,45 @@ class SetPinViewController: UIViewController {
         moveToNext()
     }
 
-    fileprivate func setPin(_ pin: String) async {
+    fileprivate func setPin(_ pin: String) {
         switch pinFlow {
         case .settings:
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: true)
-            do {
-                try await self.viewModel.setup(pin: pin)
-                await MainActor.run {
-                    navigationController?.popToRootViewController(animated: true)
+            Task {
+                do {
+                    try await self.viewModel.setup(pin: pin)
+                    await MainActor.run {
+                        navigationController?.popToRootViewController(animated: true)
+                    }
+                } catch {
+                    self.failure(error)
                 }
-            } catch {
-                self.failure(error)
+                self.stopLoader()
+                self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
             }
-            self.stopLoader()
-            self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
         case .restore:
             self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""), isRive: true)
-            do {
-                try await self.viewModel.restore(pin: pin)
-                AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
-                OnBoardParams.shared.restoreSuccess = true
-            } catch {
-                self.failure(error)
+            Task {
+                do {
+                    try await self.viewModel.restore(pin: pin)
+                    AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
+                    OnBoardParams.shared.restoreSuccess = true
+                } catch {
+                    self.failure(error)
+                }
+                self.stopLoader()
             }
-            self.stopLoader()
         case .create:
             self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: true)
-            do {
-                try await self.viewModel.create(pin: pin)
-                AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
-            } catch {
-                self.failure(error)
+            Task {
+                do {
+                    try await self.viewModel.create(pin: pin)
+                    AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
+                } catch {
+                    self.failure(error)
+                }
+                self.stopLoader()
             }
-            self.stopLoader()
         }
     }
 

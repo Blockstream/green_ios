@@ -1,6 +1,9 @@
 import UIKit
 import gdk
 import lightning
+import UserNotifications
+import FirebaseCore
+import FirebaseMessaging
 
 func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
@@ -69,13 +72,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         AnalyticsManager.shared.setupSession(session: nil)
 
         // Remote Notifications
-        UNUserNotificationCenter.current().delegate = self
-                    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-                    UNUserNotificationCenter.current().requestAuthorization(
-                        options: authOptions,
-                        completionHandler: {_, _ in })
-        application.registerForRemoteNotifications()
-
+        let filePath = Bundle.main.path(forResource: Bundle.main.googleServiceInfo, ofType: "plist")!
+        let options = FirebaseOptions(contentsOfFile: filePath)
+        FirebaseApp.configure(options: options!)
+        Messaging.messaging().delegate = self
+        registerForPushNotifications(application: application)
         return true
     }
 
@@ -134,17 +135,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let tokenChars = (deviceToken as NSData).bytes.bindMemory(to: CChar.self, capacity: deviceToken.count)
-        var tokenString = ""
-        for i in 0..<deviceToken.count {
-            tokenString += String(format: "%02.2hhx", arguments: [tokenChars[i]])
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Firebase failed registration token: \(String(describing: error))")
+    }
+
+    private func registerForPushNotifications(application: UIApplication) {
+        UNUserNotificationCenter.current().delegate = self
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+
+        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) {
+            (granted, error) in
+            guard granted else { return }
+            DispatchQueue.main.async {
+                application.registerForRemoteNotifications()
+            }
         }
-        print("Successfully registered for notifications!")
-        print("Device Token:", tokenString)
+    }
+
+    // Called to let your app know which action was selected by the user for a given notification.
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // User TAP on local/remote notification
+        let content = response.notification.request.content.userInfo
+        print(content)
+        guard let xpub = content["app_data"] as? String else {
+            return
+        }
+        guard let account = getAccount(xpub: xpub) else {
+            return
+        }
+        if let wm = WalletsRepository.shared.get(for: account), wm.logged {
+            AccountNavigator.goLogged(account: account)
+        } else {
+            AccountNavigator.goLogin(account: account)
+        }
+        completionHandler()
+    }
+
+    // Delivers a notification to an app running in the foreground.
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        let content = notification.request.content.userInfo
+        print(content)
+        completionHandler([.alert, .badge, .sound])
     }
     
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Failed to register for notifications: \(error.localizedDescription)")
+    func getAccount(xpub: String) -> Account? {
+        let accounts = AccountsRepository.shared.accounts
+        let lightningShortcutsAccounts = accounts
+                .compactMap { $0.getDerivedLightningAccount() }
+                .filter { $0.xpubHashId == xpub }
+        let mainAccounts = accounts
+                .filter { $0.xpubHashId == xpub }
+        return lightningShortcutsAccounts.first ?? mainAccounts.first
+    }
+}
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase registration token: \(String(describing: fcmToken))")
+        let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
+        defaults?.setValue(fcmToken, forKey: "token")
     }
 }

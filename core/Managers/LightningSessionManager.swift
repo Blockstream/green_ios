@@ -15,6 +15,7 @@ public class LightningSessionManager: SessionManager {
     public var listener: EventListener?
     
     public var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
+    public var workingDir: URL? { lightBridge?.workingDir }
 
     public override func connect() async throws {
         paused = false
@@ -35,13 +36,22 @@ public class LightningSessionManager: SessionManager {
         paused = true
     }
 
+    func workingDir(walletHashId: String) -> URL {
+        let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Bundle.main.appGroup)
+        let path = "/breezSdk/\(walletHashId)/0"
+        if #available(iOS 16.0, *) {
+            return containerURL!.appending(path: path)
+        } else {
+            return containerURL!.appendingPathComponent(path)
+        }
+    }
+
     private func initLightningBridge(_ params: Credentials, eventListener: EventListener) -> LightningBridge {
-        guard let walletHashId = walletIdentifier(credentials: params)?.walletHashId else {
+        guard let walletIdentifier = try? walletIdentifier(credentials: params) else {
             fatalError("Invalid wallet identifier")
         }
-        let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
         return LightningBridge(testnet: !gdkNetwork.mainnet,
-                               workingDir: URL(fileURLWithPath: workingDir),
+                               workingDir: workingDir(walletHashId: walletIdentifier.walletHashId),
                                eventListener: eventListener)
     }
 
@@ -57,7 +67,7 @@ public class LightningSessionManager: SessionManager {
 
     public override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
         guard let params = credentials else { throw LoginError.connectionFailed() }
-        let walletId = walletIdentifier(credentials: params)
+        let walletId = try walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
         _ = LightningRepository.shared.get(for: walletHashId)
@@ -75,20 +85,22 @@ public class LightningSessionManager: SessionManager {
         logged = true
         nodeState = lightBridge?.updateNodeInfo()
         lspInfo = lightBridge?.updateLspInformation()
-
         return res
     }
 
     public func registerNotification(token: String, xpubHashId: String) {
-        try? lightBridge?.breezSdk?.registerWebhook(webhookUrl: "https://green-notify.dev.blockstream.com/api/v1/notify?platform=\("ios")&token=\(token)&app_data=\(xpubHashId)")
+        if let notificationService = Bundle.main.notificationService {
+            logger.info("register notification token \(notificationService, privacy: .public)/api/v1/notify?platform=ios&token=\(token)&app_data=\(xpubHashId)")
+            try? lightBridge?.breezSdk?.registerWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=ios&token=\(token)&app_data=\(xpubHashId)")
+        }
     }
 
     public override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         _ = try await loginUser(credentials: credentials!, restore: false)
     }
 
-    public override func walletIdentifier(credentials: Credentials) -> WalletIdentifier? {
-        let res = try? self.session?.getWalletIdentifier(
+    public override func walletIdentifier(credentials: Credentials) throws -> WalletIdentifier? {
+        let res = try self.session?.getWalletIdentifier(
             net_params: GdkSettings.read()?.toNetworkParams(chainNetwork.network).toDict() ?? [:],
             details: credentials.toDict() ?? [:])
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
@@ -107,8 +119,7 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func removeDatadir(walletHashId: String) async {
-        let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
-        try? FileManager.default.removeItem(atPath: workingDir)
+        try? FileManager.default.removeItem(at: workingDir(walletHashId: walletHashId))
         LightningRepository.shared.remove(for: walletHashId)
     }
 
