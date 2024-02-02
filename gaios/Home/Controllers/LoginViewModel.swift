@@ -46,7 +46,8 @@ class LoginViewModel {
         if !bip39passphrase.isNilOrEmpty {
             account = updateEphemeralAccount(from: credentials)
         }
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        var wm = WalletsRepository.shared.getOrAdd(for: account)
+        wm.popupResolver = await PopupResolver()
         let lightningCredentials = Credentials(mnemonic: try wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
         try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials)
         account = wm.account
@@ -75,6 +76,7 @@ class LoginViewModel {
     func loginWithLightningShortcut() async throws {
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
+        wm.popupResolver = await PopupResolver()
         try await auth()
         let credentials = try AuthenticationTypeHandler.getAuthKeyCredentials(forNetwork: account.keychain)
         _ = try await wm.login(credentials: credentials, lightningCredentials: credentials)

@@ -289,6 +289,6 @@ class WalletViewModel {
         guard let credentials = try? wm?.deriveLightningCredentials(from: mainCredentials) else {
             return
         }
-        try await wm?.addDerivedLightning(credentials: credentials)
+        try await wm?.addLightningShortcut(credentials: credentials)
     }
 }

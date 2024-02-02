@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 protocol AssetsViewControllerDelegate: AnyObject {
     func didSelectAsset(_ assetId: String)
@@ -14,7 +15,7 @@ class AssetsViewController: UIViewController {
     var viewModel: AssetsViewModel?
     weak var delegate: AssetsViewControllerDelegate?
     private var hideBalance: Bool {
-        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+        return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
 
     override func viewDidLoad() {

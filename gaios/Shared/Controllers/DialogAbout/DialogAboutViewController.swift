@@ -1,4 +1,5 @@
 import Foundation
+import core
 import UIKit
 
 
@@ -150,7 +151,7 @@ class DialogAboutViewController: KeyboardViewController {
 
     func handleDebugID() {
         var msg = "ID not available"
-        if let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) {
+        if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
             UIPasteboard.general.string = uuid
             msg = NSLocalizedString("UUID copied to clipboard", comment: "")
         }

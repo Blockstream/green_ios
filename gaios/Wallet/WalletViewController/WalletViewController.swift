@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 import RiveRuntime
 import gdk
@@ -38,10 +39,10 @@ class WalletViewController: UIViewController {
     private var cardHc: CGFloat = 184.0
     private var hideBalance: Bool {
         get {
-            return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+            return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: AppStorage.hideBalance)
+            UserDefaults.standard.set(newValue, forKey: AppStorageConstants.hideBalance.rawValue)
         }
     }
     var viewModel: WalletViewModel!

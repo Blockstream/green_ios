@@ -1,4 +1,5 @@
 import Foundation
+import core
 import UIKit
 import gdk
 
@@ -32,7 +33,7 @@ class DialogNodeViewController: KeyboardViewController {
     private var obs: NSKeyValueObservation?
 
     private var hideBalance: Bool {
-        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+        return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
 
     lazy var blurredView: UIView = {

@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 import BreezSDK
 import lightning
@@ -46,7 +47,7 @@ class AccountViewController: UIViewController {
     private var notificationObservers: [NSObjectProtocol] = []
     private var isReloading = false
     private var hideBalance: Bool {
-        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+        return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
     private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
     private var showScan = true
@@ -387,7 +388,7 @@ class AccountViewController: UIViewController {
 
     func handleShortcut(isOn: Bool) {
         
-        Task { try? await viewModel.addSWDerivedLightning() }
+        Task { try? await viewModel.addLightningShortcut() }
         
         let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {

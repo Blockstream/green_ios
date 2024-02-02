@@ -96,6 +96,7 @@ class BleJadeManager {
         account.xpubHashId = walletId?.xpubHashId
         account = normalizeAccount(account)
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
+        walletManager?.popupResolver = await PopupResolver()
         walletManager?.hwDevice = BLEDevice(peripheral: bleJade.peripheral, device: device, interface: bleJade)
         var derivedCredentials: Credentials?
         if let derivedAccount = account.getDerivedLightningAccount() {

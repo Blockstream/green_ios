@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 import gdk
 
@@ -54,7 +55,7 @@ class TransactionViewController: UIViewController {
     var headerH: CGFloat = 44.0
 
     private var hideBalance: Bool {
-        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+        return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
 
     override func viewDidLoad() {

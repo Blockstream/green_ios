@@ -25,6 +25,7 @@ class SetPinViewModel {
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let defaultAccount = restoredAccount ?? Account(name: name, network: mainNetwork)
         let wm = WalletsRepository.shared.getOrAdd(for: defaultAccount)
+        wm.popupResolver = await PopupResolver()
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)
         let lightningCredentials = try wm.deriveLightningCredentials(from: self.credentials)
@@ -65,6 +66,7 @@ class SetPinViewModel {
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let account = Account(name: name, network: mainNetwork)
         let wm = WalletsRepository.shared.getOrAdd(for: account)
+        wm.popupResolver = await PopupResolver()
         try await wm.create(credentials)
         try await wm.account.addPin(session: wm.prominentSession!, pin: pin, credentials: credentials)
     }

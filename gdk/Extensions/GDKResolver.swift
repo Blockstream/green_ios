@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-
 import greenaddress
 import hw
 
@@ -23,12 +22,18 @@ public enum TwoFactorCallError: Error {
     case cancel(localizedDescription: String)
 }
 
+public protocol ProgressDelegate {
+    func start()
+    func stop()
+}
+
 public class GDKResolver {
     
     let network: NetworkSecurityCase
     let connected: () -> Bool
     let twoFactorCall: TwoFactorCall?
     let popupDelegate: PopupResolverDelegate?
+    let progressDelegate: ProgressDelegate?
     let bcurDelegate: BcurResolver?
     let hwDelegate: HwResolverDelegate?
     let hwDevice: HWProtocol?
@@ -37,6 +42,7 @@ public class GDKResolver {
     public init(_ twoFactorCall: TwoFactorCall?,
                 gdkSession: GDKSession?,
                 popupDelegate: PopupResolverDelegate? = nil,
+                progressDelegate: ProgressDelegate? = nil,
                 hwDelegate: HwResolverDelegate? = nil,
                 hwInterfaceDelegate: HwInterfaceResolver? = nil,
                 bcurDelegate: BcurResolver? = nil,
@@ -52,6 +58,7 @@ public class GDKResolver {
         self.network = network
         self.connected = connected
         self.hwDevice = hwDevice
+        self.progressDelegate = progressDelegate
     }
 
     public func resolve() async throws -> [String: Any]? {

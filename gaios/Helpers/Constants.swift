@@ -8,22 +8,6 @@ enum Constants {
     static let electrumPrefix = "electrum-"
     static let trxPerPage: UInt32 = 30
     static let jadeAnimInterval: Double = 6.0
-
-    static let countlyRemoteConfigAppReview = "app_review"
-    static let countlyRemoteConfigBanners = "banners"
-    static let countlyRemoteConfigAssets = "liquid_assets"
-}
-
-enum AppStorage {
-    static let dontShowTorAlert = "dont_show_tor_alert"
-    static let defaultTransactionPriority = "default_transaction_priority"
-    static let userAnalyticsPreference = "user_analytics_preference"
-    static let analyticsUUID = "analytics_uuid"
-    static let countlyOffset = "countly_offset"
-    static let alwaysAskPassphrase = "always_ask_passphrase"
-    static let storeReviewDate = "store_review_date"
-    static let hideBalance = "hide_balance"
-    static let acceptedTerms = "accepted_terms"
 }
 
 enum ExternalUrls {

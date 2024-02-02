@@ -68,6 +68,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         AnalyticsManager.shared.countlyStart()
         AnalyticsManager.shared.setupSession(session: nil)
 
+        // Remote Notifications
+        UNUserNotificationCenter.current().delegate = self
+                    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+                    UNUserNotificationCenter.current().requestAuthorization(
+                        options: authOptions,
+                        completionHandler: {_, _ in })
+        application.registerForRemoteNotifications()
+
         return true
     }
 
@@ -122,5 +130,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func resolve2faOff() {
         resolve2faWindow?.removeFromSuperview()
         resolve2faWindow = nil
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let tokenChars = (deviceToken as NSData).bytes.bindMemory(to: CChar.self, capacity: deviceToken.count)
+        var tokenString = ""
+        for i in 0..<deviceToken.count {
+            tokenString += String(format: "%02.2hhx", arguments: [tokenChars[i]])
+        }
+        print("Successfully registered for notifications!")
+        print("Device Token:", tokenString)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register for notifications: \(error.localizedDescription)")
     }
 }

@@ -1,6 +1,6 @@
 import UIKit
-
 import gdk
+import core
 
 enum AccountAssetSection: Int, CaseIterable {
     case accountAsset

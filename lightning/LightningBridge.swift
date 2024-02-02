@@ -3,10 +3,6 @@ import BreezSDK
 
 public typealias Long = UInt64
 
-public protocol LightningEventListener {
-    func onLightningEvent(event: BreezEvent)
-}
-
 class LogStreamListener: LogStream {
     func log(l: LogEntry){
       //print("BREEZ: \(l.line)");
@@ -17,8 +13,8 @@ public class LightningBridge {
     
     let testnet: Bool
     public var appGreenlightCredentials: AppGreenlightCredentials?
-    var breezSdk: BlockingBreezServices?
-    var eventListener: LightningEventListener
+    public var breezSdk: BlockingBreezServices?
+    var eventListener: EventListener
     var workingDir: URL
     private var network: Network { testnet ? .testnet : .bitcoin }
     private var environment: EnvironmentType { testnet ? .staging : .production }
@@ -61,7 +57,7 @@ public class LightningBridge {
     
     public init(testnet: Bool,
                 workingDir: URL,
-                eventListener: LightningEventListener) {
+                eventListener: EventListener) {
         self.testnet = testnet
         self.eventListener = eventListener
         self.workingDir = workingDir
@@ -69,11 +65,6 @@ public class LightningBridge {
     
     public static func configure() {
         try? setLogStream(logStream: LogStreamListener())
-    }
-
-    public func connectToGreenlight(mnemonic: String, checkCredentials: Bool) async throws {
-        let partnerCredentials = checkCredentials ? nil : LightningBridge.CREDENTIALS
-        try await self.start(mnemonic: mnemonic, partnerCredentials: partnerCredentials)
     }
     
     private func createConfig(_ partnerCredentials: GreenlightCredentials?) -> Config {
@@ -87,14 +78,15 @@ public class LightningBridge {
         return config
     }
     
-    private func start(mnemonic: String, partnerCredentials: GreenlightCredentials?) async throws {
+    public func connectToGreenlight(mnemonic: String, checkCredentials: Bool) async throws {
+        let partnerCredentials = checkCredentials ? nil : LightningBridge.CREDENTIALS
         if breezSdk != nil {
             return
         }
         breezSdk = try connect(
             config: createConfig(partnerCredentials),
             seed: mnemonicToSeed(phrase: mnemonic),
-            listener: self)
+            listener: eventListener)
         if breezSdk == nil {
             throw BreezSDK.SdkError.Generic(message: "id_connection_failed")
         }
@@ -306,20 +298,3 @@ public class LightningBridge {
         }
     }
 }
-
-extension LightningBridge: EventListener {
-    public func onEvent(e: BreezEvent) {
-        print ("Breez onEvent: \(e)")
-        eventListener.onLightningEvent(event: e)
-        switch e {
-        case BreezEvent.invoicePaid( _):
-            Task { try? breezSdk?.sync() }
-            break
-        case BreezEvent.paymentSucceed(_):
-            break
-        default:
-            break
-        }
-    }
-}
-
