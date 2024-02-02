@@ -45,8 +45,8 @@ class SetPhoneViewController: KeyboardViewController {
         }
     }
     
-    let strIAgree = "By continuing you agree to Blockstream's ToS and Privacy Policy".localized
-    let strTos = "ToS".localized
+    let strIAgree = "By continuing you agree to Blockstream's Terms of Service and Privacy Policy".localized
+    let strTerms = "Terms of Service".localized
     let strPrivacy = "Privacy Policy".localized
 
     let strFrequency = "Message frequency varies according to the number of 2FA SMS requests you make.".localized
@@ -123,7 +123,7 @@ class SetPhoneViewController: KeyboardViewController {
             value: pStyle,
             range: NSRange(location: 0, length: attrStr.length))
         attrStr.setAttributes(cAttr, for: strIAgree)
-        attrStr.setAttributes(gAttr, for: strTos)
+        attrStr.setAttributes(gAttr, for: strTerms)
         attrStr.setAttributes(gAttr, for: strPrivacy)
         lblAgree.attributedText = attrStr
         lblAgree.isUserInteractionEnabled = true
@@ -166,7 +166,7 @@ class SetPhoneViewController: KeyboardViewController {
 
     @objc func onTapLblAgree(_ gesture: UITapGestureRecognizer) {
         guard let text = lblAgree.text else { return }
-        let rangeTerms = (text.lowercased() as NSString).range(of: strTos.lowercased())
+        let rangeTerms = (text.lowercased() as NSString).range(of: strTerms.lowercased())
         let rangePrivacy = (text.lowercased() as NSString).range(of: strPrivacy.lowercased())
         if gesture.didTapAttributedTextInLabel(label: lblAgree, inRange: rangeTerms) {
             navigate(ExternalUrls.aboutTermsOfService)
