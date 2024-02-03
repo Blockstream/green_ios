@@ -44,7 +44,10 @@ class AnalyticsManager {
             let prev = AnalyticsConsent(rawValue: UserDefaults.standard.integer(forKey: AppStorage.userAnalyticsPreference)) ?? .notDetermined
             UserDefaults.standard.set(newValue.rawValue, forKey: AppStorage.userAnalyticsPreference)
 
-            giveConsent(previous: prev)
+            if newValue == .denied {
+                reset()
+            }
+            giveConsent()
         }
     }
 
@@ -182,7 +185,9 @@ class AnalyticsManager {
         }
         config.urlSessionConfiguration = getSessionConfiguration(session: nil)
 
-        if consent == .notDetermined {
+        if consent == .authorized {
+            config.consents = authorizedGroup
+        } else {
             config.consents = deniedGroup
         }
 
@@ -196,10 +201,20 @@ class AnalyticsManager {
         }
         Countly.sharedInstance().start(with: config)
 
-        giveConsent(previous: consent)
+        giveConsent()
     }
 
-    private func giveConsent(previous: AnalyticsConsent) {
+    private func reset() {
+        Countly.sharedInstance().cancelConsentForAllFeatures()
+        // change the deviceID
+        invalidateAnalyticsUUID()
+        invalidateCountlyOffset()
+        Countly.sharedInstance().changeDeviceIDWithoutMerge(analyticsUUID)
+        Countly.sharedInstance().setNewOffset(countlyOffset)
+        Countly.sharedInstance().disableLocationInfo()
+    }
+
+    private func giveConsent() {
 
         print("giving consent: \(consent)")
 
@@ -207,14 +222,7 @@ class AnalyticsManager {
         case .notDetermined:
             break
         case .denied:
-            Countly.sharedInstance().cancelConsentForAllFeatures()
-            // change the deviceID
-            invalidateAnalyticsUUID()
-            invalidateCountlyOffset()
-            Countly.sharedInstance().changeDeviceIDWithoutMerge(analyticsUUID)
-            Countly.sharedInstance().setNewOffset(countlyOffset)
             Countly.sharedInstance().giveConsent(forFeatures: deniedGroup)
-            Countly.sharedInstance().disableLocationInfo()
             updateUserProperties()
         case .authorized:
             Countly.sharedInstance().giveConsent(forFeatures: authorizedGroup)
