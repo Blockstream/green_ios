@@ -350,11 +350,13 @@ public struct GdkInit: Codable {
         case tordir
         case registrydir
         case logLevel = "log_level"
+        case optimizeExpiredCsv = "optimize_expired_csv"
     }
     public let datadir: String?
     public let tordir: String?
     public let registrydir: String?
     public let logLevel: String
+    public let optimizeExpiredCsv: Bool?
     public var breezSdkDir: String { "\(datadir ?? "")/breezSdk" }
 
     public static func defaults() -> GdkInit {
@@ -367,7 +369,8 @@ public struct GdkInit: Codable {
         return GdkInit(datadir: appSupportDir?.path,
                        tordir: cacheDir?.path,
                        registrydir: cacheDir?.path,
-                       logLevel: logLevel)
+                       logLevel: logLevel,
+                       optimizeExpiredCsv: true)
     }
 
     public func run() {

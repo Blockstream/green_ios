@@ -22,7 +22,6 @@ public extension InputOutput {
     var recoveryXpub: String? { take("recovery_xpub")}
     var satoshi: UInt64? { take("satoshi")}
     var script: String? { take("script")}
-    var scriptType: UInt32? { take("script_type")}
     var scriptpubkey: String? { take("scriptpubkey")}
     var sequence: Int { take("sequence") ?? 0}
     var subaccount: UInt32? { take("subaccount")}

@@ -369,7 +369,7 @@ class SessionManager {
     }
     
     func getReceiveAddress(subaccount: UInt32) async throws -> Address {
-        let params = Address(address: nil, pointer: nil, branch: nil, subtype: nil, userPath: nil, subaccount: subaccount, scriptType: nil, addressType: nil, script: nil)
+        let params = Address(address: nil, pointer: nil, branch: nil, subtype: nil, userPath: nil, subaccount: subaccount, addressType: nil, script: nil)
         let res: Address = try await wrapperAsync(fun: self.session?.getReceiveAddress, params: params)
         return res
     }

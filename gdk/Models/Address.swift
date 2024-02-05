@@ -11,7 +11,6 @@ public struct Address: Codable {
         case branch = "branch"
         case userPath = "user_path"
         case subaccount = "subaccount"
-        case scriptType = "script_type"
         case addressType = "address_type"
         case script = "script"
         case subtype = "subtype"
@@ -26,7 +25,6 @@ public struct Address: Codable {
     public let subtype: UInt32?
     public let userPath: [UInt32]?
     public let subaccount: UInt32?
-    public let scriptType: Int?
     public let addressType: String?
     public let script: String?
     public let txCount: Int?
@@ -34,14 +32,13 @@ public struct Address: Codable {
     public var satoshi: Int32?
     public var isGreedy: Bool?
 
-    public init(address: String? = nil, pointer: Int? = nil, branch: Int? = nil, subtype: UInt32? = nil, userPath: [UInt32]? = nil, subaccount: UInt32? = nil, scriptType: Int? = nil, addressType: String? = nil, script: String? = nil, txCount: Int? = 0, satoshi: Int32? = 0, isGreedy: Bool? = nil) {
+    public init(address: String? = nil, pointer: Int? = nil, branch: Int? = nil, subtype: UInt32? = nil, userPath: [UInt32]? = nil, subaccount: UInt32? = nil, addressType: String? = nil, script: String? = nil, txCount: Int? = 0, satoshi: Int32? = 0, isGreedy: Bool? = nil) {
         self.address = address
         self.pointer = pointer
         self.branch = branch
         self.subtype = subtype
         self.userPath = userPath
         self.subaccount = subaccount
-        self.scriptType = scriptType
         self.addressType = addressType
         self.script = script
         self.txCount = txCount
