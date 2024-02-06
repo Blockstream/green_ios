@@ -172,14 +172,14 @@ class ReceiveViewController: KeyboardViewController {
         Task {
             do {
                 let invoice = notification?.object as? InvoicePaidDetails
-                let account = WalletManager.current?.lightningSubaccount
+                guard let account = WalletManager.current?.lightningSubaccount else { return }
                 let parser = Parser(input: invoice?.bolt11 ?? "")
-                try await parser.runSingleAccount(account: account!)
+                try await parser.runSingleAccount(account: account)
                 switch parser.lightningType {
                 case .some(.bolt11(let invoice)):
                     if let balance = Balance.fromSatoshi(invoice.amountSatoshi ?? 0, assetId: AssetInfo.btcId) {
                         let (amount, denom) = balance.toDenom(viewModel.inputDenomination)
-                        let model = LTSuccessViewModel(account: account?.name ?? "", amount: amount, denom: denom)
+                        let model = LTSuccessViewModel(account: account.name, amount: amount, denom: denom)
                         ltSuccessViewController(model: model)
                     }
                 default:
