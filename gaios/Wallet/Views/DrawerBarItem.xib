@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,17 +15,17 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xdu-wV-uts">
-                    <rect key="frame" x="0.0" y="0.0" width="207" height="36"/>
+                    <rect key="frame" x="0.0" y="20" width="207" height="16"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_wallet" translatesAutoresizingMaskIntoConstraints="NO" id="T2Z-2f-jBS">
-                            <rect key="frame" x="0.0" y="6" width="24" height="24"/>
+                            <rect key="frame" x="0.0" y="-4" width="24" height="24"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="24" id="HOR-BP-iLN"/>
                                 <constraint firstAttribute="height" constant="24" id="i26-1I-Ru2"/>
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Work Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QYi-S9-Rja">
-                            <rect key="frame" x="35" y="9.5" width="79.5" height="17"/>
+                            <rect key="frame" x="35" y="-0.5" width="79.5" height="17"/>
                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -33,7 +33,6 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="36" id="21g-yw-CVd"/>
                         <constraint firstItem="QYi-S9-Rja" firstAttribute="centerY" secondItem="Xdu-wV-uts" secondAttribute="centerY" id="Bzo-2T-9NL"/>
                         <constraint firstItem="QYi-S9-Rja" firstAttribute="leading" secondItem="T2Z-2f-jBS" secondAttribute="trailing" constant="11" id="WwS-LE-MZz"/>
                         <constraint firstItem="T2Z-2f-jBS" firstAttribute="leading" secondItem="Xdu-wV-uts" secondAttribute="leading" id="iyo-wT-Q9Q"/>
@@ -41,7 +40,7 @@
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hlh-RU-EwK">
-                    <rect key="frame" x="0.0" y="0.0" width="207" height="36"/>
+                    <rect key="frame" x="0.0" y="20" width="207" height="16"/>
                     <connections>
                         <action selector="btn:" destination="iN0-l3-epB" eventType="touchUpInside" id="JXE-QN-94C"/>
                     </connections>
