@@ -234,7 +234,8 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                 }
                 do {
                     validating = true
-                    let value = buffer.removeFirst()
+                    var value = ""
+                    if !buffer.isEmpty { buffer.removeFirst() }
                     NSLog(">> value \(value)")
                     
                     if let result = try await validate(value) {
