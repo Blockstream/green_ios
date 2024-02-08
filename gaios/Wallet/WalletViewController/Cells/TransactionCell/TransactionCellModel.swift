@@ -59,7 +59,7 @@ class TransactionCellModel {
                                       progress: nil)
             } else {
                 return PendingStateUI(style: .swapFailure,
-                                      label: "id_failure".localized,
+                                      label: "Failed".localized,
                                       progress: nil)
             }
         } else if tx.isUnconfirmed(block: blockHeight) {
