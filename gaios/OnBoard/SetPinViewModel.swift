@@ -32,7 +32,7 @@ class SetPinViewModel {
         wm.account.attempts = 0
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)
-        try await wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!)
+        try await wm.account.addPin(session: wm.prominentSession!, pin: pin, credentials: credentials)
         AccountsRepository.shared.current = wm.account
         AnalyticsManager.shared.importWallet(account: wm.account)
     }
@@ -66,16 +66,15 @@ class SetPinViewModel {
         let account = Account(name: name, network: mainNetwork)
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         try await wm.create(credentials)
-        try await wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!)
+        try await wm.account.addPin(session: wm.prominentSession!, pin: pin, credentials: credentials)
     }
 
     func setup(pin: String) async throws {
         guard let wm = WalletManager.current,
-            let session = wm.prominentSession,
-              let mnemonic = credentials.mnemonic
+            let session = wm.prominentSession
         else { throw LoginError.failed() }
         try await session.connect()
-        try await wm.account.addPin(session: session, pin: pin, mnemonic: mnemonic)
+        try await wm.account.addPin(session: session, pin: pin, credentials: credentials)
         wm.account.attempts = 0
     }
 

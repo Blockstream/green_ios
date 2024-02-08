@@ -172,8 +172,8 @@ struct Account: Codable, Equatable {
         try AuthenticationTypeHandler.addBiometry(pinData: encrypted.pinData, extraData: password, forNetwork: keychain)
     }
 
-    func addPin(session: SessionManager, pin: String, mnemonic: String) async throws {
-        let params = EncryptWithPinParams(pin: pin, credentials: Credentials(mnemonic: mnemonic))
+    public func addPin(session: SessionManager, pin: String, credentials: Credentials) async throws {
+        let params = EncryptWithPinParams(pin: pin, credentials: Credentials(mnemonic: credentials.mnemonic, password: credentials.password))
         let encrypted = try await session.encryptWithPin(params)
         try AuthenticationTypeHandler.addPIN(pinData: encrypted.pinData, forNetwork: keychain)
     }
