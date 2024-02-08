@@ -5,12 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [4.0.24] - 2024-02-07
 
+### Added
+- Support new Jade authentication protocol
+
 ### Changed
 - Improve account and asset selector
 - Improve lightning sweep and refund
 - Adjust 2FA SMS activation
 - Update Breez SDK to 0.2.15 
 - Disable 2FA limits in fiat
+- Update GDK to 0.70.0
 
 ### Fixed
 - Send screen: improved address typing and send all UX 
