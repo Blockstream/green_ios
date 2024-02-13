@@ -229,6 +229,7 @@ extension UserSettingsViewController {
     func openTwoFactorAuthentication() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }

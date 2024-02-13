@@ -284,6 +284,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
                     DropAlert().error(message: error.localizedDescription)
                 }
             }
+            stopLoader()
         }
     }
     

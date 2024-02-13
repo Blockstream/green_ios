@@ -214,6 +214,7 @@ class SessionManager {
         return try await self.wrapperAsync(fun: self.session?.validate, params: addressees)
     }
     
+    @discardableResult
     func loadTwoFactorConfig() async throws -> TwoFactorConfig? {
         if let dataTwoFactorConfig = try self.session?.getTwoFactorConfig() {
             print(dataTwoFactorConfig)

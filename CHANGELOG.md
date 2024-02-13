@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Fix About and Close Channel buttons
+- 2FA reset flow: UI improvement
 
 ### Changed
 - UI improvement in onboarding

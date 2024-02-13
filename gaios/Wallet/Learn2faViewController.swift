@@ -58,6 +58,8 @@ class Learn2faViewController: UIViewController {
         lblPermanentHint.text = NSLocalizedString("id_if_you_did_not_request_the", comment: "")
         // when not in dispute, use the button to dispute
         btnUndoReset.setTitle(NSLocalizedString("id_dispute_twofactor_reset", comment: ""), for: .normal)
+        btnUndoReset?.titleLabel?.lineBreakMode = NSLineBreakMode.byWordWrapping
+        btnUndoReset?.titleLabel?.textAlignment = .center
     }
 
     func canceltwoFactorReset() {
@@ -69,7 +71,9 @@ class Learn2faViewController: UIViewController {
                 try await session.cancelTwoFactorReset()
                 try await session.loadTwoFactorConfig()
                 DropAlert().success(message: "Reset Cancelled")
-                self.dismiss(animated: true, completion: nil)
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                    self.navigationController?.popViewController(animated: true)
+                }
             } catch {
                 self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
             }
