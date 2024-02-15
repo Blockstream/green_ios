@@ -72,7 +72,7 @@ class DialogNodeViewController: KeyboardViewController {
             self?.tableViewHeight.constant = table.contentSize.height
         }
 
-        btnCloseChannel.isHidden = viewModel.hideBtnSendAll
+        btnCloseChannel.isHidden = viewModel.hideBtnSendAll || !Bundle.main.dev
     }
 
     deinit {
@@ -110,7 +110,6 @@ class DialogNodeViewController: KeyboardViewController {
         lblTitle.text = "id_node_info".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
         btnCloseChannel.setTitle("Empty Lightning Account".localized, for: .normal)
-        btnCloseChannel.isHidden = !Bundle.main.dev
     }
 
     func setStyle() {

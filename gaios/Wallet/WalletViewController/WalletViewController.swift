@@ -347,7 +347,7 @@ class WalletViewController: UIViewController {
             vc.transitioningDelegate = self
             vc.modalPresentationStyle = .custom
             vc.delegate = self
-            self.view.window?.rootViewController?.present(vc, animated: true, completion: nil)
+            present(vc, animated: true, completion: nil)
         }
     }
 
