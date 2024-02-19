@@ -35,6 +35,11 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var switchProxy: UISwitch!
     @IBOutlet weak var fieldProxyIp: UITextField!
 
+    @IBOutlet weak var cardRememberHW: UIView!
+    @IBOutlet weak var lblRememberHWTitle: UILabel!
+    @IBOutlet weak var lblRememberHWHint: UILabel!
+    @IBOutlet weak var switchRememberHW: UISwitch!
+    
     @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
@@ -119,6 +124,8 @@ class WalletSettingsViewController: KeyboardViewController {
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
         fieldProxyIp.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
+        lblRememberHWTitle.text = "Remember hardware devices".localized
+        lblRememberHWHint.text = ""
         lblSPVTitle.text = NSLocalizedString("id_custom_servers_and_validation", comment: "")
         lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_electrum_server", comment: "")
         lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
@@ -152,8 +159,8 @@ class WalletSettingsViewController: KeyboardViewController {
         cardMulti.alpha = 0.5
         lblTitle.setStyle(.title)
         lblHint.setStyle(.txtBigger)
-        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblProxyTitle, lblSPVPersonalNodeTitle, lblMultiTitle, lblTxCheckTitle].forEach{ $0?.setStyle(.txtBigger)}
-        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach{ $0?.setStyle(.txtCard)}
+        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblProxyTitle, lblRememberHWTitle, lblSPVPersonalNodeTitle, lblMultiTitle, lblTxCheckTitle].forEach{ $0?.setStyle(.txtBigger)}
+        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach{ $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
     }
@@ -172,6 +179,7 @@ class WalletSettingsViewController: KeyboardViewController {
            !socks5.isEmpty && !port.isEmpty {
             fieldProxyIp.text = "\(socks5):\(port)"
         }
+        switchRememberHW.setOn(!appSettings.rememberHWIsOff, animated: true)
         cardExperimental.isHidden = false
         switchExperimental.setOn(appSettings.experimental, animated: true)
         switchTestnet.setOn(appSettings.testnet, animated: true)
@@ -218,6 +226,8 @@ class WalletSettingsViewController: KeyboardViewController {
         cardProxyDetail.isHidden = !sender.isOn
     }
 
+    @IBAction func switchRememberHWChange(_ sender: UISwitch) { }
+
     @IBAction func switchExperimentalChange(_ sender: UISwitch) { }
 
     @IBAction func switchPSPVPersonalNode(_ sender: UISwitch) {
@@ -255,6 +265,7 @@ class WalletSettingsViewController: KeyboardViewController {
             liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text)
         AppSettings.shared.testnet = switchTestnet.isOn
         AppSettings.shared.experimental = switchExperimental.isOn
+        AppSettings.shared.rememberHWIsOff = !switchRememberHW.isOn
         AppSettings.shared.gdkSettings = gdkSettings
 
         switch AnalyticsManager.shared.consent { //current value

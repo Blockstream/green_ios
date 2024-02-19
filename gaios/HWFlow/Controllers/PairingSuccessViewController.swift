@@ -7,30 +7,21 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnContinue: UIButton!
-    @IBOutlet weak var rememberView: UIView!
-    @IBOutlet weak var lblRemember: UILabel!
     @IBOutlet weak var imgDevice: UIImageView!
-    @IBOutlet weak var rememberSwitch: UISwitch!
     @IBOutlet weak var btnAppSettings: UIButton!
 
     var bleViewModel: BleViewModel?
     var scanViewModel: ScanViewModel?
     
+    var rememberIsOn = !AppSettings.shared.rememberHWIsOff
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        rememberSwitch.isOn = true
         mash.isHidden = true
         setContent()
         setStyle()
         if bleViewModel?.type == .Jade {
             loadNavigationBtns()
-        }
-        // if account just exist
-        if let account = AccountsRepository.shared.accounts.filter({
-            $0.isHW && ($0.uuid == bleViewModel?.peripheralID) || ($0.name == bleViewModel?.peripheral?.name) }).first {
-            rememberSwitch.isOn = !(account.hidden ?? false)
-//            rememberView.isHidden = true
         }
     }
 
@@ -38,7 +29,6 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         lblTitle.text = bleViewModel?.peripheral?.name
         lblHint.text = "id_follow_the_instructions_on_your".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
-        lblRemember.text = "id_remember_device_connection".localized
         imgDevice.image = UIImage(named: bleViewModel?.type == .Jade ? "il_jade_welcome_1" : "il_ledger")
         lblHint.text = bleViewModel?.type == .Jade ? "Blockstream" : ""
         btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
@@ -47,7 +37,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         lblTitle.textColor = .white
-        [lblHint, lblRemember].forEach {
+        [lblHint].forEach {
             $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
             $0?.textColor = .white
         }
@@ -136,7 +126,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                 await MainActor.run {
                     stopLoader()
                     var account = account
-                    account?.hidden = !(self.rememberSwitch.isOn)
+                    account?.hidden = !(rememberIsOn)
                     let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
                     if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
                         vc.account = account
@@ -162,7 +152,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                     vc.testnet = testnet
                     vc.bleViewModel = bleViewModel
                     vc.scanViewModel = scanViewModel
-                    vc.remember = rememberSwitch.isOn
+                    vc.remember = rememberIsOn
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             }

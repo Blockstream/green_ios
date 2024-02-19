@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - UI improvement in onboarding
+- HW: moved remember device from onboarding to settings
 
 ## [4.0.24] - 2024-02-07
 

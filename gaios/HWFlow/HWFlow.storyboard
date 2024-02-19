@@ -760,7 +760,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mD7-ii-EV0" userLabel="Btn Check Store">
-                                <rect key="frame" x="25" y="404.5" width="270" height="50"/>
+                                <rect key="frame" x="25" y="448" width="270" height="50"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="GL8-G8-mUQ"/>
@@ -773,35 +773,6 @@
                                     <action selector="btnContinue:" destination="HZ3-6e-lLK" eventType="touchUpInside" id="7ln-bl-uoS"/>
                                 </connections>
                             </button>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ncO-ma-dxm">
-                                <rect key="frame" x="25" y="479.5" width="270" height="50"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LCW-t7-kq2">
-                                        <rect key="frame" x="0.0" y="0.0" width="270" height="50"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_remember" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fOz-xC-oxh">
-                                                <rect key="frame" x="0.0" y="12" width="201" height="26"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MQ5-rq-htZ">
-                                                <rect key="frame" x="221" y="9.5" width="51" height="31"/>
-                                            </switch>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstItem="fOz-xC-oxh" firstAttribute="centerY" secondItem="LCW-t7-kq2" secondAttribute="centerY" id="4aL-7n-Mb6"/>
-                                            <constraint firstItem="fOz-xC-oxh" firstAttribute="leading" secondItem="LCW-t7-kq2" secondAttribute="leading" id="R79-zv-ilN"/>
-                                            <constraint firstItem="fOz-xC-oxh" firstAttribute="top" secondItem="LCW-t7-kq2" secondAttribute="top" constant="12" id="eWG-dG-14e"/>
-                                            <constraint firstAttribute="trailing" secondItem="MQ5-rq-htZ" secondAttribute="trailing" id="fsy-xf-RUK"/>
-                                            <constraint firstItem="MQ5-rq-htZ" firstAttribute="leading" secondItem="fOz-xC-oxh" secondAttribute="trailing" constant="20" id="prh-Yv-ayp"/>
-                                            <constraint firstAttribute="bottom" secondItem="fOz-xC-oxh" secondAttribute="bottom" constant="12" id="rnb-xC-Z6d"/>
-                                            <constraint firstItem="MQ5-rq-htZ" firstAttribute="centerY" secondItem="LCW-t7-kq2" secondAttribute="centerY" id="tHw-bH-Kqn"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                            </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c1F-zv-FpD" userLabel="App Settings">
                                 <rect key="frame" x="178" y="518" width="117" height="50"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -823,15 +794,12 @@
                             <constraint firstItem="aVr-gU-dde" firstAttribute="bottom" secondItem="c1F-zv-FpD" secondAttribute="bottom" id="1sQ-bA-Cpr"/>
                             <constraint firstItem="aVr-gU-dde" firstAttribute="trailing" secondItem="c1F-zv-FpD" secondAttribute="trailing" constant="25" id="94v-Nq-d7g"/>
                             <constraint firstItem="aVr-gU-dde" firstAttribute="trailing" secondItem="Qe1-5Y-t3Z" secondAttribute="trailing" constant="25" id="Bm1-cR-IWY"/>
-                            <constraint firstItem="c1F-zv-FpD" firstAttribute="top" secondItem="ncO-ma-dxm" secondAttribute="bottom" constant="-11.5" id="EGt-tp-tr4"/>
                             <constraint firstItem="KGM-2S-5Cz" firstAttribute="top" secondItem="8JV-Ag-Pyo" secondAttribute="top" constant="48" id="FR9-H8-9fw"/>
                             <constraint firstItem="aVr-gU-dde" firstAttribute="trailing" secondItem="KGM-2S-5Cz" secondAttribute="trailing" constant="36" id="IhD-gt-nXY"/>
                             <constraint firstItem="mD7-ii-EV0" firstAttribute="leading" secondItem="aVr-gU-dde" secondAttribute="leading" constant="25" id="N5z-T5-ctY"/>
-                            <constraint firstItem="aVr-gU-dde" firstAttribute="trailing" secondItem="ncO-ma-dxm" secondAttribute="trailing" constant="25" id="cG6-e5-PAm"/>
                             <constraint firstItem="Qe1-5Y-t3Z" firstAttribute="leading" secondItem="aVr-gU-dde" secondAttribute="leading" constant="25" id="e3C-A7-dX1"/>
-                            <constraint firstItem="ncO-ma-dxm" firstAttribute="leading" secondItem="aVr-gU-dde" secondAttribute="leading" constant="25" id="iGS-ZE-4an"/>
+                            <constraint firstItem="c1F-zv-FpD" firstAttribute="top" secondItem="mD7-ii-EV0" secondAttribute="bottom" constant="20" id="eXz-eL-FMA"/>
                             <constraint firstItem="KGM-2S-5Cz" firstAttribute="leading" secondItem="aVr-gU-dde" secondAttribute="leading" constant="36" id="ltI-Tt-LH7"/>
-                            <constraint firstItem="ncO-ma-dxm" firstAttribute="top" secondItem="mD7-ii-EV0" secondAttribute="bottom" constant="25" id="oWm-ST-SJ6"/>
                             <constraint firstItem="Qe1-5Y-t3Z" firstAttribute="centerY" secondItem="aVr-gU-dde" secondAttribute="centerY" id="vSL-xQ-h3r"/>
                             <constraint firstItem="Qe1-5Y-t3Z" firstAttribute="top" secondItem="KGM-2S-5Cz" secondAttribute="bottom" id="w97-a7-YRP"/>
                             <constraint firstItem="aVr-gU-dde" firstAttribute="trailing" secondItem="mD7-ii-EV0" secondAttribute="trailing" constant="25" id="yd7-gf-rfh"/>
@@ -842,10 +810,7 @@
                         <outlet property="btnContinue" destination="mD7-ii-EV0" id="H5e-C2-gZX"/>
                         <outlet property="imgDevice" destination="KGM-2S-5Cz" id="lEb-gO-gV0"/>
                         <outlet property="lblHint" destination="0h4-um-mWT" id="QWd-zU-6ke"/>
-                        <outlet property="lblRemember" destination="fOz-xC-oxh" id="9fc-sb-ai5"/>
                         <outlet property="lblTitle" destination="6YJ-Wv-xtk" id="SA5-xX-dKA"/>
-                        <outlet property="rememberSwitch" destination="MQ5-rq-htZ" id="ZX7-HJ-Gc0"/>
-                        <outlet property="rememberView" destination="LCW-t7-kq2" id="qEc-a7-FPa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ndq-zw-Jxz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
