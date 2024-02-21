@@ -37,6 +37,18 @@ class AssetSelectViewController: UIViewController {
         searchCard.cornerRadius = 5.0
     }
 
+    func showMasterKeyInfo(_ indexPath: IndexPath) {
+        
+        /// debug new dialog
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "MasterKeyViewController") as? MasterKeyViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            vc.indexPath = indexPath
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+    
     @objc func triggerTextChange() {
         viewModel?.search(searchField.text ?? "")
         tableView.reloadData()
@@ -122,6 +134,15 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        // TODO: show dialog when required
+        //showMasterKeyInfo(indexPath)
+        didSelectAtIndexPath(indexPath)
+    }
+
+    func didSelectAtIndexPath(_ indexPath: IndexPath?) {
+        guard let indexPath = indexPath else { return }
+        
         AnalyticsManager.shared.selectAsset(account: AccountsRepository.shared.current)
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
         
@@ -154,5 +175,11 @@ extension AssetSelectViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
+    }
+}
+
+extension AssetSelectViewController: MasterKeyViewControllerDelegate {
+    func didContinue(_ indexPath: IndexPath?) {
+        didSelectAtIndexPath(indexPath)
     }
 }
