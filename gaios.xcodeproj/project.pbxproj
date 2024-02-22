@@ -200,9 +200,9 @@
 		345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */; };
 		345FC46829ED4D83009FCF43 /* WOTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC46629ED4D83009FCF43 /* WOTypeCell.swift */; };
 		345FC46929ED4D83009FCF43 /* WOTypeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 345FC46729ED4D83009FCF43 /* WOTypeCell.xib */; };
+		34610C592B86442E005157C8 /* MasterKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34610C582B86442E005157C8 /* MasterKeyViewController.swift */; };
 		34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */; };
 		34610C5D2B864BED005157C8 /* BleUnavailableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34610C5C2B864BED005157C8 /* BleUnavailableViewController.swift */; };
-		34610C592B86442E005157C8 /* MasterKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34610C582B86442E005157C8 /* MasterKeyViewController.swift */; };
 		3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */; };
 		346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */; };
 		346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */; };
@@ -884,9 +884,9 @@
 		345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOSelectViewController.swift; sourceTree = "<group>"; };
 		345FC46629ED4D83009FCF43 /* WOTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOTypeCell.swift; sourceTree = "<group>"; };
 		345FC46729ED4D83009FCF43 /* WOTypeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WOTypeCell.xib; sourceTree = "<group>"; };
+		34610C582B86442E005157C8 /* MasterKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeyViewController.swift; sourceTree = "<group>"; };
 		34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BleUnavailable.storyboard; sourceTree = "<group>"; };
 		34610C5C2B864BED005157C8 /* BleUnavailableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleUnavailableViewController.swift; sourceTree = "<group>"; };
-		34610C582B86442E005157C8 /* MasterKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeyViewController.swift; sourceTree = "<group>"; };
 		3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartOnBoardViewController.swift; sourceTree = "<group>"; };
 		346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExplorerOptionsViewController.swift; sourceTree = "<group>"; };
 		346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogShareTxOptionViewController.swift; sourceTree = "<group>"; };
