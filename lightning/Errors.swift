@@ -89,6 +89,8 @@ extension BreezSDK.ReceivePaymentError {
             return message
         case .ServiceConnectivity(let message):
             return message
+        case .InvoiceNoRoutingHints(let message):
+            return message
         }
     }
 }

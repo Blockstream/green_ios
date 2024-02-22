@@ -28,7 +28,7 @@ extension LnInvoice {
 }
 
 extension OpenChannelFeeResponse {
-    public var feeSatoshi: UInt64 { feeMsat.satoshi }
+    public var feeSatoshi: UInt64? { feeMsat?.satoshi }
 }
 
 extension LnUrlWithdrawRequestData {

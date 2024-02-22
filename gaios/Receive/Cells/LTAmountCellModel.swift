@@ -99,7 +99,7 @@ struct LTAmountCellModel {
         openChannelFee = fee
     }
     func buildOpenChannelFee(_ satoshi: Int64) async -> Int64? {
-        let channelFee = try? breezSdk?.openChannelFee(satoshi: Long(satoshi))?.feeMsat.satoshi
+        let channelFee = try? breezSdk?.openChannelFee(satoshi: Long(satoshi))?.feeMsat?.satoshi
         if let channelFee = channelFee {
             return Int64(channelFee)
         }

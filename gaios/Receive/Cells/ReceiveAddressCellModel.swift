@@ -48,7 +48,7 @@ struct ReceiveAddressCellModel {
     }
     
     var channelFee: String? {
-        let channelFeeSatoshi = try? breezSdk?.openChannelFee(satoshi: Long(satoshi ?? 0))?.feeMsat.satoshi
+        let channelFeeSatoshi = try? breezSdk?.openChannelFee(satoshi: Long(satoshi ?? 0))?.feeMsat?.satoshi
         if let channelFeeSatoshi = channelFeeSatoshi {
             return Balance.fromSatoshi(channelFeeSatoshi, assetId: AssetInfo.btcId)?.toText(inputDenomination)
         }
