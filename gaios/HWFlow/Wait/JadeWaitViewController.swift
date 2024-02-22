@@ -92,6 +92,24 @@ class JadeWaitViewController: HWFlowBaseViewController {
         }
     }
 
+    func showBleUnavailable() {
+        var state: BleUnavailableState = .other
+        switch CentralManager.shared.bluetoothState {
+        case .unauthorized:
+            state = .unauthorized
+        case .poweredOff:
+            state = .powerOff
+        default:
+            state = .other
+        }
+        let storyboard = UIStoryboard(name: "BleUnavailable", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "BleUnavailableViewController") as? BleUnavailableViewController {
+            vc.state = state
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @MainActor
     func startScan() {
         Task {
@@ -105,6 +123,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
                 default:
                     lblLoading.text = error.localizedDescription
                 }
+                showBleUnavailable()
             }
         }
     }
