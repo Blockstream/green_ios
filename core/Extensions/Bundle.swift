@@ -22,6 +22,14 @@ extension Bundle {
         return bundleId == "io.blockstream.greendev"
     }
 
+    public var debug: Bool {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
+    }
+
     public var appGroup: String {
         return infoDictionary?["APPGROUP"] as? String ?? ""
     }

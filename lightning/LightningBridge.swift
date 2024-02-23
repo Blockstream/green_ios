@@ -269,4 +269,12 @@ public class LightningBridge {
             throw BreezSDK.SdkError.Generic(message: "Amount is too low")
         }
     }
+
+    public func setCloseToAddress(closeToAddress: String) async throws {
+        print("Setting closeToAddress")
+        guard let breezSdk = breezSdk else {
+            throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
+        }
+        try breezSdk.configureNode(req: ConfigureNodeRequest(closeToAddress: closeToAddress))
+    }
 }

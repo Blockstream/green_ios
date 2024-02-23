@@ -577,4 +577,12 @@ public class WalletManager {
             mnemonic: try getLightningMnemonic(credentials: credentials),
             bip39Passphrase: credentials.bip39Passphrase)
     }
+
+    public func setCloseToAddress() async throws {
+        let singlesig = subaccounts.filter { $0.type == .segWit }.first ?? subaccounts.filter { $0.type == .segwitWrapped }.first
+        let address = try await singlesig?.session?.getReceiveAddress(subaccount: singlesig?.pointer ?? 0)
+        if let address = address?.address {
+            try await lightningSession?.lightBridge?.setCloseToAddress(closeToAddress: address)
+        }
+    }
 }
