@@ -114,6 +114,13 @@ public struct JadeGetCommitment: Codable {
     let vbf: Data?
 }
 
+public struct JadeGetMasterBlindingKey: Codable {
+    enum CodingKeys: String, CodingKey {
+        case onlyIfSilent = "only_if_silent"
+    }
+    let onlyIfSilent: Bool?
+}
+
 public struct JadeGetBlingingFactor: Codable {
     enum CodingKeys: String, CodingKey {
         case hashPrevouts = "hash_prevouts"

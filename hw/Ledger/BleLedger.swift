@@ -114,7 +114,7 @@ public class BleLedger: BleLedgerCommands, HWProtocol {
         fatalError()
     }
     
-    public func getMasterBlindingKey() async throws -> String {
+    public func getMasterBlindingKey(onlyIfSilent: Bool) async throws -> String {
         fatalError()
     }
     

@@ -78,8 +78,9 @@ public class BleJadeCommands: BleJadeConnection {
         return res
     }
     
-    public func getMasterBlindingKey() async throws -> String {
-        let res: JadeResponse<Data> = try await exchange(JadeRequest<JadeEmpty>(method: "get_master_blinding_key", params: nil))
+    public func getMasterBlindingKey(onlyIfSilent: Bool) async throws -> String {
+        var params = JadeGetMasterBlindingKey(onlyIfSilent: onlyIfSilent)
+        let res: JadeResponse<Data> = try await exchange(JadeRequest(method: "get_master_blinding_key", params: params))
         guard let res = res.result?.hex else { throw HWError.Abort("Invalid response") }
         return res
     }

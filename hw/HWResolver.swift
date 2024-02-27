@@ -95,8 +95,13 @@ public class HWResolver: HwResolverDelegate {
             }
             return HWResolverResult(publicKeys: keys)
         case "get_master_blinding_key":
-            let res = try? await hw.getMasterBlindingKey()
-            return HWResolverResult(masterBlindingKey: res ?? "")
+            do {
+                let res = try await hw.getMasterBlindingKey(onlyIfSilent: true)
+                return HWResolverResult(masterBlindingKey: res)
+            } catch {
+                let res = try await hw.getMasterBlindingKey(onlyIfSilent: false)
+                return HWResolverResult(masterBlindingKey: res)
+            }
         default:
             throw HWError.Abort("Invalid request")
         }

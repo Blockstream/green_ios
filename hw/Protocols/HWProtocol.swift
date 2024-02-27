@@ -22,7 +22,7 @@ public protocol HWProtocol {
 
 
     // Liquid calls
-    func getMasterBlindingKey() async throws -> String
+    func getMasterBlindingKey(onlyIfSilent: Bool) async throws -> String
     func getBlindingKey(scriptHex: String) async throws -> String
     func getSharedNonce(pubkey: String, scriptHex: String) async throws -> String
     func getBlindingFactors(params: HWBlindingFactorsParams) async throws -> HWBlindingFactorsResult
