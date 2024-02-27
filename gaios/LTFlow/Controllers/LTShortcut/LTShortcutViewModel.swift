@@ -18,17 +18,15 @@ class LTShortcutViewModel {
         
         switch action {
         case .addFromAccount, .addFromCreate:
-            return "Lightning Account Shortcut".localized
+            return "Lightning Account Shortcut Activated".localized
         case .remove:
             return "Lightning Account Shortcut Removed".localized
         }
     }
     var hint: String {
         switch action {
-        case .addFromAccount:
-            return "Quickly access your Lightning account separate from your primary wallet, to maintain security and privacy of any other account in your wallet.\n\n\nYou won’t need to enter your PIN to access your funds on lightning via this shortcut.".localized
-        case .addFromCreate:
-            return "Want to quickly access your Lightning account separate from your primary wallet, to maintain security and privacy of any other account in your wallet.\n\n\nYou won’t need to enter your PIN to access your funds on lightning via this shortcut.".localized
+        case .addFromAccount, .addFromCreate:
+            return "Quickly and directly access your Lightning Account for enhanced privacy, while keeping the bulk of your funds safe and separate while you're on the go.\n\nPlus, enjoy receiving payments seamlessly! No need to keep the app open or constantly monitor your phone.\n\nYou won’t need to enter your PIN to access your funds on lightning via this shortcut.".localized
         case .remove:
             return "You can always turn this on when you need.".localized
         }
@@ -39,7 +37,7 @@ class LTShortcutViewModel {
     var btnMain: String {
         switch action {
         case .addFromAccount, .addFromCreate:
-            return "Yes, create a shortcut".localized
+            return "Ok, I understand".localized
         case .remove:
             return "id_ok".localized
         }

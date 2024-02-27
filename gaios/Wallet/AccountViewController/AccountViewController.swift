@@ -382,6 +382,9 @@ class AccountViewController: UIViewController {
     }
 
     func handleShortcut(isOn: Bool) {
+        
+        Task { try? await viewModel.addSWDerivedLightning() }
+        
         let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {
             vc.vm = LTShortcutViewModel(account: account,
@@ -1017,14 +1020,11 @@ extension AccountViewController: LTShortcutViewControllerDelegate {
         switch action {
         case .learnMore:
             print("learnMore")
-        case .add:
-            print("Add")
-            Task { try? await viewModel.addSWDerivedLightning() }
+        case .done:
+            print("Done")
         case .remove:
             print("Remove")
-            Task { try? await viewModel.removeDerivedLightning() }
-        case .later:
-            print("later")
+            Task { await viewModel.removeDerivedLightning() }
         }
     }
 }

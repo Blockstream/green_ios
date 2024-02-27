@@ -7,9 +7,8 @@ protocol LTShortcutViewControllerDelegate: AnyObject {
 
 enum LTShortcutUserAction {
     case learnMore
-    case add
+    case done
     case remove
-    case later
 }
 
 class LTShortcutViewController: UIViewController {
@@ -22,7 +21,6 @@ class LTShortcutViewController: UIViewController {
 
     @IBOutlet weak var btnLearnMore: UIButton!
     @IBOutlet weak var btnMain: UIButton!
-    @IBOutlet weak var btnLater: UIButton!
     @IBOutlet weak var lblJadeExtraNote: UILabel!
     
     weak var delegate: LTShortcutViewControllerDelegate?
@@ -49,24 +47,17 @@ class LTShortcutViewController: UIViewController {
         lblHint.text = vm.hint
         btnLearnMore.setTitle(vm.btnMore, for: .normal)
         btnMain.setTitle(vm.btnMain, for: .normal)
-        btnLater.setTitle(vm.btnLater, for: .normal)
         lblJadeExtraNote.isHidden = true
         lblJadeExtraNote.text = "You will need to export the account from Jade at your next login.".localized
         switch vm.action {
         case .addFromAccount:
-            btnLater.isHidden = false
             DrawerAnimationManager.shared.accountId = vm.account.id
-            btnLater.setTitle(vm.btnCancel, for: .normal)
         case .addFromCreate:
             DrawerAnimationManager.shared.accountId = vm.account.id
-            btnLater.isHidden = false
-            btnLater.setTitle(vm.account.isHW ? vm.btnCancel : vm.btnLater , for: .normal)
             if vm.account.isHW {
                 lblJadeExtraNote.isHidden = false
-                btnLater.setStyle(.outlinedWhite)
             }
         case .remove:
-            btnLater.isHidden = true
             btnLearnMore.isHidden = true
         }
     }
@@ -79,8 +70,6 @@ class LTShortcutViewController: UIViewController {
         lblHint.setStyle(.txtCard)
         btnLearnMore.setStyle(.inline)
         btnMain.setStyle(.primary)
-        btnLater.setStyle(.inline)
-        btnLater.setTitleColor(.white, for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -105,9 +94,6 @@ class LTShortcutViewController: UIViewController {
         }
     }
     @IBAction func btnMain(_ sender: Any) {
-        dismiss(vm.action == .remove ? .remove : .add)
-    }
-    @IBAction func btnLater(_ sender: Any) {
-        dismiss(.later)
+        dismiss(vm.action == .remove ? .remove : .done)
     }
 }

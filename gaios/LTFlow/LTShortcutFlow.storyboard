@@ -93,22 +93,8 @@
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="otu-Zt-1z0">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="284.33333333333331" height="71.666666666666671"/>
                                                                                 <subviews>
-                                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o9K-UX-Pay" userLabel="Next">
-                                                                                        <rect key="frame" x="0.0" y="0.0" width="284.33333333333331" height="50"/>
-                                                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                                        <constraints>
-                                                                                            <constraint firstAttribute="height" constant="50" id="fze-q2-h2u"/>
-                                                                                        </constraints>
-                                                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                                                                                        <state key="normal" title="btn_later">
-                                                                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                                        </state>
-                                                                                        <connections>
-                                                                                            <action selector="btnLater:" destination="iiA-YD-kQt" eventType="touchUpInside" id="On1-zE-aiQ"/>
-                                                                                        </connections>
-                                                                                    </button>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_jade_extra_note" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P9V-22-GfC">
-                                                                                        <rect key="frame" x="0.0" y="54" width="284.33333333333331" height="17.666666666666671"/>
+                                                                                        <rect key="frame" x="0.0" y="0.0" width="284.33333333333331" height="71.666666666666671"/>
                                                                                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                                         <color key="textColor" white="1" alpha="0.60208175981873124" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <nil key="highlightedColor"/>
@@ -188,7 +174,6 @@
                     </view>
                     <connections>
                         <outlet property="bgLayer" destination="H79-TJ-p1J" id="0oX-ha-sgo"/>
-                        <outlet property="btnLater" destination="o9K-UX-Pay" id="jXT-Uf-ODX"/>
                         <outlet property="btnLearnMore" destination="VRS-h9-OUq" id="Odk-eF-14Y"/>
                         <outlet property="btnMain" destination="eG8-52-mz3" id="qSD-Jm-dnH"/>
                         <outlet property="cardView" destination="Hn0-Bc-eov" id="asl-wm-Aed"/>

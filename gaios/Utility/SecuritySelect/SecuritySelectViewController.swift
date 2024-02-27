@@ -382,13 +382,29 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         if let account = account, wallet.isLightning &&
             !account.isEphemeral && !(account.hidden ?? false) {
             
-            let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController {
-                vc.vm = LTShortcutViewModel(account: account, action: .addFromCreate)
-                vc.delegate = self
-                vc.modalPresentationStyle = .overFullScreen
-                present(vc, animated: false, completion: nil)
-                return
+            startLoader(message: "")
+            Task {
+                do {
+                    if let credentials = credentialsCreated {
+                        try await viewModel.addHWDerivedLightning(credentials)
+                    } else {
+                        try await viewModel.addSWDerivedLightning()
+                    }
+                    await MainActor.run {
+                        self.stopLoader()
+                        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
+                        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController {
+                            vc.vm = LTShortcutViewModel(account: account, action: .addFromCreate)
+                            vc.delegate = self
+                            vc.modalPresentationStyle = .overFullScreen
+                            present(vc, animated: false, completion: nil)
+                            return
+                        }
+                    }
+                } catch {
+                    self.stopLoader()
+                    self.showError(error)
+                }
             }
         }
         DropAlert().success(message: "id_new_account_created".localized)
@@ -407,28 +423,12 @@ extension SecuritySelectViewController: LTShortcutViewControllerDelegate {
                     SafeNavigationManager.shared.navigate(url)
                 }
             }
-        case .add:
-            startLoader(message: "")
-            Task {
-                do {
-                    if let credentials = credentialsCreated {
-                        try await viewModel.addHWDerivedLightning(credentials)
-                    } else {
-                        try await viewModel.addSWDerivedLightning()
-                    }
-                    await MainActor.run {
-                        self.stopLoader()
-                        self.navigationController?.popViewController(animated: true)
-                        if let wallet = walletCreated {
-                            self.delegate?.didCreatedWallet(wallet)
-                        }
-                    }
-                } catch {
-                    self.stopLoader()
-                    self.showError(error)
-                }
+        case .done:
+            self.navigationController?.popViewController(animated: true)
+            if let wallet = walletCreated {
+                self.delegate?.didCreatedWallet(wallet)
             }
-        case .remove, .later:
+        case .remove:
             self.stopLoader()
             self.navigationController?.popViewController(animated: true)
             if let wallet = walletCreated {
