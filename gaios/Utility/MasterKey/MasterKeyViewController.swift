@@ -1,10 +1,6 @@
 import Foundation
 import UIKit
 
-protocol MasterKeyViewControllerDelegate: AnyObject {
-    func didContinue(_ indexPath: IndexPath?)
-}
-
 class MasterKeyViewController: UIViewController {
 
     @IBOutlet weak var tappableBg: UIView!
@@ -15,12 +11,9 @@ class MasterKeyViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var btnLearnMore: UIButton!
     
     var indexPath: IndexPath?
-
-    weak var delegate: MasterKeyViewControllerDelegate?
     
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -77,7 +70,6 @@ class MasterKeyViewController: UIViewController {
     func setContent() {
         lblTitle.text = "Green needs the master blinding key from Jade".localized
         lblHint.text = "to show balances and transactions on Liquid accounts up to 10x faster at every login, and it's necessary to use Liquid singlesig accounts."
-        btnConfirm.setTitle("id_continue".localized, for: .normal)
         btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
     }
 
@@ -88,7 +80,6 @@ class MasterKeyViewController: UIViewController {
 
         lblTitle.setStyle(.subTitle)
         lblHint.setStyle(.txtCard)
-        btnConfirm.setStyle(.primary)
         btnLearnMore.setStyle(.inline)
     }
 
@@ -98,7 +89,6 @@ class MasterKeyViewController: UIViewController {
             self.view.alpha = 0.0
             self.view.layoutIfNeeded()
         }, completion: { _ in
-            self.delegate?.didContinue(self.indexPath)
             self.dismiss(animated: false, completion: nil)
         })
     }
@@ -113,10 +103,6 @@ class MasterKeyViewController: UIViewController {
                 break
             }
         }
-    }
-
-    @IBAction func btnConfirm(_ sender: Any) {
-        dismiss()
     }
 
     @IBAction func bltLearnMore(_ sender: Any) {

@@ -68,18 +68,18 @@ class BleViewModel {
     var peripheralID: UUID? {
         didSet { setup() }
     }
-
+    
     init(centralManager: CentralManager = CentralManager.shared) {
         self.centralManager = centralManager
     }
-
+    
     var peripheral: Peripheral? {
         if let id = peripheralID {
             return centralManager.retrievePeripherals(withIdentifiers: [id]).first
         }
         return nil
     }
-
+    
     func setup() {
         guard let peripheral = peripheral else { return }
         switch type {
@@ -93,7 +93,7 @@ class BleViewModel {
             jade = nil
         }
     }
-
+    
     func connect() async throws {
         if centralManager.bluetoothState == .poweredOff {
             throw BLEManagerError.powerOff(txt: "id_enable_bluetooth_from_system".localized)
@@ -105,7 +105,7 @@ class BleViewModel {
             try await ledger?.connect()
         }
     }
-
+    
     func isConnected() -> Bool {
         let peripherals = centralManager.retrieveConnectedPeripherals(withServices: [
             CBUUID(string: BleJadeConnection.SERVICE_UUID.uuidString),
@@ -133,13 +133,22 @@ class BleViewModel {
             _ = try await ledger?.authenticating()
         }
     }
-
+    
     func authenticating() async throws -> Bool {
         switch type {
         case .Jade:
             return try await jade?.authenticating() ?? false
         case .Ledger:
             return try await ledger?.authenticating() ?? false
+        }
+    }
+
+    func silentMasterBlindingKey() async throws -> Bool? {
+        switch type {
+        case .Jade:
+            return try await jade?.silentMasterBlindingKey()
+        case .Ledger:
+            return false
         }
     }
 

@@ -120,6 +120,10 @@ class ConnectViewController: HWFlowBaseViewController {
                     }
                 }
                 progress("id_logging_in".localized)
+                
+                
+                let silent = try await bleViewModel?.jade?.silentMasterBlindingKey()
+                
                 self.account = try await bleViewModel?.login(account: account)
                 onLogin(item)
             } catch {

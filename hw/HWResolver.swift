@@ -5,11 +5,23 @@ import Semaphore
 
 public protocol HwResolverDelegate {
     func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?, hwDevice: HWProtocol?) async throws -> HWResolverResult
+    func setInterfaceDelegate(_ interfaceDelegate: HwInterfaceResolver?)
 }
+
+public protocol HwInterfaceResolver {
+    func showMasterBlindingKeyRequest() async
+    func dismiss() async
+}
+
 
 public class HWResolver: HwResolverDelegate {
     static let semaphore = AsyncSemaphore(value: 1)
+    var interfaceDelegate: HwInterfaceResolver?
     public init() {}
+    
+    public func setInterfaceDelegate(_ interfaceDelegate: HwInterfaceResolver?) {
+        self.interfaceDelegate = interfaceDelegate
+    }
 
     public func resolveCode(
         action: String,
@@ -99,7 +111,13 @@ public class HWResolver: HwResolverDelegate {
                 let res = try await hw.getMasterBlindingKey(onlyIfSilent: true)
                 return HWResolverResult(masterBlindingKey: res)
             } catch {
+                if let interfaceDelegate = interfaceDelegate {
+                    await interfaceDelegate.showMasterBlindingKeyRequest()
+                }
                 let res = try await hw.getMasterBlindingKey(onlyIfSilent: false)
+                if let interfaceDelegate = interfaceDelegate {
+                    await interfaceDelegate.dismiss()
+                }
                 return HWResolverResult(masterBlindingKey: res)
             }
         default:

@@ -23,6 +23,7 @@ class ResolverManager {
             gdkSession: session?.session,
             popupDelegate: PopupResolver(),
             hwDelegate: HWResolver(),
+            hwInterfaceDelegate: HwPopupResolver(),
             bcurDelegate: bcurResolver,
             hwDevice: hwDevice,
             network: network,
@@ -53,6 +54,24 @@ class CodeAlertController: UIAlertController {
         super.viewDidDisappear(animated)
         if self.textFields?.first?.text?.count == 6 {
             didDisappearBlock?(self)
+        }
+    }
+}
+class HwPopupResolver: HwInterfaceResolver {
+
+    func showMasterBlindingKeyRequest() async {
+        DispatchQueue.main.async {
+            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "MasterKeyViewController") as? MasterKeyViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                UIApplication.topViewController()?.present(vc, animated: false, completion: nil)
+            }
+        }
+    }
+
+    func dismiss() async {
+        DispatchQueue.main.async {
+            UIApplication.topViewController()?.dismiss(animated: true)
         }
     }
 }

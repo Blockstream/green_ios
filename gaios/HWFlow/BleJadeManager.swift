@@ -77,7 +77,16 @@ class BleJadeManager {
             return try await bleJade.auth(network: chain)
         }
     }
-    
+
+    func silentMasterBlindingKey() async throws -> Bool {
+        do {
+            _ = try await bleJade.getMasterBlindingKey(onlyIfSilent: true)
+            return true
+        } catch {
+            return false
+        }
+    }
+
     func login(account: Account, fullRestore: Bool = false) async throws -> Account {
         let version = try await version()
         let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)

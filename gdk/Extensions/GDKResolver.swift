@@ -38,6 +38,7 @@ public class GDKResolver {
                 gdkSession: GDKSession?,
                 popupDelegate: PopupResolverDelegate? = nil,
                 hwDelegate: HwResolverDelegate? = nil,
+                hwInterfaceDelegate: HwInterfaceResolver? = nil,
                 bcurDelegate: BcurResolver? = nil,
                 hwDevice: HWProtocol? = nil,
                 network: NetworkSecurityCase,
@@ -47,6 +48,7 @@ public class GDKResolver {
         self.popupDelegate = popupDelegate
         self.bcurDelegate = bcurDelegate
         self.hwDelegate = hwDelegate
+        self.hwDelegate?.setInterfaceDelegate(hwInterfaceDelegate)
         self.network = network
         self.connected = connected
         self.hwDevice = hwDevice
@@ -90,7 +92,7 @@ public class GDKResolver {
                 let action = requiredData["action"] as? String,
                 let device = requiredData["device"] as? [String: Any],
                 let hwdevice = HWDevice.from(device) as? HWDevice {
-                let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: network.chain, hwDevice: hwDevice)
+                let res = try await hwDelegate?.resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: network.chain, hwDevice: hwDevice)
                 try self.twoFactorCall?.resolveCode(code: res.stringify())
             } else if let bcurDelegate = bcurDelegate {
                 let code = try await bcurDelegate.requestData()

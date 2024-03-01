@@ -125,7 +125,7 @@ class AlertCardCell: UITableViewCell {
                 case TwoFactorCallError.failure(let txt), TwoFactorCallError.cancel(let txt):
                     return txt
                 default:
-                    return error.localizedDescription
+                    return error.description()?.localized ?? error.localizedDescription
                 }
             }()
             

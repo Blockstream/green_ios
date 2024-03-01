@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - UI improvement in onboarding
 - HW: moved remember device from onboarding to settings
 - Make Lightning Shortcut opt-out
+- Improve UI on Jade exporting liquid master blinding key
 
 ## [4.0.24] - 2024-02-07
 
