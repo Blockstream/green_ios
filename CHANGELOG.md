@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Import and export of liquid accounts with ct-descriptors
+- Allow changing btc unit in watch-only wallets
+
 ### Fixed
 - Fix About and Close Channel buttons
 - 2FA reset flow: UI improvement

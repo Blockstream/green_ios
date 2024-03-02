@@ -158,11 +158,8 @@ class UserSettingsViewModel {
             .Recovery: getRecovery(),
             .About: getAbout()]
 
-        if isDerivedLightning {
+        if isDerivedLightning || isWatchonly {
             sections = [ .Logout, .General, .About ]
-            items = [ .Logout: getLogout(), .General: getGeneral(), .About: getAbout()]
-        } else if isWatchonly {
-            sections = [ .Logout, .About ]
             items = [ .Logout: getLogout(), .About: getAbout()]
         }
         cellModels = items.mapValues { $0.map { UserSettingsCellModel($0) } }

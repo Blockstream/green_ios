@@ -562,7 +562,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell {
                 cell.configure(model: viewModel.balanceCellModel,
                                hideBalance: hideBalance,
-                               hideBtnExchange: viewModel.watchOnly == true,
+                               hideBtnExchange: false,
                                onHide: {[weak self] value in
                     self?.hideBalance = value
 
