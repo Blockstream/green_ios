@@ -26,33 +26,43 @@ class WatchOnlySettingsViewModel {
     }
 
     func load() async {
+        // Multisig watchonly with username / password
         self.multisigCellModels = []
-        let bitcoinSession = wm.sessions
-            .filter { ["mainnet", "testnet"].contains($0.key) }
-            .first?.value
-        let liquidSession = wm.sessions
-            .filter { ["liquid", "testnet-liquid"].contains($0.key) }
-            .first?.value
-        if let session = bitcoinSession, session.logged {
-            if let model = try? await self.loadWOSession(session) {
+        for session in wm.activeMultisigSessions {
+            if let model = try? await self.loadWOMultisig(session) {
                 multisigCellModels += [model]
             }
         }
-        if let session = liquidSession, session.logged {
-            if let model = try? await self.loadWOSession(session) {
-                multisigCellModels += [model]
-            }
-        }
+        // Singlesig watchonly with extended pub keys
         let cellHeaderPubKeys = WatchOnlySettingsCellModel(
             title: "id_extended_public_keys".localized,
             subtitle: "id_tip_you_can_use_the".localized,
             network: nil)
-        singlesigCellModels = [cellHeaderPubKeys]
-        let models = try? await self.loadWOExtendedPubKeys()
-        singlesigCellModels += models ?? []
+        self.singlesigCellModels = [cellHeaderPubKeys]
+        for session in wm.activeSinglesigSessions {
+            if let models = try? await self.loadWOSinglesigExtendedPubKeys(session) {
+                singlesigCellModels += models
+            }
+        }
+        
+        // Singlesig watchonly with core output descriptors
+        let cellHeaderCoreDesc = WatchOnlySettingsCellModel(
+            title: "id_output_descriptors".localized,
+            subtitle: "",
+            network: nil)
+        self.singlesigCellModels += [cellHeaderCoreDesc]
+        for session in wm.activeSinglesigSessions {
+            if let models = try? await self.loadWOSinglesigCoreDescriptors(session) {
+                singlesigCellModels += models
+            }
+        }
     }
 
-    func loadWOSession(_ session: SessionManager) async throws -> WatchOnlySettingsCellModel {
+    func loadWOMultisig(_ session: SessionManager) async throws -> WatchOnlySettingsCellModel? {
+        let subaccounts = try? await session.subaccounts().filter { !$0.hidden }
+        if subaccounts?.isEmpty ?? true {
+            return nil
+        }
         let username = try await session.getWatchOnlyUsername()
         guard let username = username else { throw GaError.GenericError()}
         return WatchOnlySettingsCellModel(
@@ -61,16 +71,20 @@ class WatchOnlySettingsViewModel {
             network: session.gdkNetwork.network)
     }
 
-    func loadWOExtendedPubKeys() async throws -> [WatchOnlySettingsCellModel] {
+    func readSubaccounts(_ session: SessionManager) async throws -> [WalletItem] {
+        let allSubaccounts = try? await session.subaccounts().filter { !$0.hidden }
         var subaccounts = [WalletItem]()
-        for subaccount in WalletManager.current?.subaccounts ?? [] {
-            let session = subaccount.session
-            if let account = try? await session?.subaccount(subaccount.pointer) {
+        for subaccount in allSubaccounts ?? [] {
+            if let account = try? await session.subaccount(subaccount.pointer) {
                 subaccounts += [account]
             }
         }
         return subaccounts
-            .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid && !$0.hidden }
+    }
+
+    func loadWOSinglesigExtendedPubKeys(_ session: SessionManager) async throws -> [WatchOnlySettingsCellModel] {
+        return try await readSubaccounts(session)
+            .filter { $0.extendedPubkey != nil }
             .compactMap {
                 WatchOnlySettingsCellModel(
                     title: $0.localizedName,
@@ -80,8 +94,8 @@ class WatchOnlySettingsViewModel {
             }
     }
 
-    func loadWOOutputDescriptors() -> [WatchOnlySettingsCellModel] {
-        return WalletManager.current!.subaccounts
+    func loadWOSinglesigCoreDescriptors(_ session: SessionManager) async throws -> [WatchOnlySettingsCellModel] {
+        return try await readSubaccounts(session)
             .filter { $0.coreDescriptors != nil }
             .compactMap {
                 WatchOnlySettingsCellModel(

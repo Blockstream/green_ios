@@ -26,11 +26,9 @@ class WOSetupViewController: KeyboardViewController {
     
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
-    private var networks = [NetworkSecurityCase]()
     private let viewModel = WOViewModel()
-    private var network: AvailableNetworks?
     private var isRem: Bool = false
-    var watchOnlySecurityOption: SecurityOption = .multi
+    var network: NetworkSecurityCase!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -142,7 +140,7 @@ class WOSetupViewController: KeyboardViewController {
     }
 
     @objc func click(_ sender: Any) {
-        selectNetwork()
+        login(for: network)
     }
 
 
@@ -158,9 +156,9 @@ class WOSetupViewController: KeyboardViewController {
         }
     }
 
-    func login(for network: GdkNetwork) {
+    func login(for network: NetworkSecurityCase) {
         let account = viewModel.newAccountMultisig(
-            for: network,
+            for: network.gdkNetwork,
             username: self.usernameTextField.text ?? "",
             password: isRem ? self.passwordTextField.text ?? "" : "",
             remember: isRem)
@@ -199,30 +197,5 @@ class WOSetupViewController: KeyboardViewController {
         DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
         AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: account)
-    }
-}
-
-extension WOSetupViewController: DialogListViewControllerDelegate {
-    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-
-    func selectNetwork() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            let testnet = OnBoardManager.shared.chainType == .testnet
-            networks = testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS]
-            let cells = networks.map { DialogListCellModel(type: .list,
-                                                           icon: nil,
-                                                           title: $0.name()) }
-            vc.viewModel = DialogListViewModel(title: "Select Network", type: .watchOnlyPrefs, items: cells)
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func didSelectIndex(_ index: Int, with type: DialogType) {
-        if let network = NetworkSecurityCase(rawValue: networks[index].rawValue) {
-            login(for: network.gdkNetwork)
-        }
     }
 }

@@ -1,4 +1,5 @@
 import UIKit
+import gdk
 
 class WOSelectViewController: UIViewController {
 
@@ -7,6 +8,8 @@ class WOSelectViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
 
     let viewModel = WOViewModel()
+    var networks = [NetworkSecurityCase]()
+    var selectSS = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,18 +73,59 @@ extension WOSelectViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let hwFlow = UIStoryboard(name: "WOFlow", bundle: nil)
         switch indexPath.row {
         case 0: // SS
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "WODetailsViewController") as? WODetailsViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            selectNetwork(singlesig: true)
         case 1: // MS
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "WOSetupViewController") as? WOSetupViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            selectNetwork(singlesig: false)
         default:
             break
         }
+    }
+
+    func login(for network: NetworkSecurityCase) {
+        let hwFlow = UIStoryboard(name: "WOFlow", bundle: nil)
+        if network.singlesig {
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "WODetailsViewController") as? WODetailsViewController {
+                vc.network = network
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        } else {
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "WOSetupViewController") as? WOSetupViewController {
+                vc.network = network
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+}
+
+extension WOSelectViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+
+    func getNetworks(singlesig: Bool, testnet: Bool) -> [NetworkSecurityCase] {
+        if testnet {
+            return singlesig ? [.testnetSS, .testnetLiquidSS] : [.testnetMS, .testnetLiquidMS]
+        } else {
+            return singlesig ? [ .bitcoinSS, .liquidSS] : [.bitcoinMS, .liquidMS]
+        }
+    }
+
+    func selectNetwork(singlesig: Bool) {
+        let testnet = OnBoardManager.shared.chainType == .testnet
+        networks = getNetworks(singlesig: singlesig, testnet: testnet)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            let cells = networks.map { DialogListCellModel(type: .list,
+                                                           icon: nil,
+                                                           title: $0.name()) }
+            vc.viewModel = DialogListViewModel(title: "Select Network", type: .watchOnlyPrefs, items: cells)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        login(for: networks[index])
     }
 }

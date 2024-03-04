@@ -333,9 +333,29 @@ class WalletManager {
         }
         try? await self.loadRegistry()
     }
-    
+
+    var bitcoinSinglesigNetwork: NetworkSecurityCase { mainnet ? .bitcoinSS : .testnetSS }
+    var liquidSinglesigNetwork: NetworkSecurityCase { mainnet ? .liquidSS : .testnetLiquidSS }
+    var singlesigNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [liquidSinglesigNetwork] }
     var bitcoinMultisigNetwork: NetworkSecurityCase { mainnet ? .bitcoinMS : .testnetMS }
     var liquidMultisigNetwork: NetworkSecurityCase { mainnet ? .liquidMS : .testnetLiquidMS }
+    var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
+    
+    var activeSinglesigSessions: [SessionManager] {
+        singlesigNetworks.compactMap { sessions[$0.rawValue] }
+            .filter { $0.logged }
+    }
+    var activeMultisigSessions: [SessionManager] {
+        multisigNetworks.compactMap { sessions[$0.rawValue] }
+            .filter { $0.logged }
+    }
+    var activeSinglesigNetworks: [NetworkSecurityCase] {
+        activeSinglesigSessions.map { $0.networkType }
+    }
+    var activeMultisigNetworks: [NetworkSecurityCase] {
+        activeSinglesigSessions.map { $0.networkType }
+    }
+
     var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
     var activeLiquidMultisig: Bool { sessions[liquidMultisigNetwork.rawValue]?.logged ?? false }
 

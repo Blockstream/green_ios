@@ -23,6 +23,7 @@ class WODetailsViewController: KeyboardViewController {
 
     private let viewModel = WOViewModel()
     private var isBio: Bool = false
+    var network: NetworkSecurityCase!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +53,10 @@ class WODetailsViewController: KeyboardViewController {
         lblError.text = "This is not a valid descriptor"
         btnFile.setTitle("id_import_from_file".localized, for: .normal)
         lblBio.text = NSLocalizedString("id_login_with_biometrics", comment: "")
+        if network.liquid {
+            segment.selectedSegmentIndex = 1
+            segment.setEnabled(false, forSegmentAt: 0)
+        }
     }
 
     func setStyle() {
@@ -132,14 +137,15 @@ class WODetailsViewController: KeyboardViewController {
     }
 
     @IBAction func btnImport(_ sender: Any) {
-        let testnet = OnBoardManager.shared.chainType == .testnet
-        let network: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        login(for: network.gdkNetwork)
+        login(for: network)
     }
 
-    func login(for network: GdkNetwork) {
-        let account = viewModel.newAccountSinglesig(for: network)
-        let keys = textView.text.split(separator:  ",").map { $0.trimmingCharacters(in: CharacterSet(charactersIn: " ")) }
+    func login(for network: NetworkSecurityCase) {
+        let account = viewModel.newAccountSinglesig(for: network.gdkNetwork)
+        let isXpubs = segment.selectedSegmentIndex == 0
+        let keys = textView.text
+            .split(whereSeparator: { $0 == "\n" || ($0 == ","  && isXpubs) })
+            .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: " ")) }
         dismissKeyboard()
         self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         let credentials = self.segment.selectedSegmentIndex == 0 ? Credentials(slip132ExtendedPubkeys: keys) : Credentials(coreDescriptors: keys)
