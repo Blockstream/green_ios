@@ -46,7 +46,7 @@ class BleUnavailableViewController: UIViewController {
     }
 
     func setContent() {
-        lblHint.text = "id_enable_bluetooth_from_system".localized
+        lblHint.text = "id_green_uses_bluetooth_for".localized
         btnCancel.setTitle("Cancel", for: .normal)
         switch state {
         case .powerOff:
