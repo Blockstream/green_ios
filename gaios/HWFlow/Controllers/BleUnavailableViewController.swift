@@ -2,6 +2,12 @@ import Foundation
 import UIKit
 
 protocol BleUnavailableViewControllerDelegate: AnyObject {
+    func onAction(_ action: BleUnavailableAction)
+}
+
+enum BleUnavailableAction {
+    case settings
+    case cancel
 }
 
 enum BleUnavailableState {
@@ -40,21 +46,17 @@ class BleUnavailableViewController: UIViewController {
     }
 
     func setContent() {
+        lblHint.text = "id_enable_bluetooth_from_system".localized
+        btnCancel.setTitle("Cancel", for: .normal)
         switch state {
         case .powerOff:
             lblTitle.text = "Enable Bluetooth".localized
-            lblHint.text = "Text adding details of the current page".localized
-            btnCancel.setTitle("Cancel", for: .normal)
             btnSettings.setTitle("iOS Settings", for: .normal)
         case .unauthorized:
             lblTitle.text = "Grant Green Bluetooth permission".localized
-            lblHint.text = "Text adding details of the current page".localized
-            btnCancel.setTitle("Cancel".localized, for: .normal)
             btnSettings.setTitle("Open Permissions".localized, for: .normal)
         case .other:
             lblTitle.text = "Enable Bluetooth from iOS settings to continue".localized
-            lblHint.text = "Text adding details of the current page".localized
-            btnCancel.setTitle("Cancel".localized, for: .normal)
             btnSettings.isHidden = true
         }
     }
@@ -71,18 +73,18 @@ class BleUnavailableViewController: UIViewController {
         super.viewWillAppear(animated)
     }
 
-    func dismiss() {
+    func dismiss(_ action: BleUnavailableAction) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
             self.dismiss(animated: false, completion: {
-//                self.delegate?.onDone()
+                self.delegate?.onAction(action)
             })
         })
     }
 
     @IBAction func btnCancel(_ sender: Any) {
-        dismiss()
+        dismiss(.cancel)
     }
     
     @IBAction func btnSettings(_ sender: Any) {
@@ -97,6 +99,6 @@ class BleUnavailableViewController: UIViewController {
                 UIApplication.shared.open(url)
             }
         }
-        dismiss()
+        dismiss(.settings)
     }
 }
