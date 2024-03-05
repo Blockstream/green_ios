@@ -24,9 +24,17 @@ class LTShortcutViewModel {
         }
     }
     var hint: String {
+
+        let l1 = "With this shortcut you'll enjoy:".localized
+        let l2 = "Direct access to the Lightning account, keep the rest of your funds safe and separate while on the go".localized
+        let l3 = "Quick biometrics login".localized
+        let l4 = "Seamless lightning payments receiving, no need to keep your app open".localized
+        let pad = "\n\n• "
+        let hint = l1 + pad + l2 + pad + l3 + pad + l4
+
         switch action {
         case .addFromAccount, .addFromCreate:
-            return "Quickly and directly access your Lightning Account for enhanced privacy, while keeping the bulk of your funds safe and separate while you're on the go.\n\nPlus, enjoy receiving payments seamlessly! No need to keep the app open or constantly monitor your phone.\n\nYou won’t need to enter your PIN to access your funds on lightning via this shortcut.".localized
+            return hint
         case .remove:
             return "You can always turn this on when you need.".localized
         }
