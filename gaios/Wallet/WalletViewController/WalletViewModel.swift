@@ -255,4 +255,40 @@ class WalletViewModel {
                                                                                      accounts: accounts,
                                                                                      accountsTypes: accountsTypes))
     }
+    
+    
+    func needShortcut() -> Bool {
+        
+        guard wm?.lightningSubaccount != nil else {
+            return false
+        }
+        if wm?.existDerivedLightning() == true {
+            return false
+        }
+        if wm?.account.isHW == true {
+            return false
+        }
+        if AccountsRepository.shared.current?.gdkNetwork.mainnet == false {
+            return false
+        }
+        if AccountsRepository.shared.current?.isWatchonly == true {
+            return false
+        }
+        return true
+    }
+
+    func addSWDerivedLightning() async throws {
+        
+        guard wm?.lightningSubaccount != nil else {
+            return
+        }
+        
+        guard let mainCredentials = try await wm?.prominentSession?.getCredentials(password: "") else {
+            return
+        }
+        guard let credentials = try? wm?.deriveLightningCredentials(from: mainCredentials) else {
+            return
+        }
+        try await wm?.addDerivedLightning(credentials: credentials)
+    }
 }

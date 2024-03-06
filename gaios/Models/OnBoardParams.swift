@@ -14,6 +14,7 @@ struct OnBoardParams: Codable {
     var mnemonicSize = Constants.mnemonicSizeDefault
     var accountId: String?
     var xpubHashId: String?
+    var restoreSuccess: Bool?
 
     static var shared = OnBoardParams()
 

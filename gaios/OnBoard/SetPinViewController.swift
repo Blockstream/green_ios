@@ -219,6 +219,7 @@ class SetPinViewController: UIViewController {
             do {
                 try await self.viewModel.restore(pin: pin)
                 AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
+                OnBoardParams.shared.restoreSuccess = true
             } catch {
                 self.failure(error)
             }
