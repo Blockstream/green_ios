@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - HW: moved remember device from onboarding to settings
 - Make Lightning Shortcut opt-out
 - Improve UI on Jade exporting liquid master blinding key
+- Update gdk to 0.70.3
 
 ## [4.0.24] - 2024-02-07
 
