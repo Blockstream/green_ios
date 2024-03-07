@@ -22,6 +22,7 @@ extension AnalyticsManager {
     static let strAddressInput = "address_input"
     static let strSendAll = "send_all"
     static let strWithMemo = "with_memo"
+    static let strNodeId = "node_id"
 
     static let strWalletFunded = "wallet_funded"
     static let strAccounts = "accounts"

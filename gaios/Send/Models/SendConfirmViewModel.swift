@@ -74,7 +74,9 @@ class SendConfirmViewModel {
                 walletItem: account,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo,
-                prettyError: error.description())
+                prettyError: error.description() ?? "",
+                nodeId: wm?.lightningSession?.nodeState?.id
+            )
             throw error
         }
     }
