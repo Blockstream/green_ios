@@ -31,6 +31,30 @@ Build unsigned debug
 
 Build dev release
 
+### ios build_unsigned_dev_release
+
+```sh
+[bundle exec] fastlane ios build_unsigned_dev_release
+```
+
+Build unsigned dev release
+
+### ios sign_dev_release
+
+```sh
+[bundle exec] fastlane ios sign_dev_release
+```
+
+Sign dev release
+
+### ios build_prod_release
+
+```sh
+[bundle exec] fastlane ios build_prod_release
+```
+
+Build prod release
+
 ### ios build_signed_prod_release
 
 ```sh

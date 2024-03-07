@@ -18,17 +18,17 @@ platform :ios do
       include_bitcode: false,
       skip_archive: true,
       skip_package_ipa: true,
-      skip_codesigning: true
+      skip_codesigning: true,
+      disable_package_automatic_updates: true
     )
   end
 
-  desc "Build dev release"
-  lane :build_dev_release do
+  desc "Build unsigned dev release"
+  lane :build_unsigned_dev_release do
     build_ios_app(
       configuration: "Staging",
       scheme: "gaios",
       project: "gaios.xcodeproj",
-      #silent: true,
       clean: true,
       output_directory: "./dev",
       output_name: "Green-dev.ipa",
@@ -37,17 +37,18 @@ platform :ios do
       build_path: "./dev",
       archive_path: "./dev/Green.xcarchive",
       export_method: "ad-hoc",
-      xcargs: "-allowProvisioningUpdates"
+      disable_package_automatic_updates: true,
+      skip_codesigning: true,
+      skip_package_ipa: true,
     )
   end
 
-  desc "Build prod release"
-  lane :build_prod_release do
+  desc "Build unsigned prod release"
+  lane :build_unsigned_prod_release do
     build_ios_app(
       configuration: "Release",
       scheme: "gaios",
       project: "gaios.xcodeproj",
-      #silent: true,
       clean: true,
       output_directory: "./prod",
       output_name: "Green.ipa",
@@ -55,35 +56,61 @@ platform :ios do
       include_bitcode: false,
       build_path: "./prod",
       archive_path: "./prod/Green.xcarchive",
-      #export_options: "./ExportOptions.plist",
-      export_method: "ad-hoc",
-      xcargs: "-allowProvisioningUpdates"
+      export_options: "./ExportOptions.plist",
+      disable_package_automatic_updates: true,
+      skip_codesigning: true,
+      skip_package_ipa: true,
     )
   end
 
-  desc "Build signed prod release"
-  lane :build_signed_prod_release do
+  desc "Sign dev release"
+  lane :sign_dev_release do
+    build_ios_app(
+      configuration: "Staging",
+      scheme: "gaios",
+      project: "gaios.xcodeproj",
+      clean: true,
+      output_directory: "./dev",
+      output_name: "Green-dev.ipa",
+      build_path: "./dev",
+      archive_path: "./dev/Green.xcarchive",
+      export_method: "ad-hoc",
+      export_team_id: "D9W37S9468",
+      xcargs: "-allowProvisioningUpdates",
+      disable_package_automatic_updates: true,
+      skip_build_archive: true
+    )
+  end
+
+  desc "Sign prod release"
+  lane :sign_prod_release do
     build_ios_app(
       configuration: "Release",
       scheme: "gaios",
       project: "gaios.xcodeproj",
-      #silent: true,
       clean: true,
-      output_directory: "./release",
+      output_directory: "./prod",
       output_name: "Green.ipa",
-      include_symbols: true,
-      include_bitcode: false,
-      build_path: "./release",
-      archive_path: "./release/Green.xcarchive",
+      build_path: "./prod",
+      archive_path: "./prod/Green.xcarchive",
+      export_team_id: "D9W37S9468",
       export_options: "./ExportOptions.plist",
-      xcargs: "-allowProvisioningUpdates"
+      xcargs: "-allowProvisioningUpdates",
+      disable_package_automatic_updates: true,
+      skip_build_archive: true
     )
+  end
+
+  desc "Upload apple store"
+  lane :upload_apple_store do
     upload_to_testflight(
       apple_id: '1402243590',
       itc_provider: 'D9W37S9468',
+      ipa: "prod/Green.ipa",
       skip_waiting_for_build_processing: true
     )
   end
+  
 
   desc "Run UI tests"
   lane :ui_tests do

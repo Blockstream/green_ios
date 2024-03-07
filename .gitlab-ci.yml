@@ -1,9 +1,13 @@
 stages:
     - format
     - build
-    - test
+    - sign
     - deploy
+    - gcloud
+    - test
     - store
+
+# FORMAT
 
 test_format:
   stage: format
@@ -11,28 +15,26 @@ test_format:
     - fastosx
     - osx
   script:
-    - ./tools/fetch_gdk_binaries.sh
     - fastlane run swiftlint
+
+# BUILD
 
 build_unsigned_debug:
   stage: build
   when: manual
   tags:
-    - fastosx
-    - osx
+    - mini
   variables:
     GDK_COMMIT: latest
   script:
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
-    - ./tools/setup_xcconfig.sh
     - fastlane build_unsigned_debug
 
 build_dev_release:
   stage: build
   tags:
-    - fastosx
-    - osx
+    - mini
   artifacts:
     name: "green-ios-dev-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -41,31 +43,16 @@ build_dev_release:
       - dev
   variables:
     GDK_COMMIT: latest
-    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
-    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
-    GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
-    GREENLIGHT_DEVICE_CERT: $GREENLIGHT_DEVICE_CERT
-    BREEZ_API_KEY: $BREEZ_API_KEY
   script:
-    - echo $COUNTLY_APP_KEY
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
-    - ./tools/setup_xcconfig.sh
-    - fastlane build_dev_release
-    - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
-    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
-    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
-    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev
-    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev/index.html"
-    - echo $LINK
-    - echo $LINK | qrencode -t UTF8
+    - fastlane build_unsigned_dev_release
 
 build_prod_release:
   stage: build
   when: manual
   tags:
-    - fastosx
-    - osx
+    - mini
   artifacts:
     name: "green-ios-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -74,53 +61,107 @@ build_prod_release:
       - prod
   variables:
     GDK_COMMIT: latest
-    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
-    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
-    GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
-    GREENLIGHT_DEVICE_CERT: $GREENLIGHT_DEVICE_CERT
-    BREEZ_API_KEY: $BREEZ_API_KEY
   script:
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
-    - ./tools/setup_xcconfig.sh
-    - echo "Dev"
-    - cat configs/DevSettings.xcconfig
-    - echo "Prod"
-    - cat configs/ProdSettings.xcconfig
-    - fastlane build_prod_release
-    - mkdir tmp && unzip ./prod/Green.app.dSYM.zip -d tmp
-    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
-    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
-    - ./tools/distribute.sh --app prod/Green.ipa --dest prod --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod
-    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod/index.html"
-    - echo $LINK
-    - echo $LINK | qrencode -t UTF8
+    - fastlane build_unsigned_prod_release
+  
+# SIGN
 
-build_signed_prod_release:
-  stage: store
-  when: manual
+sign_dev_release:
+  stage: sign
+  needs: ["build_dev_release"]
   tags:
-    - fastosx
-    - osx
+    - osxsigner
+  artifacts:
+    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - dev
+  script:
+    - fastlane sign_dev_release
+
+sign_prod_release:
+  stage: sign
+  needs: ["build_prod_release"]
+  tags:
+    - osxsigner
   artifacts:
     name: "green-ios-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
     when: on_success
     paths:
-      - release
+      - prod
+  script:
+    - fastlane sign_prod_release
+
+# DEPLOY
+
+deploy_dev_release:
+  stage: deploy
+  needs: ["sign_dev_release"]
+  tags:
+    - osxsigner
+  artifacts:
+    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - dev
+  variables:
+    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
+    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+  script:
+    - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
+    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
+    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
+    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
+    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url $LINK
+    - echo "$LINK/index.html"
+    - echo "$LINK/index.html" | qrencode -t UTF8
+
+deploy_prod_release:
+  stage: deploy
+  needs: ["sign_prod_release"]
+  tags:
+    - osxsigner
+  artifacts:
+    name: "green-ios-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - prod
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
-    GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
-    GREENLIGHT_DEVICE_CERT: $GREENLIGHT_DEVICE_CERT
-    BREEZ_API_KEY: $BREEZ_API_KEY
   script:
-    - ./tools/fetch_gdk_binaries.sh
-    - ./tools/setup_xcconfig.sh
-    - fastlane build_signed_prod_release
-    - mkdir tmp && unzip ./release/Green.app.dSYM.zip -d tmp
+    - mkdir tmp && unzip ./prod/Green.app.dSYM.zip -d tmp
     - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
     - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
+    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
+    - ./tools/distribute.sh --app prod/Green.ipa --dest prod --url $LINK
+    - echo "$LINK/index.html"
+    - echo "$LINK/index.html" | qrencode -t UTF8
+
+# STORE
+
+upload_apple_store:
+  when: manual
+  stage: store
+  needs: ["deploy_prod_release"]
+  tags:
+    - osxsigner
+  artifacts:
+    name: "green-ios-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - prod
+  script:
+    - fastlane upload_apple_store
+
+# TESTS
 
 ui_tests:
   stage: test
@@ -136,17 +177,18 @@ ui_tests:
     - export LC_ALL=en_US.UTF-8
     - export LANG=en_US.UTF-8
     - ./tools/fetch_gdk_binaries.sh --simulator
-    - ./tools/setup_xcconfig.sh
     - fastlane ui_tests
   after_script:
     - xcrun simctl shutdown "iPhone 11"
 
+# GCLOUD
+
 cp_gcloud_dev:
   image: blockstream/gcloud-docker-tf:1.1.7
-  needs: ["build_dev_release"]
+  needs: ["sign_dev_release"]
   tags:
     - ga
-  stage: deploy
+  stage: gcloud
   script:
     - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev
     - TMPF=$(mktemp) || exit 1
@@ -161,7 +203,7 @@ cp_gcloud_prod:
   needs: ["build_prod_release"]
   tags:
     - ga
-  stage: deploy
+  stage: gcloud
   script:
     - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod
     - TMPF=$(mktemp) || exit 1
