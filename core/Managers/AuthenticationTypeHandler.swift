@@ -2,6 +2,7 @@ import Foundation
 import LocalAuthentication
 import Security
 import gdk
+import core
 import lightning
 
 public class AuthenticationTypeHandler {
@@ -82,11 +83,11 @@ public class AuthenticationTypeHandler {
             if #available(iOS 11.3, *) {
                 let err = SecCopyErrorMessageString(status, nil)
 #if DEBUG
-                NSLog("Operation failed: \(String(describing: err))")
+                logger.info("Operation failed: \(String(describing: err))")
 #endif
             } else {
 #if DEBUG
-                NSLog("Operation failed: \(status). Check the error message through https://osstatus.com.")
+                logger.info("Operation failed: \(status). Check the error message through https://osstatus.com.")
 #endif
             }
         }
@@ -97,7 +98,7 @@ public class AuthenticationTypeHandler {
         let err = CFErrorCopyDescription(error)
         let errorString = String(describing: err!)
 #if DEBUG
-        NSLog("Operation failed: \(errorString)")
+        logger.info("Operation failed: \(errorString)")
 #endif
         return errorString
     }

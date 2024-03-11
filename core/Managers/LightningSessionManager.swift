@@ -1,9 +1,11 @@
 import Foundation
 import BreezSDK
+import OSLog
 import gdk
 import greenaddress
 import lightning
 import hw
+import core
 
 public class LightningSessionManager: SessionManager {
 
@@ -16,6 +18,11 @@ public class LightningSessionManager: SessionManager {
     
     public var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
     public var workingDir: URL? { lightBridge?.workingDir }
+
+    public var logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier!,
+        category: "Lightning"
+    )
 
     public override func connect() async throws {
         paused = false
@@ -52,7 +59,8 @@ public class LightningSessionManager: SessionManager {
         }
         return LightningBridge(testnet: !gdkNetwork.mainnet,
                                workingDir: workingDir(walletHashId: walletIdentifier.walletHashId),
-                               eventListener: eventListener)
+                               eventListener: eventListener, 
+                               logStreamListener: self)
     }
 
     private func connectToGreenlight(credentials: Credentials, checkCredentials: Bool = false) async throws {
@@ -90,8 +98,8 @@ public class LightningSessionManager: SessionManager {
 
     public func registerNotification(token: String, xpubHashId: String) {
         if let notificationService = Bundle.main.notificationService {
-            logger.info("register notification token \(notificationService, privacy: .public)/api/v1/notify?platform=ios&token=\(token)&app_data=\(xpubHashId)")
-            try? lightBridge?.breezSdk?.registerWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=ios&token=\(token)&app_data=\(xpubHashId)")
+            logger.info("register notification token \(token, privacy: .public) with xpubHashId \(xpubHashId, privacy: .public) at \(notificationService, privacy: .public)")
+            try? lightBridge?.breezSdk?.registerWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=\("ios")&token=\(token)&app_data=\(xpubHashId)")
         }
     }
 
@@ -319,37 +327,48 @@ extension LightningSessionManager: EventListener {
         print ("Breez onEvent: \(e)")
         switch e {
         case .synced:
-            NSLog("onLightningEvent synced")
+            logger.info("onLightningEvent synced")
             DispatchQueue.main.async {
                 self.post(event: .InvoicePaid)
             }
         case .newBlock(let block):
-            NSLog("onLightningEvent newBlock")
+            logger.info("onLightningEvent newBlock")
             blockHeight = block
             DispatchQueue.main.async {
                 self.post(event: .Block)
             }
         case .invoicePaid(let data):
-            NSLog("onLightningEvent invoicePaid")
+            logger.info("onLightningEvent invoicePaid")
             DispatchQueue.main.async {
                 self.post(event: .InvoicePaid, object: data)
                //DropAlert().success(message: "Invoice Paid".localized)
             }
         case .paymentSucceed(let details):
-            NSLog("onLightningEvent paymentSucceed")
+            logger.info("onLightningEvent paymentSucceed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentSucceed)
                 //DropAlert().success(message: "Payment Successful \(details.amountSatoshi) sats".localized)
             }
         case .paymentFailed(_):
-            NSLog("onLightningEvent paymentFailed")
+            logger.info("onLightningEvent paymentFailed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentFailed)
                 //DropAlert().error(message: "Payment Failure".localized)
             }
         default:
-            NSLog("onLightningEvent others")
+            logger.info("onLightningEvent others")
             break
         }
-    }    
+    }
+}
+
+extension LightningSessionManager: LogStream {
+    public func log(l: LogEntry){
+        switch l.level {
+        case "info": logger.info("\(l.line, privacy: .public)")
+        case "error": logger.error("\(l.line, privacy: .public)")
+        case "warning": logger.info("\(l.line, privacy: .public)")
+        default: logger.info("\(l.line, privacy: .public)")
+        }
+    }
 }

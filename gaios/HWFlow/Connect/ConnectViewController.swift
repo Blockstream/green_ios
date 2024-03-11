@@ -4,6 +4,7 @@ import AsyncBluetooth
 import Combine
 import gdk
 import hw
+import core
 
 enum PairingState: Int {
     case unknown
@@ -332,7 +333,7 @@ class ConnectViewController: HWFlowBaseViewController {
         let txt = bleViewModel?.toBleError(err, network: nil).localizedDescription
         lblTitle.text = txt?.localized ?? ""
         image.image = UIImage(named: "il_connection_fail")
-        NSLog("error: \(txt ?? "")")
+        logger.info("error: \(txt ?? "")")
     }
 }
 

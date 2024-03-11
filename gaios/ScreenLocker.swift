@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import core
 
 class ScreenLocker {
 
@@ -150,7 +151,7 @@ class ScreenLocker {
     }
 
     func resumeNetworks() async {
-        NSLog("ScreenLocker resumeNetworks")
+        logger.info("ScreenLocker resumeNetworks")
         guard let countdownInterval = self.countdownInterval else {
             // We became inactive, but never started a countdown.
             return
@@ -169,7 +170,7 @@ class ScreenLocker {
     }
 
     func pauseNetworks() async {
-        NSLog("ScreenLocker pauseNetworks")
+        logger.info("ScreenLocker pauseNetworks")
         for wm in WalletsRepository.shared.wallets.values {
             if wm.logged {
                 await wm.pause()

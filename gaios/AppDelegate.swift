@@ -51,7 +51,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Initialize gdk
         GdkInit.defaults().run()
-        LightningBridge.configure()
 
         // Checking for migrations
         MigratorManager.shared.migrate()

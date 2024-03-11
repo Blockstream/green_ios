@@ -1,6 +1,7 @@
 import AVFoundation
 import UIKit
 import gdk
+import core
 
 protocol QRCodeReaderDelegate: AnyObject {
     func onQRCodeReadSuccess(result: ScanResult)
@@ -220,7 +221,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             }
             previous = stringValue
             buffer.append(stringValue)
-            NSLog(">> append \(stringValue)")
+            logger.info(">> append \(stringValue)")
             
             if !stringValue.uppercased().starts(with: "UR:") {
                 self.delegate?.onQRCodeReadSuccess(result: ScanResult(result: stringValue, bcur: nil))
@@ -236,7 +237,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                     validating = true
                     var value = ""
                     if !buffer.isEmpty { buffer.removeFirst() }
-                    NSLog(">> value \(value)")
+                    logger.info(">> value \(value)")
                     
                     if let result = try await validate(value) {
                         delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
@@ -264,17 +265,17 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
 }
 extension QRCodeReaderView: BcurResolver {
     func requestData() async throws -> String {
-        NSLog(">> requestData")
+        logger.info(">> requestData")
         for _ in 0...3 {
             if !buffer.isEmpty {
                 let value = buffer.removeFirst()
-                NSLog(">> request \(value)")
+                logger.info(">> request \(value)")
                 return value
             }
-            NSLog(">> sleep")
+            logger.info(">> sleep")
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
-        NSLog(">> TwoFactorCallError")
+        logger.info(">> TwoFactorCallError")
         validating = false
         throw TwoFactorCallError.failure(localizedDescription: "Invalid text")
     }

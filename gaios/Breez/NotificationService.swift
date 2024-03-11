@@ -23,15 +23,6 @@ protocol SDKBackgroundTask: EventListener {
     func displayFailedPushNotification()
 }
 
-#if DEBUG && true
-fileprivate var log = Logger(
-    subsystem: Bundle.main.bundleIdentifier!,
-    category: "BreezManager"
-)
-#else
-fileprivate var log = Logger(OSLog.disabled)
-#endif
-
 class NotificationService: UNNotificationServiceExtension {
     
     
@@ -45,7 +36,7 @@ class NotificationService: UNNotificationServiceExtension {
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
-        log.info("Notification received")
+        logger.info("Notification received")
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         if let currentTask = self.getTaskFromNotification() {
@@ -55,16 +46,16 @@ class NotificationService: UNNotificationServiceExtension {
                     guard let xpub = bestAttemptContent?.userInfo["app_data"] as? String else {
                         throw SdkError.Generic(message: "No xpub found")
                     }
-                    log.info("Get lightning account mnemonic")
+                    logger.info("Get lightning account mnemonic")
                     let credentials = try self.getCredentials(xpub: xpub)
-                    log.info("Breez SDK is not connected, connecting....")
+                    logger.info("Breez SDK is not connected, connecting....")
                     try await breezConnect(credentials: credentials, listener: currentTask)
-                    log.info("Breez SDK connected successfully")
+                    logger.info("Breez SDK connected successfully")
                     if let breezSdk = self.lightningSession?.lightBridge?.breezSdk {
                         currentTask.start(breezSDK: breezSdk)
                     }
                 } catch {
-                    log.error("Breez SDK connection failed \(error.description() ?? "")")
+                    logger.error("Breez SDK connection failed \(error.description() ?? "")")
                     currentTask.displayFailedPushNotification()
                     Task { await self.shutdown() }
                 }
@@ -81,7 +72,7 @@ class NotificationService: UNNotificationServiceExtension {
         guard let account = lightningShortcutsAccount else {
             throw SdkError.Generic(message: "Wallet not found")
         }
-        log.info("\(account.name) lightning account")
+        logger.info("\(account.name) lightning account")
         return try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: account.keychain)
     }
 
@@ -107,16 +98,16 @@ class NotificationService: UNNotificationServiceExtension {
         guard let notificationXpub = content.userInfo["app_data"] as? String else {
             return nil
         }
-        log.info("Notification payload: \(content.userInfo)")
-        log.info("Notification type: \(notificationType)")
+        logger.info("Notification payload: \(content.userInfo)")
+        logger.info("Notification type: \(notificationType)")
         
         switch(notificationType) {
         case "tx_received":
-            log.info("creating task for tx received")
-            return TxReceiverTask(logger: log, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+            logger.info("creating task for tx received")
+            return TxReceiverTask(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
         case "payment_received":
-            log.info("creating task for payment received")
-            return PaymentReceiverTask(logger: log, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+            logger.info("creating task for payment received")
+            return PaymentReceiverTask(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
         default:
             return nil
         // TODO other cases
@@ -125,15 +116,15 @@ class NotificationService: UNNotificationServiceExtension {
                 contentHandler!(content)
                 return nil
             }
-            log.info("lnurlpay_info data string: \(messageData)")
+            logger.info("lnurlpay_info data string: \(messageData)")
             let jsonData = messageData.data(using: .utf8)!
             do {
                 let lnurlInfoMessage: LnurlInfoMessage = try JSONDecoder().decode(LnurlInfoMessage.self, from: jsonData)
                 
-                log.info("creting lnurl pay task, payload: \(lnurlInfoMessage.stringify() ?? "")")
-                return LnurlPayInfo(message: lnurlInfoMessage, logger: log, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+                logger.info("creting lnurl pay task, payload: \(lnurlInfoMessage.stringify() ?? "")")
+                return LnurlPayInfo(message: lnurlInfoMessage, logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
             } catch let e {
-                log.info("Error in parsing request: \(e)")
+                logger.info("Error in parsing request: \(e)")
                 return nil
             }
         case "lnurlpay_invoice":
@@ -141,15 +132,15 @@ class NotificationService: UNNotificationServiceExtension {
                 contentHandler!(content)
                 return nil
             }
-            log.info("lnurlpay_invoice data string: \(messageData)")
+            logger.info("lnurlpay_invoice data string: \(messageData)")
             let jsonData = messageData.data(using: .utf8)!
             do {
                 let lnurlInvoiceMessage: LnurlInvoiceMessage = try JSONDecoder().decode(LnurlInvoiceMessage.self, from: jsonData)
 
-                log.info("creting lnurl pay task, payload: \(lnurlInvoiceMessage.stringify() ?? "")")
-                return LnurlPayInvoice(message: lnurlInvoiceMessage, logger: log, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+                logger.info("creting lnurl pay task, payload: \(lnurlInvoiceMessage.stringify() ?? "")")
+                return LnurlPayInvoice(message: lnurlInvoiceMessage, logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
             } catch let e {
-                log.info("Error in parsing request: \(e)")
+                logger.info("Error in parsing request: \(e)")
                 return nil
             }
         default:
@@ -158,7 +149,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     override func serviceExtensionTimeWillExpire() {
-        log.error("serviceExtensionTimeWillExpire()")
+        logger.error("serviceExtensionTimeWillExpire()")
         
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
@@ -167,9 +158,9 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     private func shutdown() async -> Void {
-        log.info("shutting down...")
+        logger.info("shutting down...")
         try? await breezDisconnect()
-        log.info("task unregistered")
+        logger.info("task unregistered")
         self.currentTask?.onShutdown()
     }
 }

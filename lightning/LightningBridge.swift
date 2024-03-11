@@ -3,12 +3,6 @@ import BreezSDK
 
 public typealias Long = UInt64
 
-class LogStreamListener: LogStream {
-    func log(l: LogEntry){
-      //print("BREEZ: \(l.line)");
-    }
-}
-
 public class LightningBridge {
     
     let testnet: Bool
@@ -29,14 +23,14 @@ public class LightningBridge {
     
     public init(testnet: Bool,
                 workingDir: URL,
-                eventListener: EventListener) {
+                eventListener: EventListener,
+                logStreamListener: LogStream?) {
         self.testnet = testnet
         self.eventListener = eventListener
         self.workingDir = workingDir
-    }
-    
-    public static func configure() {
-        try? setLogStream(logStream: LogStreamListener())
+        if let logStreamListener = logStreamListener {
+            try? setLogStream(logStream: logStreamListener)
+        }
     }
     
     private func createConfig(_ partnerCredentials: GreenlightCredentials?) -> Config {

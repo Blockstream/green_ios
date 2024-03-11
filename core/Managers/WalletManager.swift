@@ -4,6 +4,7 @@ import gdk
 import greenaddress
 import hw
 import lightning
+import core
 
 public class WalletManager {
     
@@ -212,7 +213,6 @@ public class WalletManager {
             let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
             if let token = defaults?.string(forKey: "token"), 
                 let xpubHashId = parentWalletId?.xpubHashId {
-                print("register notification token \(token) xpubHashId \(xpubHashId)")
                 session.registerNotification(token: token, xpubHashId: xpubHashId)
             }
         }
@@ -323,9 +323,9 @@ public class WalletManager {
         failureSessionsError = [:]
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
-                NSLog(">> mnemonic \(credentials.debugDescription)")
-                NSLog(">> lightningCredentials \(lightningCredentials.debugDescription)")
-                NSLog(">> login \(session.networkType.rawValue) begin")
+                logger.info(">> mnemonic \(credentials.debugDescription)")
+                logger.info(">> lightningCredentials \(lightningCredentials.debugDescription)")
+                logger.info(">> login \(session.networkType.rawValue) begin")
                 
                 if session.networkType == .lightning {
                     if let session = session as? LightningSessionManager,
@@ -344,9 +344,9 @@ public class WalletManager {
                         masterXpub: masterXpub,
                         fullRestore: fullRestore)
                 }
-                NSLog(">> login \(session.networkType.rawValue) success")
+                logger.info(">> login \(session.networkType.rawValue) success")
             } catch {
-                NSLog(">> login \(session.networkType.rawValue) failure: \(error)")
+                logger.info(">> login \(session.networkType.rawValue) failure: \(error)")
                 try? await session.disconnect()
                 switch error {
                 case TwoFactorCallError.failure(let txt):
@@ -362,7 +362,7 @@ public class WalletManager {
         }
         failureSessionsError = [:]
         let sessions = self.sessions.values.filter { !$0.logged }
-        NSLog(">> login start: \(sessions.count) sessions")
+        logger.info(">> login start: \(sessions.count) sessions")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in sessions {
                 group.addTask { try? await loginTask(session) }
@@ -370,7 +370,7 @@ public class WalletManager {
             for await _ in group {
             }
         }
-        NSLog(">> login complete")
+        logger.info(">> login complete")
         if self.activeSessions.count == 0 {
             throw LoginError.failed()
         }
@@ -520,7 +520,7 @@ public class WalletManager {
     }
 
     public func pause() async {
-        NSLog("pause networkDisconnect")
+        logger.info("pause networkDisconnect")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in activeSessions.values {
                 if session.connected {
@@ -531,7 +531,7 @@ public class WalletManager {
     }
 
     public func resume() async {
-        NSLog("resume networkConnect")
+        logger.info("resume networkConnect")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in activeSessions.values {
                 if session.connected {

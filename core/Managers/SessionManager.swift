@@ -1,8 +1,8 @@
 import Foundation
-import UIKit
 import gdk
 import greenaddress
 import hw
+import core
 
 public enum LoginError: Error, Equatable {
     case walletsJustRestored(_ localizedDescription: String? = nil)
@@ -288,10 +288,10 @@ public class SessionManager {
     )
     async throws -> K {
         let dict = params.toDict()
-        NSLog("GDK \(funcName) \(params.stringify() ?? "")")
+        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params.stringify() ?? "")")
         if let fun = try fun?(dict ?? [:]) {
             let res = try await resolve(fun, bcurResolver: bcurResolver)
-            NSLog("GDK \(funcName) \(res ?? [:])")
+            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
             let result = res?["result"] as? [String: Any]
             if let res = K.from(result ?? [:]) as? K {
                 return res
@@ -514,7 +514,7 @@ public class SessionManager {
 
     public func networkConnect() async {
         try? await reconnectionTasks.add {
-            NSLog("tor_hint: async connect \(self.gdkNetwork.network)")
+            logger.info("tor_hint: async connect \(self.gdkNetwork.network)")
             try? self.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
         }
     }
@@ -522,7 +522,7 @@ public class SessionManager {
     public func networkDisconnect() async {
         paused = true
         try? await reconnectionTasks.add {
-            NSLog("tor_hint: async disconnect \(self.gdkNetwork.network)")
+            logger.info("tor_hint: async disconnect \(self.gdkNetwork.network)")
             try? self.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
         }
     }
@@ -578,7 +578,7 @@ extension SessionManager {
             return
         }
         #if DEBUG
-        NSLog("\(gdkNetwork.network) \(event): \(data)")
+        logger.info("\(self.gdkNetwork.network) \(event.rawValue): \(data)")
         #endif
         switch event {
         case .Block:
@@ -628,13 +628,13 @@ extension SessionManager {
             // Restore connection through hidden login
             Task {
                 do {
-                    NSLog("\(self.gdkNetwork.network) reconnect")
+                    logger.info("\(self.gdkNetwork.network) reconnect")
                     try await reconnect()
-                    NSLog("\(self.gdkNetwork.network) reconnected")
+                    logger.info("\(self.gdkNetwork.network) reconnected")
                     paused = false
                     post(event: EventType.Network, userInfo: data)
                 } catch {
-                    NSLog("Error on reconnected: \(error.localizedDescription)")
+                    logger.info("Error on reconnected: \(error.localizedDescription)")
                 }
             }
         case .Tor:

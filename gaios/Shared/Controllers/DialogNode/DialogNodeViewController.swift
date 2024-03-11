@@ -2,6 +2,7 @@ import Foundation
 import core
 import UIKit
 import gdk
+import core
 
 protocol DialogNodeViewControllerProtocol {
     func onSendAll()
@@ -27,6 +28,7 @@ class DialogNodeViewController: KeyboardViewController {
     @IBOutlet weak var btnMnemonic: UIButton!
     @IBOutlet weak var btnCloseChannel: UIButton!
 
+    @IBOutlet weak var btnShareLogs: UIButton!
     var viewModel: DialogNodeViewModel!
     var delegate: DialogNodeViewControllerProtocol?
     private var nodeCellTypes: [NodeCellType] { viewModel.cells }
@@ -111,6 +113,7 @@ class DialogNodeViewController: KeyboardViewController {
         lblTitle.text = "id_node_info".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
         btnCloseChannel.setTitle("Empty Lightning Account".localized, for: .normal)
+        btnShareLogs.setTitle("Share logs".localized, for: .normal)
     }
 
     func setStyle() {
@@ -169,6 +172,22 @@ class DialogNodeViewController: KeyboardViewController {
     
     @IBAction func btnCloseChannel(_ sender: Any) {
         dismiss(.sendAll)
+    }
+
+    @IBAction func btnShareLogs(_ sender: Any) {
+        startLoader(message: "Exporting logs")
+        Task.detached { [weak self] in
+            let logger = WalletManager.current?.lightningSession?.logger
+            logger?.write(category: "Lightning")
+            await MainActor.run { [weak self] in
+                self?.stopLoader()
+                if let url = logger?.logFile() {
+                    let shareVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                    self?.present(shareVC, animated: true, completion: nil)
+                }
+            }
+        }
+        
     }
 }
 

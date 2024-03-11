@@ -1,5 +1,5 @@
 import UIKit
-
+import core
 import gdk
 import greenaddress
 
@@ -63,7 +63,7 @@ class UserSettingsViewController: UIViewController {
             return true
         } else if screenlock == .FaceID || screenlock == .TouchID {
             // this should never happen
-            NSLog("no pin exists but faceid/touchid is enabled" )
+            logger.info("no pin exists but faceid/touchid is enabled" )
             return true
         } else if screenlock == .Pin {
             return false

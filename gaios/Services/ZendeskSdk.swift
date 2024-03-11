@@ -2,6 +2,7 @@ import Foundation
 import SupportSDK
 import ZendeskCoreSDK
 import gdk
+import core
 
 class ZendeskSdk {
     //private let zendeskSdk = ZendeskSdk().INSTANCE
@@ -96,9 +97,9 @@ class ZendeskSdk {
         let provider = ZDKRequestProvider()
         provider.createRequest(request) { result, error in
             if error != nil {
-                NSLog("ZendeskSdk: request error")
+                logger.info("ZendeskSdk: request error")
             } else {
-                NSLog("ZendeskSdk: request success")
+                logger.info("ZendeskSdk: request success")
             }
         }
     }
