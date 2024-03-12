@@ -89,7 +89,10 @@ class UserSettingsViewModel {
             subtitle: (settings?.autolock ?? .fiveMinutes).string,
             section: .Security,
             type: .AutoLogout)
-        if isHW {
+        if isWatchonly {
+            return [autolock]
+        }
+        else if isHW {
             return [twoFactorAuth, pgpKey, autolock]
         } else if wm?.hasMultisig ?? false {
             return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]
@@ -117,9 +120,7 @@ class UserSettingsViewModel {
             subtitle: "",
             section: .General,
             type: .WatchOnly)
-        if isDerivedLightning {
-            return [unifiedDenominationExchange]
-        } else if isWatchonly && isSinglesig {
+        if isDerivedLightning || isWatchonly {
             return [unifiedDenominationExchange]
         }
         return [unifiedDenominationExchange, archievedAccounts, watchOnly]
@@ -158,9 +159,13 @@ class UserSettingsViewModel {
             .Recovery: getRecovery(),
             .About: getAbout()]
 
-        if isDerivedLightning || isWatchonly {
+        if isDerivedLightning {
             sections = [ .Logout, .General, .About ]
-            items = [ .Logout: getLogout(), .About: getAbout()]
+            items = [ .Logout: getLogout(), .General: getGeneral(), .About: getAbout()]
+        }
+        if isWatchonly {
+            sections = [ .Logout, .General, .Security, .About ]
+            items = [ .Logout: getLogout(), .General: getGeneral(), .Security: getSecurity(), .About: getAbout()]
         }
         cellModels = items.mapValues { $0.map { UserSettingsCellModel($0) } }
     }
