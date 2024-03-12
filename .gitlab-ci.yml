@@ -81,6 +81,8 @@ sign_dev_release:
       - dev
   script:
     - fastlane sign_dev_release
+  after_script:
+    - rm -rf dev/Green.xcarchive
 
 sign_prod_release:
   stage: sign
@@ -95,6 +97,8 @@ sign_prod_release:
       - prod
   script:
     - fastlane sign_prod_release
+  after_script:
+    - rm -rf prod/Green.xcarchive
 
 # DEPLOY
 
@@ -185,7 +189,7 @@ ui_tests:
 
 cp_gcloud_dev:
   image: blockstream/gcloud-docker-tf:1.1.7
-  needs: ["sign_dev_release"]
+  needs: ["deploy_dev_release"]
   tags:
     - ga
   stage: gcloud
@@ -200,7 +204,7 @@ cp_gcloud_dev:
 
 cp_gcloud_prod:
   image: blockstream/gcloud-docker-tf:1.1.7
-  needs: ["build_prod_release"]
+  needs: ["deploy_prod_release"]
   tags:
     - ga
   stage: gcloud
