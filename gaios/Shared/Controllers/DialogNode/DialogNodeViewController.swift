@@ -73,7 +73,7 @@ class DialogNodeViewController: KeyboardViewController {
             self?.tableViewHeight.constant = table.contentSize.height
         }
 
-        btnCloseChannel.isHidden = viewModel.hideBtnSendAll || !Bundle.main.dev
+        btnCloseChannel.isHidden = viewModel.hideBtnSendAll
     }
 
     deinit {
