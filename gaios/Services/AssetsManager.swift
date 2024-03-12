@@ -56,7 +56,7 @@ class AssetsManager {
         if icons[key] == nil {
             getAsset(for: key)
         }
-        if let icon = icons[key] {
+        if let icon = icons[key], let icon = icon {
             return UIImage(base64: icon)
         }
         return nil
