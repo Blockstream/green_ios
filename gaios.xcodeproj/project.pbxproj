@@ -6097,8 +6097,10 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = gaios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6106,6 +6108,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 4.0.26;
+				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
