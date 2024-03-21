@@ -9,7 +9,9 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>io.blockstream.green</key>
-		<string>iOS Green Distribution</string>
+		<string>io.blockstream.green AppStore</string>
+		<key>io.blockstream.green.NotificationService</key>
+		<string>io.blockstream.green.NotificationService AppStore</string>
 	</dict>
 	<key>signingCertificate</key>
 	<string>iPhone Distribution</string>

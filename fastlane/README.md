@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios get_dev_certs
+
+```sh
+[bundle exec] fastlane ios get_dev_certs
+```
+
+Get certificates
+
 ### ios build_unsigned_debug
 
 ```sh
@@ -22,14 +30,6 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 ```
 
 Build unsigned debug
-
-### ios build_dev_release
-
-```sh
-[bundle exec] fastlane ios build_dev_release
-```
-
-Build dev release
 
 ### ios build_unsigned_dev_release
 
@@ -39,6 +39,14 @@ Build dev release
 
 Build unsigned dev release
 
+### ios build_unsigned_prod_release
+
+```sh
+[bundle exec] fastlane ios build_unsigned_prod_release
+```
+
+Build unsigned prod release
+
 ### ios sign_dev_release
 
 ```sh
@@ -47,21 +55,21 @@ Build unsigned dev release
 
 Sign dev release
 
-### ios build_prod_release
+### ios sign_prod_release
 
 ```sh
-[bundle exec] fastlane ios build_prod_release
+[bundle exec] fastlane ios sign_prod_release
 ```
 
-Build prod release
+Sign prod release
 
-### ios build_signed_prod_release
+### ios upload_apple_store
 
 ```sh
-[bundle exec] fastlane ios build_signed_prod_release
+[bundle exec] fastlane ios upload_apple_store
 ```
 
-Build signed prod release
+Upload apple store
 
 ### ios ui_tests
 
