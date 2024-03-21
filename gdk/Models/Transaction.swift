@@ -270,6 +270,28 @@ public struct Transaction: Comparable {
         set { details["url"] = newValue }
     }
 
+    public var paymentHash: (String, String)? {
+        get { return get("paymentHash") }
+        set { details["paymentHash"] = newValue }
+    }
+    
+    public var destinationPubkey: (String, String)? {
+        get { return get("destinationPubkey") }
+        set { details["destinationPubkey"] = newValue }
+    }
+    
+    public var paymentPreimage: (String, String)? {
+        get { return get("paymentPreimage") }
+        set { details["paymentPreimage"] = newValue }
+    }
+    
+    public var invoice: (String, String)? {
+        get { return get("invoice") }
+        set { details["invoice"] = newValue }
+    }
+    
+    
+    
     public var isPendingCloseChannel: Bool? {
         get { return get("isPendingCloseChannel") }
         set { details["isPendingCloseChannel"] = newValue }

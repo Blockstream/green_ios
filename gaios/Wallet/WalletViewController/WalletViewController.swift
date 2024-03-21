@@ -782,12 +782,19 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func pushTransactionViewController(_ tx: Transaction) {
-        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-            vc.transaction = tx
-            vc.wallet = tx.subaccountItem
+        
+        let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccountItem {
+            vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
             navigationController?.pushViewController(vc, animated: true)
         }
+        
+//        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+//            vc.transaction = tx
+//            vc.wallet = tx.subaccountItem
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
     }
 }
 

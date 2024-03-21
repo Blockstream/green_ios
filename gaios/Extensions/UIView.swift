@@ -146,4 +146,15 @@ extension UIView {
         mask.path = path.cgPath
         self.layer.mask = mask
     }
+    
+
+    func rotate() {
+        let rotation : CABasicAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
+        rotation.toValue = NSNumber(value: -Double.pi * 2)
+        rotation.duration = 4
+        rotation.fromValue = 0.0
+        rotation.isCumulative = true
+        rotation.repeatCount = .greatestFiniteMagnitude
+        self.layer.add(rotation, forKey: "rotationAnimation")
+    }
 }

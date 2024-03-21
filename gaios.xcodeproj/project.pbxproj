@@ -299,6 +299,20 @@
 		34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */; };
 		34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6C292BD704007995D7 /* NetworkPrefs.swift */; };
 		34A75B6F292BD9FC007995D7 /* PhrasePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */; };
+		34A8839E2BA30034004A1826 /* TxDetailsMultiAmountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A8839D2BA30034004A1826 /* TxDetailsMultiAmountCell.xib */; };
+		34A883A02BA30050004A1826 /* TxDetailsMultiAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A8839F2BA30050004A1826 /* TxDetailsMultiAmountCell.swift */; };
+		34A883A42BA3251B004A1826 /* TxDetailsStatusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A883A32BA3251B004A1826 /* TxDetailsStatusCell.xib */; };
+		34A883A62BA82C11004A1826 /* TxDetailsActionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A883A52BA82C11004A1826 /* TxDetailsActionCell.xib */; };
+		34A883A82BA82C2D004A1826 /* TxDetailsActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883A72BA82C2D004A1826 /* TxDetailsActionCell.swift */; };
+		34A883AA2BA82CD3004A1826 /* TxDetailsActionCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883A92BA82CD3004A1826 /* TxDetailsActionCellModel.swift */; };
+		34A883AC2BA85F10004A1826 /* TxDetailsInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A883AB2BA85F10004A1826 /* TxDetailsInfoCell.xib */; };
+		34A883B02BA85F3E004A1826 /* TxDetailsInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883AF2BA85F3E004A1826 /* TxDetailsInfoCell.swift */; };
+		34A883B22BA85F50004A1826 /* TxDetailsInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883B12BA85F50004A1826 /* TxDetailsInfoCellModel.swift */; };
+		34A883B92BAB0144004A1826 /* TxDetailsMoreInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883B82BAB0144004A1826 /* TxDetailsMoreInfoViewController.swift */; };
+		34A883BC2BAB01EA004A1826 /* TxDetailsMoreInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883BB2BAB01EA004A1826 /* TxDetailsMoreInfoViewModel.swift */; };
+		34A883BF2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A883BE2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib */; };
+		34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883C02BAB0329004A1826 /* TxDetailsMoreInfoCell.swift */; };
+		34A883C32BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883C22BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B170E3292E861E00A829B2 /* AddingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B170E2292E861E00A829B2 /* AddingCell.xib */; };
 		34B170E7292E864400A829B2 /* AddingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B170E6292E864400A829B2 /* AddingCell.swift */; };
@@ -384,6 +398,14 @@
 		34F568982A828D330081BF0C /* LTRecoverFundsAddressCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F568972A828D330081BF0C /* LTRecoverFundsAddressCell.swift */; };
 		34F5689A2A828D490081BF0C /* LTRecoverFundsAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F568992A828D490081BF0C /* LTRecoverFundsAmountCell.swift */; };
 		34F5689C2A828D610081BF0C /* LTRecoverFundsFeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F5689B2A828D610081BF0C /* LTRecoverFundsFeeCell.swift */; };
+		34F57FF72BA1EA0000DCB076 /* TxDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34F57FF42BA1EA0000DCB076 /* TxDetails.storyboard */; };
+		34F57FF82BA1EA0000DCB076 /* TxDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F57FF52BA1EA0000DCB076 /* TxDetailsViewModel.swift */; };
+		34F57FF92BA1EA0000DCB076 /* TxDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F57FF62BA1EA0000DCB076 /* TxDetailsViewController.swift */; };
+		34F57FFD2BA1EA1C00DCB076 /* TxDetailsStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F57FFA2BA1EA1C00DCB076 /* TxDetailsStatusCell.swift */; };
+		34F57FFF2BA1EA1C00DCB076 /* TxDetailsStatusCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F57FFC2BA1EA1C00DCB076 /* TxDetailsStatusCellModel.swift */; };
+		34F580042BA1ED1C00DCB076 /* TxDetailsAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F580022BA1ED1C00DCB076 /* TxDetailsAmountCell.swift */; };
+		34F580052BA1ED1C00DCB076 /* TxDetailsAmountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F580032BA1ED1C00DCB076 /* TxDetailsAmountCell.xib */; };
+		34F580072BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F580062BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift */; };
 		34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F8E7C22823E66C00555F5B /* AMViews.swift */; };
 		34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F9809A2913A5EC00C12D48 /* WalletAssetCell.swift */; };
 		34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F9809B2913A5EC00C12D48 /* WalletAssetCell.xib */; };
@@ -981,6 +1003,20 @@
 		34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnBoardInfoCell.swift; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCell.swift; sourceTree = SOURCE_ROOT; };
 		34A75B6C292BD704007995D7 /* NetworkPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPrefs.swift; sourceTree = "<group>"; };
 		34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhrasePrefs.swift; sourceTree = "<group>"; };
+		34A8839D2BA30034004A1826 /* TxDetailsMultiAmountCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsMultiAmountCell.xib; sourceTree = "<group>"; };
+		34A8839F2BA30050004A1826 /* TxDetailsMultiAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsMultiAmountCell.swift; sourceTree = "<group>"; };
+		34A883A32BA3251B004A1826 /* TxDetailsStatusCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsStatusCell.xib; sourceTree = "<group>"; };
+		34A883A52BA82C11004A1826 /* TxDetailsActionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsActionCell.xib; sourceTree = "<group>"; };
+		34A883A72BA82C2D004A1826 /* TxDetailsActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsActionCell.swift; sourceTree = "<group>"; };
+		34A883A92BA82CD3004A1826 /* TxDetailsActionCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsActionCellModel.swift; sourceTree = "<group>"; };
+		34A883AB2BA85F10004A1826 /* TxDetailsInfoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsInfoCell.xib; sourceTree = "<group>"; };
+		34A883AF2BA85F3E004A1826 /* TxDetailsInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsInfoCell.swift; sourceTree = "<group>"; };
+		34A883B12BA85F50004A1826 /* TxDetailsInfoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsInfoCellModel.swift; sourceTree = "<group>"; };
+		34A883B82BAB0144004A1826 /* TxDetailsMoreInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsMoreInfoViewController.swift; sourceTree = "<group>"; };
+		34A883BB2BAB01EA004A1826 /* TxDetailsMoreInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsMoreInfoViewModel.swift; sourceTree = "<group>"; };
+		34A883BE2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsMoreInfoCell.xib; sourceTree = "<group>"; };
+		34A883C02BAB0329004A1826 /* TxDetailsMoreInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsMoreInfoCell.swift; sourceTree = "<group>"; };
+		34A883C22BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsMoreInfoCellModel.swift; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
 		34B170E2292E861E00A829B2 /* AddingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AddingCell.xib; path = gaios/Wallet/AccountViewController/Cells/AddingCell/AddingCell.xib; sourceTree = SOURCE_ROOT; };
 		34B170E6292E864400A829B2 /* AddingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddingCell.swift; path = gaios/Wallet/AccountViewController/Cells/AddingCell/AddingCell.swift; sourceTree = SOURCE_ROOT; };
@@ -1068,6 +1104,14 @@
 		34F568972A828D330081BF0C /* LTRecoverFundsAddressCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoverFundsAddressCell.swift; sourceTree = "<group>"; };
 		34F568992A828D490081BF0C /* LTRecoverFundsAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoverFundsAmountCell.swift; sourceTree = "<group>"; };
 		34F5689B2A828D610081BF0C /* LTRecoverFundsFeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoverFundsFeeCell.swift; sourceTree = "<group>"; };
+		34F57FF42BA1EA0000DCB076 /* TxDetails.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TxDetails.storyboard; sourceTree = "<group>"; };
+		34F57FF52BA1EA0000DCB076 /* TxDetailsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TxDetailsViewModel.swift; sourceTree = "<group>"; };
+		34F57FF62BA1EA0000DCB076 /* TxDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TxDetailsViewController.swift; sourceTree = "<group>"; };
+		34F57FFA2BA1EA1C00DCB076 /* TxDetailsStatusCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TxDetailsStatusCell.swift; sourceTree = "<group>"; };
+		34F57FFC2BA1EA1C00DCB076 /* TxDetailsStatusCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TxDetailsStatusCellModel.swift; sourceTree = "<group>"; };
+		34F580022BA1ED1C00DCB076 /* TxDetailsAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsAmountCell.swift; sourceTree = "<group>"; };
+		34F580032BA1ED1C00DCB076 /* TxDetailsAmountCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TxDetailsAmountCell.xib; sourceTree = "<group>"; };
+		34F580062BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsAmountCellModel.swift; sourceTree = "<group>"; };
 		34F8E7C22823E66C00555F5B /* AMViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMViews.swift; sourceTree = "<group>"; };
 		34F9809A2913A5EC00C12D48 /* WalletAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAssetCell.swift; sourceTree = "<group>"; };
 		34F9809B2913A5EC00C12D48 /* WalletAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletAssetCell.xib; sourceTree = "<group>"; };
@@ -2255,6 +2299,26 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		34A883BA2BAB017E004A1826 /* MoreInfo */ = {
+			isa = PBXGroup;
+			children = (
+				34A883BD2BAB0202004A1826 /* Cells */,
+				34A883B82BAB0144004A1826 /* TxDetailsMoreInfoViewController.swift */,
+				34A883BB2BAB01EA004A1826 /* TxDetailsMoreInfoViewModel.swift */,
+			);
+			path = MoreInfo;
+			sourceTree = "<group>";
+		};
+		34A883BD2BAB0202004A1826 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34A883C02BAB0329004A1826 /* TxDetailsMoreInfoCell.swift */,
+				34A883C22BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift */,
+				34A883BE2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		34AB8BAC26036742009C930A /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -2642,6 +2706,39 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		34F57FF22BA1E9E000DCB076 /* TxDetails */ = {
+			isa = PBXGroup;
+			children = (
+				34A883BA2BAB017E004A1826 /* MoreInfo */,
+				34F57FF32BA1E9ED00DCB076 /* Cells */,
+				34F57FF42BA1EA0000DCB076 /* TxDetails.storyboard */,
+				34F57FF62BA1EA0000DCB076 /* TxDetailsViewController.swift */,
+				34F57FF52BA1EA0000DCB076 /* TxDetailsViewModel.swift */,
+			);
+			path = TxDetails;
+			sourceTree = "<group>";
+		};
+		34F57FF32BA1E9ED00DCB076 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34A883B12BA85F50004A1826 /* TxDetailsInfoCellModel.swift */,
+				34A883AF2BA85F3E004A1826 /* TxDetailsInfoCell.swift */,
+				34A883AB2BA85F10004A1826 /* TxDetailsInfoCell.xib */,
+				34A883A72BA82C2D004A1826 /* TxDetailsActionCell.swift */,
+				34A883A92BA82CD3004A1826 /* TxDetailsActionCellModel.swift */,
+				34A883A52BA82C11004A1826 /* TxDetailsActionCell.xib */,
+				34A8839F2BA30050004A1826 /* TxDetailsMultiAmountCell.swift */,
+				34A8839D2BA30034004A1826 /* TxDetailsMultiAmountCell.xib */,
+				34F580022BA1ED1C00DCB076 /* TxDetailsAmountCell.swift */,
+				34F580062BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift */,
+				34F580032BA1ED1C00DCB076 /* TxDetailsAmountCell.xib */,
+				34F57FFA2BA1EA1C00DCB076 /* TxDetailsStatusCell.swift */,
+				34F57FFC2BA1EA1C00DCB076 /* TxDetailsStatusCellModel.swift */,
+				34A883A32BA3251B004A1826 /* TxDetailsStatusCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		34F980A62913FFDD00C12D48 /* AccountViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -2733,6 +2830,7 @@
 				81A3B53F2244AE9A0091B6BC /* Wallet */,
 				34128F9C27391A99002E19F5 /* Receive */,
 				6D56C76D235E162A00E4F990 /* Accounts */,
+				34F57FF22BA1E9E000DCB076 /* TxDetails */,
 				349D1ED727424ECE0095B5CA /* Transaction */,
 				6DD813B022BC585C002DCC8B /* Assets */,
 				34237FCE276B5DF000618502 /* Send */,
@@ -3510,6 +3608,7 @@
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
 				34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */,
+				34A883A62BA82C11004A1826 /* TxDetailsActionCell.xib in Resources */,
 				34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */,
 				342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */,
 				345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */,
@@ -3537,6 +3636,7 @@
 				34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */,
 				343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
+				34A883A42BA3251B004A1826 /* TxDetailsStatusCell.xib in Resources */,
 				3415CB042A67BD0100B66882 /* AddressAuth.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
 				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
@@ -3546,9 +3646,11 @@
 				3483D09929FBDAF800C85106 /* LTInfoCell.xib in Resources */,
 				34560BA629BF349E007E916F /* OtherDeviceCell.xib in Resources */,
 				3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */,
+				34A883BF2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib in Resources */,
 				3499655929E569D60092B5BD /* Jade 02 - Adjusted.riv in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
+				34A8839E2BA30034004A1826 /* TxDetailsMultiAmountCell.xib in Resources */,
 				343BC94E2AA702F600F0FEE5 /* GreenPickerCell.xib in Resources */,
 				348EB95329FA93860001CC47 /* LTAmountCell.xib in Resources */,
 				3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */,
@@ -3559,8 +3661,10 @@
 				34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */,
 				34955C0E2B67B7200056DE90 /* HowToSecureCell.xib in Resources */,
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
+				34A883AC2BA85F10004A1826 /* TxDetailsInfoCell.xib in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				3415CB152A67DBB700B66882 /* AddressAuthHeader.xib in Resources */,
+				34F57FF72BA1EA0000DCB076 /* TxDetails.storyboard in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
@@ -3576,6 +3680,7 @@
 				3445499429FBFC8F006725D2 /* LTNoteCell.xib in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				3415CB0E2A67BFE500B66882 /* AddressAuthCell.xib in Resources */,
+				34F580052BA1ED1C00DCB076 /* TxDetailsAmountCell.xib in Resources */,
 				34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */,
 				34C680EE2A72784900369639 /* DialogInputDenominationCell.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
@@ -3647,12 +3752,15 @@
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
 				34204713291B91B000EDE945 /* SecuritySelectViewModel.swift in Sources */,
 				3448B5CF29D59ADF008D5746 /* UITapGestureRecognizer.swift in Sources */,
+				34A883A02BA30050004A1826 /* TxDetailsMultiAmountCell.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
 				34B385D929B888E40097220B /* WelcomeJadeViewController.swift in Sources */,
 				3447553529098DB300B9C1AF /* WalletViewModel.swift in Sources */,
 				3497936E25F8B18C0029ECB1 /* ProgressView.swift in Sources */,
 				3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */,
 				3415CB0D2A67BFE500B66882 /* AddressAuthCell.swift in Sources */,
+				34F580042BA1ED1C00DCB076 /* TxDetailsAmountCell.swift in Sources */,
+				34A883C32BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift in Sources */,
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				81961AB929E4B93F00E9B94D /* Transaction.swift in Sources */,
 				816184652A3B8AC1007D6569 /* BleJadeManager.swift in Sources */,
@@ -3684,12 +3792,14 @@
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				34B170E7292E864400A829B2 /* AddingCell.swift in Sources */,
 				34F5689C2A828D610081BF0C /* LTRecoverFundsFeeCell.swift in Sources */,
+				34A883B02BA85F3E004A1826 /* TxDetailsInfoCell.swift in Sources */,
 				345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */,
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
 				3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
+				34A883A82BA82C2D004A1826 /* TxDetailsActionCell.swift in Sources */,
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
 				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
@@ -3724,7 +3834,9 @@
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3415CB132A67DBA600B66882 /* AddressAuthHeader.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
+				34F57FFF2BA1EA1C00DCB076 /* TxDetailsStatusCellModel.swift in Sources */,
 				34CF91D92A31BE8200498B08 /* RecoveryTransactionsViewController.swift in Sources */,
+				34A883B92BAB0144004A1826 /* TxDetailsMoreInfoViewController.swift in Sources */,
 				34D761362A38501F00DE57F5 /* DenominationExchangeViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */,
@@ -3733,6 +3845,7 @@
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
 				34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */,
 				343BC9472AA7012B00F0FEE5 /* GreenPIckerViewController.swift in Sources */,
+				34F57FF92BA1EA0000DCB076 /* TxDetailsViewController.swift in Sources */,
 				34F5689A2A828D490081BF0C /* LTRecoverFundsAmountCell.swift in Sources */,
 				81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */,
 				344915F02A0CE27F00D35818 /* ReceiveAssetCellModel.swift in Sources */,
@@ -3748,6 +3861,7 @@
 				34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */,
 				819F1AEA2A0E4D0600ECF999 /* AccountType.swift in Sources */,
 				812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */,
+				34A883AA2BA82CD3004A1826 /* TxDetailsActionCellModel.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
@@ -3776,12 +3890,14 @@
 				34A75B64292B6A1E007995D7 /* OnBoardInfoViewModel.swift in Sources */,
 				812DBDBE2972509A002992D6 /* WatchOnlySettingsViewModel.swift in Sources */,
 				34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */,
+				34F57FF82BA1EA0000DCB076 /* TxDetailsViewModel.swift in Sources */,
 				34C67E722924D1B000A50F89 /* AssetExpandableView.swift in Sources */,
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */,
 				81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */,
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */,
+				34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */,
 				345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				34927BC92971452C00D741DB /* AccountAssetViewModel.swift in Sources */,
@@ -3842,6 +3958,7 @@
 				812DBDBA29724E8C002992D6 /* WatchOnlySettings.swift in Sources */,
 				8190D4CA2A28C77B003D31B4 /* Parser.swift in Sources */,
 				34F980B129151C7500C12D48 /* TransactionCellModel.swift in Sources */,
+				34F580072BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift in Sources */,
 				3447553329098DA000B9C1AF /* WalletViewController.swift in Sources */,
 				349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */,
 				3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */,
@@ -3879,6 +3996,7 @@
 				81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */,
 				81F328FC29ED319300D54F1D /* ResolverManager.swift in Sources */,
 				817A0B352A404F6600E2F80D /* BLEDevice.swift in Sources */,
+				34A883BC2BAB01EA004A1826 /* TxDetailsMoreInfoViewModel.swift in Sources */,
 				34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */,
 				81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */,
 				349F723E29C84DA4007B9154 /* UpdateFirmwareViewController.swift in Sources */,
@@ -3977,6 +4095,7 @@
 				34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */,
 				34287B752A83855B0065471F /* AlertViewController.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
+				34F57FFD2BA1EA1C00DCB076 /* TxDetailsStatusCell.swift in Sources */,
 				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				344915ED2A0CE26700D35818 /* ReceiveAddressCell.swift in Sources */,
 				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
@@ -3997,6 +4116,7 @@
 				34955C102B67B7560056DE90 /* HowToSecureCell.swift in Sources */,
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */,
+				34A883B22BA85F50004A1826 /* TxDetailsInfoCellModel.swift in Sources */,
 				3470646B2A42C1710096313C /* RecoveryTransactionsViewModel.swift in Sources */,
 				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
 				3457F4B529239F2400EF33B5 /* DialogListCellModel.swift in Sources */,

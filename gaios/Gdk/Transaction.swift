@@ -100,6 +100,10 @@ extension Transaction {
             default:
                 break
             }
+            tx.paymentHash = ("paymentHash", data.paymentHash)
+            tx.destinationPubkey = ("destinationPubkey", data.destinationPubkey)
+            tx.paymentPreimage = ("paymentPreimage", data.paymentPreimage)
+            tx.invoice = ("invoice", data.bolt11)
         default:
             break
         }

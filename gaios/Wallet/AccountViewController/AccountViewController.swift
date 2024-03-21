@@ -66,6 +66,8 @@ class AccountViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        setNavigationBar()
         reloadSections([AccountSection.assets, AccountSection.adding, AccountSection.disclose], animated: false)
 
         EventType.allCases.forEach {
@@ -90,6 +92,8 @@ class AccountViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        drawerIcon(false)
         notificationObservers.forEach { observer in
             NotificationCenter.default.removeObserver(observer)
         }
@@ -199,7 +203,7 @@ class AccountViewController: UIViewController {
     }
 
     func setContent() {
-        setNavigationBar()
+        
         setActionBar()
         tableView.prefetchDataSource = self
         tableView.refreshControl = UIRefreshControl()
@@ -417,13 +421,21 @@ class AccountViewController: UIViewController {
     }
 
     func pushTransactionViewController(_ tx: Transaction) {
-        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-            vc.transaction = tx
-            vc.wallet = tx.subaccountItem
+        
+        let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccountItem {
+            vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
+        
+//        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+//            vc.transaction = tx
+//            vc.wallet = tx.subaccountItem
+//            vc.delegate = self
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -888,7 +900,7 @@ extension AccountViewController: DialogRenameViewControllerDelegate {
     }
 }
 
-extension AccountViewController: TransactionViewControllerDelegate {
+extension AccountViewController: TxDetailsViewControllerDelegate {
     func onMemoEdit() {
         reload()
     }

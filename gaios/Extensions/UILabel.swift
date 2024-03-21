@@ -3,6 +3,7 @@ import UIKit
 enum LabelStyle {
     case title
     case subTitle
+    case subTitle24
     case titleCard
     case txt
     case txtBigger
@@ -23,6 +24,9 @@ extension UILabel {
         case .subTitle:
             textColor = .white
             font = UIFont.systemFont(ofSize: 20.0, weight: .bold)
+        case .subTitle24:
+            textColor = .white
+            font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         case .titleCard:
             textColor = .white
             font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
@@ -37,7 +41,7 @@ extension UILabel {
             font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         case .txtSmallerBold:
             textColor = .white
-            font = UIFont.systemFont(ofSize: 12.0, weight: .semibold)
+            font = UIFont.systemFont(ofSize: 12.0, weight: .bold)
         case .txtCard:
             textColor = UIColor.gW40()
             font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
