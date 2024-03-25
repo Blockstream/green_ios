@@ -31,8 +31,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/breez/breez-sdk-swift",
       "state" : {
-        "revision" : "1f85615977059181377cb3aaad149091f5886798",
-        "version" : "0.3.6"
+        "revision" : "d60ea9da5addff4003ea0468e9c22837bce7b1d8",
+        "version" : "0.3.8"
       }
     },
     {
