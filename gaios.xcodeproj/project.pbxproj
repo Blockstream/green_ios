@@ -428,7 +428,6 @@
 		34FF27A527C7E5A7008FD72C /* DialogReceiveMoreOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27A427C7E5A7008FD72C /* DialogReceiveMoreOptions.swift */; };
 		34FF27AE27CCE926008FD72C /* DialogCustomFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27AD27CCE926008FD72C /* DialogCustomFee.swift */; };
 		34FF27B027CD0689008FD72C /* DialogMnemonicLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27AF27CD0689008FD72C /* DialogMnemonicLength.swift */; };
-		3646136400F243CBF6DB750F /* libPods-gaiosTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A86540174AD367FC26E586 /* libPods-gaiosTests.a */; };
 		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
 		671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */; };
 		67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */ = {isa = PBXBuildFile; fileRef = 67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */; };
@@ -508,14 +507,6 @@
 		8177ED662B6C59EF00C2271C /* NotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8177ED5F2B6C59EE00C2271C /* NotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8177ED8E2B6C688C00C2271C /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8177ED882B6C688C00C2271C /* core.framework */; };
 		8177ED8F2B6C688C00C2271C /* core.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8177ED882B6C688C00C2271C /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8177ED942B6C689D00C2271C /* gdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961A4C29E46B5400E9B94D /* gdk.framework */; platformFilter = ios; };
-		8177ED952B6C689D00C2271C /* gdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81961A4C29E46B5400E9B94D /* gdk.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8177ED992B6C68A100C2271C /* greenaddress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; platformFilter = ios; };
-		8177ED9A2B6C68A100C2271C /* greenaddress.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8177ED9D2B6C68A400C2271C /* hw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; platformFilter = ios; };
-		8177ED9E2B6C68A400C2271C /* hw.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8177EDA12B6C68A700C2271C /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; platformFilter = ios; };
-		8177EDA22B6C68A700C2271C /* lightning.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8177EDA72B6C6DEE00C2271C /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8177ED882B6C688C00C2271C /* core.framework */; };
 		8177EDA82B6C6DEE00C2271C /* core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8177ED882B6C688C00C2271C /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8177EDAE2B6C741700C2271C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8177ED422B6C563000C2271C /* NotificationService.swift */; };
@@ -658,6 +649,10 @@
 		81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */; };
 		81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */; };
 		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
+		81BC543E2BB1E081009F7631 /* gdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961A4C29E46B5400E9B94D /* gdk.framework */; platformFilter = ios; };
+		81BC54412BB1E083009F7631 /* greenaddress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; platformFilter = ios; };
+		81BC54432BB1E084009F7631 /* hw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; platformFilter = ios; };
+		81BC54452BB1E085009F7631 /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; platformFilter = ios; };
 		81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF5D4828C885AF006225C6 /* WalletManager.swift */; };
 		81C2F1FF2B865ED8000845EA /* greenaddress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; };
 		81C2F2002B865ED8000845EA /* greenaddress.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -691,7 +686,6 @@
 		81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */; };
 		81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
-		DD1C96BAC43AE08FD1433D9E /* libPods-gaiosUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
 		FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7722374F8D0035F95A /* UILabel.swift */; };
 /* End PBXBuildFile section */
@@ -850,20 +844,6 @@
 				8177ED662B6C59EF00C2271C /* NotificationService.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8177ED982B6C689E00C2271C /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				8177ED952B6C689D00C2271C /* gdk.framework in Embed Frameworks */,
-				8177ED9A2B6C68A100C2271C /* greenaddress.framework in Embed Frameworks */,
-				8177ED9E2B6C68A400C2271C /* hw.framework in Embed Frameworks */,
-				8177EDA22B6C68A700C2271C /* lightning.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8177EDAB2B6C6DEE00C2271C /* Embed Frameworks */ = {
@@ -1570,7 +1550,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3646136400F243CBF6DB750F /* libPods-gaiosTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1578,7 +1557,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD1C96BAC43AE08FD1433D9E /* libPods-gaiosUITests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1597,11 +1575,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8177ED942B6C689D00C2271C /* gdk.framework in Frameworks */,
-				8177ED992B6C68A100C2271C /* greenaddress.framework in Frameworks */,
+				81BC543E2BB1E081009F7631 /* gdk.framework in Frameworks */,
+				81BC54452BB1E085009F7631 /* lightning.framework in Frameworks */,
+				81BC54412BB1E083009F7631 /* greenaddress.framework in Frameworks */,
 				8177EDDB2B6C7B9C00C2271C /* Countly in Frameworks */,
-				8177ED9D2B6C68A400C2271C /* hw.framework in Frameworks */,
-				8177EDA12B6C68A700C2271C /* lightning.framework in Frameworks */,
+				81BC54432BB1E084009F7631 /* hw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3746,7 +3724,6 @@
 				8177ED842B6C688C00C2271C /* Sources */,
 				8177ED852B6C688C00C2271C /* Frameworks */,
 				8177ED862B6C688C00C2271C /* Resources */,
-				8177ED982B6C689E00C2271C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -3861,7 +3838,6 @@
 					676FCF1B1F9D0CF800354E93 = {
 						CreatedOnToolsVersion = 9.0.1;
 						LastSwiftMigration = 1020;
-						ProvisioningStyle = Manual;
 					};
 					676FCF311F9D0CF800354E93 = {
 						CreatedOnToolsVersion = 9.0.1;
@@ -3877,28 +3853,22 @@
 					};
 					8177ED5E2B6C59EE00C2271C = {
 						CreatedOnToolsVersion = 15.2;
-						ProvisioningStyle = Manual;
 					};
 					8177ED872B6C688C00C2271C = {
 						CreatedOnToolsVersion = 15.2;
-						ProvisioningStyle = Manual;
 					};
 					81961A4B29E46B5400E9B94D = {
 						CreatedOnToolsVersion = 14.2;
-						ProvisioningStyle = Manual;
 					};
 					81961AD629E4EC2E00E9B94D = {
 						CreatedOnToolsVersion = 14.2;
-						ProvisioningStyle = Manual;
 					};
 					81961B2629E4F4A000E9B94D = {
 						CreatedOnToolsVersion = 14.2;
-						ProvisioningStyle = Manual;
 					};
 					81A8F8F429E5069E0052B214 = {
 						CreatedOnToolsVersion = 14.2;
 						LastSwiftMigration = 1420;
-						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -4921,7 +4891,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4984,7 +4953,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -5018,10 +4986,12 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = D9W37S9468;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				"ENABLE_HARDENED_RUNTIME[sdk=iphoneos*]" = YES;
@@ -5044,6 +5014,8 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "io.blockstream.greendev Dev";
 				SWIFT_INCLUDE_PATHS = "";
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
@@ -5097,7 +5069,6 @@
 		676FCF4A1F9D0CF800354E93 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
@@ -5119,7 +5090,6 @@
 		676FCF4B1F9D0CF800354E93 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
@@ -5141,7 +5111,6 @@
 		676FCF4D1F9D0CF800354E93 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = D9W37S9468;
@@ -5162,7 +5131,6 @@
 		676FCF4E1F9D0CF800354E93 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = D9W37S9468;
@@ -5188,7 +5156,8 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
+				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationServiceDebug.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D9W37S9468;
@@ -5209,6 +5178,8 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greendev.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "io.blockstream.greendev.NotificationService Dev";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -5261,7 +5232,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationServiceStaging.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D9W37S9468;
@@ -5282,7 +5252,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greendev.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "io.blockstream.greendev.NotificationService AdHoc";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -5293,16 +5262,16 @@
 		8177ED912B6C688C00C2271C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = D9W37S9468;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5325,7 +5294,11 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -5338,12 +5311,12 @@
 		8177ED922B6C688C00C2271C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -5370,6 +5343,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -5381,12 +5357,12 @@
 		8177ED932B6C688C00C2271C /* Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -5413,6 +5389,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -5437,7 +5416,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = D9W37S9468;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5457,6 +5436,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.gdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -5579,7 +5559,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = D9W37S9468;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5600,6 +5580,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -5718,7 +5699,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = D9W37S9468;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5746,6 +5727,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -5884,7 +5866,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = D9W37S9468;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -5908,6 +5890,7 @@
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.lightning;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6057,7 +6040,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6091,7 +6073,6 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = D9W37S9468;
@@ -6116,7 +6097,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "io.blockstream.greendev AdHoc";
 				SWIFT_INCLUDE_PATHS = "";
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
@@ -6128,7 +6108,6 @@
 		81CF901028EC77B0003CC793 /* Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
@@ -6150,7 +6129,6 @@
 		81CF901128EC77B0003CC793 /* Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = D9W37S9468;
