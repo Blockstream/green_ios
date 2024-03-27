@@ -133,7 +133,7 @@ public class LightningBridge {
         guard let breezSdk = breezSdk else {
             throw BreezSDK.SdkError.Generic(message: "Unitialized breez sdk")
         }
-        return try breezSdk.inProgressReverseSwaps()
+        return try breezSdk.inProgressReverseSwaps().filter { $0.status == .initial || $0.status == .inProgress }
     }
     
     public func listRefundables() throws -> [SwapInfo] {
