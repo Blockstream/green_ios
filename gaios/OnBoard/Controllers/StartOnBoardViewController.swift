@@ -96,7 +96,14 @@ class StartOnBoardViewController: UIViewController {
 
     @IBAction func btnRestoreWallet(_ sender: Any) {
         AnalyticsManager.shared.restoreWallet()
-        onNext(.restore)
+        if AppSettings.shared.experimental {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.registerForPushNotifications(application: UIApplication.shared, completion: {
+                self.onNext(.restore)
+            })
+        } else {
+            onNext(.restore)
+        }
     }
 }
 

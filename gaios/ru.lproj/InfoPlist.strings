@@ -2,3 +2,4 @@ NSFaceIDUsageDescription = "Green использует биометрическ�
 NSBluetoothAlwaysUsageDescription = "Green использует Bluetooth для связи с аппаратными кошельками";
 NSBluetoothPeripheralUsageDescription = "Green использует Bluetooth для подключения к аппаратным кошелькам";
 NSCameraUsageDescription = "Мы используем камеру для сканирования QR-кодов";
+NSUserNotificationsUsageDescription = "Receive notifications for lightning payments";

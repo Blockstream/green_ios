@@ -59,6 +59,9 @@ class LTExperimentalViewController: UIViewController {
     }
 
     @IBAction func btnContinue(_ sender: Any) {
-        dismiss()
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.registerForPushNotifications(application: UIApplication.shared, completion: {
+            self.dismiss()
+        })
     }
 }

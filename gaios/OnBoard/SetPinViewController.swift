@@ -192,15 +192,7 @@ class SetPinViewController: UIViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .verify:
-            if AppSettings.shared.experimental {
-                startLoader()
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                appDelegate?.registerForPushNotifications(application: UIApplication.shared, completion: {
-                    self.setPin(self.pinCode)
-                })
-            } else {
-                setPin(pinCode)
-            }
+            setPin(pinCode)
         }
     }
 

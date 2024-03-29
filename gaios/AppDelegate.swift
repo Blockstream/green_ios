@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var navigateWindow: UIWindow?
     var resolve2faWindow: UIWindow?
+    var pushNotificationAlreadyRegistered = false
 
     func setupAppearance() {
         if #available(iOS 15.0, *) {
@@ -69,13 +70,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AnalyticsManager.shared.countlyStart()
         AnalyticsManager.shared.setupSession(session: nil)
-
-        // Remote Notifications
-        let filePath = Bundle.main.path(forResource: Bundle.main.googleServiceInfo, ofType: "plist")!
-        let options = FirebaseOptions(contentsOfFile: filePath)
-        FirebaseApp.configure(options: options!)
-        Messaging.messaging().delegate = self
-        registerForPushNotifications(application: application)
         return true
     }
 
@@ -138,17 +132,33 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         print("Firebase failed registration token: \(String(describing: error))")
     }
 
-    private func registerForPushNotifications(application: UIApplication) {
+    func registerForPushNotifications(application: UIApplication, completion: (() -> Void)? = nil) {
+        if self.pushNotificationAlreadyRegistered {
+            if let completion = completion {
+                completion()
+            }
+            return
+        }
+        // Remote Notifications from FCM
+        let filePath = Bundle.main.path(forResource: Bundle.main.googleServiceInfo, ofType: "plist")!
+        let options = FirebaseOptions(contentsOfFile: filePath)
+        FirebaseApp.configure(options: options!)
+        Messaging.messaging().delegate = self
+
+        // Remote Notifications permissions
         UNUserNotificationCenter.current().delegate = self
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-
         UNUserNotificationCenter.current().requestAuthorization(options: authOptions) {
             (granted, error) in
+            self.pushNotificationAlreadyRegistered = true
             guard granted else { return }
             DispatchQueue.main.async {
-                application.registerForRemoteNotifications()
+                if let completion = completion {
+                    completion()
+                }
             }
         }
+        application.registerForRemoteNotifications()
     }
 
     // Called to let your app know which action was selected by the user for a given notification.

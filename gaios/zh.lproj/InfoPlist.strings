@@ -2,3 +2,4 @@ NSFaceIDUsageDescription = "Green使用生物识别验证来让用户能够更�
 NSBluetoothAlwaysUsageDescription = "Green通过蓝牙与硬件钱包通讯";
 NSBluetoothPeripheralUsageDescription = "Green通过蓝牙连接硬件钱包";
 NSCameraUsageDescription = "请使用摄像头扫描二维码";
+NSUserNotificationsUsageDescription = "Receive notifications for lightning payments";
