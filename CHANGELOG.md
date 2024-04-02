@@ -3,23 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
-
-### Fixed
-- Sending Liquid bitcoin with jade
-- Improve fee calculation
-
-### Changed
-- Refactoring transaction details screen
-- Update gdk to 0.71.0
-- Update translations
-
-## Unreleased
+## [4.0.27] - 2024-05-03
 
 ### Added
-- Lightning notifications
+- Support push notification to receive lightning payments
 - Empty lightning account
-- Exporting lightning logs
+- Export lightning logs
+
+### Changed
+- Update breez to 0.4.0-rc5
+- Update gdk to 0.71.0
+- Refactor transaction details screen
+- Update translations
+
+### Fixed
+-  Show fee calculation in send
 
 ## [4.0.26] - 2024-03-19
 

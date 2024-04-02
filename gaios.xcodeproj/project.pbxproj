@@ -3213,7 +3213,6 @@
 				813872932A0480E20092CFD2 /* LightningSessionManager.swift */,
 				81D671EA26C8007600682508 /* SessionManager.swift */,
 				81F328FB29ED319300D54F1D /* ResolverManager.swift */,
-				81CCDF072B9F3E3800C8490C /* Logger.swift */,
 				81BF5D4828C885AF006225C6 /* WalletManager.swift */,
 				81CCDF072B9F3E3800C8490C /* Logger.swift */,
 			);
@@ -4937,7 +4936,7 @@
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
@@ -4953,7 +4952,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.26;
+				MARKETING_VERSION = 4.0.27;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -4985,7 +4984,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4997,7 +4996,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.26;
+				MARKETING_VERSION = 4.0.27;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6039,7 +6038,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -6054,7 +6053,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.26;
+				MARKETING_VERSION = 4.0.27;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
