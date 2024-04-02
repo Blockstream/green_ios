@@ -9,7 +9,7 @@
       "scale" : "2x"
     },
     {
-      "filename" : "Frame 513655@3x.png",
+      "filename" : "Untitled 6@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
@@ -17,5 +17,8 @@
   "info" : {
     "author" : "xcode",
     "version" : 1
+  },
+  "properties" : {
+    "template-rendering-intent" : "template"
   }
 }
