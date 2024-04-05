@@ -1,6 +1,7 @@
 import UIKit
 import gdk
 import hw
+import core
 
 class PinCreateViewController: HWFlowBaseViewController {
 

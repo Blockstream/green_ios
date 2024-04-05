@@ -2,6 +2,7 @@ import Foundation
 import gdk
 import UIKit
 import AsyncBluetooth
+import core
 
 class AccountNavigator {
 

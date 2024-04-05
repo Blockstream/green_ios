@@ -4,6 +4,7 @@ import lightning
 import UserNotifications
 import FirebaseCore
 import FirebaseMessaging
+import core
 
 func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate

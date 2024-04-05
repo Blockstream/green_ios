@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import LocalAuthentication
+import core
 
 class MnemonicAuthViewController: UIViewController {
 

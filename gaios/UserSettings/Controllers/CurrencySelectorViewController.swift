@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import core
 
 class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 

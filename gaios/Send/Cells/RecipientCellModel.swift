@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import gdk
 import Combine
+import core
 
 struct RecipientCellModel {
 

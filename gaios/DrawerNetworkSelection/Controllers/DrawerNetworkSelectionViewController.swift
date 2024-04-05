@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import core
 
 protocol DrawerNetworkSelectionDelegate: AnyObject {
     func didSelectAccount(account: Account)

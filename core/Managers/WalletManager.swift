@@ -381,30 +381,30 @@ public class WalletManager {
         try? await self.loadRegistry()
     }
 
-    var bitcoinSinglesigNetwork: NetworkSecurityCase { mainnet ? .bitcoinSS : .testnetSS }
-    var liquidSinglesigNetwork: NetworkSecurityCase { mainnet ? .liquidSS : .testnetLiquidSS }
-    var singlesigNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [liquidSinglesigNetwork] }
-    var bitcoinMultisigNetwork: NetworkSecurityCase { mainnet ? .bitcoinMS : .testnetMS }
-    var liquidMultisigNetwork: NetworkSecurityCase { mainnet ? .liquidMS : .testnetLiquidMS }
-    var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
+    public var bitcoinSinglesigNetwork: NetworkSecurityCase { mainnet ? .bitcoinSS : .testnetSS }
+    public var liquidSinglesigNetwork: NetworkSecurityCase { mainnet ? .liquidSS : .testnetLiquidSS }
+    public var singlesigNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [liquidSinglesigNetwork] }
+    public var bitcoinMultisigNetwork: NetworkSecurityCase { mainnet ? .bitcoinMS : .testnetMS }
+    public var liquidMultisigNetwork: NetworkSecurityCase { mainnet ? .liquidMS : .testnetLiquidMS }
+    public var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
     
-    var activeSinglesigSessions: [SessionManager] {
+    public var activeSinglesigSessions: [SessionManager] {
         singlesigNetworks.compactMap { sessions[$0.rawValue] }
             .filter { $0.logged }
     }
-    var activeMultisigSessions: [SessionManager] {
+    public var activeMultisigSessions: [SessionManager] {
         multisigNetworks.compactMap { sessions[$0.rawValue] }
             .filter { $0.logged }
     }
-    var activeSinglesigNetworks: [NetworkSecurityCase] {
+    public var activeSinglesigNetworks: [NetworkSecurityCase] {
         activeSinglesigSessions.map { $0.networkType }
     }
-    var activeMultisigNetworks: [NetworkSecurityCase] {
+    public var activeMultisigNetworks: [NetworkSecurityCase] {
         activeSinglesigSessions.map { $0.networkType }
     }
 
-    var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
-    var activeLiquidMultisig: Bool { sessions[liquidMultisigNetwork.rawValue]?.logged ?? false }
+    public var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
+    public var activeLiquidMultisig: Bool { sessions[liquidMultisigNetwork.rawValue]?.logged ?? false }
 
     func syncSettings() async throws {
         // Prefer Multisig for initial sync as those networks are synced across devices

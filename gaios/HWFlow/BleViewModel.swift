@@ -4,6 +4,7 @@ import CoreBluetooth
 import hw
 import gdk
 import greenaddress
+import core
 
 enum BLEManagerError: Error {
     case powerOff(txt: String)

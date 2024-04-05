@@ -3,6 +3,7 @@ import gdk
 import CoreBluetooth
 import AsyncBluetooth
 import Combine
+import core
 
 class ScanViewController: HWFlowBaseViewController {
 

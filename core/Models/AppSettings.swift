@@ -3,9 +3,9 @@ import Foundation
 public struct AppSettings: Codable {
 
     public static var shared = AppSettings()
-    public static let testnetIsVisible = "testnet_is_visible"
-    public static let experimental = "experimental"
-    public static let rememberHWIsOff = "remember_HW_is_off"
+    static let testnetIsVisible = "testnet_is_visible"
+    static let experimental = "experimental"
+    static let rememberHWIsOff = "remember_HW_is_off"
 
     public var testnet: Bool {
         get { UserDefaults.standard.bool(forKey: AppSettings.testnetIsVisible) == true }
@@ -17,7 +17,7 @@ public struct AppSettings: Codable {
         set { UserDefaults.standard.set(newValue, forKey: AppSettings.experimental) }
     }
 
-    var rememberHWIsOff: Bool {
+    public var rememberHWIsOff: Bool {
         get { UserDefaults.standard.bool(forKey: AppSettings.rememberHWIsOff) == true }
         set { UserDefaults.standard.set(newValue, forKey: AppSettings.rememberHWIsOff) }
     }

@@ -1,5 +1,6 @@
 import UIKit
 import gdk
+import core
 
 protocol FeeEditCellDelegate: AnyObject {
     func setCustomFee()

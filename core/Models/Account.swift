@@ -207,7 +207,7 @@ public struct Account: Codable, Equatable {
         return nil
     }
     
-    var walletIdentifier: WalletIdentifier? {
+    public var walletIdentifier: WalletIdentifier? {
         return WalletIdentifier(walletHashId: walletHashId ?? "", xpubHashId: xpubHashId ?? "")
     }
 }

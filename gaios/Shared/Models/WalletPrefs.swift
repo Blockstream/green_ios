@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 enum WalletPrefs: Int, CaseIterable {
     case settings = 0

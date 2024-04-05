@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 protocol AssetSelectViewControllerDelegate: AnyObject {
     func didSelectAsset(_ assetId: String)

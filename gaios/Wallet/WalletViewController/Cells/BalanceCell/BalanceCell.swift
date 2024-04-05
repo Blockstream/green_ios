@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 class BalanceCell: UITableViewCell {
 

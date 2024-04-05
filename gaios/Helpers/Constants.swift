@@ -1,5 +1,6 @@
 import Foundation
 import RiveRuntime
+import core
 
 enum Constants {
     static let mnemonicSizeDefault = MnemonicSize._12.rawValue

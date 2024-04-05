@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-
+import core
 
 protocol DialogRecoveryHelpViewControllerDelegate: AnyObject {
     func didTapHelpCenter()

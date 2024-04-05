@@ -3,6 +3,7 @@ import UIKit
 import BreezSDK
 import greenaddress
 import lightning
+import core
 
 class LTWithdrawViewController: KeyboardViewController {
     

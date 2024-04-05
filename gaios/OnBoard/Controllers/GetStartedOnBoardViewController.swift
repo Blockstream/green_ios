@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 class GetStartedOnBoardViewController: UIViewController {
 

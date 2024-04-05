@@ -1,5 +1,5 @@
 import UIKit
-
+import core
 
 class MultisigSettingsViewController: UIViewController {
 

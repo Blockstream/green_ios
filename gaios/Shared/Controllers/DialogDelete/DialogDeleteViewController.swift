@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-
+import core
 
 protocol DialogDeleteViewControllerDelegate: AnyObject {
     func didDelete(_ index: String?)

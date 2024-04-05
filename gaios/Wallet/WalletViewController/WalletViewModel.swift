@@ -3,6 +3,7 @@ import UIKit
 import gdk
 import greenaddress
 import hw
+import core
 
 class WalletViewModel {
 

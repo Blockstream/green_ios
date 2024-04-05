@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-
+import core
 
 enum SurveyAction {
     case close

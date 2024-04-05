@@ -7,7 +7,7 @@ public enum MigrationFlag: String {
 }
 public class MigratorManager {
 
-    static let shared = MigratorManager()
+    public static let shared = MigratorManager()
 
     public func migrate() {
         let appDataVersion = UserDefaults.standard.integer(forKey: MigrationFlag.appDataVersion.rawValue)

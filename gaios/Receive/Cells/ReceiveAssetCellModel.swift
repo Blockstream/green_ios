@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import gdk
+import core
 
 struct ReceiveAssetCellModel {
     let assetId: String

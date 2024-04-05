@@ -57,7 +57,7 @@ public class AuthenticationTypeHandler {
     static let ECCKeyType = kSecAttrKeyTypeECSECPrimeRandom
     static let ECCKeySizeInBits = 256
 
-    static var biometryType: LABiometryType? {
+    public static var biometryType: LABiometryType? {
         let context = LAContext()
 
         var error: NSError?
@@ -67,14 +67,14 @@ public class AuthenticationTypeHandler {
         return context.biometryType
     }
 
-    static func supportsBiometricAuthentication() -> Bool {
+    public static func supportsBiometricAuthentication() -> Bool {
         guard let biometryType = biometryType else {
             return false
         }
         return biometryType == LABiometryType.faceID || biometryType == LABiometryType.touchID
     }
 
-    static func supportsPasscodeAuthentication() -> Bool {
+    public static func supportsPasscodeAuthentication() -> Bool {
         return LAContext().canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
     }
 

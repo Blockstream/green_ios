@@ -1,8 +1,8 @@
 import Foundation
 
-typealias VoidToVoid = () -> Void
+public typealias VoidToVoid = () -> Void
 
-func secureRandomData(count: Int) -> Data? {
+public func secureRandomData(count: Int) -> Data? {
     var bytes = [Int8](repeating: 0, count: count)
     let status = SecRandomCopyBytes(
         kSecRandomDefault,

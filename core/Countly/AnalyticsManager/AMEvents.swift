@@ -399,9 +399,14 @@ extension AnalyticsManager {
     }
 
     public struct TransactionSegmentation {
-        let transactionType: TxType
-        let addressInputType: AddressInputType?
-        let sendAll: Bool
+        public let transactionType: TxType
+        public let addressInputType: AddressInputType?
+        public let sendAll: Bool
+        public init(transactionType: TxType, addressInputType: AddressInputType?, sendAll: Bool) {
+            self.transactionType = transactionType
+            self.addressInputType = addressInputType
+            self.sendAll = sendAll
+        }
     }
 
     public struct WalletData {
@@ -409,11 +414,22 @@ extension AnalyticsManager {
         let accountsFunded: Int
         let accounts: Int
         let accountsTypes: String
+        public init(walletFunded: Bool, accountsFunded: Int, accounts: Int, accountsTypes: String) {
+            self.walletFunded = walletFunded
+            self.accountsFunded = accountsFunded
+            self.accounts = accounts
+            self.accountsTypes = accountsTypes
+        }
     }
 
     public struct ReceiveAddressData {
         let type: ReceiveAddressType
         let media: ReceiveAddressMedia
         let method: ReceiveAddressMethod
+        public init(type: ReceiveAddressType, media: ReceiveAddressMedia, method: ReceiveAddressMethod) {
+            self.type = type
+            self.media = media
+            self.method = method
+        }
     }
 }

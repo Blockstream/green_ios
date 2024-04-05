@@ -1,5 +1,6 @@
 import Foundation
 import gdk
+import core
 
 enum NodeCellType: CaseIterable {
     case id

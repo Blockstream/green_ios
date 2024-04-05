@@ -5,6 +5,7 @@ import greenaddress
 import hw
 import BreezSDK
 import lightning
+import core
 
 enum ReceiveType: Int, CaseIterable {
     case address

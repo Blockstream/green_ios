@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-
+import core
 
 protocol DialogRenameViewControllerDelegate: AnyObject {
     func didRename(name: String, index: String?)

@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 class NetworkSelectorBarItem: UIView {
     @IBOutlet weak var lblNetwork: UILabel!

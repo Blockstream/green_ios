@@ -5,6 +5,7 @@ import LinkPresentation
 import gdk
 import hw
 import Combine
+import core
 
 public enum TransactionBaseType: UInt32 {
     case BTC = 0

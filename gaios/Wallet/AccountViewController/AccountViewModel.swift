@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import gdk
 import greenaddress
+import core
 
 enum AmpEducationalMode {
     case table

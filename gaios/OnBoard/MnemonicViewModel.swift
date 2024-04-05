@@ -1,5 +1,5 @@
 import Foundation
-
+import core
 import greenaddress
 
 class MnemonicViewModel {

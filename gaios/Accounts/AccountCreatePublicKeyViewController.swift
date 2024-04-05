@@ -1,6 +1,7 @@
 import UIKit
 import gdk
 import greenaddress
+import core
 
 class AccountCreatePublicKeyViewController: UIViewController {
 

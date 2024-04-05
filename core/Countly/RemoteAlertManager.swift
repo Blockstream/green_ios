@@ -2,13 +2,13 @@ import Foundation
 import gdk
 
 public struct RemoteAlert: Decodable {
-    var dismissable: Bool?
-    var isWarning: Bool?
-    var link: String?
-    var message: String?
-    var networks: [String]?
-    var screens: [String]?
-    var title: String?
+    public var dismissable: Bool?
+    public var isWarning: Bool?
+    public var link: String?
+    public var message: String?
+    public var networks: [String]?
+    public var screens: [String]?
+    public var title: String?
 
     enum CodingKeys: String, CodingKey {
         case dismissable

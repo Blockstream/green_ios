@@ -3,6 +3,7 @@ import UIKit
 import BreezSDK
 import gdk
 import greenaddress
+import core
 
 enum LTRecoverFundsType {
     case sweep

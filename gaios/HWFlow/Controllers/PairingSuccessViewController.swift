@@ -1,6 +1,7 @@
 import UIKit
 import AsyncBluetooth
 import Combine
+import core
 
 class PairingSuccessViewController: HWFlowBaseViewController {
 

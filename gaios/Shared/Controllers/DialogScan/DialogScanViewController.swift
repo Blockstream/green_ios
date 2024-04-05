@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import core
 
 protocol DialogScanViewControllerDelegate: AnyObject {
     func didScan(value: ScanResult, index: Int?)

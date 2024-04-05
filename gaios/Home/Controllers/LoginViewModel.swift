@@ -1,6 +1,7 @@
 import Foundation
 import LocalAuthentication
 import gdk
+import core
 
 class LoginViewModel {
     

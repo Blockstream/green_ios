@@ -3,6 +3,7 @@ import BreezSDK
 import UIKit
 import gdk
 import greenaddress
+import core
 
 class SendViewModel {
     

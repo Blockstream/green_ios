@@ -1,5 +1,5 @@
 import UIKit
-
+import core
 import LocalAuthentication
 
 enum OnBoardInfoSection: Int, CaseIterable {

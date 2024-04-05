@@ -2,6 +2,7 @@ import Foundation
 import BreezSDK
 import gdk
 import greenaddress
+import core
 
 struct CreateTransaction {
     var addressee: Addressee?

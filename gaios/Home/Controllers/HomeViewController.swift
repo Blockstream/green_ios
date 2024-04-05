@@ -1,5 +1,6 @@
 import UIKit
 import gdk
+import core
 
 enum HomeSection: Int, CaseIterable {
     case remoteAlerts = 0

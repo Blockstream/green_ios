@@ -3,6 +3,7 @@ import AsyncBluetooth
 import hw
 import gdk
 import UIKit
+import core
 
 class BleJadeManager {
 

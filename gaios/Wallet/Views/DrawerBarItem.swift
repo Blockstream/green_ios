@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 class DrawerBarItem: UIView {
     @IBOutlet weak var lblWallet: UILabel!

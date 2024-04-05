@@ -1,5 +1,6 @@
 import UIKit
 import gdk
+import core
 
 class AccountCell: UITableViewCell {
 

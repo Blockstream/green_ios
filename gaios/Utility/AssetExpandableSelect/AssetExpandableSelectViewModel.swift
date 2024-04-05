@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import gdk
+import core
 
 enum AssetExpandableSection: Equatable {
     case anyLiquid
