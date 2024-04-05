@@ -72,7 +72,7 @@ class DialogNodeViewController: KeyboardViewController {
             tappableBg.addGestureRecognizer(tapToClose)
 
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
-            self?.tableViewHeight.constant = table.contentSize.height
+            //self?.tableViewHeight.constant = table.contentSize.height
         }
 
         btnCloseChannel.isHidden = viewModel.hideBtnSendAll
