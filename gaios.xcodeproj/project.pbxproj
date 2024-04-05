@@ -196,6 +196,13 @@
 		345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */; };
 		345FC46829ED4D83009FCF43 /* WOTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC46629ED4D83009FCF43 /* WOTypeCell.swift */; };
 		345FC46929ED4D83009FCF43 /* WOTypeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 345FC46729ED4D83009FCF43 /* WOTypeCell.xib */; };
+		3460D2FF2BC02F8700CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
+		3460D3152BC0602E00CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
+		3460D3162BC0602F00CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
+		3460D3172BC0603000CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
+		3460D3182BC0603000CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
+		3460D3192BC0603100CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
+		3460D31A2BC0603200CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
 		34610C592B86442E005157C8 /* MasterKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34610C582B86442E005157C8 /* MasterKeyViewController.swift */; };
 		34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */; };
 		34610C5D2B864BED005157C8 /* BleUnavailableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34610C5C2B864BED005157C8 /* BleUnavailableViewController.swift */; };
@@ -1010,6 +1017,7 @@
 		345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOSelectViewController.swift; sourceTree = "<group>"; };
 		345FC46629ED4D83009FCF43 /* WOTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOTypeCell.swift; sourceTree = "<group>"; };
 		345FC46729ED4D83009FCF43 /* WOTypeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WOTypeCell.xib; sourceTree = "<group>"; };
+		3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		34610C582B86442E005157C8 /* MasterKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeyViewController.swift; sourceTree = "<group>"; };
 		34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BleUnavailable.storyboard; sourceTree = "<group>"; };
 		34610C5C2B864BED005157C8 /* BleUnavailableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleUnavailableViewController.swift; sourceTree = "<group>"; };
@@ -2960,6 +2968,7 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
+				3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */,
 				81C2F2062B879D39000845EA /* gaiosStaging.entitlements */,
 				81C2F2052B879D2B000845EA /* gaiosRelease.entitlements */,
 				8177ED3F2B6C548200C2271C /* gaiosDebug.entitlements */,
@@ -3895,6 +3904,7 @@
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				8114888B2B77F1B7004C7AB6 /* GoogleService-Dev-Info.plist in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
+				3460D2FF2BC02F8700CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 				34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */,
 				34A883A62BA82C11004A1826 /* TxDetailsActionCell.xib in Resources */,
 				34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */,
@@ -4001,6 +4011,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3460D3192BC0603100CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 				8150EE212BB72C4000E70A12 /* greenlight_device_key.txt in Resources */,
 				8150EE222BB72C5400E70A12 /* greenlight_device_cert.txt in Resources */,
 			);
@@ -4010,6 +4021,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3460D31A2BC0603200CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4017,6 +4029,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3460D3152BC0602E00CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4024,6 +4037,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3460D3162BC0602F00CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4031,6 +4045,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3460D3172BC0603000CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4038,6 +4053,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3460D3182BC0603000CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 				8150EE1F2BB727EE00E70A12 /* greenlight_device_cert.txt in Resources */,
 				8150EE1B2BB721B700E70A12 /* greenlight_device_key.txt in Resources */,
 			);
