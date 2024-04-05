@@ -15,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var navigateWindow: UIWindow?
     var resolve2faWindow: UIWindow?
-    var pushNotificationAlreadyRegistered = false
 
     func setupAppearance() {
         if #available(iOS 15.0, *) {
@@ -133,16 +132,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
 
     func registerForPushNotifications(application: UIApplication, completion: (() -> Void)? = nil) {
-        if self.pushNotificationAlreadyRegistered {
-            if let completion = completion {
-                completion()
-            }
-            return
-        }
         // Remote Notifications from FCM
-        let filePath = Bundle.main.path(forResource: Bundle.main.googleServiceInfo, ofType: "plist")!
-        let options = FirebaseOptions(contentsOfFile: filePath)
-        FirebaseApp.configure(options: options!)
+        if FirebaseApp.app() == nil {
+            let filePath = Bundle.main.path(forResource: Bundle.main.googleServiceInfo, ofType: "plist")!
+            let options = FirebaseOptions(contentsOfFile: filePath)
+            FirebaseApp.configure(options: options!)
+        }
         Messaging.messaging().delegate = self
 
         // Remote Notifications permissions
@@ -150,7 +145,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(options: authOptions) {
             (granted, error) in
-            self.pushNotificationAlreadyRegistered = true
             guard granted else { return }
             DispatchQueue.main.async {
                 if let completion = completion {
