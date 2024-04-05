@@ -82,8 +82,6 @@
 	<string>We use the camera to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Green uses biometric authentication to allow easy access to the wallet</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Receive notifications for lightning payments</string>
 	<key>UIBackgroundModes</key>
