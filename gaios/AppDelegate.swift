@@ -70,6 +70,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AnalyticsManager.shared.countlyStart()
         AnalyticsManager.shared.setupSession(session: nil)
+        
+        UNUserNotificationCenter.current().delegate = self
         return true
     }
 
@@ -111,6 +113,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        Task.detached { [weak self] in await self?.disconnect() }
+    }
+    
+    func disconnect() async {
+        for wm in WalletsRepository.shared.wallets.values {
+            if wm.logged {
+                await wm.disconnect()
+            }
+        }
     }
 
     func resolve2faOn(_ vc: UIViewController) {
@@ -129,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Firebase failed registration token: \(String(describing: error))")
+        logger.info("Firebase failed registration token: \(String(describing: error))")
     }
 
     func registerForPushNotifications(application: UIApplication, completion: (() -> Void)? = nil) {
@@ -160,7 +171,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         // User TAP on local/remote notification
         let content = response.notification.request.content.userInfo
-        print(content)
         guard let xpub = content["app_data"] as? String else {
             return
         }
@@ -172,14 +182,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         } else {
             AccountNavigator.goLogin(account: account)
         }
-        completionHandler()
+         ()
     }
 
     // Delivers a notification to an app running in the foreground.
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        
-        let content = notification.request.content.userInfo
-        print(content)
         completionHandler([.alert, .badge, .sound])
     }
     
@@ -196,7 +203,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("Firebase registration token: \(String(describing: fcmToken))")
+        logger.info("Firebase registration token: \(String(describing: fcmToken))")
         let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
         defaults?.setValue(fcmToken, forKey: "token")
     }

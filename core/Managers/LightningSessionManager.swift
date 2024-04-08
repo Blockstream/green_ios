@@ -8,41 +8,47 @@ import hw
 import core
 
 public class LightningSessionManager: SessionManager {
-
+    
     public var lightBridge: LightningBridge?
     public var nodeState: NodeState?
     public var lspInfo: LspInformation?
     public var accountId: String?
     public var isRestoredNode: Bool?
-    public var listener: EventListener?
     
     public var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
     public var workingDir: URL? { lightBridge?.workingDir }
-
+    
     public var logger = Logger(
         subsystem: Bundle.main.bundleIdentifier!,
         category: "Lightning"
     )
-
+    
     public override func connect() async throws {
         paused = false
     }
-
+    
     public override func disconnect() async throws {
+        logger.info("lightning disconnect")
         logged = false
         connected = false
         paused = false
-        lightBridge?.stop()
+        do {
+            try lightBridge?.stop()
+        } catch {
+            logger.error("lightning disconnect error \(error.localizedDescription)")
+            throw error
+        }
+        lightBridge = nil
     }
     
     public override func networkConnect() async {
         paused = false
     }
-
+    
     public override func networkDisconnect() async {
         paused = true
     }
-
+    
     func workingDir(walletHashId: String) -> URL {
         let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Bundle.main.appGroup)
         let path = "/breezSdk/\(walletHashId)/0"
@@ -52,17 +58,17 @@ public class LightningSessionManager: SessionManager {
             return containerURL!.appendingPathComponent(path)
         }
     }
-
+    
     private func initLightningBridge(_ params: Credentials, eventListener: EventListener) -> LightningBridge {
         guard let walletIdentifier = try? walletIdentifier(credentials: params) else {
             fatalError("Invalid wallet identifier")
         }
         return LightningBridge(testnet: !gdkNetwork.mainnet,
                                workingDir: workingDir(walletHashId: walletIdentifier.walletHashId),
-                               eventListener: eventListener, 
+                               eventListener: eventListener,
                                logStreamListener: self)
     }
-
+    
     private func connectToGreenlight(credentials: Credentials, checkCredentials: Bool = false) async throws {
         guard let mnemonic = credentials.mnemonic else {
             fatalError("Invalid mnemonic")
@@ -72,6 +78,12 @@ public class LightningSessionManager: SessionManager {
         AnalyticsManager.shared.loginLightningStop()
         connected = true
     }
+    
+    public func smartLogin(credentials: Credentials, listener: EventListener) async throws {
+        lightBridge = initLightningBridge(credentials, eventListener: listener)
+        try await connectToGreenlight(credentials: credentials, checkCredentials: false)
+        logged = true
+    }
 
     public override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
         guard let params = credentials else { throw LoginError.connectionFailed() }
@@ -80,7 +92,7 @@ public class LightningSessionManager: SessionManager {
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
         _ = LightningRepository.shared.get(for: walletHashId)
         isRestoredNode = false
-        lightBridge = initLightningBridge(params, eventListener: listener ?? self)
+        lightBridge = initLightningBridge(params, eventListener: self)
         do {
             try await connectToGreenlight(credentials: params, checkCredentials: restore)
             isRestoredNode = restore
@@ -324,7 +336,7 @@ public class LightningSessionManager: SessionManager {
 
 extension LightningSessionManager: EventListener {
     public func onEvent(e: BreezEvent) {
-        print ("Breez onEvent: \(e)")
+        logger.info("Breez onEvent")
         switch e {
         case .synced:
             logger.info("onLightningEvent synced")

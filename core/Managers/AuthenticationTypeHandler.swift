@@ -83,11 +83,11 @@ public class AuthenticationTypeHandler {
             if #available(iOS 11.3, *) {
                 let err = SecCopyErrorMessageString(status, nil)
 #if DEBUG
-                logger.info("Operation failed: \(String(describing: err))")
+                logger.info("Operation failed: \(String(describing: err), privacy: .public)")
 #endif
             } else {
 #if DEBUG
-                logger.info("Operation failed: \(status). Check the error message through https://osstatus.com.")
+                logger.info("Operation failed: \(status, privacy: .public). Check the error message through https://osstatus.com.")
 #endif
             }
         }
@@ -98,7 +98,7 @@ public class AuthenticationTypeHandler {
         let err = CFErrorCopyDescription(error)
         let errorString = String(describing: err!)
 #if DEBUG
-        logger.info("Operation failed: \(errorString)")
+        logger.info("Operation failed: \(errorString, privacy: .public)")
 #endif
         return errorString
     }

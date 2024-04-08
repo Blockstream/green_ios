@@ -2,7 +2,6 @@ import Foundation
 import gdk
 import greenaddress
 import hw
-import core
 
 public enum LoginError: Error, Equatable {
     case walletsJustRestored(_ localizedDescription: String? = nil)
@@ -12,20 +11,6 @@ public enum LoginError: Error, Equatable {
     case failed(_ localizedDescription: String? = nil)
     case walletMismatch(_ localizedDescription: String? = nil)
     case hostUnblindingDisabled(_ localizedDescription: String? = nil)
-}
-
-
-public actor SerialTasks<Success> {
-    private var previousTask: Task<Success, Error>?
-
-    func add(block: @Sendable @escaping () async throws -> Success) async throws -> Success {
-        let task = Task { [previousTask] in
-            let _ = await previousTask?.result
-            return try await block()
-        }
-        previousTask = task
-        return try await task.value
-    }
 }
 
 public class SessionManager {

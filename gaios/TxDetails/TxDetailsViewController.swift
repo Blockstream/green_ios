@@ -1,5 +1,6 @@
 import UIKit
 import gdk
+import core
 
 enum TxDetailsSection: Int, CaseIterable {
     case status = 0

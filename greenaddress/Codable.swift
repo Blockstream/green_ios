@@ -21,7 +21,7 @@ public extension Encodable {
 
 public extension Decodable {
 
-    static func from(_ dict: [String: Any]) -> Decodable? {
+    static func from(_ dict: [AnyHashable: Any]) -> Decodable? {
         let data = try? JSONSerialization.data(withJSONObject: dict, options: [])
         let json = try? JSONDecoder().decode(self, from: data ?? Data())
         return json

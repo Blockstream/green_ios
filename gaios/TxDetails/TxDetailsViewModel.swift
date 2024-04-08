@@ -1,5 +1,6 @@
 import UIKit
 import gdk
+import core
 
 enum TxDetailsAction {
     case speedUp
@@ -20,7 +21,7 @@ class TxDetailsViewModel {
                  "TxDetailsActionCell", "TxDetailsInfoCell"]
     
     private var hideBalance: Bool {
-        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+        return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
     
     init(wallet: WalletItem, transaction: Transaction) {

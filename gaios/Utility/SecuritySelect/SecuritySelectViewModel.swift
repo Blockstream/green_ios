@@ -110,7 +110,7 @@ class SecuritySelectViewModel {
             let _ = try await session.loginUser(credentials: credentials, hw: nil, restore: true)
             let _ = try await wm.subaccounts()
             if Bundle.main.debug {
-                try await wm.setCloseToAddress()
+                //try await wm.setCloseToAddress()
             }
             return try await session.subaccount(0)
         } else if let session = getSession(for: network) {

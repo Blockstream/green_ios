@@ -123,7 +123,7 @@ extension Transaction {
         tx.outputs = []
         tx.amounts = ["btc": Int64(swapInfo.confirmedSats + swapInfo.unconfirmedSats)]
         tx.isLightningSwap = true
-        tx.isInProgressSwap = swapInfo.status != .expired && !isRefundableSwap
+        tx.isInProgressSwap = swapInfo.status != .completed && !isRefundableSwap
         tx.isRefundableSwap = isRefundableSwap
         tx.invoice = swapInfo.bolt11
 

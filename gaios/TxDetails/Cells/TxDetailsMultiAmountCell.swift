@@ -1,5 +1,6 @@
 import UIKit
 import gdk
+import core
 
 class TxDetailsMultiAmountCell: UITableViewCell {
 
@@ -68,7 +69,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
                 let intPart = components[0]
                 var decPart = components[1]
                 if decPart.count == 8 {
-                    decPart = decPart[0..<3] + " " + decPart[3..<6] + " " + decPart[6..<8]
+                    decPart = "\(decPart[0..<3]) \(decPart[3..<6]) \(decPart[6..<8])"
                 }
                 let attributedLeftPart = NSMutableAttributedString(string: intPart + decimalSeparator)
                 let attributedRightPart = NSMutableAttributedString(string: decPart)

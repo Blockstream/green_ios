@@ -315,7 +315,6 @@
 		34A883BF2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A883BE2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib */; };
 		34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883C02BAB0329004A1826 /* TxDetailsMoreInfoCell.swift */; };
 		34A883C32BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883C22BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift */; };
-		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B170E3292E861E00A829B2 /* AddingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B170E2292E861E00A829B2 /* AddingCell.xib */; };
 		34B170E7292E864400A829B2 /* AddingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B170E6292E864400A829B2 /* AddingCell.swift */; };
 		34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B170E8292E865900A829B2 /* AddingCellModel.swift */; };
@@ -403,7 +402,6 @@
 		34F580042BA1ED1C00DCB076 /* TxDetailsAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F580022BA1ED1C00DCB076 /* TxDetailsAmountCell.swift */; };
 		34F580052BA1ED1C00DCB076 /* TxDetailsAmountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F580032BA1ED1C00DCB076 /* TxDetailsAmountCell.xib */; };
 		34F580072BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F580062BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift */; };
-		34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F8E7C22823E66C00555F5B /* AMViews.swift */; };
 		34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F9809A2913A5EC00C12D48 /* WalletAssetCell.swift */; };
 		34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F9809B2913A5EC00C12D48 /* WalletAssetCell.xib */; };
 		34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F9809E2913A72600C12D48 /* WalletAssetCellModel.swift */; };
@@ -462,7 +460,6 @@
 		812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */; };
 		812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */; };
 		813872962A04AF450092CFD2 /* LNExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813872952A04AF450092CFD2 /* LNExtensions.swift */; };
-		814292252B99852B000E6E79 /* TxReceiverTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814292242B99852B000E6E79 /* TxReceiverTask.swift */; };
 		8150EE1B2BB721B700E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE1F2BB727EE00E70A12 /* greenlight_device_cert.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */; };
@@ -481,6 +478,8 @@
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		81664BED2A31219500A0131D /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81664BEC2A31219500A0131D /* BreezSDK */; };
 		816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */; };
+		816E9BD82BC48011008DBFA7 /* BreezSDKConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816E9BD72BC48011008DBFA7 /* BreezSDKConnector.swift */; };
+		816E9BDB2BC5199C008DBFA7 /* SerialTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816E9BDA2BC5199C008DBFA7 /* SerialTasks.swift */; };
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
 		8173B8EC2AB19DB800C15C85 /* ZendeskSupportSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8173B8EB2AB19DB800C15C85 /* ZendeskSupportSDK */; };
 		8173B8EE2AB19DCD00C15C85 /* ZendeskSdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8173B8ED2AB19DCD00C15C85 /* ZendeskSdk.swift */; };
@@ -495,8 +494,6 @@
 		8177ED8E2B6C688C00C2271C /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8177ED882B6C688C00C2271C /* core.framework */; };
 		8177ED8F2B6C688C00C2271C /* core.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8177ED882B6C688C00C2271C /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8177EDA72B6C6DEE00C2271C /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8177ED882B6C688C00C2271C /* core.framework */; };
-		8177EDAE2B6C741700C2271C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8177ED422B6C563000C2271C /* NotificationService.swift */; };
-		8177EDAF2B6C742700C2271C /* LNUrlPayTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8177ED462B6C565C00C2271C /* LNUrlPayTask.swift */; };
 		8177EDB02B6C742700C2271C /* PaymentReceiverTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8177ED482B6C567100C2271C /* PaymentReceiverTask.swift */; };
 		8177EDB32B6C74A900C2271C /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8177EDB22B6C74A900C2271C /* BreezSDK */; };
 		8177EDC82B6C760900C2271C /* gdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961A4C29E46B5400E9B94D /* gdk.framework */; };
@@ -654,6 +651,9 @@
 		81F5C9862ADD3C71004B020A /* LNWithdrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C9852ADD3C71004B020A /* LNWithdrawViewController.swift */; };
 		81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C9872ADD3F5F004B020A /* LTWithdrawNoteCell.swift */; };
 		81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */; };
+		81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC542BC56F5D002E384D /* NotificationService.swift */; };
+		81F8AC572BC5A4A4002E384D /* RedeemSwap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */; };
+		81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */; };
 		81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
@@ -1302,7 +1302,6 @@
 		812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsCellModel.swift; sourceTree = "<group>"; };
 		813872932A0480E20092CFD2 /* LightningSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningSessionManager.swift; sourceTree = "<group>"; };
 		813872952A04AF450092CFD2 /* LNExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNExtensions.swift; sourceTree = "<group>"; };
-		814292242B99852B000E6E79 /* TxReceiverTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxReceiverTask.swift; sourceTree = "<group>"; };
 		8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_key.txt; sourceTree = "<group>"; };
 		8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_cert.txt; sourceTree = "<group>"; };
 		8152772629F9B52F00853EA1 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
@@ -1326,6 +1325,8 @@
 		81683F9126BC02960058982E /* Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
 		81683F9326BC088E0058982E /* WalletItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletItem.swift; sourceTree = "<group>"; };
 		816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogJadeCheckViewController.swift; sourceTree = "<group>"; };
+		816E9BD72BC48011008DBFA7 /* BreezSDKConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezSDKConnector.swift; sourceTree = "<group>"; };
+		816E9BDA2BC5199C008DBFA7 /* SerialTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialTasks.swift; sourceTree = "<group>"; };
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
 		8173B8ED2AB19DCD00C15C85 /* ZendeskSdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZendeskSdk.swift; sourceTree = "<group>"; };
@@ -1335,8 +1336,6 @@
 		81772B322992BC9800F05BF2 /* RecipientCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientCellModel.swift; sourceTree = "<group>"; };
 		81772B342992EDE900F05BF2 /* SendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendViewModel.swift; sourceTree = "<group>"; };
 		8177ED3F2B6C548200C2271C /* gaiosDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = gaiosDebug.entitlements; sourceTree = "<group>"; };
-		8177ED422B6C563000C2271C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NotificationService.swift; path = ../gaios/Breez/NotificationService.swift; sourceTree = "<group>"; };
-		8177ED462B6C565C00C2271C /* LNUrlPayTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNUrlPayTask.swift; sourceTree = "<group>"; };
 		8177ED482B6C567100C2271C /* PaymentReceiverTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentReceiverTask.swift; sourceTree = "<group>"; };
 		8177ED5F2B6C59EE00C2271C /* NotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8177ED632B6C59EF00C2271C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1479,6 +1478,9 @@
 		81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNWithdrawAmountCell.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		81F8AC542BC56F5D002E384D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemSwap.swift; sourceTree = "<group>"; };
+		81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskProtocol.swift; sourceTree = "<group>"; };
 		81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTExportJadeViewController.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		88A86540174AD367FC26E586 /* libPods-gaiosTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3154,6 +3156,14 @@
 			path = Connect;
 			sourceTree = "<group>";
 		};
+		816E9BD92BC5198A008DBFA7 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				816E9BDA2BC5199C008DBFA7 /* SerialTasks.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		81772B362992EDF800F05BF2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -3171,7 +3181,9 @@
 				8177ED822B6C659300C2271C /* NotificationServiceDebug.entitlements */,
 				8177ED632B6C59EF00C2271C /* Info.plist */,
 				8177EDB12B6C743B00C2271C /* Tasks */,
-				8177ED422B6C563000C2271C /* NotificationService.swift */,
+				816E9BD72BC48011008DBFA7 /* BreezSDKConnector.swift */,
+				81F8AC542BC56F5D002E384D /* NotificationService.swift */,
+				81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */,
 			);
 			path = NotificationService;
 			sourceTree = "<group>";
@@ -3179,6 +3191,7 @@
 		8177ED892B6C688C00C2271C /* core */ = {
 			isa = PBXGroup;
 			children = (
+				816E9BD92BC5198A008DBFA7 /* Utils */,
 				8177EDD32B6C7A2700C2271C /* Countly */,
 				8177EDCC2B6C771900C2271C /* Extensions */,
 				8177EDA62B6C6A8200C2271C /* Managers */,
@@ -3207,9 +3220,8 @@
 		8177EDB12B6C743B00C2271C /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
-				8177ED462B6C565C00C2271C /* LNUrlPayTask.swift */,
 				8177ED482B6C567100C2271C /* PaymentReceiverTask.swift */,
-				814292242B99852B000E6E79 /* TxReceiverTask.swift */,
+				81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */,
 			);
 			path = Tasks;
 			sourceTree = "<group>";
@@ -4120,7 +4132,6 @@
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
 				3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
-				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
 				34A883A82BA82C2D004A1826 /* TxDetailsActionCell.swift in Sources */,
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
 				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
@@ -4299,8 +4310,6 @@
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */,
 				81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */,
-				81F328FC29ED319300D54F1D /* ResolverManager.swift in Sources */,
-				817A0B352A404F6600E2F80D /* BLEDevice.swift in Sources */,
 				34A883BC2BAB01EA004A1826 /* TxDetailsMoreInfoViewModel.swift in Sources */,
 				34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */,
 				81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */,
@@ -4500,10 +4509,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8177EDAE2B6C741700C2271C /* NotificationService.swift in Sources */,
 				8177EDB02B6C742700C2271C /* PaymentReceiverTask.swift in Sources */,
-				8177EDAF2B6C742700C2271C /* LNUrlPayTask.swift in Sources */,
-				814292252B99852B000E6E79 /* TxReceiverTask.swift in Sources */,
+				81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */,
+				81F8AC572BC5A4A4002E384D /* RedeemSwap.swift in Sources */,
+				816E9BD82BC48011008DBFA7 /* BreezSDKConnector.swift in Sources */,
+				81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4527,6 +4537,7 @@
 				8177EE142B6C933300C2271C /* AssetInfo.swift in Sources */,
 				8177EE152B6C933300C2271C /* WalletItem.swift in Sources */,
 				8177EE162B6C933400C2271C /* Errors.swift in Sources */,
+				816E9BDB2BC5199C008DBFA7 /* SerialTasks.swift in Sources */,
 				8177EE172B6C933400C2271C /* String.swift in Sources */,
 				8177EE182B6C933400C2271C /* AuthenticationTypeHandler.swift in Sources */,
 				8177EE192B6C933400C2271C /* AssetsManager.swift in Sources */,
@@ -4922,7 +4933,7 @@
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
@@ -4970,7 +4981,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -6024,7 +6035,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -6218,7 +6229,7 @@
 			repositoryURL = "https://github.com/breez/breez-sdk-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 0.3.8;
+				version = "0.4.0-rc5";
 			};
 		};
 		8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */ = {

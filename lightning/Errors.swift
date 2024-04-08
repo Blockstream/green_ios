@@ -23,9 +23,9 @@ extension BreezSDK.SendOnchainError {
             return message
         case .PaymentTimeout(let message):
             return message
-        case .ReverseSwapInProgress(let message):
-            return message
         case .ServiceConnectivity(let message):
+            return message
+        case .OutOfRange(message: let message):
             return message
         }
     }

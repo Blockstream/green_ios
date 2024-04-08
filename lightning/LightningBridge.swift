@@ -49,9 +49,12 @@ public class LightningBridge {
         if breezSdk != nil {
             return
         }
-        breezSdk = try connect(
+        let connectRequest = ConnectRequest(
             config: createConfig(partnerCredentials),
-            seed: mnemonicToSeed(phrase: mnemonic),
+            seed: try mnemonicToSeed(phrase: mnemonic),
+            restoreOnly: checkCredentials)
+        breezSdk = try connect(
+            req: connectRequest,
             listener: eventListener)
         if breezSdk == nil {
             throw BreezSDK.SdkError.Generic(message: "id_connection_failed")
@@ -63,8 +66,8 @@ public class LightningBridge {
         _ = updateLspInformation()
     }
     
-    public func stop() {
-        try? breezSdk?.disconnect()
+    public func stop() throws {
+        try breezSdk?.disconnect()
         breezSdk = nil
     }
     
@@ -226,7 +229,7 @@ public class LightningBridge {
     }
 
     public func serviceHealthCheck() -> ServiceHealthCheckResponse? {
-        try? breezSdk?.serviceHealthCheck()
+        try? BreezSDK.serviceHealthCheck(apiKey: Bundle.main.breezApiKey ?? "")
     }
 
     public func reportIssue(paymentHash: String) {
