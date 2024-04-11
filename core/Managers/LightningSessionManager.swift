@@ -5,7 +5,6 @@ import gdk
 import greenaddress
 import lightning
 import hw
-import core
 
 public class LightningSessionManager: SessionManager {
     

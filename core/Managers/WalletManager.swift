@@ -4,7 +4,6 @@ import gdk
 import greenaddress
 import hw
 import lightning
-import core
 
 public class WalletManager {
     
@@ -102,6 +101,7 @@ public class WalletManager {
     }
     
     public func disconnect() async {
+        try? await lightningSession?.disconnect()
         for session in sessions.values {
             try? await session.disconnect()
         }
