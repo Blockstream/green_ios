@@ -41,6 +41,8 @@ class LoginViewModel {
         AnalyticsManager.shared.loginWalletStart()
         var credentials = try await decryptCredentials(usingAuth: usingAuth, withPIN: withPIN)
         credentials.bip39Passphrase = bip39passphrase
+        ///to support legacy gdk behaviour
+        credentials.password = credentials.password == "" ? nil : credentials.password
         if !bip39passphrase.isNilOrEmpty {
             account = updateEphemeralAccount(from: credentials)
         }

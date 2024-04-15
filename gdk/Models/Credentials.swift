@@ -16,7 +16,7 @@ public struct Credentials: Codable {
     public let pin: String?
     public let pinData: PinData?
     public let username: String?
-    public let password: String?
+    public var password: String?
     public let coreDescriptors: [String]?
     public let slip132ExtendedPubkeys: [String]?
 
