@@ -69,10 +69,10 @@ class TransactionCell: UITableViewCell {
                                         style: model.statusUI().style))
 
         if !(model.tx.memo?.isEmpty ?? true) {
-            addStackRow(MultiLabelViewModel(txtLeft: model.tx.memo,
-                                            txtRight: "",
-                                            hideBalance: nil,
-                                            style: .simple))
+            if let row = Bundle.main.loadNibNamed("SingleLabelView", owner: self, options: nil)?.first as? SingleLabelView {
+                row.configure(model.tx.memo ?? "")
+                innerStack.addArrangedSubview(row)
+            }
         }
 
         progressBar.progress = model.statusUI().progress ?? 0
