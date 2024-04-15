@@ -17,7 +17,7 @@ public class BleJadeCommands: BleJadeConnection {
     public static let PIN_SERVER_ONION = "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion"
     public static let PIN_SERVERv2_HTTPS = "https://j8d.io"
 
-    public static let MIN_ALLOWED_FW_VERSION = "0.1.24"
+    public static let MIN_ALLOWED_FW_VERSION = "0.1.44"
     public static let FW_JADE_PATH = "/bin/jade/"
     public static let FW_JADEDEV_PATH = "/bin/jadedev/"
     public static let FW_JADE1_1_PATH = "/bin/jade1.1/"
