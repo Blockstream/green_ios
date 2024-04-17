@@ -91,6 +91,7 @@ public class AccountsRepository {
         account.removeLightningShortcut()
         if let derivedAccount = account.getDerivedLightningAccount() {
             derivedAccount.removeLightningCredentials()
+            derivedAccount.removeLightningShortcut()
         }
     }
 
