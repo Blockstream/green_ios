@@ -13,26 +13,33 @@ class TxDetailsMoreInfoViewModel {
         
         var list: [TxDetailsMoreInfoCellModel] = []
         
-        if let destinationPubkey = transaction.destinationPubkey?.1 {
+        if let destinationPubkey = transaction.destinationPubkey {
             list.append(TxDetailsMoreInfoCellModel(title: "Destination Public Key".localized,
                                        hint: destinationPubkey))
         }
-        if let paymentHash = transaction.paymentHash?.1 {
+        if let paymentHash = transaction.paymentHash {
             list.append(TxDetailsMoreInfoCellModel(title: "Payment Hash".localized,
                                                    hint: paymentHash))
         }
-        if let paymentPreimage = transaction.paymentPreimage?.1 {
+        if let paymentPreimage = transaction.paymentPreimage {
             list.append(TxDetailsMoreInfoCellModel(title: "Payment Pre Image".localized,
                                                    hint: paymentPreimage))
         }
-        if let invoice = transaction.invoice?.1 {
+        if let invoice = transaction.invoice {
             list.append(TxDetailsMoreInfoCellModel(title: "Invoice".localized,
                                                    hint: invoice))
         }
-        if let hash = transaction.hash {
-            list.append(TxDetailsMoreInfoCellModel(title: "Invoice".localized,
-                                                   hint: hash))
+
+        if let fundingTxid = transaction.fundingTxid {
+            list.append(TxDetailsMoreInfoCellModel(title: "Funding Transaction Id".localized,
+                                                   hint: fundingTxid))
         }
+        
+        if let closingTxid = transaction.closingTxid {
+            list.append(TxDetailsMoreInfoCellModel(title: "Closing Transaction Id".localized,
+                                                   hint: closingTxid))
+        }
+        
         return list
     }
 }

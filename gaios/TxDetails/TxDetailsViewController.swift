@@ -508,7 +508,7 @@ extension TxDetailsViewController {
             ])
         } else {
             NSLayoutConstraint.activate([
-                v.topAnchor.constraint(equalTo: section.topAnchor, constant: 20),
+                v.topAnchor.constraint(equalTo: section.topAnchor, constant: 10),
                 v.bottomAnchor.constraint(equalTo: section.bottomAnchor , constant: 0)
             ])
         }

@@ -27,7 +27,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="lbl_hint" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pvb-kw-0Ys">
-                                <rect key="frame" x="89.333333333333357" y="0.0" width="150.66666666666663" height="21.666666666666668"/>
+                                <rect key="frame" x="89.333333333333357" y="0.0" width="150.66666666666663" height="57"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -47,12 +47,11 @@
                             <constraint firstItem="Pvb-kw-0Ys" firstAttribute="leading" secondItem="1cm-23-Vc4" secondAttribute="trailing" constant="10" id="52W-Cn-Fbd"/>
                             <constraint firstItem="1cm-23-Vc4" firstAttribute="top" secondItem="UB4-3a-pAv" secondAttribute="top" id="ezz-CB-4tc"/>
                             <constraint firstItem="1cm-23-Vc4" firstAttribute="width" secondItem="UB4-3a-pAv" secondAttribute="width" multiplier="0.33" id="fBi-gS-hhn"/>
-                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="1cm-23-Vc4" secondAttribute="bottom" id="kHJ-ft-Xcy"/>
                             <constraint firstItem="fRk-hp-orD" firstAttribute="top" secondItem="UB4-3a-pAv" secondAttribute="top" id="ojL-Sr-9Ry"/>
                             <constraint firstItem="1cm-23-Vc4" firstAttribute="leading" secondItem="UB4-3a-pAv" secondAttribute="leading" id="uZB-Tr-iiV"/>
                             <constraint firstAttribute="bottom" secondItem="fRk-hp-orD" secondAttribute="bottom" id="vHl-CD-ZWA"/>
                             <constraint firstItem="fRk-hp-orD" firstAttribute="leading" secondItem="UB4-3a-pAv" secondAttribute="leading" id="ww0-CO-ufd"/>
-                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Pvb-kw-0Ys" secondAttribute="bottom" id="x1L-Ol-aa3"/>
+                            <constraint firstAttribute="bottom" secondItem="Pvb-kw-0Ys" secondAttribute="bottom" constant="10" id="x1L-Ol-aa3"/>
                             <constraint firstAttribute="trailing" secondItem="fRk-hp-orD" secondAttribute="trailing" id="yD7-LN-Nse"/>
                         </constraints>
                     </view>

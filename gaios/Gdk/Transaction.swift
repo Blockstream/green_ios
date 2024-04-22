@@ -73,16 +73,11 @@ extension Transaction {
         tx.fee = payment.feeMsat / 1000
         tx.createdAtTs = payment.paymentTime * 1000000
         tx.feeRate = 0
-        switch payment.details {
-        case .closedChannel(let data):
-            tx.hash = data.closingTxid
-        case .ln(_):
-            tx.hash = nil
-        }
         tx.type = payment.paymentType == .received ? .incoming : .outgoing
         tx.amounts = ["btc": payment.amountSatoshi]
         tx.isLightningSwap = false
         tx.isPendingCloseChannel = payment.paymentType == PaymentType.closedChannel && payment.status == PaymentStatus.pending
+        
         switch payment.details {
         case .ln(let data):
             switch data.lnurlSuccessAction {
@@ -100,12 +95,15 @@ extension Transaction {
             default:
                 break
             }
-            tx.paymentHash = ("paymentHash", data.paymentHash)
-            tx.destinationPubkey = ("destinationPubkey", data.destinationPubkey)
-            tx.paymentPreimage = ("paymentPreimage", data.paymentPreimage)
-            tx.invoice = ("invoice", data.bolt11)
-        default:
-            break
+            tx.paymentHash = data.paymentHash
+            tx.destinationPubkey = data.destinationPubkey
+            tx.paymentPreimage = data.paymentPreimage
+            tx.invoice = data.bolt11
+            tx.hash = payment.id
+        case .closedChannel(let data):
+            tx.hash = data.closingTxid
+            tx.closingTxid = data.closingTxid
+            tx.fundingTxid = data.fundingTxid
         }
         return tx
     }
@@ -127,6 +125,8 @@ extension Transaction {
         tx.isLightningSwap = true
         tx.isInProgressSwap = swapInfo.confirmedSats > 0 && !isRefundableSwap
         tx.isRefundableSwap = isRefundableSwap
+        tx.invoice = swapInfo.bolt11
+
         return tx
     }
     
