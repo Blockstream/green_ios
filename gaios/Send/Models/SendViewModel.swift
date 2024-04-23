@@ -197,23 +197,26 @@ class SendViewModel {
     }
     
     var amountError: String? {
-        return ["id_invalid_amount", "id_no_amount_specified", "id_insufficient_funds", "id_invalid_payment_request_assetid", "id_invalid_asset_id"].contains(inputError) ? inputError : nil
+        return ["id_invalid_amount",
+                "id_no_amount_specified",
+                "id_insufficient_funds",
+                "id_invalid_payment_request_assetid",
+                "id_invalid_asset_id",
+                "id_amount_must_be_at_least_s",
+                "id_amount_must_be_at_most_s",
+                "id_amount_above_maximum_allowed",
+                "id_amount_below_minimum_allowed",
+                "id_amount_below_the_dust_threshold"
+        ].contains(inputError) ? inputError : nil
     }
     
     var addressError: String? {
-        return ["id_invalid_address", "id_invalid_private_key"].contains(inputError) ? inputError : nil
+        return ["id_invalid_address", 
+                "id_invoice_expired",
+                "id_invalid_private_key"
+        ].contains(inputError) ? inputError : nil
     }
-    
-    var inlineErrors = [
-        "id_invalid_address",
-        "id_invalid_private_key",
-        "id_invalid_amount",
-        "id_no_amount_specified",
-        "id_insufficient_funds",
-        "id_invalid_payment_request_assetid",
-        "id_invalid_asset_id"
-    ]
-    
+
     func reload() {
         guard let tx = self.transaction else { return }
         inputError = tx.error

@@ -62,7 +62,7 @@ fi
 
 # Import Green key
 PGPKEY="04BEBF2E35A2AF2FFDF1FA5DE7F054AA2E76E792"
-gpg --keyserver pgp.mit.edu --recv-keys $PGPKEY
+gpg --recv-keys $PGPKEY
 # Download the key file
 curl -sL -o IOS_SHA256SUMS.asc https://github.com/Blockstream/gdk/releases/download/$TAGNAME/IOS_SHA256SUMS.asc
 # Check the signed key
@@ -77,7 +77,7 @@ update() {
     TARURL="https://github.com/Blockstream/gdk/releases/download/$TAGNAME/$TARFILE"
     curl -sL -o $TARFILE $TARURL
     SHA256_TAR=$(shasum -a256 $TARFILE | awk '{print $1;}')
-    SHA256_SUM=$(cat IOS_SHA256SUMS | grep $TARFILE | awk '{print $1;}')
+    SHA256_SUM=$(cat IOS_SHA256SUMS.asc | grep $TARFILE | awk '{print $1;}')
     if [ "$SHA256_TAR" != "$SHA256_SUM" ]; then
         echo "Shasum ${TARFILE} mismatch"
         exit 1

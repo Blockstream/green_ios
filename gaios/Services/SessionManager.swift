@@ -396,11 +396,12 @@ class SessionManager {
         wallet.network = self.gdkNetwork.network
         return wallet
     }
-    
+
     func renameSubaccount(subaccount: UInt32, newName: String) async throws {
-        try self.session?.renameSubaccount(subaccount: subaccount, newName: newName)
+        let res = try self.session?.updateSubaccount(details: ["subaccount": subaccount, "name": newName])
+        _ = try await resolve(res)
     }
-    
+
     func changeSettings(settings: Settings) async throws -> Settings? {
         return try await wrapperAsync(fun: self.session?.changeSettings, params: settings)
     }
