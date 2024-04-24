@@ -69,17 +69,14 @@ class SendViewModel {
         }
     }
     var defaultMinFee: UInt64 { session.gdkNetwork.liquid ? 100 : 1000 }
-    var feeLiquidEstimates = [UInt64](repeating: 100, count: 25)
-    var feeBtcEstimates = [UInt64](repeating: 1000, count: 25)
-    var feeEstimates: [UInt64] {
-        session.gdkNetwork.liquid ? feeLiquidEstimates : feeBtcEstimates
-    }
+    var feeEstimates = [UInt64](repeating: 100, count: 25)
+    var minFeeEstimate: UInt64? { feeEstimates.first }
     
-    func loadFees() async {
-        let session = self.wm?.activeSessions.values.filter { !$0.gdkNetwork.liquid && !$0.gdkNetwork.lightning }.first
-        if let fees = try? await session?.getFeeEstimates() {
-            self.feeBtcEstimates = fees
+    func getFeeEstimates() async -> [UInt64] {
+        if let fees = try? await session.getFeeEstimates() {
+            self.feeEstimates = fees
         }
+        return self.feeEstimates
     }
     
     private var session: SessionManager { account.session! }
@@ -206,7 +203,8 @@ class SendViewModel {
                 "id_amount_must_be_at_most_s",
                 "id_amount_above_maximum_allowed",
                 "id_amount_below_minimum_allowed",
-                "id_amount_below_the_dust_threshold"
+                "id_amount_below_the_dust_threshold",
+                "Insufficient funds for fees"
         ].contains(inputError) ? inputError : nil
     }
     
@@ -263,7 +261,7 @@ class SendViewModel {
     var feeCellModel: FeeEditCellModel {
         return FeeEditCellModel(fee: fee,
                                 feeRate: feeRate,
-                                txError: nil,
+                                txError: transaction?.error,
                                 feeEstimates: feeEstimates,
                                 inputDenomination: inputDenomination,
                                 transactionPriority: transactionPriority)

@@ -85,10 +85,9 @@ class FeeEditCell: UITableViewCell {
     }
 
     func configure(tx: Transaction?, cellModel: FeeEditCellModel, delegate: FeeEditCellDelegate) {
-        lblFeeValue.isHidden = true
-        lblFeeRate.isHidden = true
-        lblFeeFiat.isHidden = true
-        lblInvalidFee.isHidden = true
+        lblFeeValue.text = ""
+        lblFeeRate.text = ""
+        lblFeeFiat.text = ""
         self.delegate = delegate
 
         let estimateConfirmTime = cellModel.transactionPriority?.time(isLiquid: WalletManager.current?.account.gdkNetwork.liquid ?? false)
@@ -109,19 +108,19 @@ class FeeEditCell: UITableViewCell {
         }
 
         let btc = tx?.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
-        if ((cellModel.txError ?? "").isEmpty || cellModel.txError == "id_invalid_replacement_fee_rate"), let fee = cellModel.fee, let feeRate = cellModel.feeRate {
+        if let fee = cellModel.fee {
             if let balance = Balance.fromSatoshi(fee, assetId: btc) {
                 let (amount, denom) = balance.toDenom(cellModel.inputDenomination)
                 lblFeeValue.text = "\(amount) \(denom)"
                 let (fiat, fiatCurrency) = balance.toFiat()
                 lblFeeFiat.text = "≈ \(fiat) \(fiatCurrency)"
-                lblFeeRate.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(feeRate) / 1000))"
-                lblFeeValue.isHidden = false
-                lblFeeRate.isHidden = false
-                lblFeeFiat.isHidden = false
             }
         }
-        lblInvalidFee.isHidden = !(cellModel.txError == "id_invalid_replacement_fee_rate")
+        if let feeRate = cellModel.feeRate {
+            lblFeeRate.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(feeRate) / 1000))"
+        }
+        lblInvalidFee.text = cellModel.txError?.localized ?? ""
+        lblInvalidFee.isHidden = cellModel.txError != "id_invalid_replacement_fee_rate"
         btnCustomFee.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.setCutomFeeBtn
     }
 

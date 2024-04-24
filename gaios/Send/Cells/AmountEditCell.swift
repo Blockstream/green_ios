@@ -118,7 +118,7 @@ class AmountEditCell: UITableViewCell {
     func configure(cellModel: AmountEditCellModel, delegate: AmountEditCellDelegate) {
         self.delegate = delegate
         self.cellModel = cellModel
-        errorLabel.text = cellModel.error?.localized ?? ""
+        errorLabel.text = (cellModel.error ?? "").localized
         amountTextField.delegate = self
         //amountTextField.text = cellModel.text
         amountTextField.isEnabled = cellModel.editable

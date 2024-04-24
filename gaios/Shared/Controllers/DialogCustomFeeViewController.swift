@@ -24,7 +24,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
     @IBOutlet weak var scrollView: UIScrollView!
 
     weak var delegate: DialogCustomFeeViewControllerDelegate?
-    var storedFeeRate: UInt64?
+    var feeRate: UInt64?
     var buttonConstraint: NSLayoutConstraint?
     var account: WalletItem!
 
@@ -51,10 +51,6 @@ class DialogCustomFeeViewController: KeyboardViewController {
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
         view.alpha = 0.0
-
-        feeTextField.keyboardType = .decimalPad
-        feeTextField.attributedPlaceholder = NSAttributedString(string: String(Double(storedFeeRate ?? 1000) / 1000),
-                                                                attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         updateUI()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.DialogCustomFeeScreen.view
@@ -68,6 +64,9 @@ class DialogCustomFeeViewController: KeyboardViewController {
             self.view.alpha = 1.0
         }
         feeTextField.becomeFirstResponder()
+        feeTextField.keyboardType = .decimalPad
+        feeTextField.attributedPlaceholder = NSAttributedString(string: String(Double(feeRate ?? 1000) / 1000),
+                                                                attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
     }
 
     func updateUI() {
@@ -84,23 +83,16 @@ class DialogCustomFeeViewController: KeyboardViewController {
 
     func validate() {
         Task {
-            var feeRate: UInt64
             let minFeeRate = await self.minFeeRate()
-            if let storedFeeRate = storedFeeRate {
-                feeRate = storedFeeRate
-            } else if let settings = account.session?.settings {
-                feeRate = UInt64(settings.customFeeRate ?? minFeeRate)
-            } else {
-                feeRate = minFeeRate
-            }
             guard var amountText = feeTextField.text else { return }
             amountText = amountText.isEmpty ? "0" : amountText
             amountText = amountText.unlocaleFormattedString(8)
             guard let number = Double(amountText), number > 0 else { return }
             if 1000 * number >= Double(UInt64.max) { return }
-            feeRate = UInt64(1000 * number)
+            let feeRate = UInt64(1000 * number)
             if feeRate < minFeeRate {
-                DropAlert().warning(message: String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(minFeeRate)))
+                let value = Double(minFeeRate) / 1000
+                DropAlert().warning(message: String(format: "id_fee_rate_must_be_at_least_s".localized, String(format: "%.2f", value)))
                 return
             }
             dismiss(.save, feeRate: feeRate)

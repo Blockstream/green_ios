@@ -39,7 +39,7 @@ class SendViewController: KeyboardViewController {
 
     func loadFeesAndTransaction() async {
         if !viewModel.account.isLightning {
-            await viewModel.loadFees()
+            _ = await viewModel.getFeeEstimates()
         }
         if viewModel.transaction == nil {
             return
@@ -360,7 +360,11 @@ extension SendViewController: FeeEditCellDelegate {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.account = viewModel.account
-            vc.storedFeeRate = viewModel.feeRate
+            if viewModel.inputType == .bumpFee {
+                vc.feeRate = (viewModel.transaction?.previousTransaction?["fee_rate"] as? UInt64 ?? 0) + viewModel.defaultMinFee
+            } else {
+                vc.feeRate = viewModel.minFeeEstimate ?? viewModel.defaultMinFee
+            }
             present(vc, animated: false, completion: nil)
         }
     }
@@ -389,9 +393,10 @@ extension SendViewController: AccountAssetViewControllerDelegate {
         viewModel.assetId = asset.assetId
         tableView.reloadData()
         Task {
+            _ = await viewModel.getFeeEstimates()
             try await viewModel.validateInput()
             self.refreshAmountCell()
-            self.reloadSections([.address, .amount], animated: false)
+            self.reloadSections([.address, .amount, .fee], animated: false)
             if self.viewModel.satoshi != nil {
                 try? await validateTransaction()
             }

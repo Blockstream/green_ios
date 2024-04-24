@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Sending Liquid bitcoin with jade
+- Improve fee calculation
 
 ### Changed
 - Refactoring transaction details screen
