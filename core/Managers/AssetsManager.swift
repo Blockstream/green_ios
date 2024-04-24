@@ -2,14 +2,19 @@ import Foundation
 import UIKit
 import gdk
 
+public protocol AssetsProvider {
+    func getAssets(params: GetAssetsParams) -> GetAssetsResult?
+    func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws
+}
+
 public class AssetsManager {
 
     private let testnet: Bool
     private var infos = [String: AssetInfo?]()
     private var icons = [String: String?]()
     private var uncached = [String]()
-    private var session: SessionManager?
     private let qos = DispatchQueue(label: "AssetsManagerDispatchQueue", qos: .userInteractive)
+    private var updatedAt: TimeInterval?
 
     public init(testnet: Bool) {
         self.testnet = testnet
@@ -26,21 +31,21 @@ public class AssetsManager {
         return infos.compactMap { $0.value }
     }
 
-    public func getAsset(for key: String) {
-        let assets = session?.getAssets(params: GetAssetsParams(assetsId: [key]))
+    private func getAsset(for key: String, provider: AssetsProvider) {
+        let assets = provider.getAssets(params: GetAssetsParams(assetsId: [key]))
         if let assets = assets {
             infos.merge(assets.assets.isEmpty ? [key: nil] : assets.assets, uniquingKeysWith: {_, new in new})
             icons.merge(assets.icons.isEmpty ? [key: nil] : assets.icons, uniquingKeysWith: {_, new in new})
         }
     }
 
-    public func getInfo(for key: String) -> AssetInfo? {
+    private func getInfo(for key: String, provider: AssetsProvider) -> AssetInfo? {
         let main = [AssetInfo.btc, AssetInfo.lbtc, AssetInfo.test, AssetInfo.ltest].filter { $0.assetId == key }.first
         if let main = main {
             return main
         }
-        if infos[key] == nil {
-            getAsset(for: key)
+        if !infos.keys.contains(key) {
+            getAsset(for: key, provider: provider)
         }
         if let asset = infos[key], let asset = asset {
             return asset
@@ -48,12 +53,12 @@ public class AssetsManager {
         return nil
     }
 
-    public func getImage(for key: String) -> UIImage? {
+    private func getImage(for key: String, provider: AssetsProvider) -> UIImage? {
         if [AssetInfo.btcId, AssetInfo.testId].contains(key) {
             return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
         }
-        if icons[key] == nil {
-            getAsset(for: key)
+        if !icons.keys.contains(key) {
+            getAsset(for: key, provider: provider)
         }
         if let icon = icons[key], let icon = icon {
             return UIImage(base64: icon)
@@ -61,29 +66,31 @@ public class AssetsManager {
         return nil
     }
 
-    public func info(for key: String) -> AssetInfo {
-        return qos.sync() { getInfo(for: key) ?? AssetInfo(assetId: key, name: nil, precision: 0, ticker: nil) }
+    public func info(for key: String, provider: AssetsProvider) -> AssetInfo {
+        return qos.sync() { getInfo(for: key, provider: provider) ?? AssetInfo(assetId: key, name: nil, precision: 0, ticker: nil) }
     }
 
-    public func image(for key: String) -> UIImage {
-        return qos.sync() { getImage(for: key) ?? UIImage(named: "default_asset_icon") ?? UIImage() }
+    public func image(for key: String, provider: AssetsProvider) -> UIImage {
+        return qos.sync() { getImage(for: key, provider: provider) ?? UIImage(named: "default_asset_icon") ?? UIImage() }
     }
 
-    public func hasImage(for key: String?) -> Bool {
-        return qos.sync() { getImage(for: key ?? "") != nil }
+    public func hasImage(for key: String?, provider: AssetsProvider) -> Bool {
+        return qos.sync() { getImage(for: key ?? "", provider: provider) != nil }
     }
 
-    public func refresh(session: SessionManager?) async throws {
-        self.session = session ?? self.session
-        try await self.session?.connect()
-        try await self.fetchFromCountly(session: self.session)
-        try await self.session?.refreshAssets(icons: true, assets: true, refresh: true)
-        let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
-        NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+    public func refreshIfNeeded(provider: AssetsProvider) async throws {
+        let interval = CFAbsoluteTimeGetCurrent() - (updatedAt ?? .zero)
+        if updatedAt == nil || interval > 120 {
+            try await self.fetchFromCountly(provider: provider)
+            try await provider.refreshAssets(icons: true, assets: true, refresh: true)
+            updatedAt = CFAbsoluteTimeGetCurrent()
+            let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
+            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+        }
     }
 
-    public func cache(session: SessionManager?) async throws {
-        try await self.session?.refreshAssets(icons: true, assets: true, refresh: false)
+    public func cache(provider: AssetsProvider) async throws {
+        try await provider.refreshAssets(icons: true, assets: true, refresh: false)
     }
 
     public func getAssetsFromCountly() async throws -> [EnrichedAsset] {
@@ -93,9 +100,9 @@ public class AssetsManager {
         return res ?? []
     }
 
-    public func fetchFromCountly(session: SessionManager?) async throws {
+    public func fetchFromCountly(provider: AssetsProvider) async throws {
         let assets = try await getAssetsFromCountly()
-        let res = session?.getAssets(params: GetAssetsParams(assetsId: assets.map { $0.id }))
+        let res = provider.getAssets(params: GetAssetsParams(assetsId: assets.map { $0.id }))
         qos.sync() {
             self.infos.merge(res?.assets ?? [:], uniquingKeysWith: {_, new in new})
             self.icons.merge(res?.icons ?? [:], uniquingKeysWith: {_, new in new})

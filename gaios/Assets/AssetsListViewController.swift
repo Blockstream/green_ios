@@ -60,7 +60,7 @@ extension AssetsListViewController: UITableViewDelegate, UITableViewDataSource {
             let assetAmount = assetAmountList.amounts[indexPath.row]
             let tag = assetAmount.0
             let info = assetAmountList.assets[tag]
-            let icon = WalletManager.current?.registry.image(for: tag)
+            let icon = WalletManager.current?.image(for: tag)
             let satoshi = assetAmount.1
             cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
             cell.selectionStyle = .none

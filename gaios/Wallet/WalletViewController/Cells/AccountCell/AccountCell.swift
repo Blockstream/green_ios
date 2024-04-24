@@ -158,7 +158,7 @@ class AccountCell: UITableViewCell {
     func reloadAmounts(_ model: AccountCellModel) {
         let list = model.hasTxs ? model.account.satoshi ?? [:] : [:]
         let assets = AssetAmountList(list)
-        let registry = WalletManager.current?.registry
+        let registry = WalletManager.current
         var icons = [UIImage]()
         assets.amounts.compactMap {
             if model.networkType.lightning && $0.0 == "btc" {

@@ -18,8 +18,8 @@ class WalletAssetCellModel {
     }
 
     func load() {
-        asset = WalletManager.current?.registry.info(for: assetId)
-        icon = WalletManager.current?.registry.image(for: assetId)
+        asset = WalletManager.current?.info(for: assetId)
+        icon = WalletManager.current?.image(for: assetId)
 
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId)?.toValue() {
             self.value = "\(balance.0) \(balance.1)"

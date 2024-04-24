@@ -55,7 +55,7 @@ class SecuritySelectViewModel {
         if anyLiquidAmpAsset {
             return false
         }
-        if let asset = asset, let asset = WalletManager.current?.registry.info(for: asset), asset.amp ?? false {
+        if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false {
             return false
         } else {
             return true
@@ -79,7 +79,7 @@ class SecuritySelectViewModel {
             return listLiquid(extended: extended)
         } else if AssetInfo.btcId == asset { // btc
             return listBitcoin(extended: extended)
-        } else if let asset = asset, let asset = WalletManager.current?.registry.info(for: asset), asset.amp ?? false { // amp liquid asset
+        } else if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false { // amp liquid asset
             return [.Amp]
         } else { // liquid
             return listLiquid(extended: extended)

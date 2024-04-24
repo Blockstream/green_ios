@@ -142,7 +142,7 @@ class TxDetailsStatusCell: UITableViewCell {
             if model.transaction.subaccountItem?.gdkNetwork.lightning ?? false {
                 icons = [UIImage(named: "ic_lightning_btc")!]
             } else {
-                let registry = WalletManager.current?.registry
+                let registry = WalletManager.current
                 let ids = amounts.map { $0.0 }
                 for asset in ids {
                     let icon = registry?.image(for: asset) ?? UIImage()

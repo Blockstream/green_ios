@@ -21,13 +21,13 @@ struct RecipientCellModel {
 
     var asset: AssetInfo? {
         get async throws {
-            await WalletManager.current?.registry.info(for: assetId ?? "")
+            WalletManager.current?.info(for: assetId)
         }
     }
 
     var assetImage: UIImage? {
         get async throws {
-            await WalletManager.current?.registry.image(for: assetId ?? "")
+            WalletManager.current?.image(for: assetId)
         }
     }
 

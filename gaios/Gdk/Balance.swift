@@ -15,7 +15,7 @@ extension Balance {
         return [AssetInfo.btcId, AssetInfo.lbtcId, AssetInfo.testId, AssetInfo.ltestId].contains(assetId ?? "")
     }
     static func getAsset(_ assetId: String) -> AssetInfo? {
-        return WalletManager.current?.registry.info(for: assetId)
+        return WalletManager.current?.info(for: assetId)
     }
 
     static func from(details: [String: Any]) -> Balance? {

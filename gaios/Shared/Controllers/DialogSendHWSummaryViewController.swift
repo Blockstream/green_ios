@@ -61,7 +61,7 @@ class DialogSendHWSummaryViewController: UIViewController {
             let addreessee = transaction.addressees.first
             let assetId = (account.gdkNetwork.liquid ) ? addreessee?.assetId ?? "" : "btc"
             let value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
-            let registry = WalletManager.current?.registry
+            let registry = WalletManager.current
             if let balance = Balance.fromSatoshi(abs(value), assetId: assetId) {
                 let (value, ticker) = balance.toValue()
                 let (fiat, fiatCurrency) = balance.toFiat()

@@ -49,8 +49,7 @@ struct AddresseeCellModel {
         if tx.subaccountItem?.gdkNetwork.lightning ?? false {
             return UIImage(named: "ic_lightning_btc")
         } else {
-            let registry = WalletManager.current?.registry
-            return registry?.image(for: assetId)
+            return WalletManager.current?.image(for: assetId)
         }
     }
 }

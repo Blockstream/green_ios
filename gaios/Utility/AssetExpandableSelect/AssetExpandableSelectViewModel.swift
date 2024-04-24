@@ -108,7 +108,7 @@ class AssetExpandableSelectViewModel {
         } else {
             // for liquid
             accounts.removeAll { !$0.gdkNetwork.liquid }
-            if let asseInfo = wm?.registry.getInfo(for: assetId), asseInfo.amp ?? false {
+            if let asseInfo = wm?.info(for: assetId), asseInfo.amp ?? false {
                 // for liquid amp
                 accounts.removeAll { $0.type != .amp }
             }

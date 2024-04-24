@@ -54,8 +54,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
         if model?.tx.subaccountItem?.gdkNetwork.lightning ?? false {
             iconAsset.image = UIImage(named: "ic_lightning_btc")
         } else {
-            let registry = WalletManager.current?.registry
-            Task { iconAsset.image = await registry?.image(for: model!.id) }
+            iconAsset.image = WalletManager.current?.image(for: model!.id)
         }
     }
 

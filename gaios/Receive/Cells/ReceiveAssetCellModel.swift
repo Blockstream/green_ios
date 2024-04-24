@@ -11,18 +11,15 @@ struct ReceiveAssetCellModel {
         if account.gdkNetwork.lightning {
             return UIImage(named: "ic_lightning_btc")
         } else {
-            let registry = WalletManager.current?.registry
-            return registry?.image(for: assetId)
+            return WalletManager.current?.image(for: assetId)
         }
     }
 
     var assetName: String? {
-        let registry = WalletManager.current?.registry
-        return registry?.info(for: assetId).name
+        WalletManager.current?.info(for: assetId).name
     }
 
     var ticker: String? {
-        let registry = WalletManager.current?.registry
-        return registry?.info(for: assetId).ticker
+        WalletManager.current?.info(for: assetId).ticker
     }
 }

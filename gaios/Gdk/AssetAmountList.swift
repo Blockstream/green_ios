@@ -11,7 +11,7 @@ class AssetAmountList {
     var ids: [String] { amounts.map { $0.0} }
 
     init(_ amounts: [String: Int64]) {
-        let registry = WalletManager.current?.registry
+        let registry = WalletManager.current
         for assetId in amounts.keys {
             let assetInfo = registry?.info(for: assetId)
             assets[assetId] = assetInfo
@@ -65,7 +65,6 @@ class AssetAmountList {
     }
 
     func image(for id: String) -> UIImage {
-        let registry = WalletManager.current?.registry
-        return registry?.image(for: id) ?? UIImage()
+        return WalletManager.current?.image(for: id) ?? UIImage()
     }
 }

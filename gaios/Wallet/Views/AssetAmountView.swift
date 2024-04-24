@@ -31,7 +31,7 @@ class AssetAmountView: UIView {
             lblAmount.text = String(format: "%@%@", satoshi > 0 ? "+" : "", value)
             lblDenom.text = "\(denom)"
         }
-        icon.image = WalletManager.current?.registry.image(for: assetId)
+        icon.image = WalletManager.current?.image(for: assetId)
         lblAmount.textColor = satoshi > 0 ? .customMatrixGreen() : .white
         setSpvVerifyIcon(tx: tx)
     }

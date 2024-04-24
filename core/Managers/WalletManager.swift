@@ -388,13 +388,20 @@ public class WalletManager {
     public var liquidMultisigNetwork: NetworkSecurityCase { mainnet ? .liquidMS : .testnetLiquidMS }
     public var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
 
+    public var bitcoinNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [bitcoinMultisigNetwork] }
+    public var liquidNetworks: [NetworkSecurityCase] { [liquidSinglesigNetwork] + [liquidMultisigNetwork] }
+    
+    public var activeBitcoinSessions: [SessionManager] {
+        bitcoinNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
+    }
+    public var activeLiquidSessions: [SessionManager] {
+        liquidNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
+    }
     public var activeSinglesigSessions: [SessionManager] {
-        singlesigNetworks.compactMap { sessions[$0.rawValue] }
-            .filter { $0.logged }
+        singlesigNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
     }
     public var activeMultisigSessions: [SessionManager] {
-        multisigNetworks.compactMap { sessions[$0.rawValue] }
-            .filter { $0.logged }
+        multisigNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
     }
     public var activeSinglesigNetworks: [NetworkSecurityCase] {
         activeSinglesigSessions.map { $0.networkType }
@@ -443,15 +450,8 @@ public class WalletManager {
     }
 
     public func loadRegistry() async throws {
-        let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
-        let liquidSessions = sessions.filter { liquidNetworks.map { $0.rawValue }.contains($0.key) }
-        var session = liquidSessions.filter({ $0.value.logged }).first?.value
-        session = session ?? liquidSessions.filter({ $0.value.connected }).first?.value
-        session = session ?? SessionManager(liquidNetworks.first!.gdkNetwork)
-        if let session = session {
-            try await registry.cache(session: session)
-            Task { try await registry.refresh(session: session) }
-        }
+        try await registry.cache(provider: self)
+        Task { try await registry.refreshIfNeeded(provider: self) }
     }
 
     public func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
@@ -588,5 +588,34 @@ public class WalletManager {
         if let address = address?.address {
             try await lightningSession?.lightBridge?.setCloseToAddress(closeToAddress: address)
         }
+    }
+}
+extension WalletManager {
+
+    public func refreshIfNeeded() async throws {
+        try await registry.refreshIfNeeded(provider: self)
+    }
+    
+    public func info(for key: String?) -> AssetInfo {
+        registry.info(for: key ?? "", provider: self)
+    }
+
+    public func image(for key: String?) -> UIImage {
+        registry.image(for: key ?? "", provider: self)
+    }
+
+    public func hasImage(for key: String?) -> Bool {
+        registry.hasImage(for: key ?? "", provider: self)
+    }
+}
+extension WalletManager: AssetsProvider {
+    public func getAssets(params: gdk.GetAssetsParams) -> gdk.GetAssetsResult? {
+        let session = activeLiquidSessions.first ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
+        return session.getAssets(params: params)
+    }
+
+    public func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
+        let session = activeLiquidSessions.first ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
+        return try await session.refreshAssets(icons: icons, assets: assets, refresh: refresh)
     }
 }

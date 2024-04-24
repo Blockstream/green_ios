@@ -343,6 +343,9 @@ class WalletViewController: UIViewController {
             }
             await self?.emptiedAccountEvent()
         }
+        Task.detached() { [weak self] in
+            try? await self?.viewModel.wm?.refreshIfNeeded()
+        }
     }
 
     // open wallet selector drawer

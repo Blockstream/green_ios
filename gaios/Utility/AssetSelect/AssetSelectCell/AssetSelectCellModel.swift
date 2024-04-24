@@ -10,8 +10,8 @@ class AssetSelectCellModel {
     var anyLiquid: Bool = false
 
     init(assetId: String, satoshi: Int64) {
-        asset = WalletManager.current?.registry.info(for: assetId)
-        icon = WalletManager.current?.registry.image(for: assetId)
+        asset = WalletManager.current?.info(for: assetId)
+        icon = WalletManager.current?.image(for: assetId)
     }
     init(anyAmp: Bool) {
         self.anyAmp = anyAmp
@@ -26,8 +26,8 @@ class AssetSelectCellModel {
         case .anyAmp:
             anyAmp = true
         case .asset(let assetId):
-            asset = WalletManager.current?.registry.info(for: assetId)
-            icon = WalletManager.current?.registry.image(for: assetId)
+            asset = WalletManager.current?.info(for: assetId)
+            icon = WalletManager.current?.image(for: assetId)
         case .none:
             break
         }

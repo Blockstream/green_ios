@@ -7,7 +7,7 @@ class AccountAssetViewModel {
 
     let accounts: [WalletItem]
     var accountAssetCellModels: [AccountAssetCellModel] = []
-    let registry = WalletManager.current?.registry
+    let registry = WalletManager.current
 
     init(accounts: [WalletItem]) {
         self.accounts = accounts

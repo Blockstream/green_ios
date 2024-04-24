@@ -19,8 +19,7 @@ class AccountAssetCellModel: Comparable {
         if account.gdkNetwork.lightning {
             return UIImage(named: "ic_lightning_btc")
         } else {
-            let registry = WalletManager.current?.registry
-            return registry?.image(for: asset.assetId)
+            return WalletManager.current?.image(for: asset.assetId)
         }
     }
 
