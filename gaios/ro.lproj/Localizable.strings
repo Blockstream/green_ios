@@ -32,6 +32,7 @@
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_new_transaction_has_just" = "Ați primit o tranzacție nouă.";
 "id_a_newer_version_of_blockstream" = "A newer version of Blockstream Green is now available";
+"id_a_powerful_hardware_wallet_for" = "A powerful hardware wallet for securing your Bitcoin.";
 "id_a_screen_lock_must_be_enabled" = "Blocarea ecranului trebuie să fie activată din setările Android.";
 "id_a_set_up_funding_fee_of_s_s" = "A set up funding fee of %@ (%@) will be applied to the received amount.";
 "id_a_wallet_is_detected_on_this" = "Există deja un portofel pe acest dispozitiv:";
@@ -80,6 +81,7 @@
 "id_addresses" = "Adrese";
 "id_advanced" = "Advanced";
 "id_advanced_network_settings" = "Setări avansate de rețea";
+"id_advanced_options" = "Advanced options";
 "id_advanced_options_for_your_third" = "Advanced options for your third recovery key";
 "id_all" = "Tot/toate";
 "id_all_assets" = "All Assets";
@@ -94,6 +96,9 @@
 "id_always" = "Întotdeauna";
 "id_always_ask" = "Always ask";
 "id_amount" = "Sumă";
+"id_amount_above_maximum_allowed" = "Amount above maximum allowed value";
+"id_amount_below_minimum_allowed" = "Amount below minimum allowed value";
+"id_amount_below_the_dust_threshold" = "Amount below the dust threshold";
 "id_amount_in_s" = "Amount in %@";
 "id_amount_must_be_at_least_s" = "Amount must be at least %@";
 "id_amount_must_be_at_most_s" = "Amount must be at most %@";
@@ -126,6 +131,7 @@
 "id_at_least_8_characters_required" = "At least 8 characters required";
 "id_attempts_remaining_d" = "Încercări rămase: %d";
 "id_authenticate" = "Authenticate";
+"id_authenticate_address" = "Authenticate address";
 "id_authenticate_to_view_the" = "Logați-vă pentru a vedea fraza de recuperare";
 "id_authentication_error_s" = "Authentication error: %@";
 "id_authentication_failed" = "Authentication failed";
@@ -187,6 +193,7 @@
 "id_change" = "Change";
 "id_change_address" = "Adresă rest";
 "id_change_pin" = "Schimbare PIN";
+"id_change_speed" = "Change speed";
 "id_changing_reference_exchange" = "Schimbarea ratei de referință va reseta la 0 limita de cheltuire fara 2FA. Vă rugăm să restabiliți limita 2FA manual.";
 "id_channel_closure_initiated_you" = "Channel closure initiated. You can sweep your funds after the transaction is confirmed";
 "id_cheaper_and_more_private" = "Cheaper and more private singlesig option. Addresses are Bech32m.";
@@ -218,6 +225,7 @@
 "id_clear_cache" = "Clear cache";
 "id_click_to_copy" = "Click aici pentru copiere";
 "id_click_to_receive_an_email_with" = "Click aici pentru a primi un e-mail cu datele de recuperare criptate.";
+"id_close" = "Close";
 "id_close_channel" = "Close Channel";
 "id_code" = "Cod";
 "id_coin" = "Coin";
@@ -240,6 +248,7 @@
 "id_confirm_action" = "Confirmați acțiunea";
 "id_confirm_by_typing_the_wallet" = "Confirmați prin scrierea numelui portofelului";
 "id_confirm_code" = "Confirmați codul";
+"id_confirm_coin_selection" = "Confirm Coin Selection";
 "id_confirm_on_your_device" = "Confirm on your device";
 "id_confirm_passphrase" = "Confirmați parola";
 "id_confirm_refund" = "Confirm Refund";
@@ -249,6 +258,7 @@
 "id_confirm_update_on_your_jade" = "Confirmați update-ul pe Jade";
 "id_confirm_version_on_jade" = "Confirm version on Jade";
 "id_confirm_via_2fa_that_you" = "Confirmați prin 2FA modificarea";
+"id_confirm_your_new_pin" = "Confirm your new PIN";
 "id_confirmation_in_d_blocks" = "Confirmare în %d blocuri";
 "id_confirmation_time" = "Confirmation Time";
 "id_confirmations" = "Confirmations";
@@ -424,6 +434,7 @@
 "id_enter_your_12_24_or_27_words" = "Enter your 12, 24 or 27 words recovery phrase";
 "id_enter_your_24_or_27_words" = "Introduceți fraza de recuperare din 24 sau 27 de cuvinte.";
 "id_enter_your_27_words_recovery" = "Introduceți fraza de recuperare din 27 de cuvinte";
+"id_enter_your_6digit_pin_to_access" = "Enter your 6-digit PIN to Access your Wallet";
 "id_enter_your_email_address" = "Introduceți adresa dvs de e-mail";
 "id_enter_your_pin" = "Introduceți PIN";
 "id_enter_your_recovery_phrase" = "Introduceți fraza de recuperare";
@@ -454,6 +465,7 @@
 "id_experimental_features_might" = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.";
 "id_expiration" = "Expiration";
 "id_explore_your_wallet" = "Deschideți portofelul";
+"id_export" = "Export";
 "id_export_transactions_to_csv_file" = "Exportare tranzacții într-un fișier CSV";
 "id_exports_an_accounts_extended" = "Exports an account's extended public key (xPub/yPub/zPub) to view as a watch-only";
 "id_extended_public_key" = "Extended Public Key";
@@ -608,6 +620,7 @@
 "id_invalid_twofactor_code" = "Cod de autentificare cu 2 factori (2FA) invalid";
 "id_invalid_url" = "URL invalid";
 "id_invalid_xpub" = "Invalid xpub";
+"id_invoice_expired" = "Invoice expired";
 "id_invoices" = "Invoices";
 "id_is_a_noncustodial" = "este un portofel non-custodial";
 "id_issuer" = "Emițător";
@@ -615,6 +628,7 @@
 "id_it_looks_like_you_have_no" = "Se pare că nu aveți niciun portofel. Click mai jos ca să adăugați unul.";
 "id_jade_is_a_specialized_device" = "Jade is a specialized device designed to securely store the keys needed to spend your bitcoin.";
 "id_jade_is_an_isolated_device_not" = "Jade is an isolated device not connected to the internet, which means your funds are protected from a hacked or compromised phone.";
+"id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
 "id_jade_unlocked" = "Jade a fost deblocat";
 "id_jade_was_initialized_for_testnet" = "Jade was initialized for testnet";
 "id_just_a_few_more_steps_to_get" = "Cîțiva pași și inițializarea este gata.";
@@ -689,6 +703,7 @@
 "id_main_account" = "Contul principal";
 "id_make_sure_to_be_in_a_private" = "Make sure to be in a private and safe space";
 "id_make_sure_you_are_alone_and_no" = "Make sure you are alone and no camera is recording you or the screen.";
+"id_make_sure_you_got_everything" = "Make sure you got everything right.";
 "id_make_sure_you_have_enabled_otg" = "Asigurați-vă ca ați activat opțiunea OTG in setările dispozitivului.";
 "id_make_sure_you_made_a_proper" = "Asigurați-vă că aveți o copie de protecție corespunzătoare pentru fraza mnemonică a portofelului dvs.";
 "id_malleated" = "Maleat";
@@ -854,14 +869,18 @@
 "id_please_set_and_enable_socks5" = "Vă rugăm să setați și să activați proxy-ul SOCKS5 și portul pentru a utiliza Tor";
 "id_please_tap_card" = "Vă rugăm să apăsați pe card";
 "id_please_verify_that_the_address" = "Vă rugăm să verificați dacă adresa afișată pe ecranul portofelului hardware este aceeași pe care o puteți citi pe ecranul telefonului.";
+"id_please_verify_that_this_address" = "Please verify that this address matches the one displayed on your hardware device.";
 "id_please_wait_until_your_ledger" = "Vă rugăm să așteptați în timp ce dispozitivul dvs Ledger afișează adresa pentru validare. Acest proces poate dura până la 20 de secunde.";
 "id_power_on_jade" = "Power on Jade";
 "id_precision" = "Precizie";
 "id_previous_fee" = "Comisionul anterior";
+"id_price_feed" = "Price Feed";
+"id_print_backup_template" = "Print Backup Template";
 "id_privacy_policy" = "Politică de Confidențialitate";
 "id_private_but_less_stable" = "Conexiune privată dar instabilă";
 "id_private_key" = "Private Key";
 "id_problem_with_key_1s" = "Problemă cu cheia %1$@";
+"id_protect_your_bitcoin_with_a" = "Protect your bitcoin with a second form of verification";
 "id_provide_this_id_to_the_asset" = "Oferiți acest ID către emițătorul monedei dacă vi se cere.";
 "id_provide_your_amp_id_to_the" = "Furnizorul activului vă poate cere ID-ul contului AMP";
 "id_proxy_host" = "Proxy host";
@@ -991,6 +1010,7 @@
 "id_select_wallet" = "Alegeți un portofel";
 "id_select_watchonly_type" = "Select Watch-only type";
 "id_select_word_number_d" = "Selectați cuvântul numărul %d";
+"id_select_your_coins" = "Select Your Coins";
 "id_select_your_jade_to_login" = "Selectați dispozitivul Jade pentru logare";
 "id_select_your_recovery_key" = "Select your recovery key";
 "id_send" = "Trimiteți";
@@ -1055,6 +1075,7 @@
 "id_show_onchain_address" = "Show Onchain Address";
 "id_show_qr_code" = "Afișare cod QR";
 "id_show_recovery_phrase" = "Show Recovery Phrase";
+"id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Verificarea semnăturii a eșuat. Dacă această eroare este neașteptată sau apare frecvent, este posibil ca portofelul fizic să fie defect sau să fi fost compromis de un potential atac. Luați in considerare schimbarea portofelului.";
 "id_signup_in_progress" = "Se realizează înscrierea contului";
@@ -1134,6 +1155,7 @@
 "id_the_easier_safer_and_faster" = "Portofelul mai accesibil, sigur și rapid";
 "id_the_email_will_also_be_used_to" = "E-mailul va fi folosit și pentru a primi date de recuperare și notificări ale tranzacțiilor";
 "id_the_hardware_wallet_you_are" = "Portofelul hardware pe care îl folosiți nu este compatibil deocamdată.";
+"id_the_importance_of_twofactor" = "The Importance of Two-Factor Authentication";
 "id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "Rețeaua selectată în aplicația Green este diferită față de cea selectată în portofelul hardware. Selectați aceeași rețea pe ambele dispozitive. ";
 "id_the_new_email_will_be_used_for" = "Noul e-mail va fi folosit pentru autentificare cu doi factori (2FA) după ce resetarea este completă. Resetarea va dura 12 luni, la care se adaugă orice setare timelock rămasă.";
@@ -1156,6 +1178,7 @@
 "id_this_amount_is_below_the" = "This amount is below the minimum fee %@ (%@).";
 "id_this_feature_is_coming_soon" = "This feature is coming soon, stay tuned!";
 "id_this_might_take_up_to_a" = "This might take up to a minute.\nThanks for your patience!";
+"id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "Această tranzacție a trimis monede non-confidențiale.";
 "id_this_wallet_is_based_on_your" = "This wallet is based on your recovery phrase and a BIP39 Passphrase";
 "id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value";
@@ -1166,6 +1189,7 @@
 "id_tip_we_recommend_you_enable" = "Vă recomandăm să activați mai multe metode 2FA. Dacă aveți activată doar o metodă 2FA și veți pierde accesul la ea, va trebui să așteptați cel puțin un an până când veți avea din nou acces la fondurile din portofel.";
 "id_tip_you_can_use_the" = "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.";
 "id_to" = "CĂTRE";
+"id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Pentru a vă ajuta să păstrați controlul monedelor, protecția oferită de autentificarea cu doi factori (2FA) expiră după aproximativ %d zile de la ultima dvs plată. Dacă nu tranzacționați monedele suficient de des, vi se va cere să realizați o operațiune pentru reactivarea 2FA.";
 "id_too_many_pin_attempts" = "Too many PIN attempts";
 "id_tor" = "Tor";
@@ -1321,6 +1345,7 @@
 "id_you_are_now_connected" = "Acum sunteți conectat(ă)";
 "id_you_are_redeeming_funds_from_s" = "You are redeeming funds from %@";
 "id_you_can_change_these_later_on" = "Puteți să le schimbați mai târziu";
+"id_you_can_send_up_to" = "You can send up to:";
 "id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_can_sweep_s_of_your_funds" = "You can sweep %@ of your funds to your onchain account.";
 "id_you_can_use_your_wallet_to" = "You can use your wallet to anonymously sign and authorize an action on:";

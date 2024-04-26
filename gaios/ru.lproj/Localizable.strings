@@ -32,6 +32,7 @@
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_new_transaction_has_just" = "Новая транзакция только что поступила на ваш кошелек.";
 "id_a_newer_version_of_blockstream" = "Доступна новая версия Blockstream Green";
+"id_a_powerful_hardware_wallet_for" = "A powerful hardware wallet for securing your Bitcoin.";
 "id_a_screen_lock_must_be_enabled" = "Блокировка экрана должна быть включена в настройках Android";
 "id_a_set_up_funding_fee_of_s_s" = "A set up funding fee of %@ (%@) will be applied to the received amount.";
 "id_a_wallet_is_detected_on_this" = "На этом устройстве обнаружен кошелек:";
@@ -80,6 +81,7 @@
 "id_addresses" = "Адреса";
 "id_advanced" = "Расширенные";
 "id_advanced_network_settings" = "Расширенные настройки сети";
+"id_advanced_options" = "Advanced options";
 "id_advanced_options_for_your_third" = "Расширенные опции для вашего третьего ключа восстановления";
 "id_all" = "Все";
 "id_all_assets" = "Все активы";
@@ -94,6 +96,9 @@
 "id_always" = "Всегда";
 "id_always_ask" = "Всегда спрашивать";
 "id_amount" = "Сумма";
+"id_amount_above_maximum_allowed" = "Amount above maximum allowed value";
+"id_amount_below_minimum_allowed" = "Amount below minimum allowed value";
+"id_amount_below_the_dust_threshold" = "Amount below the dust threshold";
 "id_amount_in_s" = "Сумма в%@";
 "id_amount_must_be_at_least_s" = "Amount must be at least %@";
 "id_amount_must_be_at_most_s" = "Amount must be at most %@";
@@ -126,6 +131,7 @@
 "id_at_least_8_characters_required" = "Требуется не менее 8 символов";
 "id_attempts_remaining_d" = "Осталось попыток: %d";
 "id_authenticate" = "Authenticate";
+"id_authenticate_address" = "Authenticate address";
 "id_authenticate_to_view_the" = "Выполните аутентификацию, чтобы просмотреть фразу восстановления";
 "id_authentication_error_s" = "Ошибка аутентификации: %@";
 "id_authentication_failed" = "Аутентификация не удалась";
@@ -187,6 +193,7 @@
 "id_change" = "Сдача";
 "id_change_address" = "Сменить адрес";
 "id_change_pin" = "Изменить PIN-код";
+"id_change_speed" = "Change speed";
 "id_changing_reference_exchange" = "При изменении референтного обменного курса ваш порог 2FA сбрасывается до 0. Не забудьте настроить порог 2FA после траты.";
 "id_channel_closure_initiated_you" = "Channel closure initiated. You can sweep your funds after the transaction is confirmed";
 "id_cheaper_and_more_private" = "Более дешевый и конфиденциальный вариант сингл-сигнатуры. Адреса используют формат Bech32m.";
@@ -218,6 +225,7 @@
 "id_clear_cache" = "Очистить кэш";
 "id_click_to_copy" = "Нажмите, чтобы скопировать";
 "id_click_to_receive_an_email_with" = "Нажмите, чтобы получить электронное письмо с вашими зашифрованными данными для восстановления.";
+"id_close" = "Close";
 "id_close_channel" = "Close Channel";
 "id_code" = "Код";
 "id_coin" = "Монета";
@@ -240,6 +248,7 @@
 "id_confirm_action" = "Подтвердить действие";
 "id_confirm_by_typing_the_wallet" = "Подтвердите, введя название кошелька";
 "id_confirm_code" = "Подтвердите код";
+"id_confirm_coin_selection" = "Confirm Coin Selection";
 "id_confirm_on_your_device" = "Подтвердите на своем устройстве";
 "id_confirm_passphrase" = "Подтвердите кодовую фразу";
 "id_confirm_refund" = "Confirm Refund";
@@ -249,6 +258,7 @@
 "id_confirm_update_on_your_jade" = "Подтвердите обновление у себя на Jade";
 "id_confirm_version_on_jade" = "Подтвердить версию на Jade";
 "id_confirm_via_2fa_that_you" = "Подтвердите с помощью 2FA, что вы даете разрешение на это изменение.";
+"id_confirm_your_new_pin" = "Подтвердите ваш новый PIN-код";
 "id_confirmation_in_d_blocks" = "Подтверждение в %d блоках";
 "id_confirmation_time" = "Время подтверждения";
 "id_confirmations" = "Подтверждения";
@@ -424,6 +434,7 @@
 "id_enter_your_12_24_or_27_words" = "Введите фразу восстановления из 12, 24 или 27 слов";
 "id_enter_your_24_or_27_words" = "Введите фразу восстановления из 24 или 27 слов";
 "id_enter_your_27_words_recovery" = "Введите фразу восстановления из 27 слов";
+"id_enter_your_6digit_pin_to_access" = "Enter your 6-digit PIN to Access your Wallet";
 "id_enter_your_email_address" = "Введите ваш адрес электронной почты";
 "id_enter_your_pin" = "Введите свой PIN-код";
 "id_enter_your_recovery_phrase" = "Введите фразу восстановления";
@@ -454,6 +465,7 @@
 "id_experimental_features_might" = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.";
 "id_expiration" = "Expiration";
 "id_explore_your_wallet" = "Исследуйте свой кошелек";
+"id_export" = "Export";
 "id_export_transactions_to_csv_file" = "Экспорт транзакций в файл CSV";
 "id_exports_an_accounts_extended" = "Экспортирует расширенный публичный ключ аккаунта (xPub/yPub/zPub) для использования в режиме \"только для просмотра\"";
 "id_extended_public_key" = "Расширенный публичный ключ";
@@ -608,6 +620,7 @@
 "id_invalid_twofactor_code" = "Невалидный двухфакторный код";
 "id_invalid_url" = "Неверный URL";
 "id_invalid_xpub" = "Недействительный xpub";
+"id_invoice_expired" = "Invoice expired";
 "id_invoices" = "Invoices";
 "id_is_a_noncustodial" = "некастодиальный";
 "id_issuer" = "Эмитент";
@@ -615,6 +628,7 @@
 "id_it_looks_like_you_have_no" = "Похоже, у вас нет кошельков. Нажмите ниже, чтобы добавить кошелек.";
 "id_jade_is_a_specialized_device" = "Jade – это специализированное устройство, предназначенное для безопасного хранения ключей, необходимых для траты ваших биткоинов.";
 "id_jade_is_an_isolated_device_not" = "Jade – это изолированное устройство, не подключенное к интернету, что означает, что ваши средства защищены от взломанного или скомпрометированного телефона.";
+"id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
 "id_jade_unlocked" = "Jade разблокирован";
 "id_jade_was_initialized_for_testnet" = "Jade инициализирован для тестнета";
 "id_just_a_few_more_steps_to_get" = "Еще несколько шагов для настройки.";
@@ -689,6 +703,7 @@
 "id_main_account" = "Основной аккаунт";
 "id_make_sure_to_be_in_a_private" = "Убедитесь, что находитесь в уединенном и безопасном месте";
 "id_make_sure_you_are_alone_and_no" = "Убедитесь, что вы одни и никакая камера не записывает ни вас, ни экран.";
+"id_make_sure_you_got_everything" = "Make sure you got everything right.";
 "id_make_sure_you_have_enabled_otg" = "Убедитесь, что вы включили опцию OTG в настройках Android.";
 "id_make_sure_you_made_a_proper" = "Убедитесь, что вы сделали правильную резервную копию мнемоники вашего кошелька.";
 "id_malleated" = "деформированная";
@@ -854,14 +869,18 @@
 "id_please_set_and_enable_socks5" = "Пожалуйста, включите SOCKS5 прокси и задайте порт для использования Tor";
 "id_please_tap_card" = "Пожалуйста, нажмите на карточку";
 "id_please_verify_that_the_address" = "Убедитесь, что адрес, указанный на вашем аппаратном кошельке, совпадает с адресом у вас на телефоне.";
+"id_please_verify_that_this_address" = "Please verify that this address matches the one displayed on your hardware device.";
 "id_please_wait_until_your_ledger" = "Подождите, пока ваш Ledger не отобразит адрес, чтобы подтвердить его. Это может занять до 20 секунд.";
 "id_power_on_jade" = "Включить Jade";
 "id_precision" = "Точность";
 "id_previous_fee" = "Предыдущая комиссия";
+"id_price_feed" = "Price Feed";
+"id_print_backup_template" = "Print Backup Template";
 "id_privacy_policy" = "Политика конфиденциальности";
 "id_private_but_less_stable" = "Приватное, но менее стабильное соединение";
 "id_private_key" = "Закрытый ключ";
 "id_problem_with_key_1s" = "Проблема с ключом %1$@";
+"id_protect_your_bitcoin_with_a" = "Protect your bitcoin with a second form of verification";
 "id_provide_this_id_to_the_asset" = "Если необходимо, предоставьте этот идентификатор эмитенту актива.";
 "id_provide_your_amp_id_to_the" = "Если необходимо, сообщите свой идентификатор AMP эмитенту актива.";
 "id_proxy_host" = "Прокси-хост";
@@ -991,6 +1010,7 @@
 "id_select_wallet" = "Выберите кошелек";
 "id_select_watchonly_type" = "Выберите тип \"Только для просмотра\"";
 "id_select_word_number_d" = "Выберите слово номер %d";
+"id_select_your_coins" = "Select Your Coins";
 "id_select_your_jade_to_login" = "Чтобы войти, выберите свой Jade";
 "id_select_your_recovery_key" = "Выберите ключ восстановления";
 "id_send" = "Отправить";
@@ -1055,6 +1075,7 @@
 "id_show_onchain_address" = "Show Onchain Address";
 "id_show_qr_code" = "Показать QR-код";
 "id_show_recovery_phrase" = "Показать фразу восстановления";
+"id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Проверка подписи не удалась. Если эта ошибка является неожиданной и повторяется неоднократно, возможно, аппаратный кошелек неисправен или был взломан. Возможно, произошла утечка ваших ключей, что может привести к потере средств. Пожалуйста, подумайте о замене аппаратного кошелька.";
 "id_signup_in_progress" = "Регистрация продолжается";
@@ -1134,6 +1155,7 @@
 "id_the_easier_safer_and_faster" = "более простой, безопасный и быстрый кошелек";
 "id_the_email_will_also_be_used_to" = "Этот адрес электронной почты также будет использоваться для получения данных для восстановления и уведомлений о транзакциях";
 "id_the_hardware_wallet_you_are" = "Используемый вами аппаратный кошелек пока не поддерживается";
+"id_the_importance_of_twofactor" = "The Importance of Two-Factor Authentication";
 "id_the_liquid_network_is_a_bitcoin" = "Liquid Network – это решение уровня-2 для Биткоина, позволяющее осуществлять быстрые, конфиденциальные расчеты и эмиссию цифровых активов, таких как стейблкоины, security-токены и другие финансовые инструменты, на основе таймчейна Биткоина.";
 "id_the_network_selected_on_the" = "Сеть, выбранная в приложении Green, отличается от сети, выбранной в аппаратном кошельке. Выберите одну и ту же сеть на обоих устройствах.";
 "id_the_new_email_will_be_used_for" = "После завершения сброса для двухфакторной аутентификации новый адрес электронной почты будет использоваться. Сброс занимает 12 месяцев плюс оставшееся время блокировки.";
@@ -1156,6 +1178,7 @@
 "id_this_amount_is_below_the" = "This amount is below the minimum fee %@ (%@).";
 "id_this_feature_is_coming_soon" = "Эта функция скоро появится, следите за сообщениями!";
 "id_this_might_take_up_to_a" = "This might take up to a minute.\nThanks for your patience!";
+"id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "На эту транзакцию потрачены неконфиденциальные средства.";
 "id_this_wallet_is_based_on_your" = "Этот кошелек основан на вашей фразе восстановления и пароле BIP39.";
 "id_this_wallet_operates_on_a_test" = "Этот кошелек работает в тестовой сети. Все, что вы получаете или отправляете здесь, не имеет ценности";
@@ -1166,6 +1189,7 @@
 "id_tip_we_recommend_you_enable" = "Совет: мы рекомендуем вам включить более одного метода 2FA. Если вы настроили только один метод 2FA, а затем потеряете его, вам придется подождать как минимум один год, пока не истечет срок действия 2FA.";
 "id_tip_you_can_use_the" = "Совет: Вы можете использовать xPub/yPub/zPub только для просмотра своего кошелька в Green или импортировать его на другую платформу. Каждый аккаунт в вашем кошельке имеет отдельный xPub/yPub/zPub.";
 "id_to" = "ДО";
+"id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Для предоставления вам возможности управлять вашими средствами, защита с помощью двухфакторной аутентификации истекает примерно через %d дней после вашего последнего платежа. Если вы недостаточно часто переводите средства, вам будет предложено совершить транзакцию для реактивации двухфакторной аутентификации.";
 "id_too_many_pin_attempts" = "Слишком много попыток ввода PIN-кода";
 "id_tor" = "Tor";
@@ -1321,6 +1345,7 @@
 "id_you_are_now_connected" = "Соединение есть";
 "id_you_are_redeeming_funds_from_s" = "You are redeeming funds from %@";
 "id_you_can_change_these_later_on" = "Вы можете изменить их позже.";
+"id_you_can_send_up_to" = "You can send up to:";
 "id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_can_sweep_s_of_your_funds" = "You can sweep %@ of your funds to your onchain account.";
 "id_you_can_use_your_wallet_to" = "You can use your wallet to anonymously sign and authorize an action on:";

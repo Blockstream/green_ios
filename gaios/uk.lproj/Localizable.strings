@@ -32,6 +32,7 @@
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_new_transaction_has_just" = "Нова транзакція щойно надійшла на ваш гаманець.";
 "id_a_newer_version_of_blockstream" = "Доступна нова версія Blockstream Green";
+"id_a_powerful_hardware_wallet_for" = "A powerful hardware wallet for securing your Bitcoin.";
 "id_a_screen_lock_must_be_enabled" = "Блокування екрану повинно бути включено в настройках Android";
 "id_a_set_up_funding_fee_of_s_s" = "A set up funding fee of %@ (%@) will be applied to the received amount.";
 "id_a_wallet_is_detected_on_this" = "На пристрої знайдено гаманець:";
@@ -80,6 +81,7 @@
 "id_addresses" = "Адреси";
 "id_advanced" = "Розширені";
 "id_advanced_network_settings" = "Розширені налаштування мережі";
+"id_advanced_options" = "Advanced options";
 "id_advanced_options_for_your_third" = "Розширені опції для вашого третього ключа відновлення";
 "id_all" = "Усі";
 "id_all_assets" = "Усі активи";
@@ -94,6 +96,9 @@
 "id_always" = "Завжди";
 "id_always_ask" = "Завжди запитувати";
 "id_amount" = "Сума";
+"id_amount_above_maximum_allowed" = "Amount above maximum allowed value";
+"id_amount_below_minimum_allowed" = "Amount below minimum allowed value";
+"id_amount_below_the_dust_threshold" = "Amount below the dust threshold";
 "id_amount_in_s" = "Сума в %@";
 "id_amount_must_be_at_least_s" = "Amount must be at least %@";
 "id_amount_must_be_at_most_s" = "Amount must be at most %@";
@@ -126,6 +131,7 @@
 "id_at_least_8_characters_required" = "Потрібно принаймні 8 символів";
 "id_attempts_remaining_d" = "Залишилося спроб: %d";
 "id_authenticate" = "Authenticate";
+"id_authenticate_address" = "Authenticate address";
 "id_authenticate_to_view_the" = "Виконайте автентифікацію, щоб переглянути фразу відновлення";
 "id_authentication_error_s" = "Помилка автентифікації: %@";
 "id_authentication_failed" = "Автентифікація не вдалася";
@@ -187,6 +193,7 @@
 "id_change" = "Решта";
 "id_change_address" = "Змінити адресу";
 "id_change_pin" = "Змінити PIN-код";
+"id_change_speed" = "Change speed";
 "id_changing_reference_exchange" = "При зміні референтного обмінного курсу ваш поріг 2FA скидається до 0. Не забудьте налаштувати поріг 2FA після витрати.";
 "id_channel_closure_initiated_you" = "Channel closure initiated. You can sweep your funds after the transaction is confirmed";
 "id_cheaper_and_more_private" = "Дешевший та більш конфіденційний варіант сингл-сигнатури. Адреси використовують формат Bech32m.";
@@ -218,6 +225,7 @@
 "id_clear_cache" = "Очистити кеш";
 "id_click_to_copy" = "Натисніть, щоб скопіювати";
 "id_click_to_receive_an_email_with" = "Натисніть, щоб отримати електронний лист із вашими зашифрованими даними для відновлення.";
+"id_close" = "Close";
 "id_close_channel" = "Close Channel";
 "id_code" = "Код";
 "id_coin" = "Монета";
@@ -240,6 +248,7 @@
 "id_confirm_action" = "Підтвердити дію";
 "id_confirm_by_typing_the_wallet" = "Щоб підтвердити, введіть ім'я гаманця";
 "id_confirm_code" = "Підтвердіть код";
+"id_confirm_coin_selection" = "Confirm Coin Selection";
 "id_confirm_on_your_device" = "Підтвердіть на вашому пристрої";
 "id_confirm_passphrase" = "Підтвердити кодову фразу";
 "id_confirm_refund" = "Confirm Refund";
@@ -249,6 +258,7 @@
 "id_confirm_update_on_your_jade" = "Підтвердіть оновлення на вашому Jade";
 "id_confirm_version_on_jade" = "Підтвердіть версію на Jade";
 "id_confirm_via_2fa_that_you" = "Підтвердіть за допомогою 2FA, що ви дозволяєте цю зміну.";
+"id_confirm_your_new_pin" = "Підтвердіть ваш новий PIN-код";
 "id_confirmation_in_d_blocks" = "Підтвердження у %d блоках";
 "id_confirmation_time" = "Час підтвердження";
 "id_confirmations" = "Підтвердження";
@@ -424,6 +434,7 @@
 "id_enter_your_12_24_or_27_words" = "Введіть фразу відновлення з 12, 24 або 27 слів";
 "id_enter_your_24_or_27_words" = "Введіть фразу відновлення з 24 або 27 слів";
 "id_enter_your_27_words_recovery" = "Введіть фразу відновлення з 27 слів";
+"id_enter_your_6digit_pin_to_access" = "Enter your 6-digit PIN to Access your Wallet";
 "id_enter_your_email_address" = "Введіть вашу email адресу";
 "id_enter_your_pin" = "Введіть свій PIN-код";
 "id_enter_your_recovery_phrase" = "Введіть фразу відновлення";
@@ -454,6 +465,7 @@
 "id_experimental_features_might" = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.";
 "id_expiration" = "Expiration";
 "id_explore_your_wallet" = "Дослідити свій гаманець";
+"id_export" = "Export";
 "id_export_transactions_to_csv_file" = "Експорт транзакцій у файл CSV";
 "id_exports_an_accounts_extended" = "Експортує розширений публічний ключ акаунту (xPub/yPub/zPub)  для використання в режимі \"тільки для перегляду\"";
 "id_extended_public_key" = "Розширений публічний ключ";
@@ -608,6 +620,7 @@
 "id_invalid_twofactor_code" = "Неправильний двофакторний код";
 "id_invalid_url" = "Неправильний URL";
 "id_invalid_xpub" = "Недійсний xpub";
+"id_invoice_expired" = "Invoice expired";
 "id_invoices" = "Invoices";
 "id_is_a_noncustodial" = "керується тільки власником";
 "id_issuer" = "Емітент";
@@ -615,6 +628,7 @@
 "id_it_looks_like_you_have_no" = "Схоже, у вас немає гаманців. Клацніть нижче, щоб додати один.";
 "id_jade_is_a_specialized_device" = "Jade – спеціалізований пристрій, розроблений для безпечного зберігання ключів, необхідних для витрати ваших біткоїнів.";
 "id_jade_is_an_isolated_device_not" = "Jade – ізольований пристрій, не підключений до Інтернету, що означає, що ваші кошти захищені від взломаного або компрометованого телефону.";
+"id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
 "id_jade_unlocked" = "Jade розблоковано";
 "id_jade_was_initialized_for_testnet" = "Jade було ініціалізовано для тестнету";
 "id_just_a_few_more_steps_to_get" = "Ще кілька кроків для настройки.";
@@ -689,6 +703,7 @@
 "id_main_account" = "Основний акаунт";
 "id_make_sure_to_be_in_a_private" = "Перебувайте в приватному та безпечному місці";
 "id_make_sure_you_are_alone_and_no" = "Переконайтеся, що ви самі і жодна камера не записує вас або екран.";
+"id_make_sure_you_got_everything" = "Make sure you got everything right.";
 "id_make_sure_you_have_enabled_otg" = "Переконайтеся, що ви включили опцію OTG в настройках Android.";
 "id_make_sure_you_made_a_proper" = "Переконайтеся, що ви зробили правильну резервну копію мнемоніки вашого гаманця.";
 "id_malleated" = "деформована";
@@ -854,14 +869,18 @@
 "id_please_set_and_enable_socks5" = "Будь ласка, увімкніть SOCKS5 проксі і задайте порт для використання Tor";
 "id_please_tap_card" = "Будь ласка, натисніть картку";
 "id_please_verify_that_the_address" = "Переконайтеся, що адреса, вказана на вашому апаратному гаманці, збігається з адресою на вашому телефоні.";
+"id_please_verify_that_this_address" = "Please verify that this address matches the one displayed on your hardware device.";
 "id_please_wait_until_your_ledger" = "Зачекайте, поки ваш Ledger не відобразить адресу, щоб її підтвердити. Це може зайняти до 20 секунд.";
 "id_power_on_jade" = "Увімкнути Jade";
 "id_precision" = "Точність";
 "id_previous_fee" = "Попередня комісія";
+"id_price_feed" = "Price Feed";
+"id_print_backup_template" = "Print Backup Template";
 "id_privacy_policy" = "Політика конфіденційності";
 "id_private_but_less_stable" = "Приватне, але менш стабільне з'єднання";
 "id_private_key" = "Приватний ключ";
 "id_problem_with_key_1s" = "Проблема з ключем %1$@";
+"id_protect_your_bitcoin_with_a" = "Protect your bitcoin with a second form of verification";
 "id_provide_this_id_to_the_asset" = "Якщо необхідно, надайте цей ID емітенту активу.";
 "id_provide_your_amp_id_to_the" = "Якщо необхідно, повідомте свій ідентифікатор AMP емітенту активу.";
 "id_proxy_host" = "Проксі-хост";
@@ -991,6 +1010,7 @@
 "id_select_wallet" = "Оберіть гаманець";
 "id_select_watchonly_type" = "Виберіть \"Тільки для перегляду\"";
 "id_select_word_number_d" = "Оберіть слово номер %d";
+"id_select_your_coins" = "Select Your Coins";
 "id_select_your_jade_to_login" = "Щоб увійти, оберіть свій Jade";
 "id_select_your_recovery_key" = "Виберіть ключ відновлення";
 "id_send" = "Надіслати";
@@ -1055,6 +1075,7 @@
 "id_show_onchain_address" = "Show Onchain Address";
 "id_show_qr_code" = "Показати QR-код";
 "id_show_recovery_phrase" = "Показати фразу відновлення";
+"id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Перевірка підпису не вдалася. Якщо ця помилка є несподіваною і повторювалася неодноразово, можливо, апаратний гаманець несправний або був зламаний. Можливо, стався витік ваших ключів, що може призвести до втрати коштів. Будь ласка, подумайте про заміну апаратного гаманця.";
 "id_signup_in_progress" = "Реєстрація продовжується";
@@ -1134,6 +1155,7 @@
 "id_the_easier_safer_and_faster" = "простіший, безпечніший та більш швидкий гаманець";
 "id_the_email_will_also_be_used_to" = "Електронна пошта також буде використовуватися для отримання даних для відновлення і повідомлень про транзакції";
 "id_the_hardware_wallet_you_are" = "Апаратний гаманець, який ви використовуєте, ще не підтримується";
+"id_the_importance_of_twofactor" = "The Importance of Two-Factor Authentication";
 "id_the_liquid_network_is_a_bitcoin" = "Liquid Network – це рішення рівня-2 для Біткоїна, що забезпечує швидке та конфіденційне здійснення операцій з цифровими активами, такими як стейблкоїни, security-токени та інші фінансові інструменти, на основі ланцюжка Біткоїну.";
 "id_the_network_selected_on_the" = "Мережа, обрана в додатку Green, відрізняється від мережі, обраної в апаратному гаманці. Виберіть одну і ту ж мережу на обох пристроях.";
 "id_the_new_email_will_be_used_for" = "Нова адреса електронної пошти буде використовуватися для двофакторної аутентифікації після завершення скидання. Скидання займає 12 місяців плюс залишившийся час блокування.";
@@ -1156,6 +1178,7 @@
 "id_this_amount_is_below_the" = "This amount is below the minimum fee %@ (%@).";
 "id_this_feature_is_coming_soon" = "Ця функція скоро з'явиться, слідкуйте за оновленнями!";
 "id_this_might_take_up_to_a" = "This might take up to a minute.\nThanks for your patience!";
+"id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "На цю транзакцію витрачені неконфіденційні кошти.";
 "id_this_wallet_is_based_on_your" = "Цей гаманець базується на вашій фразі відновлення та паролі BIP39";
 "id_this_wallet_operates_on_a_test" = "Цей гаманець працює у тестовій мережі. Все, що ви отримуєте або надсилаєте тут, не має цінності";
@@ -1166,6 +1189,7 @@
 "id_tip_we_recommend_you_enable" = "Порада: ми рекомендуємо вам включити більше одного методу 2FA. Якщо ви налаштували тільки один метод 2FA, а потім втратите його, вам доведеться почекати як мінімум один рік, поки закінчиться термін дії 2FA.";
 "id_tip_you_can_use_the" = "Порада: ви можете використовувати xPub/yPub/zPub тільки для перегляду свого гаманця в Green, або імпортувати його на іншу платформу. Для кожного акаунту в вашому гаманці є свій окремий xPub/yPub/zPub.";
 "id_to" = "ДО";
+"id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Для контролю ваших коштів, захист за допомогою двофакторної аутентифікації закінчується приблизно через %d днів з моменту вашого останнього платежу. Вам буде запропоновано зробити транзакцію двофакторної реактивації, якщо ви недостатньо часто переводите кошти.";
 "id_too_many_pin_attempts" = "Забагато спроб PIN-коду";
 "id_tor" = "Tor";
@@ -1321,6 +1345,7 @@
 "id_you_are_now_connected" = "З'єднання є";
 "id_you_are_redeeming_funds_from_s" = "You are redeeming funds from %@";
 "id_you_can_change_these_later_on" = "Ви можете змінити їх пізніше.";
+"id_you_can_send_up_to" = "You can send up to:";
 "id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_can_sweep_s_of_your_funds" = "You can sweep %@ of your funds to your onchain account.";
 "id_you_can_use_your_wallet_to" = "You can use your wallet to anonymously sign and authorize an action on:";

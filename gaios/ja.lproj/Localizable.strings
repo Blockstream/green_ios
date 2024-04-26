@@ -32,6 +32,7 @@
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_new_transaction_has_just" = "貴方のウォレットに新しいトランザクションが届きました。";
 "id_a_newer_version_of_blockstream" = "新しいバージョンのBlockstream Greenがご利用いただけます";
+"id_a_powerful_hardware_wallet_for" = "A powerful hardware wallet for securing your Bitcoin.";
 "id_a_screen_lock_must_be_enabled" = "アンドロイドの設定から画面ロックを有効化してください。";
 "id_a_set_up_funding_fee_of_s_s" = "A set up funding fee of %@ (%@) will be applied to the received amount.";
 "id_a_wallet_is_detected_on_this" = "このデバイスにウォレットが検知されました:";
@@ -80,6 +81,7 @@
 "id_addresses" = "アドレス一覧";
 "id_advanced" = "詳細オプション";
 "id_advanced_network_settings" = "ネットワーク詳細設定";
+"id_advanced_options" = "Advanced options";
 "id_advanced_options_for_your_third" = "第3のリカバリーキーに関する詳細オプション";
 "id_all" = "全て";
 "id_all_assets" = "すべてのアセット";
@@ -94,6 +96,9 @@
 "id_always" = "いつも";
 "id_always_ask" = "常に確認する";
 "id_amount" = "額";
+"id_amount_above_maximum_allowed" = "Amount above maximum allowed value";
+"id_amount_below_minimum_allowed" = "Amount below minimum allowed value";
+"id_amount_below_the_dust_threshold" = "Amount below the dust threshold";
 "id_amount_in_s" = "%@の金額";
 "id_amount_must_be_at_least_s" = "Amount must be at least %@";
 "id_amount_must_be_at_most_s" = "Amount must be at most %@";
@@ -126,6 +131,7 @@
 "id_at_least_8_characters_required" = "8文字以上入力してください";
 "id_attempts_remaining_d" = "残り: %d 回";
 "id_authenticate" = "Authenticate";
+"id_authenticate_address" = "Authenticate address";
 "id_authenticate_to_view_the" = "リカバリーフレーズを確認するには認証してください";
 "id_authentication_error_s" = "認証エラー: %@";
 "id_authentication_failed" = "認証に失敗しました";
@@ -187,6 +193,7 @@
 "id_change" = "お釣り";
 "id_change_address" = "お釣りアドレス";
 "id_change_pin" = "PINコードを変更する";
+"id_change_speed" = "Change speed";
 "id_changing_reference_exchange" = "交換レートの提供元を変更すると2段階認証の閾値が0にリセットされます。送金後に2段階認証の閾値を調整することをお忘れなく。";
 "id_channel_closure_initiated_you" = "Channel closure initiated. You can sweep your funds after the transaction is confirmed";
 "id_cheaper_and_more_private" = "手数料が安価でプライバシーが改善されたシングルシグウォレット。アドレスはBech32m形式です。";
@@ -218,6 +225,7 @@
 "id_clear_cache" = "キャッシュのクリア";
 "id_click_to_copy" = "クリックしてコピー";
 "id_click_to_receive_an_email_with" = "クリックして暗号化されたリカバリーデータをメールで受け取る。";
+"id_close" = "Close";
 "id_close_channel" = "Close Channel";
 "id_code" = "コード";
 "id_coin" = "コイン";
@@ -240,6 +248,7 @@
 "id_confirm_action" = "許可する";
 "id_confirm_by_typing_the_wallet" = "ウォレット名を入力して許可する";
 "id_confirm_code" = "コードを確認";
+"id_confirm_coin_selection" = "Confirm Coin Selection";
 "id_confirm_on_your_device" = "デバイスで承認してください";
 "id_confirm_passphrase" = "パスフレーズを確認";
 "id_confirm_refund" = "Confirm Refund";
@@ -249,6 +258,7 @@
 "id_confirm_update_on_your_jade" = "Jadeでアップデートを確認する";
 "id_confirm_version_on_jade" = "Jadeの画面でバージョンを確認してください";
 "id_confirm_via_2fa_that_you" = "2段階認証でこの変更を承認する。";
+"id_confirm_your_new_pin" = "新しいPINを確認";
 "id_confirmation_in_d_blocks" = "%d ブロックで承認";
 "id_confirmation_time" = "承認時間";
 "id_confirmations" = "承認";
@@ -424,6 +434,7 @@
 "id_enter_your_12_24_or_27_words" = "12, 24, または27単語のリカバリーフレーズを入力";
 "id_enter_your_24_or_27_words" = "24または27単語のリカバリーフレーズを入力";
 "id_enter_your_27_words_recovery" = "27単語のリカバリーフレーズを入力";
+"id_enter_your_6digit_pin_to_access" = "Enter your 6-digit PIN to Access your Wallet";
 "id_enter_your_email_address" = "Eメールアドレス入力";
 "id_enter_your_pin" = "PINを入力してください";
 "id_enter_your_recovery_phrase" = "リカバリーフレーズを入力してください";
@@ -454,6 +465,7 @@
 "id_experimental_features_might" = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.";
 "id_expiration" = "Expiration";
 "id_explore_your_wallet" = "ウォレットを探検する";
+"id_export" = "Export";
 "id_export_transactions_to_csv_file" = "トランザクション一覧をCSVファイルに出力";
 "id_exports_an_accounts_extended" = "アカウントの拡張公開鍵(xPub/yPub/zPub)を出力して読み取りモードのウォレットを作る";
 "id_extended_public_key" = "拡張公開鍵";
@@ -608,6 +620,7 @@
 "id_invalid_twofactor_code" = "無効な2段階認証コード";
 "id_invalid_url" = "無効なURL";
 "id_invalid_xpub" = "xpubが無効です\n";
+"id_invoice_expired" = "Invoice expired";
 "id_invoices" = "Invoices";
 "id_is_a_noncustodial" = "保管されない";
 "id_issuer" = "発行者";
@@ -615,6 +628,7 @@
 "id_it_looks_like_you_have_no" = "ウォレットが存在しないようです。下から新しく作成しましょう";
 "id_jade_is_a_specialized_device" = "Jadeはビットコインで使用する秘密鍵をセキュアに守るために設計された専用デバイスです。";
 "id_jade_is_an_isolated_device_not" = "Jadeはインターネットから隔離されたデバイスのため、ハッキングやスマホのウィルス感染に対して堅牢です。";
+"id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
 "id_jade_unlocked" = "Jadeのアンロックが成功";
 "id_jade_was_initialized_for_testnet" = "JadeがTestnet用に初期化されました";
 "id_just_a_few_more_steps_to_get" = "セットアップはあと少しで完了します。";
@@ -689,6 +703,7 @@
 "id_main_account" = "メイン・アカウント";
 "id_make_sure_to_be_in_a_private" = "プライバシーの保たれた安全な場所で続行してください";
 "id_make_sure_you_are_alone_and_no" = "ここからの作業は必ず一人で、あなたや画面がカメラに映らない場所で行ってください。";
+"id_make_sure_you_got_everything" = "Make sure you got everything right.";
 "id_make_sure_you_have_enabled_otg" = "Androidの設定からOTGが有効化されていることを確認してください。";
 "id_make_sure_you_made_a_proper" = "ウォレットのニモニックを正しくバックアップしているかご確認ください。";
 "id_malleated" = "malleated";
@@ -854,14 +869,18 @@
 "id_please_set_and_enable_socks5" = "SOCKS5プロキシとポートを設定、有効化後にTorをご利用いただけます";
 "id_please_tap_card" = "カードをタップして下さい";
 "id_please_verify_that_the_address" = "ハードウェアウォレットに表示されているアドレスが本画面に表示されているものと一致するかご確認ください。";
+"id_please_verify_that_this_address" = "Please verify that this address matches the one displayed on your hardware device.";
 "id_please_wait_until_your_ledger" = "Ledgerがアドレスを表示してから確認ボタンを押してください。最大20秒程度かかります。";
 "id_power_on_jade" = "Jadeの電源を入れてください";
 "id_precision" = "精度";
 "id_previous_fee" = "前回の手数料";
+"id_price_feed" = "Price Feed";
+"id_print_backup_template" = "Print Backup Template";
 "id_privacy_policy" = "プライバシーポリシー";
 "id_private_but_less_stable" = "プライベートだが安定性で劣る接続";
 "id_private_key" = "秘密鍵";
 "id_problem_with_key_1s" = "キー%1$@ に問題が発生";
+"id_protect_your_bitcoin_with_a" = "Protect your bitcoin with a second form of verification";
 "id_provide_this_id_to_the_asset" = "必要な場合は発行者にこのIDを伝えてください。";
 "id_provide_your_amp_id_to_the" = "アセットの発行者に求められた場合はAMP IDを伝えてください。";
 "id_proxy_host" = "プロキシのホスト";
@@ -991,6 +1010,7 @@
 "id_select_wallet" = "ウォレットを選択";
 "id_select_watchonly_type" = "読み取りモードの種類を選択してください";
 "id_select_word_number_d" = "文字数の選択%d";
+"id_select_your_coins" = "Select Your Coins";
 "id_select_your_jade_to_login" = "ログインするにはJadeを選択してください";
 "id_select_your_recovery_key" = "リカバリーキーを選択してください";
 "id_send" = "送金";
@@ -1055,6 +1075,7 @@
 "id_show_onchain_address" = "Show Onchain Address";
 "id_show_qr_code" = "QRコードを表示する";
 "id_show_recovery_phrase" = "リカバリーフレーズを表示する";
+"id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "署名の検証に失敗しました。このエラーが原因不明で繰り返し発生する場合、ハードウェアウォレットの故障か改造が疑われます。秘密鍵の流出と資金の盗難につながる恐れがあるので、ハードウェアウォレットの交換をお勧めします。";
 "id_signup_in_progress" = "登録中です";
@@ -1134,6 +1155,7 @@
 "id_the_easier_safer_and_faster" = "より簡単、安全で早いウォレット";
 "id_the_email_will_also_be_used_to" = "このメールアドレスはリカバリーデータの受け取りとトランザクションの通知にも使用されます";
 "id_the_hardware_wallet_you_are" = "ご使用中のハードウェア・ウォレットには現在対応しておりません";
+"id_the_importance_of_twofactor" = "The Importance of Two-Factor Authentication";
 "id_the_liquid_network_is_a_bitcoin" = "Liquid Networkはステーブルコインや証券トークンを始めとする金融商品をビットコイン・タイムチェーン上で高速でプライベートに取引・発行するためのビットコイン・レイヤー２ソリューションです。";
 "id_the_network_selected_on_the" = "Greenアプリ内で選択されているネットワークとハードウェアウォレットで選択されているネットワークが一致しません。同じネットワークを選択してください。";
 "id_the_new_email_will_be_used_for" = "リセット完了後、新しいメールアドレスが2段階認証に使用されます。リセットには12ヶ月とタイムロックの残存期間の合計がかかります。";
@@ -1156,6 +1178,7 @@
 "id_this_amount_is_below_the" = "This amount is below the minimum fee %@ (%@).";
 "id_this_feature_is_coming_soon" = "この機能はまもなく追加予定です！";
 "id_this_might_take_up_to_a" = "This might take up to a minute.\nThanks for your patience!";
+"id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "このトランザクションには秘匿化されていない資金が含まれていました。";
 "id_this_wallet_is_based_on_your" = "このウォレットはあなたのリカバリーフレーズとBIP39パスフレーズから導かれたものです";
 "id_this_wallet_operates_on_a_test" = "このウォレットはテストネット用です。送受信するものに価値はありません。";
@@ -1166,6 +1189,7 @@
 "id_tip_we_recommend_you_enable" = "おすすめ: 複数の2段階認証手段を有効化しましょう。唯一の2段階認証手段を失った場合、保護が失効するまで1年以上待つ必要があります。";
 "id_tip_you_can_use_the" = "ちなみに、xPub/yPub/zPubによる読み取りモードのウォレットはGreenのみならず、別のウォレットに読み込むことでも利用できます。また、ウォレット内の各アカウントには個別にxPub/yPub/zPubがあります。";
 "id_to" = "送り先";
+"id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "資金を動かせない状況を回避するため、2段階認証による保護は前回の送金からおよそ%d日後に解除されます。頻繁に取引されない方は、2段階認証を再度有効化するためのトランザクションを推奨する通知を受け取る可能性があります。";
 "id_too_many_pin_attempts" = "PINの試行回数が残っていません";
 "id_tor" = "Tor";
@@ -1321,6 +1345,7 @@
 "id_you_are_now_connected" = "接続しました。";
 "id_you_are_redeeming_funds_from_s" = "You are redeeming funds from %@";
 "id_you_can_change_these_later_on" = "これらは後からも変更できます。";
+"id_you_can_send_up_to" = "You can send up to:";
 "id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_can_sweep_s_of_your_funds" = "You can sweep %@ of your funds to your onchain account.";
 "id_you_can_use_your_wallet_to" = "You can use your wallet to anonymously sign and authorize an action on:";

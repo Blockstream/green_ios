@@ -32,6 +32,7 @@
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_new_transaction_has_just" = "Une nouvelle transaction vient d'arriver dans votre portefeuille";
 "id_a_newer_version_of_blockstream" = "Une nouvelle version de Blockstream Green est désormais disponible.";
+"id_a_powerful_hardware_wallet_for" = "A powerful hardware wallet for securing your Bitcoin.";
 "id_a_screen_lock_must_be_enabled" = "Le verrouillage de l'écran doit être activé dans les paramètres d'Android";
 "id_a_set_up_funding_fee_of_s_s" = "A set up funding fee of %@ (%@) will be applied to the received amount.";
 "id_a_wallet_is_detected_on_this" = "Un portefeuille est détecté sur cet appareil";
@@ -80,6 +81,7 @@
 "id_addresses" = "Adresses";
 "id_advanced" = "Avancé";
 "id_advanced_network_settings" = "Paramètres réseau avancés";
+"id_advanced_options" = "Advanced options";
 "id_advanced_options_for_your_third" = "Options avancées pour votre troisième clé de récupération";
 "id_all" = "Tous";
 "id_all_assets" = "Tous les actifs";
@@ -94,6 +96,9 @@
 "id_always" = "Toujours";
 "id_always_ask" = "Toujours demander";
 "id_amount" = "Montant";
+"id_amount_above_maximum_allowed" = "Amount above maximum allowed value";
+"id_amount_below_minimum_allowed" = "Amount below minimum allowed value";
+"id_amount_below_the_dust_threshold" = "Amount below the dust threshold";
 "id_amount_in_s" = "Montant en %@";
 "id_amount_must_be_at_least_s" = "Amount must be at least %@";
 "id_amount_must_be_at_most_s" = "Amount must be at most %@";
@@ -126,6 +131,7 @@
 "id_at_least_8_characters_required" = "Au moins 8 caractères sont requis";
 "id_attempts_remaining_d" = "Tentatives restantes : %d";
 "id_authenticate" = "Authenticate";
+"id_authenticate_address" = "Authenticate address";
 "id_authenticate_to_view_the" = "Authentifiez-vous pour voir la phrase de récupération";
 "id_authentication_error_s" = "Erreur d'authentification : %@";
 "id_authentication_failed" = "Échec de l'authentification";
@@ -187,6 +193,7 @@
 "id_change" = "Modification";
 "id_change_address" = "Modifier l'adresse";
 "id_change_pin" = "Modifier le PIN";
+"id_change_speed" = "Change speed";
 "id_changing_reference_exchange" = "La modification du taux de change de référence réinitialisera votre seuil 2FA à 0. N'oubliez pas d'ajuster le seuil 2FA après avoir dépensé.";
 "id_channel_closure_initiated_you" = "Channel closure initiated. You can sweep your funds after the transaction is confirmed";
 "id_cheaper_and_more_private" = "Option singlesig moins chère et plus privée. Les adresses sont Bech32m.";
@@ -218,6 +225,7 @@
 "id_clear_cache" = "Vider la cache";
 "id_click_to_copy" = "Cliquez pour copier";
 "id_click_to_receive_an_email_with" = "Cliquez pour recevoir un courriel contenant vos données de récupération cryptées.";
+"id_close" = "Close";
 "id_close_channel" = "Close Channel";
 "id_code" = "Code";
 "id_coin" = "Jeton";
@@ -240,6 +248,7 @@
 "id_confirm_action" = "Confirmez l'action";
 "id_confirm_by_typing_the_wallet" = "Confirmez en tapant le nom du portefeuille";
 "id_confirm_code" = "Confirmez le code";
+"id_confirm_coin_selection" = "Confirm Coin Selection";
 "id_confirm_on_your_device" = "Confirmez sur votre appareil";
 "id_confirm_passphrase" = "Confirmez le mot de passe";
 "id_confirm_refund" = "Confirm Refund";
@@ -249,6 +258,7 @@
 "id_confirm_update_on_your_jade" = "Confirmez la mise à jour sur votre Jade";
 "id_confirm_version_on_jade" = "Confirmez la version sur votre Jade";
 "id_confirm_via_2fa_that_you" = "Confirmez via 2FA que vous autorisez ce changement.";
+"id_confirm_your_new_pin" = "Confirmez votre nouveau PIN";
 "id_confirmation_in_d_blocks" = "Confirmation de blocs %d";
 "id_confirmation_time" = "Temps de confirmation";
 "id_confirmations" = "Confirmations";
@@ -424,6 +434,7 @@
 "id_enter_your_12_24_or_27_words" = "Saisissez votre phrase de récupération de 12, 24 ou 27 mots";
 "id_enter_your_24_or_27_words" = "Entrez votre phrase de récupération de 24 ou 27 mots";
 "id_enter_your_27_words_recovery" = "Entrez votre phrase de récupération de 27 mots";
+"id_enter_your_6digit_pin_to_access" = "Enter your 6-digit PIN to Access your Wallet";
 "id_enter_your_email_address" = "Saisissez votre adresse email";
 "id_enter_your_pin" = "Saisissez votre code PIN";
 "id_enter_your_recovery_phrase" = "Saisissez votre phrase de récupération";
@@ -454,6 +465,7 @@
 "id_experimental_features_might" = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.";
 "id_expiration" = "Expiration";
 "id_explore_your_wallet" = "Explorez votre portefeuille";
+"id_export" = "Export";
 "id_export_transactions_to_csv_file" = "Exportation des transactions vers un fichier CSV";
 "id_exports_an_accounts_extended" = "Exporte le compte extended public key (xPub/yPub/zPub) permettant la consultation en lecture seule";
 "id_extended_public_key" = "Extended Public Key";
@@ -608,6 +620,7 @@
 "id_invalid_twofactor_code" = "Code du deuxième facteur invalide";
 "id_invalid_url" = "URL invalide";
 "id_invalid_xpub" = "Xpub invalide";
+"id_invoice_expired" = "Invoice expired";
 "id_invoices" = "Invoices";
 "id_is_a_noncustodial" = "sans dépôt";
 "id_issuer" = "Emetteur";
@@ -615,6 +628,7 @@
 "id_it_looks_like_you_have_no" = "Il semble que vous n'ayez pas de portefeuille. Cliquez ci-dessous pour en ajouter un.";
 "id_jade_is_a_specialized_device" = "Jade est un appareil spécialisé conçu pour stocker en toute sécurité les clés nécessaires pour dépenser vos bitcoins.";
 "id_jade_is_an_isolated_device_not" = "Jade est un appareil isolé qui n'est pas connecté à Internet, ce qui signifie que vos fonds sont à l'abri du piratage ou de la compromission de votre téléphone.";
+"id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
 "id_jade_unlocked" = "Jade déverrouillé";
 "id_jade_was_initialized_for_testnet" = "Jade a été initialisé pour testnet";
 "id_just_a_few_more_steps_to_get" = "Encore quelques étapes pour vous mettre en place.";
@@ -689,6 +703,7 @@
 "id_main_account" = "Compte principal";
 "id_make_sure_to_be_in_a_private" = "Assurez-vous d'être dans un espace privé et sûr";
 "id_make_sure_you_are_alone_and_no" = "Assurez-vous que vous êtes seul et qu'aucune caméra ne vous enregistre ou n'enregistre l'écran.";
+"id_make_sure_you_got_everything" = "Make sure you got everything right.";
 "id_make_sure_you_have_enabled_otg" = "Vérifiez que vous avez activé l'option OTG dans les paramètres d'Android.";
 "id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "malléabilisée";
@@ -854,14 +869,18 @@
 "id_please_set_and_enable_socks5" = "Veuillez définir et activer le proxy puis le port SOCKS5 pour utiliser Tor";
 "id_please_tap_card" = "Tapez sur la carte";
 "id_please_verify_that_the_address" = "Veuillez vérifier que l'adresse indiquée sur votre portefeuile matériel correspond à celle de votre téléphone.";
+"id_please_verify_that_this_address" = "Please verify that this address matches the one displayed on your hardware device.";
 "id_please_wait_until_your_ledger" = "Veuillez attendre que votre Ledger affiche l'adresse pour la valider. Cela peut prendre jusqu'à 20 secondes.";
 "id_power_on_jade" = "Mise sous tension de Jade";
 "id_precision" = "Précision";
 "id_previous_fee" = "Frais antérieurs";
+"id_price_feed" = "Price Feed";
+"id_print_backup_template" = "Print Backup Template";
 "id_privacy_policy" = "Politique de confidentialité";
 "id_private_but_less_stable" = "Connexion privée, mais moins stable";
 "id_private_key" = "Clé privée";
 "id_problem_with_key_1s" = "Problème avec la clé %1$@";
+"id_protect_your_bitcoin_with_a" = "Protect your bitcoin with a second form of verification";
 "id_provide_this_id_to_the_asset" = "Fournissez cet identifiant à l'émetteur de l'actif si cela vous est demandé.";
 "id_provide_your_amp_id_to_the" = "Fournissez votre AMP ID à l'émetteur de l'actif si cela vous est demandé.";
 "id_proxy_host" = "Hôte proxy";
@@ -991,6 +1010,7 @@
 "id_select_wallet" = "Sélectionnez un portefeuille";
 "id_select_watchonly_type" = "Sélectionner l'option de lecture seule";
 "id_select_word_number_d" = "Sélectionnez le mot numéro %d";
+"id_select_your_coins" = "Select Your Coins";
 "id_select_your_jade_to_login" = "Sélectionnez votre Jade pour vous connecter";
 "id_select_your_recovery_key" = "Sélectionnez votre clé de récupération";
 "id_send" = "Envoyer";
@@ -1055,6 +1075,7 @@
 "id_show_onchain_address" = "Show Onchain Address";
 "id_show_qr_code" = "Affichez le code QR";
 "id_show_recovery_phrase" = "Afficher la phrase de récupération";
+"id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "La validation de la signature a échoué. Si cette erreur est inattendue et s'est produite à plusieurs reprises, il est possible que le portefeuille matériel soit défectueux ou ait été compromis. Il se peut qu'il y ait une fuite de vos clés, ce qui pourrait entraîner une perte de fonds. Veuillez envisager de remplacer le portefeuille matériel.";
 "id_signup_in_progress" = "Inscription en cours";
@@ -1134,6 +1155,7 @@
 "id_the_easier_safer_and_faster" = "le portefeuille le plus sûr, le plus rapide et le plus simple d'utilisation";
 "id_the_email_will_also_be_used_to" = "L'adresse email sera également utilisée pour recevoir les données de récupération et les notifications de transaction.";
 "id_the_hardware_wallet_you_are" = "Le hardware wallet que vous utilisez n'est pas encore pris en charge.";
+"id_the_importance_of_twofactor" = "The Importance of Two-Factor Authentication";
 "id_the_liquid_network_is_a_bitcoin" = "Liquid Network est une solution de seconde couche permettant le règlement et l'émission rapides et confidentiels d'actifs numériques, tels que des stablecoins, des jetons de valeur mobilière et d'autres instruments financiers, au-dessus de la chaîne de blocs de Bitcoin.";
 "id_the_network_selected_on_the" = "Le réseau sélectionné sur l'application Green est différent de celui du portefeuille hardware . Sélectionnez le même réseau sur les deux appareils.\n ";
 "id_the_new_email_will_be_used_for" = "Le nouvel email sera utilisé pour l'authentification à deux facteurs lorsque la réinitialisation sera terminée. La réinitialisation dure 12 mois, plus les délais restants.";
@@ -1156,6 +1178,7 @@
 "id_this_amount_is_below_the" = "This amount is below the minimum fee %@ (%@).";
 "id_this_feature_is_coming_soon" = "Cette fonctionnalité sera bientôt disponible, restez à l'écoute !";
 "id_this_might_take_up_to_a" = "This might take up to a minute.\nThanks for your patience!";
+"id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "Cette transaction a généré des fonds non confidentiels.\n ";
 "id_this_wallet_is_based_on_your" = "Ce portefeuille est basé sur votre phrase de récupération et une passphrase BIP39.";
 "id_this_wallet_operates_on_a_test" = "Ce portefeuile fonctionne sur un réseau de test. Tout ce que vous recevez ou envoyez ici n'a aucune valeur.";
@@ -1166,6 +1189,7 @@
 "id_tip_we_recommend_you_enable" = "Conseil : nous vous recommandons d'activer plus d'une méthode 2FA. Si vous ne configurez qu'une seule méthode 2FA et que vous la perdez ensuite, vous devrez attendre au moins un an jusqu'à ce que la méthode 2FA expire.";
 "id_tip_you_can_use_the" = "Conseil : vous pouvez utiliser le xPub/yPub/zPub pour visualiser votre portefeuille en lecture seule dans Green, ou vous pouvez l'importer sur une autre plateforme. Chaque compte de votre portefeuille possède un xPub/yPub/zPub distinct.";
 "id_to" = "À";
+"id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Pour vous permettre de garder le contrôle de vos fonds, la protection par authentification à deux facteurs expire environ  %d jours après votre dernier paiement. Vous serez invité à effectuer une transaction de réactivation de l'authentification à deux facteurs si vous ne transférez pas vos fonds assez souvent.";
 "id_too_many_pin_attempts" = "Trop de tentatives de saisie du code PIN";
 "id_tor" = "Tor";
@@ -1321,6 +1345,7 @@
 "id_you_are_now_connected" = "Vous êtes connecté";
 "id_you_are_redeeming_funds_from_s" = "You are redeeming funds from %@";
 "id_you_can_change_these_later_on" = "Vous pourrez les modifier ultérieurement.";
+"id_you_can_send_up_to" = "You can send up to:";
 "id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_can_sweep_s_of_your_funds" = "You can sweep %@ of your funds to your onchain account.";
 "id_you_can_use_your_wallet_to" = "You can use your wallet to anonymously sign and authorize an action on:";

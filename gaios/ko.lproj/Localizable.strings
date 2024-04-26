@@ -32,6 +32,7 @@
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_new_transaction_has_just" = "방금 지갑에 새로운 거래가 발생했습니다.";
 "id_a_newer_version_of_blockstream" = "최신 버전의 Blockstream Green을 사용하실 수 있습니다.";
+"id_a_powerful_hardware_wallet_for" = "A powerful hardware wallet for securing your Bitcoin.";
 "id_a_screen_lock_must_be_enabled" = "Android 설정에서 화면 잠금을 활성화해야 합니다.";
 "id_a_set_up_funding_fee_of_s_s" = "A set up funding fee of %@ (%@) will be applied to the received amount.";
 "id_a_wallet_is_detected_on_this" = "이 기기에 지갑이 인식되었습니다.";
@@ -80,6 +81,7 @@
 "id_addresses" = "주소";
 "id_advanced" = "고급";
 "id_advanced_network_settings" = "고급 네트워크 설정";
+"id_advanced_options" = "Advanced options";
 "id_advanced_options_for_your_third" = "세 번째 복구 키 고급 옵션";
 "id_all" = "전부";
 "id_all_assets" = "모든 자산";
@@ -94,6 +96,9 @@
 "id_always" = "항상";
 "id_always_ask" = "항상 물어보기";
 "id_amount" = "금액";
+"id_amount_above_maximum_allowed" = "Amount above maximum allowed value";
+"id_amount_below_minimum_allowed" = "Amount below minimum allowed value";
+"id_amount_below_the_dust_threshold" = "Amount below the dust threshold";
 "id_amount_in_s" = "%@ 안의 금액";
 "id_amount_must_be_at_least_s" = "Amount must be at least %@";
 "id_amount_must_be_at_most_s" = "Amount must be at most %@";
@@ -126,6 +131,7 @@
 "id_at_least_8_characters_required" = "최소 8자가 필요함";
 "id_attempts_remaining_d" = "남은 시도 : %d";
 "id_authenticate" = "Authenticate";
+"id_authenticate_address" = "Authenticate address";
 "id_authenticate_to_view_the" = "복구 문구를 보려면 인증이 필요합니다";
 "id_authentication_error_s" = "인증 오류 : %@";
 "id_authentication_failed" = "인증 실패";
@@ -187,6 +193,7 @@
 "id_change" = "변경하기";
 "id_change_address" = "주소 변경하기";
 "id_change_pin" = "PIN 변경하기";
+"id_change_speed" = "Change speed";
 "id_changing_reference_exchange" = "기준 환율을 변경하면 2FA 기준값이 0으로 초기화됩니다. 결제 후 2FA 기준값을 반드시 조정하세요.";
 "id_channel_closure_initiated_you" = "Channel closure initiated. You can sweep your funds after the transaction is confirmed";
 "id_cheaper_and_more_private" = "더 저렴하고 개인정보가 더 잘 보호되는 단일서명 옵션. 주소들은 Bech32m임.";
@@ -218,6 +225,7 @@
 "id_clear_cache" = "캐시 비우기";
 "id_click_to_copy" = "복사하려면 클릭하세요";
 "id_click_to_receive_an_email_with" = "암호화된 복구 데이터가 포함된 이메일을 받으려면 클릭하세요.";
+"id_close" = "Close";
 "id_close_channel" = "Close Channel";
 "id_code" = "코드";
 "id_coin" = "코인";
@@ -240,6 +248,7 @@
 "id_confirm_action" = "작업 확인하기";
 "id_confirm_by_typing_the_wallet" = "지갑 이름을 입력하여 확인하기";
 "id_confirm_code" = "코드 확인하기";
+"id_confirm_coin_selection" = "Confirm Coin Selection";
 "id_confirm_on_your_device" = "귀하의 장치에서 확인하십시오";
 "id_confirm_passphrase" = "암호 구문 확인하기";
 "id_confirm_refund" = "Confirm Refund";
@@ -249,6 +258,7 @@
 "id_confirm_update_on_your_jade" = "Jade 업데이트 확인하기";
 "id_confirm_version_on_jade" = "Jade에서 버전을 확인하십시오";
 "id_confirm_via_2fa_that_you" = "2FA를 통해 이 변경의 승인을 확인하세요.";
+"id_confirm_your_new_pin" = "새로운 비밀번호 확정";
 "id_confirmation_in_d_blocks" = "%d 블록 확인";
 "id_confirmation_time" = "시간을 확인하십시오";
 "id_confirmations" = "확인";
@@ -424,6 +434,7 @@
 "id_enter_your_12_24_or_27_words" = "12 또는 24, 27 단어로 된 복구 구문을 입력하세요";
 "id_enter_your_24_or_27_words" = "24 또는 27 단어로 된 복구 문구를 입력하세요.";
 "id_enter_your_27_words_recovery" = "27 단어로 된 복구 구문을 입력하세요";
+"id_enter_your_6digit_pin_to_access" = "Enter your 6-digit PIN to Access your Wallet";
 "id_enter_your_email_address" = "이메일 주소를 입력하세요";
 "id_enter_your_pin" = "PIN을 입력하세요";
 "id_enter_your_recovery_phrase" = "복구 구문을 입력하세요";
@@ -454,6 +465,7 @@
 "id_experimental_features_might" = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.";
 "id_expiration" = "Expiration";
 "id_explore_your_wallet" = "나의 지갑 살펴보기";
+"id_export" = "Export";
 "id_export_transactions_to_csv_file" = "거래를 CSV 파일로 내보내기";
 "id_exports_an_accounts_extended" = "시계 전용으로 보기 위해 계정의 확장 공개 키 (xPub/yPub/zPub)를 내보냅니다";
 "id_extended_public_key" = "확장 공개 키";
@@ -608,6 +620,7 @@
 "id_invalid_twofactor_code" = "이중 인증 코드가 유효하지 않습니다";
 "id_invalid_url" = "URL이 유효하지 않습니다";
 "id_invalid_xpub" = "잘못된 xpub";
+"id_invoice_expired" = "Invoice expired";
 "id_invoices" = "Invoices";
 "id_is_a_noncustodial" = "비수탁형입니다";
 "id_issuer" = "발행자";
@@ -615,6 +628,7 @@
 "id_it_looks_like_you_have_no" = "보유한 지갑이 없습니다. 아래를 클릭하여 추가하세요.";
 "id_jade_is_a_specialized_device" = "Jade는 비트코인 사용에 필요한 키들을 안전하게 저장하도록 설계된 특수 장치입니다.";
 "id_jade_is_an_isolated_device_not" = "Jade는 인터넷에 연결되지 않은 격리된 장치이므로, 귀하의 자금은 해킹되거나 보안이 무력화된 전화로부터 보호됩니다.";
+"id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
 "id_jade_unlocked" = "Jade 잠금 해제 완료";
 "id_jade_was_initialized_for_testnet" = "Jade가 테스트넷을 위해 초기화되었습니다";
 "id_just_a_few_more_steps_to_get" = "몇 단계만 더 거치면 설정이 완료됩니다.";
@@ -689,6 +703,7 @@
 "id_main_account" = "주 계정";
 "id_make_sure_to_be_in_a_private" = "개인 정보가 지켜지는 안전한 공간에 위치하도록 하십시오";
 "id_make_sure_you_are_alone_and_no" = "귀하가 혼자 있으며 귀하 또는 화면을 녹화 중인 카메라가 없음을 확인하십시오.";
+"id_make_sure_you_got_everything" = "Make sure you got everything right.";
 "id_make_sure_you_have_enabled_otg" = "Android 설정에서 OTG 옵션을 활성화했는지 확인하세요.";
 "id_make_sure_you_made_a_proper" = "지갑 니모닉이 제대로 백업되었는지 확인하세요.";
 "id_malleated" = "변경된";
@@ -854,14 +869,18 @@
 "id_please_set_and_enable_socks5" = "Tor를 사용하려면 SOCKS5 프록시와 포트를 설정 및 활성화하세요";
 "id_please_tap_card" = "카드를 탭하세요";
 "id_please_verify_that_the_address" = "하드웨어 지갑에 표시된 주소와 휴대전화의 주소가 일치하는지 확인하세요.";
+"id_please_verify_that_this_address" = "Please verify that this address matches the one displayed on your hardware device.";
 "id_please_wait_until_your_ledger" = "Ledger에 검증할 주소가 표시될 때까지 기다려 주세요. 최대 20초가 소요될 수 있습니다.";
 "id_power_on_jade" = "Jade 전원 켜기";
 "id_precision" = "정확도";
 "id_previous_fee" = "이전 수수료";
+"id_price_feed" = "Price Feed";
+"id_print_backup_template" = "Print Backup Template";
 "id_privacy_policy" = "개인정보보호";
 "id_private_but_less_stable" = "비공개, 연결 안정성은 낮음";
 "id_private_key" = "개인 키";
 "id_problem_with_key_1s" = "%1$@키에 문제가 있습니다";
+"id_protect_your_bitcoin_with_a" = "Protect your bitcoin with a second form of verification";
 "id_provide_this_id_to_the_asset" = "자산 발행자가 요청 시 이 ID를 제공하세요.";
 "id_provide_your_amp_id_to_the" = "자산 발행자가 요청 시 AMP ID를 제공하세요.";
 "id_proxy_host" = "프록시 호스트";
@@ -991,6 +1010,7 @@
 "id_select_wallet" = "지갑을 선택하세요";
 "id_select_watchonly_type" = "시계 전용 유형을 선택하세요";
 "id_select_word_number_d" = "%d번째 단어를 선택하세요";
+"id_select_your_coins" = "Select Your Coins";
 "id_select_your_jade_to_login" = "로그인할 Jade를 선택하세요";
 "id_select_your_recovery_key" = "귀하의 복구 키를 선택하세요";
 "id_send" = "보내기";
@@ -1055,6 +1075,7 @@
 "id_show_onchain_address" = "Show Onchain Address";
 "id_show_qr_code" = "QR 코드 보기";
 "id_show_recovery_phrase" = "복구 문구 보이기";
+"id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "서명 검증에 실패했습니다. 이 오류가 예상치 못한 오류이고 반복적으로 발생했다면 하드웨어 지갑에 결함이 있거나 지갑이 위험에 노출되었을 수 있습니다. 사용자 키가 유출되었다면 자금 손실이 발생할 수 있습니다. 하드웨어 지갑을 교체하시는 것이 좋습니다.";
 "id_signup_in_progress" = "회원가입 진행 중";
@@ -1134,6 +1155,7 @@
 "id_the_easier_safer_and_faster" = "보다 쉽고 안전하고 빠른 지갑";
 "id_the_email_will_also_be_used_to" = "이메일은 복구 데이터 및 거래 알림을 수신하는 데에도 사용됩니다.";
 "id_the_hardware_wallet_you_are" = "지금 사용하시는 하드웨어 지갑은 아직 지원되지 않습니다.";
+"id_the_importance_of_twofactor" = "The Importance of Two-Factor Authentication";
 "id_the_liquid_network_is_a_bitcoin" = "리퀴드 네트워크는 비트코인 타임체인 위에서 스테이블코인, 보안 토큰 및 기타 금융 상품과 같은 디지털 자산의 빠르고 보안성 있는 결제 및 발행을 가능하게 하는 비트코인 레이어 2 솔루션입니다.";
 "id_the_network_selected_on_the" = "Green 앱에서 선택한 네트워크가 하드웨어 지갑에서 선택한 네트워크와 일치하지 않습니다. 두 기기에서 동일한 네트워크를 선택해 주세요.";
 "id_the_new_email_will_be_used_for" = "초기화가 완료되면 새 이메일이 이중 인증에 사용됩니다. 초기화는 12개월에 남은 타임락 기간이 추가된 만큼 소요됩니다.";
@@ -1156,6 +1178,7 @@
 "id_this_amount_is_below_the" = "This amount is below the minimum fee %@ (%@).";
 "id_this_feature_is_coming_soon" = "이 기능은 곧 제공될 예정입니다. 조금만 기다려주세요!";
 "id_this_might_take_up_to_a" = "This might take up to a minute.\nThanks for your patience!";
+"id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "이 거래에 공개 자금이 사용되었습니다.";
 "id_this_wallet_is_based_on_your" = "이 지갑은 복구 문구와 BIP39 암호 문구를 기반으로 합니다.";
 "id_this_wallet_operates_on_a_test" = "이 지갑은 테스트 네트워크에서 작동합니다. 여기에서 주고 받는 것은 무엇이든 가치가 없습니다.";
@@ -1166,6 +1189,7 @@
 "id_tip_we_recommend_you_enable" = "팁 : 두 가지 이상의 2FA 방법을 활성화하는 것이 좋습니다. 2FA 방식을 하나만 설정하고 잃어버리면 해당 2FA가 만료될 때까지 최소 1년은 기다려야 합니다.";
 "id_tip_you_can_use_the" = "도움말: xPub/yPub/zPub를 활용하여 Green 안에 있는 귀하의 시계 전용 지갑을 보거나, 그것을 또 다른 플랫폼에로 가지고 올 수 있습니다. 귀하의 지갑 내 각 계정에는 별도의 xPub/yPub/zPub가 존재합니다.";
 "id_to" = "받는 사람";
+"id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "사용자가 자금을 스스로 관리할 수 있도록, 이중 인증 보호는 마지막 결제 후 약 %d일 뒤에 만료됩니다. 자금을 충분히 자주 옮기지 않으면 이중 인증 재활성화 거래를 하라는 메시지가 표시됩니다.";
 "id_too_many_pin_attempts" = "잘못된 PIN이 너무 많이 입력되었습니다";
 "id_tor" = "Tor";
@@ -1321,6 +1345,7 @@
 "id_you_are_now_connected" = "이제 연결되었습니다";
 "id_you_are_redeeming_funds_from_s" = "You are redeeming funds from %@";
 "id_you_can_change_these_later_on" = "나중에 변경 가능합니다.";
+"id_you_can_send_up_to" = "You can send up to:";
 "id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_can_sweep_s_of_your_funds" = "You can sweep %@ of your funds to your onchain account.";
 "id_you_can_use_your_wallet_to" = "You can use your wallet to anonymously sign and authorize an action on:";
