@@ -137,7 +137,7 @@ class SecuritySelectViewModel {
                     }
                 }
             }
-            let accounts = self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden }
+            let accounts = self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.type != .twoOfThree && $0.hidden }
             let txs = try await self.wm.transactions(subaccounts: accounts)
             let account = try await self.createOrUnarchiveSubaccount(session: session, accounts: accounts, txs: txs, params: params)
             _ = try await self.wm.subaccounts()
