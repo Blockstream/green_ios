@@ -287,13 +287,16 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     
     func createSubaccount(policy: PolicyCellType, params: CreateSubaccountParams?) {
         let isHW = AccountsRepository.shared.current?.isHW ?? false
+        if isHW {
+            showHWCheckDialog()
+        } else {
+            startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.shortString))
+        }
         Task {
-            if isHW {
-                showHWCheckDialog()
-            }
             do {
                 let wallet = try await viewModel.create(policy: policy, params: params)
                 await MainActor.run {
+                    self.stopLoader()
                     DropAlert().success(message: "id_new_account_created".localized)
                     navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
                     if let wallet = wallet {
