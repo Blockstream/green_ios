@@ -59,7 +59,7 @@ class RedeemSwapTask : TaskProtocol {
         
         do {
             try breezSDK.redeemSwap(swapAddress: address)
-            logger.debug("Found swap for \(address, privacy: .public)")
+            logger.info("Found swap for \(address, privacy: .public)")
             self.dismiss?()
         } catch let e {
             logger.error("Failed to manually redeem swap notification: \(e, privacy: .public)")

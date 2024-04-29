@@ -1,5 +1,7 @@
 import UserNotifications
 import BreezSDK
+import os.log
+import core
 
 public protocol TaskProtocol : EventListener {
     var payload: String { get set }
@@ -17,12 +19,14 @@ extension TaskProtocol {
             let contentHandler = contentHandler,
             let bestAttemptContent = bestAttemptContent
         else {
+            logger.error("displayPushNotification error")
             return
         }
         
         if threadIdentifier != nil {
             bestAttemptContent.threadIdentifier = threadIdentifier!
         }
+        logger.info("displayPushNotification threadIdentifier \(threadIdentifier ?? "", privacy: .public)")
         
         bestAttemptContent.title = title
         contentHandler(bestAttemptContent)

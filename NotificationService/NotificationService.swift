@@ -62,14 +62,15 @@ class NotificationService: UNNotificationServiceExtension {
 
         if let currentTask = self.getTaskFromNotification(notification: notification) {
             self.currentTask = currentTask
-            Task.detached {
+            Task.detached(priority: .high) { @MainActor [weak self] in
                 do {
                     guard let xpub = notification.appData else {
-                        logger.error("Invalid xpub: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
+                        logger.error("Invalid xpub: \(self?.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
                         throw NotificationError.InvalidNotification
                     }
-                    guard let lightningAccount = self.getLightningAccount(xpub: xpub) else {
-                        guard let account = self.getAccount(xpub: xpub) else {
+                    logger.info("xpub: \(xpub, privacy: .public)")
+                    guard let lightningAccount = self?.getLightningAccount(xpub: xpub) else {
+                        guard let account = self?.getAccount(xpub: xpub) else {
                             logger.error("Wallet not found")
                             throw NotificationError.WalletNotFound
                         }
@@ -80,14 +81,14 @@ class NotificationService: UNNotificationServiceExtension {
                     logger.info("Using lightning account \(lightningAccount.name, privacy: .public)")
                     let credentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: lightningAccount.keychain)
                     logger.info("Breez SDK is not connected, connecting....")
-                    if let breezSdk = try await self.breezSDKConnector.register(credentials: credentials, listener: currentTask) {
+                    if let breezSdk = try await self?.breezSDKConnector.register(credentials: credentials, listener: currentTask) {
                         logger.info("Breez SDK connected successfully")
                         try currentTask.start(breezSDK: breezSdk)
                     }
                 } catch {
                     logger.error("Breez SDK connection failed \(error.description() ?? "", privacy: .public)")
-                    await self.shutdown()
-                    self.currentTask?.onShutdown()
+                    self?.shutdown()
+                    self?.currentTask?.onShutdown()
                 }
             }
         }
@@ -112,10 +113,10 @@ class NotificationService: UNNotificationServiceExtension {
         switch(notification.notificationType) {
         case .addressTxsConfirmed:
             logger.info("creating task for tx received")
-            return RedeemSwapTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: { Task { await self.shutdown() }})
+            return RedeemSwapTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
         case .paymentReceived:
             logger.info("creating task for payment received")
-            return PaymentReceiverTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: { Task { await self.shutdown() }})
+            return PaymentReceiverTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
         default:
             return nil
         }
@@ -127,15 +128,15 @@ class NotificationService: UNNotificationServiceExtension {
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
         // otherwise the original push payload will be used.
-        Task {
-            await self.shutdown()
-            self.currentTask?.onShutdown()
-        }
+        self.shutdown()
+        self.currentTask?.onShutdown()
     }
 
-    private func shutdown() async -> Void {
-        logger.info("shutting down...")
-        await breezSDKConnector.unregister()
-        logger.info("task unregistered")
+    private func shutdown() -> Void {
+        Task.detached(priority: .high) { @MainActor [weak self] in
+            logger.info("shutting down...")
+            await self?.breezSDKConnector.unregister()
+            logger.info("task unregistered")
+        }
     }
 }

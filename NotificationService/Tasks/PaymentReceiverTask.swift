@@ -57,7 +57,9 @@ class PaymentReceiverTask : TaskProtocol {
             receivedPayment = details.payment
             break
         case .synced:
+            logger.error("Received synced event")
             if self.receivedPayment != nil {
+                logger.info("Received synced event and receivedPayment != nil")
                 self.onShutdown()
                 self.dismiss?()
             }
