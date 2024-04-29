@@ -1033,11 +1033,11 @@
                                                 <rect key="frame" x="24" y="82" width="272" height="384"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qf5-N3-kxo">
-                                                        <rect key="frame" x="36" y="0.0" width="200" height="193"/>
+                                                        <rect key="frame" x="36" y="0.0" width="200" height="163"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="C8I-Hj-bDm">
-                                                        <rect key="frame" x="36" y="193" width="200" height="71"/>
+                                                        <rect key="frame" x="36" y="163" width="200" height="71"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9mB-qv-cxP">
                                                                 <rect key="frame" x="0.0" y="0.0" width="200" height="20.5"/>
@@ -1054,7 +1054,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="s6E-bi-3aM">
-                                                        <rect key="frame" x="50" y="274" width="172" height="110"/>
+                                                        <rect key="frame" x="50" y="244" width="172" height="110"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AOh-PG-2eB">
                                                                 <rect key="frame" x="0.0" y="0.0" width="172" height="50"/>
@@ -1089,7 +1089,7 @@
                                                 </subviews>
                                                 <color key="backgroundColor" name="gGrayCard"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="s6E-bi-3aM" secondAttribute="bottom" id="CoS-s7-2dX"/>
+                                                    <constraint firstAttribute="bottom" secondItem="s6E-bi-3aM" secondAttribute="bottom" constant="30" id="CoS-s7-2dX"/>
                                                     <constraint firstItem="s6E-bi-3aM" firstAttribute="top" secondItem="C8I-Hj-bDm" secondAttribute="bottom" constant="10" id="L2v-qc-UUi"/>
                                                     <constraint firstItem="qf5-N3-kxo" firstAttribute="leading" secondItem="rmj-oJ-iwm" secondAttribute="leading" constant="36" id="SG7-wF-yUL"/>
                                                     <constraint firstItem="qf5-N3-kxo" firstAttribute="top" secondItem="rmj-oJ-iwm" secondAttribute="top" id="X3B-1p-PYq"/>
