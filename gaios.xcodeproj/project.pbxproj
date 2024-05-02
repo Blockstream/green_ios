@@ -651,6 +651,7 @@
 		81F5C9862ADD3C71004B020A /* LNWithdrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C9852ADD3C71004B020A /* LNWithdrawViewController.swift */; };
 		81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C9872ADD3F5F004B020A /* LTWithdrawNoteCell.swift */; };
 		81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */; };
+		81F7FE722BE2FD4D00F44FC2 /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F7FE712BE2FD4D00F44FC2 /* AppNotifications.swift */; };
 		81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC542BC56F5D002E384D /* NotificationService.swift */; };
 		81F8AC572BC5A4A4002E384D /* RedeemSwap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */; };
 		81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */; };
@@ -1478,6 +1479,7 @@
 		81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNWithdrawAmountCell.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		81F7FE712BE2FD4D00F44FC2 /* AppNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotifications.swift; sourceTree = "<group>"; };
 		81F8AC542BC56F5D002E384D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemSwap.swift; sourceTree = "<group>"; };
 		81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskProtocol.swift; sourceTree = "<group>"; };
@@ -3011,6 +3013,7 @@
 				34AB8BAC26036742009C930A /* Services */,
 				34AFA8E429D1723F00C4F3E6 /* Rive */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
+				81F7FE712BE2FD4D00F44FC2 /* AppNotifications.swift */,
 				8189BEFF2236F2270091B466 /* ScreenLocker.swift */,
 				817417362236E85500A28E36 /* ScreenLockWindow.swift */,
 			);
@@ -4382,6 +4385,7 @@
 				34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */,
 				3469A2482887D56E00B2F640 /* Date.swift in Sources */,
 				3445499329FBFC8F006725D2 /* LTNoteCell.swift in Sources */,
+				81F7FE722BE2FD4D00F44FC2 /* AppNotifications.swift in Sources */,
 				34FE20122A1CA1FC00301746 /* DialogNodeViewController.swift in Sources */,
 				812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */,
 				818BA7072A2F8ACB00DFB03A /* ScanViewModel.swift in Sources */,

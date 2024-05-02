@@ -381,38 +381,44 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         walletCreated = wallet
         credentialsCreated = credentials
         
+        // for not lightning subaccount creation: exit
+        if !wallet.isLightning {
+            DropAlert().success(message: "id_new_account_created".localized)
+            self.navigationController?.popViewController(animated: true)
+            self.delegate?.didCreatedWallet(wallet)
+            return
+        }
+        
+        // only for lightning subaccount creation: add lightning shortcut
         let account = WalletManager.current?.account
-        if let account = account, wallet.isLightning &&
-            !account.isEphemeral && !(account.hidden ?? false) {
-            
-            startLoader(message: "")
+        if let account = account, !account.isEphemeral && !(account.hidden ?? false) {
             Task {
+                startLoader(message: "")
                 do {
                     if let credentials = credentialsCreated {
                         try await viewModel.addHWShortcutLightning(credentials)
                     } else {
                         try await viewModel.addSWShortcutLightning()
                     }
-                    await MainActor.run {
-                        self.stopLoader()
-                        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-                        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController {
-                            vc.vm = LTShortcutViewModel(account: account, action: .addFromCreate)
-                            vc.delegate = self
-                            vc.modalPresentationStyle = .overFullScreen
-                            present(vc, animated: false, completion: nil)
-                            return
-                        }
-                    }
+                    self.stopLoader()
+                    self.showLTShortcutViewController(account: account)
                 } catch {
                     self.stopLoader()
                     self.showError(error)
                 }
             }
         }
-        DropAlert().success(message: "id_new_account_created".localized)
-        self.navigationController?.popViewController(animated: true)
-        self.delegate?.didCreatedWallet(wallet)
+    }
+
+    @MainActor
+    func showLTShortcutViewController(account: Account) {
+        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController {
+            vc.vm = LTShortcutViewModel(account: account, action: .addFromCreate)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
     }
 }
 

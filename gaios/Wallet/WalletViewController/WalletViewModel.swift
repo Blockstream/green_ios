@@ -292,4 +292,13 @@ class WalletViewModel {
         }
         try await wm?.addLightningShortcut(credentials: credentials)
     }
+    
+    func registerNotifications() {
+        if subaccounts.filter({ $0.networkType == .lightning }).isEmpty {
+            return
+        }
+        DispatchQueue.main.async {
+            AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared)
+        }
+    }
 }

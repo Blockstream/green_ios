@@ -80,9 +80,15 @@ class LTShortcutViewController: UIViewController {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
-            self.dismiss(animated: false, completion: {
-                self.delegate?.onTap(action)
-            })
+            DispatchQueue.main.async {
+                AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared) {
+                    DispatchQueue.main.async {
+                        self.dismiss(animated: false, completion: {
+                            self.delegate?.onTap(action)
+                        })
+                    }
+                }
+            }
         })
     }
 
@@ -94,6 +100,6 @@ class LTShortcutViewController: UIViewController {
         }
     }
     @IBAction func btnMain(_ sender: Any) {
-        dismiss(vm.action == .remove ? .remove : .done)
+        self.dismiss(self.vm.action == .remove ? .remove : .done)
     }
 }
