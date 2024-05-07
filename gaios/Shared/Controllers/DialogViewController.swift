@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 class DialogViewController: KeyboardViewController {
-    
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)

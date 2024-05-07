@@ -21,7 +21,7 @@ protocol TxDetailsViewControllerDelegate: AnyObject {
 class TxDetailsViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    
+
     weak var delegate: TxDetailsViewControllerDelegate?
 
     var vm: TxDetailsViewModel!
@@ -57,7 +57,7 @@ class TxDetailsViewController: UIViewController {
         register()
         setContent()
         setStyle()
-        
+
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
@@ -142,7 +142,7 @@ class TxDetailsViewController: UIViewController {
             if let url = urlForTx() {
                 let tx: [Any] = [url]
                 let shareVC = UIActivityViewController(activityItems: tx, applicationActivities: nil)
-                //shareVC.popoverPresentationController?.sourceView = sender
+                // shareVC.popoverPresentationController?.sourceView = sender
                 self.present(shareVC, animated: true, completion: nil)
             }
         }
@@ -286,7 +286,7 @@ class TxDetailsViewController: UIViewController {
             break
         }
     }
-    
+
     func didSelectAmountAt(_ index: Int) {
         if !vm.transaction.isLiquid { return }
         Task {
@@ -376,7 +376,7 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-            
+
         case TxDetailsSection.actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TxDetailsActionCell.identifier, for: indexPath) as? TxDetailsActionCell {
                 cell.configure(model: vm.txDetailsActionCellModels[indexPath.row], isLast: vm.txDetailsActionCellModels.count - 1 == indexPath.row)
@@ -395,14 +395,14 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == TxDetailsSection.info.rawValue && vm.txDetailsInfoCellModels.count > 0  {
+        if section == TxDetailsSection.info.rawValue && vm.txDetailsInfoCellModels.count > 0 {
             return UITableView.automaticDimension
         }
         return 0.1
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            
+
         if indexPath.section == TxDetailsSection.actions.rawValue {
             return 54.0
         }
@@ -422,10 +422,10 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
         }
         return nil
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let txSection = TxDetailsSection(rawValue: indexPath.section) {
-            
+
             switch txSection {
             case .amount:
                 didSelectAmountAt(indexPath.row)
@@ -482,39 +482,37 @@ extension TxDetailsViewController: DialogShareTxOptionViewControllerDelegate {
 }
 
 extension TxDetailsViewController {
-    
+
     func tableDivider(_ style: TableDividerStyle) -> UIView {
-        
 
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: .zero))
         section.backgroundColor = UIColor.clear
-        
+
         let v = UIView(frame: .zero)
         v.backgroundColor = .white.withAlphaComponent(0.1)
         v.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(v)
-        
+
         NSLayoutConstraint.activate([
             v.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 40.0),
             v.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -40.0),
             v.heightAnchor.constraint(equalToConstant: 1.0)
         ])
-        
+
         if style == .header {
 
             let top = vm.txDetailsAmountCellModels.count > 1 ? CGFloat(20) : CGFloat(8)
             NSLayoutConstraint.activate([
                 v.topAnchor.constraint(equalTo: section.topAnchor, constant: top),
-                v.bottomAnchor.constraint(equalTo: section.bottomAnchor , constant: -18)
+                v.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: -18)
             ])
         } else {
             NSLayoutConstraint.activate([
                 v.topAnchor.constraint(equalTo: section.topAnchor, constant: 10),
-                v.bottomAnchor.constraint(equalTo: section.bottomAnchor , constant: 0)
+                v.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: 0)
             ])
         }
 
         return section
-        
     }
 }

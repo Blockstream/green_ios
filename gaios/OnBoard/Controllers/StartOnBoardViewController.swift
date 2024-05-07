@@ -103,7 +103,7 @@ class StartOnBoardViewController: UIViewController {
 
 extension StartOnBoardViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:

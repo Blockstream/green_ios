@@ -27,7 +27,7 @@ class DialogExchangeViewModel {
                 await MainActor.run {
                     self.exchangeList.removeAll()
                     var list: [CurrencyItem] = []
-                    for (exchange, array) in perExchange ?? [:]{
+                    for (exchange, array) in perExchange ?? [:] {
                         for currency in array {
                             list.append(CurrencyItem(exchange: exchange, currency: currency))
                         }

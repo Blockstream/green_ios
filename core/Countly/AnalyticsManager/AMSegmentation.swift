@@ -3,9 +3,9 @@ import gdk
 import hw
 
 public extension AnalyticsManager {
-    
+
     typealias Sgmt = [String: String]
-    
+
     func ntwSgmtUnified() -> Sgmt {
         var s = Sgmt()
         if let analyticsNtw = analyticsNetworks {
@@ -16,24 +16,24 @@ public extension AnalyticsManager {
         }
         return s
     }
-    
+
     func onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow) -> Sgmt {
         var s = Sgmt()
         s[AnalyticsManager.strFlow] = flow.rawValue
         return s
     }
-    
+
     func sessSgmt(_ account: Account?) -> Sgmt {
         var s = ntwSgmtUnified()
         if account?.isJade ?? false {
             s[AnalyticsManager.strBrand] = "Blockstream"
-            s[AnalyticsManager.strFirmware] = "" //BleViewModel.shared.jade?.version?.jadeVersion ?? ""
-            s[AnalyticsManager.strModel] = "" //BleViewModel.shared.jade?.version?.boardType ?? ""
+            s[AnalyticsManager.strFirmware] = "" // BleViewModel.shared.jade?.version?.jadeVersion ?? ""
+            s[AnalyticsManager.strModel] = "" // BleViewModel.shared.jade?.version?.boardType ?? ""
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }
         if account?.isLedger ?? false {
             s[AnalyticsManager.strBrand] = "Ledger"
-            s[AnalyticsManager.strFirmware] = "" //BleViewModel.shared.ledger?.version ?? ""
+            s[AnalyticsManager.strFirmware] = "" // BleViewModel.shared.ledger?.version ?? ""
             s[AnalyticsManager.strModel] = "Ledger Nano X"
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }

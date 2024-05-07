@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 protocol DialogExplorerOptionsViewControllerDelegate: AnyObject {
     func didSelect(_ option: ExplorerOption)
 }

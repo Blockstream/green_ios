@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 enum OnBoardInfoCellType: String, CaseIterable {
     case environment
     case sensitive

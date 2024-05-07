@@ -65,7 +65,7 @@ class WalletViewModel {
     }
 
     func getAssetId() -> String {
-        let lSubs: [WalletItem] = subaccounts.filter{ $0.gdkNetwork.liquid == true }
+        let lSubs: [WalletItem] = subaccounts.filter { $0.gdkNetwork.liquid == true }
         if lSubs.count == subaccounts.count && lSubs.count > 0 {
             return lSubs.first?.gdkNetwork.mainnet ?? true ? Balance.lbtc : Balance.ltest
         } else {
@@ -187,7 +187,7 @@ class WalletViewModel {
         var cards: [AlertCardType] = []
         cards += self.loadMetadataCards()
         cards += self.loadDisputeCards()
-        
+
         if Balance.fromSatoshi(0, assetId: session.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" {
             cards.append(AlertCardType.fiatMissing)
         }
@@ -256,10 +256,9 @@ class WalletViewModel {
                                                                                      accounts: accounts,
                                                                                      accountsTypes: accountsTypes))
     }
-    
-    
+
     func needShortcut() -> Bool {
-        
+
         guard wm?.lightningSubaccount != nil else {
             return false
         }
@@ -279,11 +278,11 @@ class WalletViewModel {
     }
 
     func addSWDerivedLightning() async throws {
-        
+
         guard wm?.lightningSubaccount != nil else {
             return
         }
-        
+
         guard let mainCredentials = try await wm?.prominentSession?.getCredentials(password: "") else {
             return
         }
@@ -292,7 +291,7 @@ class WalletViewModel {
         }
         try await wm?.addLightningShortcut(credentials: credentials)
     }
-    
+
     func registerNotifications() {
         if subaccounts.filter({ $0.networkType == .lightning }).isEmpty {
             return

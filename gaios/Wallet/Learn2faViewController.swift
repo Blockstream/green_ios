@@ -63,7 +63,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
-        //AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        // AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
         self.startAnimating()
         Task {
             do {
@@ -82,7 +82,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func disputeReset(email: String) {
-        //AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        // AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
         self.startAnimating()
         Task {
             do {
@@ -99,7 +99,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func undoReset(email: String) {
-        //AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        // AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
         self.startAnimating()
         Task {
             do {
@@ -111,7 +111,7 @@ class Learn2faViewController: UIViewController {
             } catch {
                 self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
             }
-            
+
             self.stopAnimating()
         }
     }

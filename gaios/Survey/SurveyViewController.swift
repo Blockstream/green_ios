@@ -124,7 +124,7 @@ class SurveyViewController: KeyboardViewController {
                 typeText.isHidden = true
             }
 
-            /// validation
+            // validation
             if qRating != nil && qText != nil {
                 btnRight.setStyle(.primaryDisabled)
                 if segment.selectedSegmentIndex >= 0 {

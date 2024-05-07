@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 enum OTAAction {
     case update
     case readMore

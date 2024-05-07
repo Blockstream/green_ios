@@ -22,8 +22,7 @@ class DialogSignViewController: KeyboardViewController {
     @IBOutlet weak var signMessageView: UIView!
     @IBOutlet weak var lblSignMessage: UILabel!
     @IBOutlet weak var animateView: UIView!
-    
-    
+
     var viewModel: DialogSignViewModel!
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
 
@@ -109,7 +108,7 @@ class DialogSignViewController: KeyboardViewController {
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         messageTextView.cornerRadius = 5.0
-        [btnPaste, btnCopy].forEach{
+        [btnPaste, btnCopy].forEach {
             $0?.cornerRadius = 5.0
         }
         lblAddress.setStyle(.txtCard)
@@ -152,7 +151,7 @@ class DialogSignViewController: KeyboardViewController {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
             let riveView = RiveModel.animationCheckMark.createRiveView()
             riveView.frame = CGRect(x: 0.0, y: 0.0, width: self.animateView.frame.width, height: self.animateView.frame.height)
-            
+
             print(riveView.frame)
             self.animateView.addSubview(riveView)
         }
@@ -186,7 +185,7 @@ class DialogSignViewController: KeyboardViewController {
         }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
-    
+
     @IBAction func btnSign(_ sender: Any) {
         signView.isHidden = false
         messageTextView.endEditing(true)
@@ -195,7 +194,7 @@ class DialogSignViewController: KeyboardViewController {
         Task {
             do {
                 if viewModel.isHW {
-                    showHWCheckDialog(message: message ?? "")                    
+                    showHWCheckDialog(message: message ?? "")
                 }
                 let signature = try await viewModel.sign(message: message ?? "")
                 hideHWCheckDialog()
@@ -208,7 +207,7 @@ class DialogSignViewController: KeyboardViewController {
             }
         }
     }
-    
+
     @MainActor
     func showHWCheckDialog(message: String) {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
@@ -224,7 +223,7 @@ class DialogSignViewController: KeyboardViewController {
     func hideHWCheckDialog() {
         dialogJadeCheckViewController?.dismiss()
     }
-    
+
     @IBAction func btnCopy(_ sender: Any) {
         if let sign = lblSign.text {
             UIPasteboard.general.string = sign

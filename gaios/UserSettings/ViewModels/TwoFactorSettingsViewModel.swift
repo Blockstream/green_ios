@@ -4,10 +4,10 @@ import core
 import gdk
 
 class TwoFactorSettingsViewModel {
-    
+
     // load wallet manager for current logged session
     var wm: WalletManager { WalletManager.current! }
-    
+
     // current multisig session
     var sessionBitcoin: SessionManager? { wm.sessions["mainnet"] }
     var sessionLiquid: SessionManager? { wm.sessions["liquid"] }
@@ -19,7 +19,7 @@ class TwoFactorSettingsViewModel {
     private var newCsv: Int?
     private var currentCsv: Int?
     var twoFactorConfig: TwoFactorConfig?
-    
+
     func getTwoFactors(session: SessionManager) async throws -> [TwoFactorItem] {
         if !session.logged {
             return []

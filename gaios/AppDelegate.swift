@@ -67,13 +67,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AnalyticsManager.shared.countlyStart()
         AnalyticsManager.shared.setupSession(session: nil)
-        
+
         UNUserNotificationCenter.current().delegate = AppNotifications.shared
         AppNotifications.shared.registerForFcmPushNotifications()
         return true
     }
 
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         URLSchemeManager.shared.sendingAppID = options[.sourceApplication] as? String
         URLSchemeManager.shared.url = url
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
@@ -81,7 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.bip21Scheme.rawValue),
                                                 object: nil, userInfo: nil)
         }
-        
+
         return true
     }
 
@@ -113,7 +113,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         Task.detached { [weak self] in await self?.disconnect() }
     }
-    
+
     func disconnect() async {
         for wm in WalletsRepository.shared.wallets.values {
             if wm.logged {

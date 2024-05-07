@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 protocol DialogMnemonicLengthViewControllerDelegate: AnyObject {
     func didSelect(_ option: MnemonicLengthOption)
 }

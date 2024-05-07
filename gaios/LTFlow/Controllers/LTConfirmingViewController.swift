@@ -9,7 +9,7 @@ class LTConfirmingViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var animateView: UIView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

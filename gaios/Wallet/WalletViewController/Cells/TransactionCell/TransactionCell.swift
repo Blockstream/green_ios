@@ -19,7 +19,7 @@ class TransactionCell: UITableViewCell {
         progressBar.cornerRadius = 5.0
         progressBar.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
-    
+
     deinit {
         timer?.invalidate()
     }

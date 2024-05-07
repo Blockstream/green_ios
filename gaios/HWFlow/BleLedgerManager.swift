@@ -5,21 +5,21 @@ import gdk
 import core
 
 class BleLedgerManager {
-    
+
     let bleLedger: BleLedger
     var walletManager: WalletManager?
     var version: String?
-    
+
     init(bleLedger: BleLedger) {
         self.bleLedger = bleLedger
     }
-    
+
     public func connect() async throws {
         if !bleLedger.connected {
             try await bleLedger.open()
         }
     }
-    
+
     public func disconnect() async throws {
         try await bleLedger.close()
     }
@@ -53,7 +53,7 @@ class BleLedgerManager {
             throw DeviceError.wrong_app
         }
     }
-    
+
     func getMasterXpub() async throws -> String {
         let network = try await getLedgerNetwork()
         return try await bleLedger.xpubs(network: network.chain, path: [])
@@ -63,7 +63,7 @@ class BleLedgerManager {
         _ = try await getLedgerNetwork()
         return true
     }
-    
+
     func login(account: Account) async throws -> Account {
         let device: HWDevice = .defaultLedger()
         let masterXpub = try await bleLedger.xpubs(network: account.gdkNetwork.chain, path: [])
@@ -89,7 +89,7 @@ class BleLedgerManager {
         }
         return account
     }
-    
+
     func defaultAccount() async throws -> Account {
         let device: HWDevice = .defaultLedger()
         let network = try await getLedgerNetwork()

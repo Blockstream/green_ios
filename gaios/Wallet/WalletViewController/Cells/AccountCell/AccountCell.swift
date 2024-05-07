@@ -27,7 +27,7 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var trailing4_3: NSLayoutConstraint!
     @IBOutlet weak var titlesTrailing: NSLayoutConstraint!
     @IBOutlet weak var loader: UIActivityIndicatorView!
-    
+
     @IBOutlet weak var ltExperimental: UIView!
     @IBOutlet weak var lblLtEXperimental: UILabel!
     @IBOutlet weak var lblLtExpBg: UIView!
@@ -115,10 +115,10 @@ class AccountCell: UITableViewCell {
         self.onCopy = onCopy
         self.onShield = onShield
         self.onExperiental = onExperiental
-        
+
         lblType.text = model.lblType
         lblName.text = NSLocalizedString(model.name, comment: "")
-        
+
         if hideBalance {
             lblFiat.attributedText = Common.obfuscate(color: .white, size: 12, length: 5)
             lblAmount.attributedText = Common.obfuscate(color: .white, size: 16, length: 5)
@@ -141,12 +141,12 @@ class AccountCell: UITableViewCell {
         btcImg.isHidden = network.liquid
         btcImg.image = backgroundImage(network: network)
         imgMS.image = backgroundIcon(network: network)
-        
+
         ltExperimental.isHidden = !model.networkType.lightning
         lblLtEXperimental.text = "id_experimental".localized
         ltIconExp.image = UIImage(named: "ic_lightning_info")?.maskWithColor(color: .white)
         lblLtExpBg.layer.cornerRadius = 4.0
-        
+
         [bg, effectView, btnShield].forEach {
             $0?.backgroundColor = cColor
         }

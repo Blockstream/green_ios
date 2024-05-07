@@ -54,7 +54,7 @@ class BalanceCell: UITableViewCell {
 
         let assetsCount = model?.cachedBalance.nonZeroAmounts().count ?? 0
         assetsBox.isHidden = assetsCount < 2
-        
+
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
         let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assetsCount), attributes: uLineAttr)
         btnAssets.setAttributedTitle(str, for: .normal)
@@ -82,9 +82,9 @@ class BalanceCell: UITableViewCell {
         icons = Array(icons.prefix(10))
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         setImages(icons)
-        iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
-        
-        ///future usage
+        iconsView.isHidden = false // !showAccounts || !gdkNetwork.liquid
+
+        // future usage
         lblLoadingAssets.isHidden = true
     }
 

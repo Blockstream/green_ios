@@ -7,7 +7,7 @@ extension Transaction {
     public var subaccountItem: WalletItem? {
         return WalletManager.current?.subaccounts.filter({ $0.hashValue == subaccount }).first
     }
-    
+
     public var feeAsset: String {
         subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
     }
@@ -23,7 +23,7 @@ extension Transaction {
         }
         return amounts
     }
-    
+
     public var amountsWithoutFees: [String: Int64] {
         if type == .some(.redeposit) {
             return [:]
@@ -77,7 +77,7 @@ extension Transaction {
         tx.amounts = ["btc": payment.amountSatoshi]
         tx.isLightningSwap = false
         tx.isPendingCloseChannel = payment.paymentType == PaymentType.closedChannel && payment.status == PaymentStatus.pending
-        
+
         switch payment.details {
         case .ln(let data):
             switch data.lnurlSuccessAction {
@@ -129,7 +129,7 @@ extension Transaction {
 
         return tx
     }
-    
+
     static func fromReverseSwapInfo(_ swapInfo: ReverseSwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
         var tx = Transaction([:])
         tx.subaccount = subaccount

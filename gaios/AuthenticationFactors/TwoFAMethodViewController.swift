@@ -24,9 +24,9 @@ class TwoFAMethodViewController: UIViewController {
     @IBOutlet weak var cardCall: UIView!
     @IBOutlet weak var cardEmail: UIView!
     @IBOutlet weak var cardGauth: UIView!
-    
+
     @IBOutlet var btns: [UIButton]!
-    
+
     var onCancel: (() -> Void)?
     var onType: ((TwoFactorType) -> Void)?
     var methods: [String] = []
@@ -70,12 +70,12 @@ class TwoFAMethodViewController: UIViewController {
         [lblSms, lblCall, lblEmail, lblGauth].forEach {
             $0.setStyle(.txtBigger)
         }
-        btns.forEach{
+        btns.forEach {
             $0.isUserInteractionEnabled = false
             $0.backgroundColor = UIColor.gGreenMatrix()
             $0.cornerRadius = 4.0
         }
-        [cardSms, cardCall, cardEmail, cardGauth].forEach{
+        [cardSms, cardCall, cardEmail, cardGauth].forEach {
             $0?.cornerRadius = 5.0
         }
     }
@@ -98,7 +98,7 @@ class TwoFAMethodViewController: UIViewController {
             })
         })
     }
-    
+
     func onTap(_ type: TwoFactorType) {
         UIView.animate(withDuration: 0.2, animations: {
             switch type {

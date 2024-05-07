@@ -6,7 +6,7 @@ class DialogInputDenominationCell: UITableViewCell {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var icon: UIImageView!
-    
+
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -33,7 +33,7 @@ class DialogInputDenominationCell: UITableViewCell {
             lblHint.text = ""
             return
         }
-        
+
         switch denomination {
         case .BTC:
             hint = balance.btc
@@ -51,4 +51,3 @@ class DialogInputDenominationCell: UITableViewCell {
         return denom.string(for: network.gdkNetwork)
     }
 }
-

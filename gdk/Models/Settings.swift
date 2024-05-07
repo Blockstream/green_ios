@@ -1,6 +1,5 @@
 import Foundation
 
-
 // Section of settings
 public enum SettingsSections: String, Codable, CaseIterable {
     case network = "Network"
@@ -187,7 +186,7 @@ public struct SettingsNotifications: Codable {
         self.emailIncoming = emailIncoming
         self.emailOutgoing = emailOutgoing
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case emailIncoming = "email_incoming"
         case emailOutgoing = "email_outgoing"

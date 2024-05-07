@@ -5,10 +5,10 @@ import core
 import gdk
 
 class BreezSDKConnector: EventListener {
-    
+
     private static var lightningSession: LightningSessionManager? = nil
     private var sdkListener: EventListener? = nil
-    
+
     func register(credentials: Credentials, listener: EventListener) async throws -> BlockingBreezServices? {
         sdkListener = listener
         if BreezSDKConnector.lightningSession == nil {
@@ -42,13 +42,13 @@ class BreezSDKConnector: EventListener {
     }
 }
 
-class SDKLogListener : LogStream {
+class SDKLogListener: LogStream {
     private var logger: Logger
-    
+
     init(logger: Logger) {
         self.logger = logger
     }
-    
+
     func log(l: LogEntry) {
         if l.level != "TRACE" {
             logger.info("greenlight: [\(l.level)] \(l.line)")

@@ -63,7 +63,7 @@ class WODetailsViewController: KeyboardViewController {
         lblTitle.setStyle(.title)
         lblHint.setStyle(.txt)
         lblError.setStyle(.err)
-        [lblDesc, lblCoda].forEach{
+        [lblDesc, lblCoda].forEach {
             $0?.setStyle(.txt)
             $0?.textColor = UIColor.gW40()
         }
@@ -159,14 +159,14 @@ class WODetailsViewController: KeyboardViewController {
             }
         }
     }
-    
+
     @MainActor
     func success(account: Account) {
         stopLoader()
         AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
         AnalyticsManager.shared.importWallet(account: account)
     }
-    
+
     @MainActor
     func failure(_ error: Error, account: Account) {
         var prettyError = "id_login_failed"
@@ -227,7 +227,7 @@ extension WODetailsViewController: UIDocumentPickerDelegate {
             // Get the contents
             let txt = try String(contentsOfFile: url.path, encoding: .utf8)
             let data = txt.data(using: .utf8)!
-            let content = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [String: Any] ?? [:]
+            let content = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] ?? [:]
             if let keys = parseGenericJson(content), !keys.isEmpty {
                 textView.text = keys.joined(separator: ", ")
             } else if let keys = parseElectrumJson(content), !keys.isEmpty {

@@ -5,7 +5,6 @@ import gdk
 import hw
 import greenaddress
 
-
 class QRUnlockSelectAccountViewModel {
 
     var assetCellModel: AssetSelectCellModel?
@@ -34,13 +33,13 @@ class QRUnlockSelectAccountViewModel {
     }
 
     func listLiquid(extended: Bool) -> [PolicyCellType] {
-        var list:  [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .Amp]
+        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .Amp]
         if !extended {
             list = [.NativeSegwit, .TwoFAProtected]
         }
         return list
     }
-    
+
     func isAdvancedEnable() -> Bool {
         return true
 //        if asset?.amp ?? false {
@@ -69,7 +68,7 @@ class QRUnlockSelectAccountViewModel {
 
     func device() -> HWDevice {
         return .defaultJade(fmwVersion: nil)
-        //wm.account.isJade ? .defaultJade(fmwVersion: nil) : .defaultLedger()
+        // wm.account.isJade ? .defaultJade(fmwVersion: nil) : .defaultLedger()
     }
 
     func uniqueName(_ type: AccountType, liquid: Bool) -> String {

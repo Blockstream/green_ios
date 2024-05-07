@@ -23,12 +23,12 @@ class QRUnlockSignDialogViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnsStack: UIStackView!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-    
+
     @IBOutlet weak var btnConnectBLE: UIButton!
     @IBOutlet weak var btnSignWithQR: UIButton!
-    
+
     weak var delegate: QRUnlockSignDialogViewControllerDelegate?
-    
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)
@@ -131,7 +131,7 @@ class QRUnlockSignDialogViewController: UIViewController {
     @IBAction func btnConnectBLE(_ sender: Any) {
         dismiss(.connectBLE)
     }
-    
+
     @IBAction func btnSignWithQR(_ sender: Any) {
         dismiss(.signWithQR)
     }

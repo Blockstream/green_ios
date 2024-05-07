@@ -125,13 +125,13 @@ class HomeViewController: UIViewController {
             AccountNavigator.goLogin(account: account)
         }
     }
-    
+
     func onTapOverview(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
             goAccount(account: account)
         }
     }
-    
+
     func onTapLightShort(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
             if let lightning = account.getDerivedLightningAccount() {
@@ -139,7 +139,7 @@ class HomeViewController: UIViewController {
             }
         }
     }
-    
+
     func onTapLongPressOverview(_ indexPath: IndexPath, cell: UITableViewCell) {
         if let account = getAccountFromTableView(indexPath) {
             popover(for: cell, account: account)
@@ -291,9 +291,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             popover.delegate = self
             popover.index = account.id
             popover.isDerivedLightning = account.isDerivedLightning
-            
+
             if account.isDerivedLightning {
-                popover.menuOptions = [.delete]    
+                popover.menuOptions = [.delete]
             } else {
                 popover.menuOptions = [.edit, .delete]
             }

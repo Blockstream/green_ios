@@ -39,7 +39,7 @@ struct LTAmountCellModel {
         return NSAttributedString(string: denomText ?? "", attributes:
             [.underlineStyle: NSUnderlineStyle.single.rawValue])
     }
-    
+
     var btc: String? {
         if let satoshi = satoshi {
             return Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId)?.toDenom(inputDenomination).0
@@ -58,7 +58,7 @@ struct LTAmountCellModel {
         }
         return nil
     }
-    
+
     var maxLimitAmount: String? {
         if let maxLimit = maxLimit {
             let balance = Balance.fromSatoshi(UInt64(maxLimit), assetId: AssetInfo.btcId)

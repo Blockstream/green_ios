@@ -9,7 +9,7 @@ protocol QRCodeReaderDelegate: AnyObject {
 }
 
 class QRCodeReaderView: UIView {
-    
+
     private let sessionQueue = DispatchQueue(label: "capture session queue", qos: .userInteractive)
 
     var captureSession = AVCaptureSession()
@@ -62,9 +62,9 @@ class QRCodeReaderView: UIView {
         super.init(coder: aDecoder)
         setupView()
     }
-    
+
     func getDevice() -> AVCaptureDevice? {
-        
+
         var availDevice: AVCaptureDevice?
 
         if let device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) {
@@ -78,21 +78,21 @@ class QRCodeReaderView: UIView {
         }
         return availDevice
     }
-    
+
     private func setupSession() {
         captureSession.beginConfiguration()
         defer {
             captureSession.commitConfiguration()
         }
-        
+
         guard let captureDevice = getDevice() else {
             return
         }
-        
+
         guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
             return
         }
-        
+
         guard captureSession.canAddInput(captureDeviceInput) else {
             return
         }
@@ -124,9 +124,9 @@ class QRCodeReaderView: UIView {
         requestVideoAccess(presentingViewController: nil)
         sessionQueue.async {
             if self.authorizationStatus == .authorized {
-                
+
                 DispatchQueue.main.async {
-                    
+
                     self.setupCaptureView()
                 }
             } else {
@@ -222,7 +222,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             previous = stringValue
             buffer.append(stringValue)
             logger.info(">> append \(stringValue)")
-            
+
             if !stringValue.uppercased().starts(with: "UR:") {
                 self.delegate?.onQRCodeReadSuccess(result: ScanResult(result: stringValue, bcur: nil))
                 previous = nil
@@ -238,7 +238,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                     var value = ""
                     if !buffer.isEmpty { buffer.removeFirst() }
                     logger.info(">> value \(value)")
-                    
+
                     if let result = try await validate(value) {
                         delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
                         previous = nil
@@ -261,7 +261,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
         }
         return try await session?.bcurDecode(params: BcurDecodeParams(part: text), bcurResolver: self)
     }
-    
+
 }
 extension QRCodeReaderView: BcurResolver {
     func requestData() async throws -> String {

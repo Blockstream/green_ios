@@ -5,7 +5,7 @@ class TxDetailsMoreInfoCellModel {
 
     var title: String
     var hint: String
-    
+
     init(title: String,
          hint: String
     ) {
@@ -13,4 +13,3 @@ class TxDetailsMoreInfoCellModel {
         self.hint = hint
     }
 }
-

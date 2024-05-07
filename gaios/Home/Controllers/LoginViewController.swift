@@ -6,30 +6,30 @@ import gdk
 import greenaddress
 
 class LoginViewController: UIViewController {
-    
+
     @IBOutlet weak var cardEnterPin: UIView!
     @IBOutlet weak var cardWalletLock: UIView!
     @IBOutlet weak var cardLoginShortcut: UIView!
     @IBOutlet weak var btnsStack: UIStackView!
-    
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var attempts: UILabel!
     @IBOutlet weak var connectionSettingsButton: UIButton!
     @IBOutlet weak var emergencyButton: UIButton!
     @IBOutlet weak var attemptsView: UIView!
     @IBOutlet weak var attemptsBg: UIView!
-    
+
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet var keyButton: [UIButton]?
     @IBOutlet var pinLabel: [UILabel]?
     let menuButton = UIButton(type: .system)
-    
+
     @IBOutlet weak var lblWalletLockHint1: UILabel!
     @IBOutlet weak var lblWalletLockHint2: UILabel!
     @IBOutlet weak var btnWalletLock: UIButton!
     @IBOutlet weak var btnLoginShortcut: UIButton!
-    
+
     @IBOutlet weak var alertCard: UIView!
     @IBOutlet weak var alertTitle: UILabel!
     @IBOutlet weak var alertHint: UILabel!
@@ -37,9 +37,9 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var alertBtnDismiss: UIButton!
     @IBOutlet weak var alertBtnRight: UIButton!
     @IBOutlet weak var alertBtnsContainer: UIView!
-    
+
     var viewModel: LoginViewModel!
-    
+
     private var account: Account { viewModel.account }
     private var remoteAlert: RemoteAlert?
     private var pinCode = ""
@@ -49,22 +49,22 @@ class LoginViewController: UIViewController {
             emergencyButton.isHidden = !emergencyRestore
         }
     }
-    
+
     @IBOutlet weak var passphraseView: UIStackView!
     @IBOutlet weak var lblPassphrase: UILabel!
-    
+
     var bip39passphare: String? {
         didSet {
             passphraseView.isHidden = bip39passphare?.isEmpty ?? true
         }
     }
-    
+
     private var showLockPage: Bool {
         !emergencyRestore &&
         !account.isDerivedLightning &&
         (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
     }
-    
+
     @IBAction func tap1(_ sender: Any) {
         tapNumber("1")
     }
@@ -107,12 +107,12 @@ class LoginViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setContent()
         setStyle()
         setNavigation()
         setRemoteAlert()
-        
+
         view.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.view
         navigationItem.leftBarButtonItem?.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.backBtn
         menuButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.menuBtn
@@ -121,10 +121,10 @@ class LoginViewController: UIViewController {
         keyButton![2].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn3
         attempts.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.attemptsLbl
         connectionSettingsButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.settingsBtn
-        
+
         AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
-    
+
     func setNavigation() {
         navigationItem.title = account.name
         navigationItem.setHidesBackButton(true, animated: false)
@@ -142,7 +142,7 @@ class LoginViewController: UIViewController {
         menuButton.isHidden = account.isDerivedLightning
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
-    
+
     func setRemoteAlert() {
         alertCard.isHidden = true
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkType]).first
@@ -163,7 +163,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
+
     func setContent() {
         lblTitle.text = account.isDerivedLightning ? "Lightning Shortcut".localized : "id_enter_pin".localized
         lblWalletLockHint1.text = "\("id_youve_entered_an_invalid_pin".localized)\n\("id_youll_need_your_recovery_phrase".localized)"
@@ -176,7 +176,7 @@ class LoginViewController: UIViewController {
         btnLoginShortcut.setTitle("id_login_with_biometrics".localized, for: .normal)
         passphraseView.isHidden = true
     }
-    
+
     func setStyle() {
         btnWalletLock.setStyle(.primary)
         btnLoginShortcut.setStyle(.primary)
@@ -189,14 +189,14 @@ class LoginViewController: UIViewController {
         emergencyButton.setImage(UIImage(named: "ic_x_circle")!.maskWithColor(color: .white), for: .normal)
         emergencyButton.cornerRadius = 5.0
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         updateAttemptsLabel()
         reloadPin()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if account.askEphemeral ?? false {
@@ -212,23 +212,23 @@ class LoginViewController: UIViewController {
         }
         reload()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
     }
-    
+
     @objc func menuButtonTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            
+
             vc.viewModel = DialogListViewModel(title: "More Options", type: .loginPrefs, items: LoginPrefs.getItems(isWatchOnly: false))
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @objc func progressTor(_ notification: NSNotification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
            let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
@@ -241,7 +241,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
+
     @objc func updateNetwork(_ notification: NSNotification) {
         if let dict = notification.userInfo as? [String: Any],
            let connection = Connection.from(dict) as? Connection,
@@ -251,7 +251,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
+
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         Task.detached() { [weak self] in
@@ -266,7 +266,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
+
     @MainActor
     fileprivate func successDecrypt(_ credentials: Credentials) {
         self.stopLoader()
@@ -278,8 +278,7 @@ class LoginViewController: UIViewController {
         self.pinCode = ""
         self.reloadPin()
     }
-    
-    
+
     fileprivate func loginWithLightningShortcut() {
         AnalyticsManager.shared.loginWalletStart()
         self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
@@ -292,7 +291,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
+
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         AnalyticsManager.shared.loginWalletStart()
         self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
@@ -314,30 +313,29 @@ class LoginViewController: UIViewController {
         AnalyticsManager.shared.activeWalletStart()
         _ = AccountNavigator.goLogged(account: account)
     }
-    
+
     @MainActor
     func failure(error: Error, enableFailingCounter: Bool) {
         self.stopLoader()
         switch error {
         case AuthenticationTypeHandler.AuthError.CanceledByUser:
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError:  "id_action_cancel")
-            break
+            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_action_cancel")
         case AuthenticationTypeHandler.AuthError.KeychainError:
             self.onBioAuthError(error.localizedDescription)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError:  error.localizedDescription)
+            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: error.localizedDescription)
         case AuthenticationTypeHandler.AuthError.SecurityError(let desc):
             DropAlert().error(message: desc.localized)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError:  desc)
+            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: desc)
         case LoginError.connectionFailed:
             DropAlert().error(message: "id_connection_failed".localized)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError:  "id_connection_failed")
+            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_connection_failed")
         case LoginError.walletNotFound:
             let msg = "id_wallet_not_found"
             DropAlert().error(message: msg.localized)
-            showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login") 
+            showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
         case GaError.NotAuthorizedError(_):
             self.wrongPin()
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError:  "id_not_authorized")
+            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_not_authorized")
         case TwoFactorCallError.failure(let msg):
             if msg.contains("id_connection_failed") {
                 DropAlert().error(message: msg.localized)
@@ -349,12 +347,12 @@ class LoginViewController: UIViewController {
                 showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
                 DropAlert().error(message: msg.localized)
             }
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError:  msg)
+            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         default:
             let msg = "id_login_failed"
             showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
             DropAlert().error(message: msg.localized)
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError:  msg)
+            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         }
         self.pinCode = ""
         self.reloadPin()
@@ -390,7 +388,7 @@ class LoginViewController: UIViewController {
 
     func reload() {
         if account.isDerivedLightning {
-            [cardEnterPin, cardWalletLock, btnsStack].forEach{
+            [cardEnterPin, cardWalletLock, btnsStack].forEach {
                 $0?.isHidden = true
             }
             cardLoginShortcut.isHidden = false
@@ -567,7 +565,7 @@ extension LoginViewController: DialogPassphraseViewControllerDelegate {
 
 extension LoginViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .loginPrefs:

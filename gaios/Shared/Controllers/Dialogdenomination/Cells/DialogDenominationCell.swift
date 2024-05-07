@@ -4,7 +4,7 @@ class DialogDenominationCell: UITableViewCell {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var icon: UIImageView!
-    
+
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -25,4 +25,3 @@ class DialogDenominationCell: UITableViewCell {
         lblTitle.textColor = isSelected ? UIColor.gGreenMatrix() : .white
     }
 }
-

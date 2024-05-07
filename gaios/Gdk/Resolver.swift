@@ -42,9 +42,9 @@ class HwPopupResolver: HwInterfaceResolver {
 }
 
 public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
-    
+
     private var textContinuation: CheckedContinuation<String, Error>?
-    
+
     public func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase) async throws -> String {
         DispatchQueue.main.async {
             UIApplication.topViewController()?.stopAnimating()
@@ -61,37 +61,34 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
         if method == TwoFactorType.email.rawValue {
             methodDesc = "id_email"
             methodEnum = .email
-        }
-        else if method == TwoFactorType.phone.rawValue {
+        } else if method == TwoFactorType.phone.rawValue {
             methodDesc = "id_phone_call"
             methodEnum = .phone
-        }
-        else if method == TwoFactorType.sms.rawValue {
+        } else if method == TwoFactorType.sms.rawValue {
             methodDesc = "id_sms"
             methodEnum = .sms
-        }
-        else {
+        } else {
             methodDesc = "id_authenticator_app"
             methodEnum = .gauth
         }
-        
+
         let twoFAFlow = UIStoryboard(name: "TwoFAFlow", bundle: nil)
         guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFAViewController") as? TwoFAViewController else { return }
-            
+
         vc.methodEnum = methodEnum
         vc.commontitle = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
         vc.attemptsRemaining = attemptsRemaining ?? 3
         vc.enable2faCallMethod = enable2faCallMethod
-        
+
         vc.onCancel = { [weak self] in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled"))
         }
-        
+
         vc.onCode = { [weak self] code in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(returning: code)
@@ -100,7 +97,7 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
             }
         }
         vc.onEnable2faCall = { [weak self] in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: ""))
@@ -123,7 +120,7 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
             }
         }
         DispatchQueue.main.async {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 appDelegate.resolve2faOn(vc)
             }
         }
@@ -142,18 +139,18 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
 
         let twoFAFlow = UIStoryboard(name: "TwoFAFlow", bundle: nil)
         guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFAMethodViewController") as? TwoFAMethodViewController else { return }
-            
+
         vc.methods = methods
-        
+
         vc.onCancel = { [weak self] in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled"))
         }
-        
+
         vc.onType = { [weak self] tfType in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(returning: tfType.rawValue)
@@ -161,9 +158,9 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
                 UIApplication.topViewController()?.startAnimating()
             }
         }
-        
+
         DispatchQueue.main.async {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 appDelegate.resolve2faOn(vc)
             }
         }

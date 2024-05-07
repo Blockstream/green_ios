@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import gdk
 
-protocol AmountEditCellDelegate {
+protocol AmountEditCellDelegate: AnyObject {
     func sendAll(enabled: Bool)
     func amountDidChange(text: String, isFiat: Bool)
     func onFocus()
@@ -36,7 +36,7 @@ struct AmountEditCellModel {
     var ticker: String {
         Balance.fromSatoshi(0, assetId: assetId)?.toInputDenominationValue(inputDenomination).1 ?? ""
     }
-    
+
     var currency: String {
         Balance.fromSatoshi(0, assetId: assetId)?.toFiat().1 ?? ""
     }
@@ -120,7 +120,7 @@ class AmountEditCell: UITableViewCell {
         self.cellModel = cellModel
         errorLabel.text = (cellModel.error ?? "").localized
         amountTextField.delegate = self
-        //amountTextField.text = cellModel.text
+        // amountTextField.text = cellModel.text
         amountTextField.isEnabled = cellModel.editable
         amountTextField.isUserInteractionEnabled = cellModel.editable
         convertButton.isHidden = !AssetInfo.baseIds.contains(cellModel.assetId)

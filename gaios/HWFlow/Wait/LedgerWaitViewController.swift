@@ -8,7 +8,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
-    
+
     var scanViewModel: ScanViewModel?
     private var scanCancellable: AnyCancellable?
     private var activeToken, resignToken: NSObjectProtocol?
@@ -54,7 +54,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
             }
         })
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         if let token = activeToken {
             NotificationCenter.default.removeObserver(token)
@@ -108,7 +108,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @MainActor
     func startScan() {
         Task {
@@ -126,7 +126,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
             }
         }
     }
-    
+
     @MainActor
     func stopScan() {
         Task {

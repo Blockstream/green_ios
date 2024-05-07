@@ -6,8 +6,8 @@ class TxDetailsStatusCellModel {
     var transaction: Transaction
     var blockHeight: UInt32
     var assetAmountList: AssetAmountList
-    
-    init(transaction: Transaction, 
+
+    init(transaction: Transaction,
          blockHeight: UInt32,
          assetAmountList: AssetAmountList) {
         self.transaction = transaction

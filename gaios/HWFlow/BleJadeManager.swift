@@ -21,7 +21,7 @@ class BleJadeManager {
     }
 
     func domain(from url: String) -> String? {
-        var url = url.starts(with: "http://") || url.starts(with: "https://") ? url : "http://\(url)"
+        let url = url.starts(with: "http://") || url.starts(with: "https://") ? url : "http://\(url)"
         let urlComponents = URLComponents(string: url)
         if let host = urlComponents?.host {
             if let port = urlComponents?.port {
@@ -42,7 +42,7 @@ class BleJadeManager {
     public func connect() async throws {
         try await bleJade.open()
     }
-    
+
     public func disconnect() async throws {
         try await bleJade.close()
         customWhitelistUrls = []
@@ -107,7 +107,7 @@ class BleJadeManager {
         AccountsRepository.shared.current = walletManager?.account
         return account
     }
-    
+
     func defaultNetwork() async throws -> NetworkSecurityCase {
         let version = try await version()
         return version.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS
@@ -146,10 +146,10 @@ class BleJadeManager {
     func fetchFirmware(firmware: Firmware) async throws -> Data {
         let version = try await version()
         let binary = try await bleJade.getBinary(version, firmware)
-        //hash = bleJade.sha256(binary).hex
+        // hash = bleJade.sha256(binary).hex
         return binary
     }
-    
+
     func updateFirmware(firmware: Firmware, binary: Data) async throws -> Bool {
         let version = try await version()
         let updated = try await bleJade.updateFirmware(version: version, firmware: firmware, binary: binary)
@@ -203,7 +203,7 @@ extension BleJadeManager: JadeGdkRequest {
                     if let url = URL(string: ExternalUrls.pinServerSupport + Common.versionNumber) {
                         SafeNavigationManager.shared.navigate( url )
                     }
-                    /// navigating info center sends cancel event
+                    // navigating info center sends cancel event
                     completion(.cancel)
                 }
                 vc.onConnect = { [weak self] notAskAgain in

@@ -92,7 +92,7 @@ class SendViewController: KeyboardViewController {
     func validateTransaction() async throws {
         let task = try await viewModel.validateTransaction()
         switch await task?.result {
-        case .success(let tx): 
+        case .success(let tx):
             break
         case .failure(let err):
             switch err {
@@ -134,7 +134,7 @@ class SendViewController: KeyboardViewController {
                 cell.errorLabel.text = self.viewModel.amountError?.localized
             }})
     }
-    
+
     override func keyboardWillHide(notification: Notification) {
         if keyboardDismissGesture != nil {
             view.removeGestureRecognizer(keyboardDismissGesture!)
@@ -144,9 +144,9 @@ class SendViewController: KeyboardViewController {
     }
 
     func onTransactionReady() {
-       // if viewModel.isBipAddress() {
+        // if viewModel.isBipAddress() {
         //    addressInputType = .bip21 //analytics only
-        //}
+        // }
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController, let tx = viewModel.transaction {
             vc.viewModel = SendConfirmViewModel(account: viewModel.account,
@@ -172,7 +172,7 @@ class SendViewController: KeyboardViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @IBAction func btnNext(_ sender: Any) {
         onTransactionReady()
     }
@@ -417,14 +417,14 @@ extension SendViewController: AddressEditCellDelegate {
                                            screen: .send)
         }
     }
-    
+
     func paste() {
         if let text = UIPasteboard.general.string {
             addressDidChange(text: text)
         }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
-    
+
     func addressDidChange(text: String) {
         viewModel.input = text
         viewModel.satoshi = nil
@@ -444,7 +444,7 @@ extension SendViewController: AmountEditCellDelegate {
     func onInputDenomination() {
         showDialogInputDenominations()
     }
-    
+
     func sendAll(enabled: Bool) {
         viewModel.sendAll = enabled
         viewModel.amount = nil

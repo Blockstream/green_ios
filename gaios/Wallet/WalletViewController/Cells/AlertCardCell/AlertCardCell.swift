@@ -27,9 +27,9 @@ class AlertCardCell: UITableViewCell {
     @IBOutlet weak var iconWarn: UIImageView!
     @IBOutlet weak var btnDismiss: UIButton!
 
-    var onLeft:(() -> Void)?
-    var onRight:(() -> Void)?
-    var onDismiss:(() -> Void)?
+    var onLeft: (() -> Void)?
+    var onRight: (() -> Void)?
+    var onDismiss: (() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -46,9 +46,9 @@ class AlertCardCell: UITableViewCell {
     }
 
     func configure(_ model: AlertCardCellModel,
-                   onLeft:(() -> Void)?,
-                   onRight:(() -> Void)?,
-                   onDismiss:(() -> Void)?
+                   onLeft: (() -> Void)?,
+                   onRight: (() -> Void)?,
+                   onDismiss: (() -> Void)?
     ) {
         self.backgroundColor = UIColor.customTitaniumDark()
         bg.layer.cornerRadius = 6.0
@@ -77,7 +77,7 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = "2FA protection on some of your funds has expired"
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.setTitle("Reactivate 2FA", for: .normal)
-        case .systemMessage(var system):
+        case .systemMessage(let system):
             lblTitle.text = NSLocalizedString("id_system_message", comment: "")
             lblHint.text = system.text.count > 200 ? system.text.prefix(200) + " ..." : system.text
             btnRight.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
@@ -129,7 +129,7 @@ class AlertCardCell: UITableViewCell {
                     return error.description()?.localized ?? error.localizedDescription
                 }
             }()
-            
+
             let networkName = NetworkSecurityCase(rawValue: network)?.name()
             btnRight.isHidden = true
             btnLeft.isHidden = true

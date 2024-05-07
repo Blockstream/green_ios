@@ -7,7 +7,7 @@ class DialogListCell: UITableViewCell {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var switchControl: UISwitch!
-    var onSwitchChange: ((Int,Bool) -> Void)?
+    var onSwitchChange: ((Int, Bool) -> Void)?
     var index: Int?
 
     class var identifier: String { return String(describing: self) }
@@ -25,7 +25,7 @@ class DialogListCell: UITableViewCell {
 
     func configure(model: DialogCellModel,
                    index: Int? = nil,
-                   onSwitchChange: ((Int,Bool) -> Void)? = nil) {
+                   onSwitchChange: ((Int, Bool) -> Void)? = nil) {
         guard let model = model as? DialogListCellModel else { return }
         self.index = index
         self.onSwitchChange = onSwitchChange
@@ -47,6 +47,6 @@ class DialogListCell: UITableViewCell {
 
     @IBAction func switchDidChange(_ sender: Any) {
         guard let index = index else {return}
-        onSwitchChange?(index,switchControl.isOn)
+        onSwitchChange?(index, switchControl.isOn)
     }
 }

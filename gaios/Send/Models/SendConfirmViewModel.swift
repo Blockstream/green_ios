@@ -3,7 +3,7 @@ import core
 import gdk
 
 class SendConfirmViewModel {
-    
+
     var wm: WalletManager? { WalletManager.current }
     var account: WalletItem
     var tx: Transaction
@@ -15,7 +15,7 @@ class SendConfirmViewModel {
     var isLedger: Bool { wm?.account.isLedger ?? false }
     var inputDenomination: DenominationType
     var sendAll: Bool { tx.addressees.first?.isGreedy ?? false }
-    
+
     var inputType: TxType = .transaction // for analytics
     var addressInputType: AnalyticsManager.AddressInputType? = .paste // for analytics
 
@@ -28,7 +28,7 @@ class SendConfirmViewModel {
         self.inputType = inputType
         self.addressInputType = addressInputType
     }
-    
+
     private func _send() async throws -> SendTransactionSuccess {
         if wm?.hwDevice != nil {
             let bleDevice = BleViewModel.shared
@@ -48,7 +48,7 @@ class SendConfirmViewModel {
             return try await session.sendTransaction(tx: tx)
         }
     }
-    
+
     func send() async throws -> SendTransactionSuccess {
         AnalyticsManager.shared.startSendTransaction()
         AnalyticsManager.shared.startFailedTransaction()
@@ -64,7 +64,7 @@ class SendConfirmViewModel {
                 walletItem: account,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo)
-            
+
             if sendAll { AnalyticsManager.shared.emptiedAccount = account }
 
             return res

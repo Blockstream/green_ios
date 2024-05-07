@@ -19,7 +19,7 @@ struct CreateTransaction {
     }
     var address: String? {
         get { addressee?.address }
-        set { if let value = newValue  { addressee?.address = value } }
+        set { if let value = newValue { addressee?.address = value } }
     }
     var satoshi: Int64? {
         get { if let satoshi = addressee?.satoshi { return abs(satoshi) }; return nil }
@@ -66,18 +66,18 @@ class Parser {
     var liquidAccounts: [WalletItem] { wm.subaccounts.filter { [.liquidSS, .liquidMS].contains($0.networkType) && !$0.hidden } }
     var lightningAccount: WalletItem? { wm.lightningSubaccount }
     var isBip21: Bool { input.starts(with: "bitcoin:") || input.starts(with: "liquidnetwork:") || input.starts(with: "lightning:")}
-    
+
     // outputs
     var lightningType: InputType?
     var createTx: CreateTransaction?
     var account: WalletItem?
-    
+
     private static var IgnorableErrors = [
         "id_invalid_amount",
         "id_no_amount_specified",
         "id_insufficient_funds",
         "id_invalid_asset_id" ]
-    
+
     init(input: String) {
         self.input = input
     }
@@ -97,7 +97,7 @@ class Parser {
                 throw ParserError.InvalidTransaction(res?.errors.first ?? "id_operation_failure")
             }
         default:
-            return (nil,nil)
+            return (nil, nil)
         }
     }
 
@@ -126,7 +126,7 @@ class Parser {
         }
         return nil
     }
-    
+
     private func parseGdk(for session: SessionManager) async throws -> CreateTransaction? {
         let res = try await session.parseTxInput(self.input, satoshi: nil, assetId: nil)
         if res.isValid {
@@ -141,7 +141,7 @@ class Parser {
         }
         return nil
     }
-    
+
     func runSingleAccount(account: WalletItem) async throws {
         if account.networkType.lightning {
             (lightningType, createTx) = try await parseLightning()
@@ -153,7 +153,7 @@ class Parser {
         }
         throw ParserError.InvalidNetwork("Wrong network")
     }
-    
+
     func runMultiAccounts(preferredAccount: WalletItem?) async throws {
         if !isBip21 || input.starts(with: "lightning:") {
             (lightningType, createTx) = try await parseLightning()

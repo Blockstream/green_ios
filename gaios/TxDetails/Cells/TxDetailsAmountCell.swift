@@ -5,18 +5,18 @@ import core
 class TxDetailsAmountCell: UITableViewCell {
 
     class var identifier: String { return String(describing: self) }
-    
+
     var model: TxDetailsAmountCellModel?
     var copyAmount: ((String) -> Void)?
-    
+
     @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblAsset: UILabel!
     @IBOutlet weak var lblFiat: UILabel!
-    
+
     private var btc: String {
         return WalletManager.current?.account.gdkNetwork.getFeeAsset() ?? ""
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         lblAmount.setStyle(.subTitle)
@@ -44,11 +44,11 @@ class TxDetailsAmountCell: UITableViewCell {
             }
         }
     }
-    
+
     func formatAmount(_ amount: String) -> NSAttributedString {
         let leftFont = UIFont.systemFont(ofSize: 32.0, weight: .medium)
         let rightFont = UIFont.systemFont(ofSize: 20.0, weight: .regular)
-        
+
         let decimalSeparator = Locale.current.decimalSeparator
         if let decimalSeparator = decimalSeparator {
             let components: [String] = amount.components(separatedBy: decimalSeparator)
@@ -62,7 +62,7 @@ class TxDetailsAmountCell: UITableViewCell {
                 let attributedRightPart = NSMutableAttributedString(string: decPart)
                 attributedLeftPart.addAttribute(.font, value: leftFont, range: NSRange(location: 0, length: attributedLeftPart.length))
                 attributedRightPart.addAttribute(.font, value: rightFont, range: NSRange(location: 0, length: attributedRightPart.length))
-                var final = NSMutableAttributedString()
+                let final = NSMutableAttributedString()
                 final.append(attributedLeftPart)
                 final.append(attributedRightPart)
                 return final

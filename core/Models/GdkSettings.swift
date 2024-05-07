@@ -30,7 +30,7 @@ public struct GdkSettings: Codable {
     public static let liquidElectrumSrvDefaultEndPoint = "blockstream.info:995"
     public static let testnetElectrumSrvDefaultEndPoint = "blockstream.info:993"
     public static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
-    
+
     public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, spvEnabled: Bool?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?) {
         self.tor = tor
         self.proxy = proxy
@@ -54,7 +54,7 @@ public struct GdkSettings: Codable {
         UserDefaults.standard.set(newValue, forKey: "network_settings")
         UserDefaults.standard.synchronize()
     }
-    
+
     public func toNetworkParams(_ network: String) -> NetworkSettings {
         let gdkSettings = GdkSettings.read()
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""

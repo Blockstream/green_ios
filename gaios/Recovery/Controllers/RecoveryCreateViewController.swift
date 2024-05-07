@@ -75,7 +75,7 @@ class RecoveryCreateViewController: UIViewController {
 
     func setContent() {
         let title = "id_write_down_your_recovery_phrase".localized
-        let strs = ["id_recovery_phrase".localized, "id_correct_order".localized] // TODO: localize these as well.
+        let strs = ["id_recovery_phrase".localized, "id_correct_order".localized]
 
         let attributedText = NSMutableAttributedString.init(string: title)
         for str1 in strs {

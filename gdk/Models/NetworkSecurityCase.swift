@@ -10,7 +10,7 @@ public enum NetworkSecurityCase: String, CaseIterable {
     case testnetSS = "electrum-testnet"
     case testnetLiquidMS = "testnet-liquid"
     case testnetLiquidSS = "electrum-testnet-liquid"
-    
+
     case lightning = "lightning-mainnet"
     case testnetLightning = "lightning-testnet"
 

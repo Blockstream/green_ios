@@ -7,7 +7,7 @@ class TransactionBarItem: UIView {
     @IBOutlet weak var lblAccount: UILabel!
     var onTap: (() -> Void)?
 
-    func configure(status: String, account: String, onTap:@escaping (() -> Void)) {
+    func configure(status: String, account: String, onTap: @escaping (() -> Void)) {
         self.lblStatus.text = status
         self.lblAccount.text = account
         self.onTap = onTap

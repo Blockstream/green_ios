@@ -1,6 +1,5 @@
 import Foundation
 
-
 public struct TwoFactorReset: Codable {
     enum CodingKeys: String, CodingKey {
         case isResetActive = "is_active"
@@ -100,7 +99,7 @@ public struct TwoFactorItem: Codable {
         self.maskedData = maskedData
         self.type = type
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case name = "name"
         case enabled

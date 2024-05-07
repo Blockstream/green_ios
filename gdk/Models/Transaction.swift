@@ -274,22 +274,22 @@ public struct Transaction: Comparable {
         get { return get("paymentHash") }
         set { details["paymentHash"] = newValue }
     }
-    
+
     public var destinationPubkey: String? {
         get { return get("destinationPubkey") }
         set { details["destinationPubkey"] = newValue }
     }
-    
+
     public var paymentPreimage: String? {
         get { return get("paymentPreimage") }
         set { details["paymentPreimage"] = newValue }
     }
-    
+
     public var invoice: String? {
         get { return get("invoice") }
         set { details["invoice"] = newValue }
     }
-    
+
     public var closingTxid: String? {
         get { return get("closingTxid") }
         set { details["closingTxid"] = newValue }
@@ -298,7 +298,7 @@ public struct Transaction: Comparable {
         get { return get("fundingTxid") }
         set { details["fundingTxid"] = newValue }
     }
-    
+
     public var isPendingCloseChannel: Bool? {
         get { return get("isPendingCloseChannel") }
         set { details["isPendingCloseChannel"] = newValue }
@@ -404,9 +404,11 @@ public struct Transaction: Comparable {
     }
 
     public static func < (lhs: Transaction, rhs: Transaction) -> Bool {
-        if lhs.createdAtTs == 0 { return false }
-        else if rhs.createdAtTs == 0 { return false }
-        else if lhs.createdAtTs == rhs.createdAtTs {
+        if lhs.createdAtTs == 0 {
+            return false
+        } else if rhs.createdAtTs == 0 {
+            return false
+        } else if lhs.createdAtTs == rhs.createdAtTs {
             if (lhs.type == .incoming && rhs.type == .outgoing) && (lhs.blockHeight == rhs.blockHeight) {
                 return false
             }

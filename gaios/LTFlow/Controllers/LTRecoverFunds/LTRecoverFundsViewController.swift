@@ -60,7 +60,7 @@ struct LTRecoverFundsViewModel {
             AnalyticsManager.shared.emptiedAccount = wallet
         }
     }
-    
+
     mutating func prepare() async {
         do {
             try await _prepare()
@@ -69,7 +69,7 @@ struct LTRecoverFundsViewModel {
             self.error = error.description()
         }
     }
-    
+
     mutating func _prepare() async throws {
         guard let lightBridge = session?.lightBridge else { return }
         if recommendedFees == nil {
@@ -123,7 +123,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
     private var headerH: CGFloat = 36.0
 
     var viewModel: LTRecoverFundsViewModel!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -160,14 +160,14 @@ class LTRecoverFundsViewController: KeyboardViewController {
         }
         tableView.setContentOffset(CGPoint(x: 0.0, y: 0.0), animated: true)
     }
-    
+
     func prepare() {
         Task { [weak self] in
             await self?.viewModel.prepare()
             await MainActor.run { self?.tableView.reloadData() }
         }
     }
-    
+
     func send() {
         startAnimating()
         Task { [weak self] in
@@ -354,7 +354,7 @@ extension LTRecoverFundsViewController: LTRecoverFundsAddressCellDelegate {
         btnNextIsEnabled = !address.isEmpty
         prepare()
     }
-    
+
     func qrcodeScanner() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {

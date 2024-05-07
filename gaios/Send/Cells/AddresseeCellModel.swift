@@ -15,7 +15,7 @@ struct AddresseeCellModel {
 
     var satoshi: Int64 {
         var value = addreessee.satoshi
-        if isSendAll{
+        if isSendAll {
             value = abs(tx.amounts.filter({$0.key == assetId}).first?.value ?? 0)
         }
         return value ?? 0

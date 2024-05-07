@@ -13,7 +13,7 @@ class LTRecoverFundsAddressCell: UITableViewCell {
     @IBOutlet weak var pasteButton: UIButton!
     @IBOutlet weak var qrcodeButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
-    
+
     weak var delegate: LTRecoverFundsAddressCellDelegate?
 
     class var identifier: String { return String(describing: self) }

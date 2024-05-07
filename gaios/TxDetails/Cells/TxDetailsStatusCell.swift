@@ -9,11 +9,10 @@ class TxDetailsStatusCell: UITableViewCell {
 
     @IBOutlet weak var iconsView: UIView!
     @IBOutlet weak var iconsStack: UIStackView!
-    
+
     @IBOutlet weak var swapIconsView: UIView!
     @IBOutlet weak var swapIconsStack: UIStackView!
-    
-    
+
     @IBOutlet weak var lblStateTitle: UILabel!
     @IBOutlet weak var lblStateInfo: UILabel!
     @IBOutlet weak var lblStateDate: UILabel!
@@ -21,34 +20,34 @@ class TxDetailsStatusCell: UITableViewCell {
     @IBOutlet weak var bgLblStatus: UIView!
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
     @IBOutlet weak var swapIconsStackWidth: NSLayoutConstraint!
-    
+
     @IBOutlet weak var spvStack: UIStackView!
     @IBOutlet weak var iconSpv: UIImageView!
     @IBOutlet weak var lblSpv: UILabel!
-    
+
     class var identifier: String { return String(describing: self) }
-    
+
     var model: TxDetailsStatusCellModel?
-    
+
     private let iconW: CGFloat = 36.0
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        [stateView, bgLblStatus].forEach{
+        [stateView, bgLblStatus].forEach {
             $0.cornerRadius = $0.frame.size.height / 2.0
         }
         swapIconsView.isHidden = true
     }
-    
+
     func configure(model: TxDetailsStatusCellModel) {
         self.model = model
-        
+
         setStyle()
         setAssetIcons()
-        
+
         lblStateDate.text = model.transaction.date(dateStyle: .long, timeStyle: .short)
         lblStateDate.isHidden = model.transaction.createdAtTs == 0
-        
+
         lblStateInfo.text = model.txStatusExtended
 
         var step: Int = 0
@@ -104,9 +103,9 @@ class TxDetailsStatusCell: UITableViewCell {
         lblStateDate.textColor = UIColor.gGrayTxt()
         lblStateStatus.setStyle(.txtSmallerBold)
     }
-    
+
     func applyColor(_ color: UIColor) {
-        [stateView, bgLblStatus].forEach{
+        [stateView, bgLblStatus].forEach {
             $0.backgroundColor = color
         }
     }
@@ -116,11 +115,11 @@ class TxDetailsStatusCell: UITableViewCell {
 
         for v in iconsStack.subviews { v.removeFromSuperview() }
         for v in swapIconsStack.subviews { v.removeFromSuperview() }
-        
+
         if model.transaction.type == .mixed {
-    
+
             swapIconsView.isHidden = false
-            
+
             var iconsOut: [UIImage] = []
             var iconsIn: [UIImage] = []
             let ids_values = model.assetAmountList.amounts.map { ($0.0, $0.1) }
@@ -132,12 +131,12 @@ class TxDetailsStatusCell: UITableViewCell {
                     iconsIn.append(icon)
                 }
             }
-            
+
             fillIconsStack(iconsOut)
             fillSwapIconsStack(iconsIn)
-            
+
         } else if model.transaction.type == .redeposit {
-        
+
             let amounts = model.transaction.amounts
             var icons: [UIImage] = []
             if model.transaction.subaccountItem?.gdkNetwork.lightning ?? false {
@@ -192,7 +191,7 @@ class TxDetailsStatusCell: UITableViewCell {
             iconsStack.addArrangedSubview(imageView)
         }
     }
-    
+
     func fillSwapIconsStack(_ icons: [UIImage]) {
         swapIconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         for img in icons {
@@ -210,18 +209,18 @@ class TxDetailsStatusCell: UITableViewCell {
         stateIcon.image = UIImage(named: "ic_tx_pending")!
         stateIcon.rotate()
     }
-    
+
     func shouldShowSpvStatus(tx: Transaction) -> Bool {
-        
+
         let appSettings = AppSettings.shared
         guard let gdkSettings = appSettings.gdkSettings else { return false }
         if gdkSettings.spvEnabled == false { return false }
-        
+
         if tx.spvVerified == "disabled" || tx.spvVerified == nil {
             return false
         }
         if tx.blockHeight == 0 {
-            //return false
+            // return false
         }
         if let account = subaccount(tx: tx), let session = account.session,
            Int(session.blockHeight) - Int(tx.blockHeight) + 1 < 6 {
@@ -259,7 +258,7 @@ class TxDetailsStatusCell: UITableViewCell {
 
     func setLblSpv(transaction: Transaction) {
         lblSpv.isHidden = ["disabled", nil].contains(transaction.spvVerified)
-        
+
         switch transaction.spvVerified {
         case "verified":
             lblSpv.textColor = UIColor.customMatrixGreen()

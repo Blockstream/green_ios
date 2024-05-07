@@ -6,7 +6,7 @@ import greenaddress
 import core
 
 class SendViewModel {
-    
+
     var wm: WalletManager? { WalletManager.current }
     var recipientCellModels = [RecipientCellModel]()
     var transaction: Transaction?
@@ -35,7 +35,7 @@ class SendViewModel {
     var editableAmount: Bool = false
     var enableSendAll: Bool = false
     var addressInputType: AnalyticsManager.AddressInputType?
-    
+
     var transactionPriority: TransactionPriority = .Medium {
         didSet {
             if transactionPriority != .Custom {
@@ -44,19 +44,8 @@ class SendViewModel {
             }
         }
     }
-    
+
     var amount: String? {
-        set {
-            if let newValue = newValue {
-                if isFiat {
-                    satoshi = Balance.fromFiat(newValue)?.satoshi
-                } else {
-                    satoshi = Balance.from(newValue, assetId: assetId ?? feeAsset, denomination: inputDenomination)?.satoshi
-                }
-            } else {
-                satoshi = nil
-            }
-        }
         get {
             if let satoshi = satoshi {
                 if isFiat {
@@ -68,25 +57,36 @@ class SendViewModel {
                 return nil
             }
         }
+        set {
+            if let newValue = newValue {
+                if isFiat {
+                    satoshi = Balance.fromFiat(newValue)?.satoshi
+                } else {
+                    satoshi = Balance.from(newValue, assetId: assetId ?? feeAsset, denomination: inputDenomination)?.satoshi
+                }
+            } else {
+                satoshi = nil
+            }
+        }
     }
     var defaultMinFee: UInt64 { session.gdkNetwork.liquid ? 100 : 1000 }
     var feeEstimates = [UInt64](repeating: 100, count: 25)
     var minFeeEstimate: UInt64? { feeEstimates.first }
-    
+
     func getFeeEstimates() async -> [UInt64] {
         if let fees = try? await session.getFeeEstimates() {
             self.feeEstimates = fees
         }
         return self.feeEstimates
     }
-    
+
     private var session: SessionManager { account.session! }
     private var isLiquid: Bool { session.gdkNetwork.liquid }
     private var isBtc: Bool { !session.gdkNetwork.liquid }
     private var isLightning: Bool { !session.gdkNetwork.lightning }
     private var btc: String { session.gdkNetwork.getFeeAsset() }
     private var feeAsset: String { session.gdkNetwork.getFeeAsset() }
-    
+
     init(account: WalletItem, inputType: TxType, transaction: Transaction?, input: String?, addressInputType: AnalyticsManager.AddressInputType?) {
         self.account = account
         self.transaction = transaction
@@ -104,7 +104,7 @@ class SendViewModel {
             fee = transaction?.fee
         }
     }
-    
+
     func validateTransaction() async throws -> Task<Transaction?, Error>? {
         let tx = Transaction(self.transaction?.details ?? [:], subaccount: account.hashValue)
         validateTask?.cancel()
@@ -128,7 +128,7 @@ class SendViewModel {
             attempts += 1
             if let session = account.session {
                 if !(session.logged && !session.paused) {
-                    try await Task.sleep(nanoseconds:  500_000_000)
+                    try await Task.sleep(nanoseconds: 500_000_000)
                     try await attempt()
                 }
             }
@@ -158,7 +158,6 @@ class SendViewModel {
                 if let addressee = tx.addressees.first {
                     tx.addressees = [Addressee.from(address: addressee.address, satoshi: satoshi ?? 0, assetId: "btc", isGreedy: sendAll)]
                 }
-                break
             case .lnurl:
                 if var addressee = tx.addressees.first {
                     addressee.satoshi = satoshi ?? 0
@@ -193,7 +192,7 @@ class SendViewModel {
         if Task.isCancelled { return nil }
         return tx
     }
-    
+
     var amountError: String? {
         return ["id_invalid_amount",
                 "id_no_amount_specified",
@@ -208,9 +207,9 @@ class SendViewModel {
                 "Insufficient funds for fees"
         ].contains(inputError) ? inputError : nil
     }
-    
+
     var addressError: String? {
-        return ["id_invalid_address", 
+        return ["id_invalid_address",
                 "id_invoice_expired",
                 "id_invalid_private_key"
         ].contains(inputError) ? inputError : nil
@@ -251,14 +250,14 @@ class SendViewModel {
             enableSendAll = tx.anyAmouts
         }
     }
-    
+
     var alertCellModel: AlertCardCellModel? {
         if let remoteAlert = remoteAlert {
             return AlertCardCellModel(type: .remoteAlert(remoteAlert))
         }
         return nil
     }
-    
+
     var feeCellModel: FeeEditCellModel {
         return FeeEditCellModel(fee: fee,
                                 feeRate: feeRate,
@@ -267,7 +266,7 @@ class SendViewModel {
                                 inputDenomination: inputDenomination,
                                 transactionPriority: transactionPriority)
     }
-    
+
     var accountAssetCellModel: ReceiveAssetCellModel {
         return ReceiveAssetCellModel(assetId: assetId ?? AssetInfo.btcId, account: account)
     }

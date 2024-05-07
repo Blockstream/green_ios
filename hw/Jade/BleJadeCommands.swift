@@ -8,7 +8,6 @@ public protocol JadeGdkRequest: AnyObject {
     func urlValidation(urls: [String]) async -> Bool
 }
 
-
 public class BleJadeCommands: BleJadeConnection {
 
     public static let FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
@@ -33,15 +32,14 @@ public class BleJadeCommands: BleJadeConnection {
         BleJadeCommands.PIN_SERVER_HTTPS,
         BleJadeCommands.PIN_SERVER_ONION]
 
-
     public weak var gdkRequestDelegate: JadeGdkRequest?
-    
+
     public func version() async throws -> JadeVersionInfo {
         let res: JadeResponse<JadeVersionInfo> = try await exchange(JadeRequest<JadeEmpty>(method: "get_version_info"))
         guard let res = res.result else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     public func addEntropy() async throws -> Bool {
         let buffer = [UInt8](repeating: 0, count: 32).map { _ in UInt8(arc4random_uniform(0xff))}
         let cmd = JadeAddEntropy(entropy: Data(buffer))
@@ -49,14 +47,14 @@ public class BleJadeCommands: BleJadeConnection {
         guard let res = res.result else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     public func xpubs(network: String, path: [Int]) async throws -> String {
         let cmd = JadeGetXpub(network: network, path: getUnsignedPath(path))
         let res: JadeResponse<String> = try await exchange(JadeRequest<JadeGetXpub>(method: "get_xpub", params: cmd))
         guard let res = res.result else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     // Get blinding key for script
     public func getBlindingKey(scriptHex: String) async throws -> String {
         let cmd = JadeGetBlindingKey(scriptHex: scriptHex)
@@ -64,33 +62,33 @@ public class BleJadeCommands: BleJadeConnection {
         guard let res = res.result?.hex else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     public func getSharedNonce(pubkey: String, scriptHex: String) async throws -> String {
         let cmd = JadeGetSharedNonce(scriptHex: scriptHex, theirPubkeyHex: pubkey)
         let res: JadeResponse<Data> = try await exchange(JadeRequest<JadeGetSharedNonce>(method: "get_shared_nonce", params: cmd))
         guard let res = res.result?.hex else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     public func getBlindingFactor(_ params: JadeGetBlingingFactor) async throws -> Data {
         let res: JadeResponse<Data> = try await exchange(JadeRequest(method: "get_blinding_factor", params: params))
         guard let res = res.result else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     public func getMasterBlindingKey(onlyIfSilent: Bool) async throws -> String {
         var params = JadeGetMasterBlindingKey(onlyIfSilent: onlyIfSilent)
         let res: JadeResponse<Data> = try await exchange(JadeRequest(method: "get_master_blinding_key", params: params))
         guard let res = res.result?.hex else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     public func signLiquidTx(params: JadeSignTx) async throws -> Bool {
         let res: JadeResponse<Bool> = try await exchange(JadeRequest<JadeSignTx>(method: "sign_liquid_tx", params: params))
         guard let res = res.result else { throw HWError.Abort("Error response from initial sign_liquid_tx call: \(res.error?.message ?? "")") }
         return res
     }
-    
+
     public func getReceiveAddress(_ params: JadeGetReceiveMultisigAddress) async throws -> String {
         let res: JadeResponse<String> = try await exchange(JadeRequest<JadeGetReceiveMultisigAddress>(method: "get_receive_address", params: params))
         guard let res = res.result else { throw HWError.Abort("Invalid response") }
@@ -120,7 +118,7 @@ public class BleJadeCommands: BleJadeConnection {
         guard let res = res.result else { throw HWError.Abort("Invalid response") }
         return res
     }
-    
+
     func request2cbor<T: Decodable>(_ request: JadeRequest<T>)  async throws -> Data {
         guard let buffer = request.encoded else { throw HWError.Abort("Invalid message") }
         return buffer
@@ -130,7 +128,7 @@ public class BleJadeCommands: BleJadeConnection {
         let inEncoded: [UInt8] = try! CBOR.encodeMap(request)
         return Data(inEncoded)
     }
-    
+
     func cbor2response<K: Decodable>(_ response: Data)  async throws -> JadeResponse<K> {
         return try CodableCBORDecoder().decode(JadeResponse<K>.self, from: response)
     }
@@ -156,7 +154,7 @@ public class BleJadeCommands: BleJadeConnection {
             if let error = response["error"] as? [String: Any],
                let errorCode = error["code"] as? Int,
                let errorMessage = error["message"] as? String {
-                throw HWError.from(code: errorCode , message: errorMessage )
+                throw HWError.from(code: errorCode, message: errorMessage )
             }
             if let result = response["result"] as? [String: Any],
                let httpRequest = result["http_request"] as? [String: Any],
@@ -166,7 +164,7 @@ public class BleJadeCommands: BleJadeConnection {
                     "id": "\(JadeRequestId)",
                     "method": onReply,
                     "params": httpResponse
-                ] as [String : Any]
+                ] as [String: Any]
                 JadeRequestId += 1
                 let request = try await dict2cbor(package)
         #if DEBUG
@@ -230,4 +228,3 @@ public class BleJadeCommands: BleJadeConnection {
         return httpResponseBody
     }
 }
-

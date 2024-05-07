@@ -4,7 +4,7 @@ import lightning
 public class LightningRepository {
 
     public static let shared = LightningRepository()
-    
+
     public func get(for id: String) -> AppGreenlightCredentials? {
         return try? AuthenticationTypeHandler.getCertLightning(forNetwork: id)
     }

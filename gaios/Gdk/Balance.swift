@@ -3,7 +3,7 @@ import gdk
 import core
 
 extension Balance {
-    
+
     static var session: SessionManager? { WalletManager.current?.prominentSession }
     static var lbtc: String { AssetInfo.lbtcId }
     static var ltest: String { AssetInfo.ltestId }
@@ -54,7 +54,7 @@ extension Balance {
     static func fromDenomination(_ value: String, assetId: String, denomination: DenominationType? = nil) -> Balance? {
         let value = value.unlocaleFormattedString()
         let denomination = denomination ?? session?.settings?.denomination
-        let details: [String: Any] = [denomination?.rawValue ?? Balance.session?.gdkNetwork.getFeeAsset() ?? "btc": value,"asset_id": assetId]
+        let details: [String: Any] = [denomination?.rawValue ?? Balance.session?.gdkNetwork.getFeeAsset() ?? "btc": value, "asset_id": assetId]
         return Balance.from(details: details)
     }
 
@@ -165,4 +165,3 @@ extension Balance {
         }
     }
 }
-

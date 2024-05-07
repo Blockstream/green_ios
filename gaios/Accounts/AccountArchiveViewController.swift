@@ -1,7 +1,6 @@
 import UIKit
 import core
 
-
 enum AccountArchiveSection: Int, CaseIterable {
     case account = 0
 }

@@ -44,7 +44,7 @@ class WatchOnlySettingsViewModel {
                 singlesigCellModels += models
             }
         }
-        
+
         // Singlesig watchonly with core output descriptors
         let cellHeaderCoreDesc = WatchOnlySettingsCellModel(
             title: "id_output_descriptors".localized,

@@ -24,7 +24,7 @@ class AccountCreateFooterView: UIView {
         createNew.borderColor = UIColor.gGreenMatrix()
         createNew.layer.cornerRadius = 5
         createNew.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        topMask.isHidden = false //hasAccounts
+        topMask.isHidden = false // hasAccounts
         createNew.isHidden = !enableCreate
         hiddenFooterLine.isHidden = !(!enableCreate && hasAccounts)
     }

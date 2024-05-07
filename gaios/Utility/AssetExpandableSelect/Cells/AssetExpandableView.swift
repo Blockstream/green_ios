@@ -12,8 +12,7 @@ class AssetExpandableView: UIView {
     func configure(
         model: AssetSelectCellModel,
         hasAccounts: Bool,
-        open: Bool)
-    {
+        open: Bool) {
         if open {
             bg.borderWidth = 2.0
             bg.borderColor = UIColor.gGreenMatrix()

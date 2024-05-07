@@ -9,7 +9,7 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     @IBOutlet weak var lblInfo1: UILabel!
     @IBOutlet weak var lblInfo2: UILabel!
     @IBOutlet weak var lblInfo3: UILabel!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -33,7 +33,7 @@ class QRUnlockJadePinInfoViewController: UIViewController {
         lblHint.font = UIFont.systemFont(ofSize: 20.0, weight: .regular)
         lblHint.textColor = .gW60()
         btnNext.setStyle(.primary)
-        [lblInfo1, lblInfo2, lblInfo3].forEach{
+        [lblInfo1, lblInfo2, lblInfo3].forEach {
             $0?.setStyle(.txt)
         }
     }

@@ -29,7 +29,7 @@ class SetPhoneViewController: KeyboardViewController {
     @IBOutlet weak var lblAgree: UILabel!
     @IBOutlet weak var lblFrequency: UILabel!
     @IBOutlet weak var lblHelp: UILabel!
-    
+
     var icon: UIImage {
         get {
             switch network {
@@ -44,19 +44,19 @@ class SetPhoneViewController: KeyboardViewController {
             }
         }
     }
-    
+
     let strIAgree = "By continuing you agree to Blockstream's Terms of Service and Privacy Policy".localized
     let strTerms = "Terms of Service".localized
     let strPrivacy = "Privacy Policy".localized
 
     let strFrequency = "Message frequency varies according to the number of 2FA SMS requests you make.".localized
-    
+
     let strHelp = "For help visit help.blockstream.com To unsubscribe turn off SMS 2FA from the app. Standard messages and data rates may apply.".localized
     let strBlockcom = "help.blockstream.com".localized
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setContent()
         setStyle()
     }
@@ -80,7 +80,7 @@ class SetPhoneViewController: KeyboardViewController {
     }
 
     func setContent() {
-        
+
         iconNetwork.image = icon
         title = "Two-Factor Setup".localized
         lblTitle.text = "Multisig".localized
@@ -89,14 +89,14 @@ class SetPhoneViewController: KeyboardViewController {
         textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
 
         nextButton.setTitle("Setup 2FA".localized, for: .normal)
-        
-        [lblAgree, lblFrequency, lblHelp].forEach{
+
+        [lblAgree, lblFrequency, lblHelp].forEach {
             $0?.isHidden = !sms
         }
     }
-    
+
     func setStyle() {
-        
+
         lblTitle.setStyle(.txtBigger)
         lblHint.setStyle(.txtCard)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
@@ -104,11 +104,11 @@ class SetPhoneViewController: KeyboardViewController {
         [countryCodeView, phoneView].forEach {
             $0.layer.cornerRadius = 5.0
         }
-        
+
         let pStyle = NSMutableParagraphStyle()
         pStyle.lineSpacing = 7.0
         pStyle.alignment = .center
-        
+
         let cAttr: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.gW40(),
             .font: UIFont.systemFont(ofSize: 14.0, weight: .regular)
@@ -140,7 +140,7 @@ class SetPhoneViewController: KeyboardViewController {
         attrStr2.setAttributes(cAttr, for: strFrequency)
         lblFrequency.attributedText = attrStr2
         lblFrequency.lineBreakMode = .byWordWrapping
-        
+
         let attrStr3 = NSMutableAttributedString(string: strHelp)
         attrStr3.addAttribute (
             NSAttributedString.Key.paragraphStyle,
@@ -174,7 +174,7 @@ class SetPhoneViewController: KeyboardViewController {
             navigate(ExternalUrls.aboutPrivacyPolicy)
         }
     }
-    
+
     @objc func onTapLblHelp(_ gesture: UITapGestureRecognizer) {
         guard let text = lblHelp.text else { return }
         let rangeBlockcom = (text.lowercased() as NSString).range(of: strBlockcom.lowercased())
@@ -186,7 +186,7 @@ class SetPhoneViewController: KeyboardViewController {
     func navigate(_ url: URL) {
         SafeNavigationManager.shared.navigate(url)
     }
-    
+
     @objc func onTapCountry(textField: UITextField) {
         print("country")
     }
@@ -241,7 +241,7 @@ class SetPhoneViewController: KeyboardViewController {
     }
 
     @IBAction func btnCountryPicker(_ sender: Any) {
-        
+
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "GreenPickerViewController") as? GreenPickerViewController {
             vc.vm = GreenPickerViewModel(title: "id_country".localized,

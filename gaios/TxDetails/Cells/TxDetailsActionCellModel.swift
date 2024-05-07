@@ -6,7 +6,7 @@ class TxDetailsActionCellModel {
     var icon: UIImage
     var title: String
     var action: TxDetailsAction
-    
+
     init(icon: UIImage,
          title: String,
          action: TxDetailsAction

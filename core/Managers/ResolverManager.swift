@@ -5,10 +5,10 @@ import greenaddress
 import hw
 
 public class ResolverManager {
-    
+
     public let resolver: GDKResolver
     public let session: SessionManager?
-    
+
     public init(
         _ factor: TwoFactorCall?,
         network: NetworkSecurityCase,

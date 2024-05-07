@@ -86,7 +86,7 @@ class BleUnavailableViewController: UIViewController {
     @IBAction func btnCancel(_ sender: Any) {
         dismiss(.cancel)
     }
-    
+
     @IBAction func btnSettings(_ sender: Any) {
         switch state {
         case .powerOff:

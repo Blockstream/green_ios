@@ -20,7 +20,7 @@ class LTWithdrawAmountCell: UITableViewCell {
 
     @IBOutlet weak var lblError: UILabel!
     @IBOutlet weak var lblLimits: UILabel!
-    
+
     class var identifier: String { return String(describing: self) }
 
     var minAmount: UInt64 = 1
@@ -59,7 +59,7 @@ class LTWithdrawAmountCell: UITableViewCell {
         lblError.isHidden = false
         lblLimits.isHidden = false
         lblLimits.text = String(format: "id_withdraw_limits_s__s".localized, "\(minAmount)", "\(maxAmount)")
-        
+
         switch amountValidate() {
         case .insufficient:
             lblError.text = "id_insufficient_funds".localized
@@ -81,7 +81,7 @@ class LTWithdrawAmountCell: UITableViewCell {
             onChange?(nil)
         }
     }
-    
+
     func amountValidate() -> LTWithdrawAmount {
         if maxAmount == 0 {return .insufficient}
         if textField.text == "" {

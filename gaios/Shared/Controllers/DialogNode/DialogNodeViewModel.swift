@@ -16,8 +16,6 @@ enum NodeCellType: CaseIterable {
 class DialogNodeViewModel {
 
     var lightningSession: LightningSessionManager
-    
-    
 
     var cells: [NodeCellType] {
         return NodeCellType.allCases
@@ -64,7 +62,7 @@ class DialogNodeViewModel {
 
     func asStr(satoshi: UInt64?) -> String {
         let satoshi = satoshi ?? 0
-        
+
         if let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId) {
             let (amount, denom) = balance.toDenom()
             return "\(amount) \(denom)"

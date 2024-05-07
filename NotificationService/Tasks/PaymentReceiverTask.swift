@@ -8,7 +8,7 @@ struct ReceivePaymentNotificationRequest: Codable {
     let payment_hash: String
 }
 
-class PaymentReceiverTask : TaskProtocol {
+class PaymentReceiverTask: TaskProtocol {
     static let NOTIFICATION_THREAD_PAYMENT_RECEIVED = "PAYMENT_RECEIVED"
 
     internal var payload: String
@@ -17,7 +17,7 @@ class PaymentReceiverTask : TaskProtocol {
     internal var dismiss: (() -> Void)?
     private var logger: Logger
     private var receivedPayment: Payment? = nil
-    
+
     init(payload: String, logger: Logger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil, dismiss: (() -> Void)? = nil) {
         self.payload = payload
         self.contentHandler = contentHandler
@@ -25,7 +25,7 @@ class PaymentReceiverTask : TaskProtocol {
         self.logger = logger
         self.dismiss = dismiss
     }
-    
+
     func start(breezSDK: BlockingBreezServices) throws {
         do {
             let request = try JSONDecoder().decode(ReceivePaymentNotificationRequest.self, from: self.payload.data(using: .utf8)!)
@@ -41,7 +41,7 @@ class PaymentReceiverTask : TaskProtocol {
             throw NotificationError.Failed
         }
     }
-    
+
     func onShutdown() {
         if receivedPayment != nil {
             self.displayPushNotification(title: "Payment received", threadIdentifier: PaymentReceiverTask.NOTIFICATION_THREAD_PAYMENT_RECEIVED)
@@ -49,13 +49,12 @@ class PaymentReceiverTask : TaskProtocol {
             self.displayPushNotification(title: "Open wallet to receive a payment", threadIdentifier: PaymentReceiverTask.NOTIFICATION_THREAD_PAYMENT_RECEIVED)
         }
     }
-    
+
     func onEvent(e: BreezEvent) {
         switch e {
         case .invoicePaid(details: let details):
             self.logger.info("Received payment. Bolt11: \(details.bolt11, privacy: .public)\nPayment Hash:\(details.paymentHash, privacy: .public)")
             receivedPayment = details.payment
-            break
         case .synced:
             logger.error("Received synced event")
             if self.receivedPayment != nil {
@@ -63,7 +62,6 @@ class PaymentReceiverTask : TaskProtocol {
                 self.onShutdown()
                 self.dismiss?()
             }
-            break
         default:
             break
         }

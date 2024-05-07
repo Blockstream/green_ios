@@ -7,7 +7,7 @@ class MultiLabelView: UIView {
     @IBOutlet weak var lblRight: UILabel!
     @IBOutlet weak var bgLeft: UIView!
     @IBOutlet weak var paddingLeft: NSLayoutConstraint!
-    
+
     func configure(_ model: MultiLabelViewModel) {
         lblLeft.text = model.txtLeft
         lblRight.text = model.txtRight

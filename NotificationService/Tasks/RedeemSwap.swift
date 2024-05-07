@@ -8,22 +8,22 @@ struct AddressTxsConfirmedRequest: Codable {
     let address: String
 }
 
-class RedeemSwapTask : TaskProtocol {
+class RedeemSwapTask: TaskProtocol {
     static let NOTIFICATION_THREAD_SWAP_TX_CONFIRMED = "SWAP_TX_CONFIRMED"
-    
+
     internal var payload: String
     internal var contentHandler: ((UNNotificationContent) -> Void)?
     internal var bestAttemptContent: UNMutableNotificationContent?
     internal var dismiss: (() -> Void)?
     internal var swapAddress: String? = nil
-    
+
     init(payload: String, logger: Logger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil, dismiss: (() -> Void)? = nil) {
         self.payload = payload
         self.contentHandler = contentHandler
         self.bestAttemptContent = bestAttemptContent
         self.dismiss = dismiss
     }
-    
+
     public func onEvent(e: BreezEvent) {
         if let address = self.swapAddress {
             switch e {
@@ -36,13 +36,12 @@ class RedeemSwapTask : TaskProtocol {
                     }
                 }
                 self.dismiss?()
-                break
             default:
                 break
             }
         }
     }
-    
+
     func start(breezSDK: BlockingBreezServices) throws {
         do {
             let addressTxsConfirmedRequest = try JSONDecoder().decode(AddressTxsConfirmedRequest.self, from: self.payload.data(using: .utf8)!)
@@ -51,12 +50,12 @@ class RedeemSwapTask : TaskProtocol {
             logger.error("Failed to decode payload: \(e, privacy: .public)")
             throw e
         }
-        
+
         guard let address = swapAddress else {
             logger.error("Failed to process swap notification: swap address not in payload")
             throw NotificationError.InvalidNotification
         }
-        
+
         do {
             try breezSDK.redeemSwap(swapAddress: address)
             logger.info("Found swap for \(address, privacy: .public)")

@@ -3,7 +3,7 @@ import UIKit
 import Combine
 import Semaphore
 
-public protocol HwResolverDelegate {
+public protocol HwResolverDelegate: AnyObject {
     func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?, hwDevice: HWProtocol?) async throws -> HWResolverResult
     func setInterfaceDelegate(_ interfaceDelegate: HwInterfaceResolver?)
 }
@@ -13,12 +13,11 @@ public protocol HwInterfaceResolver {
     func dismiss() async
 }
 
-
 public class HWResolver: HwResolverDelegate {
     static let semaphore = AsyncSemaphore(value: 1)
     var interfaceDelegate: HwInterfaceResolver?
     public init() {}
-    
+
     public func setInterfaceDelegate(_ interfaceDelegate: HwInterfaceResolver?) {
         self.interfaceDelegate = interfaceDelegate
     }

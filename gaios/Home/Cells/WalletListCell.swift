@@ -75,7 +75,7 @@ class WalletListCell: UITableViewCell {
     ) {
         lblTitle.text = item.name
         lblHint.text = ""
-        [lblTitle, lblOverviewTitle, lblShortcutTitle].forEach{
+        [lblTitle, lblOverviewTitle, lblShortcutTitle].forEach {
             $0.setStyle(.txtBigger)
         }
         lblHint.setStyle(.txtSmaller)
@@ -158,13 +158,13 @@ class WalletListCell: UITableViewCell {
             onTap?(indexPath)
         }
     }
-    
+
     @IBAction func onTapOverview(_ sender: Any) {
         if let indexPath = indexPath {
             onTapOverview?(indexPath)
         }
     }
-    
+
     @IBAction func btnTapLightShort(_ sender: Any) {
         if let indexPath = indexPath {
             onTapLightShort?(indexPath)

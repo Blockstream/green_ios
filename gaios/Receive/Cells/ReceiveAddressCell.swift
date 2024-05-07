@@ -9,12 +9,12 @@ class ReceiveAddressCell: UITableViewCell {
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var qrFrame: UIView!
     @IBOutlet weak var loader: UIActivityIndicatorView!
-    
+
     @IBOutlet weak var lnBannerBox: UIView!
     @IBOutlet weak var lnBanner: UIView!
     @IBOutlet weak var lblInfo: UILabel!
     @IBOutlet weak var btnRefresh: UIButton!
-    
+
     static var identifier: String { return String(describing: self) }
 
     var onCopyToClipboard: (() -> Void)?
@@ -25,7 +25,7 @@ class ReceiveAddressCell: UITableViewCell {
         super.awakeFromNib()
 
         bgCard.layer.cornerRadius = 5.0
-        //btnCopy.setTitle("id_copy_address".localized, for: .normal)
+        // btnCopy.setTitle("id_copy_address".localized, for: .normal)
         btnCopy.cornerRadius = 5.0
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
@@ -75,7 +75,7 @@ class ReceiveAddressCell: UITableViewCell {
             lblInfo.text = onChaininfo
             btnRefresh.isHidden = true
         }
-        
+
         self.onLongpress = onLongpress
     }
 
@@ -89,7 +89,7 @@ class ReceiveAddressCell: UITableViewCell {
     @IBAction func copyAction(_ sender: Any) {
         onCopyToClipboard?()
     }
-    
+
     @IBAction func refreshClick(_ sender: Any) {
         onRefreshClick?()
     }

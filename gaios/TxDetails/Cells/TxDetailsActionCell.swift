@@ -7,9 +7,9 @@ class TxDetailsActionCell: UITableViewCell {
     @IBOutlet weak var hintView: UIView!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var divider: UIView!
-    
+
     class var identifier: String { return String(describing: self) }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

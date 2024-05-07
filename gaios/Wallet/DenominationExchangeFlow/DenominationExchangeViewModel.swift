@@ -51,7 +51,7 @@ class DenominationExchangeViewModel {
                                            denominations: list,
                                            network: network)
     }
-    
+
     func updateSettings() async throws {
         guard let session = wm.prominentSession,
             let settings = settings else { return }

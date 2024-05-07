@@ -242,7 +242,7 @@ extension OnBoardInfoViewController {
 
 extension OnBoardInfoViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch PhrasePrefs(rawValue: index) {
         case ._12:

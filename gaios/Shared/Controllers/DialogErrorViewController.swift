@@ -56,7 +56,7 @@ class DialogErrorViewController: DialogViewController {
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-    
+
     let limit = 1000
     var request: DialogErrorRequest? = nil
 
@@ -150,7 +150,6 @@ class DialogErrorViewController: DialogViewController {
         }
         return email.isValidEmailAddr()
     }
-
 
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)

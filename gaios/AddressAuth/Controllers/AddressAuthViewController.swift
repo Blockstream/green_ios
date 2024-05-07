@@ -14,13 +14,13 @@ class AddressAuthViewController: KeyboardViewController {
     @IBOutlet weak var searchCard: UIView!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var tableView: UITableView!
-    
+
     var viewModel: AddressAuthViewModel!
     var isSearchActive = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         ["AddressAuthCell", "AddressAuthLoaderCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
@@ -31,44 +31,44 @@ class AddressAuthViewController: KeyboardViewController {
         loadNavigationBtns()
         fetchData(reset: true)
     }
-    
+
     deinit {
         print("deinit")
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
     }
-    
+
     func setContent() {
         title = "id_search_address".localized
-        
+
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(callPullToRefresh(_:)), for: .valueChanged)
         searchField.attributedPlaceholder = NSAttributedString(string: "Search", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
     }
-    
+
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         settingsBtn.tintColor = UIColor.gGreenMatrix()
         settingsBtn.setTitle("Export".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(exportBtnTapped), for: .touchUpInside)
-        //navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        // navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
-    
+
     func setStyle() {
         searchCard.cornerRadius = 5.0
     }
@@ -81,14 +81,14 @@ class AddressAuthViewController: KeyboardViewController {
     @objc func exportBtnTapped() {
         // SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
-    
+
     // tableview refresh gesture
     @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
         searchField.text = ""
         viewModel?.search(searchField.text ?? "")
         fetchData(reset: true)
     }
-    
+
     func fetchData(reset: Bool) {
         Task {
             do {
@@ -128,7 +128,7 @@ class AddressAuthViewController: KeyboardViewController {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
     }
-    
+
 }
 
 extension AddressAuthViewController: UITableViewDelegate, UITableViewDataSource {
@@ -236,11 +236,11 @@ extension AddressAuthViewController: UITextFieldDelegate {
         self.view.endEditing(true)
         return false
     }
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         isSearchActive = true
     }
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {
         isSearchActive = false
     }

@@ -69,18 +69,18 @@ class BleViewModel {
     var peripheralID: UUID? {
         didSet { setup() }
     }
-    
+
     init(centralManager: CentralManager = CentralManager.shared) {
         self.centralManager = centralManager
     }
-    
+
     var peripheral: Peripheral? {
         if let id = peripheralID {
             return centralManager.retrievePeripherals(withIdentifiers: [id]).first
         }
         return nil
     }
-    
+
     func setup() {
         guard let peripheral = peripheral else { return }
         switch type {
@@ -94,7 +94,7 @@ class BleViewModel {
             jade = nil
         }
     }
-    
+
     func connect() async throws {
         if centralManager.bluetoothState == .poweredOff {
             throw BLEManagerError.powerOff(txt: "id_enable_bluetooth_from_system".localized)
@@ -106,14 +106,14 @@ class BleViewModel {
             try await ledger?.connect()
         }
     }
-    
+
     func isConnected() -> Bool {
         let peripherals = centralManager.retrieveConnectedPeripherals(withServices: [
             CBUUID(string: BleJadeConnection.SERVICE_UUID.uuidString),
             CBUUID(string: BleLedger.SERVICE_UUID.uuidString)])
         return !peripherals.filter { peripheral?.identifier == $0.identifier }.isEmpty
     }
-    
+
     func disconnect() async throws {
         switch type {
         case .Jade:
@@ -122,7 +122,7 @@ class BleViewModel {
             try await ledger?.disconnect()
         }
     }
-    
+
     func initialize(testnet: Bool) async throws {
         switch type {
         case .Jade:
@@ -134,7 +134,7 @@ class BleViewModel {
             _ = try await ledger?.authenticating()
         }
     }
-    
+
     func authenticating() async throws -> Bool {
         switch type {
         case .Jade:
@@ -199,7 +199,7 @@ class BleViewModel {
         guard let jade = jade else { throw HWError.Abort("No peripheral found") }
         return try await jade.checkFirmware()
     }
-    
+
     func fetchFirmware(firmware: Firmware) async throws -> Data {
         guard let jade = jade else { throw HWError.Abort("No peripheral found") }
         return try await jade.fetchFirmware(firmware: firmware)
@@ -212,7 +212,7 @@ class BleViewModel {
         AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
         return updated
     }
-    
+
     func ping() async throws {
         switch type {
         case .Jade:
@@ -220,7 +220,7 @@ class BleViewModel {
         case .Ledger:
             break
         }
-    }    
+    }
 
     func toBleError(_ err: Error, network: String?) -> BLEManagerError {
         let defaultMsg = "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again."

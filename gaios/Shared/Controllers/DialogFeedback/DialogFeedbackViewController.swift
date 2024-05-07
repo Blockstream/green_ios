@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 protocol DialogFeedbackViewControllerDelegate: AnyObject {
     func didSend(rating: Int, email: String?, comment: String)
     func didCancel()
@@ -33,7 +32,7 @@ class DialogFeedbackViewController: KeyboardViewController {
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var segment: UISegmentedControl!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-    
+
     weak var delegate: DialogFeedbackViewControllerDelegate?
 
     let limit = 1000

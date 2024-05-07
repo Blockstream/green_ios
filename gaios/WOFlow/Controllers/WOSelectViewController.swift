@@ -14,7 +14,7 @@ class WOSelectViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["WOTypeCell",].forEach {
+        ["WOTypeCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         setContent()

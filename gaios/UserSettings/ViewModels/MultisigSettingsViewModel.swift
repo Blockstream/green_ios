@@ -60,7 +60,7 @@ class MultisigSettingsViewModel {
         if let username = try await session.getWatchOnlyUsername() {
             let items = getItems(username: username)
             cellModels = items.map { MultisigSettingsCellModel($0) }
-            
+
         }
     }
 

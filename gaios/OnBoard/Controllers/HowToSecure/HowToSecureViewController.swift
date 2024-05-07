@@ -18,7 +18,7 @@ class HowToSecureViewController: UIViewController {
         setContent()
         setStyle()
         tableView.register(UINib(nibName: "HowToSecureCell", bundle: nil), forCellReuseIdentifier: "HowToSecureCell")
-        
+
 //        AnalyticsManager.shared.recordView(.onBoardIntro)
     }
 
@@ -54,9 +54,9 @@ class HowToSecureViewController: UIViewController {
     }
 
     @IBAction func btnWatchOnly(_ sender: Any) {
-        
+
         OnBoardManager.shared.flowType = .watchonly
-        
+
         let testnetAvailable = AppSettings.shared.testnet
         if testnetAvailable {
             selectNetwork()
@@ -68,7 +68,7 @@ class HowToSecureViewController: UIViewController {
 
 extension HowToSecureViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:
@@ -106,9 +106,9 @@ extension HowToSecureViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+
         let model = model.items[indexPath.row]
-        
+
         switch model.type {
         case .sw:
             let onBFlow = UIStoryboard(name: "OnBoard", bundle: nil)

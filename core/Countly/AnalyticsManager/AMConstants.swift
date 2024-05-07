@@ -1,5 +1,5 @@
 public extension AnalyticsManager {
-    
+
     static let countlyRemoteConfigAppReview = "app_review"
     static let countlyRemoteConfigBanners = "banners"
     static let countlyRemoteConfigAssets = "liquid_assets"

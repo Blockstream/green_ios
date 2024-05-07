@@ -1,6 +1,6 @@
 import UIKit
 
-protocol LTRecoverFundsFeeDelegate {
+protocol LTRecoverFundsFeeDelegate: AnyObject {
     func didChange(feeSliderIndex: Int)
 }
 
@@ -31,18 +31,18 @@ class LTRecoverFundsFeeCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(fee: String, fiatFee: String,  feeRate: String, feeSliderIndex: Int, feeSliderMaxIndex: Int = 3) {
+    func configure(fee: String, fiatFee: String, feeRate: String, feeSliderIndex: Int, feeSliderMaxIndex: Int = 3) {
         lblGlobalFeeAmount.text = fee
         lblGlobalFeeFiatAmount.text = fiatFee
         lblFeeAmount.text = feeRate
         self.feeSliderMaxIndex = feeSliderMaxIndex
         setFeeSlider(feeSliderIndex)
     }
-    
+
     func setFeeSlider(_ index: Int) {
         feeSlider.value = Float(index)
     }
-    
+
     @IBAction func didValueChange(_ sender: UISlider) {
         let index = Int(sender.value)
         setFeeSlider(index)

@@ -2,7 +2,7 @@ import Foundation
 import gdk
 
 class URLSchemeManager {
-    
+
     static let shared = URLSchemeManager()
     var sendingAppID: String? = nil
     var url: URL? = nil
@@ -12,5 +12,5 @@ class URLSchemeManager {
         .replacingOccurrences(of: "bitcoin://", with: "bitcoin:")
         .replacingOccurrences(of: "liquidnetwork://", with: "liquidnetwork:")
         .replacingOccurrences(of: "lightning://", with: "lightning:")
-    }    
+    }
 }

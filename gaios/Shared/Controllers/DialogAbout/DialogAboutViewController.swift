@@ -2,7 +2,6 @@ import Foundation
 import core
 import UIKit
 
-
 class DialogAboutViewController: KeyboardViewController {
 
     @IBOutlet weak var tappableBg: UIView!
@@ -60,7 +59,7 @@ class DialogAboutViewController: KeyboardViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(multiTap))
         tap.numberOfTapsRequired = 5
 
-        cardView.subviews.forEach{
+        cardView.subviews.forEach {
             $0.subviews.forEach { view in
                 if let logo = view as? UIImageView {
                     logo.isUserInteractionEnabled = true
@@ -166,19 +165,19 @@ class DialogAboutViewController: KeyboardViewController {
     @IBAction func didTap(_ sender: UIButton) {
 
         switch sender.tag {
-        case 1: //web
+        case 1: // web
             navigate(ExternalUrls.aboutBlockstreamGreenWebSite)
-        case 2: //tw
+        case 2: // tw
             navigate(ExternalUrls.aboutBlockstreamTwitter)
-        case 3: //in
+        case 3: // in
             navigate(ExternalUrls.aboutBlockstreamLinkedIn)
-        case 4: //fb
+        case 4: // fb
             navigate(ExternalUrls.aboutBlockstreamFacebook)
-        case 5: //tel
+        case 5: // tel
             navigate(ExternalUrls.aboutBlockstreamTelegram)
-        case 6: //git
+        case 6: // git
             navigate(ExternalUrls.aboutBlockstreamGitHub)
-        case 7: //you
+        case 7: // you
             navigate(ExternalUrls.aboutBlockstreamYouTube)
         default:
             break

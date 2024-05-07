@@ -22,7 +22,7 @@ class LTShortcutViewController: UIViewController {
     @IBOutlet weak var btnLearnMore: UIButton!
     @IBOutlet weak var btnMain: UIButton!
     @IBOutlet weak var lblJadeExtraNote: UILabel!
-    
+
     weak var delegate: LTShortcutViewControllerDelegate?
 
     var vm: LTShortcutViewModel!

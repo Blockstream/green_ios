@@ -111,7 +111,7 @@ class GetStartedOnBoardViewController: UIViewController {
     }
 
     func onNext(_ action: ActionToButton) {
-        
+
         if AnalyticsManager.shared.consent == .notDetermined {
             actionToButton = action
 

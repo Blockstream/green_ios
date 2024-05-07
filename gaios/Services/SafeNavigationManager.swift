@@ -16,7 +16,7 @@ class SafeNavigationManager {
     public func navigate(_ url: URL) {
         confirm(url)
     }
-    
+
     private func confirm(_ url: URL) {
         guard GdkSettings.read()?.tor ?? false else {
             browse(url)
@@ -32,9 +32,9 @@ class SafeNavigationManager {
             .instantiateViewController(
                 withIdentifier: "DialogSafeNavigationViewController") as? DialogSafeNavigationViewController {
             con.onSelect = { [weak self] (action: SafeNavigationAction) in
-                
+
                 appDelegate?.navigateWindow = nil
-                
+
                 switch action {
                 case .authorize:
                     self?.browse(url)
@@ -50,7 +50,7 @@ class SafeNavigationManager {
         }
         appDelegate?.navigateWindow?.makeKeyAndVisible()
     }
-    
+
     private func browse(_ url: URL) {
 
         let appDelegate = UIApplication.shared.delegate as? AppDelegate

@@ -28,7 +28,7 @@ class UserSettingsViewModel {
             reloadTableView?()
         }
     }
-    
+
     func getCellModel(at indexPath: IndexPath) -> UserSettingsCellModel? {
         let section = sections[indexPath.section]
         return cellModels[section]?[indexPath.row]
@@ -91,8 +91,7 @@ class UserSettingsViewModel {
             type: .AutoLogout)
         if isWatchonly {
             return [autolock]
-        }
-        else if isHW {
+        } else if isHW {
             return [twoFactorAuth, pgpKey, autolock]
         } else if wm?.hasMultisig ?? false {
             return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]

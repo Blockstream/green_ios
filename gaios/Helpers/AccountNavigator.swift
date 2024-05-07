@@ -14,7 +14,7 @@ class AccountNavigator {
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
-        
+
         if account.isDerivedLightning {
             vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
@@ -96,10 +96,10 @@ class AccountNavigator {
             let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
             nv.setViewControllers([onboard!], animated: true)
         } else {
-            
-            let list = AccountsRepository.shared.accounts.filter{ $0.hidden == false}
+
+            let list = AccountsRepository.shared.accounts.filter { $0.hidden == false}
             if list.count == 1, let account = list.first, account.getDerivedLightningAccount() == nil {
-                
+
                 goLogin(account: account)
                 return
             } else {

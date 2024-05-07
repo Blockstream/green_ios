@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 public struct AssentEntity: Codable {
     public let domain: String
 }

@@ -49,7 +49,7 @@ extension LnUrlPayRequestData {
     public var minSendableSatoshi: UInt64 { minSendable.satoshi }
     public var metadata: [[String]]? {
         let data = metadataStr.data(using: .utf8)
-        return try? JSONSerialization.jsonObject(with: data ?? Data(), options : .allowFragments) as? [[String]]
+        return try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [[String]]
     }
 }
 

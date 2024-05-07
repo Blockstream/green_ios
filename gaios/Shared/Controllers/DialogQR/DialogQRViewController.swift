@@ -14,7 +14,7 @@ class DialogQRViewController: UIViewController {
     @IBOutlet weak var qrImgView: UIImageView!
 
     var qrDialogInfo: QRDialogInfo?
-    
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)

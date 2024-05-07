@@ -102,7 +102,7 @@ class DialogListViewController: UIViewController {
         guard let vm = viewModel else { return }
         if let item = vm.items[safe: index] as? DialogListCellModel {
             if item.switchState != nil {
-                /// prevent tap on cells with the switch
+                // prevent tap on cells with the switch
                 return
             }
         }
@@ -150,7 +150,7 @@ extension DialogListViewController: UITableViewDelegate, UITableViewDataSource {
         case .list:
             if let cell = tableView.dequeueReusableCell(withIdentifier: DialogListCell.identifier, for: indexPath) as? DialogListCell, let vm = viewModel {
                 cell.configure(model: vm.items[indexPath.row],
-                               index: indexPath.row) { [weak self] (idx,isOn) in
+                               index: indexPath.row) { [weak self] (idx, isOn) in
                     self?.switchAndDismiss(idx: idx, isOn: isOn, type: vm.type)
                 }
                 cell.selectionStyle = .none

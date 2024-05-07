@@ -12,9 +12,9 @@ class TxDetailsAmountCellModel {
     var iconSide: UIImage {
         value > 0 ? UIImage(named: "ic_tx_in")! : UIImage(named: "ic_tx_out")!
     }
-    
+
     init(tx: Transaction,
-         isLightning: Bool, 
+         isLightning: Bool,
          id: String,
          value: Int64,
          hideBalance: Bool

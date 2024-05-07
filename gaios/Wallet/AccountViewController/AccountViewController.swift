@@ -34,7 +34,7 @@ class AccountViewController: UIViewController {
     @IBOutlet weak var btnReceive: UIButton!
     @IBOutlet weak var btnScanView: UIView!
     @IBOutlet weak var divider: UIView!
-    
+
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
     private var cardH: CGFloat = 64.0
@@ -67,7 +67,7 @@ class AccountViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         setNavigationBar()
         reloadSections([AccountSection.assets, AccountSection.adding, AccountSection.disclose], animated: false)
 
@@ -93,7 +93,7 @@ class AccountViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         drawerIcon(false)
         notificationObservers.forEach { observer in
             NotificationCenter.default.removeObserver(observer)
@@ -177,7 +177,7 @@ class AccountViewController: UIViewController {
             navigationItem.rightBarButtonItems?.append( UIBarButtonItem(customView: ampHelpBtn) )
         }
         if AccountsRepository.shared.current?.isDerivedLightning ?? false {
-            drawerIcon(true)            
+            drawerIcon(true)
             let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
             navigationItem.leftBarButtonItem = leftItem
             let desiredWidth = 135.0
@@ -187,7 +187,7 @@ class AccountViewController: UIViewController {
             drawerItem.addConstraints([widthConstraint, heightConstraint])
         }
     }
-    
+
     func setActionBar() {
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
@@ -204,7 +204,7 @@ class AccountViewController: UIViewController {
     }
 
     func setContent() {
-        
+
         setActionBar()
         tableView.prefetchDataSource = self
         tableView.refreshControl = UIRefreshControl()
@@ -318,7 +318,7 @@ class AccountViewController: UIViewController {
             } catch { showError(error) }
         }
     }
-    
+
     func logout() {
         Task {
             let account = AccountsRepository.shared.current
@@ -387,9 +387,9 @@ class AccountViewController: UIViewController {
     }
 
     func handleShortcut(isOn: Bool) {
-        
+
         Task { try? await viewModel.addLightningShortcut() }
-        
+
         let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {
             vc.vm = LTShortcutViewModel(account: account,
@@ -422,14 +422,14 @@ class AccountViewController: UIViewController {
     }
 
     func pushTransactionViewController(_ tx: Transaction) {
-        
+
         let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccountItem {
             vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
-        
+
 //        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
 //        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
 //            vc.transaction = tx
@@ -835,7 +835,7 @@ extension AccountViewController: DialogListViewControllerDelegate {
             break
         }
     }
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .accountPrefs:
@@ -927,7 +927,7 @@ extension AccountViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
         parse(value: value.result, account: viewModel.account)
     }
-    
+
     func parse(value: String, account: WalletItem) {
         Task {
             do {
@@ -1004,11 +1004,11 @@ extension AccountViewController: DialogNodeViewControllerProtocol {
     func navigateMnemonic() {
         navigateToBip85Mnemonic()
     }
-    
+
     func onSendAll() {
         pushLTRecoverFundsViewController(viewModel.ltRecoverFundsViewModelSendAll())
     }
-    
+
     @MainActor
     func presentAlertClosedChannels() {
         let viewModel = AlertViewModel(title: "id_close_channel".localized, hint: "id_channel_closure_initiated_you".localized)
@@ -1077,7 +1077,7 @@ extension AccountViewController: DrawerNetworkSelectionDelegate {
     // accounts drawer: select another account
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
-        if account.id == viewModel.wm?.account.id{
+        if account.id == viewModel.wm?.account.id {
             return
         } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
             AccountNavigator.goLogged(account: account)

@@ -1,6 +1,5 @@
 import Foundation
 
-
 // Section of settings
 enum USSection: String, Codable, CaseIterable {
     case Logout = "id_logout"

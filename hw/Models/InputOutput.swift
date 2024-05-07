@@ -45,7 +45,7 @@ public extension InputOutput {
         hasUnblindingData ? "\(satoshi ?? 0),\(assetId ?? ""),\(amountblinder ?? ""),\(assetblinder ?? "")" : nil
     }
     var isSegwit: Bool { [ "csv", "p2wsh", "p2wpkh", "p2sh-p2wpkh"].contains(addressType) }
-    
+
     var getAssetIdBytes: [UInt8]? { assetId?.hexToBytes() }
     var getAbfs: [UInt8]? { assetblinder?.hexToBytes().reversed() }
     var getVbfs: [UInt8]? { amountblinder?.hexToBytes().reversed() }

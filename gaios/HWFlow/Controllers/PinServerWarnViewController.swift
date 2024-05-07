@@ -25,7 +25,7 @@ class PinServerWarnViewController: UIViewController {
     @IBOutlet weak var iconAsk: UIImageView!
     @IBOutlet weak var btnAsk: UIButton!
     @IBOutlet weak var btnClose: UIButton!
-    
+
     var showAdvanced = false {
         didSet {
             refresh()
@@ -132,11 +132,11 @@ class PinServerWarnViewController: UIViewController {
     @IBAction func btnSupport(_ sender: Any) {
         dismiss(.support)
     }
-    
+
     @IBAction func btnAdvanced(_ sender: Any) {
         showAdvanced = true
     }
-    
+
     @IBAction func btnConnect(_ sender: Any) {
         dismiss(.connect)
     }

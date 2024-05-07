@@ -7,17 +7,17 @@ class AddressAuthCell: UITableViewCell {
     @IBOutlet weak var lblTx: UILabel!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnSign: UIButton!
-    
+
     var model: AddressAuthCellModel!
     var onCopy: (() -> Void)?
     var onSign: (() -> Void)?
-    
+
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.cornerRadius = 5.0
-        [btnCopy, btnSign].forEach{
+        [btnCopy, btnSign].forEach {
             $0?.cornerRadius = 5.0
         }
     }
@@ -29,7 +29,7 @@ class AddressAuthCell: UITableViewCell {
     func configure(model: AddressAuthCellModel,
                    onCopy: (() -> Void)?,
                    onSign: (() -> Void)?
-    ){
+    ) {
         self.model = model
         self.onCopy = onCopy
         self.onSign = onSign

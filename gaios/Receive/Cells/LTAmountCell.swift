@@ -36,7 +36,7 @@ class LTAmountCell: UITableViewCell {
     @IBOutlet weak var btnFeeInfo: UIButton!
     @IBOutlet weak var lblToReceiveTitle: UILabel!
     @IBOutlet weak var lblToReceiveHint: UILabel!
-    
+
     var state: LTAmountCellState = .valid
     weak var delegate: LTAmountCellDelegate?
     var model: LTAmountCellModel!
@@ -93,7 +93,7 @@ class LTAmountCell: UITableViewCell {
     }
 
     func toReceiveAmount(show: Bool) {
-        [lblToReceiveTitle, lblToReceiveHint].forEach{
+        [lblToReceiveTitle, lblToReceiveHint].forEach {
             $0?.isHidden = !show
         }
     }
@@ -107,7 +107,7 @@ class LTAmountCell: UITableViewCell {
             return balance?.satoshi
         }
     }
-    
+
     @objc func triggerTextChange() {
         if let value = textField.text {
             Task.detached { [weak self] in
@@ -154,7 +154,7 @@ class LTAmountCell: UITableViewCell {
         textField.text = ""
         textFieldDidChange(textField)
     }
-    
+
     func errorState(text: String) {
         bg.borderColor = UIColor.gRedFluo()
         infoPanel.backgroundColor = UIColor.gRedFluo().withAlphaComponent(0.2)
@@ -169,7 +169,7 @@ class LTAmountCell: UITableViewCell {
     func disableState() {
         bg.borderColor = UIColor.gBlackBg()
         infoPanel.backgroundColor = UIColor.clear
-        //lblInfo.isHidden = true
+        // lblInfo.isHidden = true
         lblInfo.text = " "
         btnFeeInfo.isHidden = true
         lblMoreInfo.isHidden = true

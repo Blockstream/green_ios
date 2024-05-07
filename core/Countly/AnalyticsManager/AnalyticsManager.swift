@@ -129,7 +129,7 @@ public class AnalyticsManager {
     }
 
     public weak var delegate: AnalyticsManagerDelegate?
-    
+
     public var activeNetworks: [NetworkSecurityCase]? {
         let wm = WalletManager.current
         return wm?.activeNetworks
@@ -345,7 +345,6 @@ public class AnalyticsManager {
         guard let widget = countlyFeedbackWidget else { return }
         widget.recordResult(nil)
     }
-
 
     public func recordEvent(_ key: AnalyticsEventName) {
         guard consent == .authorized else { return }

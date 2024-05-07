@@ -10,9 +10,9 @@ class TxDetailsMoreInfoViewModel {
     }
 
     var txDetailsMoreInfoCellModels: [TxDetailsMoreInfoCellModel] {
-        
+
         var list: [TxDetailsMoreInfoCellModel] = []
-        
+
         if let destinationPubkey = transaction.destinationPubkey {
             list.append(TxDetailsMoreInfoCellModel(title: "Destination Public Key".localized,
                                        hint: destinationPubkey))
@@ -34,12 +34,12 @@ class TxDetailsMoreInfoViewModel {
             list.append(TxDetailsMoreInfoCellModel(title: "Funding Transaction Id".localized,
                                                    hint: fundingTxid))
         }
-        
+
         if let closingTxid = transaction.closingTxid {
             list.append(TxDetailsMoreInfoCellModel(title: "Closing Transaction Id".localized,
                                                    hint: closingTxid))
         }
-        
+
         return list
     }
 }

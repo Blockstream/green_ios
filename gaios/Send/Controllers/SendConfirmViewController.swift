@@ -107,7 +107,7 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     @MainActor
-    func dismissProgress(_ completion: @escaping (()->Void)) {
+    func dismissProgress(_ completion: @escaping (() -> Void)) {
         if viewModel.isLightning {
             ltConfirmingViewController?.dismiss(animated: true, completion: completion)
         } else if viewModel.isHW {
@@ -164,7 +164,7 @@ class SendConfirmViewController: KeyboardViewController {
     func success(tx: SendTransactionSuccess) {
         dismissProgress() {
             DropAlert().success(message: "id_transaction_sent".localized)
-            
+
             // LN URL transaction
             if tx.message != nil {
                 self.presentSuccessLnUrl(tx: tx) {
@@ -181,7 +181,7 @@ class SendConfirmViewController: KeyboardViewController {
             self.navigationController?.popToRootViewController(animated: true)
         }
     }
-    
+
     func presentSuccessLnUrl(tx: SendTransactionSuccess, completion: @escaping() -> () = { }) {
         let alert = UIAlertController(
             title: "id_success".localized,
@@ -219,11 +219,11 @@ class SendConfirmViewController: KeyboardViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         self.sliderView.isUserInteractionEnabled = true
         self.sliderView.reset()
     }
-    
+
 }
 
 extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource {

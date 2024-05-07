@@ -13,23 +13,22 @@ enum PairingState: Int {
 }
 
 class ConnectViewController: HWFlowBaseViewController {
-    
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var retryButton: UIButton!
-    
+
     var account: Account!
     var bleViewModel: BleViewModel?
     var scanViewModel: ScanViewModel?
-    
+
     private var activeToken, resignToken: NSObjectProtocol?
     private var pairingState: PairingState = .unknown
     private var selectedItem: ScanListItem?
     private var scanCancellable: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
-    
-    
+
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
         progress.translatesAutoresizingMaskIntoConstraints = false
@@ -55,11 +54,10 @@ class ConnectViewController: HWFlowBaseViewController {
         retryButton.setTitle("Retry".localized, for: .normal)
         retryButton.setStyle(.primary)
         lblTitle.text = "id_looking_for_device".localized
-        
     }
 
     @objc func progressTor(_ notification: NSNotification) {
-        if let info = notification.userInfo as? [String : Any],
+        if let info = notification.userInfo as? [String: Any],
            let tor = TorNotification.from(info) as? TorNotification {
             progress("id_tor_status".localized + " \(tor.progress)%")
         }
@@ -84,7 +82,7 @@ class ConnectViewController: HWFlowBaseViewController {
                     // only for jade, connect to pin server
                     try await bleViewModel?.jade?.connectPinServer()
                     let version = try await bleViewModel?.jade?.version()
-                    AnalyticsManager.shared.hwwConnected(account: account, 
+                    AnalyticsManager.shared.hwwConnected(account: account,
                                                          fwVersion: version?.jadeVersion,
                                                          model: version?.boardType)
                     if version?.jadeHasPin ?? false {
@@ -107,7 +105,7 @@ class ConnectViewController: HWFlowBaseViewController {
                         throw HWError.Abort("Authentication failure")
                     }
                 }
-                
+
                 if bleViewModel?.type == .Jade {
                     do {
                         // check firmware
@@ -121,10 +119,9 @@ class ConnectViewController: HWFlowBaseViewController {
                     }
                 }
                 progress("id_logging_in".localized)
-                
-                
+
                 let silent = try await bleViewModel?.jade?.silentMasterBlindingKey()
-                
+
                 self.account = try await bleViewModel?.login(account: account)
                 onLogin(item)
             } catch {
@@ -176,7 +173,7 @@ class ConnectViewController: HWFlowBaseViewController {
             startScan()
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
@@ -251,7 +248,7 @@ class ConnectViewController: HWFlowBaseViewController {
             }
         }
     }
-    
+
     func showBleUnavailable() {
         var state: BleUnavailableState = .other
         switch CentralManager.shared.bluetoothState {
@@ -270,7 +267,7 @@ class ConnectViewController: HWFlowBaseViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @MainActor
     func stopScan() {
         Task {
@@ -351,7 +348,7 @@ extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
                 startLoader(message: text)
                 let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
                 try await bleViewModel?.disconnect()
-                try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
+                try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
                 await MainActor.run {
                     self.stopLoader()
                     if let res = res, res {

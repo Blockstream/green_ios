@@ -3,7 +3,7 @@ import gdk
 import core
 
 class TransactionAmountCell: UITableViewCell {
-    
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblAsset: UILabel!
@@ -14,29 +14,29 @@ class TransactionAmountCell: UITableViewCell {
     @IBOutlet weak var copyRecipientIcon: UIImageView!
     @IBOutlet weak var copyAmountIcon: UIImageView!
     @IBOutlet weak var recipientView: UIView!
-    
+
     var copyAmount: ((String) -> Void)?
     var copyRecipient: ((String) -> Void)?
-    
+
     private var btc: String {
         return WalletManager.current?.account.gdkNetwork.getFeeAsset() ?? ""
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.layer.cornerRadius = 5.0
-        
+
         lblTitle.setStyle(.sectionTitle)
         lblRecipient.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblAmount.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblAsset.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblFiat.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
     }
-    
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-    
+
     override func prepareForReuse() {
         lblAmount.text = ""
         lblAsset.text = ""
@@ -44,7 +44,7 @@ class TransactionAmountCell: UITableViewCell {
         lblFiat.isHidden = true
         lblRecipient.isHidden = true
     }
-    
+
     func color(_ tx: Transaction, value: Int64) -> UIColor {
         var color: UIColor = value > 0 ? .customMatrixGreen() : .white
         if tx.isRefundableSwap ?? false {

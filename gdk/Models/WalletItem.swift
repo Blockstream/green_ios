@@ -1,6 +1,5 @@
 import Foundation
 
-
 public class WalletItem: Codable, Equatable, Comparable, Hashable {
 
     enum CodingKeys: String, CodingKey {
@@ -64,7 +63,7 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
             return false
         }
     }
-    
+
     public var isLightning: Bool {
         type == .lightning
     }
@@ -97,7 +96,7 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
         hasher.combine(type)
     }
 
-    public init(name: String, pointer: UInt32, receivingId: String, type: AccountType, recoveryChainCode: String? = nil, recoveryPubKey: String? = nil, bip44Discovered: Bool? = nil, recoveryXpub: String? = nil, hidden: Bool, network: String? = nil, coreDescriptors: [String]? = nil, extendedPubkey: String? = nil, userPath: [Int]? = nil, hasTxs: Bool = false, satoshi: [String : Int64]? = nil) {
+    public init(name: String, pointer: UInt32, receivingId: String, type: AccountType, recoveryChainCode: String? = nil, recoveryPubKey: String? = nil, bip44Discovered: Bool? = nil, recoveryXpub: String? = nil, hidden: Bool, network: String? = nil, coreDescriptors: [String]? = nil, extendedPubkey: String? = nil, userPath: [Int]? = nil, hasTxs: Bool = false, satoshi: [String: Int64]? = nil) {
         self.name = name
         self.pointer = pointer
         self.receivingId = receivingId

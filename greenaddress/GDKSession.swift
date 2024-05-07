@@ -32,7 +32,7 @@ public class GDKSession: Session {
     public func registerUserHW(device: [String: Any]) throws -> TwoFactorCall {
         try registerUser(details: [:], hw_device: ["device": device])
     }
-    
+
     public override func setNotificationHandler(notificationCompletionHandler: NotificationCompletionHandler?) {
         super.setNotificationHandler(notificationCompletionHandler: notificationCompletionHandler)
     }

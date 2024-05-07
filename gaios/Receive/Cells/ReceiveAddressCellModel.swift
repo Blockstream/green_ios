@@ -33,7 +33,7 @@ struct ReceiveAddressCellModel {
         }
         return nil
     }
-    
+
     var onChainMin: String? {
         if let minAllowedDeposit = swapInfo?.minAllowedDeposit {
             return Balance.fromSatoshi(minAllowedDeposit, assetId: AssetInfo.btcId)?.toText(inputDenomination)
@@ -46,7 +46,7 @@ struct ReceiveAddressCellModel {
         }
         return nil
     }
-    
+
     var channelFee: String? {
         let channelFeeSatoshi = try? breezSdk?.openChannelFee(satoshi: Long(satoshi ?? 0))?.feeMsat?.satoshi
         if let channelFeeSatoshi = channelFeeSatoshi {

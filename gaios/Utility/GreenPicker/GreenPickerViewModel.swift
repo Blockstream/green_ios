@@ -12,7 +12,7 @@ class GreenPickerViewModel {
     var item: GreenPickerItem?
     var items: [GreenPickerItem]
     var filteredItems: [GreenPickerItem]
-    
+
     init(title: String,
          item: GreenPickerItem?,
          items: [GreenPickerItem]
@@ -38,7 +38,7 @@ class GreenPickerViewModel {
 
     func getIdx(_ idx: Int) -> Int {
         item = filteredItems[idx]
-        if let selected = (items.filter{ $0.code == item?.code}).first {
+        if let selected = (items.filter { $0.code == item?.code}).first {
             if let index = items.firstIndex(where: {$0.code == selected.code}) {
                 return index
             }
@@ -46,4 +46,3 @@ class GreenPickerViewModel {
         return 0
     }
 }
-

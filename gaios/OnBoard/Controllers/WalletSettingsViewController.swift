@@ -39,7 +39,7 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblRememberHWTitle: UILabel!
     @IBOutlet weak var lblRememberHWHint: UILabel!
     @IBOutlet weak var switchRememberHW: UISwitch!
-    
+
     @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
@@ -147,7 +147,7 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVtestnetServer.placeholder = GdkSettings.testnetElectrumSrvDefaultEndPoint
         fieldSPVliquidTestnetServer.placeholder = GdkSettings.liquidTestnetElectrumSrvDefaultEndPoint
     }
-    
+
     func setStyle() {
         btnCancel.cornerRadius = 4.0
         btnSave.cornerRadius = 4.0
@@ -159,8 +159,8 @@ class WalletSettingsViewController: KeyboardViewController {
         cardMulti.alpha = 0.5
         lblTitle.setStyle(.title)
         lblHint.setStyle(.txtBigger)
-        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblProxyTitle, lblRememberHWTitle, lblSPVPersonalNodeTitle, lblMultiTitle, lblTxCheckTitle].forEach{ $0?.setStyle(.txtBigger)}
-        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach{ $0?.setStyle(.txtCard)}
+        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblProxyTitle, lblRememberHWTitle, lblSPVPersonalNodeTitle, lblMultiTitle, lblTxCheckTitle].forEach { $0?.setStyle(.txtBigger)}
+        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach { $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
     }
@@ -253,7 +253,7 @@ class WalletSettingsViewController: KeyboardViewController {
             return
         }
         let gdkSettings = GdkSettings(
-            tor:  switchTor.isOn,
+            tor: switchTor.isOn,
             proxy: switchProxy.isOn,
             socks5Hostname: String(socks5.split(separator: ":").first ?? ""),
             socks5Port: String(socks5.split(separator: ":").last ?? ""),
@@ -268,7 +268,7 @@ class WalletSettingsViewController: KeyboardViewController {
         AppSettings.shared.rememberHWIsOff = !switchRememberHW.isOn
         AppSettings.shared.gdkSettings = gdkSettings
 
-        switch AnalyticsManager.shared.consent { //current value
+        switch AnalyticsManager.shared.consent { // current value
         case .authorized:
             if switchAnalytics.isOn {
                 // no change
@@ -285,7 +285,7 @@ class WalletSettingsViewController: KeyboardViewController {
             if switchAnalytics.isOn {
                 AnalyticsManager.shared.consent = .authorized
             } else {
-                //no change
+                // no change
             }
         }
         let session = WalletManager.current?.prominentSession?.session

@@ -88,14 +88,12 @@ extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionVie
                                                                          withReuseIdentifier: "FooterQrCell",
                                                                          for: indexPath) as? FooterQrCell {
               if showBip85 {
-                  fView.configureBip85(mnemonic: self.items.joined(separator: " ")) {
-                      [weak self] in self?.magnifyQR()
+                  fView.configureBip85(mnemonic: self.items.joined(separator: " ")) {[weak self] in self?.magnifyQR()
                   }
                   return fView
               } else {
                   fView.configure(mnemonic: self.items.joined(separator: " "),
-                                  bip39Passphrase: self.bip39Passphrase) {
-                      [weak self] in self?.magnifyQR()
+                                  bip39Passphrase: self.bip39Passphrase) {[weak self] in self?.magnifyQR()
                   }
                   return fView
               }

@@ -24,13 +24,13 @@ class QRUnlockPinUnlockDialogViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnsStack: UIStackView!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-    
+
     @IBOutlet weak var btnLearMore: UIButton!
     @IBOutlet weak var btnPinUnlock: UIButton!
     @IBOutlet weak var btnAlreadyUnlocked: UIButton!
-    
+
     weak var delegate: QRUnlockPinUnlockDialogViewControllerDelegate?
-    
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)
@@ -135,13 +135,13 @@ class QRUnlockPinUnlockDialogViewController: UIViewController {
     @IBAction func btnLearMore(_ sender: Any) {
         dismiss(.learMore)
     }
-    
+
     @IBAction func btnPinUnlock(_ sender: Any) {
         dismiss(.pinUnlock)
     }
-    
+
     @IBAction func btnAlreadyUnlocked(_ sender: Any) {
         dismiss(.alreadyUnlocked)
     }
-    
+
 }

@@ -2,10 +2,10 @@ import Foundation
 import gdk
 
 extension WalletItem {
-    
+
     public var session: SessionManager? { WalletManager.current?.sessions[network ?? ""] }
     public var lightningSession: LightningSessionManager? { WalletManager.current?.lightningSession }
-    
+
     public var localizedName: String {
         if !name.isEmpty {
             return name

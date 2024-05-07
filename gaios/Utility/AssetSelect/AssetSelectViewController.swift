@@ -57,15 +57,15 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        
+
         return cnt + (viewModel?.anyAssetTypes().count ?? 0)
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        
+
         let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
-        
+
         if anyAssetTypes.count == 1 {
             if cnt == indexPath.row {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
@@ -91,7 +91,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
                 }
             }
         }
-        
+
         if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell {
             let model = viewModel.assetSelectCellModelsFilter[indexPath.row]
             cell.configure(model: model, showEditIcon: false)
@@ -123,20 +123,19 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        // TODO: show dialog when required
-        //showMasterKeyInfo(indexPath)
+
+        // showMasterKeyInfo(indexPath)
         didSelectAtIndexPath(indexPath)
     }
 
     func didSelectAtIndexPath(_ indexPath: IndexPath?) {
         guard let indexPath = indexPath else { return }
-        
+
         AnalyticsManager.shared.selectAsset(account: AccountsRepository.shared.current)
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        
+
         let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
-        
+
         if anyAssetTypes.count == 1 {
             if cnt == indexPath.row {
                 delegate?.didSelectAnyAsset(anyAssetTypes[0])
@@ -153,7 +152,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
                 return
             }
         }
-        
+
         let assetCellModel = viewModel?.assetSelectCellModelsFilter[indexPath.row] as? AssetSelectCellModel
         let asset = assetCellModel?.asset?.assetId
         delegate?.didSelectAsset(asset ?? "")

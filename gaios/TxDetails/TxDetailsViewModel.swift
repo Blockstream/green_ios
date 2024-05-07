@@ -12,24 +12,24 @@ enum TxDetailsAction {
 }
 
 class TxDetailsViewModel {
-    
+
     var wallet: WalletItem
     var transaction: Transaction
     var assetAmountList: AssetAmountList
-    
-    var cells = ["TxDetailsStatusCell", "TxDetailsAmountCell", "TxDetailsMultiAmountCell", 
+
+    var cells = ["TxDetailsStatusCell", "TxDetailsAmountCell", "TxDetailsMultiAmountCell",
                  "TxDetailsActionCell", "TxDetailsInfoCell"]
-    
+
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
-    
+
     init(wallet: WalletItem, transaction: Transaction) {
         self.wallet = wallet
         self.transaction = transaction
         self.assetAmountList = AssetAmountList(transaction.amountsWithoutFees)
     }
-    
+
     var txDetailsStatusCellModel: TxDetailsStatusCellModel {
         let blockHeight: UInt32 = wallet.session?.blockHeight ?? 0
         return TxDetailsStatusCellModel(transaction: transaction,
@@ -48,30 +48,29 @@ class TxDetailsViewModel {
     }
 
     var txDetailsInfoCellModels: [TxDetailsInfoCellModel] {
-        
+
         var items = [TxDetailsInfoCellModel]()
-        
-        
+
         if transaction.type == .incoming || transaction.isRefundableSwap ?? false {} else {
-            
-            /// fee
+
+            // fee
             if let balance = Balance.fromSatoshi(transaction.fee, assetId: transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") {
                 let (amount, denom) = balance.toValue()
                 let (fiat, fiatCurrency) = balance.toFiat()
                 let str = "\(amount) \(denom) ≈ \(fiat) \(fiatCurrency)"
-                
+
                 items.append(TxDetailsInfoCellModel(title: "Network fees".localized, hint: str, type: .fee, hideBalance: hideBalance))
             }
-            
-            /// fee rate
+
+            // fee rate
             if transaction.isLightning {} else {
                 items.append(TxDetailsInfoCellModel(title: "id_fee_rate".localized, hint: "\(String(format: "%.2f satoshi / vbyte", Double(transaction.feeRate) / 1000))", type: .feeRate, hideBalance: hideBalance))
             }
         }
-        
-        /// address
+
+        // address
         if let address = address(transaction) {
-            
+
             var title = ""
             switch transaction.type {
             case .redeposit:
@@ -83,39 +82,38 @@ class TxDetailsViewModel {
             case .mixed:
                 title = "Swapped to".localized
             }
-            
+
             let hint = address
             items.append(TxDetailsInfoCellModel(title: title,
                                                 hint: hint,
                                                 type: .address,
                                                 hideBalance: hideBalance))
         }
-        
-        /// transaction Id
+
+        // transaction Id
         if transaction.isLightning {} else {
             items.append(TxDetailsInfoCellModel(title: "id_transaction_id".localized,
                                                 hint: transaction.hash ?? "",
                                                 type: .txId,
                                                 hideBalance: hideBalance))
         }
-        
-        /// note
+
+        // note
         if !(transaction.memo ?? "").isEmpty {
             items.append(TxDetailsInfoCellModel(title: "id_note".localized,
                                                 hint: transaction.memo ?? "",
                                                 type: .memo,
                                                 hideBalance: hideBalance))
         }
-        
-        
-        /// message
+
+        // message
         if transaction.isLightning && transaction.message != nil {
             items.append(TxDetailsInfoCellModel(title: "Message".localized,
                                                 hint: transaction.message ?? "",
                                                 type: .message,
                                                 hideBalance: hideBalance))
         }
-        /// url
+        // url
         if transaction.isLightning && transaction.url != nil {
             let url = transaction.url ?? ("", "")
             items.append(TxDetailsInfoCellModel(title: url.0,
@@ -123,7 +121,7 @@ class TxDetailsViewModel {
                                                 type: .url,
                                                 hideBalance: hideBalance))
         }
-        /// plaintext
+        // plaintext
         if transaction.isLightning && transaction.plaintext != nil {
             let plaintext = transaction.plaintext ?? ("", "")
             items.append(TxDetailsInfoCellModel(title: plaintext.0,
@@ -131,14 +129,14 @@ class TxDetailsViewModel {
                                                 type: .plaintext,
                                                 hideBalance: hideBalance))
         }
-        
+
         return items
     }
 
     var txDetailsActionCellModels: [TxDetailsActionCellModel] {
-        
+
         var models: [TxDetailsActionCellModel] = []
-        
+
         if showBumpFee() {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_speed")!,
@@ -167,7 +165,7 @@ class TxDetailsViewModel {
                                          action: .shareTx)
             )
         }
-    
+
         if transaction.isLightning && !(transaction.isRefundableSwap ?? false) {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_more")!,
@@ -175,7 +173,7 @@ class TxDetailsViewModel {
                                          action: .more)
             )
         }
-        
+
         if transaction.isLightning && transaction.isRefundableSwap ?? false {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_revert")!.maskWithColor(color: UIColor.gGreenMatrix()),
@@ -183,8 +181,7 @@ class TxDetailsViewModel {
                                          action: .refund)
             )
         }
-        
-        
+
         return models
     }
 
@@ -217,6 +214,5 @@ class TxDetailsViewModel {
             return nil
         }
     }
-
 
 }

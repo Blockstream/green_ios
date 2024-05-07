@@ -3,23 +3,23 @@ import core
 import gdk
 
 class SetPinViewModel {
-    
+
     var credentials: Credentials
     var testnet: Bool
     var restoredAccount: Account?
-    
+
     init(credentials: Credentials, testnet: Bool, restoredAccount: Account? = nil) {
         self.credentials = credentials
         self.testnet = testnet
         self.restoredAccount = restoredAccount
     }
-    
+
     func getXpubHashId(session: SessionManager) async throws -> String? {
         try await session.connect()
         let walletId = try session.walletIdentifier(credentials: self.credentials)
         return walletId?.xpubHashId
     }
-    
+
     func restore(pin: String) async throws {
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
@@ -38,7 +38,7 @@ class SetPinViewModel {
         AccountsRepository.shared.current = wm.account
         AnalyticsManager.shared.importWallet(account: wm.account)
     }
-    
+
     func checkWalletMismatch(wm: WalletManager) async throws {
         // Avoid to restore an different wallet if restoredAccount is defined
         if let restoredAccount = restoredAccount {
@@ -48,7 +48,7 @@ class SetPinViewModel {
             }
         }
     }
-    
+
     func checkWalletsJustRestored(wm: WalletManager) async throws {
         // Avoid to restore an existing wallets
         if restoredAccount == nil {
@@ -56,7 +56,7 @@ class SetPinViewModel {
             let prevAccounts = AccountsRepository.shared.find(xpubHashId: xpub ?? "")?
                 .filter { $0.networkType == wm.account.networkType &&
                 !$0.isHW && !$0.isWatchonly } ?? []
-            if let prevAccount = prevAccounts.first, prevAccount.id != wm.account.id  {
+            if let prevAccount = prevAccounts.first, prevAccount.id != wm.account.id {
                 throw LoginError.walletsJustRestored()
             }
         }

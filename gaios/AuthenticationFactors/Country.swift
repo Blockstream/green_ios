@@ -1,4 +1,3 @@
-
 struct Country {
     let code: String
     let name: String
@@ -11,7 +10,7 @@ struct Country {
     }
 
     static func all() -> [Country] {
-        
+
         return [
                 Country("af", "Afghanistan (‫افغانستان‬‎)", 93),
                 Country("al", "Albania (Shqipëri)", 355),

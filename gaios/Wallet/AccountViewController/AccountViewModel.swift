@@ -167,7 +167,7 @@ class AccountViewModel {
     func removeLightningSubaccount() async throws {
         let prominentSession = wm?.prominentSession
         let session = wm?.sessions[account.gdkNetwork.network]
-        
+
         // remove lightning shortcut
         let account = AccountsRepository.shared.current
         if let derivedAccount = account?.getDerivedLightningAccount() {
@@ -181,8 +181,7 @@ class AccountViewModel {
         // remove lightning session
         if let prominentCredentials = try await prominentSession?.getCredentials(password: ""),
            let lightnigCredentials = try? wm?.deriveLightningCredentials(from: prominentCredentials),
-           let walletId = try? session?.walletIdentifier(credentials: lightnigCredentials)
-        {
+           let walletId = try? session?.walletIdentifier(credentials: lightnigCredentials) {
             try await session?.disconnect()
             await session?.removeDatadir(walletHashId: walletId.walletHashId )
             LightningRepository.shared.remove(for: walletId.walletHashId)
@@ -205,13 +204,13 @@ class AccountViewModel {
                                 amount: wm?.lightningSession?.nodeState?.onchainBalanceSatoshi,
                                 type: .sweep)
     }
-    
+
     func ltRecoverFundsViewModelSendAll() -> LTRecoverFundsViewModel {
         LTRecoverFundsViewModel(wallet: account,
                                 amount: nil,
                                 type: .sendAll)
     }
-    
+
     func ltRecoverFundsViewModelRefund(tx: Transaction) -> LTRecoverFundsViewModel {
         let amount = tx.amounts["btc"].map {UInt64(abs($0))}
         let address = tx.inputs?.first?["address"] as? String

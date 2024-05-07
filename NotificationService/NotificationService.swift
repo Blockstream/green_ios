@@ -108,7 +108,7 @@ class NotificationService: UNNotificationServiceExtension {
             .filter { $0.xpubHashId == xpub }
             .first
     }
-    
+
     func getTaskFromNotification(notification: LightningNotification) -> TaskProtocol? {
         switch(notification.notificationType) {
         case .addressTxsConfirmed:
@@ -121,10 +121,10 @@ class NotificationService: UNNotificationServiceExtension {
             return nil
         }
     }
-    
+
     override func serviceExtensionTimeWillExpire() {
         logger.error("serviceExtensionTimeWillExpire()")
-        
+
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
         // otherwise the original push payload will be used.

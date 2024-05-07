@@ -6,7 +6,7 @@ import hw
 import lightning
 
 extension Error {
-    
+
     public func description() -> String? {
         if let authError = self as? AuthenticationTypeHandler.AuthError {
             return authError.localizedDescription

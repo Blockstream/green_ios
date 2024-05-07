@@ -21,7 +21,7 @@ class GreenPickerViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchField: UITextField!
-    
+
     var vm: GreenPickerViewModel!
     weak var delegate: GreenPickerDelegate?
 
@@ -170,8 +170,8 @@ extension GreenPickerViewController: UITextFieldDelegate {
         self.view.endEditing(true)
         return false
     }
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {}
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {}
 }

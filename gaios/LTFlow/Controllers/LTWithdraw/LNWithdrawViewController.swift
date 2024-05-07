@@ -6,10 +6,10 @@ import lightning
 import core
 
 class LTWithdrawViewController: KeyboardViewController {
-    
+
     var requestData: LnUrlWithdrawRequestData?
     var session: LightningSessionManager? { WalletManager.current?.lightningSession }
-    
+
     enum LTWithdrawSection: Int, CaseIterable {
         case amount
         case note
@@ -45,7 +45,7 @@ class LTWithdrawViewController: KeyboardViewController {
 
     @MainActor
     func presentAlertSuccess() {
-        
+
         let viewModel = AlertViewModel(title: "id_success".localized,
                                        hint: String(format: "id_s_will_send_you_the_funds_it".localized, requestData?.domain ?? ""))
         let storyboard = UIStoryboard(name: "Alert", bundle: nil)
@@ -79,7 +79,7 @@ class LTWithdrawViewController: KeyboardViewController {
                 stopLoader()
                 switch error {
                 case BreezSDK.SdkError.Generic(let msg):
-                    //BreezSDK.SdkError.ServiceConnectivity(let msg):
+                    // BreezSDK.SdkError.ServiceConnectivity(let msg):
                     DropAlert().error(message: msg.localized)
                 default:
                     DropAlert().error(message: "id_operation_failure".localized)
@@ -90,15 +90,15 @@ class LTWithdrawViewController: KeyboardViewController {
 }
 
 extension LTWithdrawViewController: UITableViewDelegate, UITableViewDataSource {
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return LTWithdrawSection.allCases.count
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch LTWithdrawSection(rawValue: indexPath.section) {
         case .amount:
@@ -116,17 +116,17 @@ extension LTWithdrawViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-            
+
         default:
             break
         }
-        
+
         return UITableViewCell()
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return UITableView.automaticDimension
     }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -140,7 +140,7 @@ extension LTWithdrawViewController: UITableViewDelegate, UITableViewDataSource {
             return nil
         }
     }
-    
+
     func headerView(_ txt: String) -> UIView {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
         section.backgroundColor = UIColor.gBlackBg()
@@ -164,4 +164,3 @@ extension LTWithdrawViewController: AlertViewControllerDelegate {
         self.navigationController?.popViewController(animated: true)
     }
 }
-

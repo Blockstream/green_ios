@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 protocol DialogShareTxOptionViewControllerDelegate: AnyObject {
     func didSelect(_ option: TxShareOption)
 }

@@ -22,7 +22,7 @@ class LTNoteCell: UITableViewCell {
         onEditClick?()
     }
 
-    func configure(model: LTNoteCellModel, onEditClick:  (() -> Void)?) {
+    func configure(model: LTNoteCellModel, onEditClick: (() -> Void)?) {
         lblNote.text = model.note
         self.onEditClick = onEditClick
     }

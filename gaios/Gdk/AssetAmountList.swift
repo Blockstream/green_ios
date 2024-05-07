@@ -63,7 +63,7 @@ class AssetAmountList {
     func nonZeroAmounts() -> [(String, Int64)] {
         return amounts.filter { $0.1 != 0 }
     }
-    
+
     func image(for id: String) -> UIImage {
         let registry = WalletManager.current?.registry
         return registry?.image(for: id) ?? UIImage()

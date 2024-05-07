@@ -2,7 +2,6 @@ import Foundation
 import core
 import UIKit
 import gdk
-import core
 
 protocol DialogNodeViewControllerProtocol {
     func onSendAll()
@@ -72,7 +71,7 @@ class DialogNodeViewController: KeyboardViewController {
             tappableBg.addGestureRecognizer(tapToClose)
 
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
-            //self?.tableViewHeight.constant = table.contentSize.height
+            // self?.tableViewHeight.constant = table.contentSize.height
         }
 
         btnCloseChannel.isHidden = viewModel.hideBtnSendAll
@@ -169,7 +168,7 @@ class DialogNodeViewController: KeyboardViewController {
     @IBAction func btnMnemonic(_ sender: Any) {
         dismiss(.mnemonic)
     }
-    
+
     @IBAction func btnCloseChannel(_ sender: Any) {
         dismiss(.sendAll)
     }
@@ -187,7 +186,6 @@ class DialogNodeViewController: KeyboardViewController {
                 }
             }
         }
-        
     }
 }
 

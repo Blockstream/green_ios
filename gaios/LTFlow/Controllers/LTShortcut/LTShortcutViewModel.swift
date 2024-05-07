@@ -16,7 +16,7 @@ class LTShortcutViewModel {
     var action: LTShortcutAction
 
     var title: String {
-        
+
         switch action {
         case .addFromAccount, .addFromCreate:
             return "Lightning Account Shortcut Activated".localized

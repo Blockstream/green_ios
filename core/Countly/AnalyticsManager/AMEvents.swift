@@ -44,7 +44,7 @@ public enum AnalyticsEventName: String {
     case jadeOtaComplete = "ota_complete"
 
     case qrScan = "qr_scan"
-    
+
     case accountEmptied = "account_emptied"
     case preferredUnits = "preferred_units"
     case hideAmount = "hide_amount"
@@ -76,7 +76,7 @@ extension AnalyticsManager {
         cancelEvent(event)
         startEvent(event)
     }
-    
+
     public func loginWalletEnd(account: Account, loginType: AnalyticsManager.LoginType) {
         let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .walletLoginTor : .walletLogin
         endTrace(event)
@@ -85,15 +85,15 @@ extension AnalyticsManager {
         s[AnalyticsManager.strEphemeralBip39] = "\(account.isEphemeral)"
         endEvent(.walletLogin, sgmt: s)
     }
-    
-    public func loginLightningStart(){
+
+    public func loginLightningStart() {
         startTrace(.lightningLogin)
     }
 
-    public func loginLightningStop(){
+    public func loginLightningStop() {
         endTrace(.lightningLogin)
     }
-    
+
     public func renameWallet() {
         recordEvent(.renameWallet)
     }
@@ -140,13 +140,13 @@ extension AnalyticsManager {
         AnalyticsManager.shared.userPropertiesDidChange()
         recordEvent(.walletCreate, sgmt: s)
     }
-    
+
     public func importWallet(account: Account?) {
         let s = sessSgmt(account)
         AnalyticsManager.shared.userPropertiesDidChange()
         recordEvent(.walletImport, sgmt: s)
     }
-    
+
     public func createAccount(account: Account?, walletItem: WalletItem?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.createAccount, sgmt: s)
@@ -177,7 +177,7 @@ extension AnalyticsManager {
         recordEvent(event, sgmt: s)
     }
 
-    public func startFailedTransaction(){
+    public func startFailedTransaction() {
         startTrace(.failedTransaction)
         cancelEvent(.failedTransaction)
         startEvent(.failedTransaction)
@@ -218,7 +218,7 @@ extension AnalyticsManager {
     }
 
     public func recoveryPhraseCheckFailed(onBoardParams: OnBoardParams?, page: Int) {
-        let sgmt = [AnalyticsManager.strPage : "\(page)" ]
+        let sgmt = [AnalyticsManager.strPage: "\(page)" ]
         recordEvent(.failedRecoveryPhraseCheck, sgmt: sgmt)
     }
 
@@ -242,11 +242,11 @@ extension AnalyticsManager {
     public func woWallet() {
         recordEvent(.walletWO)
     }
-    
+
     public func restoreWallet() {
         recordEvent(.walletRestore)
     }
-    
+
     public func onAccountFirst(account: Account?) {
         let s = sessSgmt(account)
         recordEvent(.accountFirst, sgmt: s)
@@ -279,25 +279,24 @@ extension AnalyticsManager {
 
     public func hwwConnect(account: Account?) {
         var s = sessSgmt(account)
-        
+
         s.removeValue(forKey: "\(AnalyticsManager.strFirmware)")
         s.removeValue(forKey: "\(AnalyticsManager.strModel)")
-        
+
         recordEvent(.connectHWW, sgmt: s)
     }
 
     public func hwwConnected(account: Account?) {
         let s = sessSgmt(account)
-        
-        
-        //s[AnalyticsManager.strFirmware] = BleViewModel.shared.jade?.version?.jadeVersion ?? ""
-        //s[AnalyticsManager.strModel] = BleViewModel.shared.jade?.version?.boardType ?? ""
+
+        // s[AnalyticsManager.strFirmware] = BleViewModel.shared.jade?.version?.jadeVersion ?? ""
+        // s[AnalyticsManager.strModel] = BleViewModel.shared.jade?.version?.boardType ?? ""
         recordEvent(.connectedHWW, sgmt: s)
     }
 
     public func hwwConnected(account: Account?, fwVersion: String?, model: String?) {
         var s = sessSgmt(account)
-        
+
         s.removeValue(forKey: "\(AnalyticsManager.strFirmware)")
         s.removeValue(forKey: "\(AnalyticsManager.strModel)")
         if let fwVersion = fwVersion, let model = model {
@@ -306,7 +305,7 @@ extension AnalyticsManager {
         }
         recordEvent(.connectedHWW, sgmt: s)
     }
-    
+
     public func initializeJade(account: Account?) {
         let s = sessSgmt(account)
         recordEvent(.jadeInitialize, sgmt: s)
@@ -354,7 +353,7 @@ extension AnalyticsManager {
         s[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
         s[AnalyticsManager.strAccountType] = walletItem.type.rawValue
         s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
-        
+
         recordEvent(.accountEmptied, sgmt: s)
     }
 

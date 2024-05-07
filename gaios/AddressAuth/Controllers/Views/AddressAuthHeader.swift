@@ -7,7 +7,7 @@ class AddressAuthHeader: UIView {
     @IBOutlet weak var lblActions: UILabel!
 
     func configure() {
-        [lblAddress, lblTx, lblActions].forEach{
+        [lblAddress, lblTx, lblActions].forEach {
             $0?.setStyle(.sectionTitle)
         }
         lblAddress.text = "id_address".localized

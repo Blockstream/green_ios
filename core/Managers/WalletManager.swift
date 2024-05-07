@@ -6,19 +6,19 @@ import hw
 import lightning
 
 public class WalletManager {
-    
+
     // Return current WalletManager used for the active user session
     public static var current: WalletManager? {
         let account = AccountsRepository.shared.current
         return WalletsRepository.shared.get(for: account?.id ?? "")
     }
-    
+
     // Hashmap of available networks with open session
     public var sessions = [String: SessionManager]()
-    
+
     // Prominent network used for login with stored credentials
     public let prominentNetwork: NetworkSecurityCase
-    
+
     // Cached subaccounts list
     public var subaccounts = [WalletItem]()
 
@@ -27,7 +27,7 @@ public class WalletManager {
 
     // Mainnet / testnet networks
     let mainnet: Bool
-    
+
     public var account: Account {
         didSet {
             if AccountsRepository.shared.get(for: account.id) != nil {
@@ -41,13 +41,13 @@ public class WalletManager {
             sessions.forEach { $0.value.hw = hwDevice }
         }
     }
-    
+
     public var popupResolver: PopupResolverDelegate? = nil {
         didSet {
             sessions.forEach { $0.value.popupResolver = popupResolver }
         }
     }
-    
+
     // Store active subaccount
     private var activeWalletHash: Int?
     public var currentSubaccount: WalletItem? {
@@ -66,17 +66,17 @@ public class WalletManager {
             }
         }
     }
-    
+
     // Get active session of the active subaccount
     public var prominentSession: SessionManager? {
         return sessions[prominentNetwork.rawValue]
     }
-    
+
     // For Countly
     public var activeNetworks: [NetworkSecurityCase] {
         return activeSessions.keys.compactMap { NetworkSecurityCase(rawValue: $0) }
     }
-    
+
     public init(account: Account, prominentNetwork: NetworkSecurityCase?) {
         self.mainnet = prominentNetwork?.gdkNetwork.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
@@ -96,41 +96,41 @@ public class WalletManager {
             addSession(for: .testnetLiquidSS)
             addSession(for: .testnetMS)
             addSession(for: .testnetLiquidMS)
-            //breez not enabled on testnet
+            // breez not enabled on testnet
         }
     }
-    
+
     public func disconnect() async {
         try? await lightningSession?.disconnect()
         for session in sessions.values {
             try? await session.disconnect()
         }
     }
-    
+
     public func addSession(for network: NetworkSecurityCase) {
         let networkName = network.network
         sessions[networkName] = SessionManager(network.gdkNetwork)
     }
-    
+
     public func addLightningSession(for network: NetworkSecurityCase) {
         let session = LightningSessionManager(network.gdkNetwork)
         session.accountId = account.id
         sessions[network.rawValue] = session
     }
-    
+
     public var lightningSession: LightningSessionManager? {
         let network: NetworkSecurityCase = testnet ? .testnetLightning : .lightning
         return sessions[network.rawValue] as? LightningSessionManager
     }
-    
+
     public var lightningSubaccount: WalletItem? {
         return subaccounts.filter {$0.gdkNetwork.lightning }.first
     }
-    
+
     public var testnet: Bool {
         return !prominentNetwork.gdkNetwork.mainnet
     }
-    
+
     public var activeSessions: [String: SessionManager] {
         self.sessions.filter { $0.1.logged }
     }
@@ -138,12 +138,12 @@ public class WalletManager {
     public var logged: Bool {
         self.activeSessions.count > 0
     }
-    
+
     public var hasMultisig: Bool {
         let multisigNetworks: [NetworkSecurityCase] =  [.bitcoinMS, .testnetMS, .liquidMS, .testnetLiquidMS]
         return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
     }
-    
+
     public var failureSessionsError = [String: Error]()
 
     public func loginWithPin(
@@ -166,7 +166,7 @@ public class WalletManager {
         try await self.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
         AccountsRepository.shared.current = self.account
     }
-    
+
     public func create(_ credentials: Credentials) async throws {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]!
@@ -179,7 +179,7 @@ public class WalletManager {
         _ = try await self.subaccounts()
         try? await self.loadRegistry()
     }
-    
+
     public func loginWatchonly(credentials: Credentials) async throws {
         guard let session = prominentSession else { fatalError() }
         let loginData = try await session.loginUser(credentials: credentials, restore: false)
@@ -188,7 +188,7 @@ public class WalletManager {
         _ = try await self.subaccounts()
         try? await self.loadRegistry()
     }
-    
+
     public func loginSessionLightning(
         session: LightningSessionManager,
         credentials: Credentials,
@@ -211,7 +211,7 @@ public class WalletManager {
         let res = try await session.loginUser(credentials: credentials, hw: nil, restore: fullRestore)
         if session.logged {
             let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
-            if let token = defaults?.string(forKey: "token"), 
+            if let token = defaults?.string(forKey: "token"),
                 let xpubHashId = parentWalletId?.xpubHashId {
                 session.registerNotification(token: token, xpubHashId: xpubHashId)
             }
@@ -268,7 +268,7 @@ public class WalletManager {
             }
         }
     }
-    
+
     public func loginHW(
         lightningCredentials: Credentials?,
         device: HWDevice?,
@@ -286,7 +286,7 @@ public class WalletManager {
            parentWalletId: walletId
         )
     }
-    
+
     public func loginSW(
         credentials: Credentials?,
         lightningCredentials: Credentials?,
@@ -299,7 +299,7 @@ public class WalletManager {
            fullRestore: fullRestore,
            parentWalletId: parentWalletId)
     }
-    
+
     public func login(
         credentials: Credentials? = nil,
         lightningCredentials: Credentials? = nil,
@@ -326,7 +326,7 @@ public class WalletManager {
                 logger.info(">> mnemonic \(credentials.debugDescription)")
                 logger.info(">> lightningCredentials \(lightningCredentials.debugDescription)")
                 logger.info(">> login \(session.networkType.rawValue) begin")
-                
+
                 if session.networkType == .lightning {
                     if let session = session as? LightningSessionManager,
                        let credentials = lightningCredentials {
@@ -387,7 +387,7 @@ public class WalletManager {
     public var bitcoinMultisigNetwork: NetworkSecurityCase { mainnet ? .bitcoinMS : .testnetMS }
     public var liquidMultisigNetwork: NetworkSecurityCase { mainnet ? .liquidMS : .testnetLiquidMS }
     public var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
-    
+
     public var activeSinglesigSessions: [SessionManager] {
         singlesigNetworks.compactMap { sessions[$0.rawValue] }
             .filter { $0.logged }
@@ -410,9 +410,13 @@ public class WalletManager {
         // Prefer Multisig for initial sync as those networks are synced across devices
         // In case of Lightning Shorcut get settings from parent wallet
         let syncNetwork: NetworkSecurityCase? = {
-            if activeBitcoinMultisig { return bitcoinMultisigNetwork }
-            else if activeLiquidMultisig { return liquidMultisigNetwork }
-            else { return prominentSession?.networkType }
+            if activeBitcoinMultisig {
+                return bitcoinMultisigNetwork
+            } else if activeLiquidMultisig {
+                return liquidMultisigNetwork
+            } else {
+                return prominentSession?.networkType
+            }
         }()
         guard let prominentSession = sessions[(syncNetwork ?? .bitcoinSS).rawValue],
               let prominentSettings = try? await prominentSession.loadSettings() else {
@@ -496,7 +500,7 @@ public class WalletManager {
         }
         return balances
             .flatMap { $0 }
-            .reduce([String:Int64]()) { (dict, tuple) in
+            .reduce([String: Int64]()) { (dict, tuple) in
                 var nextDict = dict
                 let prevValue = dict[tuple.key] ?? 0
                 nextDict.updateValue(prevValue + tuple.value, forKey: tuple.key)
@@ -540,11 +544,11 @@ public class WalletManager {
             }
         }
     }
-    
+
     public func existDerivedLightning() -> Bool {
         account.getDerivedLightningAccount() != nil
     }
-    
+
     public func addLightningShortcut(credentials: Credentials) async throws {
         let session = SessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
         try? await session.connect()
@@ -571,7 +575,7 @@ public class WalletManager {
                           isTestnet: false,
                           index: 0)
     }
-    
+
     public func deriveLightningCredentials(from credentials: Credentials) throws -> Credentials {
         Credentials(
             mnemonic: try getLightningMnemonic(credentials: credentials),

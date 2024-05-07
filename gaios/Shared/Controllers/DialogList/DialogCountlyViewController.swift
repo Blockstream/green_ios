@@ -88,11 +88,11 @@ class DialogCountlyViewController: UIViewController {
         }
         btnDebugID.isHidden = true
 
-//#if DEBUG
+// #if DEBUG
 //        if disableControls == true {
 //            btnDebugID.isHidden = false
 //        }
-//#endif
+// #endif
 
         detailsExpand.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandDetails)))
     }

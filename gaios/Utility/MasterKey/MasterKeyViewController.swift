@@ -12,9 +12,9 @@ class MasterKeyViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnLearnMore: UIButton!
-    
+
     var indexPath: IndexPath?
-    
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)

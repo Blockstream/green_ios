@@ -6,7 +6,6 @@ import FirebaseCore
 import FirebaseMessaging
 import core
 
-
 class AppNotifications: NSObject {
     static let shared = AppNotifications()
 
@@ -23,8 +22,7 @@ class AppNotifications: NSObject {
     func requestRemoteNotificationPermissions(application: UIApplication, completion: (() -> Void)? = nil) {
         // Remote Notifications permissions
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) {
-            (granted, error) in
+        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { (granted, error) in
             if let error = error {
                 logger.error("Register for push notifications fails with error: \(error.localizedDescription)")
                 completion?()
@@ -43,7 +41,7 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
     }
 
     // Called to let your app know which action was selected by the user for a given notification.
-    @MainActor 
+    @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         // User TAP on local/remote notification
         let content = response.notification.request.content.userInfo
@@ -65,7 +63,7 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.alert, .badge, .sound])
     }
-    
+
     func getAccount(xpub: String) -> Account? {
         let accounts = AccountsRepository.shared.accounts
         let lightningShortcutsAccounts = accounts

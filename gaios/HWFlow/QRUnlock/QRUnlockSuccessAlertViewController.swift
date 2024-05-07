@@ -24,7 +24,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     @IBOutlet weak var btnFaceID: UIButton!
     @IBOutlet weak var btnLater: UIButton!
     @IBOutlet weak var lblInfoCredentials: UILabel!
-    
+
     weak var delegate: QRUnlockSuccessAlertViewControllerDelegate?
 
     override func viewDidLoad() {

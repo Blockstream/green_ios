@@ -22,7 +22,7 @@ enum ReceiveSection: Int, CaseIterable {
 }
 
 class ReceiveViewController: KeyboardViewController {
-    
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnShare: UIButton!
     @IBOutlet weak var btnEdit: UIButton!
@@ -31,7 +31,7 @@ class ReceiveViewController: KeyboardViewController {
     @IBOutlet weak var btnOnChain: UIButton!
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-    
+
     private var selectedType = TransactionBaseType.BTC
     private var lightningAmountEditing = true
     private var newAddressToken, invoicePaidToken: NSObjectProtocol?
@@ -40,29 +40,29 @@ class ReceiveViewController: KeyboardViewController {
     private var keyboardVisible = false
     var viewModel: ReceiveViewModel!
     var dialogReceiveVerifyAddressViewController: DialogReceiveVerifyAddressViewController?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         register()
         setContent()
         setStyle()
-        
+
         view.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.view
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
-    
+
         AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
         reload()
         newAddress()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         invoicePaidToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.InvoicePaid.rawValue), object: nil, queue: .main, using: invoicePaid)
         newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let token = newAddressToken {
@@ -72,7 +72,7 @@ class ReceiveViewController: KeyboardViewController {
             NotificationCenter.default.removeObserver(token)
         }
     }
-    
+
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
@@ -85,7 +85,7 @@ class ReceiveViewController: KeyboardViewController {
             self?.btnOnChain.isHidden = !(network?.lightning ?? false) || self?.keyboardVisible ?? false
         })
     }
-    
+
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         keyboardVisible = false
@@ -96,13 +96,13 @@ class ReceiveViewController: KeyboardViewController {
             self?.btnOnChain.isHidden = !(network?.lightning ?? false) || self?.keyboardVisible ?? false
         })
     }
-    
+
     func register() {
         ["ReceiveAssetCell", "ReceiveAddressCell", "LTAmountCell", "LTInfoCell", "LTNoteCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
-    
+
     func setContent() {
         title = "id_receive".localized
         btnShare.setTitle("id_share".localized, for: .normal)
@@ -111,14 +111,14 @@ class ReceiveViewController: KeyboardViewController {
         btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
         btnConfirm.setTitle("id_confirm".localized, for: .normal)
     }
-    
+
     func setStyle() {
         btnShare.setStyle(.primary)
-        [btnEdit, btnOptions, btnVerify].forEach{ $0.setStyle(.outlinedWhite) }
+        [btnEdit, btnOptions, btnVerify].forEach { $0.setStyle(.outlinedWhite) }
         btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
         stateDidChange(.disabled)
     }
-    
+
     var sections: [ReceiveSection] {
         switch viewModel.type {
         case .bolt11:
@@ -135,7 +135,7 @@ class ReceiveViewController: KeyboardViewController {
             return [.asset, .address]
         }
     }
-    
+
     func reload() {
         let network = viewModel.account.gdkNetwork
         btnOnChain.isHidden = !network.lightning || keyboardVisible
@@ -152,7 +152,7 @@ class ReceiveViewController: KeyboardViewController {
         reloadNavigationBtns()
         tableView.reloadData()
     }
-    
+
     func reloadNavigationBtns() {
         let network = viewModel.account.gdkNetwork
         if network.lightning {
@@ -168,7 +168,7 @@ class ReceiveViewController: KeyboardViewController {
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpBtn)
         }
     }
-    
+
     func invoicePaid(_ notification: Notification? = nil) {
         Task {
             do {
@@ -201,7 +201,7 @@ class ReceiveViewController: KeyboardViewController {
             self.reload()
         }
     }
-    
+
     @MainActor
     func failure(_ err: Error) {
          guard let msg = err.description() else {
@@ -384,7 +384,7 @@ class ReceiveViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            
+
             vc.viewModel = DialogListViewModel(title: "id_more_options".localized,
                                                type: .moreOptPrefs,
                                                items: MoreOptPrefs.getItems(account: viewModel.account))
@@ -411,7 +411,7 @@ class ReceiveViewController: KeyboardViewController {
             lightningAmountEditing = false
             newAddress()
         }
-        
+
     }
 
     @IBAction func btnOnChain(_ sender: Any) {
@@ -451,7 +451,7 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
             reload()
             newAddress()
         case .amp:
-            ///TODO: handle amp case
+            // TODO: handle amp case
             print("TODO: handle amp case")
         }
         navigationController?.popViewController(animated: true)
@@ -494,7 +494,7 @@ extension ReceiveViewController: UIActivityItemSource {
 
 extension ReceiveViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .moreOptPrefs:
@@ -711,20 +711,20 @@ extension ReceiveViewController: LTSuccessViewControllerDelegate {
 }
 
 extension ReceiveViewController: LTAmountCellDelegate {
-    
+
     func onInputDenomination() {
         showDialogInputDenominations()
     }
-    
+
     func onFeeInfo() {
         showLightningFeeInfo()
     }
-    
+
     func textFieldEnabled() {
         lightningAmountEditing = true
         reload()
     }
-    
+
     func textFieldDidChange(_ satoshi: Int64?, isFiat: Bool) {
         viewModel.satoshi = satoshi
         viewModel.isFiat = isFiat

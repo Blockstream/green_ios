@@ -107,7 +107,7 @@ public class Wally {
         defer {
             bip32_key_free(bip32KeyPtr)
         }
-        if bip39_mnemonic_to_seed512(strdup(mnemonic)!, passphrase != nil ? strdup(passphrase ?? "")! : nil , seed512Ptr, Int(BIP39_SEED_LEN_512)) != WALLY_OK {
+        if bip39_mnemonic_to_seed512(strdup(mnemonic)!, passphrase != nil ? strdup(passphrase ?? "")!: nil, seed512Ptr, Int(BIP39_SEED_LEN_512)) != WALLY_OK {
             return nil
         }
         if bip32_key_from_seed_alloc(seed512Ptr, Int(BIP39_SEED_LEN_512), UInt32(version), UInt32(BIP32_FLAG_SKIP_HASH), &bip32KeyPtr) != WALLY_OK {
@@ -183,7 +183,7 @@ public class Wally {
         let output = wallyTx.pointee.outputs[index]
         return Array(UnsafeBufferPointer(start: output.value, count: output.value_len))
     }
-    
+
     public static func ecPrivateKeyVerify(
         privateKey: [UInt8]
     ) -> Bool {
@@ -204,7 +204,7 @@ public class Wally {
         var bip85Len: Int = 0
         var wordlistPtr: OpaquePointer?
         var resultPtr: UnsafeMutablePointer<CChar>?
-            
+
         if wally_aes_cbc_with_ecdh_key(privPtr, privateKey.count, nil, 0, payloadPtr, payload.count, pubPtr, publicKey.count, labelPtr, label.count, UInt32(AES_FLAG_DECRYPT), bip85Ptr, payload.count, &bip85Len) != WALLY_OK {
             return nil
         }
@@ -220,4 +220,3 @@ public class Wally {
         return String(cString: resultPtr)
     }
 }
-

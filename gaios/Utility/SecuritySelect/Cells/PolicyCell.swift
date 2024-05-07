@@ -32,7 +32,7 @@ class PolicyCell: UITableViewCell {
         lblDisableTitle.text = "Added Already!".localized
         lblDisableHint.text = "You cannot add more than one\nLightning Account.".localized
         lblDisableTitle.setStyle(.txtBigger)
-        [lblHint, lblDisableHint].forEach{
+        [lblHint, lblDisableHint].forEach {
             $0.setStyle(.txtCard)
             $0.textColor = UIColor.gW60()
         }
@@ -55,7 +55,7 @@ class PolicyCell: UITableViewCell {
             $0?.textColor = UIColor.gW60()
         }
         disableView.isHidden = true
-        disableView.subviews.forEach{
+        disableView.subviews.forEach {
             if let _ = $0 as? UIStackView { } else {
                 $0.removeFromSuperview()
             }
@@ -77,7 +77,7 @@ class PolicyCell: UITableViewCell {
             imgMS.isHidden = true
             lblTypeDesc.textColor = .white
             bgTypeDesc.backgroundColor = UIColor.gLightning()
-            
+
             if hasLightning {
                 self.disableView.cornerRadius = 5.0
                 self.disableView.addSubview(self.blurredView)
@@ -101,7 +101,7 @@ class PolicyCell: UITableViewCell {
         dimmedView.cornerRadius = 5.0
         containerView.addSubview(customBlurEffectView)
         containerView.addSubview(dimmedView)
-        
+
         return containerView
     }()
 }

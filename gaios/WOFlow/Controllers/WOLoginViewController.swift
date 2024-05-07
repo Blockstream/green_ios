@@ -78,7 +78,7 @@ class WOLoginViewController: KeyboardViewController {
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
@@ -168,7 +168,7 @@ class WOLoginViewController: KeyboardViewController {
         AccountNavigator.goLogged(account: account)
         AnalyticsManager.shared.importWallet(account: account)
     }
-    
+
     @MainActor
     func failure(_ error: Error) {
         var prettyError = "id_login_failed"
@@ -187,7 +187,7 @@ class WOLoginViewController: KeyboardViewController {
         AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: self.account)
     }
-    
+
     @objc func click(_ sender: Any) {
         view.endEditing(true)
         login()
@@ -234,7 +234,7 @@ extension WOLoginViewController: UIPopoverPresentationControllerDelegate {
 
 extension WOLoginViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .loginPrefs:

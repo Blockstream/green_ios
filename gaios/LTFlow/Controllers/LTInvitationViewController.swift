@@ -53,7 +53,7 @@ class LTInvitationViewController: KeyboardViewController {
 
         setContent()
         setStyle()
-        
+
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
 
@@ -129,7 +129,7 @@ class LTInvitationViewController: KeyboardViewController {
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         handle.cornerRadius = 1.5
-        
+
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblHint.setStyle(.txtCard)
         bgField.layer.cornerRadius = 5.0

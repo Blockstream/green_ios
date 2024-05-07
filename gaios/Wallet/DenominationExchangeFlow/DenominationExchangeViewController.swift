@@ -62,14 +62,14 @@ class DenominationExchangeViewController: UIViewController {
         lblTitle.setStyle(.titleCard)
         btnCancel.setStyle(.inline)
         btnOk.setStyle(.inline)
-        [lblDenTitle, lblExTitle].forEach{
+        [lblDenTitle, lblExTitle].forEach {
             $0?.setStyle(.txtSmaller)
             $0?.textColor = .gW40()
         }
-        [lblDenHint, lblExHint].forEach{
+        [lblDenHint, lblExHint].forEach {
             $0?.setStyle(.txtSmallerBold)
         }
-        [denBg, exBg].forEach{
+        [denBg, exBg].forEach {
             $0?.cornerRadius = 5.0
         }
     }
@@ -166,6 +166,4 @@ extension DenominationExchangeViewController: DialogExchangeViewControllerDelaga
         viewModel.editingExchange = currencyItem
         refresh()
     }
-    
-    
 }

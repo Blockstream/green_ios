@@ -7,7 +7,7 @@ class DrawerBarItem: UIView {
 
     var onTap: (() -> Void)?
 
-    func configure(img: UIImage, onTap:@escaping (() -> Void)) {
+    func configure(img: UIImage, onTap: @escaping (() -> Void)) {
         let account = AccountsRepository.shared.current
         lblWallet.text = account?.name ?? ""
         self.icon.image = img

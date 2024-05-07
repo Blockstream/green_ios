@@ -128,7 +128,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
             }
         }
     }
-    
+
     @MainActor
     func stopScan() {
         Task {

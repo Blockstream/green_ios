@@ -32,7 +32,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
         }
         return list
     }
-    
+
     public func signMessage(_ params: HWSignMessageParams) async throws -> HWSignMessageResult {
         let pathstr = getUnsignedPath(params.path)
         var result: HWSignMessageResult?
@@ -66,7 +66,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
 
     // swiftlint:disable:next function_parameter_count
     public func newReceiveAddress(chain: String, mainnet: Bool, multisig: Bool, chaincode: String?, recoveryPubKey: String?, walletPointer: UInt32?, walletType: String?, path: [UInt32], csvBlocks: UInt32) async throws -> String {
-        
+
         if multisig {
             // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
             // In any case the last two entries are 'branch' and 'pointer'
@@ -82,7 +82,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
             }
             // Get receive address from Jade for the path elements given
             let params = JadeGetReceiveMultisigAddress(network: chain,
-                                                    pointer: pointer ,
+                                                    pointer: pointer,
                                                              subaccount: walletPointer ?? 0,
                                                              branch: branch,
                                                              recoveryXpub: recoveryxpub,
@@ -104,7 +104,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
         default: return nil
         }
     }
-    
+
     func getBlindingFactors(index: Int, output: InputOutput, version: JadeVersionInfo, hashPrevouts: [UInt8]?) async throws -> (String, String ) {
         // Call Jade to get the blinding factors
         // NOTE: 0.1.48+ Jade fw accepts 'ASSET_AND_VALUE', and returns abf and vbf concatenated abf||vbf
@@ -123,7 +123,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
             return (Data(abf.reversed()).hex, Data(vbf.reversed()).hex)
         }
     }
-    
+
     public func getBlindingFactors(params: HWBlindingFactorsParams) async throws -> HWBlindingFactorsResult {
         let version = try await version()
         // Compute hashPrevouts to derive deterministic blinding factors from
@@ -185,11 +185,11 @@ public class BleJade: BleJadeCommands, HWProtocol {
                 aeHostEntropy: input.aeHostEntropy?.hexToData(),
                 aeHostCommitment: input.aeHostCommitment?.hexToData())
         }
-        
+
         if txInputs.contains(where: { $0 == nil }) {
             throw HWError.Abort("Input transactions missing")
         }
-        
+
         let changes = getChangeData(outputs: params.txOutputs)
         let signtx = JadeSignTx(change: changes,
                                 network: network,
@@ -209,7 +209,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
         }
         return HWSignTxResponse(signatures: signatures, signerCommitments: commitments)
     }
-    
+
     func signTxInputs(inputs: [TxInputProtocol?]) async throws -> (commitments: [String], signatures: [String]) {
         /**
          * Legacy Protocol:
@@ -354,7 +354,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
 }
 // OTA functions
 extension BleJade {
-    
+
     // Check Jade fmw against minimum allowed firmware version
     public func isJadeFwValid(_ version: String) -> Bool {
         return BleJade.MIN_ALLOWED_FW_VERSION <= version
@@ -431,7 +431,7 @@ extension BleJade {
         }
         return Data(hash)
     }
-    
+
     public func updateFirmware(version: JadeVersionInfo, firmware: Firmware, binary: Data) async throws -> Bool {
         let hash = sha256(binary)
         let cmd = JadeOta(fwsize: firmware.fwsize,

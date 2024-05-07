@@ -2,8 +2,8 @@ import Foundation
 import SwiftCBOR
 
 extension CBOR {
-    static func getDictionary (map: CBOR) -> [CBOR:CBOR]? {
-        var extractedDict = [CBOR:CBOR]()
+    static func getDictionary (map: CBOR) -> [CBOR: CBOR]? {
+        var extractedDict = [CBOR: CBOR]()
         switch map {
         case .map(let dict): extractedDict = dict
         default: break

@@ -24,7 +24,7 @@ struct PolicyCellModel {
             return PolicyCellModel(hint: "Permanent 2FA account, ideal for long term hodling, optionally with 3rd emergency key on hardware wallet.", policy: policy)
         case .NativeSegwit:
             return PolicyCellModel(hint: "Cheaper singlesig option. Addresses are Native SegWit Bech32.", policy: policy)
-        //case .Taproot:
+        // case .Taproot:
         //    return PolicyCellModel(hint: "Cheaper and more private singlesig option. Addresses are Bech32m.", policy: policy)
         case .Amp:
             return PolicyCellModel(hint: "Account for special assets, monitored or authorized by the asset issuer.", policy: policy)

@@ -5,7 +5,6 @@ import gdk
 import hw
 import greenaddress
 
-
 class SecuritySelectViewModel {
 
     var asset: String? = nil
@@ -45,13 +44,13 @@ class SecuritySelectViewModel {
     }
 
     func listLiquid(extended: Bool) -> [PolicyCellType] {
-        var list:  [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .Amp]
+        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .Amp]
         if !extended {
             list = [.NativeSegwit, .TwoFAProtected]
         }
         return list
     }
-    
+
     func isAdvancedEnable() -> Bool {
         if anyLiquidAmpAsset {
             return false
@@ -110,7 +109,7 @@ class SecuritySelectViewModel {
             let _ = try await session.loginUser(credentials: credentials, hw: nil, restore: true)
             let _ = try await wm.subaccounts()
             if Bundle.main.debug {
-                //try await wm.setCloseToAddress()
+                // try await wm.setCloseToAddress()
             }
             return try await session.subaccount(0)
         } else if let session = getSession(for: network) {

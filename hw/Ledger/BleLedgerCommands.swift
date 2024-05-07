@@ -4,7 +4,7 @@ import Combine
 import SwiftCBOR
 
 public class BleLedgerCommands: BleLedgerConnection {
-    
+
     let CLA_BOLOS: UInt8 = 0xE0
     let INS_GET_VERSION: UInt8 = 0x01
     let INS_RUN_APP: UInt8 = 0xD8
@@ -20,11 +20,10 @@ public class BleLedgerCommands: BleLedgerConnection {
     let INS_HASH_SIGN: UInt8 = 0x48
     let INS_HASH_INPUT_FINALIZE_FULL: UInt8 = 0x4a
     let INS_EXIT: UInt8 = 0xA7
-    
 
     func finalizeInputFull(data: Data) async throws -> [String: Any] {
         let res = try await exchangeAdpu(cla: self.CLA_BOLOS, ins: self.INS_HASH_INPUT_FINALIZE_FULL, p1: 0xFF, p2: 0x00, data: [0x00].data!)
-        
+
         var result = Data()
         var offset = 0
         while offset < data.count {
@@ -88,7 +87,7 @@ public class BleLedgerCommands: BleLedgerConnection {
         let buffer = txVersion.uint32LE() + UInt(usedInputList.count).varint()
         let p2: UInt8 = newTransaction ? (segwit ? 0x02 : 0x00) : 0x80
         _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_HASH_INPUT_START, p1: 0x00, p2: p2, data: Data(buffer))
-        
+
         for input in usedInputList.enumerated() {
             let script = input.offset == inputIndex ? redeemScript : Data()
             try await hashInput(input.element, script: script)
@@ -106,7 +105,7 @@ public class BleLedgerCommands: BleLedgerConnection {
         let buffer: [UInt8] = script.bytes + (input["sequence"] as? [UInt8] ?? [])
         _ = try await exchangeApduSplit(cla: CLA_BOLOS, ins: INS_HASH_INPUT_START, p1: 0x80, p2: 0x00, data: Data(buffer))
     }
-    
+
     func getTrustedInput(transaction: HWTransactionLedger, index: Int, sequence: Int, segwit: Bool) async throws -> [String: Any] {
         var buffer = Data()
         // Header
@@ -119,10 +118,10 @@ public class BleLedgerCommands: BleLedgerConnection {
             buffer = input.prevOut
             buffer += VarintUtils.write(input.script.count)
             _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
-            //_ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer + input.sequence)
+            // _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer + input.sequence)
             _ = try await exchangeApduSplit2(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data1: input.script, data2: input.sequence)
         }
-        //  Number of outputs
+        // Number of outputs
         buffer = VarintUtils.write(transaction.outputs.count)
         _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
         // Each output
@@ -130,7 +129,7 @@ public class BleLedgerCommands: BleLedgerConnection {
             buffer = output.amount
             buffer += VarintUtils.write(output.script.count)
             _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
-            //_ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
+            // _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
             _ = try await exchangeApduSplit(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: output.script)
         }
         // Locktime

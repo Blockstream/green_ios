@@ -4,7 +4,7 @@ class TransactionInitRefundCell: UITableViewCell {
 
     @IBOutlet weak var btnInitRefund: UIButton!
     var action: (() -> ())?
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
 

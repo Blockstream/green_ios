@@ -179,7 +179,7 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
                 startLoader(message: text)
                 let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
                 try await bleViewModel?.disconnect()
-                try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
+                try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
                 self.stopLoader()
                 await MainActor.run {
                     btnContinue.isHidden = false

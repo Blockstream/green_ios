@@ -23,7 +23,7 @@ class WOSetupViewController: KeyboardViewController {
     @IBOutlet weak var iconRem: UIImageView!
     @IBOutlet weak var btnRem: UIButton!
     @IBOutlet weak var lblRem: UILabel!
-    
+
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
     private let viewModel = WOViewModel()
@@ -83,7 +83,7 @@ class WOSetupViewController: KeyboardViewController {
     func refresh() {
         iconRem.image = isRem ? UIImage(named: "ic_checkbox_on")! : UIImage(named: "ic_checkbox_off")!
     }
-    
+
     @objc func rememberSwitchChange(_ sender: UISwitch) {
         if sender.isOn {
             let alert = UIAlertController(title: NSLocalizedString("id_warning_watchonly_credentials", comment: ""), message: NSLocalizedString("id_your_watchonly_username_and", comment: ""), preferredStyle: .alert)
@@ -143,7 +143,6 @@ class WOSetupViewController: KeyboardViewController {
         login(for: network)
     }
 
-
     @IBAction func btnRem(_ sender: Any) {
         isRem = !isRem
         refresh()
@@ -173,13 +172,13 @@ class WOSetupViewController: KeyboardViewController {
             }
         }
     }
-    
+
     @MainActor
     func success(account: Account) {
         stopLoader()
         AccountNavigator.goLogged(account: account)
     }
-    
+
     @MainActor
     func failure(_ error: Error, account: Account) {
         var prettyError = "id_login_failed"

@@ -3,7 +3,7 @@ import UIKit
 import greenaddress
 import hw
 
-public protocol PopupResolverDelegate {
+public protocol PopupResolverDelegate: AnyObject {
     func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase) async throws -> String
     func method(_ methods: [String]) async throws -> String
 }
@@ -22,13 +22,13 @@ public enum TwoFactorCallError: Error {
     case cancel(localizedDescription: String)
 }
 
-public protocol ProgressDelegate {
+public protocol ProgressDelegate: AnyObject {
     func start()
     func stop()
 }
 
 public class GDKResolver {
-    
+
     let network: NetworkSecurityCase
     let connected: () -> Bool
     let twoFactorCall: TwoFactorCall?
@@ -118,7 +118,7 @@ public class GDKResolver {
                     enable2faCallMethod: enable2faCallMethod,
                     network: network
                 )
-                
+
                 try await self.waitConnection()
                 try self.twoFactorCall?.resolveCode(code: code)
             }
@@ -136,7 +136,7 @@ public class GDKResolver {
             attempts += 1
             let status = self.connected()
             if !status {
-                try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
+                try await Task.sleep(nanoseconds: 3 * 1_000_000_000)
                 try await attempt()
             }
         }

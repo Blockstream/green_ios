@@ -68,7 +68,7 @@ class ContainerViewController: UIViewController {
             self.offline()
         }
     }
-    
+
     func isCurrentWallet(sessionId: String) -> Bool {
         WalletManager.current?
             .activeSessions

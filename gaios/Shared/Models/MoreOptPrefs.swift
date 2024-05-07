@@ -32,7 +32,7 @@ enum MoreOptPrefs: Int, CaseIterable {
 
         let hideSweep = account.gdkNetwork.liquid || account.gdkNetwork.lightning
         let hideSign = account.gdkNetwork.lightning
-        
+
         var prefs: [MoreOptPrefs] = [ .requestAmount ]
 
         if hideSweep == false {

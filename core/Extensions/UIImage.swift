@@ -10,7 +10,7 @@ public extension UIImage {
 
 public extension UIImage {
 
-  public func maskWithColor(color: UIColor) -> UIImage {
+    func maskWithColor(color: UIColor) -> UIImage {
 
     UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
     let context = UIGraphicsGetCurrentContext()!

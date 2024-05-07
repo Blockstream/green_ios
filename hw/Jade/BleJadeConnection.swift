@@ -6,14 +6,14 @@ import Combine
 import Semaphore
 
 public class BleJadeConnection: HWConnectionProtocol {
-    
+
     public var peripheral: Peripheral
     public weak var centralManager: CentralManager?
 
     public static let SERVICE_UUID = UUID(uuidString: "6e400001-b5a3-f393-e0a9-e50e24dcca9e")!
     public let WRITE_CHARACTERISTIC_UUID = UUID(uuidString: "6e400002-b5a3-f393-e0a9-e50e24dcca9e")!
     public let CLIENT_CHARACTERISTIC_CONFIG = UUID(uuidString: "6e400003-b5a3-f393-e0a9-e50e24dcca9e")!
-    
+
     private var semaphore = AsyncSemaphore(value: 1)
     private var semaphoreQueue = AsyncSemaphore(value: 0)
     private var mtu = 128
@@ -24,7 +24,7 @@ public class BleJadeConnection: HWConnectionProtocol {
         self.peripheral = peripheral
         self.centralManager = centralManager
     }
-    
+
     public func open() async throws {
         semaphore = AsyncSemaphore(value: 1)
         semaphoreQueue = AsyncSemaphore(value: 0)
@@ -42,7 +42,7 @@ public class BleJadeConnection: HWConnectionProtocol {
         try await setNotifyValue()
         var buffer = Data()
         cancellable = peripheral.characteristicValueUpdatedPublisher
-            //.map { print("Data '\($0.value)'"); return $0 }
+            // .map { print("Data '\($0.value)'"); return $0 }
             .filter { $0.uuid.uuidString == self.CLIENT_CHARACTERISTIC_CONFIG.uuidString }
             .map { try? $0.parsedValue() as Data? } // replace `String?` with your type
             .sink(receiveValue: { [self] value in

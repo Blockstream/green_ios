@@ -18,7 +18,6 @@ func compressPublicKey(_ publicKey: [UInt8]) -> [UInt8]? {
     return [UInt8(type)] + publicKey[1..<32+1]
 }
 
-
 // Helper to turn the BIP32 paths back into a list of Longs, rather than a list of Integers
 // (which may well be expressed as negative [for hardened paths]).
 func getUnsignedPath(_ signed: [Int]) -> [UInt32] {

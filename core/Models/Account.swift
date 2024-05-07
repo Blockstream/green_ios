@@ -153,7 +153,7 @@ public struct Account: Codable, Equatable {
     public func removePinKeychainData() {
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: keychain)
     }
-    
+
     public func removeLightningShortcut() {
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: keychain)
     }
@@ -163,7 +163,7 @@ public struct Account: Codable, Equatable {
             LightningRepository.shared.remove(for: walletHashId)
         }
     }
-    
+
     public func addBiometrics(session: SessionManager, credentials: Credentials) async throws {
         let password = String.random(length: 14)
         let params = EncryptWithPinParams(pin: password, credentials: credentials)
@@ -191,13 +191,13 @@ public struct Account: Codable, Equatable {
             self.network = newValue.rawValue
         }
     }
-    
+
     public func getDerivedLightningAccount() -> Account? {
         let account = Account(
                 id: "\(id)-lightning-shortcut",
                 name: name,
                 network: .bitcoinSS,
-                isJade: isJade, 
+                isJade: isJade,
                 xpubHashId: xpubHashId, isDerivedLightning: true,
                 password: password
         )
@@ -206,7 +206,7 @@ public struct Account: Codable, Equatable {
         }
         return nil
     }
-    
+
     public var walletIdentifier: WalletIdentifier? {
         return WalletIdentifier(walletHashId: walletHashId ?? "", xpubHashId: xpubHashId ?? "")
     }

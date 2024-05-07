@@ -4,7 +4,7 @@ import gdk
 import core
 
 class AccountAssetCellModel: Comparable {
-    
+
     var account: WalletItem
     var asset: AssetInfo
     var balance: [String: Int64]
@@ -27,7 +27,7 @@ class AccountAssetCellModel: Comparable {
     var ticker: String {
         asset.ticker ?? ""
     }
-    
+
     static func == (lhs: AccountAssetCellModel, rhs: AccountAssetCellModel) -> Bool {
         lhs.account == rhs.account && lhs.asset == rhs.asset && lhs.balance == rhs.balance
     }

@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 enum SafeNavigationAction {
     case authorize
     case cancel

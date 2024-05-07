@@ -7,7 +7,7 @@ class DialogInputDenominationViewModel {
     var denominations: [DenominationType]
     var network: NetworkSecurityCase
     var isFiat = false
-    
+
     init(denomination: DenominationType,
          denominations: [DenominationType],
          network: NetworkSecurityCase,

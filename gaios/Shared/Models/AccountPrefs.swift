@@ -2,7 +2,7 @@ import UIKit
 import core
 
 enum AccountPrefs {
-    
+
     case rename
     case archive
     case enhanceSecurity
@@ -100,7 +100,7 @@ enum AccountPrefs {
                          isLightning: Bool,
                          isLightningShortcut: Bool,
                          switchState: Bool?) -> [DialogListCellModel] {
-        
+
         return AccountPrefs.getPrefs(
             isEphemeral: isEphemeral,
             isHW: isHW,

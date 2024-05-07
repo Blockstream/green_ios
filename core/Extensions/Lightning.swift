@@ -7,10 +7,10 @@ extension SendTransactionSuccess {
     public static func create(from payment: Payment) -> SendTransactionSuccess {
         SendTransactionSuccess(paymentId: payment.id)
     }
-    
+
     public static func create(from successData: LnUrlPaySuccessData) -> SendTransactionSuccess {
         var message: String?
-        var url: String? 
+        var url: String?
         switch successData.successAction {
         case .aes(let result):
             switch result {

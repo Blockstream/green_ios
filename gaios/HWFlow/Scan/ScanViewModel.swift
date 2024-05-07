@@ -48,7 +48,7 @@ class ScanViewModel: ObservableObject {
             peripherals.append(peripheral)
         }
     }
-    
+
     func reset() {
         DispatchQueue.main.async {
             self.peripherals.removeAll()

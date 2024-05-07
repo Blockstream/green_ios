@@ -15,7 +15,7 @@ class Loader: UIView {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var rectangle: UIView!
     @IBOutlet weak var animateView: UIView!
-    
+
     static let tag = 0x70726f6772657373
     var message: NSMutableAttributedString? {
         didSet { self.lblHint.attributedText = self.message }
@@ -102,7 +102,7 @@ extension UIViewController {
             }
         }
     }
-    
+
     @MainActor
     func updateLoader(message: String = "") {
         loader?.message = NSMutableAttributedString(string: message)

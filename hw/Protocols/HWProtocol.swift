@@ -11,15 +11,14 @@ public protocol HWProtocol {
 
     // swiftlint:disable:next function_parameter_count
     func newReceiveAddress(chain: String,
-                                  mainnet: Bool,
-                                  multisig: Bool,
-                                  chaincode: String?,
-                                  recoveryPubKey: String?,
-                                  walletPointer: UInt32?,
-                                  walletType: String?,
-                                  path: [UInt32],
-                                  csvBlocks: UInt32) async throws -> String
-
+                           mainnet: Bool,
+                           multisig: Bool,
+                           chaincode: String?,
+                           recoveryPubKey: String?,
+                           walletPointer: UInt32?,
+                           walletType: String?,
+                           path: [UInt32],
+                           csvBlocks: UInt32) async throws -> String
 
     // Liquid calls
     func getMasterBlindingKey(onlyIfSilent: Bool) async throws -> String

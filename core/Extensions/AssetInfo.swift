@@ -2,7 +2,7 @@ import Foundation
 import gdk
 
 extension AssetInfo {
-    
+
     // Default asset info
     public static var btc: AssetInfo {
         let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC

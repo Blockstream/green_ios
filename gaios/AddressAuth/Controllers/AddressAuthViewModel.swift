@@ -12,7 +12,7 @@ class AddressAuthViewModel {
     var isLoading = false
 
     var wallet: WalletItem
-    
+
     init(wallet: WalletItem) {
         self.wallet = wallet
     }

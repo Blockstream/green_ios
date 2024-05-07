@@ -21,7 +21,7 @@ public struct AppSettings: Codable {
         get { UserDefaults.standard.bool(forKey: AppSettings.rememberHWIsOff) == true }
         set { UserDefaults.standard.set(newValue, forKey: AppSettings.rememberHWIsOff) }
     }
-    
+
     public var gdkSettings: GdkSettings? {
         get { GdkSettings.read() }
         set { newValue?.write() }

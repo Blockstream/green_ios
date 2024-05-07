@@ -22,7 +22,7 @@ class LTErrorViewController: UIViewController {
 
     @IBOutlet weak var btnReport: UIButton!
     @IBOutlet weak var btnDone: UIButton!
-    
+
     weak var delegate: LTErrorViewControllerDelegate?
 
     var errorStr: String?
@@ -85,5 +85,5 @@ class LTErrorViewController: UIViewController {
     @IBAction func btnDone(_ sender: Any) {
         dismiss(.done)
     }
-    
+
 }

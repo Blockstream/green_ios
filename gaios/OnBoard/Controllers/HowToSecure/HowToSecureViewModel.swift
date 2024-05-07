@@ -1,9 +1,8 @@
 import Foundation
 import UIKit
 
-
 enum HowToSecureViewModelType {
-    
+
     case sw
     case hw
 }

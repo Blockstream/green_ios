@@ -41,8 +41,8 @@ class RecoveryTransactionsViewController: UIViewController {
     }
 
     func setStyle() {
-        [bg1, bg2, bg3].forEach{ $0?.cornerRadius = 5.0 }
-        [lblTitle1, lblTitle2, lblTitle3].forEach{ $0?.setStyle(.titleCard)}
+        [bg1, bg2, bg3].forEach { $0?.cornerRadius = 5.0 }
+        [lblTitle1, lblTitle2, lblTitle3].forEach { $0?.setStyle(.titleCard)}
         lblHint.setStyle(.txtCard)
         btnMoreInfo.setStyle(.outlined)
     }
@@ -68,7 +68,7 @@ class RecoveryTransactionsViewController: UIViewController {
     }
 
     func emailIsSet(_ flag: Bool) {
-        [item1, item2].forEach{
+        [item1, item2].forEach {
             $0?.isHidden = !flag
         }
         item3.isHidden = flag

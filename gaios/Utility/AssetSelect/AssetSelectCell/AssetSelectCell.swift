@@ -24,7 +24,7 @@ class AssetSelectCell: UITableViewCell {
         ampSubview.isHidden = true
         assetSubview.borderWidth = 0.0
         iconEdit.isHidden = !showEditIcon
-        
+
         // Any liquid asset
         if model.anyLiquid {
             self.lblAsset.text = "id_receive_any_liquid_asset".localized

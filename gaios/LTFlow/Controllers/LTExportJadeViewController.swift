@@ -11,14 +11,14 @@ protocol LTExportJadeViewControllerDelegate: AnyObject {
 class LTExportJadeViewModel {
     private var wm: WalletManager? { WalletManager.current }
     private var privateKey: Data?
-    
+
     func request() async -> BcurEncodedData? {
         guard let session = wm?.prominentSession else { return nil }
         let (privateKey, bcurParts) = await session.jadeBip8539Request()
         self.privateKey = privateKey
         return bcurParts
     }
-    
+
     func reply(publicKey: String, encrypted: String) async throws -> Credentials {
         guard let session = wm?.prominentSession else {
             throw HWError.Abort("Invalid session")
@@ -46,21 +46,21 @@ class LTExportJadeViewModel {
 }
 
 class LTExportJadeViewController: UIViewController {
-    
+
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var qrcodeView: UIView!
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var qrCodeImageView: UIImageView!
-    
+
     @IBOutlet weak var btnLearnMore: UIButton!
     @IBOutlet weak var btnQREnlarge: UIButton!
-    
+
     var delegate: LTExportJadeViewControllerDelegate?
     private let viewModel = LTExportJadeViewModel()
     private var bcur: BcurEncodedData?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setStyle()
@@ -110,8 +110,7 @@ class LTExportJadeViewController: UIViewController {
         }
     }
 
-    @objc func showQRFullScreen()
-    {
+    @objc func showQRFullScreen() {
         let stb = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
             vc.qrBcur = bcur
@@ -129,12 +128,11 @@ class LTExportJadeViewController: UIViewController {
     @IBAction func btnQREnlarge(_ sender: Any) {
         showQRFullScreen()
     }
-    
+
     @IBAction func tapNextButton(_ sender: Any) {
         dialogScanViewController()
     }
 }
-
 
 extension LTExportJadeViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {

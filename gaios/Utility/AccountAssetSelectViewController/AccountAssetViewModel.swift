@@ -35,5 +35,5 @@ class AccountAssetViewModel {
             }
         }
         self.accountAssetCellModels = models.sorted()
-    }                                                                    
+    }
 }

@@ -6,7 +6,7 @@ public var logger = Logger(
     category: "Green")
 
 extension Logger {
-    
+
     @available(iOSApplicationExtension 15.0, *)
     public func export(category: String?) -> [String] {
         do {
@@ -17,7 +17,7 @@ extension Logger {
                 .compactMap { $0 as? OSLogEntryLog }
                 .filter { $0.subsystem == Bundle.main.bundleIdentifier! && (category != nil && category! == $0.category)  }
                 .map { "[\($0.date.formatted())] [\($0.category)] \($0.composedMessage)" }
-            
+
             return logs
         } catch {
             return []

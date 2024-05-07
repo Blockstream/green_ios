@@ -172,7 +172,6 @@ extension QRUnlockSelectAccountViewController: UITableViewDelegate, UITableViewD
                 vc.vm = QRScanOnJadeViewModel(scope: .oracle)
                 navigationController?.pushViewController(vc, animated: true)
             }
-            break
         default:
             break
         }
@@ -218,7 +217,7 @@ extension QRUnlockSelectAccountViewController: AssetSelectViewControllerDelegate
     }
 
     func didSelectAnyAsset() {
-        /// handle any asset case
+        // handle any asset case
         print("didSelectAnyAsset")
         viewModel?.asset = AssetInfo.lbtcId
         reloadSections([.asset, .policy], animated: true)

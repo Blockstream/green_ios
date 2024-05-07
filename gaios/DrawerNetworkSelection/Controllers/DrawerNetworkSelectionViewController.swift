@@ -9,8 +9,6 @@ protocol DrawerNetworkSelectionDelegate: AnyObject {
     func didSelectAbout()
 }
 
-
-
 class DrawerNetworkSelectionViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
@@ -85,14 +83,14 @@ class DrawerNetworkSelectionViewController: UIViewController {
     func onTap(_ indexPath: IndexPath) {
         onTapOverview(indexPath)
     }
-    
+
     func onTapOverview(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
             goAccount(account: account)
             dismiss(animated: true, completion: nil)
         }
     }
-    
+
     func onTapLightShort(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
             if let lightning = account.getDerivedLightningAccount() {
@@ -291,7 +289,7 @@ extension DrawerNetworkSelectionViewController: UIScrollViewDelegate {
         for cell in tableView.visibleCells {
             if let c = cell as? WalletListCell, c.hasShortcut == true,
                c.account?.id == DrawerAnimationManager.shared.accountId {
-                
+
                 DrawerAnimationManager.shared.accountId = nil
                 UIView.animate(withDuration: 0.5, animations: {
                     c.shortcutView.backgroundColor = UIColor.gLightning()

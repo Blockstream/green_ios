@@ -81,7 +81,7 @@ class TransactionStatusCell: UITableViewCell {
         // status widget
         lblStep.isHidden = true
         iconCheck.isHidden = true
-        
+
         if !shouldShowSpvStatus(tx: transaction) {
             if transaction.isLightning && transaction.isRefundableSwap ?? false {
                 lblStep.isHidden = true
@@ -90,7 +90,7 @@ class TransactionStatusCell: UITableViewCell {
                 lblStep.isHidden = status == .confirmed
                 arc.subviews.forEach { $0.removeFromSuperview() }
                 iconCheck.isHidden = !(status == .confirmed)
-                
+
                 arc.subviews.forEach { $0.removeFromSuperview() }
                 if status != .confirmed {
                     lblStep.text = "\(step)/\(steps)"

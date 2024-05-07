@@ -58,7 +58,6 @@ public struct HWTxOutput: Codable {
     let blindingKey: String?
 }
 
-
 public typealias HWTransaction = [String: Any]
 
 public extension HWTransaction {
@@ -75,7 +74,7 @@ public struct HWTransactionInputLedger {
     let script: Data
     let sequence: Data
     var size = 0
-    
+
     init(_ data: Data) {
         let data = Data(data.bytes)
         prevOut = Data(data[0..<36])
@@ -86,7 +85,7 @@ public struct HWTransactionInputLedger {
         sequence = data[offset..<offset+4]
         size = offset + 4
     }
-    
+
     func serialize() -> Data {
         var buffer = Data()
         buffer.append(prevOut)
@@ -96,12 +95,12 @@ public struct HWTransactionInputLedger {
         return buffer
     }
 }
-    
+
 public struct HWTransactionOutputLedger {
     let amount: Data
     let script: Data
     var size = 0
-    
+
     init(_ data: Data) {
         let data = Data(data.bytes)
         amount = data[0..<8]
@@ -109,7 +108,7 @@ public struct HWTransactionOutputLedger {
         size = 8 + len + scriptSize
         script = data[8+len..<size]
     }
-    
+
     func serialize() -> Data {
         var buffer = Data()
         buffer.append(amount)
@@ -125,9 +124,9 @@ public struct HWTransactionLedger {
     var locktime: Data
     var inputs = [HWTransactionInputLedger]()
     var outputs = [HWTransactionOutputLedger]()
-    
+
     init(data: Data) {
-        
+
         version = data[0..<4]
         // If num-inputs is zero, this should rather be the segwit flag
         var offset = 4
@@ -162,7 +161,7 @@ public struct HWTransactionLedger {
         // we know the last 4 bytes are the locktime
         locktime = data[data.count-4..<data.count]
     }
-    
+
 }
 
 public struct HWSignTxParams {

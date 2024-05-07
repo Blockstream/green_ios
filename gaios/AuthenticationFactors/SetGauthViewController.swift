@@ -12,7 +12,7 @@ class SetGauthViewController: UIViewController {
     @IBOutlet weak var secretLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var btnCopy: UIButton!
-    
+
     var session: SessionManager!
     private var gauthData: String?
     private var connected = true

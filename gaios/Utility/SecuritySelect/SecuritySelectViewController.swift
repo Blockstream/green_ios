@@ -194,8 +194,8 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 let assetIds = WalletManager.current?.registry.all.map { ($0.assetId, Int64(0)) }
                 let dict = Dictionary(uniqueKeysWithValues: assetIds ?? [])
                 let list = AssetAmountList(dict)
-                
-                ///TODO: handle amp case
+
+                // TODO: handle amp case
                 vc.viewModel = AssetSelectViewModel(assets: list,
                                                     enableAnyLiquidAsset: true,
                                                     enableAnyAmpAsset: true)
@@ -284,7 +284,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     func hideHWCheckDialog() {
         dialogJadeCheckViewController?.dismiss()
     }
-    
+
     func createSubaccount(policy: PolicyCellType, params: CreateSubaccountParams?) {
         let isHW = AccountsRepository.shared.current?.isHW ?? false
         if isHW {
@@ -363,7 +363,7 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     }
 
     func didSelectAnyAsset(_ type: AnyAssetType) {
-        /// handle any asset case
+        // handle any asset case
         switch type {
         case .liquid:
             viewModel?.anyLiquidAsset = true
@@ -371,7 +371,6 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         case .amp:
             viewModel?.anyLiquidAmpAsset = true
             reloadSections([.asset, .policy], animated: true)
-            break
         }
         navigationController?.popViewController(animated: true)
     }
@@ -380,7 +379,7 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem, credentials: Credentials? = nil) {
         walletCreated = wallet
         credentialsCreated = credentials
-        
+
         // for not lightning subaccount creation: exit
         if !wallet.isLightning {
             DropAlert().success(message: "id_new_account_created".localized)
@@ -388,7 +387,7 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
             self.delegate?.didCreatedWallet(wallet)
             return
         }
-        
+
         // only for lightning subaccount creation: add lightning shortcut
         let account = WalletManager.current?.account
         if let account = account, !account.isEphemeral && !(account.hidden ?? false) {
@@ -443,7 +442,6 @@ extension SecuritySelectViewController: LTShortcutViewControllerDelegate {
             if let wallet = walletCreated {
                 self.delegate?.didCreatedWallet(wallet)
             }
-            break
         }
     }
 }

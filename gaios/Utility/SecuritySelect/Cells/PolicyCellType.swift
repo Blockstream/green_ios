@@ -7,7 +7,7 @@ enum PolicyCellType: String, CaseIterable {
     case Lightning
     case TwoFAProtected
     case TwoOfThreeWith2FA
-    //case Taproot
+    // case Taproot
     case Amp
 
     var accountType: AccountType {

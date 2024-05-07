@@ -15,7 +15,7 @@ public struct AppGreenlightCredentials: Codable {
         self.deviceKey = Data(gc.deviceKey)
         self.deviceCert = Data(gc.deviceCert)
     }
-    
+
     var greenlightCredentials: GreenlightCredentials {
         GreenlightCredentials(deviceKey: [UInt8](deviceKey),
                               deviceCert: [UInt8](deviceCert))

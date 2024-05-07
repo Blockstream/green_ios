@@ -1,6 +1,5 @@
 import Foundation
 
-
 class AssetsViewModel {
 
     var assetCellModels: [WalletAssetCellModel] = []

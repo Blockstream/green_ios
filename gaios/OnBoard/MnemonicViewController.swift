@@ -109,7 +109,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             case .recoverWallet:
                 AnalyticsManager.shared.scanQr(account: nil,
                                                screen: .onBoardRecovery)
-                
             case .addSubaccount:
                 break
             }
@@ -182,7 +181,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                 textField.isSecureTextEntry = true
             }
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
-                completition(nil,nil)
+                completition(nil, nil)
             })
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
                 let textField = alert.textFields![0]

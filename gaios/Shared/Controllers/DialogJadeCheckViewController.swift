@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 class DialogJadeCheckViewController: UIViewController {
 
     @IBOutlet weak var icArrow: UIImageView!

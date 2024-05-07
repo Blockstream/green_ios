@@ -13,7 +13,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
 
     var bleViewModel: BleViewModel?
     var scanViewModel: ScanViewModel?
-    
+
     var rememberIsOn = !AppSettings.shared.rememberHWIsOff
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -163,7 +163,6 @@ class PairingSuccessViewController: HWFlowBaseViewController {
 
 extension PairingSuccessViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
 
     func selectNetwork() {
         self.stopLoader()

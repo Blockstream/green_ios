@@ -18,7 +18,7 @@ class TxDetailsInfoCellModel {
     var hint: String
     var type: TxDetailsInfoType
     var hideBalance: Bool
-    
+
     init(title: String,
          hint: String,
          type: TxDetailsInfoType,

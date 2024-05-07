@@ -35,7 +35,6 @@ public struct HWDevice: Codable {
                         supportsExternalBlinding: false)
     }
 
-    
     public static func defaultJade(fmwVersion: String?) -> HWDevice {
         let JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING = "0.1.48"
         let supportUnblinding = JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING <= fmwVersion ?? ""

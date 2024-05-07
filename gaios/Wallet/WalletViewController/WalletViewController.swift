@@ -164,7 +164,7 @@ class WalletViewController: UIViewController {
         guard let emptiedAccount = AnalyticsManager.shared.emptiedAccount else {
             return
         }
-        
+
         var accountsFunded: Int = 0
         viewModel.subaccounts.forEach { item in
             let assets = item.satoshi ?? [:]
@@ -176,7 +176,7 @@ class WalletViewController: UIViewController {
         let walletFunded: Bool = accountsFunded > 0
         let accounts: Int = viewModel.subaccounts.count
         let accountsTypes: String = Array(Set(viewModel.subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
-        
+
         var totValue: Int64 = 0
         viewModel.subaccounts.forEach { item in
             if item == emptiedAccount {
@@ -490,14 +490,13 @@ class WalletViewController: UIViewController {
             self.present(vc, animated: false, completion: nil)
         }
     }
-    
-    
+
     func afterRestore() {
         if OnBoardParams.shared.restoreSuccess == true {
             OnBoardParams.shared.restoreSuccess = false
             if viewModel.needShortcut() {
                 Task { try? await viewModel.addSWDerivedLightning() }
-                
+
                 let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {
                     vc.vm = LTShortcutViewModel(account: account,
@@ -784,13 +783,13 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func pushTransactionViewController(_ tx: Transaction) {
-        
+
         let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccountItem {
             vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
             navigationController?.pushViewController(vc, animated: true)
         }
-        
+
 //        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
 //        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
 //            vc.transaction = tx
@@ -803,7 +802,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 extension WalletViewController: DialogRenameViewControllerDelegate {
 
     func didRename(name: String, index: String?) {
-        //...
+        // ...
     }
     func didCancel() {
     }
@@ -996,7 +995,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 
 extension WalletViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-    
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .walletPrefs:

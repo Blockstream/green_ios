@@ -13,17 +13,17 @@ class TwoFAViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var btnHelp: UIButton!
     @IBOutlet weak var btnCancel: UIButton!
-    
+
     @IBOutlet weak var cardInfo: UIView!
     @IBOutlet weak var lblInfoTitle: UILabel!
     @IBOutlet weak var lblInfoHint: UILabel!
     @IBOutlet weak var btnInfoEnableCall: UIButton!
     @IBOutlet weak var btnInfoRetry: UIButton!
     @IBOutlet weak var btnInfoSupport: UIButton!
-    
+
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet var lblsDigit: [UILabel]!
-    
+
     @IBOutlet weak var lblAttempts: UILabel!
     var digits: [Int] = []
 
@@ -59,9 +59,9 @@ class TwoFAViewController: UIViewController {
         view.alpha = 0.0
         fill()
         cardInfo.isHidden = true
-        
+
         btnInfoEnableCall.isHidden = !enable2faCallMethod
-        
+
         if let method = methodEnum {
             switch method {
             case .email:
@@ -96,7 +96,7 @@ class TwoFAViewController: UIViewController {
     }
 
     func setStyle() {
-        [cardInfo, cardView].forEach{
+        [cardInfo, cardView].forEach {
             $0.layer.cornerRadius = 10
             $0.borderWidth = 1.0
             $0.borderColor = .white.withAlphaComponent(0.05)
@@ -121,7 +121,7 @@ class TwoFAViewController: UIViewController {
     }
 
     func fill() {
-        orderedPlaceHolders.forEach{ $0.isHidden = false}
+        orderedPlaceHolders.forEach { $0.isHidden = false}
         for n in 0...5 {
             if let d = digits[safe: n] {
                 orderedLblsDigit[n].text = "\(d)"
@@ -176,7 +176,7 @@ class TwoFAViewController: UIViewController {
             dismiss(.code(digits: (digits.map(String.init)).joined()))
         }
     }
-    
+
     @IBAction func btnPaste(_ sender: Any) {
         if let txt = UIPasteboard.general.string {
             if txt.isCode6Digits() {
@@ -187,7 +187,7 @@ class TwoFAViewController: UIViewController {
                     }
                 }
                 fill()
-                
+
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                     if self.digits.count == 6 {
                         self.dismiss(.code(digits: (self.digits.map(String.init)).joined()))
@@ -210,7 +210,7 @@ class TwoFAViewController: UIViewController {
     @IBAction func btnInfoRetry(_ sender: Any) {
         dismiss(.cancel)
     }
-    
+
     @IBAction func btnInfoSupport(_ sender: Any) {
         let request = DialogErrorRequest(
             account: AccountsRepository.shared.current,

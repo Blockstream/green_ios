@@ -10,7 +10,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
     case segWit = "p2wpkh"
     case taproot = "p2tr"
     case lightning = "lightning"
-    
+
     public var multisig: Bool {
         [AccountType.standard, AccountType.amp, AccountType.twoOfThree].contains(self)
     }

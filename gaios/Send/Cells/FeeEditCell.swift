@@ -15,7 +15,7 @@ struct FeeEditCellModel {
     var feeEstimates: [UInt64?]
     var inputDenomination: DenominationType
     var transactionPriority: TransactionPriority?
-    
+
     func selectedFee() -> Int {
         switch transactionPriority {
         case .High:

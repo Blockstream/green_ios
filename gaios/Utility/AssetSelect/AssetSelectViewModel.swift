@@ -7,10 +7,10 @@ class AssetSelectViewModel {
     var reload: (() -> Void)?
     private var enableAnyLiquidAsset: Bool
     private var enableAnyAmpAsset: Bool
-    
+
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
-    
+
     private var wm: WalletManager { WalletManager.current! }
 
     func search(_ txt: String?) {
@@ -40,7 +40,7 @@ class AssetSelectViewModel {
         if enableAnyAmpAsset == true { data.append(.amp) }
         return data
     }
-    
+
     init(assets: AssetAmountList, enableAnyLiquidAsset: Bool, enableAnyAmpAsset: Bool) {
         self.assets = assets
         self.enableAnyLiquidAsset = enableAnyLiquidAsset

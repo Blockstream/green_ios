@@ -11,7 +11,7 @@ enum AssetExpandableSection: Equatable {
 }
 
 class AssetExpandableSelectViewModel {
-    
+
     private var enableAnyLiquidAsset: Bool
     private var enableAnyAmpAsset: Bool
     private var hideLiquid: Bool
@@ -88,7 +88,7 @@ class AssetExpandableSelectViewModel {
     func loadAccounts(_ selected: AssetExpandableSection) {
         var accounts = wm?.subaccounts.filter { !$0.hidden } ?? []
         switch selected {
-        case .anyAmp: 
+        case .anyAmp:
             accounts.removeAll { $0.type != .amp }
         case .anyLiquid:
             accounts.removeAll { !$0.gdkNetwork.liquid }

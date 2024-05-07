@@ -13,7 +13,7 @@ class AnyAssetCell: UITableViewCell {
     @IBOutlet weak var lblAny: UILabel!
 
     var anyAssetType: AnyAssetType?
-    
+
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -24,7 +24,7 @@ class AnyAssetCell: UITableViewCell {
 
     func configure(_ type: AnyAssetType) {
         anyAssetType = type
-        
+
         switch type {
         case .liquid:
             self.lblAny.text = "id_receive_any_liquid_asset".localized

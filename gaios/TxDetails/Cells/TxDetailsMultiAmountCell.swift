@@ -5,20 +5,20 @@ import core
 class TxDetailsMultiAmountCell: UITableViewCell {
 
     class var identifier: String { return String(describing: self) }
-    
+
     var model: TxDetailsAmountCellModel?
     var copyAmount: ((String) -> Void)?
-    
+
     @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblAsset: UILabel!
     @IBOutlet weak var lblFiat: UILabel!
     @IBOutlet weak var iconAsset: UIImageView!
     @IBOutlet weak var iconSide: UIImageView!
-    
+
     private var btc: String {
         return WalletManager.current?.account.gdkNetwork.getFeeAsset() ?? ""
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         lblAmount.setStyle(.subTitle)
@@ -31,7 +31,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
                    copyAmount: ((String) -> Void)?) {
         self.model = model
         self.copyAmount = copyAmount
-        
+
         iconSide.image = model.iconSide
         loadIcon()
 
@@ -61,7 +61,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
 
     func formatAmount(_ amount: String) -> NSAttributedString {
         let font = UIFont.systemFont(ofSize: 20.0, weight: .regular)
-        
+
         let decimalSeparator = Locale.current.decimalSeparator
         if let decimalSeparator = decimalSeparator {
             let components: [String] = amount.components(separatedBy: decimalSeparator)

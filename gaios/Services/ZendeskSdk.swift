@@ -5,8 +5,8 @@ import gdk
 import core
 
 class ZendeskSdk {
-    //private let zendeskSdk = ZendeskSdk().INSTANCE
-    //private let support = Support.INSTANCE
+    // private let zendeskSdk = ZendeskSdk().INSTANCE
+    // private let support = Support.INSTANCE
     static let shared = ZendeskSdk()
     let URL = "https://blockstream.zendesk.com"
     let APPLICATION_ID = "12519480a4c4efbe883adc90777bb0f680186deece244799"
@@ -28,9 +28,9 @@ class ZendeskSdk {
         network: NetworkSecurityCase?,
         hw: String?
     ) async -> URL? {
-        
+
         let supportId = await SupportManager.shared.str()
-        
+
         var components = URLComponents(string: "https://help.blockstream.com/hc/en-us/requests/new")!
         components.queryItems = [
             URLQueryItem(name: "tf_900008231623", value: "ios"),
@@ -44,9 +44,11 @@ class ZendeskSdk {
         }
         if let network = network {
             let field = {
-                if network.lightning { return "lightning__green_" }
-                else if network.singlesig { return "singlesig__green_" }
-                else { return "multisig_shield__green_" }
+                if network.lightning {
+                    return "lightning__green_"
+                } else if network.singlesig {
+                    return "singlesig__green_"
+                } else { return "multisig_shield__green_" }
             }()
             components.queryItems! += [URLQueryItem(name: "tf_6167739898649", value: field)]
         }
@@ -61,9 +63,9 @@ class ZendeskSdk {
         network: NetworkSecurityCase?,
         hw: String?
     ) async {
-        
+
         let supportId = await SupportManager.shared.str()
-        
+
         let request = ZDKCreateRequest()
         request.tags = ["ios", "green"]
         request.subject = subject
@@ -80,9 +82,11 @@ class ZendeskSdk {
         }
         if let network = network {
             let field = {
-                if network.lightning { return "lightning__green_" }
-                else if network.singlesig { return "singlesig__green_" }
-                else { return "multisig_shield__green_" }
+                if network.lightning {
+                    return "lightning__green_"
+                } else if network.singlesig {
+                    return "singlesig__green_"
+                } else { return "multisig_shield__green_" }
             }()
             customFields += [CustomField(fieldId: 6167739898649, value: field)]
         }
@@ -93,7 +97,7 @@ class ZendeskSdk {
             identity = Identity.createAnonymous(email: email)
         }
         Zendesk.instance?.setIdentity(identity)
-        
+
         let provider = ZDKRequestProvider()
         provider.createRequest(request) { result, error in
             if error != nil {

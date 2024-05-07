@@ -7,25 +7,25 @@ import lightning
 import hw
 
 public class LightningSessionManager: SessionManager {
-    
+
     public var lightBridge: LightningBridge?
     public var nodeState: NodeState?
     public var lspInfo: LspInformation?
     public var accountId: String?
     public var isRestoredNode: Bool?
-    
+
     public var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
     public var workingDir: URL? { lightBridge?.workingDir }
-    
+
     public var logger = Logger(
         subsystem: Bundle.main.bundleIdentifier!,
         category: "Lightning"
     )
-    
+
     public override func connect() async throws {
         paused = false
     }
-    
+
     public override func disconnect() async throws {
         logger.info("lightning disconnect")
         logged = false
@@ -39,15 +39,15 @@ public class LightningSessionManager: SessionManager {
         }
         lightBridge = nil
     }
-    
+
     public override func networkConnect() async {
         paused = false
     }
-    
+
     public override func networkDisconnect() async {
         paused = true
     }
-    
+
     func workingDir(walletHashId: String) -> URL {
         let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Bundle.main.appGroup)
         let path = "/breezSdk/\(walletHashId)/0"
@@ -57,7 +57,7 @@ public class LightningSessionManager: SessionManager {
             return containerURL!.appendingPathComponent(path)
         }
     }
-    
+
     private func initLightningBridge(_ params: Credentials, eventListener: EventListener) -> LightningBridge {
         guard let walletIdentifier = try? walletIdentifier(credentials: params) else {
             fatalError("Invalid wallet identifier")
@@ -67,7 +67,7 @@ public class LightningSessionManager: SessionManager {
                                eventListener: eventListener,
                                logStreamListener: self)
     }
-    
+
     private func connectToGreenlight(credentials: Credentials, checkCredentials: Bool = false) async throws {
         guard let mnemonic = credentials.mnemonic else {
             fatalError("Invalid mnemonic")
@@ -77,7 +77,7 @@ public class LightningSessionManager: SessionManager {
         AnalyticsManager.shared.loginLightningStop()
         connected = true
     }
-    
+
     public func smartLogin(credentials: Credentials, listener: EventListener) async throws {
         lightBridge = initLightningBridge(credentials, eventListener: listener)
         try await connectToGreenlight(credentials: credentials, checkCredentials: false)
@@ -142,7 +142,7 @@ public class LightningSessionManager: SessionManager {
         LightningRepository.shared.remove(for: walletHashId)
     }
 
-    public override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String : Int64] {
+    public override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
         let sats = lightBridge?.balance()
         let balance = [gdkNetwork.getFeeAsset(): Int64(sats ?? 0)]
         return balance
@@ -283,8 +283,8 @@ public class LightningSessionManager: SessionManager {
         }
         switch inputType {
         case .bitcoinAddress(_):
-            //let addr = Addressee.from(address: address.address, satoshi: Int64(address.amountSat ?? 0), assetId: nil)
-            //return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
+            // let addr = Addressee.from(address: address.address, satoshi: Int64(address.amountSat ?? 0), assetId: nil)
+            // return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
             return ValidateAddresseesResult(isValid: false, errors: ["id_invalid_address"], addressees: [])
         case .bolt11(let invoice):
             let addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
@@ -327,7 +327,7 @@ public class LightningSessionManager: SessionManager {
         }
         return Transactions(list: txs.sorted().reversed())
     }
-    
+
     public func closeChannels() throws {
         try lightBridge?.closeLspChannels()
     }
@@ -352,29 +352,28 @@ extension LightningSessionManager: EventListener {
             logger.info("onLightningEvent invoicePaid")
             DispatchQueue.main.async {
                 self.post(event: .InvoicePaid, object: data)
-               //DropAlert().success(message: "Invoice Paid".localized)
+               // DropAlert().success(message: "Invoice Paid".localized)
             }
         case .paymentSucceed(let details):
             logger.info("onLightningEvent paymentSucceed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentSucceed)
-                //DropAlert().success(message: "Payment Successful \(details.amountSatoshi) sats".localized)
+                // DropAlert().success(message: "Payment Successful \(details.amountSatoshi) sats".localized)
             }
         case .paymentFailed(_):
             logger.info("onLightningEvent paymentFailed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentFailed)
-                //DropAlert().error(message: "Payment Failure".localized)
+                // DropAlert().error(message: "Payment Failure".localized)
             }
         default:
             logger.info("onLightningEvent others")
-            break
         }
     }
 }
 
 extension LightningSessionManager: LogStream {
-    public func log(l: LogEntry){
+    public func log(l: LogEntry) {
         switch l.level {
         case "info": logger.info("\(l.line, privacy: .public)")
         case "error": logger.error("\(l.line, privacy: .public)")

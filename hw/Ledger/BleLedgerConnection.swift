@@ -21,7 +21,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
     private let semaphoreQueue = AsyncSemaphore(value: 0)
     private var cancellable: AnyCancellable?
     private var queue = [Data]()
-    private let reqMtu = Data([0x08,0x00,0x00,0x00,0x00])
+    private let reqMtu = Data([0x08, 0x00, 0x00, 0x00, 0x00])
 
     public enum LedgerError: Error {
         case InvalidParameter
@@ -65,7 +65,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
             }
         }
         try await peripheral.setNotifyValue(true, forCharacteristicWithUUID: READ_CHARACTERISTIC_CONFIG, ofServiceWithUUID: BleLedgerConnection.SERVICE_UUID)
-        
+
         cancellable = peripheral.characteristicValueUpdatedPublisher
             .filter { $0.uuid.uuidString == self.READ_CHARACTERISTIC_CONFIG.uuidString }
             .map { try? $0.parsedValue() as Data? } // replace `String?` with your type
@@ -74,7 +74,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
                 semaphoreQueue.signal()
                 semaphore.signal()
             })
-        
+
         let resMtu = try await exchange(reqMtu)
         MTU = Int(resMtu[0]) - 3
         print ("MTU \(MTU)")
@@ -111,10 +111,10 @@ public class BleLedgerConnection: HWConnectionProtocol {
     static func wrapCommandAPDU(command: Data, packetSize: Int) throws -> Data? {
         if packetSize < 3 { throw LedgerError.InvalidParameter }
         var buffer = [UInt8]()
-        
+
         var sequenceIdx: UInt16 = 0
         var offset = 0
-        //buffer += [channel >> 8, channel]
+        // buffer += [channel >> 8, channel]
         buffer += [TAG_APDU,
                    UInt8(sequenceIdx >> 8),
                    UInt8(sequenceIdx),
@@ -125,7 +125,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
         buffer += command[offset..<offset + blockSize]
         offset += blockSize
         while offset != command.count {
-            //buffer += [channel >> 8, channel]
+            // buffer += [channel >> 8, channel]
             buffer += [TAG_APDU,
                        UInt8(sequenceIdx >> 8),
                        UInt8(sequenceIdx)]
@@ -164,7 +164,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
         var blockSize = responseLength > packetSize - 5 ? packetSize - 5 : Int(responseLength)
         buffer += data[offset..<Int(offset + blockSize)]
         offset += blockSize
-        
+
         while buffer.count != responseLength {
             sequenceIdx += 1
             if offset == data.count { throw LedgerError.IOError }

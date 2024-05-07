@@ -14,7 +14,7 @@ enum ReceiveType: Int, CaseIterable {
 }
 
 class ReceiveViewModel {
-    
+
     var accounts: [WalletItem]
     var asset: String
     var satoshi: Int64?
@@ -28,9 +28,9 @@ class ReceiveViewModel {
     var swap: SwapInfo?
     var inputDenomination: gdk.DenominationType = .Sats
     var state: LTAmountCellState = .disabled
-    
+
     var wm: WalletManager { WalletManager.current! }
-    
+
     init(account: WalletItem, accounts: [WalletItem]) {
         self.account = account
         self.accounts = accounts
@@ -38,11 +38,11 @@ class ReceiveViewModel {
         self.type = account.gdkNetwork.lightning ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
     }
-    
+
     func accountType() -> String {
         return account.localizedName
     }
-    
+
     func newAddress() async throws {
         switch type {
         case .address:
@@ -59,12 +59,12 @@ class ReceiveViewModel {
             swap = try await wm.lightningSession?.lightBridge?.receiveOnchain()
         }
     }
-    
+
     func isBipAddress(_ addr: String) -> Bool {
         let session = wm.sessions[account.gdkNetwork.network]
         return session?.validBip21Uri(uri: addr) ?? false
     }
-    
+
     func validateHw() async throws -> Bool {
         guard let addr = address else {
             throw GaError.GenericError()
@@ -72,7 +72,7 @@ class ReceiveViewModel {
         let res = try await BleViewModel.shared.validateAddress(account: account, address: addr)
         return res
     }
-    
+
     func addressToUri(address: String, satoshi: Int64) -> String {
         var ntwPrefix = "bitcoin"
         if account.gdkNetwork.liquid {
@@ -83,11 +83,11 @@ class ReceiveViewModel {
         }
         return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(satoshi))
     }
-    
+
     func toBTC(_ satoshi: Int64) -> Double {
         return Double(satoshi) / 100000000
     }
-    
+
     var amountCellModel: LTAmountCellModel {
         let nodeState = account.lightningSession?.nodeState
         let lspInfo = account.lightningSession?.lspInfo
@@ -101,7 +101,7 @@ class ReceiveViewModel {
                                  breezSdk: account.lightningSession?.lightBridge
         )
     }
-    
+
     var infoReceivedAmountCellModel: LTInfoCellModel {
         if let satoshi = invoice?.receiveAmountSatoshi(openingFeeParams: receivePaymentResponse?.openingFeeParams) {
             if let balance = Balance.fromSatoshi(Int64(satoshi), assetId: "btc") {
@@ -112,22 +112,22 @@ class ReceiveViewModel {
         }
         return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "", hint2: "")
     }
-    
+
     var infoExpiredInCellModel: LTInfoCellModel {
         LTInfoCellModel(
             title: "id_expiration".localized,
             hint1: "In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
             hint2: "")
     }
-    
+
     var noteCellModel: LTNoteCellModel {
         return LTNoteCellModel(note: description ?? "id_note".localized)
     }
-    
+
     var assetCellModel: ReceiveAssetCellModel {
         return ReceiveAssetCellModel(assetId: asset, account: account)
     }
-    
+
     var text: String? {
         switch type {
         case .bolt11:
@@ -145,7 +145,7 @@ class ReceiveViewModel {
             return text
         }
     }
-    
+
     var addressCellModel: ReceiveAddressCellModel {
         let nodeState = account.lightningSession?.nodeState
         let lspInfo = account.lightningSession?.lspInfo
@@ -160,7 +160,7 @@ class ReceiveViewModel {
                                        breezSdk: account.lightningSession?.lightBridge
         )
     }
-    
+
     func getAssetSelectViewModel() -> AssetSelectViewModel {
         let isLiquid = account.gdkNetwork.liquid
         let showAmp = accounts.filter { $0.type == .amp }.count > 0
@@ -173,13 +173,13 @@ class ReceiveViewModel {
                 (showBtc && $0.assetId == AssetInfo.btcId)
             }
         let list = AssetAmountList.from(assetIds: assets?.map { $0.assetId } ?? [])
-        
-        ///TODO: handle amp case
+
+        // TODO: handle amp case
         return AssetSelectViewModel(assets: list,
                                     enableAnyLiquidAsset: isLiquid,
                                     enableAnyAmpAsset: isLiquid)
     }
-    
+
     func getAssetExpandableSelectViewModel() -> AssetExpandableSelectViewModel {
         let isWO = AccountsRepository.shared.current?.isWatchonly ?? false
         let isLiquid = account.gdkNetwork.liquid

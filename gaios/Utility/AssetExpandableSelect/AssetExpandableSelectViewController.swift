@@ -137,7 +137,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             let handler = UIButton(frame: accountView.tapView.frame)
             handler.tag = section
             handler.borderColor = .red
-            handler.addTarget(self,action: #selector(didSelectSection(sender:)), for: .touchUpInside)
+            handler.addTarget(self, action: #selector(didSelectSection(sender:)), for: .touchUpInside)
             accountView.addSubview(handler)
             return accountView
         }
