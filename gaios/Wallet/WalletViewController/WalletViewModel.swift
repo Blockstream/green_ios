@@ -12,6 +12,7 @@ class WalletViewModel {
     var paused: Bool { !(wm?.activeSessions.filter { $0.value.paused }.isEmpty ?? false) }
     var isTxLoading = true // on init is always true
     var isBalanceLoading = true
+    var expiredSubaccounts = [WalletItem]()
 
     /// load visible subaccounts
     var subaccounts: [WalletItem] { wm?.subaccounts.filter { !($0.hidden) } ?? [] }
@@ -208,7 +209,16 @@ class WalletViewModel {
                 break
             }
         }
+        let expired = try? await wm.getExpiredSubaccounts()
+        if let expired = expired, !expired.isEmpty {
+            expiredSubaccounts = expired
+            cards.append(.reEnable2fa)
+        }
         self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
+    }
+
+    func reEnable2faViewModel() -> ReEnable2faViewModel {
+        ReEnable2faViewModel(expiredSubaccounts: expiredSubaccounts)
     }
 
     func reload() async {

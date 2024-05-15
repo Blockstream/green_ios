@@ -13,6 +13,7 @@ public enum TxType: Codable {
     case bumpFee
     case bolt11
     case lnurl
+    case redepositExpiredUtxos
 }
 
 public typealias Metadata = [[String]]
@@ -321,6 +322,11 @@ public struct Transaction: Comparable {
         set { details["transaction_inputs"] = newValue?.map { $0.toDict() } }
     }
 
+    // tx utxo strategy
+    public var utxoStrategy: String? {
+        get { return get("utxo_strategy") }
+        set { details["utxo_strategy"] = newValue }
+    }
     // tx utxos
     public var utxos: [String: Any]? {
         get { return get("utxos") }

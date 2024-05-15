@@ -14,15 +14,18 @@ class SendTxConfirmViewModel {
     var session: SessionManager? { subaccount?.session }
     var sendTransaction: SendTransactionSuccess?
     var error: Error?
+    var txType: TxType
     
-    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool) {
+    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType) {
         self.transaction = transaction
         self.subaccount = subaccount
         self.denominationType = denominationType
         self.isFiat = isFiat
+        self.txType = txType
     }
     
     var isLightning: Bool { subaccount?.networkType == .lightning }
+    var isConsolitating: Bool { txType == .redepositExpiredUtxos }
     var hasHW: Bool { wm?.account.isHW ?? false }
     var addressee: Addressee? { transaction?.addressees.first }
     var address: String? { addressee?.address }
@@ -67,7 +70,9 @@ class SendTxConfirmViewModel {
     var feeText: String? { isFiat ? feeFiatText : feeDenomText }
     var totalText: String? { isFiat ? totalFiatText : totalDenomText }
     var conversionText: String? { isFiat ? totalDenomText : totalFiatText }
-    var addressTitle: String { isLightning ? "id_recipient".localized : "id_address".localized }
+    var addressTitle: String { isLightning ? "id_recipient" : isConsolitating ? "Your Redeposit Address" : "id_address" }
+    var amountTitle: String { isConsolitating ? "Redepositing" : "Recipient Receives" }
+    var recipientReceivesHidden: Bool { isConsolitating }
 
     private func _send() async throws -> SendTransactionSuccess {
         guard let session = session,
@@ -84,7 +89,9 @@ class SendTxConfirmViewModel {
         if isLiquid {
             tx = try await session.blindTransaction(tx: tx)
         }
-        tx = try await session.signTransaction(tx: tx)
+        if !isConsolitating {
+            tx = try await session.signTransaction(tx: tx)
+        }
         self.transaction = tx
         if tx.isSweep {
             return try await session.broadcastTransaction(txHex: tx.transaction ?? "")
@@ -124,7 +131,7 @@ class SendTxConfirmViewModel {
             throw error
         }
     }
-    
+
     func sendHWConfirmViewModel() -> SendHWConfirmViewModel {
         SendHWConfirmViewModel(
             isLedger: wm?.account.isLedger ?? false,

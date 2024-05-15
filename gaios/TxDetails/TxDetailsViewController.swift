@@ -107,7 +107,7 @@ class TxDetailsViewController: UIViewController {
     func navBarSetup() {
         title = "id_transaction_details".localized
         navigationItem.backBarButtonItem = UIBarButtonItem(
-            title: "Back".localized, style: .plain, target: nil, action: nil)
+            title: "id_back".localized, style: .plain, target: nil, action: nil)
 //        let shareBtn = UIButton(type: .system)
 //        shareBtn.setImage(UIImage(named: "ic_export"), for: .normal)
 //        shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
@@ -264,11 +264,11 @@ class TxDetailsViewController: UIViewController {
     func createTx(session : SessionManager) async throws -> CreateTx {
         let feeRates = try await session.getFeeEstimates()
         let feeRate = feeRates?.first ?? session.gdkNetwork.defaultFee
-        return CreateTx(feeRate: vm.transaction.feeRate + feeRate, subaccount: vm.wallet, previousTransaction: vm.transaction.details)
+        return CreateTx(feeRate: vm.transaction.feeRate + feeRate, subaccount: vm.wallet, previousTransaction: vm.transaction.details, txType: .bumpFee)
     }
 
     func createTransaction(createTx: CreateTx, session : SessionManager) async throws -> Transaction {
-        let unspentOutputs = try await session.getUnspentOutputs(subaccount: vm.wallet.pointer, numConfs: 1)
+        let unspentOutputs = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: vm.wallet.pointer, numConfs: 1))
         var tx = Transaction([:], subaccount: vm.transaction.subaccount)
         tx.previousTransaction = createTx.previousTransaction
         tx.feeRate = createTx.feeRate ?? session.gdkNetwork.defaultFee

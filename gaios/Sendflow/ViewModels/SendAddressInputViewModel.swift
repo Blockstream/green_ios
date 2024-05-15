@@ -53,7 +53,11 @@ class SendAddressInputViewModel {
                 addressee?.satoshi = nil
             }
             let lightningType = lightningSession?.lightBridge?.parseBoltOrLNUrl(input: addressee?.address ?? "")
-            return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, anyAmounts: anyAmounts, lightningType: lightningType)
+            let txType: TxType = { switch lightningType {
+                case .bolt11(_): return .bolt11
+                default: return .lnurl
+            }}()
+            return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, anyAmounts: anyAmounts, lightningType: lightningType, txType: txType)
         } else {
             throw TransactionError.invalid(localizedDescription: res?.errors.first ?? "id_operation_failure")
         }
@@ -63,7 +67,7 @@ class SendAddressInputViewModel {
         guard let account = preferredAccount, let input = self.input else {
             throw TransactionError.invalid(localizedDescription: "Invalid input")
         }
-        return CreateTx(subaccount: account, privateKey: input)
+        return CreateTx(subaccount: account, privateKey: input, txType: .sweep)
     }
 
     private func parseGdk(for session: SessionManager, input: String) async throws -> CreateTx? {
@@ -79,17 +83,17 @@ class SendAddressInputViewModel {
                 let assetId = addressee?.assetId {
                 addressee?.satoshi = Balance.from(amount, assetId: assetId, denomination: .BTC)?.satoshi
             }
-            return CreateTx(addressee: addressee)
+            return CreateTx(addressee: addressee, txType: .transaction)
         } else if let error = res.errors.first {
             if "id_no_amount_specified" == error {
                 var addressee = res.addressees.first
                 addressee?.bip21 = isBip21Bitcoin || isBip21Liquid
-                return CreateTx(addressee: addressee)
+                return CreateTx(addressee: addressee, txType: .transaction)
             }
             if !isBip21Liquid && "id_invalid_asset_id" == error {
                 var addressee = res.addressees.first
                 addressee?.bip21 = isBip21Bitcoin || isBip21Liquid
-                return CreateTx(addressee: addressee)
+                return CreateTx(addressee: addressee, txType: .transaction)
             }
             throw TransactionError.invalid(localizedDescription: error)
         }
@@ -168,7 +172,8 @@ class SendAddressInputViewModel {
             transaction: await lightningTransaction(),
             subaccount: lightningSubaccount,
             denominationType: settings?.denomination ?? .Sats,
-            isFiat: false)
+            isFiat: false, 
+            txType: createTx?.txType ?? .transaction)
     }
 
     func accountAssetViewModel() -> AccountAssetViewModel {

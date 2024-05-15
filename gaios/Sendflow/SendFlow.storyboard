@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -1232,6 +1232,7 @@
                         <outlet property="lblPayRequestByValue" destination="yQA-r5-dwQ" id="VgI-hv-bGC"/>
                         <outlet property="lblSumAmountKey" destination="lrL-Ds-cQb" id="O8D-w1-ezc"/>
                         <outlet property="lblSumAmountValue" destination="QQh-8Q-XYm" id="2Lc-Fs-xaq"/>
+                        <outlet property="lblSumAmountView" destination="VqL-gd-DAS" id="er4-R5-erK"/>
                         <outlet property="lblSumFeeKey" destination="AK5-aE-uUi" id="1tj-1w-3T4"/>
                         <outlet property="lblSumFeeValue" destination="mAP-fW-nPt" id="9EF-gj-6j6"/>
                         <outlet property="lblSumTotalKey" destination="e88-D7-8cK" id="fbo-0j-9Lo"/>
@@ -2347,7 +2348,7 @@
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="U7Q-Ge-RCR">
-                                                                                <rect key="frame" x="25" y="68.666666666666657" width="343" height="47"/>
+                                                                                <rect key="frame" x="25" y="68.666666666666629" width="343" height="47"/>
                                                                                 <subviews>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RbX-KN-rQA">
                                                                                         <rect key="frame" x="147.66666666666666" y="0.0" width="47.666666666666657" height="17"/>

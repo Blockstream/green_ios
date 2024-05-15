@@ -55,6 +55,9 @@
 		3418BAE32743BDAD00F9B2D0 /* ArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE22743BDAD00F9B2D0 /* ArcView.swift */; };
 		3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */; };
 		3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */; };
+		3419B44C2BEE302500492198 /* ReEnable2faAccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3419B44B2BEE302500492198 /* ReEnable2faAccountCell.xib */; };
+		3419B44E2BEE304900492198 /* ReEnable2faAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3419B44D2BEE304900492198 /* ReEnable2faAccountCell.swift */; };
+		3419B4532BF340AB00492198 /* ReEnable2faViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3419B4522BF340AB00492198 /* ReEnable2faViewModel.swift */; };
 		341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */; };
 		34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204707291A67E900EDE945 /* MultiLabelView.xib */; };
 		3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204709291A6BD800EDE945 /* MultiLabelView.swift */; };
@@ -353,6 +356,8 @@
 		34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C680EF2A72786500369639 /* DialogInputDenominationCell.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C8585529F9012C004A3F83 /* LTFlow.storyboard */; };
+		34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C8BD692BED132A00AE9CC4 /* ReEnable2fa.storyboard */; };
+		34C8BD6D2BED13F200AE9CC4 /* ReEnable2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8BD6C2BED13F200AE9CC4 /* ReEnable2faViewController.swift */; };
 		34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* JadeDeviceCell.swift */; };
 		34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* JadeDeviceCell.xib */; };
 		34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77F29C069F400C84066 /* PinCreateViewController.swift */; };
@@ -878,6 +883,9 @@
 		3418BAE22743BDAD00F9B2D0 /* ArcView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcView.swift; sourceTree = "<group>"; };
 		3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionBarItem.swift; sourceTree = "<group>"; };
 		3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionBarItem.xib; sourceTree = "<group>"; };
+		3419B44B2BEE302500492198 /* ReEnable2faAccountCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReEnable2faAccountCell.xib; sourceTree = "<group>"; };
+		3419B44D2BEE304900492198 /* ReEnable2faAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReEnable2faAccountCell.swift; sourceTree = "<group>"; };
+		3419B4522BF340AB00492198 /* ReEnable2faViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReEnable2faViewModel.swift; sourceTree = "<group>"; };
 		341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSendHWSummaryViewController.swift; sourceTree = "<group>"; };
 		34204707291A67E900EDE945 /* MultiLabelView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MultiLabelView.xib; sourceTree = "<group>"; };
 		34204709291A6BD800EDE945 /* MultiLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLabelView.swift; sourceTree = "<group>"; };
@@ -1176,6 +1184,8 @@
 		34C680EF2A72786500369639 /* DialogInputDenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationCell.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C8585529F9012C004A3F83 /* LTFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LTFlow.storyboard; sourceTree = "<group>"; };
+		34C8BD692BED132A00AE9CC4 /* ReEnable2fa.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ReEnable2fa.storyboard; sourceTree = "<group>"; };
+		34C8BD6C2BED13F200AE9CC4 /* ReEnable2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReEnable2faViewController.swift; sourceTree = "<group>"; };
 		34C8E77429BF868500C84066 /* JadeDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDeviceCell.swift; sourceTree = "<group>"; };
 		34C8E77529BF868500C84066 /* JadeDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JadeDeviceCell.xib; sourceTree = "<group>"; };
 		34C8E77F29C069F400C84066 /* PinCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCreateViewController.swift; sourceTree = "<group>"; };
@@ -1700,6 +1710,15 @@
 				3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */,
 			);
 			path = TransactionBarItem;
+			sourceTree = "<group>";
+		};
+		3419B44A2BEE2F1500492198 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				3419B44D2BEE304900492198 /* ReEnable2faAccountCell.swift */,
+				3419B44B2BEE302500492198 /* ReEnable2faAccountCell.xib */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		3420470D291B913E00EDE945 /* Utility */ = {
@@ -2511,6 +2530,16 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		34ABBD7B2BF4A17C0049CC76 /* ReEnable2fa */ = {
+			isa = PBXGroup;
+			children = (
+				34C8BD692BED132A00AE9CC4 /* ReEnable2fa.storyboard */,
+				3419B44A2BEE2F1500492198 /* Cells */,
+				34C8BD6B2BED13C000AE9CC4 /* Controllers */,
+			);
+			path = ReEnable2fa;
+			sourceTree = "<group>";
+		};
 		34AFA8E429D1723F00C4F3E6 /* Rive */ = {
 			isa = PBXGroup;
 			children = (
@@ -2675,6 +2704,15 @@
 				3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */,
 				3468AFEF2A96648300EDFC34 /* LTInvitationViewController.swift */,
 				81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		34C8BD6B2BED13C000AE9CC4 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				34C8BD6C2BED13F200AE9CC4 /* ReEnable2faViewController.swift */,
+				3419B4522BF340AB00492198 /* ReEnable2faViewModel.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -3404,6 +3442,7 @@
 		81A3B53F2244AE9A0091B6BC /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				34ABBD7B2BF4A17C0049CC76 /* ReEnable2fa */,
 				34D761322A384E9000DE57F5 /* DenominationExchangeFlow */,
 				34F980A62913FFDD00C12D48 /* AccountViewController */,
 				3491C98E2912B0220063C055 /* AssetsViewController */,
@@ -3616,6 +3655,7 @@
 				676FCF1A1F9D0CF800354E93 /* Resources */,
 				6718E0F32360A4110077D552 /* Embed Libraries */,
 				8177ED5A2B6C594300C2271C /* Embed Foundation Extensions */,
+				3419B4512BF20C0600492198 /* Lint */,
 			);
 			buildRules = (
 			);
@@ -3951,6 +3991,7 @@
 				346EB2762BE8BB3A0043139F /* SendFeeCell.xib in Resources */,
 				3487657629D43B2A0059D05F /* Illustration Wallet.riv in Resources */,
 				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
+				3419B44C2BEE302500492198 /* ReEnable2faAccountCell.xib in Resources */,
 				3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */,
 				34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
@@ -3991,6 +4032,7 @@
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
+				34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */,
 				8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */,
 				34B385D629B888610097220B /* HWFlow.storyboard in Resources */,
 				344915EE2A0CE26700D35818 /* ReceiveAddressCell.xib in Resources */,
@@ -4086,6 +4128,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3419B4512BF20C0600492198 /* Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Lint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#if [[ \"$(uname -m)\" == arm64 ]]; then\n#    export PATH=\"/opt/homebrew/bin:$PATH\"\n#fi\n#if which swiftlint > /dev/null; then\n#  swiftlint\n#fi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		676FCF181F9D0CF800354E93 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -4121,6 +4185,7 @@
 				345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */,
 				816685DA2BEE50EF00B03B02 /* SendTxConfirmViewModel.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
+				3419B44E2BEE304900492198 /* ReEnable2faAccountCell.swift in Sources */,
 				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
@@ -4237,6 +4302,7 @@
 				34C67E722924D1B000A50F89 /* AssetExpandableView.swift in Sources */,
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */,
+				34C8BD6D2BED13F200AE9CC4 /* ReEnable2faViewController.swift in Sources */,
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */,
 				34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */,
@@ -4414,6 +4480,7 @@
 				34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */,
 				34287B752A83855B0065471F /* AlertViewController.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
+				3419B4532BF340AB00492198 /* ReEnable2faViewModel.swift in Sources */,
 				34F57FFD2BA1EA1C00DCB076 /* TxDetailsStatusCell.swift in Sources */,
 				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				346EB2822BE8BB480043139F /* SendDialogFeeViewModel.swift in Sources */,

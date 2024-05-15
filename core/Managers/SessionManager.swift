@@ -402,11 +402,13 @@ public class SessionManager {
         return result?["unspent_outputs"] as? [String: Any]
     }
 
-    public func getUnspentOutputs(subaccount: UInt32, numConfs: Int) async throws -> [String: Any] {
-        let utxos = try self.session?.getUnspentOutputs(details: ["subaccount": subaccount, "num_confs": numConfs])
+    public func getUnspentOutputs(_ params: GetUnspentOutputsParams, funcName: String = #function) async throws -> [String: [[String:Any]]] {
+        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params.toDict()!)")
+        let utxos = try self.session?.getUnspentOutputs(details: params.toDict()!)
         let res = try await resolve(utxos)
+        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
         let result = res?["result"] as? [String: Any]
-        return result?["unspent_outputs"] as? [String: Any] ?? [:]
+        return result?["unspent_outputs"] as? [String: [[String:Any]]] ?? [:]
     }
 
     func wrapperTransaction(fun: GdkFunc?, tx: Transaction, funcName: String = #function) async throws -> Transaction {

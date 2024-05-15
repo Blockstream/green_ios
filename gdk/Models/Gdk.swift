@@ -349,6 +349,68 @@ public struct BcurDecodedData: Codable {
         descriptors?.joined(separator: ",") ?? descriptor ?? psbt ?? data ?? ""
     }
 }
+public struct GetUnspentOutputsParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case subaccount
+        case numConfs = "num_confs"
+        case addressType = "address_type"
+        case allCoins = "all_coins"
+        case expiredAt = "expired_at"
+        case confidential
+        case dustLimit = "dust_limit"
+        case sortBy = "sort_by"
+    }
+    public let subaccount: UInt32
+    public let numConfs: Int?
+    public let addressType: String?
+    public let allCoins: Bool?
+    public let expiredAt: UInt64?
+    public let confidential: Bool?
+    public let dustLimit: UInt64?
+    public let sortBy: String?
+
+    public init(subaccount: UInt32, numConfs: Int? = nil, addressType: String? = nil, allCoins: Bool? = nil, expiredAt: UInt64? = nil, confidential: Bool? = nil, dustLimit: UInt64? = nil, sortBy: String? = nil) {
+        self.subaccount = subaccount
+        self.numConfs = numConfs
+        self.addressType = addressType
+        self.allCoins = allCoins
+        self.expiredAt = expiredAt
+        self.confidential = confidential
+        self.dustLimit = dustLimit
+        self.sortBy = sortBy
+    }
+}
+
+public struct UnspentOutput: Codable {
+    enum CodingKeys: String, CodingKey {
+        case subaccount
+        case pointer
+        case blockHeight = "block_height"
+        case addressType = "address_type"
+        case prevoutScript = "prevout_script"
+        case ptIdx = "pt_idx"
+        case satoshi
+        case subtype
+        case txhash
+        case userStatus = "user_status"
+        case expiryHeight = "expiry_height"
+        case assetId = "asset_id"
+        case isConfidential = "is_confidential"
+    }
+    public let subaccount: UInt32
+    public let pointer: UInt32
+    public let blockHeight: UInt64?
+    public let addressType: String?
+    public let prevoutScript: String?
+    public let ptIdx: UInt32?
+    public let satoshi: Int64?
+    public let subtype: UInt64?
+    public let txhash: String?
+    public let userStatus: UInt8?
+    public let expiryHeight: UInt64?
+    public let assetId: String?
+    public let isConfidential: Bool?
+}
 
 public struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {

@@ -39,20 +39,5 @@ struct CreateTx {
     var isLiquid: Bool { !isLightning && (assetId != nil && assetId != "btc") }
     var isBitcoin: Bool { !isLightning && (assetId == nil || assetId == "btc") }
 
-    var txType: TxType {
-        if privateKey != nil {
-            return .sweep
-        } else if previousTransaction != nil {
-            return .bumpFee
-        } else if isLightning {
-            switch lightningType {
-            case .lnUrlPay(let `data`):
-                return .lnurl
-            default:
-                return .bolt11
-            }
-        } else {
-            return .transaction
-        }
-    }
+    var txType: TxType
 }

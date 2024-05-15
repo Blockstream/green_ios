@@ -32,7 +32,7 @@ class AccountAssetViewController: UIViewController {
         }
 
         navigationItem.backBarButtonItem = UIBarButtonItem(
-            title: "Back".localized, style: .plain, target: nil, action: nil)
+            title: "id_back".localized, style: .plain, target: nil, action: nil)
 
         setContent()
         setStyle()

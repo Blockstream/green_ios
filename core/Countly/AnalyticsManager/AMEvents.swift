@@ -124,9 +124,7 @@ extension AnalyticsManager {
             s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
         case .bumpFee:
             s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.bump.rawValue
-        case .bolt11:
-            break
-        case .lnurl:
+        default:
             break
         }
         s[AnalyticsManager.strAddressInput] = (transactionSgmt.addressInputType ?? .paste).rawValue
@@ -199,9 +197,7 @@ extension AnalyticsManager {
             s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
         case .bumpFee:
             s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.bump.rawValue
-        case .bolt11:
-            break
-        case .lnurl:
+        default:
             break
         }
         s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType?.rawValue

@@ -617,6 +617,24 @@ public class WalletManager {
             try await lightningSession?.lightBridge?.setCloseToAddress(closeToAddress: address)
         }
     }
+
+    public func getExpiredSubaccounts() async throws -> [WalletItem] {
+        var expiredSubaccounts = [WalletItem]()
+        for subaccount in subaccounts.filter({$0.gdkNetwork.multisig && !$0.gdkNetwork.liquid}) {
+            if let session = subaccount.session {
+                let params = GetUnspentOutputsParams(subaccount: subaccount.pointer, numConfs: 1, addressType: "csv", expiredAt: UInt64(session.blockHeight))
+                let res = try await subaccount.session?.getUnspentOutputs(params)
+                for assetUtxos in res ?? [:] {
+                    if assetUtxos.value.count > 0 {
+                        if !expiredSubaccounts.contains(subaccount) {
+                            expiredSubaccounts += [subaccount]
+                        }
+                    }
+                }
+            }
+        }
+        return expiredSubaccounts
+    }
 }
 extension WalletManager {
 

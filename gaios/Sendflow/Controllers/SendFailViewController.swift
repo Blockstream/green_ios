@@ -7,7 +7,7 @@ import gdk
 
 protocol SendFailViewControllerDelegate: AnyObject {
     func onAgain()
-    func onSupport()
+    func onSupport(error: Error)
 }
 
 class SendFailViewController: UIViewController {
@@ -82,7 +82,7 @@ class SendFailViewController: UIViewController {
 
     @IBAction func btnSupport(_ sender: Any) {
         dismiss() {
-            self.delegate?.onSupport()
+            self.delegate?.onSupport(error: self.error)
         }
     }
     @IBAction func btnCopy(_ sender: Any) {

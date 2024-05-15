@@ -29,6 +29,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var lblSumFeeValue: UILabel!
     @IBOutlet weak var lblSumAmountKey: UILabel!
     @IBOutlet weak var lblSumAmountValue: UILabel!
+    @IBOutlet weak var lblSumAmountView: UIView!
     @IBOutlet weak var lblSumTotalKey: UILabel!
     @IBOutlet weak var lblSumTotalValue: UILabel!
     @IBOutlet weak var totalsView: UIStackView!
@@ -60,8 +61,8 @@ class SendTxConfirmViewController: UIViewController {
     func setContent() {
         title = "id_confirm_transaction".localized
         lblAssetTitle.text = "Asset & Account".localized
-        lblAddressTitle.text = viewModel.addressTitle
-        lblAmountTitle.text = "Recipient Receives".localized
+        lblAddressTitle.text = viewModel.addressTitle.localized
+        lblAmountTitle.text = viewModel.amountTitle.localized
         lblAmountValue.text = ""
         lblAmountFee.text = ""
         lblAssetName.text = ""
@@ -126,10 +127,8 @@ class SendTxConfirmViewController: UIViewController {
         totalsView.isHidden = viewModel.isLightning
         noteView.isHidden = viewModel.isLightning && viewModel.note == nil
         noteView.isHidden = viewModel.note?.isEmpty ?? true
+        lblSumAmountView.isHidden = viewModel.recipientReceivesHidden
         
-        if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
-            lblAmountFee.isHidden = true
-        }
         if viewModel.isLightning {
             if let text = viewModel.addressee?.domain {
                 lblPayRequestByValue.text = text
@@ -153,7 +152,7 @@ class SendTxConfirmViewController: UIViewController {
                 textView: addressTextView)
         }
         if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
-            [lblConversion].forEach {
+            [lblConversion, lblAmountFee].forEach {
                 $0?.isHidden = true
             }
         }
@@ -236,6 +235,15 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
     
+    @MainActor
+    func presentReEnable2faSuccessViewController() {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ReEnable2faSuccessViewController") as? ReEnable2faSuccessViewController {
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     func send() {
         Task {
             do {
@@ -249,7 +257,11 @@ class SendTxConfirmViewController: UIViewController {
                 stopLoader()
                 await MainActor.run {
                     dismiss(animated: true, completion: {
-                        self.presentSendSuccessViewController(res)
+                        if self.viewModel.txType == .redepositExpiredUtxos {
+                            self.presentReEnable2faSuccessViewController()
+                        } else {
+                            self.presentSendSuccessViewController(res)
+                        }
                     })
                 }
             } catch {
@@ -299,7 +311,7 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
     }
 }
 
-extension SendTxConfirmViewController: SendSuccessViewControllerDelegate {
+extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnable2faSuccessViewControllerDelegate {
     func onDone() {
         StoreReviewHelper
             .shared
@@ -307,6 +319,10 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate {
                 isSendAll: viewModel.sendAll,
                 account: viewModel.wm?.account,
                 walletItem: viewModel.subaccount)
+        popViewController()
+    }
+
+    func popViewController() {
         let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first
         if avc != nil {
             navigationController?.popToViewController(ofClass: AccountViewController.self)
@@ -343,8 +359,7 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
         send()
     }
     
-    func onSupport() {
-        guard let error = viewModel.error else { return }
+    func onSupport(error: Error) {
         switch error {
         case TwoFactorCallError.cancel(_):
             break

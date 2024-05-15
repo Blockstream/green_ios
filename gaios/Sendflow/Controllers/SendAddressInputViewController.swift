@@ -31,7 +31,7 @@ class SendAddressInputViewController: KeyboardViewController {
         setContent()
         setStyle()
         navigationItem.backBarButtonItem = UIBarButtonItem(
-            title: "Back", style: .plain, target: nil, action: nil)
+            title: "id_back".localized, style: .plain, target: nil, action: nil)
         
         addressTextView.text = ""
         reload()

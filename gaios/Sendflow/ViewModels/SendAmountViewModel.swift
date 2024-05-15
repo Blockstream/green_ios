@@ -5,7 +5,6 @@ import greenaddress
 import UIKit
 
 enum Redeposit2faType {
-
     case single
     case multi
 }
@@ -21,11 +20,20 @@ class SendAmountViewModel {
     var transaction: Transaction?
     var transactionPriority: TransactionPriority = .Medium
     var isFiat = false
+    var hasHW: Bool { wm?.account.isHW ?? false }
 
     var feeEstimator: FeeEstimator?
     var validateTask: Task<Transaction?, Error>?
 
-    var redeposit2faType: Redeposit2faType?
+    var redeposit2faType: Redeposit2faType? {
+        if createTx.txType != .redepositExpiredUtxos {
+            return nil
+        }
+        if let addressees = transaction?.addressees {
+            return addressees.count > 1 ? .multi : .single
+        }
+        return nil
+    }
 
     var error: String? {
         if let error = transaction?.error, !error.isEmpty {
@@ -43,7 +51,7 @@ class SendAmountViewModel {
         if createTx.isLightning {
             return createTx.anyAmounts ?? false
         } else {
-            return createTx.previousTransaction == nil && !createTx.sendAll && createTx.privateKey == nil
+            return createTx.txType == .transaction && !createTx.sendAll
         }
     }
 
@@ -51,7 +59,7 @@ class SendAmountViewModel {
         if createTx.isLightning {
             return false
         } else {
-            return createTx.previousTransaction == nil && createTx.privateKey == nil 
+            return createTx.txType == .transaction
         }
     }
     
@@ -63,8 +71,6 @@ class SendAmountViewModel {
         if transaction?.previousTransaction != nil {
             transactionPriority = .Custom
         }
-
-        self.redeposit2faType = nil
     }
     
     var walletBalance: Balance? {
@@ -189,14 +195,14 @@ class SendAmountViewModel {
     var walletBalanceText: String? { isFiat ? walletBalanceFiatText : walletBalanceDenomText }
     
     var amountText: String? {
-        if sendAll || createTx.privateKey != nil {
+        if sendAll || createTx.txType == .sweep || createTx.txType == .redepositExpiredUtxos {
             return isFiat ? totalWithoutFeeFiat : totalWithoutFeeDenom
         } else {
             return isFiat ? amountFiatText : amountDenomText
         }
     }
     var subamountText: String? {
-        if sendAll || createTx.privateKey != nil {
+        if sendAll || createTx.txType == .sweep || createTx.txType == .redepositExpiredUtxos {
             return isFiat ? "\(totalWithoutFeeDenom ?? "") \(denomination ?? "")" : "\(totalWithoutFeeFiat ?? "") \(fiatCurrency ?? "")"
         } else {
             return isFiat ? "\(subamountDenomText ?? "") \(denomination ?? "")" : "\(subamountFiatText ?? "") \(fiatCurrency ?? "")"
@@ -234,7 +240,8 @@ class SendAmountViewModel {
             transaction: transaction,
             subaccount: subaccount,
             denominationType: denominationType,
-            isFiat: isFiat
+            isFiat: isFiat,
+            txType: createTx.txType
         )
     }
     
@@ -270,23 +277,6 @@ class SendAmountViewModel {
         case .sweep:
             tx.sessionSubaccount = subaccount?.pointer ?? 0
             tx.privateKey = createTx.privateKey
-        case .bumpFee:
-            tx.sessionSubaccount = subaccount?.pointer ?? 0
-            tx.previousTransaction = createTx.previousTransaction
-        case .bolt11:
-            if let addressee = createTx.addressee {
-                tx.addressees = [addressee]
-            }
-            tx.anyAmouts = createTx.anyAmounts ?? false
-        case .lnurl:
-            if let addressee = createTx.addressee {
-                tx.addressees = [addressee]
-            }
-            tx.anyAmouts = createTx.anyAmounts ?? false
-        }
-        self.transaction = tx
-        if Task.isCancelled { return nil }
-        if tx.isSweep {
             if tx.addressees.isEmpty {
                 var address = try await session?.getReceiveAddress(subaccount: subaccount?.pointer ?? 0)
                 address?.isGreedy = true
@@ -305,10 +295,41 @@ class SendAmountViewModel {
                     return tx
                 }
             }
-        } else if !createTx.isLightning && tx.utxos == nil {
-            let unspent = try? await session?.getUnspentOutputs(subaccount: subaccount?.pointer ?? 0, numConfs: 0)
+        case .bumpFee:
+            tx.sessionSubaccount = subaccount?.pointer ?? 0
+            tx.previousTransaction = createTx.previousTransaction
+        case .bolt11:
+            if let addressee = createTx.addressee {
+                tx.addressees = [addressee]
+            }
+            tx.anyAmouts = createTx.anyAmounts ?? false
+        case .lnurl:
+            if let addressee = createTx.addressee {
+                tx.addressees = [addressee]
+            }
+            tx.anyAmouts = createTx.anyAmounts ?? false
+        case .redepositExpiredUtxos:
+            tx.sessionSubaccount = subaccount?.pointer ?? 0
+            if tx.utxos == nil {
+                let receiveAddress = try await session?.getReceiveAddress(subaccount: subaccount?.pointer ?? 0)
+                guard let address = receiveAddress?.address else {
+                    throw GaError.GenericError("Invalid address")
+                }
+                let utxos = try await getExpiredUtxos()
+                let assetIds = utxos.keys
+                let addressees = assetIds.map { Addressee.from(address: address, satoshi: 0, assetId: $0 == "btc" ? nil : $0, isGreedy: true) }
+                tx.addressees = addressees
+                tx.details["transaction_inputs"] = utxos.values.joined().compactMap { $0 } as? [[String: Any]]
+                tx.utxoStrategy = "manual"
+                createTx.addressee = addressees.first
+            }
+        }
+        
+        if [TxType.transaction, TxType.bumpFee, TxType.redepositExpiredUtxos].contains(where: {$0 == createTx.txType }) && tx.utxos == nil {
+            let unspent = try? await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
             tx.utxos = unspent ?? [:]
         }
+        self.transaction = tx
         if Task.isCancelled { return nil }
         tx.amounts = [:]
         var created = try? await session?.createTransaction(tx: tx)
@@ -316,4 +337,12 @@ class SendAmountViewModel {
         return created
     }
 
+    func getExpiredUtxos() async throws -> [String: [[String: Any]]] {
+        let params = GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 1, expiredAt: UInt64(session?.blockHeight ?? 0))
+        return try await session?.getUnspentOutputs(params) ?? [:]
+    }
+
+    func getAssetIcons() -> [UIImage] {
+        transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
+    }
 }

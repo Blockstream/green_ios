@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import gdk
 import greenaddress
+import core
 
 
 class SendAmountViewController: KeyboardViewController {
@@ -67,7 +68,6 @@ class SendAmountViewController: KeyboardViewController {
 
         setContent()
         setStyle()
-        configureRedeposit()
 
         lblFeeTitle.text = "id_network_fee".localized
         lblFeeRate.text = ""
@@ -79,12 +79,7 @@ class SendAmountViewController: KeyboardViewController {
         amountField.addTarget(self, action: #selector(SendAmountViewController.textFieldDidChange(_:)),
                                   for: .editingChanged)
 
-        reloadNavigationBar()
-        reloadBalance()
-        reloadAmount()
-        reloadDenomination()
-        reloadFee()
-        reloadTotal()
+        reload()
         reloadError(false)
         if viewModel.createTx.isLightning {
             reloadForLightning()
@@ -93,6 +88,9 @@ class SendAmountViewController: KeyboardViewController {
         Task { [weak self] in
             await self?.viewModel?.loadFees()
             await self?.validate()
+            if self?.viewModel.redeposit2faType != nil {
+                self?.reload()
+            }
             if let vm = self?.viewModel {
                 self?.reloadError(vm.error != nil && (vm.createTx.satoshi ?? 0 > 0 || !vm.amountEditable))
             }
@@ -104,10 +102,19 @@ class SendAmountViewController: KeyboardViewController {
         }
     }
 
+    func reload() {
+        reloadNavigationBar()
+        configureRedeposit()
+        reloadBalance()
+        reloadAmount()
+        reloadDenomination()
+        reloadFee()
+        reloadTotal()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        if viewModel.redeposit2faType == nil {
+        if viewModel.amountEditable {
             amountField.becomeFirstResponder()
         }
     }
@@ -130,12 +137,9 @@ class SendAmountViewController: KeyboardViewController {
     func setContent() {
         title = "id_amount".localized
         btnNext.setTitle("id_next".localized, for: .normal)
-        if let _ = viewModel.redeposit2faType {
-            btnNext.setTitle("Redeposit".localized, for: .normal)
-        }
         lblPayRequestTitle.text = "Payment request of".localized
         lblMultiAssetTitle.text = ""
-        lblMultiAssetHint.text = "Multiple assets".localized
+        lblMultiAssetHint.text = "id_multiple_assets".localized
         lblMultiAssetInfo.text = "The amount can’t be changed.".localized
         lblRedepositNoEdit.text = "The amount can’t be changed.".localized
     }
@@ -199,40 +203,32 @@ class SendAmountViewController: KeyboardViewController {
     }
 
     func configureRedeposit() {
-
-        redepositMultiStack.isHidden = true
-        redepositNoEditView.isHidden = true
-        guard let type = viewModel.redeposit2faType else { return }
-
-        [lblAvailable, amountStack, actionsStack, totalsSeparator, totalsSumView, btnSendall, btnClear].forEach { $0?.isHidden = true }
-
-        switch type {
+        if viewModel.redeposit2faType != nil {
+            btnNext.setTitle("Redeposit".localized, for: .normal)
+            [lblAvailable, amountStack, actionsStack, totalsSeparator, totalsSumView, btnSendall, btnClear].forEach { $0?.isHidden = true }
+            
+        }
+        switch viewModel.redeposit2faType {
         case .single:
             amountStack.isHidden = false
             actionsStack.isHidden = false
             redepositNoEditView.isHidden = false
             totalsSeparator.isHidden = false
             totalsSumView.isHidden = false
+            redepositMultiStack.isHidden = true
         case .multi:
+            redepositNoEditView.isHidden = true
             redepositMultiStack.isHidden = false
             configureMultiAssetIcons()
+        case .none:
+            redepositNoEditView.isHidden = true
+            redepositMultiStack.isHidden = true
         }
     }
 
     func configureMultiAssetIcons() {
         for v in iconsStack.subviews { v.removeFromSuperview() }
-        var icons: [UIImage] = [UIImage(named: "ntw_btc")!, UIImage(named: "ntw_btc")!, UIImage(named: "ntw_btc")!, UIImage(named: "ntw_btc")!]
-//        for asset in assets?.ids ?? [] {
-//            if let icon = assets?.image(for: asset) {
-//                if icons.count > 0 {
-//                    if icon != icons.last {
-//                        icons.append(icon)
-//                    }
-//                } else {
-//                    icons.append(icon)
-//                }
-//            }
-//        }
+        var icons = viewModel.getAssetIcons()
         icons = Array(icons.prefix(4))
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         setImages(icons)
@@ -252,8 +248,7 @@ class SendAmountViewController: KeyboardViewController {
     }
     @MainActor
     func reloadNavigationBar() {
-
-        if viewModel.redeposit2faType == .multi {
+        if viewModel.redeposit2faType != nil {
             title = "Re-enable 2FA".localized
         } else {
             if let titleView = Bundle.main.loadNibNamed("SendTitleView", owner: self, options: nil)?.first as? SendTitleView {
@@ -269,21 +264,26 @@ class SendAmountViewController: KeyboardViewController {
         if error {
             btnNextEnabled = false
             lblError.text = viewModel.error?.localized
+            lblMultiError.text = viewModel.error?.localized
+            infoMultiBg.backgroundColor = UIColor.gRedWarn()
             infoBg.backgroundColor = UIColor.gRedWarn()
+            infoMultiView.isHidden = false
             infoView.isHidden = false
         } else {
             btnNextEnabled = false
-            if viewModel.createTx.satoshi != nil || viewModel.createTx.sendAll || viewModel.createTx.privateKey != nil {
+            if viewModel.createTx.satoshi != nil || viewModel.createTx.sendAll || viewModel.createTx.txType == .sweep || viewModel.createTx.txType == .redepositExpiredUtxos {
                 btnNextEnabled = true
             }
             lblError.text = ""
+            lblMultiError.text = ""
+            infoMultiBg.backgroundColor = .clear
             infoBg.backgroundColor = .clear
+            infoMultiView.isHidden = true
             infoView.isHidden = true
         }
     }
 
     @IBAction func btnClear(_ sender: Any) {
-
         amountField.text = ""
         viewModel.createTx.satoshi = nil
         lblFiat.text = "≈ \(viewModel.subamountText ?? "")"
@@ -308,7 +308,11 @@ class SendAmountViewController: KeyboardViewController {
         }
     }
     @IBAction func btnNext(_ sender: Any) {
+        presentSendTxConfirmViewController()
+    }
 
+    @MainActor
+    func presentSendTxConfirmViewController() {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
             vc.viewModel = viewModel.sendSendTxConfirmViewModel()
@@ -478,7 +482,10 @@ extension SendAmountViewController: SendDialogFeeViewControllerProtocol {
         reloadFee()
         reloadTotal()
         reloadAmount()
-        Task { [weak self] in await self?.validate() }
+        Task { [weak self] in
+            await self?.validate()
+            self?.reloadAmount()
+        }
     }
 }
 extension SendAmountViewController: UITextFieldDelegate {

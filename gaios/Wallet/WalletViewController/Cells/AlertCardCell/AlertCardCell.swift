@@ -14,6 +14,7 @@ enum AlertCardType {
     case login(String, Error)
     case lightningMaintenance
     case lightningServiceDisruption
+    case reEnable2fa
 }
 
 class AlertCardCell: UITableViewCell {
@@ -157,6 +158,11 @@ class AlertCardCell: UITableViewCell {
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
+        case .reEnable2fa:
+            lblTitle.text = "Re-enable 2FA".localized
+            lblHint.text = "Some coins are no longer 2FA protected.".localized
+            btnRight.setTitle("Re-enable 2FA".localized, for: .normal)
+            btnLeft.isHidden = true
         }
     }
 

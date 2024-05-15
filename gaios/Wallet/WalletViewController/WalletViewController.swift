@@ -446,6 +446,14 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func presentReEnable2fa() {
+        let storyboard = UIStoryboard(name: "ReEnable2fa", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ReEnable2faViewController") as? ReEnable2faViewController {
+            vc.vm = viewModel.reEnable2faViewModel()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     func onShieldBtn(_ idx: Int) {
         let account = viewModel.accountCellModels[safe: idx]?.account
         cachedAccount = account
@@ -684,6 +692,13 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: nil,
+                                   onDismiss: nil)
+                case .reEnable2fa:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: {[weak self] in
+                        self?.presentReEnable2fa()
+                    },
                                    onDismiss: nil)
                 }
                 cell.selectionStyle = .none
