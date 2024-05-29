@@ -16,7 +16,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wd1-tX-cqj">
                     <rect key="frame" x="0.0" y="0.0" width="52.666666666666664" height="54"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="lbl_left" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yss-Xw-Uqf">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="752" text="lbl_left" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yss-Xw-Uqf">
                             <rect key="frame" x="4" y="2" width="44.666666666666664" height="50"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -32,8 +32,8 @@
                         <constraint firstAttribute="bottom" secondItem="yss-Xw-Uqf" secondAttribute="bottom" constant="2" id="zQt-JC-tqz"/>
                     </constraints>
                 </view>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" text="lbl_right" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMg-op-mFs">
-                    <rect key="frame" x="339.66666666666669" y="0.0" width="53.333333333333314" height="54"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" text="lbl_right" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMg-op-mFs">
+                    <rect key="frame" x="62.666666666666657" y="0.0" width="330.33333333333337" height="54"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -42,6 +42,7 @@
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="rMg-op-mFs" firstAttribute="leading" secondItem="Wd1-tX-cqj" secondAttribute="trailing" constant="10" id="M64-GG-4Xb"/>
                 <constraint firstItem="Wd1-tX-cqj" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="RZ9-ap-RRT"/>
                 <constraint firstAttribute="bottom" secondItem="Wd1-tX-cqj" secondAttribute="bottom" id="Uu4-R0-bO1"/>
                 <constraint firstItem="Wd1-tX-cqj" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="W5p-Cs-1CX"/>

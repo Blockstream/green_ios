@@ -73,15 +73,19 @@ class ReceiveViewModel {
         return res
     }
 
-    func addressToUri(address: String, satoshi: Int64) -> String {
+    func addressToUri(address: String, satoshi: Int64, assetId: String) -> String {
         var ntwPrefix = "bitcoin"
         if account.gdkNetwork.liquid {
             ntwPrefix = account.gdkNetwork.mainnet ? "liquidnetwork" :  "liquidtestnet"
         }
+        let amount = String(format:"%.8f", toBTC(satoshi))
         if satoshi == 0 {
             return address
+        } else if !account.gdkNetwork.liquid {
+            return "\(ntwPrefix):\(address)?amount=\(amount)"
+        } else {
+            return "\(ntwPrefix):\(address)?amount=\(amount)&assetid=\(assetId)"
         }
-        return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(satoshi))
     }
 
     func toBTC(_ satoshi: Int64) -> Double {
@@ -140,7 +144,7 @@ class ReceiveViewModel {
         case .address:
             var text = address?.address
             if let address = address?.address, let satoshi = satoshi {
-                text = addressToUri(address: address, satoshi: satoshi)
+                text = addressToUri(address: address, satoshi: satoshi, assetId: asset)
             }
             return text
         }
@@ -196,13 +200,25 @@ class ReceiveViewModel {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let gdkNetwork = account.session?.gdkNetwork
         let network: NetworkSecurityCase = gdkNetwork?.mainnet ?? true ? .bitcoinSS : .testnetSS
-        return DialogInputDenominationViewModel(denomination: inputDenomination,
-                                           denominations: list,
-                                           network: network,
-                                            isFiat: isFiat)
+        return DialogInputDenominationViewModel(
+            denomination: inputDenomination,
+            denominations: list,
+            network: network,
+            isFiat: isFiat,
+            balance: getBalance())
     }
 
     func getBalance() -> Balance? {
         return Balance.fromSatoshi(satoshi ?? 0.0, assetId: asset)
     }
+
+    func ltSuccessViewModel(details: InvoicePaidDetails) async throws -> LTSuccessViewModel? {
+        let satoshi = details.payment?.amountSatoshi
+        if let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: AssetInfo.btcId) {
+            let (amount, denom) = balance.toDenom(inputDenomination)
+            return LTSuccessViewModel(account: account.name, amount: amount, denom: denom)
+        }
+        return nil
+    }
+
 }

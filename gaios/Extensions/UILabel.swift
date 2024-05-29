@@ -5,6 +5,7 @@ enum LabelStyle {
     case subTitle
     case subTitle24
     case titleCard
+    case titleDialog
     case txt
     case txtBigger
     case txtSmaller
@@ -30,6 +31,9 @@ extension UILabel {
         case .titleCard:
             textColor = .white
             font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
+        case .titleDialog:
+            textColor = .white
+            font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         case .txt:
             textColor = .white
             font = UIFont.systemFont(ofSize: 14.0, weight: .regular)

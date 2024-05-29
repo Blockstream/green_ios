@@ -15,6 +15,8 @@ enum ButtonStyle {
     case warnWhite
     case warnRed
     case qrEnlarge
+    case underline(txt: String)
+    case underlineGray(txt: String)
 }
 
 @IBDesignable
@@ -221,6 +223,28 @@ extension UIButton {
         case .qrEnlarge:
             backgroundColor = UIColor.gGrayBtn()
             cornerRadius = 5.0
+        case .underline(let txt):
+            backgroundColor = UIColor.clear
+            let attr: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.gGreenMatrix(),
+                .underlineStyle: NSUnderlineStyle.single.rawValue
+            ]
+            let attributeString = NSMutableAttributedString(
+                    string: txt,
+                    attributes: attr
+                 )
+            setAttributedTitle(attributeString, for: .normal)
+        case .underlineGray(let txt):
+            backgroundColor = UIColor.clear
+            let attr: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.gW40(),
+                .underlineStyle: NSUnderlineStyle.single.rawValue
+            ]
+            let attributeString = NSMutableAttributedString(
+                    string: txt,
+                    attributes: attr
+                 )
+            setAttributedTitle(attributeString, for: .normal)
         }
     }
 }

@@ -1,6 +1,7 @@
 import UIKit
 import gdk
 import core
+import lightning
 
 enum TxDetailsSection: Int, CaseIterable {
     case status = 0
@@ -104,6 +105,8 @@ class TxDetailsViewController: UIViewController {
     }
     func navBarSetup() {
         title = "id_transaction_details".localized
+        navigationItem.backBarButtonItem = UIBarButtonItem(
+            title: "Back".localized, style: .plain, target: nil, action: nil)
 //        let shareBtn = UIButton(type: .system)
 //        shareBtn.setImage(UIImage(named: "ic_export"), for: .normal)
 //        shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
@@ -247,33 +250,51 @@ class TxDetailsViewController: UIViewController {
         DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
+    
+    func createTx(session : SessionManager) async throws -> CreateTx {
+        let feeRates = try await session.getFeeEstimates()
+        let feeRate = feeRates?.first ?? session.gdkNetwork.defaultFee
+        return CreateTx(feeRate: vm.transaction.feeRate + feeRate, subaccount: vm.wallet, previousTransaction: vm.transaction.details)
+    }
+
+    func createTransaction(createTx: CreateTx, session : SessionManager) async throws -> Transaction {
+        let unspentOutputs = try await session.getUnspentOutputs(subaccount: vm.wallet.pointer, numConfs: 1)
+        var tx = Transaction([:], subaccount: vm.transaction.subaccount)
+        tx.previousTransaction = createTx.previousTransaction
+        tx.feeRate = createTx.feeRate ?? session.gdkNetwork.defaultFee
+        tx.utxos = unspentOutputs
+        tx.sessionSubaccount = vm.wallet.pointer
+        return try await session.createTransaction(tx: tx)
+    }
 
     func increaseFeeTapped() {
         if self.cantBumpFees { return }
         guard let session = vm.wallet.session else { return }
         Task {
-            let unspentOutputs = try? await session.getUnspentOutputs(subaccount: vm.wallet.pointer, numConfs: 1)
-            let feeRates = try? await session.getFeeEstimates()
-            let feeRate = feeRates?.first ?? session.gdkNetwork.defaultFee
-            let details = ["previous_transaction": vm.transaction.details,
-                           "fee_rate": vm.transaction.feeRate + feeRate,
-                           "subaccount": vm.wallet.pointer,
-                           "utxos": unspentOutputs as Any]
-            let tx = try? await session.createTransaction(tx: Transaction(details))
-            let storyboard = UIStoryboard(name: "Send", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-                vc.viewModel = SendViewModel(account: vm.wallet,
-                                             inputType: .bumpFee,
-                                             transaction: tx,
-                                             input: nil,
-                                             addressInputType: nil)
-                vc.fixedWallet = true
-                vc.fixedAsset = true
-                self.navigationController?.pushViewController(vc, animated: true)
+            do {
+                startLoader()
+                var createTx = try await createTx(session: session)
+                let tx = try await self.createTransaction(createTx: createTx, session: session)
+                createTx.addressee = tx.addressees.first
+                stopLoader()
+                presentSendAmountViewController(createTx: createTx, tx: tx)
+            } catch {
+                stopLoader()
+                let error = error.description()?.localized
+                showError(error ?? "")
             }
         }
     }
-
+    
+    @MainActor
+    func presentSendAmountViewController(createTx: CreateTx, tx: Transaction) {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewController") as? SendAmountViewController {
+            vc.viewModel = SendAmountViewModel(createTx: createTx, transaction: tx)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
     func didSelectInfoAt(_ index: Int) {
         let m: TxDetailsInfoCellModel = vm.txDetailsInfoCellModels[index]
         let txInfo = m.type

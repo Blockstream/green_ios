@@ -35,8 +35,9 @@ class StoreReviewHelper {
     }
 
     private func requestReview() {
-
-        SKStoreReviewController.requestReview()
+        DispatchQueue.main.async {
+            SKStoreReviewController.requestReview()
+        }
     }
 }
 

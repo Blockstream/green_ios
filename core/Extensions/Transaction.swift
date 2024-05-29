@@ -9,16 +9,16 @@ extension Transaction {
     }
 
     public var feeAsset: String {
-        subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
+        subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
     }
 
     public func amountsWithFees() -> [String: Int64] {
         if type == .redeposit {
-            return [feeAsset: -1 * Int64(fee)]
+            return [feeAsset: -1 * Int64(fee ?? 0)]
         } else {
             // remove L-BTC asset only if fee on outgoing transactions
             if type == .some(.outgoing) || type == .some(.mixed) {
-                return amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(fee)) })
+                return amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(fee ?? 0)) })
             }
         }
         return amounts
@@ -30,7 +30,7 @@ extension Transaction {
         } else if isLiquid {
             // remove L-BTC asset only if fee on outgoing transactions
             if type == .some(.outgoing) || type == .some(.mixed) {
-                return amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee)) })
+                return amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee ?? 0)) })
             }
         }
         return amounts
@@ -110,6 +110,7 @@ extension Transaction {
 
     public static func fromSwapInfo(_ swapInfo: SwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
         var tx = Transaction([:])
+        let amount = Int64(swapInfo.confirmedSats + swapInfo.unconfirmedSats)
         tx.subaccount = subaccount
         tx.blockHeight = isRefundableSwap ? UInt32.max : 0
         tx.canRBF = false
@@ -119,9 +120,9 @@ extension Transaction {
         tx.createdAtTs = swapInfo.createdAt * 1_000_000
         tx.hash = swapInfo.refundTxIds.first
         tx.type = .mixed
-        tx.inputs = [["address": swapInfo.bitcoinAddress]]
+        tx.amounts = ["btc": amount]
+        tx.inputs = [TransactionInputOutput(address: swapInfo.bitcoinAddress, satoshi: amount)]
         tx.outputs = []
-        tx.amounts = ["btc": Int64(swapInfo.confirmedSats + swapInfo.unconfirmedSats)]
         tx.isLightningSwap = true
         tx.isInProgressSwap = swapInfo.status != .completed && !isRefundableSwap
         tx.isRefundableSwap = isRefundableSwap
@@ -132,6 +133,7 @@ extension Transaction {
 
     static func fromReverseSwapInfo(_ swapInfo: ReverseSwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
         var tx = Transaction([:])
+        let amount = Int64(swapInfo.onchainAmountSat)
         tx.subaccount = subaccount
         tx.blockHeight = isRefundableSwap ? UInt32.max : 0
         tx.canRBF = false
@@ -141,9 +143,9 @@ extension Transaction {
         tx.createdAtTs = isRefundableSwap ? Int64.max : 0
         tx.hash = swapInfo.lockupTxid
         tx.type = .mixed
-        tx.inputs = [["address": swapInfo.claimPubkey]]
+        tx.inputs = [TransactionInputOutput.init(address: swapInfo.claimPubkey, satoshi: amount)]
         tx.outputs = []
-        tx.amounts = ["btc": Int64(swapInfo.onchainAmountSat)]
+        tx.amounts = ["btc": amount]
         tx.isLightningSwap = true
         tx.isInProgressSwap = swapInfo.status == .inProgress
         tx.isRefundableSwap = isRefundableSwap

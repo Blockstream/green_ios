@@ -160,7 +160,13 @@ extension LTWithdrawViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension LTWithdrawViewController: AlertViewControllerDelegate {
+    @MainActor
     func onAlertOk() {
-        self.navigationController?.popViewController(animated: true)
+        let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first
+        if avc != nil {
+            navigationController?.popToViewController(ofClass: AccountViewController.self)
+        } else {
+            navigationController?.popToViewController(ofClass: WalletViewController.self)
+        }
     }
 }

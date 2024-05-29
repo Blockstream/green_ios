@@ -92,7 +92,7 @@ class DialogEditViewController: KeyboardViewController {
     }
 
     func updateUI() {
-        if nameTextField.text?.count ?? 0 > 2 {
+        if nameTextField.text?.count ?? 0 > 0 {
             btnSave.setStyle(.primary)
         } else {
             btnSave.setStyle(.primaryDisabled)

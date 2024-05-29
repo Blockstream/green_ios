@@ -127,8 +127,8 @@ public class BleJade: BleJadeCommands, HWProtocol {
     public func getBlindingFactors(params: HWBlindingFactorsParams) async throws -> HWBlindingFactorsResult {
         let version = try await version()
         // Compute hashPrevouts to derive deterministic blinding factors from
-        let txhashes = params.usedUtxos.map { $0.getTxid ?? []}.lazy.joined()
-        let outputIdxs = params.usedUtxos.map { $0.ptIdx }
+        let txhashes = params.transactionInputs.map { $0.getTxid ?? []}.lazy.joined()
+        let outputIdxs = params.transactionInputs.map { $0.ptIdx }
         let hashPrevouts = Wally.getHashPrevouts(txhashes: [UInt8](txhashes), outputIdxs: outputIdxs)
         // Enumerate the outputs and provide blinding factors as needed
         // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded

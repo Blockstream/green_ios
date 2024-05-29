@@ -277,7 +277,7 @@ extension QRCodeReaderView: BcurResolver {
         }
         logger.info(">> TwoFactorCallError")
         validating = false
-        throw TwoFactorCallError.failure(localizedDescription: "Invalid text")
+        throw TwoFactorCallError.failure(localizedDescription: "id_invalid_address".localized)
     }
 }
 

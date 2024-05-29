@@ -174,7 +174,7 @@ public class LightningSessionManager: SessionManager {
                 throw TransactionError.invalid(localizedDescription: "Invoice Expired")
             }
             do {
-                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: tx.anyAmouts ? UInt64(satoshi ?? 0) : nil) {
+                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: UInt64(satoshi ?? 0)) {
                     return SendTransactionSuccess.create(from: res.payment)
                 }
             } catch {
@@ -238,7 +238,7 @@ public class LightningSessionManager: SessionManager {
             tx.error = ""
             tx.addressees = [addressee]
             tx.amounts = ["btc": Int64(sendableSatoshi)]
-            tx.transactionOutputs = [TransactionOutput.fromLnInvoice(invoice, fallbackAmount: Int64(sendableSatoshi))]
+            tx.transactionOutputs = [TransactionInputOutput.fromLnInvoice(invoice, fallbackAmount: Int64(sendableSatoshi))]
             if invoice.isExpired {
                 tx.error = "Invoice Expired"
             }
@@ -258,7 +258,7 @@ public class LightningSessionManager: SessionManager {
             tx.error = ""
             tx.addressees = [addressee]
             tx.amounts = ["btc": Int64(sendableSatoshi)]
-            tx.transactionOutputs = [TransactionOutput.fromLnUrlPay(requestData, input: address, satoshi: Int64(sendableSatoshi))]
+            tx.transactionOutputs = [TransactionInputOutput.fromLnUrlPay(requestData, input: address, satoshi: Int64(sendableSatoshi))]
             if let subaccount = tx.subaccountItem,
                let error = generateLightningError(account: subaccount, satoshi: sendableSatoshi, min: requestData.minSendableSatoshi, max: requestData.maxSendableSatoshi) {
                 tx.error = error
@@ -277,8 +277,8 @@ public class LightningSessionManager: SessionManager {
         try lightBridge?.createInvoice(satoshi: satoshi, description: description)
     }
 
-    public override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) async throws -> ValidateAddresseesResult {
-        guard let inputType =  lightBridge?.parseBoltOrLNUrl(input: input) else {
+    public override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkSecurityCase?) async throws -> ValidateAddresseesResult {
+        guard let inputType = lightBridge?.parseBoltOrLNUrl(input: input) else {
             throw GaError.GenericError()
         }
         switch inputType {
@@ -287,12 +287,25 @@ public class LightningSessionManager: SessionManager {
             // return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
             return ValidateAddresseesResult(isValid: false, errors: ["id_invalid_address"], addressees: [])
         case .bolt11(let invoice):
+            if invoice.isExpired {
+                return ValidateAddresseesResult(isValid: true, errors: ["Invoice expired"], addressees: [])
+            }
+            if let satoshi = invoice.amountSatoshi {
+                let subaccount = try await subaccount(0)
+                subaccount.satoshi = try await getBalance(subaccount: 0, numConfs: 0)
+                if let error = generateLightningError(account: subaccount, satoshi: satoshi) {
+                    return ValidateAddresseesResult(isValid: true, errors: [error], addressees: [])
+                }
+            }
             let addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
         case .lnUrlPay(let data):
             let addr = Addressee.fromRequestData(data, input: input, satoshi: nil)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-        case .lnUrlAuth(_), .lnUrlWithdraw(_), .nodeId(_), .url(_), .lnUrlError(_):
+        case .lnUrlAuth(_), .lnUrlWithdraw(_):
+            let addr = Addressee.from(address: input, satoshi: nil, assetId: nil)
+            return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
+        case .nodeId(_), .url(_), .lnUrlError(_):
             return ValidateAddresseesResult(isValid: false, errors: ["Unsupported"], addressees: [])
         }
     }

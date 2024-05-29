@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Improve Assets app cache Behavior
 - Update breez to 0.4.1 
+- Update send flow UI
 
 ## [4.0.27] - 2024-05-03
 

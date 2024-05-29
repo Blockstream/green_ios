@@ -88,8 +88,14 @@ public class BleJadeConnection: HWConnectionProtocol {
 
     public func exchange(_ data: Data) async throws -> Data {
         try await semaphore.waitUnlessCancelled()
+#if DEBUG
+        print(">= \(data.hex)")
+#endif
         try await write(data)
         if let result = try await read() {
+#if DEBUG
+            print("<= \(result.hex)")
+#endif
             semaphore.signal()
             return result
         }

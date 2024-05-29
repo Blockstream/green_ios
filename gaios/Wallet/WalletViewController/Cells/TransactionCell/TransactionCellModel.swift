@@ -101,15 +101,15 @@ class TransactionCellModel {
     func amounts(_ tx: Transaction, _ subaccount: WalletItem) -> [String: Int64] {
         let feeAsset = subaccount.gdkNetwork.getFeeAsset()
         if tx.type == .redeposit {
-            return [feeAsset: -1 * Int64(tx.fee)]
+            return [feeAsset: -1 * Int64(tx.fee ?? 0)]
         } else if tx.isLiquid {
             // remove L-BTC asset only if fee on outgoing transactions
             if tx.type == .some(.outgoing) || tx.type == .some(.mixed) {
-                return tx.amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(tx.fee)) })
+                return tx.amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(tx.fee ?? 0)) })
             }
         } else if tx.isLightning {
             let amount: Int64 = tx.amounts.first?.value ?? 0
-            let fee: Int64 = Int64(tx.fee)
+            let fee: Int64 = Int64(tx.fee ?? 0)
             if amount < 0 {
                 return ["btc": amount - fee]
             } else {

@@ -41,7 +41,7 @@ enum ExternalUrls {
     static let lightningJadeHelp = "https://help.blockstream.com/hc/en-us/articles/27446807737497"
     static let helpBlockstream = URL(string: "https://help.blockstream.com")!
     static let masterBlindingKey = URL(string: "https://help.blockstream.com/hc/en-us/articles/4403675941017-What-are-the-implications-of-exporting-the-master-blinding-key")!
-
+    static let feesInfo = URL(string: "https://help.blockstream.com/hc/en-us/articles/4412578550809-Why-do-I-have-to-pay-transaction-fees")!
 }
 
 enum RiveModel {

@@ -201,11 +201,16 @@ public struct HWSignTxResponse: Codable {
 
 public struct HWBlindingFactorsParams {
     enum CodingKeys: String, CodingKey {
-        case usedUtxos = "used_utxos"
+        case transactionInputs = "transaction_inputs"
         case transactionOutputs = "transaction_outputs"
     }
-    let usedUtxos: [InputOutput]
+    let transactionInputs: [InputOutput]
     let transactionOutputs: [InputOutput]
+    
+    init(_ details: [String: Any]) {
+        transactionInputs = details["transactionInputs"] as? [InputOutput] ?? []
+        transactionOutputs = details["transactionOutputs"] as? [InputOutput] ?? []
+    }
 }
 
 public struct HWBlindingFactorsResult: Codable {

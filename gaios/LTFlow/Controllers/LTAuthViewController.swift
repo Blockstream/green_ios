@@ -57,7 +57,7 @@ class LTAuthViewController: UIViewController {
                 switch res {
                 case .ok:
                     DropAlert().success(message: "Authentication successful")
-                    self.navigationController?.popViewController(animated: true)
+                    self.next()
                 case .errorStatus(let data):
                     DropAlert().error(message: data.reason)
                 }
@@ -65,6 +65,16 @@ class LTAuthViewController: UIViewController {
                 self.showError(error)
             }
             stopAnimating()
+        }
+    }
+    
+    @MainActor
+    func next() {
+        let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first
+        if avc != nil {
+            navigationController?.popToViewController(ofClass: AccountViewController.self)
+        } else {
+            navigationController?.popToViewController(ofClass: WalletViewController.self)
         }
     }
 }

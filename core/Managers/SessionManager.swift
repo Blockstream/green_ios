@@ -194,10 +194,10 @@ public class SessionManager {
         return wallets.sorted()
     }
 
-    public func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) async throws -> ValidateAddresseesResult {
+    public func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkSecurityCase?) async throws -> ValidateAddresseesResult {
         let asset = assetId == AssetInfo.btcId ? nil : assetId
         let addressee = Addressee.from(address: input, satoshi: satoshi, assetId: asset)
-        let addressees = ValidateAddresseesParams(addressees: [addressee])
+        let addressees = ValidateAddresseesParams(addressees: [addressee], network: network?.network ?? networkType.network)
         return try await self.wrapperAsync(fun: self.session?.validate, params: addressees)
     }
 
@@ -407,9 +407,11 @@ public class SessionManager {
         return result?["unspent_outputs"] as? [String: Any] ?? [:]
     }
 
-    func wrapperTransaction(fun: GdkFunc?, tx: Transaction) async throws -> Transaction {
-        if let fun = try fun?(tx.details) {
+    func wrapperTransaction(fun: GdkFunc?, tx: Transaction, funcName: String = #function) async throws -> Transaction {
+        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(tx.details)")
+        if let fun = try fun?(tx.details) { 
             let res = try await resolve(fun)
+            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
             let result = res?["result"] as? [String: Any]
             return Transaction(result ?? [:], subaccount: tx.subaccount)
         }

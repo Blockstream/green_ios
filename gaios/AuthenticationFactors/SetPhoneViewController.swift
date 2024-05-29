@@ -223,7 +223,7 @@ class SetPhoneViewController: KeyboardViewController {
                 if let twofaError = error as? TwoFactorCallError {
                     switch twofaError {
                     case .failure(let localizedDescription), .cancel(let localizedDescription):
-                        DropAlert().error(message: localizedDescription)
+                        DropAlert().error(message: localizedDescription.localized)
                     }
                 } else {
                     DropAlert().error(message: error.localizedDescription)

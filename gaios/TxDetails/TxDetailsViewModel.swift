@@ -205,11 +205,11 @@ class TxDetailsViewModel {
         }
         switch tx.type {
         case .outgoing:
-            let output = tx.outputs?.filter { $0["is_relevant"] as? Bool == false}.first
-            return output?["address"] as? String
+            let output = tx.outputs?.filter { $0.isRelevant ?? false == false}.first
+            return output?.address
         case .incoming:
-            let output = tx.outputs?.filter { $0["is_relevant"] as? Bool == true}.first
-            return output?["address"] as? String
+            let output = tx.outputs?.filter { $0.isRelevant ?? true == true}.first
+            return output?.address
         default:
             return nil
         }

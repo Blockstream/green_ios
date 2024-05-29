@@ -89,6 +89,15 @@ extension Error {
         if let breezError = self as? BreezSDK.ReceivePaymentError {
             return breezError.description()
         }
+        if let breezError = self as? BreezSDK.LnUrlPayError {
+            return breezError.description()
+        }
+        if let breezError = self as? BreezSDK.LnUrlAuthError {
+            return breezError.description()
+        }
+        if let breezError = self as? BreezSDK.ConnectError {
+            return breezError.description()
+        }
         return nil
     }
 }

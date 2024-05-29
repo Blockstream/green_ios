@@ -22,7 +22,6 @@ class DialogInputDenominationViewController: UIViewController {
     var viewModel: DialogInputDenominationViewModel!
     var obs: NSKeyValueObservation?
     weak var delegate: DialogInputDenominationViewControllerDelegate?
-    var balance: Balance?
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -150,7 +149,7 @@ extension DialogInputDenominationViewController: UITableViewDelegate, UITableVie
             cell.selectionStyle = .none
             let denom = viewModel.denominations[indexPath.row]
             cell.configure(denomination: denom,
-                           balance: balance,
+                           balance: viewModel.balance,
                            network: viewModel.network,
                            isSelected: denom == viewModel.denomination && viewModel.isFiat == false)
             return cell
@@ -171,7 +170,7 @@ extension DialogInputDenominationViewController: UITableViewDelegate, UITableVie
         let fiatCurrency = Balance.fromSatoshi(0, assetId: AssetInfo.btcId)?.toFiat().1
         if let fView = Bundle.main.loadNibNamed("DialogInputDenominationFooter", owner: self, options: nil)?.first as? DialogInputDenominationFooter {
             fView.configure(title: fiatCurrency ?? "",
-                            hint: balance?.fiat ?? "",
+                            hint: viewModel.balance?.fiat ?? "",
                             isSelected: viewModel.isFiat, onTap: { [weak self] in
                 self?.onFooterTap()
             })

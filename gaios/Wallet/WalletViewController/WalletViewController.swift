@@ -145,7 +145,11 @@ class WalletViewController: UIViewController {
 
         if URLSchemeManager.shared.isValid {
             if let bip21 = URLSchemeManager.shared.bip21 {
-                parse(value: bip21, account: nil)
+                let sendAddressInputViewModel = SendAddressInputViewModel(
+                    input: bip21,
+                    preferredAccount: nil,
+                    txType: .transaction)
+                presentSendAddressInputViewController(sendAddressInputViewModel)
                 URLSchemeManager.shared.url = nil
             }
         }
@@ -229,7 +233,11 @@ class WalletViewController: UIViewController {
             if URLSchemeManager.shared.isValid {
                 if let bip21 = URLSchemeManager.shared.bip21 {
                     let account = viewModel.accountCellModels[safe: sIdx]
-                    parse(value: bip21, account: account?.account)
+                    let sendAddressInputViewModel = SendAddressInputViewModel(
+                        input: bip21,
+                        preferredAccount: account?.account,
+                        txType: .transaction)
+                    presentSendAddressInputViewController(sendAddressInputViewModel)
                     URLSchemeManager.shared.url = nil
                 }
             }
@@ -370,21 +378,6 @@ class WalletViewController: UIViewController {
         }
     }
 
-    // open send flow
-    func sendfromWallet() {
-        let storyboard = UIStoryboard(name: "Send", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
-            vc.viewModel = SendViewModel(account: model.account,
-                                         inputType: viewModel.watchOnly ? .sweep : .transaction,
-                                         transaction: nil,
-                                         input: nil,
-                                         addressInputType: nil)
-            vc.fixedWallet = false
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
     // open receive screen
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
@@ -515,7 +508,20 @@ class WalletViewController: UIViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
-        sendfromWallet()
+        let account = viewModel.accountCellModels[sIdx].account
+        let sendAddressInputViewModel = SendAddressInputViewModel(
+            input: nil,
+            preferredAccount: account,
+            txType: .transaction)
+        presentSendAddressInputViewController(sendAddressInputViewModel)
+    }
+    
+    func presentSendAddressInputViewController(_ sendAddressInputViewModel: SendAddressInputViewModel) {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
+            vc.viewModel = sendAddressInputViewModel
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnReceive(_ sender: Any) {
@@ -1062,69 +1068,11 @@ extension WalletViewController: DialogScanViewControllerDelegate {
 
     func didScan(value: ScanResult, index: Int?) {
         let account = viewModel.accountCellModels[sIdx].account
-        parse(value: value.result, account: account)
-    }
-
-    func parse(value: String, account: WalletItem?) {
-        Task {
-            do {
-                let parser = Parser(input: value)
-                try await parser.runMultiAccounts(preferredAccount: account)
-                switch parser.lightningType {
-                case .lnUrlAuth(let data):
-                    // open LNURL-Auth page
-                    ltAuthViewController(requestData: data)
-                case .lnUrlWithdraw(let data):
-                    ltWithdrawViewController(requestData: data)
-                default:
-                    // open Send page
-                    guard parser.account != nil else {
-                        throw ParserError.InvalidInput("Invalid text")
-                    }
-                    let tx = parser.createTx?.tx
-                    let sendModel = SendViewModel(account: parser.account!,
-                                                  inputType: tx?.txType ?? .transaction,
-                                                  transaction: tx,
-                                                  input: value,
-                                                  addressInputType: .scan)
-                    self.sendViewController(model: sendModel)
-                }
-            } catch {
-                switch error {
-                case ParserError.InvalidInput(let txt),
-                    ParserError.InvalidNetwork(let txt),
-                    ParserError.InvalidTransaction(let txt):
-                    DropAlert().warning(message: txt?.localized ?? "")
-                default:
-                    DropAlert().warning(message: error.localizedDescription)
-                }
-            }
-        }
-    }
-
-    func ltAuthViewController(requestData: LnUrlAuthRequestData) {
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTAuthViewController") as? LTAuthViewController {
-            vc.requestData = requestData
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func ltWithdrawViewController(requestData: LnUrlWithdrawRequestData) {
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTWithdrawViewController") as? LTWithdrawViewController {
-            vc.requestData = requestData
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func sendViewController(model: SendViewModel) {
-        let storyboard = UIStoryboard(name: "Send", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            vc.viewModel = model
-            vc.fixedWallet = false
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        let sendAddressInputViewModel = SendAddressInputViewModel(
+            input: value.result,
+            preferredAccount: account,
+            txType: nil)
+        presentSendAddressInputViewController(sendAddressInputViewModel)
     }
 
     func didStop() {

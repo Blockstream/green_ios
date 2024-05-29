@@ -69,9 +69,7 @@ public class HWResolver: HwResolverDelegate {
             let tx = chain.contains("liquid") ? try await hw.signLiquidTransaction(network: chain, params: params) : try await hw.signTransaction(network: chain, params: params)
             return HWResolverResult(signerCommitments: tx.signerCommitments, signatures: tx.signatures)
         case "get_blinding_factors":
-            let transactionInputs = requiredData["transaction_inputs"] as? [[String: Any]]
-            let transactionOutputs = requiredData["transaction_outputs"] as? [[String: Any]]
-            let params = HWBlindingFactorsParams(usedUtxos: transactionInputs ?? [], transactionOutputs: transactionOutputs ?? [])
+            let params = HWBlindingFactorsParams(requiredData)
             let res = try await hw.getBlindingFactors(params: params)
             HWResolver.semaphore.signal()
             return HWResolverResult(assetblinders: res.assetblinders, amountblinders: res.amountblinders)

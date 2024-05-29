@@ -46,6 +46,14 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
     public var bip32Pointer: UInt32 { isSinglesig ? pointer / 16 : pointer}
     public var accountNumber: UInt32 { bip32Pointer + 1 }
 
+    public var manyAssets: Int {
+        satoshi?.filter { $0.value > 0 }.keys.count ?? 0
+    }
+    
+    public func hasAsset(_ assetId: String) -> Bool {
+        satoshi?.filter { $0.key == assetId && $0.value > 0 }.count ?? 0 > 0
+    }
+    
     public var isMultisig: Bool {
         switch type {
         case .standard, .amp, .twoOfThree:

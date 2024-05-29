@@ -100,7 +100,15 @@ public class LightningBridge {
 
     public func parseBoltOrLNUrl(input: String?) -> InputType? {
         guard let input = input else { return nil }
-        return try? parseInput(s: input)
+        do {
+            return try parseInput(s: input)
+        } catch {
+            print (error.localizedDescription)
+            if !input.starts(with: "lightning:") {
+                return try? parseInput(s: "lightning:\(input)")
+            }
+        }
+        return nil
     }
 
     public func getListPayments() throws -> [Payment] {

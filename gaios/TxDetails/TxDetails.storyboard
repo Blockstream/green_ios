@@ -35,6 +35,9 @@
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="9dC-h0-Do3" secondAttribute="trailing" id="hMI-oo-ezO"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="SRN-6H-Qs3">
+                        <barButtonItem key="backBarButtonItem" title=" " id="B9e-r9-Eqg"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="9dC-h0-Do3" id="qYd-gL-Jav"/>
                     </connections>

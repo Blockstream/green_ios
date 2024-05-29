@@ -136,6 +136,7 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
+    @MainActor
     func reload() {
         let network = viewModel.account.gdkNetwork
         btnOnChain.isHidden = !network.lightning || keyboardVisible
@@ -171,34 +172,25 @@ class ReceiveViewController: KeyboardViewController {
 
     func invoicePaid(_ notification: Notification? = nil) {
         Task {
-            do {
-                let invoice = notification?.object as? InvoicePaidDetails
-                guard let account = WalletManager.current?.lightningSubaccount else { return }
-                let parser = Parser(input: invoice?.bolt11 ?? "")
-                try await parser.runSingleAccount(account: account)
-                switch parser.lightningType {
-                case .some(.bolt11(let invoice)):
-                    if let balance = Balance.fromSatoshi(invoice.amountSatoshi ?? 0, assetId: AssetInfo.btcId) {
-                        let (amount, denom) = balance.toDenom(viewModel.inputDenomination)
-                        let model = LTSuccessViewModel(account: account.name, amount: amount, denom: denom)
-                        ltSuccessViewController(model: model)
-                    }
-                default:
-                    break
+            if let invoice = notification?.object as? InvoicePaidDetails {
+                if let vm = try await viewModel.ltSuccessViewModel(details: invoice) {
+                    presentLTSuccessViewController(model: vm)
                 }
-            } catch { print(error) }
+            }
         }
     }
 
     func newAddress(_ notification: Notification? = nil) {
         loading = true
         reload()
-        Task {
+        Task.detached() { [weak self] in
             do {
-                try await viewModel?.newAddress()
-            } catch { failure(error) }
-            self.loading = false
-            self.reload()
+                try await self?.viewModel?.newAddress()
+            } catch {
+                await self?.failure(error)
+            }
+            await MainActor.run { [weak self] in self?.loading = false }
+            await self?.reload()
         }
     }
 
@@ -286,10 +278,13 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func optSweep() {
-        let storyboard = UIStoryboard(name: "Send", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            let sendViewModel = SendViewModel(account: viewModel.account, inputType: .sweep, transaction: nil, input: nil, addressInputType: nil)
-            vc.viewModel = sendViewModel
+        presentSendAddressInputViewController()
+    }
+    
+    func presentSendAddressInputViewController() {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
+            vc.viewModel = SendAddressInputViewModel(preferredAccount: viewModel.account, txType: .sweep)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -328,7 +323,8 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
-    func ltSuccessViewController(model: LTSuccessViewModel) {
+    @MainActor
+    func presentLTSuccessViewController(model: LTSuccessViewModel) {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTSuccessViewController") as? LTSuccessViewController {
             vc.viewModel = model
@@ -355,10 +351,9 @@ class ReceiveViewController: KeyboardViewController {
     func showDialogInputDenominations() {
         let model = viewModel.dialogInputDenominationViewModel()
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController, let balance = viewModel.getBalance() {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController {
             vc.viewModel = model
             vc.delegate = self
-            vc.balance = balance
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }

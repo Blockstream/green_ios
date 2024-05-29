@@ -387,9 +387,13 @@ public class WalletManager {
     public var bitcoinMultisigNetwork: NetworkSecurityCase { mainnet ? .bitcoinMS : .testnetMS }
     public var liquidMultisigNetwork: NetworkSecurityCase { mainnet ? .liquidMS : .testnetLiquidMS }
     public var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
-
     public var bitcoinNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [bitcoinMultisigNetwork] }
     public var liquidNetworks: [NetworkSecurityCase] { [liquidSinglesigNetwork] + [liquidMultisigNetwork] }
+    
+    public var liquidSinglesigSession: SessionManager? { sessions[liquidSinglesigNetwork.rawValue] }
+    public var bitcoinSinglesigSession: SessionManager? { sessions[bitcoinSinglesigNetwork.rawValue] }
+    public var liquidMultisigSession: SessionManager? { sessions[liquidMultisigNetwork.rawValue] }
+    public var bitcoinMultisigSession: SessionManager? { sessions[bitcoinMultisigNetwork.rawValue] }
     
     public var activeBitcoinSessions: [SessionManager] {
         bitcoinNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
@@ -412,6 +416,24 @@ public class WalletManager {
 
     public var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
     public var activeLiquidMultisig: Bool { sessions[liquidMultisigNetwork.rawValue]?.logged ?? false }
+    
+    public var bitcoinSubaccounts: [WalletItem] {
+        subaccounts.filter { !$0.hidden }
+            .filter { bitcoinNetworks.contains($0.networkType) }
+    }
+    public var liquidSubaccounts: [WalletItem] {
+        subaccounts.filter { !$0.hidden }
+            .filter { liquidNetworks.contains($0.networkType) }
+    }
+    public var bitcoinSubaccountsWithFunds: [WalletItem] {
+        bitcoinSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
+    }
+    public var liquidSubaccountsWithFunds: [WalletItem] {
+        liquidSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
+    }
+    public func liquidSubaccountsWithAssetIdFunds(assetId: String) -> [WalletItem] {
+        liquidSubaccounts.filter { $0.satoshi?.filter{ $0.key == assetId }.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
+    }
 
     func syncSettings() async throws {
         // Prefer Multisig for initial sync as those networks are synced across devices
