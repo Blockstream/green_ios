@@ -6311,7 +6311,7 @@
 			repositoryURL = "https://github.com/breez/breez-sdk-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 0.4.1;
+				version = "0.4.2-rc1";
 			};
 		};
 		8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */ = {

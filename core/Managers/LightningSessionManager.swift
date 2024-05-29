@@ -114,6 +114,13 @@ public class LightningSessionManager: SessionManager {
         }
     }
 
+    public func unregisterNotification(token: String, xpubHashId: String) {
+        if let notificationService = Bundle.main.notificationService {
+            logger.info("unregister notification token \(token, privacy: .public) with xpubHashId \(xpubHashId, privacy: .public) at \(notificationService, privacy: .public)")
+            try? lightBridge?.breezSdk?.unregisterWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=\("ios")&token=\(token)&app_data=\(xpubHashId)")
+        }
+    }
+
     public override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         _ = try await loginUser(credentials: credentials!, restore: false)
     }

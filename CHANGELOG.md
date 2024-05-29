@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improve Assets app cache Behavior
-- Update breez to 0.4.1 
+- Update breez to 0.4.2-rc1 
 - Update send flow UI
 - Update gdk to 0.71.3
 - Improved fields in transaction details
