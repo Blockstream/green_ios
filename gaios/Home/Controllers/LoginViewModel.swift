@@ -49,6 +49,7 @@ class LoginViewModel {
         }
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
+        wm.hwInterfaceResolver = await HwPopupResolver()
         let lightningCredentials = Credentials(mnemonic: try wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
         let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
         try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
@@ -79,6 +80,7 @@ class LoginViewModel {
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
+        wm.hwInterfaceResolver = await HwPopupResolver()
         try await auth()
         let credentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: account.keychain)
         _ = try await wm.login(credentials: credentials, lightningCredentials: credentials, parentWalletId: account.walletIdentifier)

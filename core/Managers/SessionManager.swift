@@ -22,6 +22,7 @@ public class SessionManager {
     public var gdkNetwork: GdkNetwork
     public var blockHeight: UInt32 = 0
     public var popupResolver: PopupResolverDelegate? = nil
+    public var hwInterfaceResolver: HwInterfaceResolver? = nil
 
     public var connected = false
     public var logged = false
@@ -162,6 +163,7 @@ public class SessionManager {
             hwDevice: hw?.interface,
             session: self,
             popupResolver: popupResolver,
+            hwInterfaceDelegate: hwInterfaceResolver,
             bcurResolver: bcurResolver)
         return try await rm.run()
     }

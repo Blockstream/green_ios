@@ -48,6 +48,12 @@ public class WalletManager {
         }
     }
 
+    public var hwInterfaceResolver: HwInterfaceResolver? = nil {
+        didSet {
+            sessions.forEach { $0.value.hwInterfaceResolver = hwInterfaceResolver }
+        }
+    }
+
     // Store active subaccount
     private var activeWalletHash: Int?
     public var currentSubaccount: WalletItem? {

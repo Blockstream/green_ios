@@ -8,7 +8,7 @@ public protocol HwResolverDelegate: AnyObject {
     func setInterfaceDelegate(_ interfaceDelegate: HwInterfaceResolver?)
 }
 
-public protocol HwInterfaceResolver {
+public protocol HwInterfaceResolver: AnyObject {
     func showMasterBlindingKeyRequest() async
     func dismiss() async
 }
