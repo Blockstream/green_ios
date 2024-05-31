@@ -216,7 +216,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             guard let stringValue = readableObject.stringValue else {
                 return
             }
-            if previous ?? "" == stringValue || buffer.contains(stringValue) {
+            if previous ?? "" == stringValue || buffer.contains(stringValue) || stringValue.isEmpty {
                 return
             }
             previous = stringValue
@@ -236,9 +236,8 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                 do {
                     validating = true
                     var value = ""
-                    if !buffer.isEmpty { buffer.removeFirst() }
+                    if !buffer.isEmpty { value = buffer.removeFirst() }
                     logger.info(">> value \(value)")
-
                     if let result = try await validate(value) {
                         delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
                         previous = nil
