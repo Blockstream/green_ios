@@ -1,4 +1,5 @@
 import Foundation
+import gdk
 
 public class AccountsRepository {
 
@@ -83,20 +84,23 @@ public class AccountsRepository {
         accounts = currentList
     }
 
-    public func remove(_ account: Account) {
-        accounts.removeAll(where: { $0.id == account.id})
+    public func remove(_ account: Account) async {
+        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        try? await wm.removeLightningShortcut()
+        try? await wm.removeLightning()
         account.removePinKeychainData()
         account.removeBioKeychainData()
-        account.removeLightningCredentials()
-        account.removeLightningShortcut()
-        if let derivedAccount = account.getDerivedLightningAccount() {
-            derivedAccount.removeLightningCredentials()
-            derivedAccount.removeLightningShortcut()
-        }
+        accounts.removeAll(where: { $0.id == account.id})
     }
 
-    public func removeAll() {
-        accounts.forEach { remove($0) }
+    public func removeAll() async {
+        for account in accounts {
+            await remove(account)
+        }
+        reset()
+    }
+
+    public func reset() {
         accounts = []
         try? storage.removeAll()
     }

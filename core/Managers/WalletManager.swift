@@ -28,6 +28,8 @@ public class WalletManager {
     // Mainnet / testnet networks
     let mainnet: Bool
 
+    public var isHW: Bool { account.isHW }
+
     public var account: Account {
         didSet {
             if AccountsRepository.shared.get(for: account.id) != nil {
@@ -589,10 +591,37 @@ public class WalletManager {
         try AuthenticationTypeHandler.addAuthKeyLightning(credentials: credentials, forNetwork: keychain)
     }
 
-    public func removeLightningShortcut() async {
-        let keychain = "\(account.keychain)-lightning-shortcut"
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: keychain)
+    public func removeLightningShortcut() async throws {
+        let account = AccountsRepository.shared.current
+        if let derivedAccount = account?.getDerivedLightningAccount() {
+            let derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain)
+            AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: derivedAccount.keychain)
+            if let walletId = try? prominentSession?.walletIdentifier(credentials: derivedCredentials) {
+                await prominentSession?.removeDatadir(walletHashId: walletId.walletHashId)
+            }
+        }
     }
+
+    public func removeLightning() async throws {
+        // unregister lightning webhook
+        let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
+        if let token = defaults?.string(forKey: "token"),
+           let xpubHashId = account.xpubHashId {
+           lightningSession?.unregisterNotification(token: token, xpubHashId: xpubHashId)
+        }
+        try? await lightningSession?.disconnect()
+        if let prominentCredentials = try await prominentSession?.getCredentials(password: ""),
+           let lightnigCredentials = try? deriveLightningCredentials(from: prominentCredentials),
+           let walletId = try lightningSession?.walletIdentifier(credentials: lightnigCredentials) {
+            
+            // remove lightning folder & credentials
+            await lightningSession?.removeDatadir(walletHashId: walletId.walletHashId)
+            LightningRepository.shared.remove(for: walletId.walletHashId)
+        }
+        // reload subaccounts
+        _ = try await subaccounts()
+    }
+    
 
     public func getLightningMnemonic(credentials: Credentials) throws -> String? {
         guard let mnemonic = credentials.mnemonic else {

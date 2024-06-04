@@ -165,29 +165,8 @@ class AccountViewModel {
     }
 
     func removeLightningSubaccount() async throws {
-        let prominentSession = wm?.prominentSession
-        let session = wm?.sessions[account.gdkNetwork.network]
-
-        // remove lightning shortcut
-        let account = AccountsRepository.shared.current
-        if let derivedAccount = account?.getDerivedLightningAccount() {
-            let derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain)
-            _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: derivedAccount.keychain)
-            if let walletId = try? session?.walletIdentifier(credentials: derivedCredentials) {
-                await session?.removeDatadir(walletHashId: walletId.walletHashId)
-                LightningRepository.shared.remove(for: walletId.walletHashId)
-            }
-        }
-        // remove lightning session
-        if let prominentCredentials = try await prominentSession?.getCredentials(password: ""),
-           let lightnigCredentials = try? wm?.deriveLightningCredentials(from: prominentCredentials),
-           let walletId = try? session?.walletIdentifier(credentials: lightnigCredentials) {
-            try await session?.disconnect()
-            await session?.removeDatadir(walletHashId: walletId.walletHashId )
-            LightningRepository.shared.remove(for: walletId.walletHashId)
-        }
-        try await session?.disconnect()
-        _ = try await wm?.subaccounts()
+        try await wm?.removeLightningShortcut()
+        try await wm?.removeLightning()
     }
 
     func renameSubaccount(name: String) async throws {
@@ -252,8 +231,8 @@ class AccountViewModel {
         try await wm?.addLightningShortcut(credentials: credentials)
     }
 
-    func removeLightningShortcut() async {
-        await wm?.removeLightningShortcut()
+    func removeLightningShortcut() async throws {
+        try await wm?.removeLightningShortcut()
     }
 
     var headerIcon: UIImage {

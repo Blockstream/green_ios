@@ -212,9 +212,13 @@ extension WOLoginViewController: DialogRenameViewControllerDelegate, DialogDelet
     }
     func didDelete(_ index: String?) {
         if let account = self.account {
-            AccountsRepository.shared.remove(account)
-            navigationController?.popViewController(animated: true)
-            AnalyticsManager.shared.deleteWallet()
+            Task {
+                await AccountsRepository.shared.remove(account)
+                await MainActor.run {
+                    navigationController?.popViewController(animated: true)
+                    AnalyticsManager.shared.deleteWallet()
+                }
+            }
         }
     }
     func didCancel() {

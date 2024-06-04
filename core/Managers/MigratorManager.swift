@@ -65,7 +65,7 @@ public class MigratorManager {
                 UserDefaults.standard.set(true, forKey: network + "FirstInitialization")
             }
         }
-        AccountsRepository.shared.removeAll()
+        AccountsRepository.shared.reset()
     }
 
     func updateKeychainPolicy() { // from  "4.0.25"

@@ -79,9 +79,13 @@ class HomeViewController: UIViewController {
 
     func walletDelete(_ index: String) {
         if let account = AccountsRepository.shared.get(for: index), account.isDerivedLightning {
-            AccountsRepository.shared.remove(account)
-            AnalyticsManager.shared.deleteWallet()
-            tableView.reloadData()
+            Task {
+                await AccountsRepository.shared.remove(account)
+                await MainActor.run {
+                    AnalyticsManager.shared.deleteWallet()
+                    tableView.reloadData()
+                }
+            }
             return
         }
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
@@ -426,9 +430,13 @@ extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteVi
     }
     func didDelete(_ index: String?) {
         if let index = index, let account = AccountsRepository.shared.get(for: index) {
-            AccountsRepository.shared.remove(account)
-            AnalyticsManager.shared.deleteWallet()
-            tableView.reloadData()
+            Task {
+                await AccountsRepository.shared.remove(account)
+                await MainActor.run {
+                    AnalyticsManager.shared.deleteWallet()
+                    tableView.reloadData()
+                }
+            }
         }
     }
     func didCancel() {
