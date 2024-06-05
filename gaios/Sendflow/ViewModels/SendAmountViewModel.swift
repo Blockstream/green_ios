@@ -277,10 +277,12 @@ class SendAmountViewModel {
             if let addressee = createTx.addressee {
                 tx.addressees = [addressee]
             }
+            tx.anyAmouts = createTx.anyAmounts ?? false
         case .lnurl:
             if let addressee = createTx.addressee {
                 tx.addressees = [addressee]
             }
+            tx.anyAmouts = createTx.anyAmounts ?? false
         }
         self.transaction = tx
         if Task.isCancelled { return nil }
