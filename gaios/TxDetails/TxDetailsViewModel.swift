@@ -18,7 +18,7 @@ class TxDetailsViewModel {
     var assetAmountList: AssetAmountList
 
     var cells = ["TxDetailsStatusCell", "TxDetailsAmountCell", "TxDetailsMultiAmountCell",
-                 "TxDetailsActionCell", "TxDetailsInfoCell"]
+                 "TxDetailsActionCell", "TxDetailsInfoCell", "TxDetailsTotalsCell"]
 
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
@@ -47,26 +47,60 @@ class TxDetailsViewModel {
         }
     }
 
+    var showTotals: Bool {
+        if !transaction.isLightning && transaction.type == .outgoing && assetAmountList.amounts.count == 1 {
+            let amount: (String,Int64) = assetAmountList.amounts[0]
+            let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+            if amount.0 == assetId {
+                return true
+            }
+        }
+        return false
+    }
+
+    var txDetailsTotalsCellModels: [TxDetailsTotalsCellModel] {
+        var items = [TxDetailsTotalsCellModel]()
+        if !showTotals { return items }
+
+        var totalSpent: String?
+        var conversion: String?
+        var ntwFees: String?
+        var receive: String?
+
+        let amount: (String,Int64) = assetAmountList.amounts[0]
+        let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+        if amount.0 == assetId {
+            let tSpent = amount.1 - Int64(transaction.fee ?? 0)
+            if let balance = Balance.fromSatoshi(tSpent, assetId: assetId) {
+                let (amount, denom) = balance.toValue()
+                let (fiat, fiatCurrency) = balance.toFiat()
+                totalSpent = "\(amount) \(denom)"
+                conversion = "≈ \(fiat) \(fiatCurrency)"
+            }
+            if let balance = Balance.fromSatoshi(transaction.fee ?? 0, assetId: assetId) {
+                let (amount, denom) = balance.toValue()
+                ntwFees = "\(amount) \(denom)"
+            }
+            let spent = amount.1
+            if let balance = Balance.fromSatoshi(spent, assetId: assetId) {
+                let (amount, denom) = balance.toValue()
+                receive = "\(amount) \(denom)"
+            }
+        }
+
+        if let totalSpent = totalSpent, let conversion = conversion, let ntwFees = ntwFees, let receive = receive {
+            items.append(TxDetailsTotalsCellModel(totalSpent: totalSpent,
+                                                  conversion: conversion,
+                                                  ntwFees: ntwFees,
+                                                  receive: receive,
+                                                  hideBalance: hideBalance))
+        }
+        return items
+    }
+
     var txDetailsInfoCellModels: [TxDetailsInfoCellModel] {
 
         var items = [TxDetailsInfoCellModel]()
-
-        if transaction.type == .incoming || transaction.isRefundableSwap ?? false {} else {
-
-            // fee
-            if let balance = Balance.fromSatoshi(transaction.fee, assetId: transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") {
-                let (amount, denom) = balance.toValue()
-                let (fiat, fiatCurrency) = balance.toFiat()
-                let str = "\(amount) \(denom) ≈ \(fiat) \(fiatCurrency)"
-
-                items.append(TxDetailsInfoCellModel(title: "Network fees".localized, hint: str, type: .fee, hideBalance: hideBalance))
-            }
-
-            // fee rate
-            if transaction.isLightning {} else {
-                items.append(TxDetailsInfoCellModel(title: "id_fee_rate".localized, hint: "\(String(format: "%.2f satoshi / vbyte", Double(transaction.feeRate) / 1000))", type: .feeRate, hideBalance: hideBalance))
-            }
-        }
 
         // address
         if let address = address(transaction) {
@@ -90,12 +124,31 @@ class TxDetailsViewModel {
                                                 hideBalance: hideBalance))
         }
 
+        if transaction.type != .incoming &&
+            !(transaction.isRefundableSwap ?? false) &&
+            !showTotals {
+
+            // fee
+            if let balance = Balance.fromSatoshi(transaction.fee ?? 0, assetId: transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") {
+                let (amount, denom) = balance.toValue()
+                let (fiat, fiatCurrency) = balance.toFiat()
+                let str = "\(amount) \(denom) ≈ \(fiat) \(fiatCurrency)"
+
+                items.append(TxDetailsInfoCellModel(title: "Network fees".localized, hint: str, type: .fee, hideBalance: hideBalance))
+            }
+
+            // fee rate
+//            if transaction.isLightning {} else {
+//                items.append(TxDetailsInfoCellModel(title: "id_fee_rate".localized, hint: "\(String(format: "%.2f satoshi / vbyte", Double(transaction.feeRate) / 1000))", type: .feeRate, hideBalance: hideBalance))
+//            }
+        }
+
         // transaction Id
-        if transaction.isLightning {} else {
-            items.append(TxDetailsInfoCellModel(title: "id_transaction_id".localized,
-                                                hint: transaction.hash ?? "",
-                                                type: .txId,
-                                                hideBalance: hideBalance))
+        if !transaction.isLightning {
+//            items.append(TxDetailsInfoCellModel(title: "id_transaction_id".localized,
+//                                                hint: transaction.hash ?? "",
+//                                                type: .txId,
+//                                                hideBalance: hideBalance))
         }
 
         // note
@@ -147,7 +200,7 @@ class TxDetailsViewModel {
         if transaction.isLightning {} else {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_note")!,
-                                         title: "Add Note".localized,
+                                         title: Common.noteActionName(transaction.memo ?? ""),
                                          action: .addNote)
             )
         }

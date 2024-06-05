@@ -4,7 +4,9 @@ class TxDetailsInfoCell: UITableViewCell {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-
+    @IBOutlet weak var addressTextView: UITextView!
+    @IBOutlet weak var innerPad: UIView!
+    
     class var identifier: String { return String(describing: self) }
 
     var model: TxDetailsInfoCellModel?
@@ -21,19 +23,27 @@ class TxDetailsInfoCell: UITableViewCell {
         // Initialization code
         lblTitle.setStyle(.txtCard)
         lblHint.setStyle(.txt)
+        addressTextView.isHidden = true
     }
 
     func configure(model: TxDetailsInfoCellModel, onTap: ((String)->Void)?) {
         self.lblTitle.text = model.title
         self.lblHint.text = model.hint
+
         self.model = model
         self.onTap = onTap
         if model.type == .address {
-
-            let attributedHint = NSMutableAttributedString(string: model.hint)
-            attributedHint.addAttribute(.foregroundColor, value: UIColor.gGreenMatrix(), range: NSRange(location: 0, length: 6))
-            attributedHint.addAttribute(.foregroundColor, value: UIColor.gGreenMatrix(), range: NSRange(location: model.hint.count - 6, length: 6))
-            lblHint.attributedText = attributedHint
+            lblHint.isHidden = true
+            addressTextView.isHidden = false
+            innerPad.isHidden = true
+            AddressDisplay.configure(
+                address: model.hint,
+                textView: addressTextView,
+                style: .txDetails)
+        } else {
+            addressTextView.isHidden = true
+            lblHint.isHidden = false
+            innerPad.isHidden = false
         }
         switch model.type {
         case .fee, .feeRate:

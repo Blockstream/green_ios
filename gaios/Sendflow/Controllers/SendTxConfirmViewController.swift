@@ -172,7 +172,7 @@ class SendTxConfirmViewController: UIViewController {
     func updateNavigationItem() {
         let noteBtn = UIButton(type: .system)
         noteBtn.setStyle(.inline)
-        noteBtn.setTitle("id_add_note".localized, for: .normal)
+        noteBtn.setTitle(Common.noteActionName(viewModel.transaction?.memo ?? ""), for: .normal)
         noteBtn.addTarget(self, action: #selector(noteBtnTapped), for: .touchUpInside)
         if !viewModel.isLightning {
             navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: noteBtn)]

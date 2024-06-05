@@ -132,6 +132,9 @@
 		344915F22A0CE29C00D35818 /* ReceiveAddressCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */; };
 		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
 		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
+		344EF1BF2C10522A00689D63 /* TxDetailsTotalsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344EF1BE2C10522A00689D63 /* TxDetailsTotalsCell.xib */; };
+		344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF1C02C10525300689D63 /* TxDetailsTotalsCell.swift */; };
+		344EF1C32C10528700689D63 /* TxDetailsTotalsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF1C22C10528700689D63 /* TxDetailsTotalsCellModel.swift */; };
 		344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F1C0B26B7CC4D009293E6 /* TwoFaMethodsCell.swift */; };
 		344FE3492684BD9700C087A5 /* RecoverySuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE3482684BD9700C087A5 /* RecoverySuccess.swift */; };
 		344FE34B2684C77900C087A5 /* WalletName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34A2684C77900C087A5 /* WalletName.swift */; };
@@ -951,6 +954,9 @@
 		344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAddressCellModel.swift; sourceTree = "<group>"; };
 		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
 		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
+		344EF1BE2C10522A00689D63 /* TxDetailsTotalsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsTotalsCell.xib; sourceTree = "<group>"; };
+		344EF1C02C10525300689D63 /* TxDetailsTotalsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsTotalsCell.swift; sourceTree = "<group>"; };
+		344EF1C22C10528700689D63 /* TxDetailsTotalsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsTotalsCellModel.swift; sourceTree = "<group>"; };
 		344F1C0B26B7CC4D009293E6 /* TwoFaMethodsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFaMethodsCell.swift; sourceTree = "<group>"; };
 		344FE3482684BD9700C087A5 /* RecoverySuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccess.swift; sourceTree = "<group>"; };
 		344FE34A2684C77900C087A5 /* WalletName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletName.swift; sourceTree = "<group>"; };
@@ -2863,6 +2869,9 @@
 		34F57FF32BA1E9ED00DCB076 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				344EF1C22C10528700689D63 /* TxDetailsTotalsCellModel.swift */,
+				344EF1C02C10525300689D63 /* TxDetailsTotalsCell.swift */,
+				344EF1BE2C10522A00689D63 /* TxDetailsTotalsCell.xib */,
 				34A883B12BA85F50004A1826 /* TxDetailsInfoCellModel.swift */,
 				34A883AF2BA85F3E004A1826 /* TxDetailsInfoCell.swift */,
 				34A883AB2BA85F10004A1826 /* TxDetailsInfoCell.xib */,
@@ -3945,6 +3954,7 @@
 				3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */,
 				34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
+				344EF1BF2C10522A00689D63 /* TxDetailsTotalsCell.xib in Resources */,
 				34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */,
 				343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
@@ -4202,6 +4212,7 @@
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
 				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
+				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,
 				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
 				34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */,
 				34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */,
@@ -4399,6 +4410,7 @@
 				81E04A3B2AA63C6800867705 /* Country.swift in Sources */,
 				3484118C265E6113002D2202 /* Constants.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
+				344EF1C32C10528700689D63 /* TxDetailsTotalsCellModel.swift in Sources */,
 				34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */,
 				34287B752A83855B0065471F /* AlertViewController.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,

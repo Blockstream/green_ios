@@ -7,7 +7,8 @@ enum TxDetailsSection: Int, CaseIterable {
     case status = 0
     case amount = 1
     case info = 2
-    case actions = 3
+    case totals = 3
+    case actions = 4
 }
 
 enum TableDividerStyle {
@@ -236,6 +237,15 @@ class TxDetailsViewController: UIViewController {
         }
     }
 
+    func infoFee() {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as? SendFeeInfoViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
+
     func refreshTransaction(_ notification: Notification) {
         DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -362,6 +372,8 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
             return vm.assetAmountList.amounts.count
         case TxDetailsSection.info:
             return vm.txDetailsInfoCellModels.count
+        case TxDetailsSection.totals:
+            return vm.txDetailsTotalsCellModels.count
         case TxDetailsSection.actions:
             return vm.txDetailsActionCellModels.count
         }
@@ -397,7 +409,14 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-
+        case TxDetailsSection.totals:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TxDetailsTotalsCell.identifier, for: indexPath) as? TxDetailsTotalsCell {
+                cell.configure(model: vm.txDetailsTotalsCellModels[indexPath.row]) { [weak self] () in
+                    self?.infoFee()
+                }
+                cell.selectionStyle = .none
+                return cell
+            }
         case TxDetailsSection.actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TxDetailsActionCell.identifier, for: indexPath) as? TxDetailsActionCell {
                 cell.configure(model: vm.txDetailsActionCellModels[indexPath.row], isLast: vm.txDetailsActionCellModels.count - 1 == indexPath.row)
@@ -416,7 +435,7 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == TxDetailsSection.info.rawValue && vm.txDetailsInfoCellModels.count > 0 {
+        if section == TxDetailsSection.info.rawValue && vm.txDetailsInfoCellModels.count > 0 && vm.showTotals == false {
             return UITableView.automaticDimension
         }
         return 0.1
@@ -439,6 +458,8 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         if section == TxDetailsSection.info.rawValue {
+
+            if vm.showTotals { return nil }
             return tableDivider(.footer)
         }
         return nil
@@ -537,3 +558,10 @@ extension TxDetailsViewController {
         return section
     }
 }
+
+extension TxDetailsViewController: SendFeeInfoViewControllerDelegate {
+    func didTapMore() {
+        SafeNavigationManager.shared.navigate( ExternalUrls.feesInfo )
+    }
+}
+

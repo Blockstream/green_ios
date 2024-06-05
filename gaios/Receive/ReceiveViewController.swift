@@ -157,11 +157,11 @@ class ReceiveViewController: KeyboardViewController {
     func reloadNavigationBtns() {
         let network = viewModel.account.gdkNetwork
         if network.lightning {
-            let settingsBtn = UIButton(type: .system)
-            settingsBtn.setStyle(.inline)
-            settingsBtn.setTitle("id_add_note".localized, for: .normal)
-            settingsBtn.addTarget(self, action: #selector(editNoteBtnTapped), for: .touchUpInside)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+            let btnNote = UIButton(type: .system)
+            btnNote.setStyle(.inline)
+            btnNote.setTitle(Common.noteActionName(viewModel.description ?? ""), for: .normal)
+            btnNote.addTarget(self, action: #selector(editNoteBtnTapped), for: .touchUpInside)
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: btnNote)
         } else {
             let helpBtn = UIButton(type: .system)
             helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
@@ -338,7 +338,7 @@ class ReceiveViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = ""
+            vc.prefill = viewModel.description ?? ""
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }

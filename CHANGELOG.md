@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Update breez to 0.4.1 
 - Update send flow UI
 - Update gdk to 0.71.2
+- Improved fields in transaction details
 
 ## [4.0.27] - 2024-05-03
 

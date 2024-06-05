@@ -34,4 +34,12 @@ class Common {
             return NSAttributedString(string: "*")
         }
     }
+
+    static func noteActionName(_ currentStr: String) -> String {
+        if currentStr.isEmpty {
+            return "id_add_note".localized
+        } else {
+            return "Edit Note".localized
+        }
+    }
 }

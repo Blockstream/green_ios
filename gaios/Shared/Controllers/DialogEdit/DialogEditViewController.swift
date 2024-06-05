@@ -121,7 +121,7 @@ class DialogEditViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_add_note".localized.lowercased().firstUppercased
+        lblTitle.text = Common.noteActionName(prefill)
         btnSave.setTitle("id_submit".localized, for: .normal)
     }
 

@@ -1,10 +1,22 @@
 import Foundation
 import UIKit
 
+enum AddressDisplayStyle {
+    case `default`
+    case txDetails
+}
+
 class AddressDisplay {
 
-    static func configure(address: String, textView: UITextView) {
+    static func configure(address: String, textView: UITextView, style: AddressDisplayStyle = .default) {
 
+        var fontSize: CGFloat = 16.0
+        var align: NSTextAlignment = .center
+        if style == .txDetails {
+            textView.textContainerInset = UIEdgeInsets(top: 1.0, left: 0.0, bottom: 0.0, right: 0.0)
+            fontSize = 12.0
+            align = .right
+        }
         let rowL = 4 * 4 + 3 * 2
         var visibleAddress = ""
         var rangeA = NSRange() // all chars
@@ -13,7 +25,7 @@ class AddressDisplay {
         var rangeP = NSRange() // pad chars
 
         let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .center
+        paragraph.alignment = align
 
         for i in 0...address.count {
             if i > 0 && i < address.count {
@@ -47,7 +59,7 @@ class AddressDisplay {
         let attrS = NSMutableAttributedString(string: visibleAddress)
         attrS.addAttribute(.paragraphStyle, value: paragraph, range: rangeA)
         attrS.setColor(color: .white, forText: visibleAddress)
-        attrS.setFont(font: .monospacedSystemFont(ofSize: 16, weight: .regular), stringValue: visibleAddress)
+        attrS.setFont(font: .monospacedSystemFont(ofSize: fontSize, weight: .regular), stringValue: visibleAddress)
 
         if visibleAddress.count > 10 {
 
