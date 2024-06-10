@@ -1265,11 +1265,11 @@
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="793"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U7f-RD-yqI">
-                                                <rect key="frame" x="0.0" y="0.0" width="393" height="97.333333333333329"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="393" height="51.333333333333336"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oHM-I0-KvF">
-                                                <rect key="frame" x="0.0" y="97.333333333333314" width="393" height="695.66666666666674"/>
+                                                <rect key="frame" x="0.0" y="51.333333333333314" width="393" height="741.66666666666674"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kDt-zk-Ybo">
                                                         <rect key="frame" x="164" y="9" width="65" height="3"/>
@@ -1280,7 +1280,7 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LEi-zz-iGp">
-                                                        <rect key="frame" x="0.0" y="15" width="393" height="680.66666666666663"/>
+                                                        <rect key="frame" x="0.0" y="15" width="393" height="726.66666666666663"/>
                                                         <subviews>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tzl-dB-IVg">
                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="65.666666666666671"/>
@@ -1301,13 +1301,13 @@
                                                                 </constraints>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2M0-vv-otm">
-                                                                <rect key="frame" x="0.0" y="65.666666666666629" width="393" height="580"/>
+                                                                <rect key="frame" x="0.0" y="65.666666666666686" width="393" height="626"/>
                                                                 <subviews>
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9MT-Ga-FxR">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="393" height="580"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="393" height="626"/>
                                                                         <subviews>
-                                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="SSO-4M-ZjH">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="393" height="560"/>
+                                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="SSO-4M-ZjH">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="393" height="616"/>
                                                                                 <subviews>
                                                                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="GbO-5z-T5r">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="393" height="500"/>
@@ -1321,7 +1321,7 @@
                                                                                         </connections>
                                                                                     </tableView>
                                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2dE-ow-fZL" userLabel="Next">
-                                                                                        <rect key="frame" x="25" y="510" width="343" height="50"/>
+                                                                                        <rect key="frame" x="25" y="508" width="343" height="50"/>
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="height" constant="50" id="yq9-uk-3re"/>
@@ -1332,6 +1332,21 @@
                                                                                         </state>
                                                                                         <connections>
                                                                                             <action selector="tapCustomFee:" destination="SvN-ZF-L2g" eventType="touchUpInside" id="06v-1n-lGA"/>
+                                                                                        </connections>
+                                                                                    </button>
+                                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9kT-R9-kFk" userLabel="Next">
+                                                                                        <rect key="frame" x="101.66666666666669" y="566" width="190" height="50"/>
+                                                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                        <constraints>
+                                                                                            <constraint firstAttribute="height" constant="50" id="WLP-r9-1Ps"/>
+                                                                                        </constraints>
+                                                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                                                                        <inset key="contentEdgeInsets" minX="50" minY="0.0" maxX="50" maxY="0.0"/>
+                                                                                        <state key="normal" title="btn_learmore">
+                                                                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                        </state>
+                                                                                        <connections>
+                                                                                            <action selector="btnLearmore:" destination="SvN-ZF-L2g" eventType="touchUpInside" id="3B6-K6-yl2"/>
                                                                                         </connections>
                                                                                     </button>
                                                                                 </subviews>
@@ -1345,7 +1360,7 @@
                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <constraints>
                                                                             <constraint firstItem="SSO-4M-ZjH" firstAttribute="top" secondItem="9MT-Ga-FxR" secondAttribute="top" id="3NN-I4-fxd"/>
-                                                                            <constraint firstAttribute="bottom" secondItem="SSO-4M-ZjH" secondAttribute="bottom" constant="20" symbolic="YES" id="JKz-2J-LBj"/>
+                                                                            <constraint firstAttribute="bottom" secondItem="SSO-4M-ZjH" secondAttribute="bottom" constant="10" id="JKz-2J-LBj"/>
                                                                             <constraint firstAttribute="trailing" secondItem="SSO-4M-ZjH" secondAttribute="trailing" id="WXY-Ie-11a"/>
                                                                             <constraint firstItem="SSO-4M-ZjH" firstAttribute="leading" secondItem="9MT-Ga-FxR" secondAttribute="leading" id="tw8-Uk-0pf"/>
                                                                         </constraints>
@@ -1430,6 +1445,7 @@
                     <connections>
                         <outlet property="anchorBottom" destination="Kj3-5U-6HG" id="Tur-wS-s2n"/>
                         <outlet property="btnCustom" destination="2dE-ow-fZL" id="rOE-EU-uhU"/>
+                        <outlet property="btnLearmore" destination="9kT-R9-kFk" id="anj-ca-8kj"/>
                         <outlet property="cardView" destination="LEi-zz-iGp" id="Xal-Ci-ATh"/>
                         <outlet property="handle" destination="kDt-zk-Ybo" id="dTL-pj-TpF"/>
                         <outlet property="lblTitle" destination="1Xi-7h-j2f" id="1z1-B1-jn4"/>
@@ -1883,13 +1899,13 @@
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_hww_jade_new" translatesAutoresizingMaskIntoConstraints="NO" id="e8p-ic-3Rf">
-                                                                                <rect key="frame" x="80" y="78.666666666666686" width="233" height="100"/>
+                                                                                <rect key="frame" x="80" y="78.666666666666657" width="233" height="100"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="100" id="bWV-cl-uwr"/>
                                                                                 </constraints>
                                                                             </imageView>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FF6-7G-wEt">
-                                                                                <rect key="frame" x="157.66666666666666" y="126.66666666666669" width="24" height="24"/>
+                                                                                <rect key="frame" x="157.66666666666666" y="126.66666666666666" width="24" height="24"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" secondItem="FF6-7G-wEt" secondAttribute="height" multiplier="1:1" id="3Nx-1w-Ix4"/>
@@ -1948,7 +1964,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_fee_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ViE-qP-fLR">
-                                                                                                <rect key="frame" x="222.33333333333334" y="16.666666666666742" width="120.66666666666666" height="17"/>
+                                                                                                <rect key="frame" x="222.33333333333334" y="16.666666666666686" width="120.66666666666666" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>
@@ -1973,7 +1989,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_amount_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GSa-TJ-bWl">
-                                                                                                <rect key="frame" x="193.66666666666663" y="16.666666666666742" width="149.33333333333337" height="17"/>
+                                                                                                <rect key="frame" x="193.66666666666663" y="16.666666666666629" width="149.33333333333337" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>
@@ -2017,7 +2033,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_total_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3op-Fe-evd">
-                                                                                                <rect key="frame" x="213.66666666666663" y="16.666666666666742" width="129.33333333333337" height="17"/>
+                                                                                                <rect key="frame" x="213.66666666666663" y="16.666666666666629" width="129.33333333333337" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>

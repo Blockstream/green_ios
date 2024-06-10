@@ -17,7 +17,8 @@ class SendDialogFeeViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var btnCustom: UIButton!
-    
+    @IBOutlet weak var btnLearmore: UIButton!
+
     var viewModel: SendDialogFeeViewModel!
     var delegate: SendDialogFeeViewControllerProtocol?
     private var obs: NSKeyValueObservation?
@@ -82,6 +83,7 @@ class SendDialogFeeViewController: KeyboardViewController {
     func setContent() {
         lblTitle.text = "id_network_fee".localized
         btnCustom.setTitle("id_custom".localized, for: .normal)
+        btnLearmore.setTitle("id_learn_more".localized, for: .normal)
     }
 
     func setStyle() {
@@ -90,6 +92,8 @@ class SendDialogFeeViewController: KeyboardViewController {
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         btnCustom.setStyle(.inline)
+        btnLearmore.setStyle(.outlined)
+        btnLearmore.setTitleColor(.white, for: .normal)
     }
 
     func register() {
@@ -124,7 +128,11 @@ class SendDialogFeeViewController: KeyboardViewController {
     @IBAction func tapCustomFee(_ sender: Any) {
         presentDialogCustomFeeViewController() 
     }
-    
+
+    @IBAction func btnLearmore(_ sender: Any) {
+        SafeNavigationManager.shared.navigate( ExternalUrls.feesInfo )
+    }
+
     func presentDialogCustomFeeViewController() {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
