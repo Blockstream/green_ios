@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.28] - 2024-06-11
+
+### Changed
+- Update gdk to 0.71.3
+
 ## [4.0.27] - 2024-05-03
 
 ### Added
