@@ -282,14 +282,14 @@ class TxDetailsViewController: UIViewController {
         guard let session = vm.wallet.session else { return }
         Task {
             do {
-                startLoader()
+                startAnimating()
                 var createTx = try await createTx(session: session)
                 let tx = try await self.createTransaction(createTx: createTx, session: session)
                 createTx.addressee = tx.addressees.first
-                stopLoader()
+                stopAnimating()
                 presentSendAmountViewController(createTx: createTx, tx: tx)
             } catch {
-                stopLoader()
+                stopAnimating()
                 let error = error.description()?.localized
                 showError(error ?? "")
             }
