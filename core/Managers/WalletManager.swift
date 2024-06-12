@@ -685,12 +685,15 @@ extension WalletManager {
 }
 extension WalletManager: AssetsProvider {
     public func getAssets(params: gdk.GetAssetsParams) -> gdk.GetAssetsResult? {
-        let session = activeLiquidSessions.first ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
+        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
         return session.getAssets(params: params)
     }
 
     public func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
-        let session = activeLiquidSessions.first ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
+        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
+        if refresh {
+            try await session.connect()
+        }
         return try await session.refreshAssets(icons: icons, assets: assets, refresh: refresh)
     }
 }

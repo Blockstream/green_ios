@@ -81,8 +81,8 @@ public class AssetsManager {
     public func refreshIfNeeded(provider: AssetsProvider) async throws {
         let interval = CFAbsoluteTimeGetCurrent() - (updatedAt ?? .zero)
         if updatedAt == nil || interval > 120 {
-            try await self.fetchFromCountly(provider: provider)
             try await provider.refreshAssets(icons: true, assets: true, refresh: true)
+            try await self.fetchFromCountly(provider: provider)
             updatedAt = CFAbsoluteTimeGetCurrent()
             let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
