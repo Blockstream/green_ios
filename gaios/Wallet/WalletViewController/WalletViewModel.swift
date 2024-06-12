@@ -224,7 +224,7 @@ class WalletViewModel {
     func reload() async {
         await loadSubaccounts()
         try? await loadBalances()
-        try? await loadTransactions(max: 10)
+        try? await loadTransactions(max: 20)
     }
 
     func onCreateAccount(_ wallet: WalletItem) {

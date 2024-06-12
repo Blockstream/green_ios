@@ -344,7 +344,7 @@ class WalletViewController: UIViewController {
             await self?.reloadSections([.account, .balance, .card], animated: true)
             await self?.viewModel.reloadAlertCards()
             await self?.reloadSections([.card], animated: true)
-            try? await self?.viewModel.loadTransactions(max: 10)
+            try? await self?.viewModel.loadTransactions(max: 20)
             await self?.reloadSections([.transaction], animated: true)
             await MainActor.run { [weak self] in
                 self?.isReloading = false
@@ -1099,7 +1099,7 @@ extension WalletViewController: DenominationExchangeViewControllerDelegate {
         Task {
             try? await viewModel.loadBalances()
             reloadSections([.account, .balance], animated: true)
-            try? await self.viewModel.loadTransactions(max: 10)
+            try? await self.viewModel.loadTransactions(max: 20)
             reloadSections([.transaction], animated: true)
         }
     }
