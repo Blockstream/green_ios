@@ -9,7 +9,8 @@ class SendHWConfirmViewController: UIViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
 
-    @IBOutlet weak var loaderPlaceholder: UIView!
+    @IBOutlet weak var loaderPlaceholderJ: UIView!
+    @IBOutlet weak var loaderPlaceholderL: UIView!
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var icWallet: UIImageView!
@@ -164,17 +165,19 @@ class SendHWConfirmViewController: UIViewController {
     }
 
     func start() {
-        loaderPlaceholder.addSubview(loadingIndicator)
+        let lph = viewModel.isLedger ? loaderPlaceholderL : loaderPlaceholderJ
+        guard let lph = lph else { return }
 
+        lph.addSubview(loadingIndicator)
         NSLayoutConstraint.activate([
             loadingIndicator.centerXAnchor
-                .constraint(equalTo: loaderPlaceholder.centerXAnchor),
+                .constraint(equalTo: lph.centerXAnchor),
             loadingIndicator.centerYAnchor
-                .constraint(equalTo: loaderPlaceholder.centerYAnchor),
+                .constraint(equalTo: lph.centerYAnchor),
             loadingIndicator.widthAnchor
-                .constraint(equalToConstant: loaderPlaceholder.frame.width),
+                .constraint(equalToConstant: lph.frame.width),
             loadingIndicator.heightAnchor
-                .constraint(equalTo: loaderPlaceholder.widthAnchor)
+                .constraint(equalTo: lph.widthAnchor)
         ])
 
         loadingIndicator.isAnimating = true

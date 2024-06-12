@@ -89,9 +89,7 @@ class SendTxConfirmViewModel {
         if isLiquid {
             tx = try await session.blindTransaction(tx: tx)
         }
-        if !isConsolitating {
-            tx = try await session.signTransaction(tx: tx)
-        }
+        tx = try await session.signTransaction(tx: tx)
         self.transaction = tx
         if tx.isSweep {
             return try await session.broadcastTransaction(txHex: tx.transaction ?? "")

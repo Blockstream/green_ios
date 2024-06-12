@@ -240,7 +240,8 @@ class SendTxConfirmViewController: UIViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReEnable2faSuccessViewController") as? ReEnable2faSuccessViewController {
             vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
         }
     }
 
