@@ -23,7 +23,8 @@ class ReEnable2faAccountCell: UITableViewCell {
         lblName.setStyle(.txtBigger)
         [lblHint, lblType].forEach {
             $0.setStyle(.txtCard)
-//            $0.textColor = UIColor.gW60()
+            $0.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+            $0.textColor = UIColor.gW60()
         }
     }
 
