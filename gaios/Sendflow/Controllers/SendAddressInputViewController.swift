@@ -178,6 +178,10 @@ class SendAddressInputViewController: KeyboardViewController {
             return
         }
         if createTx.isLightning {
+            if let error = createTx.error {
+                enableError(true, text: error.localized)
+                return
+            }
             // lightning account: go in amount screen
             switch createTx.lightningType {
             case .lnUrlAuth(let data):

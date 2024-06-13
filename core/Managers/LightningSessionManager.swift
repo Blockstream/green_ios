@@ -178,7 +178,7 @@ public class LightningSessionManager: SessionManager {
             // Check for expiration
             print ("Expire in \(invoice.expiry)")
             if invoice.isExpired {
-                throw TransactionError.invalid(localizedDescription: "Invoice Expired")
+                throw TransactionError.invalid(localizedDescription: "id_invoice_expired")
             }
             do {
                 if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: satoshi) {
@@ -246,13 +246,12 @@ public class LightningSessionManager: SessionManager {
             tx.addressees = [addressee]
             tx.amounts = ["btc": Int64(sendableSatoshi)]
             tx.transactionOutputs = [TransactionInputOutput.fromLnInvoice(invoice, fallbackAmount: Int64(sendableSatoshi))]
-            if invoice.isExpired {
-                tx.error = "Invoice Expired"
-            }
             if let description = invoice.description {
                 tx.memo = description
             }
-            if let subaccount = tx.subaccountItem,
+            if invoice.isExpired {
+                tx.error = "id_invoice_expired"
+            } else if let subaccount = tx.subaccountItem,
                let error = generateLightningError(account: subaccount, satoshi: sendableSatoshi) {
                 tx.error = error
             }
@@ -295,7 +294,7 @@ public class LightningSessionManager: SessionManager {
             return ValidateAddresseesResult(isValid: false, errors: ["id_invalid_address"], addressees: [])
         case .bolt11(let invoice):
             if invoice.isExpired {
-                return ValidateAddresseesResult(isValid: true, errors: ["Invoice expired"], addressees: [])
+                return ValidateAddresseesResult(isValid: true, errors: ["id_invoice_expired"], addressees: [])
             }
             if let satoshi = invoice.amountSatoshi {
                 let subaccount = try await subaccount(0)

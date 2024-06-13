@@ -43,6 +43,7 @@ class SendAddressInputViewModel {
         self.createTx = createTx
         self.txType = txType
     }
+
     private func parseLightning() async throws -> CreateTx? {
         guard let input = input else { return nil }
         let res = try? await lightningSession?.parseTxInput(input, satoshi: nil, assetId: nil, network: lightningSession?.networkType)
@@ -52,12 +53,12 @@ class SendAddressInputViewModel {
             if anyAmounts == true {
                 addressee?.satoshi = nil
             }
-            let lightningType = lightningSession?.lightBridge?.parseBoltOrLNUrl(input: addressee?.address ?? "")
+            let lightningType = lightningSession?.lightBridge?.parseBoltOrLNUrl(input: input)
             let txType: TxType = { switch lightningType {
                 case .bolt11(_): return .bolt11
                 default: return .lnurl
             }}()
-            return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, anyAmounts: anyAmounts, lightningType: lightningType, txType: txType)
+            return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, error: res?.errors.first, anyAmounts: anyAmounts, lightningType: lightningType, txType: txType)
         } else {
             throw TransactionError.invalid(localizedDescription: res?.errors.first ?? "id_operation_failure")
         }
