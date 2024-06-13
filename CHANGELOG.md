@@ -3,17 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-### [Unreleased]
+### [4.0.30] - 2024-06-13
 
 ### Added
-- Allow redeposit expired utxos on bitcoin multisig
+- Allow redeposit of expired utxos in bitcoin multisig accounts
 
 ### Changed
-- Improve Assets app cache Behavior
-- Update breez to 0.4.2-rc1 
-- Update send flow UI
+- Improvements to liquid assets caching
+- Update breez to 0.4.2-rc1
+- Improved send UI
 - Update gdk to 0.71.3
-- Improved fields in transaction details
+- Improvements in transaction details
 
 ## [4.0.27] - 2024-05-03
 
