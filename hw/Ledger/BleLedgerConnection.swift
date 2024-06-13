@@ -29,7 +29,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
     }
 
     // Status codes
-    enum SWCode: UInt16 {
+    public enum SWCode: UInt16 {
         case SW_OK = 0x9000
         case SW_INS_NOT_SUPPORTED = 0x6D00
         case SW_WRONG_P1_P2 = 0x6B00
@@ -43,9 +43,31 @@ public class BleLedgerConnection: HWConnectionProtocol {
 
     // Status error
     public class SWError: Error {
-        let code: SWCode
-        init(_ code: SWCode) {
+        public let code: SWCode
+        public init(_ code: SWCode) {
             self.code = code
+        }
+        public func description() -> String? {
+            switch code {
+            case .SW_OK:
+                nil
+            case .SW_INS_NOT_SUPPORTED:
+                "Command not supported"
+            case .SW_WRONG_P1_P2:
+                "Wrong package"
+            case .SW_INCORRECT_P1_P2:
+                "Incorrect package"
+            case .SW_RECONNECT:
+                "Reconnection required"
+            case .SW_INVALID_STATUS:
+                "Invalid status"
+            case .SW_REJECTED:
+                "Transaction was rejected by user"
+            case .SW_INVALID_PKG:
+                "Invalid package"
+            case .SW_ABORT:
+                "Aborted operation"
+            }
         }
     }
 

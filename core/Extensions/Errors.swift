@@ -21,6 +21,10 @@ extension Error {
                 return "Invalid Response"
             }
         }
+        if let swError = self as? BleLedgerConnection.SWError {
+            return swError.description()
+        }
+        
         if let _ = self as? BleLedgerConnection.LedgerError {
             return "id_operation_failed"
         }
