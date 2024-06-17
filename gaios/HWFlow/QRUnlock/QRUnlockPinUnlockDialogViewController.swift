@@ -105,7 +105,7 @@ class QRUnlockPinUnlockDialogViewController: UIViewController {
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         btnLearMore.setStyle(.inline)
         btnPinUnlock.setStyle(.primary)
-        btnAlreadyUnlocked.setStyle(.inlineWhite)
+        btnAlreadyUnlocked.setStyle(.inline)
         lblHint.setStyle(.txtCard)
     }
 

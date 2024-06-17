@@ -146,7 +146,7 @@ public struct JadeAuthRequest: Codable {
         case epoch
     }
     let network: String
-    let epoch: UInt32
+    public let epoch: UInt32
 }
 
 public struct JadeHandshakeCompleteReply: Codable {
@@ -154,8 +154,8 @@ public struct JadeHandshakeCompleteReply: Codable {
         case hmac = "hmac"
         case encryptedKey = "encrypted_key"
     }
-    let hmac: String
-    let encryptedKey: String
+    public let hmac: String
+    public let encryptedKey: String
 }
 
 public struct JadeHandshakeComplete: Codable {
@@ -165,17 +165,17 @@ public struct JadeHandshakeComplete: Codable {
         case encryptedData = "encrypted_data"
         case hmacEncryptedData =  "hmac_encrypted_data"
     }
-    let ske: String
-    let cke: String
-    let encryptedData: String
-    let hmacEncryptedData: String
+    public let ske: String
+    public let cke: String
+    public let encryptedData: String
+    public let hmacEncryptedData: String
 }
 
 public struct JadeHttpData: Codable {
     enum CodingKeys: String, CodingKey {
         case data
     }
-    let data: String
+    public let data: String
 }
 
 public struct JadeHandshakeInit: Codable {
@@ -183,8 +183,8 @@ public struct JadeHandshakeInit: Codable {
         case sig
         case ske
     }
-    let sig: String
-    let ske: String
+    public let sig: String
+    public let ske: String
 }
 
 public struct JadeHttpRequestParams<T: Codable>: Codable {
@@ -194,10 +194,10 @@ public struct JadeHttpRequestParams<T: Codable>: Codable {
         case accept
         case data
     }
-    let urls: [String]
-    let method: String
-    let accept: String
-    let data: T
+    public let urls: [String]
+    public let method: String
+    public let accept: String
+    public let data: T
 }
 
 public struct JadeHttpRequest<T: Codable>: Codable {
@@ -205,15 +205,15 @@ public struct JadeHttpRequest<T: Codable>: Codable {
         case params = "params"
         case onReply = "on-reply"
     }
-    let params: JadeHttpRequestParams<T>
-    let onReply: String
+    public let params: JadeHttpRequestParams<T>
+    public let onReply: String
 }
 
 public struct JadeAuthResponse<T: Codable>: Codable {
     enum CodingKeys: String, CodingKey {
         case httpRequest = "http_request"
     }
-    let httpRequest: JadeHttpRequest<T>
+    public let httpRequest: JadeHttpRequest<T>
 }
 
 public struct JadeEmpty: Codable {
@@ -255,9 +255,9 @@ public struct GetBlindingFactorParams: Codable {
 public var JadeRequestId = Int.random(in: 0 ..< 899999)
 
 public struct JadeRequest<T: Codable>: Decodable, Encodable {
-    let id: String
-    let method: String
-    let params: T?
+    public let id: String
+    public let method: String
+    public let params: T?
 
     private enum CodingKeys: String, CodingKey {
         case id
@@ -294,9 +294,9 @@ public struct JadeRequest<T: Codable>: Decodable, Encodable {
 }
 
 public struct JadeResponseError: Codable {
-    let code: Int
-    let message: String
-    let data: Data? = nil
+    public let code: Int
+    public let message: String
+    public let data: Data? = nil
 
     private enum CodingKeys: String, CodingKey {
         case code
@@ -306,9 +306,9 @@ public struct JadeResponseError: Codable {
 }
 
 public struct JadeResponse<T: Codable>: Decodable, Encodable {
-    let id: String
-    let error: JadeResponseError?
-    let result: T?
+    public let id: String
+    public let error: JadeResponseError?
+    public let result: T?
 
     private enum CodingKeys: String, CodingKey {
         case id

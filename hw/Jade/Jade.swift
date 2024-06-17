@@ -6,7 +6,7 @@ import SwiftCBOR
 import CommonCrypto
 import green.wally
 
-public class BleJade: BleJadeCommands, HWProtocol {
+public class Jade: JadeCommands, HWProtocol {
 
     public func unlock(network: String) async throws -> Bool {
         // Send initial auth user request
@@ -226,7 +226,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
             }
         }
         for _ in inputs {
-            if let buffer = try await read() {
+            if let buffer = try await connection.read() {
 #if DEBUG
                 print("<= " + buffer.map { String(format: "%02hhx", $0) }.joined())
 #endif
@@ -249,7 +249,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
 #if DEBUG
         print("=> " + encoded!.map { String(format: "%02hhx", $0) }.joined())
 #endif
-        try await self.write(encoded!)
+        try await connection.write(encoded!)
     }
 
     func signTxInputsAntiExfil(inputs: [TxInputProtocol?]) async throws -> (commitments: [String], signatures: [String]) {
@@ -353,34 +353,34 @@ public class BleJade: BleJadeCommands, HWProtocol {
     }
 }
 // OTA functions
-extension BleJade {
+extension Jade {
 
     // Check Jade fmw against minimum allowed firmware version
     public func isJadeFwValid(_ version: String) -> Bool {
-        return BleJade.MIN_ALLOWED_FW_VERSION <= version
+        return Jade.MIN_ALLOWED_FW_VERSION <= version
     }
 
     public func download(_ fwpath: String, base64: Bool = false) async -> [String: Any]? {
         let params: [String: Any] = [
             "method": "GET",
             "accept": base64 ? "base64": "json",
-            "urls": ["\(BleJade.FW_SERVER_HTTPS)\(fwpath)",
-                     "\(BleJade.FW_SERVER_ONION)\(fwpath)"] ]
+            "urls": ["\(Jade.FW_SERVER_HTTPS)\(fwpath)",
+                     "\(Jade.FW_SERVER_ONION)\(fwpath)"] ]
         return await gdkRequestDelegate?.httpRequest(params: params)
     }
 
     public func firmwarePath(_ verInfo: JadeVersionInfo) -> String? {
-        if ![BleJade.BOARD_TYPE_JADE, BleJade.BOARD_TYPE_JADE_V1_1].contains(verInfo.boardType) {
+        if ![Jade.BOARD_TYPE_JADE, Jade.BOARD_TYPE_JADE_V1_1].contains(verInfo.boardType) {
             return nil
         }
-        let isV1BoardType = verInfo.boardType == BleJade.BOARD_TYPE_JADE
+        let isV1BoardType = verInfo.boardType == Jade.BOARD_TYPE_JADE
         // Alas the first version of the jade fmw didn't have 'BoardType' - so we assume an early jade.
-        if verInfo.jadeFeatures.contains(BleJade.FEATURE_SECURE_BOOT) {
+        if verInfo.jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
             // Production Jade (Secure-Boot [and flash-encryption] enabled)
-            return isV1BoardType ? BleJade.FW_JADE_PATH : BleJade.FW_JADE1_1_PATH
+            return isV1BoardType ? Jade.FW_JADE_PATH : Jade.FW_JADE1_1_PATH
         } else {
             // Unsigned/development/testing Jade
-            return isV1BoardType ? BleJade.FW_JADEDEV_PATH : BleJade.FW_JADE1_1DEV_PATH
+            return isV1BoardType ? Jade.FW_JADEDEV_PATH : Jade.FW_JADE1_1DEV_PATH
         }
     }
 

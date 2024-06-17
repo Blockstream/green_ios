@@ -18,14 +18,14 @@ class AccountNavigator {
         if account.isDerivedLightning {
             vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
+        } else if account.isWatchonly {
+            vcWatch?.account = account
+            nv.setViewControllers([vcHome!, vcWatch!], animated: true)
         } else if account.isHW {
             vcConnect?.account = account
             vcConnect?.bleViewModel = BleViewModel.shared
             vcConnect?.scanViewModel = ScanViewModel()
             nv.setViewControllers([vcHome!, vcConnect!], animated: true)
-        } else if account.isWatchonly {
-            vcWatch?.account = account
-            nv.setViewControllers([vcHome!, vcWatch!], animated: true)
         } else {
             vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)

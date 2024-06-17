@@ -13,7 +13,8 @@ class JadeWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var infoBox: UIView!
     @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var animateView: UIView!
-
+    @IBOutlet weak var btnConnectWithQr: UIButton!
+    
     let viewModel = JadeWaitViewModel()
     var scanViewModel: ScanViewModel?
     private var scanCancellable: AnyCancellable?
@@ -157,6 +158,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func setContent() {
         lblLoading.text = "id_looking_for_device".localized
+        btnConnectWithQr.setTitle("Connect via QR".localized, for: .normal)
     }
 
     func refresh() {
@@ -249,10 +251,39 @@ class JadeWaitViewController: HWFlowBaseViewController {
     func applicationWillResignActive(_ notification: Notification) {
         stop()
     }
+    
+    @IBAction func tapConnectWithQr(_ sender: Any) {
+        let hwFlow = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "QRUnlockInfoAlertViewController") as? QRUnlockInfoAlertViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
 }
 
 extension JadeWaitViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
         navigationController?.popViewController(animated: true)
+    }
+}
+
+extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
+    func onTap(_ action: QRUnlockInfoAlertAction) {
+        switch action {
+        case .learnMore:
+            break
+        case .setup:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadePinInfoViewController") as? QRUnlockJadePinInfoViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .alreadyUnlocked:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRScanOnJadeViewController") as? QRScanOnJadeViewController {
+                vc.vm = QRScanOnJadeViewModel(scope: .xpub)
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
     }
 }

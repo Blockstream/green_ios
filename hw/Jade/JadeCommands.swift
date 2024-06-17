@@ -7,9 +7,10 @@ public protocol JadeGdkRequest: AnyObject {
     func httpRequest(params: [String: Any]) async -> [String: Any]?
     func urlValidation(urls: [String]) async -> Bool
     func validateTor(urls: [String]) async -> Bool
+    func bcurEncode(params: Any) async throws -> Any
 }
 
-public class BleJadeCommands: BleJadeConnection {
+public class JadeCommands {
 
     public static let FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
     public static let FW_SERVER_ONION = "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion"
@@ -27,13 +28,20 @@ public class BleJadeCommands: BleJadeConnection {
     public static let FEATURE_SECURE_BOOT = "SB"
 
     public let blockstreamUrls = [
-        BleJadeCommands.PIN_SERVERv2_HTTPS,
-        BleJadeCommands.FW_SERVER_HTTPS,
-        BleJadeCommands.FW_SERVER_ONION,
-        BleJadeCommands.PIN_SERVER_HTTPS,
-        BleJadeCommands.PIN_SERVER_ONION]
+        JadeCommands.PIN_SERVERv2_HTTPS,
+        JadeCommands.FW_SERVER_HTTPS,
+        JadeCommands.FW_SERVER_ONION,
+        JadeCommands.PIN_SERVER_HTTPS,
+        JadeCommands.PIN_SERVER_ONION]
 
     public weak var gdkRequestDelegate: JadeGdkRequest?
+    public var connection: HWConnectionProtocol
+
+    public init(gdkRequestDelegate: JadeGdkRequest? = nil, 
+                connection: HWConnectionProtocol) {
+        self.gdkRequestDelegate = gdkRequestDelegate
+        self.connection = connection
+    }
 
     public func version() async throws -> JadeVersionInfo {
         let res: JadeResponse<JadeVersionInfo> = try await exchange(JadeRequest<JadeEmpty>(method: "get_version_info"))
@@ -148,7 +156,7 @@ public class BleJadeCommands: BleJadeConnection {
         // encode request
         let request = try await request2cbor(request)
         // send request
-        var res = try await exchange(request)
+        var res = try await connection.exchange(request)
         // handling generic http request
         while true {
             let response = try await cbor2dict(res)
@@ -171,7 +179,7 @@ public class BleJadeCommands: BleJadeConnection {
         #if DEBUG
                 print("=> HttpRequest : \(request.hex)")
         #endif
-                res = try await exchange(request)
+                res = try await connection.exchange(request)
         #if DEBUG
                 print("<= HttpResponse: \(res.hex)")
         #endif

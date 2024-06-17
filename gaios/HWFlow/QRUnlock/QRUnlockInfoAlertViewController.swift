@@ -56,7 +56,7 @@ class QRUnlockInfoAlertViewController: UIViewController {
         lblHint.setStyle(.txtCard)
         btnLearnMore.setStyle(.inline)
         btnSetup.setStyle(.primary)
-        btnAlreadyUnlocked.setStyle(.inlineWhite)
+        btnAlreadyUnlocked.setStyle(.inline)
     }
 
     override func viewWillAppear(_ animated: Bool) {

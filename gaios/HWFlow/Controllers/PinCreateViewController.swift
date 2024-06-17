@@ -172,7 +172,7 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
             do {
                 startLoader(message: "id_updating_firmware".localized)
                 let binary = try await bleViewModel?.fetchFirmware(firmware: firmware)
-                let hash = bleViewModel?.jade?.bleJade.sha256(binary ?? Data())
+                let hash = bleViewModel?.jade?.jade.sha256(binary ?? Data())
                 let hashHex = hash?.hex.separated(by: " ", every: 8)
                 let text = progressLoaderMessage(title: "id_updating_firmware".localized,
                                                  subtitle: "Hash: \(hashHex ?? "")")

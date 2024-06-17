@@ -224,7 +224,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             logger.info(">> append \(stringValue)")
 
             if !stringValue.uppercased().starts(with: "UR:") {
-                self.delegate?.onQRCodeReadSuccess(result: ScanResult(result: stringValue, bcur: nil))
+                self.delegate?.onQRCodeReadSuccess(result: ScanResult.from(result: stringValue, bcur: nil))
                 previous = nil
                 buffer = []
                 return
@@ -239,7 +239,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                     if !buffer.isEmpty { value = buffer.removeFirst() }
                     logger.info(">> value \(value)")
                     if let result = try await validate(value) {
-                        delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
+                        delegate?.onQRCodeReadSuccess(result: ScanResult.from(result: nil, bcur: result))
                         previous = nil
                         buffer = []
                         validating = false

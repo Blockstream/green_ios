@@ -28,7 +28,8 @@ public class SessionManager {
     public var logged = false
     public var paused = false
     public var gdkFailures = [String]()
-    public weak var hw: BLEDevice?
+    public var hw: HWDevice?
+    public var hwProtocol: HWProtocol?
     public let uuid = UUID()
 
     // Serial reconnect queue for network events
@@ -160,7 +161,7 @@ public class SessionManager {
             twoFactorCall,
             network: networkType,
             connected: { self.connected && self.logged && !self.paused },
-            hwDevice: hw?.interface,
+            hwDevice: hwProtocol,
             session: self,
             popupResolver: popupResolver,
             hwInterfaceDelegate: hwInterfaceResolver,
@@ -283,6 +284,24 @@ public class SessionManager {
             if let res = K.from(result ?? [:]) as? K {
                 return res
             }
+        }
+        throw GaError.GenericError()
+    }
+    
+    func wrapperBcurAsync(
+        params: BcurDecodeParams,
+        funcName: String = #function,
+        bcurResolver: BcurResolver
+    )
+    async throws -> BcurDecodedData {
+        let dict = params.toDict()
+        let fun: GdkFunc? = session?.bcurDecode
+        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params.stringify() ?? "")")
+        if let fun = try fun?(dict ?? [:]) {
+            let res = try await resolve(fun, bcurResolver: bcurResolver)
+            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
+            guard let result = res?["result"] as? [String: Any] else { throw GaError.GenericError() }
+            return result
         }
         throw GaError.GenericError()
     }
@@ -519,13 +538,13 @@ public class SessionManager {
     }
 
     public func bcurEncode(params: BcurEncodeParams) async throws -> BcurEncodedData? {
-        try await connect()
+        try? await connect()
         return try await wrapperAsync(fun: self.session?.bcurEncode, params: params)
     }
 
     public func bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver) async throws -> BcurDecodedData? {
         try await connect()
-        return try await wrapperAsync(fun: self.session?.bcurDecode, params: params, bcurResolver: bcurResolver)
+        return try await wrapperBcurAsync(params: params, bcurResolver: bcurResolver)
     }
 
     public func jadeBip8539Request() async -> (Data?, BcurEncodedData?) {
@@ -554,6 +573,17 @@ public class SessionManager {
             privateKey = secureRandomData(count: Wally.EC_PRIVATE_KEY_LEN)
         } while(privateKey != nil && !Wally.ecPrivateKeyVerify(privateKey: [UInt8](privateKey!)))
         return privateKey
+    }
+    
+    public func getPsbt(tx: Transaction) async throws -> String? {
+        logger.info("GDK \(self.networkType.rawValue) PsbtFromJSON \(tx.details)")
+        if let fun = try session?.PsbtFromJSON(details: tx.details) {
+            let res = try await resolve(fun)
+            logger.info("GDK \(self.networkType.rawValue) PsbtFromJSON \(res ?? [:])")
+            let result = res?["result"] as? [String: Any]
+            return result?["psbt"] as? String
+        }
+        throw GaError.GenericError()
     }
 }
 extension SessionManager {

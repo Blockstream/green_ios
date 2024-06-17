@@ -273,7 +273,27 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
-    func send() {
+    @MainActor
+    func presentQRScanOnJadeViewController(psbt: String) {
+        let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "QRScanOnJadeViewController") as? QRScanOnJadeViewController {
+            vc.vm = QRScanOnJadeViewModel(scope: .exportPsbt(psbt))
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func exportPsbt() {
+        Task {
+            if let psbt = try await viewModel.exportPsbt() {
+                presentQRScanOnJadeViewController(psbt: psbt)
+            }
+        }
+        
+    }
+
+    func send(psbt: String?) {
         Task {
             do {
                 startLoader(message: "id_sending".localized)
@@ -282,7 +302,7 @@ class SendTxConfirmViewController: UIViewController {
                 } else if viewModel.hasHW {
                     presentSendHWConfirmViewController()
                 }
-                let res = try await self.viewModel.send()
+                let res = try await self.viewModel.send(psbt: psbt)
                 stopLoader()
                 await MainActor.run {
                     dismiss(animated: true, completion: {
@@ -351,7 +371,11 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
             if viewModel.isWithdraw {
                 widthdraw()
             } else {
-                send()
+                if viewModel.wm?.account.isWatchonly ?? false {
+                    exportPsbt()
+                } else {
+                    send(psbt: nil)
+                }
             }
         }
     }
@@ -402,7 +426,11 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnab
 
 extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func onAgain() {
-        send()
+        if viewModel.wm?.account.isWatchonly ?? false {
+            exportPsbt()
+        } else {
+            send(psbt: nil)
+        }
     }
 
     func onSupport(error: Error) {
@@ -451,5 +479,10 @@ extension SendTxConfirmViewController: AlertViewControllerDelegate {
         } else {
             navigationController?.popToViewController(ofClass: WalletViewController.self)
         }
+    }
+}
+extension SendTxConfirmViewController: QRScanOnJadeViewControllerDelegate {
+    func signPsbt(_ psbt: String) {
+        send(psbt: psbt)
     }
 }

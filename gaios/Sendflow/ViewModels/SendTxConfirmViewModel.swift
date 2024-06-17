@@ -93,6 +93,9 @@ class SendTxConfirmViewModel {
               var tx = transaction else {
             throw TransactionError.invalid(localizedDescription: "Invalid transaction")
         }
+        let psbt = try await session.getPsbt(tx: tx)
+        
+        
         if wm?.hwDevice != nil {
             let bleDevice = BleViewModel.shared
             if !bleDevice.isConnected() {
@@ -112,7 +115,27 @@ class SendTxConfirmViewModel {
         }
     }
 
-    func send() async throws -> SendTransactionSuccess {
+    func exportPsbt() async throws -> String? {
+        guard let session = session,
+              let tx = transaction else {
+            throw TransactionError.invalid(localizedDescription: "Invalid transaction")
+        }
+        return try await session.getPsbt(tx: tx)
+    }
+    
+    func _sendPsbt(_ psbt: String) async throws -> SendTransactionSuccess {
+        guard let session = session else {
+            throw TransactionError.invalid(localizedDescription: "Invalid session")
+        }
+        guard let txHex = Wally.signedPsbtToTxHex(psbt) else {
+            throw TransactionError.invalid(localizedDescription: "Invalid transaction")
+        }
+        UIPasteboard.general.string = psbt
+        throw TransactionError.invalid(localizedDescription: "Disabled broadcast for testing, copied psbt on clipboard")
+        //return try await session.broadcastTransaction(txHex: txHex)
+    }
+
+    func send(psbt: String? = nil) async throws -> SendTransactionSuccess {
         AnalyticsManager.shared.startSendTransaction()
         AnalyticsManager.shared.startFailedTransaction()
         let withMemo = !(transaction?.memo?.isEmpty ?? true)
@@ -121,15 +144,18 @@ class SendTxConfirmViewModel {
             addressInputType: .paste,
             sendAll: sendAll)
         do {
-            let res = try await _send()
-            sendTransaction = res
+            if let psbt = psbt {
+                sendTransaction = try await _sendPsbt(psbt)
+            } else {
+                sendTransaction = try await _send()
+            }
             AnalyticsManager.shared.endSendTransaction(
                 account: AccountsRepository.shared.current,
                 walletItem: subaccount,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo)
             if sendAll { AnalyticsManager.shared.emptiedAccount = subaccount }
-            return res
+            return sendTransaction!
         } catch {
             AnalyticsManager.shared.failedTransaction(
                 account: AccountsRepository.shared.current,

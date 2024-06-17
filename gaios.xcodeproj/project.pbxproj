@@ -484,8 +484,8 @@
 		8152772729F9B52F00853EA1 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8152772629F9B52F00853EA1 /* UIApplication.swift */; };
 		816184582A3B0DD1007D6569 /* BleJadeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184572A3B0DD1007D6569 /* BleJadeConnection.swift */; };
 		8161845D2A3B6467007D6569 /* AnyPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161845C2A3B6467007D6569 /* AnyPublisher.swift */; };
-		816184602A3B7596007D6569 /* BleJadeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161845F2A3B7596007D6569 /* BleJadeCommands.swift */; };
-		816184622A3B788C007D6569 /* BleJade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184612A3B788C007D6569 /* BleJade.swift */; };
+		816184602A3B7596007D6569 /* JadeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161845F2A3B7596007D6569 /* JadeCommands.swift */; };
+		816184622A3B788C007D6569 /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184612A3B788C007D6569 /* Jade.swift */; };
 		8162A1C92B500CF70065D9EB /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162A1C82B500CF70065D9EB /* UIImageView.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
@@ -545,7 +545,6 @@
 		8177EE232B6C933400C2271C /* CountlyWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8F29817CE400695304 /* CountlyWidget.swift */; };
 		8177EE242B6C933400C2271C /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328EE29E93ED100D54F1D /* AppSettings.swift */; };
 		8177EE252B6C933400C2271C /* GdkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */; };
-		8177EE262B6C933400C2271C /* BLEDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B342A404F6600E2F80D /* BLEDevice.swift */; };
 		8177EE272B6C933400C2271C /* WalletsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804729B6443F00269027 /* WalletsRepository.swift */; };
 		8177EE282B6C933400C2271C /* AccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804329B3D44300269027 /* AccountsRepository.swift */; };
 		8177EE292B6C933400C2271C /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804529B3D4B600269027 /* KeychainStorage.swift */; };
@@ -652,6 +651,19 @@
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D932122A77968500356D06 /* DialogSignViewModel.swift */; };
 		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
+		81E56A532C2476870012A5A3 /* QRUnlockFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81E56A522C2476870012A5A3 /* QRUnlockFlow.storyboard */; };
+		81E56A632C2476950012A5A3 /* QRJadeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A542C2476940012A5A3 /* QRJadeManager.swift */; };
+		81E56A642C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A552C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift */; };
+		81E56A652C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A562C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift */; };
+		81E56A662C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A572C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift */; };
+		81E56A672C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A582C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift */; };
+		81E56A682C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A592C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift */; };
+		81E56A692C2476950012A5A3 /* QRUnlockSignDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A5A2C2476950012A5A3 /* QRUnlockSignDialogViewController.swift */; };
+		81E56A6A2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A5B2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift */; };
+		81E56A6B2C2476950012A5A3 /* QRScanOnJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A5D2C2476950012A5A3 /* QRScanOnJadeViewController.swift */; };
+		81E56A6C2C2476950012A5A3 /* QRScanOnJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A5E2C2476950012A5A3 /* QRScanOnJadeViewModel.swift */; };
+		81E56A732C2479860012A5A3 /* QRJade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A6F2C24784E0012A5A3 /* QRJade.swift */; };
+		81E56A752C247AC30012A5A3 /* QrJadeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A742C247AC30012A5A3 /* QrJadeConnection.swift */; };
 		81E6897E2A234DAC00102BFC /* InputOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E6897D2A234DAC00102BFC /* InputOutput.swift */; };
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
 		81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */; };
@@ -1342,8 +1354,8 @@
 		815D4A9F28638A56004DC015 /* PinData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinData.swift; sourceTree = "<group>"; };
 		816184572A3B0DD1007D6569 /* BleJadeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeConnection.swift; sourceTree = "<group>"; };
 		8161845C2A3B6467007D6569 /* AnyPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyPublisher.swift; sourceTree = "<group>"; };
-		8161845F2A3B7596007D6569 /* BleJadeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeCommands.swift; sourceTree = "<group>"; };
-		816184612A3B788C007D6569 /* BleJade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJade.swift; sourceTree = "<group>"; };
+		8161845F2A3B7596007D6569 /* JadeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeCommands.swift; sourceTree = "<group>"; };
+		816184612A3B788C007D6569 /* Jade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jade.swift; sourceTree = "<group>"; };
 		816184642A3B8AC1007D6569 /* BleJadeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeManager.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
 		8162A1C82B500CF70065D9EB /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
@@ -1376,7 +1388,6 @@
 		8177ED882B6C688C00C2271C /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8177EE032B6C82E500C2271C /* Resolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
 		817A0B322A40428500E2F80D /* BleLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedger.swift; sourceTree = "<group>"; };
-		817A0B342A404F6600E2F80D /* BLEDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEDevice.swift; sourceTree = "<group>"; };
 		817A0B362A41AF8B00E2F80D /* BleLedgerCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedgerCommands.swift; sourceTree = "<group>"; };
 		817A0B382A41B0DB00E2F80D /* BleLedgerConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedgerConnection.swift; sourceTree = "<group>"; };
 		817A0B3C2A41BE6100E2F80D /* HWConnectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWConnectionProtocol.swift; sourceTree = "<group>"; };
@@ -1487,6 +1498,19 @@
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		81E04A3A2AA63C6800867705 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
+		81E56A522C2476870012A5A3 /* QRUnlockFlow.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = QRUnlockFlow.storyboard; sourceTree = "<group>"; };
+		81E56A542C2476940012A5A3 /* QRJadeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRJadeManager.swift; sourceTree = "<group>"; };
+		81E56A552C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockInfoAlertViewController.swift; sourceTree = "<group>"; };
+		81E56A562C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockJadePinInfoViewController.swift; sourceTree = "<group>"; };
+		81E56A572C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockPinUnlockDialogViewController.swift; sourceTree = "<group>"; };
+		81E56A582C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSelectAccountViewController.swift; sourceTree = "<group>"; };
+		81E56A592C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSelectAccountViewModel.swift; sourceTree = "<group>"; };
+		81E56A5A2C2476950012A5A3 /* QRUnlockSignDialogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSignDialogViewController.swift; sourceTree = "<group>"; };
+		81E56A5B2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSuccessAlertViewController.swift; sourceTree = "<group>"; };
+		81E56A5D2C2476950012A5A3 /* QRScanOnJadeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScanOnJadeViewController.swift; sourceTree = "<group>"; };
+		81E56A5E2C2476950012A5A3 /* QRScanOnJadeViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScanOnJadeViewModel.swift; sourceTree = "<group>"; };
+		81E56A6F2C24784E0012A5A3 /* QRJade.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRJade.swift; sourceTree = "<group>"; };
+		81E56A742C247AC30012A5A3 /* QrJadeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrJadeConnection.swift; sourceTree = "<group>"; };
 		81E6897D2A234DAC00102BFC /* InputOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputOutput.swift; sourceTree = "<group>"; };
 		81E8C358291FDAF000B2196B /* DialogTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTableViewController.swift; sourceTree = "<group>"; };
 		81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewModel.swift; sourceTree = "<group>"; };
@@ -2630,6 +2654,9 @@
 				817A0B402A41D48600E2F80D /* BleLedgerManager.swift */,
 				818BA7192A30839B00DFB03A /* BleViewModel.swift */,
 				818BA7142A2F913C00DFB03A /* CentralManager.swift */,
+				81E56A542C2476940012A5A3 /* QRJadeManager.swift */,
+				81E56A5F2C2476950012A5A3 /* QRScanOnJade */,
+				81E56A5C2C2476950012A5A3 /* QRUnlock */,
 				816184682A3BB4DF007D6569 /* Connect */,
 				8161845E2A3B6CDF007D6569 /* Wait */,
 				818BA70D2A2F8FF300DFB03A /* Scan */,
@@ -2637,6 +2664,7 @@
 				34B385D729B888A70097220B /* Controllers */,
 				34B385D529B888610097220B /* HWFlow.storyboard */,
 				34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */,
+				81E56A522C2476870012A5A3 /* QRUnlockFlow.storyboard */,
 			);
 			path = HWFlow;
 			sourceTree = "<group>";
@@ -3190,10 +3218,11 @@
 		81387E5E2452067800A63C1D /* Jade */ = {
 			isa = PBXGroup;
 			children = (
-				816184572A3B0DD1007D6569 /* BleJadeConnection.swift */,
-				8161845F2A3B7596007D6569 /* BleJadeCommands.swift */,
-				816184612A3B788C007D6569 /* BleJade.swift */,
+				816184612A3B788C007D6569 /* Jade.swift */,
+				8161845F2A3B7596007D6569 /* JadeCommands.swift */,
 				817A0B3E2A41C8E200E2F80D /* JadeMessage.swift */,
+				816184572A3B0DD1007D6569 /* BleJadeConnection.swift */,
+				81E56A742C247AC30012A5A3 /* QrJadeConnection.swift */,
 			);
 			path = Jade;
 			sourceTree = "<group>";
@@ -3494,6 +3523,7 @@
 		81A3B5402244AFAC0091B6BC /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				81E56A6F2C24784E0012A5A3 /* QRJade.swift */,
 				34AB8BA4260366A8009C930A /* WalletListItem.swift */,
 				819DFBAB26038E8B0022BD85 /* Account.swift */,
 				816282B0260BB201003E5FA6 /* OnBoardParams.swift */,
@@ -3501,7 +3531,6 @@
 				34E0CA8F29817CE400695304 /* CountlyWidget.swift */,
 				81F328EE29E93ED100D54F1D /* AppSettings.swift */,
 				811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */,
-				817A0B342A404F6600E2F80D /* BLEDevice.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3596,6 +3625,29 @@
 				81CF900D28EC7631003CC793 /* DevSettings.xcconfig */,
 			);
 			path = configs;
+			sourceTree = "<group>";
+		};
+		81E56A5C2C2476950012A5A3 /* QRUnlock */ = {
+			isa = PBXGroup;
+			children = (
+				81E56A552C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift */,
+				81E56A562C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift */,
+				81E56A572C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift */,
+				81E56A582C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift */,
+				81E56A592C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift */,
+				81E56A5A2C2476950012A5A3 /* QRUnlockSignDialogViewController.swift */,
+				81E56A5B2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift */,
+			);
+			path = QRUnlock;
+			sourceTree = "<group>";
+		};
+		81E56A5F2C2476950012A5A3 /* QRScanOnJade */ = {
+			isa = PBXGroup;
+			children = (
+				81E56A5D2C2476950012A5A3 /* QRScanOnJadeViewController.swift */,
+				81E56A5E2C2476950012A5A3 /* QRScanOnJadeViewModel.swift */,
+			);
+			path = QRScanOnJade;
 			sourceTree = "<group>";
 		};
 		81F5C9892ADD456F004B020A /* Cells */ = {
@@ -4076,6 +4128,7 @@
 				342896902BCD1C2A0042F144 /* SingleLabelView.xib in Resources */,
 				34FE20182A1CADC200301746 /* DialogDetailCell.xib in Resources */,
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
+				81E56A532C2476870012A5A3 /* QRUnlockFlow.storyboard in Resources */,
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
 				34CED8262A9F2FC500DD0683 /* LTShortcutFlow.storyboard in Resources */,
 				3445499429FBFC8F006725D2 /* LTNoteCell.xib in Resources */,
@@ -4220,6 +4273,7 @@
 				345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */,
 				816685DA2BEE50EF00B03B02 /* SendTxConfirmViewModel.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
+				81E56A642C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift in Sources */,
 				3419B44E2BEE304900492198 /* ReEnable2faAccountCell.swift in Sources */,
 				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
@@ -4255,6 +4309,7 @@
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
 				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
+				81E56A672C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift in Sources */,
 				34287B772A8385820065471F /* AlertViewModel.swift in Sources */,
 				3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */,
 				34CED82D2A9F3BC000DD0683 /* LTShortcutViewModel.swift in Sources */,
@@ -4315,12 +4370,14 @@
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
 				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
 				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,
+				81E56A692C2476950012A5A3 /* QRUnlockSignDialogViewController.swift in Sources */,
 				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
 				34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */,
 				343471072C45109600CB6F27 /* LTRemoveShortcutViewController.swift in Sources */,
 				34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */,
+				81E56A6C2C2476950012A5A3 /* QRScanOnJadeViewModel.swift in Sources */,
 				3457F4B82923A72900EF33B5 /* WalletPrefs.swift in Sources */,
 				3415CB072A67BDEE00B66882 /* AddressAuthViewController.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
@@ -4342,6 +4399,7 @@
 				81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */,
 				34C8BD6D2BED13F200AE9CC4 /* ReEnable2faViewController.swift in Sources */,
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
+				81E56A652C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift in Sources */,
 				81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */,
 				34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */,
 				345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */,
@@ -4454,6 +4512,7 @@
 				34FE20142A1CA98000301746 /* DialogNodeViewModel.swift in Sources */,
 				3448B5CB29D47647008D5746 /* DialogScanViewController.swift in Sources */,
 				34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */,
+				81E56A632C2476950012A5A3 /* QRJadeManager.swift in Sources */,
 				3407F5D62A4AD034005EF8E1 /* LTErrorViewController.swift in Sources */,
 				81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
@@ -4492,6 +4551,7 @@
 				3468AFF02A96648300EDFC34 /* LTInvitationViewController.swift in Sources */,
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				816685D02BEBBE7600B03B02 /* CreateTx.swift in Sources */,
+				81E56A6B2C2476950012A5A3 /* QRScanOnJadeViewController.swift in Sources */,
 				34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				346EB2782BE8BB3A0043139F /* SendFeeCell.swift in Sources */,
@@ -4499,6 +4559,7 @@
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
 				34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */,
+				81E56A662C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift in Sources */,
 				3469A2482887D56E00B2F640 /* Date.swift in Sources */,
 				3445499329FBFC8F006725D2 /* LTNoteCell.swift in Sources */,
 				81F7FE722BE2FD4D00F44FC2 /* AppNotifications.swift in Sources */,
@@ -4507,6 +4568,7 @@
 				812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */,
 				818BA7072A2F8ACB00DFB03A /* ScanViewModel.swift in Sources */,
 				343BC9492AA7017600F0FEE5 /* GreenPickerViewModel.swift in Sources */,
+				81E56A6A2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift in Sources */,
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
 				344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */,
@@ -4533,6 +4595,7 @@
 				34560BA529BF349E007E916F /* OtherDeviceCell.swift in Sources */,
 				344915F22A0CE29C00D35818 /* ReceiveAddressCellModel.swift in Sources */,
 				3450C8602AAF0616002B67AE /* TwoFAMethodViewController.swift in Sources */,
+				81E56A682C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift in Sources */,
 				3415CB172A69627500B66882 /* DialogSignViewController.swift in Sources */,
 				818BA71A2A30839B00DFB03A /* BleViewModel.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,
@@ -4676,10 +4739,10 @@
 				8177EE232B6C933400C2271C /* CountlyWidget.swift in Sources */,
 				8177EE242B6C933400C2271C /* AppSettings.swift in Sources */,
 				8177EE252B6C933400C2271C /* GdkSettings.swift in Sources */,
-				8177EE262B6C933400C2271C /* BLEDevice.swift in Sources */,
 				8177EE272B6C933400C2271C /* WalletsRepository.swift in Sources */,
 				8177EE282B6C933400C2271C /* AccountsRepository.swift in Sources */,
 				8177EE292B6C933400C2271C /* KeychainStorage.swift in Sources */,
+				81E56A732C2479860012A5A3 /* QRJade.swift in Sources */,
 				8177EE2A2B6C933400C2271C /* LightningRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4722,8 +4785,9 @@
 				81961B0C29E4EE3C00E9B94D /* HWResolver.swift in Sources */,
 				817A0B3D2A41BE6100E2F80D /* HWConnectionProtocol.swift in Sources */,
 				817A0B3F2A41C8E200E2F80D /* JadeMessage.swift in Sources */,
-				816184622A3B788C007D6569 /* BleJade.swift in Sources */,
+				816184622A3B788C007D6569 /* Jade.swift in Sources */,
 				81D404E12A1D6138002631F5 /* Utils.swift in Sources */,
+				81E56A752C247AC30012A5A3 /* QrJadeConnection.swift in Sources */,
 				8190D4C62A268F93003D31B4 /* Number.swift in Sources */,
 				81961B0F29E4EE3C00E9B94D /* HWProtocol.swift in Sources */,
 				81196E9D2B739F7900537A6E /* CBOR.swift in Sources */,
@@ -4732,7 +4796,7 @@
 				81961B1129E4EE3C00E9B94D /* TxInput.swift in Sources */,
 				81961B1329E4EE3C00E9B94D /* TxChangeOutput.swift in Sources */,
 				81961B1429E4EE3C00E9B94D /* Commitment.swift in Sources */,
-				816184602A3B7596007D6569 /* BleJadeCommands.swift in Sources */,
+				816184602A3B7596007D6569 /* JadeCommands.swift in Sources */,
 				816184582A3B0DD1007D6569 /* BleJadeConnection.swift in Sources */,
 				81961B1729E4EE3C00E9B94D /* HWError.swift in Sources */,
 				817A0B372A41AF8B00E2F80D /* BleLedgerCommands.swift in Sources */,

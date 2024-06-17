@@ -62,7 +62,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
         lblLearnMore.textColor = UIColor.gGreenMatrix()
         btnFaceID.setStyle(.primary)
         lblInfoCredentials.setStyle(.txtCard)
-        btnLater.setStyle(.inlineWhite)
+        btnLater.setStyle(.inline)
     }
 
     override func viewWillAppear(_ animated: Bool) {

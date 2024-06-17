@@ -325,29 +325,24 @@ public struct BcurEncodeParams: Codable {
         self.maxFragmentLen = maxFragmentLen
     }
 }
+public typealias BcurDecodedData = [String: Any?]
 
-public struct BcurDecodedData: Codable {
-    enum CodingKeys: String, CodingKey {
-        case urType = "ur_type"
-        case data
-        case psbt
-        case descriptor
-        case descriptors
-        case masterFingerprint = "master_fingerprint"
-        case encrypted
-        case publicΚey = "public_key"
+extension BcurDecodedData {
+    private func get<T>(_ key: String) -> T? {
+        return self[key] as? T
     }
-    public let urType: String
-    public let data: String?
-    public let psbt: String?
-    public let descriptor: String?
-    public let descriptors: [String]?
-    public let masterFingerprint: String?
-    public let encrypted: String?
-    public let publicΚey: String?
-    public var result: String {
-        descriptors?.joined(separator: ",") ?? descriptor ?? psbt ?? data ?? ""
-    }
+    public var urType: String? { self.get("ur_type") }
+    public var data: String? { self.get("data") }
+    public var psbt: String? { self.get("psbt") }
+    public var descriptor: String? { self.get("descriptor") }
+    public var descriptors: [String]? { self.get("descriptors") }
+    public var masterFingerprint: String? { self.get("master_fingerprint") }
+    public var encrypted: String? { self.get("encrypted") }
+    public var publicΚey: String? { self.get("publicΚey") }
+    public var res: [String: Any?]? { self.get("result") }
+    //public var result: String {
+    //    descriptors?.joined(separator: ",") ?? descriptor ?? psbt ?? data ?? ""
+    //}
 }
 public struct GetUnspentOutputsParams: Codable {
     enum CodingKeys: String, CodingKey {

@@ -206,8 +206,16 @@ extension WODetailsViewController: UITextViewDelegate {
 
 extension WODetailsViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
-        textView.text = value.result
-        segment.selectedSegmentIndex = value.result.contains("(") ? 1 : 0
+        if let result = value.result {
+            textView.text = result
+        } else if let descriptor = value.bcur?.descriptor {
+            textView.text = descriptor
+        } else if let descriptors = value.bcur?.descriptors {
+            textView.text = descriptors.joined(separator: "\n")
+        } else if let publicΚey = value.bcur?.publicΚey {
+            textView.text = publicΚey
+        }
+        segment.selectedSegmentIndex = textView.text?.contains("(") ?? false ? 1 : 0
         refresh()
     }
     func didStop() {

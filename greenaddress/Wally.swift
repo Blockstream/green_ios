@@ -224,11 +224,27 @@ public class Wally {
         }
         return String(cString: resultPtr)
     }
-    public func signPsbt(psbt: UnsafeMutablePointer<green.wally_psbt>) {
-        let wallyTx: green.wally_tx
+    
+    public static func signedPsbtToTxHex(_ psbt: String) -> String? {
+        var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
+        var wallyTx: UnsafeMutablePointer<green.wally_tx>?
+        var resultPtr: UnsafeMutablePointer<CChar>?
         
-        wally_psbt_finalize(psbt, 0)
-        //wally_psbt_extract(psbt, 0, &wallyTx)
-        
+        if wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) != WALLY_OK {
+            return nil
+        }
+        if wally_psbt_finalize(wallyPsbt, 0) != WALLY_OK {
+            return nil
+        }
+        if wally_psbt_extract(wallyPsbt, 0, &wallyTx) != WALLY_OK {
+            return nil
+        }
+        if wally_tx_to_hex(wallyTx, UInt32(WALLY_TX_FLAG_USE_WITNESS), &resultPtr) != WALLY_OK {
+            return nil
+        }
+        guard let resultPtr = resultPtr else {
+            return nil
+        }
+        return String(cString: resultPtr)
     }
 }

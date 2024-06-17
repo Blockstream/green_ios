@@ -5,9 +5,9 @@ import gdk
 import UIKit
 import core
 
-class BleJadeManager {
+class JadeManager {
 
-    let bleJade: BleJade
+    let jade: Jade
     var pinServerSession: SessionManager?
     var walletManager: WalletManager?
     var version: JadeVersionInfo?
@@ -32,24 +32,33 @@ class BleJadeManager {
         return nil
     }
 
-    var name: String { bleJade.peripheral.name ?? "" }
+    var peripheral: Peripheral? {
+        if let connection = jade.connection as? BleJadeConnection {
+            return connection.peripheral
+        }
+        return nil
+    }
+    
+    var name: String? {
+        peripheral?.name
+    }
 
-    init(bleJade: BleJade) {
-        self.bleJade = bleJade
-        bleJade.gdkRequestDelegate = self
+    init(connection: HWConnectionProtocol) {
+        jade = Jade(connection: connection)
+        jade.gdkRequestDelegate = self
     }
 
     public func connect() async throws {
-        try await bleJade.open()
+        try await jade.connection.open()
     }
 
     public func disconnect() async throws {
-        try await bleJade.close()
+        try await jade.connection.close()
         customWhitelistUrls = []
     }
 
     public func version() async throws -> JadeVersionInfo {
-        let version = try await bleJade.version()
+        let version = try await jade.version()
         self.version = version
         return version
     }
@@ -65,7 +74,7 @@ class BleJadeManager {
     }
 
     func authenticating(testnet: Bool? = nil) async throws -> Bool {
-        _ = try await bleJade.addEntropy()
+        _ = try await jade.addEntropy()
         let version = try await version()
         try? await connectPinServer(testnet: testnet)
         let chain = pinServerSession?.gdkNetwork.chain ?? "mainnet"
@@ -73,15 +82,15 @@ class BleJadeManager {
         case "READY":
             return true
         case "TEMP":
-            return try await bleJade.unlock(network: chain)
+            return try await jade.unlock(network: chain)
         default:
-            return try await bleJade.auth(network: chain)
+            return try await jade.auth(network: chain)
         }
     }
 
     func silentMasterBlindingKey() async throws -> Bool {
         do {
-            _ = try await bleJade.getMasterBlindingKey(onlyIfSilent: true)
+            _ = try await jade.getMasterBlindingKey(onlyIfSilent: true)
             return true
         } catch {
             return false
@@ -91,7 +100,7 @@ class BleJadeManager {
     func login(account: Account, fullRestore: Bool = false) async throws -> Account {
         let version = try await version()
         let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
-        let masterXpub = try await bleJade.xpubs(network: account.gdkNetwork.chain, path: [])
+        let masterXpub = try await jade.xpubs(network: account.gdkNetwork.chain, path: [])
         let walletId = try? SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
         var account = account
         account.xpubHashId = walletId?.xpubHashId
@@ -99,7 +108,8 @@ class BleJadeManager {
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.popupResolver = await PopupResolver()
         walletManager?.hwInterfaceResolver = await HwPopupResolver()
-        walletManager?.hwDevice = BLEDevice(peripheral: bleJade.peripheral, device: device, interface: bleJade)
+        walletManager?.hwDevice = device
+        walletManager?.hwProtocol = jade
         var derivedCredentials: Credentials?
         if let derivedAccount = account.getDerivedLightningAccount() {
             derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain)
@@ -129,37 +139,37 @@ class BleJadeManager {
         let version = try await version()
         let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
         let network = try await defaultNetwork()
-        return Account(name: bleJade.peripheral.name ?? device.name,
+        return Account(name: name ?? device.name,
                        network: network,
                        isJade: device.isJade,
                        isLedger: device.isLedger,
                        isSingleSig: network.gdkNetwork.electrum,
-                       uuid: bleJade.peripheral.identifier,
+                       uuid: peripheral?.identifier,
                        hidden: false)
     }
 
     func checkFirmware() async throws -> (JadeVersionInfo?, Firmware?) {
         let version = try await version()
-        let fmw = try await bleJade.firmwareData(version)
+        let fmw = try await jade.firmwareData(version)
         return (version, fmw)
     }
 
     func fetchFirmware(firmware: Firmware) async throws -> Data {
         let version = try await version()
-        let binary = try await bleJade.getBinary(version, firmware)
-        // hash = bleJade.sha256(binary).hex
+        let binary = try await jade.getBinary(version, firmware)
+        // hash = jade.sha256(binary).hex
         return binary
     }
 
     func updateFirmware(firmware: Firmware, binary: Data) async throws -> Bool {
         let version = try await version()
-        let updated = try await bleJade.updateFirmware(version: version, firmware: firmware, binary: binary)
+        let updated = try await jade.updateFirmware(version: version, firmware: firmware, binary: binary)
         return updated
     }
 
     func validateAddress(account: WalletItem, addr: Address) async throws -> Bool {
         let network = account.gdkNetwork
-        let address = try await bleJade.newReceiveAddress(chain: network.chain,
+        let address = try await jade.newReceiveAddress(chain: network.chain,
                                            mainnet: network.mainnet,
                                            multisig: !network.electrum,
                                            recoveryXPub: account.recoveryXpub,
@@ -188,7 +198,18 @@ class BleJadeManager {
     }
 }
 
-extension BleJadeManager: JadeGdkRequest {
+extension JadeManager: JadeGdkRequest {
+    func bcurEncode(params: Any) async throws -> Any {
+        guard let params = params as? BcurEncodeParams else {
+            throw BLEManagerError.genericErr(txt: "Invalid bcur")
+        }
+        let res = try await pinServerSession?.bcurEncode(params: params)
+        guard let res = res else {
+            throw BLEManagerError.genericErr(txt: "Invalid bcur")
+        }
+        return res
+    }
+    
 
     @MainActor
     func showUrlValidationWarning(domains: [String], completion: @escaping(UIAlertOption) -> () = { _ in }) {
@@ -278,7 +299,7 @@ extension BleJadeManager: JadeGdkRequest {
     }
 
     func urlValidation(urls: [String]) async -> Bool {
-        let whitelistUrls = bleJade.blockstreamUrls + customWhitelistUrls + persistCustomWhitelistUrls
+        let whitelistUrls = jade.blockstreamUrls + customWhitelistUrls + persistCustomWhitelistUrls
         let whitelistDomains = whitelistUrls.compactMap { domain(from: $0) }
         let domains = urls.filter { !$0.isEmpty }
             .compactMap { domain(from: $0) }

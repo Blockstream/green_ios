@@ -9,6 +9,7 @@ class ScanViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnTroubleshoot: UIButton!
+    @IBOutlet weak var btnConnectQr: UIButton!
     private var scanCancellable: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     var deviceType = DeviceType.Jade
@@ -61,6 +62,15 @@ class ScanViewController: HWFlowBaseViewController {
         cancellables.forEach { $0.cancel() }
     }
 
+    @IBAction func tapBtnConnectQr(_ sender: Any) {
+        let hwFlow = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "QRUnlockInfoAlertViewController") as? QRUnlockInfoAlertViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+    
     @MainActor
     func onCentralManagerUpdateState(_ state: CBManagerState) {
         switch state {
@@ -101,6 +111,7 @@ class ScanViewController: HWFlowBaseViewController {
     func setContent() {
         title = "".localized
         btnTroubleshoot.setTitle("id_troubleshoot".localized, for: .normal)
+        btnConnectQr.setTitle("Connect via QR".localized, for: .normal)
         btnTroubleshoot.isHidden = deviceType != .Jade
     }
 
@@ -207,6 +218,26 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
                     let txt = BleViewModel.shared.toBleError(error, network: nil).localizedDescription
                     self.showError(txt.localized)
                 }
+            }
+        }
+    }
+}
+
+extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
+    func onTap(_ action: QRUnlockInfoAlertAction) {
+        switch action {
+        case .learnMore:
+            break
+        case .setup:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadePinInfoViewController") as? QRUnlockJadePinInfoViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .alreadyUnlocked:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRScanOnJadeViewController") as? QRScanOnJadeViewController {
+                vc.vm = QRScanOnJadeViewModel(scope: .xpub)
+                navigationController?.pushViewController(vc, animated: true)
             }
         }
     }

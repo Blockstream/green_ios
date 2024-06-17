@@ -419,7 +419,7 @@ extension MnemonicViewController: DialogRecoveryHelpViewControllerDelegate {
 
 extension MnemonicViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
-        onPaste(value.result)
+        onPaste(value.result ?? "")
     }
     func didStop() { }
 }
