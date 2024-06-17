@@ -345,4 +345,11 @@ class SendAmountViewModel {
     func getAssetIcons() -> [UIImage] {
         transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
     }
+
+    var showFeesInTotals: Bool {
+        if createTx.isLiquid {
+            return feeEstimator?.feeRate(at: .High) ?? 0 > session?.gdkNetwork.defaultFee ?? 0
+        }
+        return true
+    }
 }

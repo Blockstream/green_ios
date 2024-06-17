@@ -771,6 +771,7 @@
                         <outlet property="lblSumTotalValue" destination="YAn-je-YQo" id="Imq-w9-QF7"/>
                         <outlet property="lblTime" destination="Azs-Pl-skG" id="fx3-F4-l6G"/>
                         <outlet property="multiAssetCard" destination="bWO-kk-q0o" id="fTd-bL-a5i"/>
+                        <outlet property="neworkFeeView" destination="kJ6-cV-egB" id="aWf-ek-ZAB"/>
                         <outlet property="payRequestStack" destination="V0X-Yu-umO" id="pz4-vM-vM1"/>
                         <outlet property="redepositMultiStack" destination="0kn-z4-3BJ" id="P36-hm-4Ss"/>
                         <outlet property="redepositNoEditView" destination="uhP-Lb-D1X" id="G9R-uP-btU"/>
