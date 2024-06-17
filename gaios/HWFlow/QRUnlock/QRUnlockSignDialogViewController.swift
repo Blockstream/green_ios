@@ -6,9 +6,10 @@ protocol QRUnlockSignDialogViewControllerDelegate: AnyObject {
 }
 
 enum QRUnlockSignDialogAction {
-    case connectBLE
-    case signWithQR
     case cancel
+    case connect
+    case unlocked
+    case unlock
 }
 
 class QRUnlockSignDialogViewController: UIViewController {
@@ -24,8 +25,10 @@ class QRUnlockSignDialogViewController: UIViewController {
     @IBOutlet weak var btnsStack: UIStackView!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
 
-    @IBOutlet weak var btnConnectBLE: UIButton!
-    @IBOutlet weak var btnSignWithQR: UIButton!
+    @IBOutlet weak var btnLearn: UIButton!
+    @IBOutlet weak var btnConnect: UIButton!
+    @IBOutlet weak var btnUnlocked: UIButton!
+    @IBOutlet weak var btnUnlock: UIButton!
 
     weak var delegate: QRUnlockSignDialogViewControllerDelegate?
 
@@ -60,6 +63,7 @@ class QRUnlockSignDialogViewController: UIViewController {
             self.view.addGestureRecognizer(swipeDown)
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
             tappableBg.addGestureRecognizer(tapToClose)
+        btnConnect.isHidden = true
     }
 
     deinit {
@@ -91,18 +95,25 @@ class QRUnlockSignDialogViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Sign with Jade".localized
-        lblHint.text = "You need to connect and unlock your Jade in order to sign your transaction with your device.".localized
-        btnConnectBLE.setTitle("Connect your Jade using Bluetooth or USB".localized, for: .normal)
-        btnSignWithQR.setTitle("Sign via QR".localized, for: .normal)
+        lblTitle.text = "Unlock Jade".localized
+        lblHint.text = "Unlock your Jade before signing the transaction.".localized
+
+        btnLearn.setTitle("id_learn_more".localized, for: .normal)
+        btnConnect.setTitle("Connect Jade via Bluetooth or USB".localized, for: .normal)
+        btnUnlocked.setTitle("Jade already unlocked".localized, for: .normal)
+        btnUnlock.setTitle("QR PIN unlock".localized, for: .normal)
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        btnConnectBLE.setStyle(.primary)
-        btnSignWithQR.setStyle(.primary)
+        cardView.setStyle(.bottomsheet)
+        handle.cornerRadius = 1.5
         lblHint.setStyle(.txt)
+
+        btnLearn.setStyle(.inline)
+        btnConnect.setStyle(.inline)
+        btnConnect.setTitleColor(.white, for: .normal)
+        btnUnlocked.setStyle(.outlinedWhite)
+        btnUnlock.setStyle(.primary)
     }
 
     func dismiss(_ action: QRUnlockSignDialogAction) {
@@ -128,11 +139,19 @@ class QRUnlockSignDialogViewController: UIViewController {
         }
     }
 
-    @IBAction func btnConnectBLE(_ sender: Any) {
-        dismiss(.connectBLE)
+    @IBAction func btnLearn(_ sender: Any) {
+        SafeNavigationManager.shared.navigate(ExternalUrls.qrModeAirGapUsage)
     }
 
-    @IBAction func btnSignWithQR(_ sender: Any) {
-        dismiss(.signWithQR)
+    @IBAction func btnConnect(_ sender: Any) {
+        dismiss(.connect)
+    }
+
+    @IBAction func btnUnlocked(_ sender: Any) {
+        dismiss(.unlocked)
+    }
+
+    @IBAction func btnUnlock(_ sender: Any) {
+        dismiss(.unlock)
     }
 }

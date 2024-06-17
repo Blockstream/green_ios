@@ -23,7 +23,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MtX-vm-sog">
                                         <rect key="frame" x="2" y="2" width="321" height="95"/>
                                         <subviews>
-                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ps3-34-xHu">
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ps3-34-xHu">
                                                 <rect key="frame" x="20" y="20" width="265" height="70"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
@@ -182,6 +182,7 @@
                             <constraint firstItem="VNJ-U5-gGQ" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="25" id="NBS-s3-rbg"/>
                             <constraint firstItem="uCt-iC-VnO" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="25" id="NF2-yj-V9s"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="VNJ-U5-gGQ" secondAttribute="trailing" constant="25" id="Se2-49-pxP"/>
+                            <constraint firstItem="7vl-Wl-pUF" firstAttribute="top" secondItem="5EZ-qb-Rvc" secondAttribute="top" constant="222" id="dvX-uq-CZF"/>
                             <constraint firstItem="7vl-Wl-pUF" firstAttribute="top" secondItem="VNJ-U5-gGQ" secondAttribute="bottom" id="ox1-vc-8Dl"/>
                             <constraint firstItem="7vl-Wl-pUF" firstAttribute="trailing" secondItem="VNJ-U5-gGQ" secondAttribute="trailing" id="sIG-Nj-IZH"/>
                         </constraints>
@@ -841,7 +842,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x7D-Uf-bEK">
-                                <rect key="frame" x="0.0" y="50" width="393" height="836"/>
+                                <rect key="frame" x="0.0" y="50" width="393" height="766"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tdR-qQ-krp">
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="809.66666666666663"/>
@@ -1160,7 +1161,7 @@
                                 <viewLayoutGuide key="frameLayoutGuide" id="gFz-El-n0B"/>
                             </scrollView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="pWL-mh-RM1">
-                                <rect key="frame" x="25" y="886" width="343" height="363"/>
+                                <rect key="frame" x="25" y="816" width="343" height="433"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="4Ed-n3-lg5">
                                         <rect key="frame" x="0.0" y="0.0" width="343" height="219"/>
@@ -1265,7 +1266,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_total_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UpP-Ls-48M">
-                                                        <rect key="frame" x="213.66666666666663" y="16.666666666666742" width="129.33333333333337" height="17"/>
+                                                        <rect key="frame" x="213.66666666666663" y="16.666666666666629" width="129.33333333333337" height="17"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -1310,6 +1311,20 @@
                                             <action selector="btnVerifyAddress:" destination="DXh-NZ-p2M" eventType="touchUpInside" id="YOL-wj-QGQ"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HF4-UH-BWX" userLabel="Next">
+                                        <rect key="frame" x="0.0" y="383" width="343" height="50"/>
+                                        <color key="backgroundColor" name="gGreenMatrix"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="jp4-q7-932"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="-6" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        <state key="normal" title="btn_sign_via_qr">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="btnSignViaQr:" destination="DXh-NZ-p2M" eventType="touchUpInside" id="N5e-kU-0a9"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -1335,6 +1350,7 @@
                         <outlet property="amountMultiAddrCard" destination="moG-la-jGL" id="Y6I-KJ-v97"/>
                         <outlet property="assetCard" destination="3Md-mU-X8f" id="MJ1-jo-v7T"/>
                         <outlet property="btnInfoFee" destination="qOg-xA-CCD" id="kdZ-79-14I"/>
+                        <outlet property="btnSignViaQr" destination="HF4-UH-BWX" id="7E3-6W-BKB"/>
                         <outlet property="btnVerifyAddress" destination="O1L-EB-7g4" id="hoB-oW-2bF"/>
                         <outlet property="iconAsset" destination="hd6-Os-nNS" id="zg3-yU-id9"/>
                         <outlet property="iconType" destination="3RA-Hf-O5s" id="VRV-Ve-SDy"/>
@@ -2673,6 +2689,9 @@
         </namedColor>
         <namedColor name="gGrayCard">
             <color red="0.10588235294117647" green="0.12549019607843137" blue="0.16470588235294117" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGreenMatrix">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gRedWarn">
             <color red="0.60392156862745094" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

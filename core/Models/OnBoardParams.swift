@@ -23,7 +23,8 @@ public struct OnBoardParams: Codable {
         return Account(id: accountId ?? UUID().uuidString,
                        name: walletName ?? "",
                        network: network,
-                       xpubHashId: xpubHashId ?? "")
+                       xpubHashId: xpubHashId ?? "",
+                       watchonly: false)
     }
     public init(testnet: Bool? = nil, walletName: String? = nil, mnemonic: String? = nil, mnemomicPassword: String? = nil, mnemonicSize: Int = MnemonicSize._12.rawValue, accountId: String? = nil, xpubHashId: String? = nil, restoreSuccess: Bool? = nil) {
         self.testnet = testnet

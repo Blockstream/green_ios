@@ -43,6 +43,10 @@ enum ExternalUrls {
     static let masterBlindingKey = URL(string: "https://help.blockstream.com/hc/en-us/articles/4403675941017-What-are-the-implications-of-exporting-the-master-blinding-key")!
     static let reEnable2faLearnMore = URL(string: "https://help.blockstream.com/hc/en-us/articles/900001391763-How-does-Blockstream-Green-s-2FA-multisig-protection-work#h_01HRYKB9YRHWX02REXYY34VPV9")!
     static let feesInfo = URL(string: "https://help.blockstream.com/hc/en-us/articles/4412578550809")!
+    static let scanQRFixIssues = URL(string: "https://help.blockstream.com/hc/en-us/articles/20427378059417-Fix-issues-scanning-QR-codes")!
+    static let qrModeScanWithJade = URL(string: "https://blockstream.zendesk.com/hc/en-us/articles/28264425434265")!
+    static let qrModeAirGapUsage = URL(string: "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage")!
+    static let qrModeAirGapSupport = URL(string: "https://help.blockstream.com/hc/en-us/articles/20272957303577-Add-Jade-to-a-QR-supported-app")!
 }
 
 enum RiveModel {

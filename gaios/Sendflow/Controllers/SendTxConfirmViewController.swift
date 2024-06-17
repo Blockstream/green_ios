@@ -50,6 +50,9 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var btnInfoFee: UIButton!
     @IBOutlet weak var btnVerifyAddress: UIButton!
+    @IBOutlet weak var btnSignViaQr: UIButton!
+
+    let qrFlowNav = UINavigationController()
 
     @IBOutlet weak var lblMultiAddrHint: UILabel!
     @IBOutlet weak var iconsView: UIView!
@@ -100,6 +103,10 @@ class SendTxConfirmViewController: UIViewController {
         lblPayRequestByHint.text = ""
         payRequestByStack.isHidden = true
         lblMultiAddrHint.text = "id_multiple_assets".localized
+        btnSignViaQr.setTitle("Sign Transaction via QR".localized, for: .normal)
+        let isWo = viewModel.wm?.account.isWatchonly ?? false
+        btnSignViaQr.isHidden = !isWo
+        squareSliderView.isHidden = isWo
     }
 
     func setStyle() {
@@ -130,6 +137,7 @@ class SendTxConfirmViewController: UIViewController {
             }
         }
         lblMultiAddrHint.setStyle(.txtCard)
+        btnSignViaQr.setStyle(.primary)
     }
 
     @MainActor
@@ -369,6 +377,44 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
+    func presentQRPinUnlockFlow() {
+        self.qrFlowNav.viewControllers = []
+        let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
+            vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: viewModel.wm?.prominentNetwork.testnet ?? false)
+            vc.requireSignerFlow = true
+            vc.delegate = self
+            self.qrFlowNav.viewControllers = [vc]
+            self.qrFlowNav.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(self.qrFlowNav, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func presentSignerFlow() {
+        self.qrFlowNav.viewControllers = []
+        let stb = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "QRPsbtShowViewController") as? QRPsbtShowViewController {
+            vc.qrBcur = viewModel.bcurUnsignedPsbt
+            vc.confirmModel = viewModel.sendHWConfirmViewModel()
+            vc.delegate = self
+            self.qrFlowNav.viewControllers = [vc]
+            self.qrFlowNav.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(self.qrFlowNav, animated: false, completion: nil)
+        }
+    }
+
+    func enterSignerFlow() {
+        let stb = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "QRPsbtShowViewController") as? QRPsbtShowViewController {
+            vc.qrBcur = viewModel.bcurUnsignedPsbt
+            vc.confirmModel = viewModel.sendHWConfirmViewModel()
+            vc.followsQRUnlock = true
+            vc.delegate = self
+            self.qrFlowNav.pushViewController(vc, animated: true)
+        }
+    }
+
     func widthdraw() {
         var desc = String(format: "id_you_are_redeeming_funds_from_s".localized, "\n\(viewModel.withdrawData?.domain ?? "")")
         if let description = viewModel.withdrawData?.defaultDescription {
@@ -385,6 +431,13 @@ class SendTxConfirmViewController: UIViewController {
                 squareSliderView.reset()
                 DropAlert().error(message: error.description()?.localized ?? "id_operation_failure".localized)
             }
+        }
+    }
+
+    func exportPsbt() {
+        Task {
+            try await viewModel.exportPsbt()
+            presentQRUnlockSignDialogViewController()
         }
     }
 
@@ -443,6 +496,11 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
+    @IBAction func btnSignViaQr(_ sender: Any) {
+        if viewModel.signedPsbt == nil {
+            exportPsbt()
+        }
+    }
 }
 
 extension SendTxConfirmViewController: DialogEditViewControllerDelegate {
@@ -466,7 +524,15 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
             if viewModel.isWithdraw {
                 widthdraw()
             } else {
-                send()
+                if viewModel.wm?.account.isWatchonly ?? false && viewModel.signedPsbt == nil {
+                    exportPsbt()
+                } else {
+                    send()
+                }
+            }
+        } else {
+            if viewModel.wm?.account.isWatchonly ?? false {
+                viewModel.signedPsbt = nil
             }
         }
     }
@@ -517,7 +583,11 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnab
 
 extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func onAgain() {
-        send()
+        if viewModel.wm?.account.isWatchonly ?? false && viewModel.signedPsbt == nil {
+            exportPsbt()
+        } else {
+            send()
+        }
     }
 
     func onSupport(error: Error) {
@@ -565,6 +635,97 @@ extension SendTxConfirmViewController: AlertViewControllerDelegate {
             navigationController?.popToViewController(ofClass: AccountViewController.self)
         } else {
             navigationController?.popToViewController(ofClass: WalletViewController.self)
+        }
+    }
+}
+extension SendTxConfirmViewController: QRUnlockJadeViewControllerDelegate {
+    func signerFlow() {
+        enterSignerFlow()
+    }
+
+    @MainActor
+    func login(credentials: gdk.Credentials) {
+    }
+
+    @MainActor
+    func abort() {
+        squareSliderView.reset()
+    }
+
+    @MainActor
+    func signPsbt(_ psbt: String) {
+        viewModel.signedPsbt = psbt
+        send()
+    }
+}
+
+extension SendTxConfirmViewController: QRUnlockSignDialogViewControllerDelegate {
+    @MainActor
+    func onTap(_ action: QRUnlockSignDialogAction) {
+        switch action {
+        case .cancel:
+            break
+        case .connect:
+            break
+        case .unlocked:
+            presentSignerFlow()
+        case .unlock:
+            presentQRPinUnlockFlow()
+//        case .copy:
+//            if let psbt = viewModel.unsignedPsbt {
+//                UIPasteboard.general.string = psbt
+//                DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+//            }
+        }
+        squareSliderView.reset()
+    }
+
+    @MainActor
+    func presentQRUnlockSignDialogViewController() {
+        let stb = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "QRUnlockSignDialogViewController") as? QRUnlockSignDialogViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
+}
+extension SendTxConfirmViewController: QRPsbtShowViewControllerDelegate {
+    @MainActor
+    func close() {
+        squareSliderView.reset()
+    }
+
+    @MainActor
+    func next() {
+        presentDialogScanViewController()
+    }
+}
+
+extension SendTxConfirmViewController: QRPsbtAquireViewControllerDelegate {
+    @MainActor
+    func didScan(value: ScanResult, index: Int?) {
+        if let psbt = value.bcur?.psbt {
+            viewModel.signedPsbt = psbt
+            send()
+        } else {
+            DropAlert().error(message: "Invalid psbt")
+        }
+        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+    }
+
+    @MainActor
+    func didStop() {
+        squareSliderView.reset()
+        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+    }
+
+    @MainActor
+    func presentDialogScanViewController() {
+        let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "QRPsbtAquireViewController") as? QRPsbtAquireViewController {
+            vc.delegate = self
+            self.qrFlowNav.pushViewController(vc, animated: true)
         }
     }
 }

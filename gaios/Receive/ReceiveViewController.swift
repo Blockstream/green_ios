@@ -312,7 +312,7 @@ class ReceiveViewController: KeyboardViewController {
             vc.qrTxt = viewModel.text
             vc.textNoURI = viewModel.textNoURI
             vc.showTxt = true
-            vc.showClose = true
+            vc.showBtn = true
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
             UINotificationFeedbackGenerator().notificationOccurred(.success)

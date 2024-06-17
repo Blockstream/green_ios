@@ -400,7 +400,7 @@ extension LTRecoverFundsViewController: LTRecoverFundsAddressCellDelegate {
 extension LTRecoverFundsViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
         viewModel.address = value.result
-        btnNextIsEnabled = !value.result.isEmpty
+        btnNextIsEnabled = !(value.result?.isEmpty ?? true)
         prepare()
     }
     func didStop() {

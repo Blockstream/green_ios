@@ -6,6 +6,7 @@ import core
 protocol QRCodeReaderDelegate: AnyObject {
     func onQRCodeReadSuccess(result: ScanResult)
     func userDidGrant(_: Bool)
+    func onBcurProgress(_: ResolveCodeAuthData)
 }
 
 class QRCodeReaderView: UIView {
@@ -224,7 +225,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             logger.info(">> append \(stringValue)")
 
             if !stringValue.uppercased().starts(with: "UR:") {
-                self.delegate?.onQRCodeReadSuccess(result: ScanResult(result: stringValue, bcur: nil))
+                self.delegate?.onQRCodeReadSuccess(result: ScanResult.from(result: stringValue, bcur: nil))
                 previous = nil
                 buffer = []
                 return
@@ -239,7 +240,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                     if !buffer.isEmpty { value = buffer.removeFirst() }
                     logger.info(">> value \(value)")
                     if let result = try await validate(value) {
-                        delegate?.onQRCodeReadSuccess(result: ScanResult.from(bcurDecodedData: result))
+                        delegate?.onQRCodeReadSuccess(result: ScanResult.from(result: nil, bcur: result))
                         previous = nil
                         buffer = []
                         validating = false
@@ -263,18 +264,15 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
 
 }
 extension QRCodeReaderView: BcurResolver {
-    func requestData() async throws -> String {
-        logger.info(">> requestData")
-        for _ in 0...3 {
+    func requestData(_ info: gdk.ResolveCodeAuthData) async throws -> String {
+        delegate?.onBcurProgress(info)
+        for _ in 0...10*5 {
             if !buffer.isEmpty {
                 let value = buffer.removeFirst()
-                logger.info(">> request \(value)")
                 return value
             }
-            logger.info(">> sleep")
-            try await Task.sleep(nanoseconds: 1_000_000_000)
+            try await Task.sleep(nanoseconds: 200_000_000)
         }
-        logger.info(">> TwoFactorCallError")
         validating = false
         throw TwoFactorCallError.failure(localizedDescription: "id_invalid_address".localized)
     }

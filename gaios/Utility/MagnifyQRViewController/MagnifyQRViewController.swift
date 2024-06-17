@@ -2,6 +2,11 @@ import Foundation
 import UIKit
 import gdk
 
+protocol MagnifyQRViewControllerDelegate: AnyObject {
+    func close()
+    func next()
+}
+
 class MagnifyQRViewController: UIViewController {
 
     @IBOutlet weak var bgLayer: UIView!
@@ -28,9 +33,12 @@ class MagnifyQRViewController: UIViewController {
     var qrTxt: String?
     var qrBcur: BcurEncodedData?
     var textNoURI: String?
-    var showClose = false
+    var showBtn = false
+    var textBtn = "id_close"
     var showTxt = false
     var isMnemonic = false
+    var showClose = false
+    weak var delegate: MagnifyQRViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +52,8 @@ class MagnifyQRViewController: UIViewController {
 
         plainTxt.isHidden = true
         groupedTxt.isHidden = true
+        btnClose.isHidden = !showBtn
+        btnNavClose.isHidden = false
         if showTxt {
             if qrTxt == textNoURI {
                 if let textNoURI = textNoURI {
@@ -110,33 +120,40 @@ class MagnifyQRViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let text = qrTxt {
-            qr.qrCode(text: text)
-        } else if let bcur = qrBcur {
+        if let bcur = qrBcur {
             qr.bcurQrCode(bcur: bcur)
+        } else if let text = qrTxt {
+            qr.qrCode(text: text)
         } else {
             qr.image = UIImage()
         }
     }
 
     @objc func onTap(sender: UITapGestureRecognizer) {
-        dismiss()
+        dismiss() { [weak self] in
+            self?.delegate?.close()
+        }
     }
 
-    func dismiss() {
+    func dismiss(completion: @escaping ()->Void) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
             self.dismiss(animated: false, completion: {
+                completion()
             })
         })
     }
 
     @IBAction func btnClose(_ sender: Any) {
-        dismiss()
+        dismiss() { [weak self] in
+            self?.delegate?.next()
+        }
     }
 
     @IBAction func btnNavClose(_ sender: Any) {
-        dismiss()
+        dismiss() { [weak self] in
+            self?.delegate?.close()
+        }
     }
 }

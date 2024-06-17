@@ -94,8 +94,8 @@ class QRUnlockPinUnlockDialogViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "Unlock Jade before signing via QR".localized
-        lblHint.text = "Help text. QR Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth). ".localized
-        btnLearMore.setTitle("Learn more here".localized, for: .normal)
+        lblHint.text = "QR Airgapped Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).".localized
+        btnLearMore.setTitle("id_learn_more".localized, for: .normal)
         btnPinUnlock.setTitle("PIN Unlock via QR".localized, for: .normal)
         btnAlreadyUnlocked.setTitle("Already unlocked via SeedQR".localized, for: .normal)
     }
@@ -105,7 +105,7 @@ class QRUnlockPinUnlockDialogViewController: UIViewController {
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         btnLearMore.setStyle(.inline)
         btnPinUnlock.setStyle(.primary)
-        btnAlreadyUnlocked.setStyle(.inlineWhite)
+        btnAlreadyUnlocked.setStyle(.inline)
         lblHint.setStyle(.txtCard)
     }
 

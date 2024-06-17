@@ -32,6 +32,7 @@ class SendHWConfirmViewController: UIViewController {
 
     private var obs: NSObjectProtocol?
     var viewModel: SendHWConfirmViewModel!
+    var isDismissible = false
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -86,6 +87,7 @@ class SendHWConfirmViewController: UIViewController {
                 $0?.isHidden = true
             }
         }
+        handle.isHidden = !isDismissible
     }
 
     deinit {
@@ -111,7 +113,9 @@ class SendHWConfirmViewController: UIViewController {
     }
 
     @objc func didTapToClose(gesture: UIGestureRecognizer) {
-        // dismiss()
+        if isDismissible {
+            dismiss()
+        }
     }
 
     func setContent() {
@@ -168,7 +172,9 @@ class SendHWConfirmViewController: UIViewController {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
             case .down:
-                break
+                if isDismissible {
+                    dismiss()
+                }
             default:
                 break
             }

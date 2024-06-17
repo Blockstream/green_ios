@@ -224,4 +224,53 @@ public class Wally {
         }
         return String(cString: resultPtr)
     }
+    
+    public static func signedPsbtToTxHex(_ psbt: String) -> String? {
+        var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
+        var wallyTx: UnsafeMutablePointer<green.wally_tx>?
+        var resultPtr: UnsafeMutablePointer<CChar>?
+        
+        if wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) != WALLY_OK {
+            return nil
+        }
+        if wally_psbt_finalize(wallyPsbt, 0) != WALLY_OK {
+            return nil
+        }
+        if wally_psbt_extract(wallyPsbt, 0, &wallyTx) != WALLY_OK {
+            return nil
+        }
+        if wally_tx_to_hex(wallyTx, UInt32(WALLY_TX_FLAG_USE_WITNESS), &resultPtr) != WALLY_OK {
+            return nil
+        }
+        guard let resultPtr = resultPtr else {
+            return nil
+        }
+        return String(cString: resultPtr)
+    }
+    
+    public static func isPsbtFinalized(_ psbt: String) -> Bool? {
+        var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
+        var finalized: Int = 0
+        
+        if wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) != WALLY_OK {
+            return nil
+        }
+        if wally_psbt_is_finalized(wallyPsbt, &finalized) != WALLY_OK {
+            return nil
+        }
+        return finalized == 1
+    }
+
+    public static func isPsbtElements(_ psbt: String) -> Bool? {
+        var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
+        var elements: Int = 0
+        
+        if wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) != WALLY_OK {
+            return nil
+        }
+        if wally_psbt_is_elements(wallyPsbt, &elements) != WALLY_OK {
+            return nil
+        }
+        return elements == 1
+    }
 }

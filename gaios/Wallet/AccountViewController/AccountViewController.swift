@@ -63,6 +63,14 @@ class AccountViewController: UIViewController {
         setStyle()
         tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
         AnalyticsManager.shared.recordView(.accountOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+
+        Task {
+            let sendButtonEnabled = await viewModel.isSendEnabled() || viewModel.isSweepEnabled()
+            if !sendButtonEnabled {
+                btnSend.alpha = 0.33
+                btnSend.isUserInteractionEnabled = false
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -196,15 +204,10 @@ class AccountViewController: UIViewController {
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
         // Sweep is only supported in watch-only for btc multisig wallets
-        if viewModel.watchOnly {
-            if let account = AccountsRepository.shared.current, !account.gdkNetwork.liquid {
-                btnSend.setTitle( "id_sweep".localized, for: .normal )
-                btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
-            } else {
-                btnSend.isEnabled = false
-                btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
-            }
-        }
+        if viewModel.isSweepEnabled() {
+            btnSend.setTitle( "id_sweep".localized, for: .normal )
+            btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
+        } 
     }
 
     func setContent() {
@@ -442,22 +445,18 @@ class AccountViewController: UIViewController {
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
-
-//        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-//            vc.transaction = tx
-//            vc.wallet = tx.subaccountItem
-//            vc.delegate = self
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
     }
 
     @IBAction func btnSend(_ sender: Any) {
+        if !viewModel.isSweepEnabled() && viewModel.satoshi == 0 {
+            presentDialogZeroSatoshi()
+            return
+        }
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
             preferredAccount: viewModel.account,
-            txType: viewModel.watchOnly ? .sweep : .transaction)
-        self.presentSendAddressInputViewController(sendAddressInputViewModel)
+            txType: viewModel.isSweepEnabled() ? .sweep : .transaction)
+        presentSendAddressInputViewController(sendAddressInputViewModel)
     }
 
     @IBAction func btnReceive(_ sender: Any) {
@@ -952,35 +951,24 @@ extension AccountViewController: DialogScanViewControllerDelegate {
 
     func didScan(value: ScanResult, index: Int?) {
         let account = viewModel.accountCellModels[sIdx].account
-        if let psbt = value.bcur?.psbt {
-            Task {
-                let utxos = try await account.session?.getUtxos(GetUnspentOutputsParams(subaccount: account.pointer, numConfs: 0))
-                let res = try await account.session?.signPsbt(params: SignPsbtParams(psbt: psbt, utxos: utxos?.unspentOutputs ?? [:], blindingNonces: nil))
-                let res1 = try await account.session?.broadcastTransaction(BroadcastTransactionParams(psbt: res?.psbt))
-            }
-            return
-        }
         let sendAddressInputViewModel = SendAddressInputViewModel(
-            input: value.result,
+            input: value.bcur?.psbt ?? value.result,
             preferredAccount: account,
-            txType: nil)
+            txType: value.bcur?.psbt != nil ? .psbt : nil )
         presentSendAddressInputViewController(sendAddressInputViewModel)
     }
 
-    func sendViewController() {
-        if viewModel.satoshi == 0 {
-            let alert = UIAlertController(title: "id_warning".localized,
-                                          message: "id_you_have_no_coins_to_send".localized,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in  })
-            alert.addAction(UIAlertAction(title: "id_receive".localized, style: .default) { _ in self.receiveScreen() })
-            present(alert, animated: true, completion: nil)
-            return
-        }
-        let sendAddressInputViewModel = SendAddressInputViewModel(preferredAccount: viewModel.account, txType: .transaction)
-        presentSendAddressInputViewController(sendAddressInputViewModel)
+    @MainActor
+    func presentDialogZeroSatoshi() {
+        let alert = UIAlertController(title: "id_warning".localized,
+                                      message: "id_you_have_no_coins_to_send".localized,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in  })
+        alert.addAction(UIAlertAction(title: "id_receive".localized, style: .default) { _ in self.receiveScreen() })
+        present(alert, animated: true, completion: nil)
     }
 
+    @MainActor
     func presentSendAddressInputViewController(_ sendAddressInputViewModel: SendAddressInputViewModel) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {

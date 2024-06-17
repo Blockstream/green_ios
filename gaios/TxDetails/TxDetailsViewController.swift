@@ -48,7 +48,7 @@ class TxDetailsViewController: UIViewController {
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
         return vm.wallet.session?.isResetActive ?? false ||
-        !vm.transaction.canRBF || isWatchonly
+        !vm.transaction.canRBF
     }
 
     var headerH: CGFloat = 44.0

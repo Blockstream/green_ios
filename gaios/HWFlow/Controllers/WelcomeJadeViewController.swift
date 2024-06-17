@@ -10,7 +10,9 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblSlide2Hint: UILabel!
     @IBOutlet weak var lblSlide3Title: UILabel!
     @IBOutlet weak var lblSlide3Hint: UILabel!
-
+    @IBOutlet weak var lblSlide4Title: UILabel!
+    @IBOutlet weak var lblSlide4Hint: UILabel!
+    
     @IBOutlet weak var btnConnectJade: UIButton!
     @IBOutlet weak var btnConnectOther: UIButton!
     @IBOutlet weak var btnCheckStore: UIButton!
@@ -36,14 +38,16 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
         lblSlide2Hint.text = "id_your_bitcoin_and_liquid_assets".localized
         lblSlide3Title.text = "id_offline_key_storage".localized
         lblSlide3Hint.text = "id_jade_is_an_isolated_device_not".localized
+        lblSlide4Title.text = "Fully air-gapped with QR".localized
+        lblSlide4Hint.text = "QR Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).".localized
     }
 
     func setStyle() {
-        [lblSlide1Title, lblSlide2Title, lblSlide3Title].forEach {
+        [lblSlide1Title, lblSlide2Title, lblSlide3Title, lblSlide4Title].forEach {
             $0?.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
             $0?.textColor = .white
         }
-        [lblSlide1Hint, lblSlide2Hint, lblSlide3Hint].forEach {
+        [lblSlide1Hint, lblSlide2Hint, lblSlide3Hint, lblSlide4Hint].forEach {
             $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
             $0?.textColor = .white.withAlphaComponent(0.6)
         }

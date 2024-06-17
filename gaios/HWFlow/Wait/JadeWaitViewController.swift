@@ -3,6 +3,8 @@ import CoreBluetooth
 import RiveRuntime
 import AsyncBluetooth
 import Combine
+import gdk
+import core
 
 class JadeWaitViewController: HWFlowBaseViewController {
 
@@ -13,6 +15,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var infoBox: UIView!
     @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var animateView: UIView!
+    @IBOutlet weak var btnConnectWithQr: UIButton!
 
     let viewModel = JadeWaitViewModel()
     var scanViewModel: ScanViewModel?
@@ -157,6 +160,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func setContent() {
         lblLoading.text = "id_looking_for_device".localized
+        btnConnectWithQr.setTitle("Connect via QR".localized, for: .normal)
     }
 
     func refresh() {
@@ -203,6 +207,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
         lblStepTitle.textColor = .white
         lblStepHint.textColor = .white.withAlphaComponent(0.6)
         lblLoading.textColor = .white
+        btnConnectWithQr.setStyle(.outlinedWhite)
     }
 
     @objc func setupBtnTapped() {
@@ -249,10 +254,63 @@ class JadeWaitViewController: HWFlowBaseViewController {
     func applicationWillResignActive(_ notification: Notification) {
         stop()
     }
+
+    @IBAction func tapConnectWithQr(_ sender: Any) {
+        let hwFlow = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "QRUnlockInfoAlertViewController") as? QRUnlockInfoAlertViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
 }
 
 extension JadeWaitViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
         navigationController?.popViewController(animated: true)
+    }
+}
+
+extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
+    func onTap(_ action: QRUnlockInfoAlertAction) {
+        switch action {
+        case .learnMore:
+            let url = "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage"
+            if let url = URL(string: url) {
+                if UIApplication.shared.canOpenURL(url) {
+                    SafeNavigationManager.shared.navigate(url)
+                }
+            }
+        case .setup:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadePinInfoViewController") as? QRUnlockJadePinInfoViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .alreadyUnlocked:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
+                vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false)
+                vc.delegate = self
+                present(vc, animated: true)
+            }
+        }
+    }
+}
+
+extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
+    func signerFlow() {
+    }
+
+    func signPsbt(_ psbt: String) {
+    }
+
+    func login(credentials: gdk.Credentials) {
+        if let account = AccountsRepository.shared.current {
+            AccountNavigator.goLogged(account: account)
+        }
+    }
+
+    func abort() {
+        DropAlert().error(message: "id_operation_failure".localized)
     }
 }

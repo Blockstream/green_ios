@@ -9,6 +9,7 @@ class ScanViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnTroubleshoot: UIButton!
+    @IBOutlet weak var btnConnectQr: UIButton!
     private var scanCancellable: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     var deviceType = DeviceType.Jade
@@ -61,6 +62,15 @@ class ScanViewController: HWFlowBaseViewController {
         cancellables.forEach { $0.cancel() }
     }
 
+    @IBAction func tapBtnConnectQr(_ sender: Any) {
+        let hwFlow = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "QRUnlockInfoAlertViewController") as? QRUnlockInfoAlertViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @MainActor
     func onCentralManagerUpdateState(_ state: CBManagerState) {
         switch state {
@@ -101,11 +111,13 @@ class ScanViewController: HWFlowBaseViewController {
     func setContent() {
         title = "".localized
         btnTroubleshoot.setTitle("id_troubleshoot".localized, for: .normal)
+        btnConnectQr.setTitle("Connect via QR".localized, for: .normal)
         btnTroubleshoot.isHidden = deviceType != .Jade
     }
 
     func setStyle() {
         btnTroubleshoot.setStyle(.inline)
+        btnConnectQr.setStyle(.outlinedWhite)
     }
 
     func next() {
@@ -209,5 +221,46 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
         }
+    }
+}
+
+extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
+    func onTap(_ action: QRUnlockInfoAlertAction) {
+        switch action {
+        case .learnMore:
+            let url = "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage"
+            if let url = URL(string: url) {
+                if UIApplication.shared.canOpenURL(url) {
+                    SafeNavigationManager.shared.navigate(url)
+                }
+            }
+        case .setup:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadePinInfoViewController") as? QRUnlockJadePinInfoViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .alreadyUnlocked:
+            let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
+                vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false)
+                vc.delegate = self
+                present(vc, animated: true)
+            }
+        }
+    }
+}
+
+extension ScanViewController: QRUnlockJadeViewControllerDelegate {
+    func signerFlow() {
+    }
+
+    func login(credentials: gdk.Credentials) {
+        if let account = AccountsRepository.shared.current {
+            AccountNavigator.goLogged(account: account)
+        }
+    }
+
+    func abort() {
+        DropAlert().error(message: "id_operation_failure".localized)
     }
 }

@@ -309,4 +309,22 @@ class WalletViewModel {
             AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared)
         }
     }
+
+    func isSendEnabled() async -> Bool {
+        if watchOnly {
+            let notSinglesigBitcoinNetworks = subaccounts.filter { $0.networkType.multisig || $0.networkType.liquid }
+            let credentials = try? await wm?.prominentSession?.getCredentials(password: "")
+            let pubkeys = credentials?.slip132ExtendedPubkeys ?? []
+            return notSinglesigBitcoinNetworks.isEmpty && pubkeys.isEmpty
+        }
+        return true
+    }
+    
+    func isSweepEnabled() -> Bool {
+        if watchOnly {
+            let notMultisigBitcoinNetworks = subaccounts.filter { $0.networkType.singlesig || $0.networkType.liquid }
+            return notMultisigBitcoinNetworks.isEmpty
+        }
+        return false
+    }
 }

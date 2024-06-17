@@ -42,8 +42,10 @@ public struct Account: Codable, Equatable {
     public var ephemeralId: Int?
     public var isDerivedLightning: Bool = false
     public var lightningWalletHashId: String?
+    private var watchonly: Bool = false
+    public var isWatchonly: Bool { watchonly || username != nil }
 
-    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil) {
+    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil, watchonly: Bool = false) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -63,6 +65,7 @@ public struct Account: Codable, Equatable {
         self.hidden = hidden
         self.isDerivedLightning = isDerivedLightning
         self.password = password
+        self.watchonly = watchonly
         if isEphemeral {
             let ephAccounts = AccountsRepository.shared.ephAccounts
             if ephAccounts.count == 0 {
@@ -85,6 +88,7 @@ public struct Account: Codable, Equatable {
         self.username = username
         self.password = password
         self.keychain = id
+        self.watchonly = true
     }
 
     public init(name: String, network: NetworkSecurityCase, keychain: String) {
@@ -100,7 +104,6 @@ public struct Account: Codable, Equatable {
     }
 
     public var isHW: Bool { isJade || isLedger }
-    public var isWatchonly: Bool { username != nil }
 
     public var hasManualPin: Bool {
         get {
@@ -206,7 +209,8 @@ public struct Account: Codable, Equatable {
                 walletHashId: walletHashId,
                 lightningWalletHashId: lightningWalletHashId,
                 isDerivedLightning: true,
-                password: password
+                password: password,
+                watchonly: false
         )
         if AuthenticationTypeHandler.findAuth(method: .AuthKeyLightning, forNetwork: account.keychain) {
             return account

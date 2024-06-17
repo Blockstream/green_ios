@@ -64,7 +64,7 @@ class BleViewModel {
     static let shared = BleViewModel()
     private let centralManager: CentralManager
     var type: DeviceType = .Jade
-    var jade: BleJadeManager?
+    var jade: JadeManager?
     var ledger: BleLedgerManager?
     var peripheralID: UUID? {
         didSet { setup() }
@@ -85,8 +85,8 @@ class BleViewModel {
         guard let peripheral = peripheral else { return }
         switch type {
         case .Jade:
-            let impl = BleJade(peripheral: peripheral, centralManager: centralManager)
-            jade = BleJadeManager(bleJade: impl)
+            let connection = BleJadeConnection(peripheral: peripheral, centralManager: centralManager)
+            jade = JadeManager(connection: connection)
             ledger = nil
         case .Ledger:
             let impl = BleLedger(peripheral: peripheral, centralManager: centralManager)

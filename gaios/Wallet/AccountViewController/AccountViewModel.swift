@@ -243,4 +243,17 @@ class AccountViewModel {
         UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!
         .maskWithColor(color: .white)
     }
+    
+    func isSendEnabled() async -> Bool {
+        if watchOnly {
+            let credentials = try? await wm?.prominentSession?.getCredentials(password: "")
+            let pubkeys = credentials?.slip132ExtendedPubkeys ?? []
+            return !account.networkType.liquid && pubkeys.isEmpty
+        }
+        return true
+    }
+
+    func isSweepEnabled() -> Bool {
+        return watchOnly && account.networkType.gdkNetwork.mainnet && account.networkType.gdkNetwork.multisig
+    }
 }

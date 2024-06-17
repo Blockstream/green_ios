@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import core
 import gdk
+import greenaddress
 
 class AccountAssetViewModel {
 
@@ -46,4 +47,5 @@ class AccountAssetViewModel {
             createTx?.assetId = cell.asset.assetId
         }
     }
+
 }

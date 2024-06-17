@@ -74,7 +74,8 @@ class BleLedgerManager {
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.popupResolver = await PopupResolver()
         walletManager?.hwInterfaceResolver = await HwPopupResolver()
-        walletManager?.hwDevice = BLEDevice(peripheral: bleLedger.peripheral, device: device, interface: bleLedger)
+        walletManager?.hwDevice = device
+        walletManager?.hwProtocol = bleLedger
         try await walletManager?.loginHW(lightningCredentials: nil, device: device, masterXpub: masterXpub, fullRestore: false)
         AccountsRepository.shared.current = walletManager?.account
         return account
@@ -100,7 +101,9 @@ class BleLedgerManager {
                        isLedger: device.isLedger,
                        isSingleSig: network.gdkNetwork.electrum,
                        uuid: bleLedger.peripheral.identifier,
-                       hidden: false)
+                       hidden: false,
+                       watchonly: false
+        )
     }
 
     func validateAddress(account: WalletItem, addr: Address) async throws -> Bool {

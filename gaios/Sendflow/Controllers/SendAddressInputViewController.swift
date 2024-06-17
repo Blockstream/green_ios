@@ -73,6 +73,8 @@ class SendAddressInputViewController: KeyboardViewController {
         } else {
             lblPlaceholder.text = "Enter Address or Invoice".localized
         }
+        addressTextView.textContainer.maximumNumberOfLines = 8
+        addressTextView.textContainer.lineBreakMode = .byTruncatingTail
     }
 
     func setStyle() {
@@ -177,7 +179,10 @@ class SendAddressInputViewController: KeyboardViewController {
             presentSendAmountViewController()
             return
         }
-        if createTx.isLightning {
+        
+        if createTx.txType == .psbt {
+            presentSendPsbtConfirmViewController()
+        } else if createTx.isLightning {
             if let error = createTx.error {
                 enableError(true, text: error.localized)
                 return
@@ -316,6 +321,26 @@ class SendAddressInputViewController: KeyboardViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    
+    func presentSendPsbtConfirmViewController() {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
+            Task {
+                do {
+                    startLoader(message: "id_loading".localized)
+                    let vm = try await viewModel.sendPsbtConfirmViewModel()
+                    stopLoader()
+                    await MainActor.run {
+                        vc.viewModel = vm
+                        navigationController?.pushViewController(vc, animated: true)
+                    }
+                } catch {
+                    stopLoader()
+                    showError(error.description()?.localized ?? "id_operation_failure".localized)
+                }
+            }
+        }
+    }
 }
 
 extension SendAddressInputViewController: UITextViewDelegate {
@@ -336,7 +361,7 @@ extension SendAddressInputViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
         addressTextView.text = value.result
         reload()
-        Task { [weak self] in await self?.validate(text: value.result) }
+        Task { [weak self] in await self?.validate(text: value.result ?? "") }
     }
     func didStop() {
     }

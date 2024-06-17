@@ -1,14 +1,17 @@
 import Foundation
 import gdk
 
-struct ScanResult: Codable {
-    enum CodingKeys: String, CodingKey {
-        case result
-        case bcur
+public typealias ScanResult = [String: Any?]
+extension ScanResult {
+    private func get<T>(_ key: String) -> T? {
+        return self[key] as? T
     }
-    public let result: String
-    public let bcur: BcurDecodedData?
-    static func from(bcurDecodedData: BcurDecodedData) -> ScanResult {
-        ScanResult(result: bcurDecodedData.result, bcur: bcurDecodedData)
+    public var result: String? { self.get("result") }
+    public var bcur: BcurDecodedData? { self.get("bcur") }
+    public static func from(result: String?, bcur: BcurDecodedData?) -> ScanResult {
+        var res = ScanResult()
+        res["result"] = result ?? bcur?.result
+        res["bcur"] = bcur
+        return res
     }
 }

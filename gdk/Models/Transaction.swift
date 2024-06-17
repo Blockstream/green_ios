@@ -14,6 +14,7 @@ public enum TxType: Codable {
     case bolt11
     case lnurl
     case redepositExpiredUtxos
+    case psbt
 }
 
 public typealias Metadata = [[String]]

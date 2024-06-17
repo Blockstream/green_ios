@@ -42,8 +42,8 @@ class QRUnlockInfoAlertViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "Set a PIN via QR".localized
-        lblHint.text = "Help text. QR Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth). ".localized
-        btnLearnMore.setTitle("Learn more here".localized, for: .normal)
+        lblHint.text = "QR Airgapped Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).".localized
+        btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
         btnSetup.setTitle("Setup PIN via QR".localized, for: .normal)
         btnAlreadyUnlocked.setTitle("Already unlocked via SeedQR".localized, for: .normal)
     }
@@ -56,7 +56,7 @@ class QRUnlockInfoAlertViewController: UIViewController {
         lblHint.setStyle(.txtCard)
         btnLearnMore.setStyle(.inline)
         btnSetup.setStyle(.primary)
-        btnAlreadyUnlocked.setStyle(.inlineWhite)
+        btnAlreadyUnlocked.setStyle(.inline)
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -57,7 +57,7 @@ public class WalletManager {
         }
     }
 
-    public var hwDevice: BLEDevice? {
+    public var hwDevice: HWDevice? {
         didSet {
             sessions.forEach { $0.value.hw = hwDevice }
         }
@@ -68,7 +68,12 @@ public class WalletManager {
             sessions.forEach { $0.value.popupResolver = popupResolver }
         }
     }
-
+    public var hwProtocol: HWProtocol? = nil {
+        didSet {
+            sessions.forEach { $0.value.hwProtocol = hwProtocol }
+        }
+    }
+    
     public var hwInterfaceResolver: HwInterfaceResolver? = nil {
         didSet {
             sessions.forEach { $0.value.hwInterfaceResolver = hwInterfaceResolver }

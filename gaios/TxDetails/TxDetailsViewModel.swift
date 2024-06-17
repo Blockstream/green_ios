@@ -241,7 +241,7 @@ class TxDetailsViewModel {
     func showBumpFee() -> Bool {
         let subaccount =  WalletManager.current?.subaccounts.filter { $0.hashValue == transaction.subaccount }.first
         let isWatchonly = WalletManager.current?.account.isWatchonly ?? false
-        let showBumpFee = !transaction.isLiquid && transaction.canRBF && !isWatchonly && !(subaccount?.session?.isResetActive ?? false)
+        let showBumpFee = !transaction.isLiquid && transaction.canRBF && !(subaccount?.session?.isResetActive ?? false)
         return showBumpFee
     }
 

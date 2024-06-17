@@ -9,7 +9,7 @@ public protocol PopupResolverDelegate: AnyObject {
 }
 
 public protocol BcurResolver {
-    func requestData() async throws -> String
+    func requestData(_ :ResolveCodeAuthData) async throws -> String
 }
 
 public enum ResolverError: Error {
@@ -74,6 +74,7 @@ public class GDKResolver {
 
     private func resolving(_ res: [String: Any]) async throws {
         let status = res["status"] as? String
+        let name = res["name"] as? String
         print("\(network.chain) \(res)")
         switch status {
         case "done":
@@ -101,8 +102,10 @@ public class GDKResolver {
                 let hwdevice = HWDevice.from(device) as? HWDevice {
                 let res = try await hwDelegate?.resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: network.chain, hwDevice: hwDevice)
                 try self.twoFactorCall?.resolveCode(code: res.stringify())
-            } else if let bcurDelegate = bcurDelegate {
-                let code = try await bcurDelegate.requestData()
+            } else if name == "bcur_decode", let bcurDelegate = bcurDelegate {
+                let authData = res["auth_data"] as? [String: Any]
+                let info = ResolveCodeAuthData.from(authData ?? [:]) as? ResolveCodeAuthData
+                let code = try await bcurDelegate.requestData(info ?? ResolveCodeAuthData())
                 try self.twoFactorCall?.resolveCode(code: code)
             } else {
                 // Software wallet interface resolver

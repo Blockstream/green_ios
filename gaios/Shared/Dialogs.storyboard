@@ -46,7 +46,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="68.666666666666671"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l06-qI-IOg">
-                                                                        <rect key="frame" x="20" y="22" width="353" height="21.666666666666671"/>
+                                                                        <rect key="frame" x="20" y="21.999999999999972" width="353" height="21.666666666666671"/>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
@@ -574,12 +574,23 @@
                                                     <constraint firstAttribute="bottom" secondItem="Hfg-6n-f5s" secondAttribute="bottom" id="yJx-ny-M23"/>
                                                 </constraints>
                                             </view>
+                                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progressViewStyle="bar" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="6Em-LP-f02">
+                                                <rect key="frame" x="0.0" y="785" width="393" height="9"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="8" id="gDq-YK-aXE"/>
+                                                </constraints>
+                                                <color key="progressTintColor" name="customMatrixGreen"/>
+                                                <color key="trackTintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </progressView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="bottom" secondItem="Trj-Ug-xIQ" secondAttribute="bottom" id="0HQ-on-gf1"/>
+                                            <constraint firstAttribute="trailing" secondItem="6Em-LP-f02" secondAttribute="trailing" id="bYy-6e-MvW"/>
+                                            <constraint firstAttribute="bottom" secondItem="6Em-LP-f02" secondAttribute="bottom" id="c6I-VY-H4f"/>
                                             <constraint firstItem="Trj-Ug-xIQ" firstAttribute="leading" secondItem="t03-cC-v8n" secondAttribute="leading" id="esW-EY-Thy"/>
                                             <constraint firstAttribute="trailing" secondItem="Trj-Ug-xIQ" secondAttribute="trailing" id="fhl-nH-Fer"/>
+                                            <constraint firstItem="6Em-LP-f02" firstAttribute="leading" secondItem="t03-cC-v8n" secondAttribute="leading" id="l6Y-GF-hZE"/>
                                             <constraint firstItem="Trj-Ug-xIQ" firstAttribute="top" secondItem="t03-cC-v8n" secondAttribute="top" id="mMe-o8-Lbh"/>
                                         </constraints>
                                     </view>
@@ -618,12 +629,11 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="anchorBottom" destination="YL3-mt-fBq" id="HX3-SJ-6RT"/>
                         <outlet property="btnClose" destination="m1e-9f-G6g" id="Btb-m9-yCH"/>
                         <outlet property="cardView" destination="Hfg-6n-f5s" id="BRh-fy-gMD"/>
                         <outlet property="lblTitle" destination="AxK-6X-nhi" id="Qv6-Oi-x4Z"/>
+                        <outlet property="progress" destination="6Em-LP-f02" id="BJW-Ks-p14"/>
                         <outlet property="qrScanView" destination="cmT-Hr-a1L" id="hzB-1F-dCM"/>
-                        <outlet property="scrollView" destination="faT-zr-uDK" id="gpn-59-Myx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5cf-O0-rHp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -2489,7 +2499,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="65.666666666666671"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hff-oA-UCa">
-                                                                        <rect key="frame" x="20" y="21.999999999999972" width="353" height="21.666666666666671"/>
+                                                                        <rect key="frame" x="20" y="22" width="353" height="21.666666666666671"/>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
@@ -3113,7 +3123,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="65.666666666666671"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vid-re-yS5">
-                                                                        <rect key="frame" x="20" y="21.999999999999972" width="353" height="21.666666666666671"/>
+                                                                        <rect key="frame" x="20" y="22" width="353" height="21.666666666666671"/>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
@@ -3324,7 +3334,7 @@
                                                                                         <nil key="highlightedColor"/>
                                                                                     </label>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_feedback" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ePk-q5-XBY" userLabel="lbl_counter">
-                                                                                        <rect key="frame" x="296" y="60.333333333333378" width="73" height="14.333333333333336"/>
+                                                                                        <rect key="frame" x="296" y="60.33333333333335" width="73" height="14.333333333333336"/>
                                                                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <nil key="highlightedColor"/>
@@ -3340,7 +3350,7 @@
                                                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" smartInsertDeleteType="no"/>
                                                                                     </textView>
                                                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="F2w-qn-vxF">
-                                                                                        <rect key="frame" x="24" y="201" width="345" height="40"/>
+                                                                                        <rect key="frame" x="24" y="201.00000000000003" width="345" height="40"/>
                                                                                         <subviews>
                                                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VIV-0V-kP8" userLabel="Next">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="167.66666666666666" height="40"/>

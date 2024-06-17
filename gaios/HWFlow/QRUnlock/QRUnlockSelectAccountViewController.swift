@@ -91,7 +91,7 @@ extension QRUnlockSelectAccountViewController: UITableViewDelegate, UITableViewD
         case .policy:
             if let cell = tableView.dequeueReusableCell(withIdentifier: PolicyCell.identifier, for: indexPath) as? PolicyCell,
                let model = viewModel {
-                cell.configure(model: model.getPolicyCellModels()[indexPath.row])
+                cell.configure(model: model.getPolicyCellModels()[indexPath.row], hasLightning: false)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -168,8 +168,8 @@ extension QRUnlockSelectAccountViewController: UITableViewDelegate, UITableViewD
 //            }
         case .policy:
             let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "QRScanOnJadeViewController") as? QRScanOnJadeViewController {
-                vc.vm = QRScanOnJadeViewModel(scope: .oracle)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
+                vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: false)
                 navigationController?.pushViewController(vc, animated: true)
             }
         default:
@@ -211,12 +211,13 @@ extension QRUnlockSelectAccountViewController {
 }
 
 extension QRUnlockSelectAccountViewController: AssetSelectViewControllerDelegate {
+
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
         reloadSections([.asset, .policy], animated: true)
     }
 
-    func didSelectAnyAsset() {
+    func didSelectAnyAsset(_ type: AnyAssetType) {
         // handle any asset case
         print("didSelectAnyAsset")
         viewModel?.asset = AssetInfo.lbtcId

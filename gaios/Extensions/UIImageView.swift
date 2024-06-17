@@ -20,7 +20,7 @@ extension UIImageView {
                     image = QRImageGenerator.imageForTextWhite(text: part, frame: frame)
                 }
                 currentIndex += 1
-                try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
             }
         }
     }

@@ -1,4 +1,3 @@
-import Foundation
 import gdk
 import greenaddress
 import core
@@ -114,6 +113,25 @@ class SendAddressInputViewModel {
         }
         return nil
     }
+    
+    private func parsePsbt(for session: SessionManager, input: String) async throws -> CreateTx? {
+        var tx = try await wm?.prominentSession?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  input, utxos: [:]))
+        return CreateTx(txType: .psbt, psbt: input)
+        
+    }
+    private func parsePsbtBitcoin() async throws -> CreateTx? {
+        if let session = bitcoinSinglesigSession ?? bitcoinMultisigSession, let input = self.input {
+            return try await parsePsbt(for: session, input: input)
+        }
+        return nil
+        
+    }
+    private func parsePsbtLiquid() async throws -> CreateTx? {
+        if let session = liquidSinglesigSession ?? liquidMultisigSession, let input = self.input {
+            return try await parsePsbt(for: session, input: input)
+        }
+        return nil
+    }
 
     public func loadSubaccountBalance() async throws {
         let subaccountsWithoutBalance = wm?.subaccounts.filter { $0.satoshi == nil}
@@ -155,6 +173,17 @@ class SendAddressInputViewModel {
                 throw error
             }
         }
+        if let res = try? await parsePsbtBitcoin() {
+            createTx = res
+            return
+        }
+        if let res = try? await parsePsbtLiquid() {
+            createTx = res
+            return
+        }
+        if txType == .psbt {
+            throw TransactionError.invalid(localizedDescription: "Invalid psbt".localized)
+        }
         throw TransactionError.invalid(localizedDescription: "id_invalid_address".localized)
     }
 
@@ -167,14 +196,16 @@ class SendAddressInputViewModel {
         created?.subaccount = lightningSubaccount?.hashValue
         return created
     }
-
+    
     func sendTxConfirmViewModel() async -> SendTxConfirmViewModel {
         SendTxConfirmViewModel(
             transaction: await lightningTransaction(),
             subaccount: lightningSubaccount,
             denominationType: settings?.denomination ?? .Sats,
             isFiat: false,
-            txType: createTx?.txType ?? .transaction)
+            txType: createTx?.txType ?? .transaction, 
+            unsignedPsbt: nil,
+            signedPsbt: nil)
     }
 
     func accountAssetViewModel() -> AccountAssetViewModel {
@@ -182,5 +213,22 @@ class SendAddressInputViewModel {
         return AccountAssetViewModel(
             accounts: isBitcoin ? bitcoinSubaccountsWithFunds : liquidSubaccountsWithFunds,
             createTx: createTx)
+    }
+    
+    func sendPsbtConfirmViewModel() async throws -> SendTxConfirmViewModel {
+        let subaccount = Wally.isPsbtElements(createTx?.psbt ?? "") ?? false ? wm?.liquidSubaccounts.first : wm?.bitcoinSubaccounts.first
+        let session = subaccount?.session
+        var tx = try await session?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  createTx?.psbt, utxos: [:]))
+        let addressee = tx?.transactionOutputs?.map { Addressee.from(address: $0.address ?? "", satoshi: $0.satoshi, assetId: $0.assetId) }
+        tx?.addressees = addressee ?? []
+        tx?.subaccount = subaccount?.hashValue
+        return SendTxConfirmViewModel(
+            transaction: tx,
+            subaccount: subaccount,
+            denominationType: wm?.prominentSession?.settings?.denomination ?? .Sats,
+            isFiat: false,
+            txType: .psbt,
+            unsignedPsbt: nil,
+            signedPsbt: createTx?.psbt)
     }
 }

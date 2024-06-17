@@ -246,7 +246,9 @@ class SendAmountViewModel {
             subaccount: subaccount,
             denominationType: denominationType,
             isFiat: isFiat,
-            txType: createTx.txType
+            txType: createTx.txType,
+            unsignedPsbt: nil,
+            signedPsbt: nil
         )
     }
 
@@ -272,7 +274,7 @@ class SendAmountViewModel {
             tx.feeRate = feeRate
         }
         switch createTx.txType {
-        case .transaction:
+        case .transaction, .psbt:
             if createTx.sendAll && createTx.satoshi == nil {
                 createTx.satoshi = 0
             }

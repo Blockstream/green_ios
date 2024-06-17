@@ -22,7 +22,10 @@ class SendTxConfirmViewModel {
     var sendTransaction: SendTransactionSuccess?
     var error: Error?
     var txType: TxType
-
+    var unsignedPsbt: String?
+    var signedPsbt: String?
+    var bcurUnsignedPsbt: BcurEncodedData?
+    
     var isWithdraw: Bool {
         return withdrawData != nil
     }
@@ -39,13 +42,15 @@ class SendTxConfirmViewModel {
         transaction?.addressees.compactMap { Address(address: $0.address, subtype: $0.subtype, userPath: $0.userPath, isGreedy: $0.isGreedy) }
     }
 
-    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType) {
+    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, unsignedPsbt: String?, signedPsbt: String?) {
         self.transaction = transaction
         self.subaccount = subaccount
         self.denominationType = denominationType
         self.isFiat = isFiat
         self.txType = txType
         self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletManager.current?.account.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
+        self.unsignedPsbt = unsignedPsbt
+        self.signedPsbt = signedPsbt
     }
 
     var isLightning: Bool { subaccount?.networkType == .lightning }
@@ -111,11 +116,12 @@ class SendTxConfirmViewModel {
     func getAssetIcons() -> [UIImage] {
         transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
     }
-    private func _send() async throws -> SendTransactionSuccess {
+    private func sendTx() async throws -> SendTransactionSuccess {
         guard let session = session,
               var tx = transaction else {
             throw TransactionError.invalid(localizedDescription: "Invalid transaction")
         }
+        
         if wm?.hwDevice != nil {
             let bleDevice = BleViewModel.shared
             if !bleDevice.isConnected() {
@@ -135,6 +141,29 @@ class SendTxConfirmViewModel {
         }
     }
 
+    func exportPsbt() async throws {
+        guard let session = session,
+              let tx = transaction else {
+            throw TransactionError.invalid(localizedDescription: "Invalid transaction")
+        }
+        unsignedPsbt = try await session.getPsbt(tx: tx)
+        let params = BcurEncodeParams(urType: "crypto-psbt", data: unsignedPsbt)
+        guard let res = try await session.bcurEncode(params: params) else {
+            throw TransactionError.invalid(localizedDescription: "Invalid bcur")
+        }
+        bcurUnsignedPsbt = res
+    }
+    
+    func sendPsbt() async throws -> SendTransactionSuccess {
+        guard let session = session else {
+            throw TransactionError.invalid(localizedDescription: "Invalid session")
+        }
+        guard let psbt = signedPsbt else {
+            throw TransactionError.invalid(localizedDescription: "Invalid psbt")
+        }
+        return try await session.broadcastTransaction(BroadcastTransactionParams(psbt: psbt, memo: transaction?.memo, simulateOnly: false))
+    }
+
     func send() async throws -> SendTransactionSuccess {
         AnalyticsManager.shared.startSendTransaction()
         AnalyticsManager.shared.startFailedTransaction()
@@ -144,15 +173,18 @@ class SendTxConfirmViewModel {
             addressInputType: .paste,
             sendAll: sendAll)
         do {
-            let res = try await _send()
-            sendTransaction = res
+            if signedPsbt != nil {
+                sendTransaction = try await sendPsbt()
+            } else {
+                sendTransaction = try await sendTx()
+            }
             AnalyticsManager.shared.endSendTransaction(
                 account: AccountsRepository.shared.current,
                 walletItem: subaccount,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo)
             if sendAll { AnalyticsManager.shared.emptiedAccount = subaccount }
-            return res
+            return sendTransaction!
         } catch {
             AnalyticsManager.shared.failedTransaction(
                 account: AccountsRepository.shared.current,
@@ -174,6 +206,14 @@ class SendTxConfirmViewModel {
             denomination: denominationType,
             subaccount: self.subaccount,
             isMultiAddressees: self.multiAddressees)
+    }
+
+    func tempSendHWConfirmViewModel() -> SendHWConfirmViewModel {
+        SendHWConfirmViewModel(
+            isLedger: wm?.account.isLedger ?? false,
+            tx: transaction!,
+            denomination: denominationType,
+            subaccount: self.subaccount)
     }
 
     func urlForTx() -> URL? {

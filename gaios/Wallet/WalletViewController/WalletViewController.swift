@@ -83,6 +83,14 @@ class WalletViewController: UIViewController {
                 }
             }
         }
+
+        Task {
+            let sendButtonEnabled = await viewModel.isSendEnabled() || viewModel.isSweepEnabled()
+            if  !sendButtonEnabled {
+                btnSend.alpha = 0.33
+                btnSend.isUserInteractionEnabled = false
+            }
+        }
     }
 
     func showAlertGdkFailures() {
@@ -280,17 +288,12 @@ class WalletViewController: UIViewController {
         lblWelcomeTitle.text = NSLocalizedString("id_welcome_to_your_wallet", comment: "")
         lblWelcomeHint.text = NSLocalizedString("id_create_your_first_account_to", comment: "")
         btnWelcomeCreate.setTitle(NSLocalizedString("id_create_account", comment: ""), for: .normal)
-        btnSend.setTitle( "id_send".localized, for: .normal )
+        btnSend.setTitle("id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
         // Sweep is only supported in watch-only for btc multisig wallets
-        if viewModel.watchOnly {
-            if let account = AccountsRepository.shared.current, !account.gdkNetwork.liquid {
-                btnSend.setTitle( "id_sweep".localized, for: .normal )
-                btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
-            } else {
-                btnSend.isEnabled = false
-                btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
-            }
+        if viewModel.isSweepEnabled() {
+            btnSend.setTitle( "id_sweep".localized, for: .normal )
+            btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
         }
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
@@ -524,13 +527,14 @@ class WalletViewController: UIViewController {
 
     @IBAction func btnSend(_ sender: Any) {
         guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
-        let sendAddressInputViewModel = SendAddressInputViewModel(
-            input: nil,
-            preferredAccount: model.account,
-            txType: viewModel.watchOnly ? .sweep : .transaction)
-        presentSendAddressInputViewController(sendAddressInputViewModel)
+            let sendAddressInputViewModel = SendAddressInputViewModel(
+                input: nil,
+                preferredAccount: model.account,
+                txType: viewModel.isSweepEnabled() ? .sweep : .transaction)
+            presentSendAddressInputViewController(sendAddressInputViewModel)
     }
 
+    @MainActor
     func presentSendAddressInputViewController(_ sendAddressInputViewModel: SendAddressInputViewModel) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
@@ -1120,18 +1124,10 @@ extension WalletViewController: DialogScanViewControllerDelegate {
 
     func didScan(value: ScanResult, index: Int?) {
         let account = viewModel.accountCellModels[sIdx].account
-        if let psbt = value.bcur?.psbt {
-            Task {
-                let utxos = try await account.session?.getUtxos(GetUnspentOutputsParams(subaccount: account.pointer, numConfs: 0))
-                let res = try await account.session?.signPsbt(params: SignPsbtParams(psbt: psbt, utxos: utxos?.unspentOutputs ?? [:], blindingNonces: nil))
-                let res1 = try await account.session?.broadcastTransaction(BroadcastTransactionParams(psbt: res?.psbt))
-            }
-            return
-        }
         let sendAddressInputViewModel = SendAddressInputViewModel(
-            input: value.result,
+            input: value.bcur?.psbt ?? value.result,
             preferredAccount: account,
-            txType: nil)
+            txType: value.bcur?.psbt != nil ? .psbt : nil)
         presentSendAddressInputViewController(sendAddressInputViewModel)
     }
 

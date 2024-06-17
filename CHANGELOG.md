@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Allow redeposit of expired utxos in liquid multisig accounts
+- QR mode for singlesig watch-only
 
 ### Changed
 - Recovery phrase: improve QR view

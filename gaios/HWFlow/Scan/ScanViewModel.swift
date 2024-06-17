@@ -25,7 +25,7 @@ class ScanViewModel: ObservableObject {
             return
         }
         try await self.centralManager.waitUntilReady()
-        let uuid = deviceType == .Jade ? BleJade.SERVICE_UUID : BleLedger.SERVICE_UUID
+        let uuid = deviceType == .Jade ? BleJadeConnection.SERVICE_UUID : BleLedger.SERVICE_UUID
         let service = CBUUID(string: uuid.uuidString)
         let connectedPeripherals = centralManager.retrieveConnectedPeripherals(withServices: [service])
         connectedPeripherals.forEach { addPeripheral($0, for: deviceType) }

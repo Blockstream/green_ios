@@ -43,12 +43,12 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Success!".localized
+        lblTitle.text = "id_success".localized
         lblHint.text = "You just created a PIN to unlock your Jade in order to sign your transactions!".localized
         lblLearnMore.text = "Learn more about  Jade’s QR functionality"
         lblInfoCredentials.text = "You can enable an extra layer of security when accessing your watch-only view."
-        btnFaceID.setTitle("Add FaceID".localized, for: .normal)
-        btnLater.setTitle("Maybe later", for: .normal)
+        btnFaceID.setTitle("id_enable_face_id".localized, for: .normal)
+        btnLater.setTitle("id_maybe_later".localized, for: .normal)
     }
 
     func setStyle() {
@@ -62,7 +62,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
         lblLearnMore.textColor = UIColor.gGreenMatrix()
         btnFaceID.setStyle(.primary)
         lblInfoCredentials.setStyle(.txtCard)
-        btnLater.setStyle(.inlineWhite)
+        btnLater.setStyle(.inline)
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import core
+import gdk
 
 protocol DialogScanViewControllerDelegate: AnyObject {
     func didScan(value: ScanResult, index: Int?)
@@ -12,17 +13,17 @@ enum DialogScanAction {
     case stop
 }
 
-class DialogScanViewController: KeyboardViewController {
+class DialogScanViewController: UIViewController {
 
-    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var qrScanView: QRCodeReaderView!
     @IBOutlet weak var cardView: UIView!
-    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var btnClose: UIButton!
-
+    @IBOutlet weak var progress: UIProgressView!
+    
     var index: Int?
     var delegate: DialogScanViewControllerDelegate?
+    var titleText: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,12 +42,13 @@ class DialogScanViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_scan_qr_code", comment: "")
+        lblTitle.text = titleText ?? "id_scan_qr_code".localized
     }
 
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
         btnClose.setImage((UIImage(named: "cancel")!.maskWithColor(color: .white)), for: .normal)
+        progress.isHidden = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -105,6 +107,10 @@ class DialogScanViewController: KeyboardViewController {
 }
 
 extension DialogScanViewController: QRCodeReaderDelegate {
+    func onBcurProgress(_ info: gdk.ResolveCodeAuthData) {
+        progress.progress = Float((info.estimatedProgress ?? 0)) / 100
+        progress.isHidden = false
+    }
 
     func userDidGrant(_: Bool) { }
 
