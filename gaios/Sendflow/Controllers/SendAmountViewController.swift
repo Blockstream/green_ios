@@ -49,6 +49,7 @@ class SendAmountViewController: KeyboardViewController {
 
     @IBOutlet weak var totalsSeparator: UIView!
     @IBOutlet weak var totalsSumView: UIView!
+    @IBOutlet weak var changeSpeedView: UIView!
 
     @IBOutlet weak var multiAssetCard: UIView!
     @IBOutlet weak var lblMultiAssetTitle: UILabel!
@@ -99,6 +100,9 @@ class SendAmountViewController: KeyboardViewController {
             [lblFiat, btnDenomination, lblConversion].forEach {
                 $0?.isHidden = true
             }
+        }
+        if viewModel.createTx.isLiquid {
+            changeSpeedView.isHidden = true
         }
     }
 
