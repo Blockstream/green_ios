@@ -520,7 +520,7 @@ class WalletViewController: UIViewController {
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
             preferredAccount: account,
-            txType: .transaction)
+            txType: viewModel.watchOnly ? .sweep : .transaction)
         presentSendAddressInputViewController(sendAddressInputViewModel)
     }
     
