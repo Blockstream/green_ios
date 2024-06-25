@@ -516,14 +516,14 @@ class WalletViewController: UIViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
-        let account = viewModel.accountCellModels[sIdx].account
+        guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
-            preferredAccount: account,
+            preferredAccount: model.account,
             txType: viewModel.watchOnly ? .sweep : .transaction)
         presentSendAddressInputViewController(sendAddressInputViewModel)
     }
-    
+
     func presentSendAddressInputViewController(_ sendAddressInputViewModel: SendAddressInputViewModel) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
