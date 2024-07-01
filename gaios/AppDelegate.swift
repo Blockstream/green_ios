@@ -61,6 +61,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .forEach { $0.perform(setHardwareLayout, with: nil) }
         #endif
 
+        PromoManager.shared.start()
+
         // start analytics
         AnalyticsManager.shared.countlyStart()
         AnalyticsManager.shared.setupSession(session: nil)
@@ -68,10 +70,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // register notifications
         UNUserNotificationCenter.current().delegate = AppNotifications.shared
         AppNotifications.shared.registerForFcmPushNotifications()
-        
+
         // Open first page
         AccountNavigator.goFirstPage()
-        
+
         // run account migration
         Task {
             await MigratorManager.shared.migrate()

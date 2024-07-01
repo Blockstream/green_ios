@@ -19,6 +19,7 @@ public enum AppStorageConstants: String {
     case storeReviewDate = "store_review_date"
     case hideBalance = "hide_balance"
     case acceptedTerms = "accepted_terms"
+    case dismissedPromos = "dismissed_promos"
 }
 
 public protocol AnalyticsManagerDelegate: AnyObject {
@@ -207,6 +208,8 @@ public class AnalyticsManager {
             if error == nil {
                 print("Remote Config is ready to use!")
                 self.delegate?.remoteConfigIsReady()
+                let notification = NSNotification.Name(rawValue: "remote_config_is_ready")
+                NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             } else {
                 print("There was an error while fetching Remote Config:\n\(error!.localizedDescription)")
             }

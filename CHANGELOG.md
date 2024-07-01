@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Jade upsells campaign
+
 ### Changed
 - Update gdk to 0.73.3
 - QR code scan: improve visual feedback

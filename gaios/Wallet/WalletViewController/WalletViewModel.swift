@@ -37,6 +37,7 @@ class WalletViewModel {
     var txCellModels = [TransactionCellModel]()
     var balanceCellModel: BalanceCellModel?
     var alertCardCellModel = [AlertCardCellModel]()
+    var promoCardCellModel = [PromoCellModel]()
 
     var walletAssetCellModels: [WalletAssetCellModel] {
         return cachedBalance?
@@ -52,6 +53,9 @@ class WalletViewModel {
 
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
+        if let promo = PromoManager.shared.promoCellModels(.walletOverview).first?.promo {
+            PromoManager.shared.promoView(promo)
+        }
     }
 
     func loadSubaccounts(discovery: Bool = false) async {
@@ -152,6 +156,10 @@ class WalletViewModel {
             }
         }
         return nil
+    }
+
+    func reloadPromoCards() async {
+        promoCardCellModel = PromoManager.shared.promoCellModels(.walletOverview)
     }
 
     func reloadAlertCards() async {

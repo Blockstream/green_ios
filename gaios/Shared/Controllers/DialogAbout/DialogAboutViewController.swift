@@ -158,7 +158,13 @@ class DialogAboutViewController: KeyboardViewController {
     }
 
     @objc func multiTap() {
-        handleDebugID()
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Debug", type: .debugPrefs, items: DebugPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     @IBAction func didTap(_ sender: UIButton) {
@@ -247,6 +253,31 @@ extension DialogAboutViewController: DialogFeedbackViewControllerDelegate {
                 network: nil,
                 hw: nil)
             DropAlert().info(message: "id_thank_you_for_your_feedback".localized)
+        }
+    }
+}
+
+extension DialogAboutViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+
+    func selectNetwork() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Select Network", type: .networkPrefs, items: NetworkPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch DebugPrefs(rawValue: index) {
+        case .deviceId:
+            handleDebugID()
+        case .promos:
+            PromoManager.shared.clearDismissed()
+        case .none:
+            break
         }
     }
 }

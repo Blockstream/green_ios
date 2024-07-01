@@ -34,6 +34,7 @@ enum ExternalUrls {
 
     static let jadeTroubleshoot = URL(string: "https://help.blockstream.com/hc/en-us/articles/4406185830041-Why-is-my-Blockstream-Jade-not-connecting-over-Bluetooth-")!
     static let blockstreamStore = URL(string: "https://store.blockstream.com/product/jade-hardware-wallet/")!
+    static let blockstreamStoreHome = URL(string: "https://store.blockstream.com/")!
     static let helpReceiveCapacity = "https://help.blockstream.com/hc/en-us/articles/18788499177753"
     static let helpReceiveFees = "https://help.blockstream.com/hc/en-us/articles/18788578831897"
     static let helpRecoveryTransactions = "https://help.blockstream.com/hc/en-us/articles/900004249546-The-upgrade-from-nLockTime-to-CheckSequenceVerify"

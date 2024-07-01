@@ -50,6 +50,11 @@ public enum AnalyticsEventName: String {
     case accountEmptied = "account_emptied"
     case preferredUnits = "preferred_units"
     case hideAmount = "hide_amount"
+
+    case promoImpression = "promo_impression"
+    case promoOpen0 = "promo_open_0"
+    case promoDismiss = "promo_dismiss"
+    case promoOpen1 = "promo_open_1"
 }
 
 extension AnalyticsManager {
@@ -374,6 +379,30 @@ extension AnalyticsManager {
     public func hideAmount(account: Account?) {
         let s = sessSgmt(account)
         recordEvent(.hideAmount, sgmt: s)
+    }
+
+    public func promoImpression(account: Account?, promoId: String) {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strPromoId] = promoId
+        recordEvent(.promoImpression, sgmt: s)
+    }
+
+    public func promoDismiss(account: Account?, promoId: String) {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strPromoId] = promoId
+        recordEvent(.promoDismiss, sgmt: s)
+    }
+
+    public func promoOpen0(account: Account?, promoId: String) {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strPromoId] = promoId
+        recordEvent(.promoOpen0, sgmt: s)
+    }
+
+    public func promoOpen1(account: Account?, promoId: String) {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strPromoId] = promoId
+        recordEvent(.promoOpen1, sgmt: s)
     }
 }
 

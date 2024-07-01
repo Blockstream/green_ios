@@ -222,6 +222,8 @@
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
 		3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2452887D23700B2F640 /* StoreReviewManager.swift */; };
 		3469A2482887D56E00B2F640 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2472887D56E00B2F640 /* Date.swift */; };
+		346C72612C466D4D00E698E1 /* PromoFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 346C72602C466D4D00E698E1 /* PromoFlow.storyboard */; };
+		346C72632C466DD200E698E1 /* PromoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C72622C466DD200E698E1 /* PromoViewController.swift */; };
 		346EB26C2BE8BB0B0043139F /* SendFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 346EB26B2BE8BB0B0043139F /* SendFlow.storyboard */; };
 		346EB26F2BE8BB1A0043139F /* SendTitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 346EB26D2BE8BB1A0043139F /* SendTitleView.xib */; };
 		346EB2702BE8BB1A0043139F /* SendTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EB26E2BE8BB1A0043139F /* SendTitleView.swift */; };
@@ -241,8 +243,13 @@
 		346F00DF2CB3CD8200F28A44 /* QRPsbtShowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346F00DE2CB3CD8200F28A44 /* QRPsbtShowViewController.swift */; };
 		346F00E12CB3E48100F28A44 /* QRPsbtAquireViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346F00E02CB3E48100F28A44 /* QRPsbtAquireViewController.swift */; };
 		3470646B2A42C1710096313C /* RecoveryTransactionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470646A2A42C1710096313C /* RecoveryTransactionsViewModel.swift */; };
+		3472798D2CD3788F00A272D2 /* Promo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472798C2CD3788F00A272D2 /* Promo.swift */; };
+		3472798F2CD3888600A272D2 /* DebugPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472798E2CD3888600A272D2 /* DebugPrefs.swift */; };
 		3472C39B2B27278F00811453 /* BrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472C39A2B27278F00811453 /* BrowserViewController.swift */; };
 		3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3478E8892A2DD0190080B50E /* Illustration Rocket.riv */; };
+		347B7C242C3280FE0016A5C0 /* PromoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347B7C232C3280FE0016A5C0 /* PromoCell.xib */; };
+		347B7C262C3281190016A5C0 /* PromoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C252C3281190016A5C0 /* PromoCell.swift */; };
+		347B7C282C3281260016A5C0 /* PromoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C272C3281260016A5C0 /* PromoCellModel.swift */; };
 		347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C037B272838D500C2EEF6 /* ReceiveViewController.swift */; };
 		347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */; };
 		347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 347FD0AC25FFA91700BB3FAB /* Home.storyboard */; };
@@ -397,6 +404,7 @@
 		34D761382A38639D00DE57F5 /* DenominationExchangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D761372A38639D00DE57F5 /* DenominationExchangeViewModel.swift */; };
 		34D7613A2A3892ED00DE57F5 /* DialogExchangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D761392A3892ED00DE57F5 /* DialogExchangeViewController.swift */; };
 		34D7613C2A38935200DE57F5 /* DialogExchangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */; };
+		34D97FF42CABD99100F71FE3 /* PromoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D97FF32CABD99100F71FE3 /* PromoManager.swift */; };
 		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
@@ -1070,6 +1078,8 @@
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
 		3469A2452887D23700B2F640 /* StoreReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewManager.swift; sourceTree = "<group>"; };
 		3469A2472887D56E00B2F640 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		346C72602C466D4D00E698E1 /* PromoFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PromoFlow.storyboard; sourceTree = "<group>"; };
+		346C72622C466DD200E698E1 /* PromoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoViewController.swift; sourceTree = "<group>"; };
 		346EB26B2BE8BB0B0043139F /* SendFlow.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SendFlow.storyboard; sourceTree = "<group>"; };
 		346EB26D2BE8BB1A0043139F /* SendTitleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SendTitleView.xib; sourceTree = "<group>"; };
 		346EB26E2BE8BB1A0043139F /* SendTitleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendTitleView.swift; sourceTree = "<group>"; };
@@ -1090,8 +1100,13 @@
 		346F00E02CB3E48100F28A44 /* QRPsbtAquireViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRPsbtAquireViewController.swift; sourceTree = "<group>"; };
 		3470646A2A42C1710096313C /* RecoveryTransactionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryTransactionsViewModel.swift; sourceTree = "<group>"; };
 		3470F9EF2600A8D7009B5E33 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		3472798C2CD3788F00A272D2 /* Promo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promo.swift; sourceTree = "<group>"; };
+		3472798E2CD3888600A272D2 /* DebugPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPrefs.swift; sourceTree = "<group>"; };
 		3472C39A2B27278F00811453 /* BrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserViewController.swift; sourceTree = "<group>"; };
 		3478E8892A2DD0190080B50E /* Illustration Rocket.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Rocket.riv"; sourceTree = "<group>"; };
+		347B7C232C3280FE0016A5C0 /* PromoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoCell.xib; sourceTree = "<group>"; };
+		347B7C252C3281190016A5C0 /* PromoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCell.swift; sourceTree = "<group>"; };
+		347B7C272C3281260016A5C0 /* PromoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCellModel.swift; sourceTree = "<group>"; };
 		347C037B272838D500C2EEF6 /* ReceiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewController.swift; sourceTree = "<group>"; };
 		347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCell.swift; sourceTree = "<group>"; };
 		347FD0AC25FFA91700BB3FAB /* Home.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Home.storyboard; sourceTree = "<group>"; };
@@ -1249,6 +1264,7 @@
 		34D761372A38639D00DE57F5 /* DenominationExchangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationExchangeViewModel.swift; sourceTree = "<group>"; };
 		34D761392A3892ED00DE57F5 /* DialogExchangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExchangeViewController.swift; sourceTree = "<group>"; };
 		34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExchangeViewModel.swift; sourceTree = "<group>"; };
+		34D97FF32CABD99100F71FE3 /* PromoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoManager.swift; sourceTree = "<group>"; };
 		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
@@ -2006,6 +2022,7 @@
 		34475536290A5B3700B9C1AF /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				347B7C222C3280EA0016A5C0 /* PromoCell */,
 				342F98082934F45A005876A8 /* AlertCardCell */,
 				34F980AB29151C1400C12D48 /* TransactionCell */,
 				3488FC67290AE25200122628 /* BalanceCell */,
@@ -2115,6 +2132,7 @@
 				34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */,
 				34E8457829DC26DD00B207E7 /* LoginPrefs.swift */,
 				34389B622A9754260023DAC3 /* RedeemPrefs.swift */,
+				3472798E2CD3888600A272D2 /* DebugPrefs.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2275,6 +2293,15 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		346C725F2C466D3800E698E1 /* Promo */ = {
+			isa = PBXGroup;
+			children = (
+				346C72602C466D4D00E698E1 /* PromoFlow.storyboard */,
+				346C72622C466DD200E698E1 /* PromoViewController.swift */,
+			);
+			path = Promo;
+			sourceTree = "<group>";
+		};
 		346EB2662BE8BAC70043139F /* Sendflow */ = {
 			isa = PBXGroup;
 			children = (
@@ -2350,6 +2377,17 @@
 				3472C39A2B27278F00811453 /* BrowserViewController.swift */,
 			);
 			path = Browser;
+			sourceTree = "<group>";
+		};
+		347B7C222C3280EA0016A5C0 /* PromoCell */ = {
+			isa = PBXGroup;
+			children = (
+				3472798C2CD3788F00A272D2 /* Promo.swift */,
+				347B7C272C3281260016A5C0 /* PromoCellModel.swift */,
+				347B7C252C3281190016A5C0 /* PromoCell.swift */,
+				347B7C232C3280FE0016A5C0 /* PromoCell.xib */,
+			);
+			path = PromoCell;
 			sourceTree = "<group>";
 		};
 		347FD0AB25FFA8E600BB3FAB /* Home */ = {
@@ -2563,6 +2601,7 @@
 				8173B8ED2AB19DCD00C15C85 /* ZendeskSdk.swift */,
 				34ED47032AD4259F000086D4 /* SupportManager.swift */,
 				343BC9512AA8772600F0FEE5 /* DrawerAnimationManager.swift */,
+				34D97FF32CABD99100F71FE3 /* PromoManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -3530,6 +3569,7 @@
 		81A3B53F2244AE9A0091B6BC /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				346C725F2C466D3800E698E1 /* Promo */,
 				34ABBD7B2BF4A17C0049CC76 /* ReEnable2fa */,
 				34D761322A384E9000DE57F5 /* DenominationExchangeFlow */,
 				34F980A62913FFDD00C12D48 /* AccountViewController */,
@@ -4089,6 +4129,7 @@
 				81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */,
+				347B7C242C3280FE0016A5C0 /* PromoCell.xib in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
 				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
@@ -4102,6 +4143,7 @@
 				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				346EB2762BE8BB3A0043139F /* SendFeeCell.xib in Resources */,
+				346C72612C466D4D00E698E1 /* PromoFlow.storyboard in Resources */,
 				3487657629D43B2A0059D05F /* Illustration Wallet.riv in Resources */,
 				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
 				3419B44C2BEE302500492198 /* ReEnable2faAccountCell.xib in Resources */,
@@ -4271,10 +4313,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
+				347B7C262C3281190016A5C0 /* PromoCell.swift in Sources */,
 				81C3014E2BBFFB3900A16A84 /* UITextView.swift in Sources */,
 				81C3014D2BBFFB1100A16A84 /* BleJadeManager.swift in Sources */,
 				346EB2852BE8BB480043139F /* SendFailViewController.swift in Sources */,
 				812528CE2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift in Sources */,
+				3472798F2CD3888600A272D2 /* DebugPrefs.swift in Sources */,
 				3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */,
 				3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */,
 				81961AB629E4B80F00E9B94D /* Settings.swift in Sources */,
@@ -4358,6 +4402,7 @@
 				81961AB729E4B91E00E9B94D /* AssetAmountList.swift in Sources */,
 				34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */,
 				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
+				346C72632C466DD200E698E1 /* PromoViewController.swift in Sources */,
 				81F5C9862ADD3C71004B020A /* LNWithdrawViewController.swift in Sources */,
 				81961ABB29E4B9C600E9B94D /* Balance.swift in Sources */,
 				34BBCEFA297151C50057DF4A /* AssetAssetCellModel.swift in Sources */,
@@ -4555,6 +4600,7 @@
 				81EA2DCF2B21F3E600A1F924 /* LoginViewModel.swift in Sources */,
 				819F1AEC2A0E6CAB00ECF999 /* PolicyCellType.swift in Sources */,
 				3497936D25F8B18C0029ECB1 /* RotationAnimation.swift in Sources */,
+				347B7C282C3281260016A5C0 /* PromoCellModel.swift in Sources */,
 				345402E42A1E42F2002CB598 /* DialogDenominationViewModel.swift in Sources */,
 				8177EE042B6C82E500C2271C /* Resolver.swift in Sources */,
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
@@ -4563,6 +4609,7 @@
 				344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
 				3415862329EE9A29005002D9 /* WOLoginViewController.swift in Sources */,
+				34D97FF42CABD99100F71FE3 /* PromoManager.swift in Sources */,
 				34ED47042AD4259F000086D4 /* SupportManager.swift in Sources */,
 				349F71E929C21945007B9154 /* DialogCountlyViewController.swift in Sources */,
 				346310EB2C3E69DE0037DA0F /* EnableTorViewController.swift in Sources */,
@@ -4644,6 +4691,7 @@
 				34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */,
+				3472798D2CD3788F00A272D2 /* Promo.swift in Sources */,
 				81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */,

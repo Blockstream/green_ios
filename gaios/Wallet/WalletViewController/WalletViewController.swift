@@ -10,6 +10,7 @@ enum WalletSection: Int, CaseIterable {
     case card
     case balance
     case account
+    case promo
     case transaction
     case footer
 }
@@ -64,7 +65,7 @@ class WalletViewController: UIViewController {
         drawerItem.configure(img: viewModel.headerIcon, onTap: {[weak self] () in
                 self?.switchNetwork()
         })
-        ["AccountCell", "BalanceCell", "TransactionCell", "AlertCardCell" ].forEach {
+        ["AccountCell", "BalanceCell", "TransactionCell", "AlertCardCell", "PromoCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         viewModel.preselectAccount = {[weak self] idx in
@@ -345,8 +346,10 @@ class WalletViewController: UIViewController {
             await self?.reloadSections([.account, .balance, .card], animated: true)
             await self?.viewModel.reloadAlertCards()
             await self?.reloadSections([.card], animated: true)
+            await self?.viewModel.reloadPromoCards()
+            await self?.reloadSections([.promo], animated: false)
             try? await self?.viewModel.loadTransactions(max: 20)
-            await self?.reloadSections([.transaction], animated: true)
+            await self?.reloadSections([.transaction], animated: false)
             await MainActor.run { [weak self] in
                 self?.isReloading = false
             }
@@ -427,6 +430,14 @@ class WalletViewController: UIViewController {
             viewModel.remoteAlert = nil
             await viewModel.reloadAlertCards()
             reloadSections([WalletSection.card], animated: true)
+        }
+    }
+
+    // dismiss promo
+    func promoDismiss() {
+        Task {
+            await viewModel.reloadPromoCards()
+            reloadSections([WalletSection.promo], animated: true)
         }
     }
 
@@ -525,6 +536,14 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func onPromo(_ promo: Promo) {
+        let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
+            vc.promo = promo
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
             let sendAddressInputViewModel = SendAddressInputViewModel(
@@ -577,6 +596,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             return viewModel.accountCellModels.count
         case .card:
             return viewModel.alertCardCellModel.count
+        case .promo:
+            return viewModel.promoCardCellModel.count
         case .transaction:
             return viewModel.txCellModels.count
         default:
@@ -712,6 +733,18 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     },
                                    onDismiss: nil)
                 }
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .promo:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoCell", for: indexPath) as? PromoCell {
+                let model = viewModel.promoCardCellModel[indexPath.row]
+                cell.configure(model, onAction: {
+                    [weak self] in
+                    self?.onPromo(model.promo)
+                }, onDismiss: { [weak self] in
+                    self?.promoDismiss()
+                })
                 cell.selectionStyle = .none
                 return cell
             }

@@ -3,6 +3,7 @@ public extension AnalyticsManager {
     static let countlyRemoteConfigAppReview = "app_review"
     static let countlyRemoteConfigBanners = "banners"
     static let countlyRemoteConfigAssets = "liquid_assets"
+    static let countlyRemoteConfigPromos = "promos"
 
     static let strNetworks = "wallet_networks"
     static let strNetwork = "account_network"
@@ -69,6 +70,8 @@ public extension AnalyticsManager {
     static let strSelectedConfig = "selected_config"
     static let strSelectedDelta = "selected_delta"
     static let strSelectedVersion = "selected_version"
+
+    static let strPromoId = "promo_id"
 
     enum OnBoardFlow: String {
         case strCreate = "create"
