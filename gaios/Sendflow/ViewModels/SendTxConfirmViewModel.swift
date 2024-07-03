@@ -3,6 +3,7 @@ import core
 import gdk
 import greenaddress
 import UIKit
+import BreezSDK
 
 class SendTxConfirmViewModel {
 
@@ -16,6 +17,19 @@ class SendTxConfirmViewModel {
     var error: Error?
     var txType: TxType
     
+    var isWithdraw: Bool {
+        return withdrawData != nil
+    }
+    var withdrawData: LnUrlWithdrawRequestData?
+    var hasWithdrawNote: Bool {
+        return withdrawNote != nil && withdrawNote != ""
+    }
+    var withdrawNote: String? {
+        guard let withdrawData = withdrawData else { return nil }
+        return withdrawData.defaultDescription
+    }
+    var withdrawAmount: UInt64 = 0
+
     internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType) {
         self.transaction = transaction
         self.subaccount = subaccount
@@ -23,7 +37,7 @@ class SendTxConfirmViewModel {
         self.isFiat = isFiat
         self.txType = txType
     }
-    
+
     var isLightning: Bool { subaccount?.networkType == .lightning }
     var isConsolitating: Bool { txType == .redepositExpiredUtxos }
     var hasHW: Bool { wm?.account.isHW ?? false }
@@ -34,7 +48,7 @@ class SendTxConfirmViewModel {
     var satoshi: Int64? { addressee?.satoshi }
     var asset: AssetInfo? { wm?.info(for: assetId) }
     var isLiquid: Bool { transaction?.subaccountItem?.gdkNetwork.liquid ?? false }
-    
+
     var assetImage: UIImage? {
         if isLightning {
             return UIImage(named: "ic_lightning_btc")
@@ -43,11 +57,11 @@ class SendTxConfirmViewModel {
     }
 
     var note: String? {
-        get { transaction?.memo }
+        get { isWithdraw ? withdrawNote : transaction?.memo }
         set { transaction?.memo = newValue }
     }
-    
-    var amount: Balance? { Balance.fromSatoshi(satoshi ?? 0, assetId: assetId) }
+
+    var amount: Balance? { Balance.fromSatoshi( isWithdraw ? withdrawAmount : satoshi ?? 0, assetId: assetId) }
     var fee: Balance? { Balance.fromSatoshi(transaction?.fee ?? 0, assetId: transaction?.feeAsset ?? "btc") }
     var total: Balance? {
         let feeAsset = session?.gdkNetwork.getFeeAsset()
@@ -57,21 +71,21 @@ class SendTxConfirmViewModel {
         }
         return Balance.fromSatoshi(amount, assetId: assetId)
     }
-    
+
     var amountDenomText: String? { amount?.toText(denominationType) }
     var amountFiatText: String? { amount?.toFiatText() }
     var feeDenomText: String? { fee?.toText(denominationType) }
     var feeFiatText: String? { fee?.toFiatText() }
     var totalDenomText: String? { total?.toText(denominationType) }
     var totalFiatText: String? { total?.toFiatText() }
-    
+
     var amountText: String? { isFiat ? amountFiatText : amountDenomText }
     var subamountText: String? { isFiat ? amountDenomText : amountFiatText}
     var feeText: String? { isFiat ? feeFiatText : feeDenomText }
     var totalText: String? { isFiat ? totalFiatText : totalDenomText }
     var conversionText: String? { isFiat ? totalDenomText : totalFiatText }
     var addressTitle: String { isLightning ? "id_recipient" : isConsolitating ? "Your Redeposit Address" : "id_address" }
-    var amountTitle: String { isConsolitating ? "Redepositing" : "Recipient Receives" }
+    var amountTitle: String { isWithdraw ? "id_amount_to_receive" : isConsolitating ? "Redepositing" : "Recipient Receives" }
     var recipientReceivesHidden: Bool { isConsolitating }
 
     private func _send() async throws -> SendTransactionSuccess {
@@ -144,5 +158,22 @@ class SendTxConfirmViewModel {
 
     func urlForTxUnblinded() -> URL? {
         return URL(string: (subaccount?.gdkNetwork.txExplorerUrl ?? "") + (sendTransaction?.txHash ?? "") + (transaction?.blindingUrlString(address: address) ?? ""))
+    }
+    
+    func withdrawLnurl(desc: String) async throws -> LnUrlWithdrawSuccessData? {
+        guard let withdrawData = withdrawData else { 
+            throw TransactionError.failure(localizedDescription: "No data found", paymentHash: "")
+        }
+        let res = try wm?.lightningSession?.lightBridge?.withdrawLnurl(requestData: withdrawData, amount: withdrawAmount, description: desc)
+        switch res {
+        case .errorStatus(let data):
+            throw TransactionError.failure(localizedDescription: data.reason.localized, paymentHash: "")
+        case .timeout(let data):
+            throw TransactionError.failure(localizedDescription: "Timeout", paymentHash: "")
+        case .ok(let data):
+            return data
+        case .none:
+            throw TransactionError.failure(localizedDescription: "No data found", paymentHash: "")
+        }
     }
 }

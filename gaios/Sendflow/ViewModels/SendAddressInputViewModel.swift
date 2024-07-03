@@ -10,7 +10,7 @@ class SendAddressInputViewModel {
     var preferredAccount: WalletItem?
     var createTx: CreateTx?
     var txType: TxType?
-    
+
     var wm: WalletManager? { WalletManager.current }
     var settings: Settings? { wm?.prominentSession?.settings }
     var lightningSession: LightningSessionManager? { wm?.lightningSession }
@@ -20,8 +20,8 @@ class SendAddressInputViewModel {
     var bitcoinMultisigSession: SessionManager? { wm?.bitcoinMultisigSession }
     var liquidMultisigSession: SessionManager? { wm?.liquidMultisigSession }
 
-    var bitcoinSubaccountsWithFunds : [WalletItem] { wm?.bitcoinSubaccountsWithFunds ?? [] }
-    var liquidSubaccountsWithFunds : [WalletItem] {
+    var bitcoinSubaccountsWithFunds: [WalletItem] { wm?.bitcoinSubaccountsWithFunds ?? [] }
+    var liquidSubaccountsWithFunds: [WalletItem] {
         if let assetId = createTx?.assetId, createTx?.bip21 ?? false {
             return wm?.liquidSubaccountsWithAssetIdFunds(assetId: assetId) ?? []
         } else {
@@ -173,7 +173,7 @@ class SendAddressInputViewModel {
             transaction: await lightningTransaction(),
             subaccount: lightningSubaccount,
             denominationType: settings?.denomination ?? .Sats,
-            isFiat: false, 
+            isFiat: false,
             txType: createTx?.txType ?? .transaction)
     }
 
@@ -183,5 +183,4 @@ class SendAddressInputViewModel {
             accounts: isBitcoin ? bitcoinSubaccountsWithFunds : liquidSubaccountsWithFunds,
             createTx: createTx)
     }
-    
 }

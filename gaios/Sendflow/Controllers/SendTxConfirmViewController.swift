@@ -3,6 +3,8 @@ import UIKit
 import core
 import gdk
 import greenaddress
+import BreezSDK
+import lightning
 
 class SendTxConfirmViewController: UIViewController {
 
@@ -36,7 +38,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var lblConversion: UILabel!
 
     @IBOutlet weak var payRequestByStack: UIStackView!
-    
+
     @IBOutlet weak var payRequestByImg: UIImageView!
     @IBOutlet weak var lblPayRequestByTitle: UILabel!
     @IBOutlet weak var lblPayRequestByValue: UILabel!
@@ -46,7 +48,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var lblNoteTitle: UILabel!
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var btnInfoFee: UIButton!
-    
+
     var viewModel: SendTxConfirmViewModel!
 
     override func viewDidLoad() {
@@ -59,7 +61,12 @@ class SendTxConfirmViewController: UIViewController {
     }
 
     func setContent() {
-        title = "id_confirm_transaction".localized
+        if viewModel.isWithdraw {
+            title = "Confirm Withdraw".localized
+        } else {
+            title = "id_confirm_transaction".localized
+        }
+
         lblAssetTitle.text = "Asset & Account".localized
         lblAddressTitle.text = viewModel.addressTitle.localized
         lblAmountTitle.text = viewModel.amountTitle.localized
@@ -106,6 +113,11 @@ class SendTxConfirmViewController: UIViewController {
         lblPayRequestByValue.setStyle(.txtBigger)
         lblPayRequestByHint.setStyle(.txt)
         btnInfoFee.setImage(UIImage(named: "ic_lightning_info_err")!.maskWithColor(color: UIColor.gW40()), for: .normal)
+        if viewModel.isWithdraw {
+            [addressCard, lblAddressTitle].forEach {
+                $0.isHidden = true
+            }
+        }
     }
 
     func reload() {
@@ -117,18 +129,17 @@ class SendTxConfirmViewController: UIViewController {
         lblAccount2.text = viewModel.subaccount?.type.shortText.uppercased()
         iconAsset.image = viewModel.assetImage
         iconType.image = networkImage(viewModel.subaccount?.networkType ?? .bitcoinSS)
-        
+
         lblSumFeeValue.text = viewModel.feeText
         lblSumAmountValue.text = viewModel.amountText
         lblSumTotalValue.text = viewModel.totalText
         lblConversion.text = "≈ \(viewModel?.conversionText ?? "")"
         lblNoteTxt.text = viewModel.note
-
         totalsView.isHidden = viewModel.isLightning
         noteView.isHidden = viewModel.isLightning && viewModel.note == nil
         noteView.isHidden = viewModel.note?.isEmpty ?? true
         lblSumAmountView.isHidden = viewModel.recipientReceivesHidden
-        
+
         if viewModel.isLightning {
             if let text = viewModel.addressee?.domain {
                 lblPayRequestByValue.text = text
@@ -179,7 +190,7 @@ class SendTxConfirmViewController: UIViewController {
     @objc func noteBtnTapped(_ sender: Any) {
         presentDialogEditViewController()
     }
-    
+
     func presentDialogEditViewController() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
@@ -189,7 +200,7 @@ class SendTxConfirmViewController: UIViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @MainActor
     func presentSendSuccessViewController(_ result: SendTransactionSuccess) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -213,7 +224,7 @@ class SendTxConfirmViewController: UIViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @MainActor
     func presentSendHWConfirmViewController() {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -223,7 +234,7 @@ class SendTxConfirmViewController: UIViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @MainActor
     func presentLTConfirmingViewController() {
         let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
@@ -232,7 +243,7 @@ class SendTxConfirmViewController: UIViewController {
             self.present(vc, animated: false, completion: nil)
         }
     }
-    
+
     @MainActor
     func presentReEnable2faSuccessViewController() {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -240,6 +251,25 @@ class SendTxConfirmViewController: UIViewController {
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func widthdraw() {
+        var desc = String(format: "id_you_are_redeeming_funds_from_s".localized, "\n\(viewModel.withdrawData?.domain ?? "")")
+        if let description = viewModel.withdrawData?.defaultDescription {
+            desc += description
+        }
+        startLoader(message: desc)
+        Task {
+            do {
+                _ = try await viewModel.withdrawLnurl(desc: desc)
+                stopLoader()
+                presentAlertSuccess()
+            } catch {
+                stopLoader()
+                squareSliderView.reset()
+                DropAlert().error(message: error.description()?.localized ?? "id_operation_failure".localized)
+            }
         }
     }
 
@@ -275,8 +305,21 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
+    @MainActor
+    func presentAlertSuccess() {
+        let viewModel = AlertViewModel(title: "id_success".localized,
+                                       hint: String(format: "id_s_will_send_you_the_funds_it".localized, viewModel.withdrawData?.domain ?? ""))
+        let storyboard = UIStoryboard(name: "Alert", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
+            vc.viewModel = viewModel
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnInfoFee(_ sender: Any) {
-        
+
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as? SendFeeInfoViewController {
             vc.delegate = self
@@ -305,7 +348,11 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
 
     func sliderThumbDidStopMoving(_ position: Int) {
         if position == 1 {
-            send()
+            if viewModel.isWithdraw {
+                widthdraw()
+            } else {
+                send()
+            }
         }
     }
 }
@@ -357,7 +404,7 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func onAgain() {
         send()
     }
-    
+
     func onSupport(error: Error) {
         switch error {
         case TwoFactorCallError.cancel(_):
@@ -392,5 +439,17 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
 extension SendTxConfirmViewController: SendFeeInfoViewControllerDelegate {
     func didTapMore() {
         SafeNavigationManager.shared.navigate( ExternalUrls.feesInfo )
+    }
+}
+
+extension SendTxConfirmViewController: AlertViewControllerDelegate {
+    @MainActor
+    func onAlertOk() {
+        let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first
+        if avc != nil {
+            navigationController?.popToViewController(ofClass: AccountViewController.self)
+        } else {
+            navigationController?.popToViewController(ofClass: WalletViewController.self)
+        }
     }
 }

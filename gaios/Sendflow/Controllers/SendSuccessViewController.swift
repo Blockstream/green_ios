@@ -43,7 +43,7 @@ class SendSuccessViewController: UIViewController {
         lblTitle.text = "Transaction successful!".localized
         btnDone.setTitle("id_done".localized, for: .normal)
         btnShare.setTitle("Share Link".localized, for: .normal)
-        
+
         if isLightning ?? false {
             btnTxId.isHidden = true
             if let message = sendTransactionSuccess.message {
@@ -51,7 +51,7 @@ class SendSuccessViewController: UIViewController {
             } else {
                 lblAddress.isHidden = true
             }
-            //btnShare.isHidden = sendTransactionSuccess?.url?.isEmpty ?? true
+            // btnShare.isHidden = sendTransactionSuccess?.url?.isEmpty ?? true
             btnShare.isHidden = true // never show
         } else {
             btnTxId.setTitle("\("id_transaction_id".localized):", for: .normal)

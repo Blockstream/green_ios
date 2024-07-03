@@ -18,6 +18,7 @@ class LTWithdrawViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var btnNext: UIButton!
+    @IBOutlet weak var squareSliderView: SquareSliderView!
     private var headerH: CGFloat = 36.0
 
     var amount: UInt64?
@@ -25,9 +26,9 @@ class LTWithdrawViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "id_withdraw".localized
-        lblTitle.text = String(format: "id_you_are_redeeming_funds_from_s".localized, requestData?.domain ?? "")
+        lblTitle.text = String(format: "id_you_are_redeeming_funds_from_s".localized, "\n\(requestData?.domain ?? "")")
         btnNext.setTitle("id_withdraw".localized, for: .normal)
-
+        squareSliderView.delegate = self
     }
 
     override func keyboardWillHide(notification: Notification) {
@@ -38,9 +39,24 @@ class LTWithdrawViewController: KeyboardViewController {
         tableView.setContentOffset(CGPoint(x: 0.0, y: 0.0), animated: true)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        squareSliderView.slideStr = "Slide to redeem".localized
+        squareSliderView.reset()
+        squareSliderView.isActive(amount != nil)
+        for cell in tableView.visibleCells {
+            if let c = cell as? LTWithdrawAmountCell {
+                c.responderOn()
+            }
+        }
+    }
+
     func onChange(_ amount: UInt64?) {
         self.amount = amount
         btnNext.setStyle(amount == nil ? .primaryDisabled : .primary)
+
+        squareSliderView.isActive(amount != nil)
     }
 
     @MainActor
@@ -57,7 +73,7 @@ class LTWithdrawViewController: KeyboardViewController {
         }
     }
 
-    @IBAction func tapNext(_ sender: Any) {
+    func next() {
         let description = lblTitle.text
         guard let requestData = requestData else { return }
         guard let amount = self.amount else { return }
@@ -67,6 +83,7 @@ class LTWithdrawViewController: KeyboardViewController {
                 let lightBridge = WalletManager.current?.lightningSession?.lightBridge
                 let res = try lightBridge?.withdrawLnurl(requestData: requestData, amount: amount, description: description)
                 stopLoader()
+                squareSliderView.reset()
                 switch res {
                 case .ok:
                     presentAlertSuccess()
@@ -79,6 +96,7 @@ class LTWithdrawViewController: KeyboardViewController {
                 }
             } catch {
                 stopLoader()
+                squareSliderView.reset()
                 switch error {
                 case BreezSDK.SdkError.Generic(let msg):
                     // BreezSDK.SdkError.ServiceConnectivity(let msg):
@@ -88,6 +106,10 @@ class LTWithdrawViewController: KeyboardViewController {
                 }
             }
         }
+    }
+
+    @IBAction func tapNext(_ sender: Any) {
+        next()
     }
 }
 
@@ -169,6 +191,18 @@ extension LTWithdrawViewController: AlertViewControllerDelegate {
             navigationController?.popToViewController(ofClass: AccountViewController.self)
         } else {
             navigationController?.popToViewController(ofClass: WalletViewController.self)
+        }
+    }
+}
+
+extension LTWithdrawViewController: SquareSliderViewDelegate {
+    func sliderThumbIsMoving(_ sliderView: SquareSliderView) {
+        //
+    }
+
+    func sliderThumbDidStopMoving(_ position: Int) {
+        if position == 1 {
+            next()
         }
     }
 }

@@ -10,7 +10,7 @@ enum Redeposit2faType {
 }
 
 class SendAmountViewModel {
-    
+
     var createTx: CreateTx
     var subaccount: WalletItem? { createTx.subaccount }
     var assetId: String { createTx.assetId ?? subaccount?.gdkNetwork.getFeeAsset() ?? "btc" }
@@ -62,7 +62,7 @@ class SendAmountViewModel {
             return createTx.txType == .transaction
         }
     }
-    
+
     init(createTx: CreateTx, transaction: Transaction? = nil) {
         self.createTx = createTx
         self.transaction = transaction
@@ -72,14 +72,14 @@ class SendAmountViewModel {
             transactionPriority = .Custom
         }
     }
-    
+
     var walletBalance: Balance? {
         if let satoshi = subaccount?.satoshi?[assetId] {
             return Balance.fromSatoshi(satoshi, assetId: assetId)
         }
         return nil
     }
-    
+
     var amount: Balance? {
         guard let satoshi = createTx.satoshi else { return nil }
         return Balance.fromSatoshi(satoshi, assetId: assetId)
@@ -87,7 +87,7 @@ class SendAmountViewModel {
     var subamount: Balance? {
         return Balance.fromSatoshi(createTx.satoshi ?? 0, assetId: assetId)
     }
-    
+
     var amountSendAll: Balance? {
         let feeAsset = session?.gdkNetwork.getFeeAsset()
         let assetId = createTx.assetId ?? feeAsset ?? "btc"
@@ -101,15 +101,15 @@ class SendAmountViewModel {
         }
         return Balance.fromSatoshi(satoshi, assetId: assetId)
     }
-    
+
     var denomination: String? {
         Balance.fromSatoshi(0, assetId: assetId)?.toValue(denominationType).1
     }
-    
+
     var fiatCurrency: String? {
         Balance.fromSatoshi(0, assetId: assetId)?.toFiat().1
     }
-    
+
     var assetImage: UIImage? {
         if createTx.isLightning {
             return UIImage(named: "ic_lightning_btc")
@@ -124,7 +124,7 @@ class SendAmountViewModel {
         }
        return asset
     }
-    
+
     func loadFees() async {
         await feeEstimator?.refreshFeeEstimates()
     }
@@ -140,7 +140,7 @@ class SendAmountViewModel {
         let feePerByte = Double(value) / 1000.0
         return String(format: "%.2f sats / vbyte", feePerByte)
     }
-    
+
     var feeTimeText: String? {
         if transactionPriority == .Custom {
             return ""
@@ -174,7 +174,7 @@ class SendAmountViewModel {
         }
         return Balance.fromSatoshi(satoshi, assetId: assetId)
     }
-    
+
     var walletBalanceDenomText: String? { walletBalance?.toText(denominationType) }
     var walletBalanceFiatText: String? { walletBalance?.toFiatText() }
     var amountDenomText: String? { amount?.toValue(denominationType).0 }
@@ -193,7 +193,7 @@ class SendAmountViewModel {
     var totalWithoutFeeFiatText: String? { totalWithoutFee?.toFiatText() }
 
     var walletBalanceText: String? { isFiat ? walletBalanceFiatText : walletBalanceDenomText }
-    
+
     var amountText: String? {
         if sendAll || createTx.txType == .sweep || createTx.txType == .redepositExpiredUtxos {
             return isFiat ? totalWithoutFeeFiat : totalWithoutFeeDenom
@@ -214,7 +214,7 @@ class SendAmountViewModel {
     var totalText: String? { isFiat ? totalFiatText : totalDenomText }
     var feeText: String? { isFiat ? feeFiatText : feeDenomText }
     var totalWithoutFeeText: String? { isFiat ? totalWithoutFeeFiatText : totalWithoutFeeDenomText }
-    
+
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel? {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = denominationType //session?.settings?.denomination ?? .BTC
@@ -226,7 +226,7 @@ class SendAmountViewModel {
             isFiat: isFiat,
             balance: sendAll || createTx.privateKey != nil ? totalWithoutFee : amount)
     }
-    
+
     func sendDialogFeeViewModel() -> SendDialogFeeViewModel? {
         SendDialogFeeViewModel(
             transaction: transaction,
@@ -234,7 +234,7 @@ class SendAmountViewModel {
             denominationType: denominationType,
             subaccount: subaccount)
     }
-    
+
     func sendSendTxConfirmViewModel() -> SendTxConfirmViewModel? {
         SendTxConfirmViewModel(
             transaction: transaction,
@@ -244,7 +244,7 @@ class SendAmountViewModel {
             txType: createTx.txType
         )
     }
-    
+
     func validate() -> Task<Transaction?, Error>? {
         validateTask?.cancel()
         validateTask = Task {
@@ -256,7 +256,7 @@ class SendAmountViewModel {
         }
         return validateTask
     }
-    
+
     private func validateTransaction() async throws -> Transaction? {
         var tx = Transaction(self.transaction?.details ?? [:])
         tx.subaccount = subaccount?.hashValue

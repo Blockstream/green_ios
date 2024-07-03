@@ -50,7 +50,10 @@ class LTWithdrawAmountCell: UITableViewCell {
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         self.onChange = onChange
         reload()
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+    }
+
+    func responderOn() {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
             self.textField.becomeFirstResponder()
         }
     }

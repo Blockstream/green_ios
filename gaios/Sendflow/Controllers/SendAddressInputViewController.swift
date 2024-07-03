@@ -188,7 +188,8 @@ class SendAddressInputViewController: KeyboardViewController {
                 // open LNURL-Auth page
                 presentLtAuthViewController(requestData: data)
             case .lnUrlWithdraw(let data):
-                presentLtWithdrawViewController(requestData: data)
+//                presentLtWithdrawViewController(requestData: data)
+                presentSendForWithdraw(requestData: data)
             default:
                 if createTx.anyAmounts ?? false {
                     presentSendAmountViewController()
@@ -288,6 +289,22 @@ class SendAddressInputViewController: KeyboardViewController {
             vc.viewModel = viewModel.accountAssetViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+
+    func presentSendForWithdraw(requestData: LnUrlWithdrawRequestData) {
+        
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewController") as? SendAmountViewController {
+            vc.viewModel = SendAmountViewModel(createTx: viewModel.createTx!)
+            vc.withdrawData = requestData
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        
+//        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "LTWithdrawViewController") as? LTWithdrawViewController {
+//            vc.requestData = requestData
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
     }
 
     func presentSendAmountViewController() {

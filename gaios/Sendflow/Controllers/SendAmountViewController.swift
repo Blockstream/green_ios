@@ -3,7 +3,8 @@ import UIKit
 import gdk
 import greenaddress
 import core
-
+import BreezSDK
+import lightning
 
 class SendAmountViewController: KeyboardViewController {
 
@@ -26,7 +27,7 @@ class SendAmountViewController: KeyboardViewController {
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var btnClear: UIButton!
-    
+
     @IBOutlet weak var lblAvailable: UILabel!
     @IBOutlet weak var lblFiat: UILabel!
     @IBOutlet weak var btnSendall: UIButton!
@@ -42,7 +43,7 @@ class SendAmountViewController: KeyboardViewController {
     @IBOutlet weak var lblSumTotalValue: UILabel!
     @IBOutlet weak var totalsView: UIStackView!
     @IBOutlet weak var lblConversion: UILabel!
-    
+
     @IBOutlet weak var redepositMultiStack: UIStackView!
     @IBOutlet weak var amountStack: UIStackView!
     @IBOutlet weak var actionsStack: UIStackView!
@@ -62,7 +63,34 @@ class SendAmountViewController: KeyboardViewController {
 
     @IBOutlet weak var redepositNoEditView: UIStackView!
     @IBOutlet weak var lblRedepositNoEdit: UILabel!
-    
+
+    @IBOutlet weak var withdrawHeader: UIView!
+
+    var withdrawData: LnUrlWithdrawRequestData?
+    @IBOutlet weak var lblWithdrawTitle: UILabel!
+    @IBOutlet weak var withdrawPayStack: UIStackView!
+    @IBOutlet weak var lblWithdrawPayTitle: UILabel!
+    @IBOutlet weak var withdrawRangeStack: UIStackView!
+    @IBOutlet weak var lblWithdrawRangeTitle: UILabel!
+
+    var minWithDrawAmount: UInt64 = 1
+    var maxWithDrawAmount: UInt64 { withdrawData?.maxWithdrawableSatoshi ?? 0 }
+    var withDrawMinMax: (String, String) {
+        let b1 = Balance.fromSatoshi(minWithDrawAmount, assetId: viewModel.assetId)
+        let b2 = Balance.fromSatoshi(maxWithDrawAmount, assetId: viewModel.assetId)
+        if viewModel.isFiat {
+            return ("\(b1?.toFiatText() ?? "")", "\(b2?.toFiatText() ?? "")")
+        } else {
+            return ("\(b1?.toValue(viewModel.denominationType).0 ?? "")", "\(b2?.toValue(viewModel.denominationType).0 ?? "")")
+        }
+    }
+    var isWithdraw: Bool {
+        return withdrawData != nil
+    }
+    var amount: UInt64? {
+        return UInt64(amountField.text ?? "")
+    }
+
     private let iconW: CGFloat = 36.0
     var viewModel: SendAmountViewModel!
     override func viewDidLoad() {
@@ -81,21 +109,32 @@ class SendAmountViewController: KeyboardViewController {
         amountField.addTarget(self, action: #selector(SendAmountViewController.textFieldDidChange(_:)),
                                   for: .editingChanged)
 
-        reload()
-        reloadError(false)
-        if viewModel.createTx.isLightning {
-            reloadForLightning()
+        [withdrawHeader, withdrawPayStack, withdrawRangeStack].forEach {
+            $0?.isHidden = !isWithdraw
         }
-    
-        Task { [weak self] in
-            await self?.viewModel?.loadFees()
-            await self?.validate()
-            if self?.viewModel.redeposit2faType != nil {
-                self?.reload()
+        [payRequestStack, actionsStack, redepositMultiStack, btnClear].forEach {
+            $0?.isHidden = isWithdraw
+        }
+        if isWithdraw {
+            reloadWithDraw()
+        } else {
+            reload()
+            reloadError(false)
+            if viewModel.createTx.isLightning {
+                reloadForLightning()
             }
-            if let vm = self?.viewModel {
-                self?.reloadError(vm.error != nil && (vm.createTx.satoshi ?? 0 > 0 || !vm.amountEditable))
+
+            Task { [weak self] in
+                await self?.viewModel?.loadFees()
+                await self?.validate()
+                if self?.viewModel.redeposit2faType != nil {
+                    self?.reload()
+                }
+                if let vm = self?.viewModel {
+                    self?.reloadError(vm.error != nil && (vm.createTx.satoshi ?? 0 > 0 || !vm.amountEditable))
+                }
             }
+
         }
         if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
             [lblFiat, btnDenomination, lblConversion].forEach {
@@ -105,6 +144,23 @@ class SendAmountViewController: KeyboardViewController {
         [changeSpeedView, neworkFeeView].forEach {
             $0.isHidden = !viewModel.showFeesInTotals
         }
+    }
+
+    func reloadWithDraw() {
+        guard let text = amountField.text else { return }
+
+        reloadDenomination()
+        reloadNavigationBar()
+        reloadForLightning()
+
+        let balance = viewModel.isFiat ? Balance.fromFiat(text) : Balance.from(text, assetId: viewModel.assetId, denomination: viewModel.denominationType)
+
+        viewModel.createTx.satoshi = balance?.satoshi
+        lblFiat.text = "≈ \(viewModel.subamountText ?? "")"
+        lblConversion.text = "≈ \(viewModel?.conversionText ?? "")"
+        
+        lblWithdrawRangeTitle.text = String(format: "id_withdraw_limits_s__s".localized, withDrawMinMax.0, withDrawMinMax.1)
+        validateWithdraw()
     }
 
     func reload() {
@@ -147,6 +203,8 @@ class SendAmountViewController: KeyboardViewController {
         lblMultiAssetHint.text = "id_multiple_assets".localized
         lblMultiAssetInfo.text = "The amount can’t be changed.".localized
         lblRedepositNoEdit.text = "The amount can’t be changed.".localized
+
+        lblWithdrawTitle.text = String(format: "id_you_are_redeeming_funds_from_s".localized, "\n\(withdrawData?.domain ?? "")")
     }
 
     var btnNextEnabled: Bool = false {
@@ -193,7 +251,7 @@ class SendAmountViewController: KeyboardViewController {
             $0?.setStyle(.txtBigger)
         }
         btnNextEnabled = false
-        [lblPayRequestTitle].forEach {
+        [lblPayRequestTitle, lblWithdrawPayTitle, lblWithdrawRangeTitle].forEach {
             $0?.setStyle(.sectionTitle)
         }
         lblMinMax.setStyle(.txt)
@@ -205,13 +263,16 @@ class SendAmountViewController: KeyboardViewController {
         lblMultiAssetHint.setStyle(.txtCard)
         lblMultiAssetInfo.setStyle(.txtCard)
         lblRedepositNoEdit.setStyle(.txtCard)
+
+        lblWithdrawPayTitle.text = "id_amount_to_receive".localized
+        lblWithdrawRangeTitle.text = String(format: "id_withdraw_limits_s__s".localized, "\(minWithDrawAmount)", "\(maxWithDrawAmount)")
+        lblWithdrawTitle.setStyle(.txt)
     }
 
     func configureRedeposit() {
         if viewModel.redeposit2faType != nil {
             btnNext.setTitle("Redeposit".localized, for: .normal)
             [lblAvailable, amountStack, actionsStack, totalsSeparator, totalsSumView, btnSendall, btnClear].forEach { $0?.isHidden = true }
-            
         }
         switch viewModel.redeposit2faType {
         case .single:
@@ -255,6 +316,8 @@ class SendAmountViewController: KeyboardViewController {
     func reloadNavigationBar() {
         if viewModel.redeposit2faType != nil {
             title = "Re-enable 2FA".localized
+        } else if isWithdraw {
+            title = "id_withdraw".localized
         } else {
             if let titleView = Bundle.main.loadNibNamed("SendTitleView", owner: self, options: nil)?.first as? SendTitleView {
                 let title = "\("id_send".localized) \(viewModel.assetInfo?.ticker ?? "")"
@@ -263,7 +326,7 @@ class SendAmountViewController: KeyboardViewController {
             }
         }
     }
-    
+
     @MainActor
     func reloadError(_ error: Bool) {
         if error {
@@ -321,6 +384,12 @@ class SendAmountViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
             vc.viewModel = viewModel.sendSendTxConfirmViewModel()
+            if isWithdraw {
+                if let text = amountField.text, let balance = viewModel.isFiat ? Balance.fromFiat(text) : Balance.from(text, assetId: viewModel.assetId, denomination: viewModel.denominationType) {
+                    vc.viewModel.withdrawData = withdrawData
+                    vc.viewModel.withdrawAmount = UInt64(balance.satoshi)
+                }
+            }
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -348,7 +417,7 @@ class SendAmountViewController: KeyboardViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-    
+
     func reloadForLightning() {
         lblFeeTitle.isHidden = true
         lblFeeRate.isHidden = true
@@ -360,12 +429,12 @@ class SendAmountViewController: KeyboardViewController {
         totalsView.isHidden = true
         btnSendall.isHidden = true
     }
-    
+
     @MainActor
     func reloadBalance() {
         lblAvailable.text = "\("id_available".localized) \(viewModel.walletBalanceText ?? "")"
     }
-    
+
     @MainActor
     func reloadAmount() {
         amountField.isUserInteractionEnabled = viewModel.amountEditable
@@ -381,7 +450,7 @@ class SendAmountViewController: KeyboardViewController {
             amountField.textColor = .white
         }
         btnSendAllPressed = viewModel.sendAll
-    
+
         payRequestStack.isHidden = true
         if viewModel.createTx.isLightning {
             if let minAmount = viewModel.createTx.addressee?.minAmount,
@@ -391,7 +460,7 @@ class SendAmountViewController: KeyboardViewController {
             }
         }
     }
-    
+
     @MainActor
     func reloadDenomination() {
         btnDenomination.setTitle(
@@ -411,10 +480,10 @@ class SendAmountViewController: KeyboardViewController {
         lblTime.text = viewModel?.feeTimeText ?? ""
         lblNtwFee.text = viewModel?.feeText ?? ""
     }
-    
+
     @IBAction func amountChanged(_ sender: Any) {
     }
-    
+
     func validate() async {
         let task = viewModel.validate()
         switch await task?.result {
@@ -439,12 +508,50 @@ class SendAmountViewController: KeyboardViewController {
         reloadFee()
         reloadTotal()
     }
+
+    func validateWithdraw() {
+
+        reloadError(true)
+        btnNextEnabled = false
+        withdrawRangeStack.isHidden = false
+        switch withDrawAmountValidate() {
+        case .insufficient:
+            lblError.text = "id_insufficient_funds".localized
+            withdrawRangeStack.isHidden = true
+        case .minInvalid:
+            lblError.text = String(format: "id_amount_must_be_at_least_s".localized, withDrawMinMax.0)
+        case .maxInvalid:
+            lblError.text = String(format: "id_amount_must_be_at_most_s".localized, withDrawMinMax.1)
+        case .valid:
+            reloadError(false)
+            btnNextEnabled = true
+        case .empty:
+            reloadError(false)
+        }
+    }
+
+    func withDrawAmountValidate() -> LTWithdrawAmount {
+        guard let text = amountField.text else { return .insufficient }
+        if maxWithDrawAmount == 0 {return .insufficient}
+        if amountField.text == "" {
+            return .empty
+        }
+        let balance = viewModel.isFiat ? Balance.fromFiat(text) : Balance.from(text, assetId: viewModel.assetId, denomination: viewModel.denominationType)
+        guard let sats = balance?.satoshi else { return .minInvalid }
+        if sats > maxWithDrawAmount { return .maxInvalid }
+        if sats < minWithDrawAmount { return .minInvalid }
+        return .valid
+    }
 }
 
 extension SendAmountViewController: DialogInputDenominationViewControllerDelegate {
 
     func didSelectFiat() {
         viewModel.isFiat = true
+        if isWithdraw {
+            reloadWithDraw()
+            return
+        }
         reloadAmount()
         reloadBalance()
         reloadFee()
@@ -456,6 +563,10 @@ extension SendAmountViewController: DialogInputDenominationViewControllerDelegat
     func didSelectInput(denomination: DenominationType) {
         viewModel.denominationType = denomination
         viewModel.isFiat = false
+        if isWithdraw {
+            reloadWithDraw()
+            return
+        }
         reloadAmount()
         reloadBalance()
         reloadFee()
@@ -467,6 +578,11 @@ extension SendAmountViewController: DialogInputDenominationViewControllerDelegat
 extension SendAmountViewController {
     @objc func textFieldDidChange(_ textField: UITextField) {
         guard let text = amountField.text else { return }
+
+        if isWithdraw {
+            reloadWithDraw()
+            return
+        }
         btnClear.isHidden = text.isEmpty
         if text.isEmpty {
             reloadError(false)

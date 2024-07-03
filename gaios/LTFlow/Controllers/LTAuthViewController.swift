@@ -11,6 +11,8 @@ class LTAuthViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var lblInfo: UILabel!
     @IBOutlet weak var btnAuth: UIButton!
+    @IBOutlet weak var hintFrame: UIView!
+    @IBOutlet weak var squareSliderView: SquareSliderView!
 
     var requestData: LnUrlAuthRequestData?
 
@@ -19,6 +21,8 @@ class LTAuthViewController: UIViewController {
 
         setStyle()
         setContent()
+        btnAuth.isHidden = true
+        squareSliderView.delegate = self
     }
 
     func setContent() {
@@ -31,9 +35,16 @@ class LTAuthViewController: UIViewController {
 
     func setStyle() {
         lblTitle.setStyle(.txtBigger)
-        lblHint.setStyle(.subTitle)
-        lblInfo.setStyle(.txt)
+        lblHint.setStyle(.txtBigger)
+        lblInfo.setStyle(.txtCard)
         btnAuth.setStyle(.primary)
+        hintFrame.borderWidth = 1.0
+        hintFrame.borderColor = UIColor.gGreenMatrix()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        hintFrame.layer.cornerRadius = hintFrame.frame.size.height / 2.0
     }
 
     func reloadData() {
@@ -65,6 +76,7 @@ class LTAuthViewController: UIViewController {
                 self.showError(error)
             }
             stopAnimating()
+            squareSliderView.reset()
         }
     }
     
@@ -75,6 +87,20 @@ class LTAuthViewController: UIViewController {
             navigationController?.popToViewController(ofClass: AccountViewController.self)
         } else {
             navigationController?.popToViewController(ofClass: WalletViewController.self)
+        }
+    }
+}
+
+extension LTAuthViewController: SquareSliderViewDelegate {
+    func sliderThumbIsMoving(_ sliderView: SquareSliderView) {
+        //
+    }
+
+    func sliderThumbDidStopMoving(_ position: Int) {
+        if position == 1 {
+            if let requestData = requestData {
+                lnAuth(requestData: requestData)
+            }
         }
     }
 }
