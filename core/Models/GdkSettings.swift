@@ -82,4 +82,22 @@ public struct GdkSettings: Codable {
             electrumUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
             electrumOnionUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil)
     }
+
+    public static func enableTor() {
+        let current = AppSettings.shared.gdkSettings
+
+        let new = GdkSettings(
+            tor: true,
+            proxy: current?.proxy,
+            socks5Hostname: current?.socks5Hostname,
+            socks5Port: current?.socks5Port,
+            spvEnabled: current?.spvEnabled,
+            personalNodeEnabled: current?.personalNodeEnabled,
+            btcElectrumSrv: current?.btcElectrumSrv,
+            liquidElectrumSrv: current?.liquidElectrumSrv,
+            testnetElectrumSrv: current?.testnetElectrumSrv,
+            liquidTestnetElectrumSrv: current?.liquidTestnetElectrumSrv)
+
+        AppSettings.shared.gdkSettings = new
+    }
 }

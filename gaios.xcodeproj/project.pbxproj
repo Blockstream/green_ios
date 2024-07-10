@@ -205,6 +205,7 @@
 		3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */; };
 		346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */; };
 		346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */; };
+		346310EB2C3E69DE0037DA0F /* EnableTorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346310EA2C3E69DE0037DA0F /* EnableTorViewController.swift */; };
 		3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */; };
 		3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */; };
 		3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */; };
@@ -1029,6 +1030,7 @@
 		3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartOnBoardViewController.swift; sourceTree = "<group>"; };
 		346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExplorerOptionsViewController.swift; sourceTree = "<group>"; };
 		346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogShareTxOptionViewController.swift; sourceTree = "<group>"; };
+		346310EA2C3E69DE0037DA0F /* EnableTorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTorViewController.swift; sourceTree = "<group>"; };
 		3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UserSettings.storyboard; sourceTree = "<group>"; };
 		3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
 		3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCell.swift; sourceTree = "<group>"; };
@@ -2619,6 +2621,7 @@
 				818BA7172A30838F00DFB03A /* PairingSuccessViewController.swift */,
 				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
 				3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */,
+				346310EA2C3E69DE0037DA0F /* EnableTorViewController.swift */,
 				34610C5C2B864BED005157C8 /* BleUnavailableViewController.swift */,
 			);
 			path = Controllers;
@@ -4436,6 +4439,7 @@
 				3415862329EE9A29005002D9 /* WOLoginViewController.swift in Sources */,
 				34ED47042AD4259F000086D4 /* SupportManager.swift in Sources */,
 				349F71E929C21945007B9154 /* DialogCountlyViewController.swift in Sources */,
+				346310EB2C3E69DE0037DA0F /* EnableTorViewController.swift in Sources */,
 				3418BAE32743BDAD00F9B2D0 /* ArcView.swift in Sources */,
 				344915E32A0A3C8000D35818 /* LTExperimentalViewController.swift in Sources */,
 				34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */,

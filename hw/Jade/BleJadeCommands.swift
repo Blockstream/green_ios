@@ -6,6 +6,7 @@ import SwiftCBOR
 public protocol JadeGdkRequest: AnyObject {
     func httpRequest(params: [String: Any]) async -> [String: Any]?
     func urlValidation(urls: [String]) async -> Bool
+    func validateTor(urls: [String]) async -> Bool
 }
 
 public class BleJadeCommands: BleJadeConnection {
@@ -212,6 +213,12 @@ public class BleJadeCommands: BleJadeConnection {
         let params = httpRequest["params"] as? [String: Any]
         let urls = params?["urls"] as? [String] ?? []
         let isUrlSafe = urls.allSatisfy { url in !blockstreamUrls.filter { url.starts(with: $0) }.isEmpty }
+
+        let torStstus = await gdkRequestDelegate?.validateTor(urls: urls)
+        if torStstus == false {
+            throw HWError.Abort("Unkwnown url")
+        }
+
         if !isUrlSafe {
             let validated = await gdkRequestDelegate?.urlValidation(urls: urls)
             if !(validated ?? false) {

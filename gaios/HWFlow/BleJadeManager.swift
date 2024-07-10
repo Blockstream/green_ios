@@ -226,11 +226,50 @@ extension BleJadeManager: JadeGdkRequest {
     }
 
     @MainActor
+    func showTorWarning(domains: [String], completion: @escaping(UIAlertOption) -> () = { _ in }) {
+        DispatchQueue.main.async {
+            let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "EnableTorViewController") as? EnableTorViewController {
+                vc.onConnect = { () in
+                    completion(.continue)
+                }
+                vc.onClose = { () in
+                    completion(.cancel)
+                }
+                vc.domains = domains
+                vc.modalPresentationStyle = .overFullScreen
+                UIApplication.topViewController()?.present(vc, animated: false, completion: nil)
+            }
+        }
+    }
+
+    @MainActor
     func showUrlValidationWarning(domains: [String]) async -> UIAlertOption {
         await withCheckedContinuation { continuation in
             showUrlValidationWarning(domains: domains) { result in
                 continuation.resume(with: .success(result))
             }
+        }
+    }
+
+    @MainActor
+    func showTorWarning(domains: [String]) async -> UIAlertOption {
+        await withCheckedContinuation { continuation in
+            showTorWarning(domains: domains) { result in
+                continuation.resume(with: .success(result))
+            }
+        }
+    }
+
+    func validateTor(urls: [String]) async -> Bool {
+
+        if !(urls.filter { $0.contains(".onion")}).isEmpty && AppSettings.shared.gdkSettings?.tor == false {
+            switch await showTorWarning(domains: urls) {
+            case .continue: return true
+            case .cancel: return false
+            }
+        } else {
+            return true
         }
     }
 
