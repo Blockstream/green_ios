@@ -265,7 +265,8 @@ extension BleJadeManager: JadeGdkRequest {
         if !(urls.filter { $0.contains(".onion")}).isEmpty && AppSettings.shared.gdkSettings?.tor == false {
             switch await showTorWarning(domains: urls) {
             case .continue:
-                if self.pinServerSession?.connected == false {
+                if AppSettings.shared.gdkSettings?.tor == true {
+                    try? await self.pinServerSession?.disconnect()
                     try? await self.pinServerSession?.connect()
                 }
                 return true
