@@ -90,6 +90,7 @@
 		342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980D29351444005876A8 /* DialogEnable2faCell.swift */; };
 		342F98102935145A005876A8 /* DialogEnable2faCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */; };
 		342F9812293518C6005876A8 /* Enable2faPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F9811293518C6005876A8 /* Enable2faPrefs.swift */; };
+		343471072C45109600CB6F27 /* LTRemoveShortcutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343471062C45109600CB6F27 /* LTRemoveShortcutViewController.swift */; };
 		34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347662268228C600D7AD43 /* AddWalletUITests.swift */; };
 		343476662682299B00D7AD43 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343476652682299B00D7AD43 /* Screen.swift */; };
 		3434766826822A5800D7AD43 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3434766726822A5800D7AD43 /* Home.swift */; };
@@ -919,6 +920,7 @@
 		342F980D29351444005876A8 /* DialogEnable2faCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogEnable2faCell.swift; sourceTree = "<group>"; };
 		342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DialogEnable2faCellModel.swift; path = gaios/Shared/Controllers/DialogList/Cells/DialogListCell/DialogEnable2faCellModel.swift; sourceTree = SOURCE_ROOT; };
 		342F9811293518C6005876A8 /* Enable2faPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enable2faPrefs.swift; sourceTree = "<group>"; };
+		343471062C45109600CB6F27 /* LTRemoveShortcutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRemoveShortcutViewController.swift; sourceTree = "<group>"; };
 		34347662268228C600D7AD43 /* AddWalletUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWalletUITests.swift; sourceTree = "<group>"; };
 		343476652682299B00D7AD43 /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		3434766726822A5800D7AD43 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
@@ -2707,6 +2709,7 @@
 				3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */,
 				3468AFEF2A96648300EDFC34 /* LTInvitationViewController.swift */,
 				81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */,
+				343471062C45109600CB6F27 /* LTRemoveShortcutViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -4283,6 +4286,7 @@
 				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,
 				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
 				34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */,
+				343471072C45109600CB6F27 /* LTRemoveShortcutViewController.swift in Sources */,
 				34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */,

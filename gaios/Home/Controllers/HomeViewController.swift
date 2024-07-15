@@ -79,12 +79,12 @@ class HomeViewController: UIViewController {
 
     func walletDelete(_ index: String) {
         if let account = AccountsRepository.shared.get(for: index), account.isDerivedLightning {
-            Task {
-                await AccountsRepository.shared.remove(account)
-                await MainActor.run {
-                    AnalyticsManager.shared.deleteWallet()
-                    tableView.reloadData()
-                }
+            let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "LTRemoveShortcutViewController") as? LTRemoveShortcutViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
+                vc.index = index
+                present(vc, animated: false, completion: nil)
             }
             return
         }
@@ -440,5 +440,23 @@ extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteVi
         }
     }
     func didCancel() {
+    }
+}
+
+extension HomeViewController: LTRemoveShortcutViewControllerDelegate {
+    func onCancel() {
+        //
+    }
+    func onRemove(_ index: String?) {
+        if let index = index, let account = AccountsRepository.shared.get(for: index), account.isDerivedLightning {
+            Task {
+                await AccountsRepository.shared.remove(account)
+                await MainActor.run {
+                    AnalyticsManager.shared.deleteWallet()
+                    tableView.reloadData()
+                }
+            }
+            return
+        }
     }
 }

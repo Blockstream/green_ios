@@ -392,7 +392,9 @@ class AccountViewController: UIViewController {
 
     func handleShortcut(isOn: Bool) {
 
-        Task { try? await viewModel.addLightningShortcut() }
+        if isOn {
+            Task { try? await viewModel.addLightningShortcut() }
+        }
 
         let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {
@@ -824,7 +826,17 @@ extension AccountViewController: DialogListViewControllerDelegate {
             if let item = viewModel.accountSettingsPrefs()[safe: index] {
                 switch item {
                 case .shortcut:
-                    handleShortcut(isOn: isOn)
+                    if isOn == false {
+                        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
+                        if let vc = storyboard.instantiateViewController(withIdentifier: "LTRemoveShortcutViewController") as? LTRemoveShortcutViewController {
+                            vc.modalPresentationStyle = .overFullScreen
+                            vc.delegate = self
+                            // rvc.account = account
+                            present(vc, animated: false, completion: nil)
+                        }
+                    } else {
+                        handleShortcut(isOn: isOn)
+                    }
                 default:
                     break
                 }
@@ -1094,5 +1106,14 @@ extension AccountViewController: UserSettingsViewControllerDelegate {
 
     func refresh() {
         reload()
+    }
+}
+
+extension AccountViewController: LTRemoveShortcutViewControllerDelegate {
+    func onCancel() {
+        //
+    }
+    func onRemove(_ index: String?) {
+        handleShortcut(isOn: false)
     }
 }
