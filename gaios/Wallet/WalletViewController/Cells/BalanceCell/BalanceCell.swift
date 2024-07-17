@@ -129,7 +129,6 @@ class BalanceCell: UITableViewCell {
     }
 
     @IBAction func onExchange(_ sender: Any) {
-        AnalyticsManager.shared.preferredUnits(account: AccountsRepository.shared.current)
         onExchange?()
     }
 }

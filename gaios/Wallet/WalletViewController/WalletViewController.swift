@@ -370,9 +370,9 @@ class WalletViewController: UIViewController {
     // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogGroupListViewController") as? DialogGroupListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: NSLocalizedString("Wallet Preferences".localized, comment: ""), type: .walletPrefs, items: WalletPrefs.getItems())
+            vc.viewModel = DialogGroupListViewModel(title: "Wallet Preferences".localized, type: .walletPrefs, dataSource: WalletPrefs.getGroupItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -487,6 +487,8 @@ class WalletViewController: UIViewController {
     }
 
     func showDenominationExchange() {
+        AnalyticsManager.shared.preferredUnits(account: AccountsRepository.shared.current)
+
         let ltFlow = UIStoryboard(name: "DenominationExchangeFlow", bundle: nil)
         if let vc = ltFlow.instantiateViewController(withIdentifier: "DenominationExchangeViewController") as? DenominationExchangeViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -513,6 +515,13 @@ class WalletViewController: UIViewController {
             }
         }
         viewModel.registerNotifications()
+    }
+
+    func showArchived() {
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -580,7 +589,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell {
                 cell.configure(model: viewModel.balanceCellModel,
                                hideBalance: hideBalance,
-                               hideBtnExchange: false,
+                               hideBtnExchange: true,
                                onHide: {[weak self] value in
                     self?.hideBalance = value
 
@@ -826,7 +835,13 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 extension WalletViewController: DialogRenameViewControllerDelegate {
 
     func didRename(name: String, index: String?) {
-        // ...
+        if var account = AccountsRepository.shared.current {
+            account.name = name
+            WalletManager.current?.account = account
+            // AccountsRepository.shared.upsert(account)
+            AnalyticsManager.shared.renameWallet()
+            drawerItem.refresh()
+        }
     }
     func didCancel() {
     }
@@ -1017,13 +1032,11 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
     }
 }
 
-extension WalletViewController: DialogListViewControllerDelegate {
-    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-
-    func didSelectIndex(_ index: Int, with type: DialogType) {
+extension WalletViewController: DialogGroupListViewControllerDelegate {
+    func didSelectIndexPath(_ indexPath: IndexPath, with type: DialogGroupType) {
         switch type {
         case .walletPrefs:
-            if let item = WalletPrefs.getPrefs()[safe: index] {
+            if let item = WalletPrefs.getSelected(indexPath) {
                 switch item {
                 case .settings:
                     let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
@@ -1040,8 +1053,33 @@ extension WalletViewController: DialogListViewControllerDelegate {
                     createAccount()
                 case .logout:
                     userLogout()
+                case .denominations:
+                    showDenominationExchange()
+                case .rename:
+                    let account = AccountsRepository.shared.current
+                    let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+                    if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
+                        vc.modalPresentationStyle = .overFullScreen
+                        vc.delegate = self
+                        vc.index = nil
+                        vc.prefill = account?.name ?? ""
+                        present(vc, animated: false, completion: nil)
+                    }
+                case .refresh:
+                    reload(discovery: true)
+                case .archive:
+                    showArchived()
                 }
             }
+        }
+    }
+}
+
+extension WalletViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
         case .enable2faPrefs:
             switch Enable2faPrefs(rawValue: index) {
             case .add:

@@ -14,6 +14,11 @@ class DrawerBarItem: UIView {
         self.onTap = onTap
     }
 
+    func refresh() {
+        let account = AccountsRepository.shared.current
+        lblWallet.text = account?.name ?? ""
+    }
+
     @IBAction func btn(_ sender: Any) {
         onTap?()
     }

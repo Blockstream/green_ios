@@ -111,6 +111,11 @@
 		343BC9522AA8772600F0FEE5 /* DrawerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9512AA8772600F0FEE5 /* DrawerAnimationManager.swift */; };
 		343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */; };
 		343BC9572AA9BF1200F0FEE5 /* TwoFAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */; };
+		344471BC2C46B2A20051957E /* DialogGroupListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471BB2C46B2A20051957E /* DialogGroupListViewController.swift */; };
+		344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471BD2C46B31F0051957E /* DialogGroupListViewModel.swift */; };
+		344471C22C478DBD0051957E /* DialogGroupListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344471C12C478DBD0051957E /* DialogGroupListCell.xib */; };
+		344471C42C478DD00051957E /* DialogGroupListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471C32C478DD00051957E /* DialogGroupListCell.swift */; };
+		344471C62C478F7C0051957E /* DialogGroupListCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471C52C478F7C0051957E /* DialogGroupListCellModel.swift */; };
 		3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3445498E29FBF7D9006725D2 /* LTSuccessViewController.swift */; };
 		3445499329FBFC8F006725D2 /* LTNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3445499129FBFC8F006725D2 /* LTNoteCell.swift */; };
 		3445499429FBFC8F006725D2 /* LTNoteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3445499229FBFC8F006725D2 /* LTNoteCell.xib */; };
@@ -940,6 +945,11 @@
 		343BC9512AA8772600F0FEE5 /* DrawerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimationManager.swift; sourceTree = "<group>"; };
 		343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TwoFAFlow.storyboard; sourceTree = "<group>"; };
 		343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFAViewController.swift; sourceTree = "<group>"; };
+		344471BB2C46B2A20051957E /* DialogGroupListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListViewController.swift; sourceTree = "<group>"; };
+		344471BD2C46B31F0051957E /* DialogGroupListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListViewModel.swift; sourceTree = "<group>"; };
+		344471C12C478DBD0051957E /* DialogGroupListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialogGroupListCell.xib; sourceTree = "<group>"; };
+		344471C32C478DD00051957E /* DialogGroupListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListCell.swift; sourceTree = "<group>"; };
+		344471C52C478F7C0051957E /* DialogGroupListCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListCellModel.swift; sourceTree = "<group>"; };
 		3445498E29FBF7D9006725D2 /* LTSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSuccessViewController.swift; sourceTree = "<group>"; };
 		3445499129FBFC8F006725D2 /* LTNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTNoteCell.swift; sourceTree = "<group>"; };
 		3445499229FBFC8F006725D2 /* LTNoteCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTNoteCell.xib; sourceTree = "<group>"; };
@@ -1921,6 +1931,34 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		344471BA2C46B2650051957E /* DialogGroupList */ = {
+			isa = PBXGroup;
+			children = (
+				344471BF2C478D870051957E /* Cells */,
+				344471BB2C46B2A20051957E /* DialogGroupListViewController.swift */,
+				344471BD2C46B31F0051957E /* DialogGroupListViewModel.swift */,
+			);
+			path = DialogGroupList;
+			sourceTree = "<group>";
+		};
+		344471BF2C478D870051957E /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				344471C02C478D960051957E /* DialogGroupListCell */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		344471C02C478D960051957E /* DialogGroupListCell */ = {
+			isa = PBXGroup;
+			children = (
+				344471C32C478DD00051957E /* DialogGroupListCell.swift */,
+				344471C52C478F7C0051957E /* DialogGroupListCellModel.swift */,
+				344471C12C478DBD0051957E /* DialogGroupListCell.xib */,
+			);
+			path = DialogGroupListCell;
+			sourceTree = "<group>";
+		};
 		3447553129098D7000B9C1AF /* WalletViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -2820,6 +2858,7 @@
 				3448B5C929D475E4008D5746 /* DialogScan */,
 				349F71E729C218FA007B9154 /* DialogCountly */,
 				3457F4AC2923978600EF33B5 /* DialogList */,
+				344471BA2C46B2650051957E /* DialogGroupList */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -4060,6 +4099,7 @@
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
 				3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */,
 				34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */,
+				344471C22C478DBD0051957E /* DialogGroupListCell.xib in Resources */,
 				3487657529D43B2A0059D05F /* Illustration Checklist.riv in Resources */,
 				345FC46929ED4D83009FCF43 /* WOTypeCell.xib in Resources */,
 			);
@@ -4258,6 +4298,7 @@
 				346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */,
 				812DBDBC29724F69002992D6 /* WatchOnlySettingsViewController.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
+				344471C42C478DD00051957E /* DialogGroupListCell.swift in Sources */,
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
 				34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */,
 				343BC9472AA7012B00F0FEE5 /* GreenPIckerViewController.swift in Sources */,
@@ -4265,6 +4306,7 @@
 				34F5689A2A828D490081BF0C /* LTRecoverFundsAmountCell.swift in Sources */,
 				81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */,
 				344915F02A0CE27F00D35818 /* ReceiveAssetCellModel.swift in Sources */,
+				344471C62C478F7C0051957E /* DialogGroupListCellModel.swift in Sources */,
 				348EB95529FA95950001CC47 /* LTAmountCellModel.swift in Sources */,
 				346EB2772BE8BB3A0043139F /* SendFeeCellModel.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
@@ -4315,6 +4357,7 @@
 				34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */,
 				345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
+				344471BC2C46B2A20051957E /* DialogGroupListViewController.swift in Sources */,
 				34927BC92971452C00D741DB /* AccountAssetViewModel.swift in Sources */,
 				34A75B6F292BD9FC007995D7 /* PhrasePrefs.swift in Sources */,
 				346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */,
@@ -4439,6 +4482,7 @@
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
 				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
 				81004E31292B6E1D001C2E4D /* MnemonicViewModel.swift in Sources */,
+				344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
 				3415862329EE9A29005002D9 /* WOLoginViewController.swift in Sources */,
 				34ED47042AD4259F000086D4 /* SupportManager.swift in Sources */,

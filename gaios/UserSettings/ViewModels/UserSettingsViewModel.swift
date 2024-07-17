@@ -109,11 +109,11 @@ class UserSettingsViewModel {
             attributed: getDenominationExchangeInfo(settings: settings, network: network),
             section: .General,
             type: .UnifiedDenominationExchange)
-        let archievedAccounts = UserSettingsItem(
-            title: USItem.ArchievedAccounts.string,
-            subtitle: "",
-            section: .General,
-            type: .ArchievedAccounts)
+//        let archievedAccounts = UserSettingsItem(
+//            title: USItem.ArchievedAccounts.string,
+//            subtitle: "",
+//            section: .General,
+//            type: .ArchievedAccounts)
         let watchOnly = UserSettingsItem(
             title: USItem.WatchOnly.string,
             subtitle: "",
@@ -122,7 +122,7 @@ class UserSettingsViewModel {
         if isDerivedLightning || isWatchonly {
             return [unifiedDenominationExchange]
         }
-        return [unifiedDenominationExchange, archievedAccounts, watchOnly]
+        return [unifiedDenominationExchange /*, archievedAccounts*/, watchOnly]
     }
 
     func getRecovery() -> [UserSettingsItem] {
