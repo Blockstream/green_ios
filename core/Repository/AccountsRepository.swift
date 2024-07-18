@@ -87,9 +87,12 @@ public class AccountsRepository {
     public func remove(_ account: Account) async {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         try? await wm.removeLightningShortcut()
-        try? await wm.removeLightning()
-        account.removePinKeychainData()
-        account.removeBioKeychainData()
+        if !account.isDerivedLightning {
+            // full wallet deletion
+            try? await wm.removeLightning()
+            account.removePinKeychainData()
+            account.removeBioKeychainData()
+        }
         accounts.removeAll(where: { $0.id == account.id})
     }
 

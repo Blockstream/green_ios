@@ -391,15 +391,32 @@ class AccountViewController: UIViewController {
     }
 
     func handleShortcut(isOn: Bool) {
-
-        if isOn {
-            Task { try? await viewModel.addLightningShortcut() }
+        Task {
+            if isOn {
+                try? await viewModel.addLightningShortcut()
+            }
+            presentLTShortcutViewController(isOn: isOn)
         }
+    }
 
+    @MainActor
+    func presentLTShortcutViewController(isOn: Bool) {
+        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController,
+           let account = WalletManager.current?.account {
+            vc.vm = LTShortcutViewModel(account: account,
+                                        action: isOn ? .addFromAccount : .remove)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func presentLTShortcutViewController() {
         let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {
             vc.vm = LTShortcutViewModel(account: account,
-                                        action: isOn ? .addFromAccount : .remove)
+                                        action: .remove)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)

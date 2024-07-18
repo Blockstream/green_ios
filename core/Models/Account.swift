@@ -20,6 +20,7 @@ public struct Account: Codable, Equatable {
         case xpubHashId = "xpub_hash_id"
         case hidden
         case uuid
+        case lightningWalletHashId = "lightning_wallet_hash_id"
     }
 
     public var name: String
@@ -40,8 +41,9 @@ public struct Account: Codable, Equatable {
     public var askEphemeral: Bool?
     public var ephemeralId: Int?
     public var isDerivedLightning: Bool = false
+    public var lightningWalletHashId: String?
 
-    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil) {
+    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -55,6 +57,8 @@ public struct Account: Codable, Equatable {
         self.isEphemeral = isEphemeral
         self.askEphemeral = askEphemeral
         self.xpubHashId = xpubHashId
+        self.walletHashId = walletHashId
+        self.lightningWalletHashId = lightningWalletHashId
         self.uuid = uuid
         self.hidden = hidden
         self.isDerivedLightning = isDerivedLightning
@@ -199,6 +203,8 @@ public struct Account: Codable, Equatable {
                 network: .bitcoinSS,
                 isJade: isJade,
                 xpubHashId: xpubHashId, 
+                walletHashId: walletHashId,
+                lightningWalletHashId: lightningWalletHashId,
                 isDerivedLightning: true,
                 password: password
         )
