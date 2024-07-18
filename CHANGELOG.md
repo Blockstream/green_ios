@@ -8,8 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Updates in wallet preferences dialog
 
+### Added
+- Set electrum TLS for custom electrum server
 
-### [4.0.30] - 2024-06-13
+## [4.0.30] - 2024-06-13
 
 ### Added
 - Allow redeposit of expired utxos in bitcoin multisig accounts

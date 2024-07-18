@@ -81,6 +81,9 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnSave: UIButton!
 
+    @IBOutlet weak var lblElectrumTls: UILabel!
+    @IBOutlet weak var switchElectrumTls: UISwitch!
+
     weak var delegate: WalletSettingsViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -136,6 +139,7 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVbtcServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVliquidServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVtestnetServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
+        lblElectrumTls.text = NSLocalizedString("Enable TLS", comment: "")
         lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
         lblTxCheckHint.text = NSLocalizedString("id_verify_your_bitcoin", comment: "")
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
@@ -185,6 +189,7 @@ class WalletSettingsViewController: KeyboardViewController {
         switchTestnet.setOn(appSettings.testnet, animated: true)
         switchTxCheck.setOn(gdkSettings.spvEnabled ?? false, animated: true)
         switchPSPVPersonalNode.setOn(gdkSettings.personalNodeEnabled ?? false, animated: true)
+        switchElectrumTls.setOn(gdkSettings.electrumTls ?? true, animated: true)
 
         if let uri = gdkSettings.btcElectrumSrv, !uri.isEmpty {
             fieldSPVbtcServer.text = uri
@@ -201,6 +206,7 @@ class WalletSettingsViewController: KeyboardViewController {
 
         switchPSPVPersonalNode(switchPSPVPersonalNode)
         switchProxyChange(switchProxy)
+        
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -252,7 +258,8 @@ class WalletSettingsViewController: KeyboardViewController {
                       message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
             return
         }
-        let gdkSettings = GdkSettings(
+        let gdkSettings = AppSettings.shared.gdkSettings
+        let newSettings = GdkSettings(
             tor: switchTor.isOn,
             proxy: switchProxy.isOn,
             socks5Hostname: String(socks5.split(separator: ":").first ?? ""),
@@ -262,11 +269,13 @@ class WalletSettingsViewController: KeyboardViewController {
             btcElectrumSrv: fieldSPVbtcServer.text,
             liquidElectrumSrv: fieldSPVliquidServer.text ?? "",
             testnetElectrumSrv: fieldSPVtestnetServer.text,
-            liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text)
+            liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text,
+            electrumTls: switchPSPVPersonalNode.isOn && switchElectrumTls.isOn
+        )
         AppSettings.shared.testnet = switchTestnet.isOn
         AppSettings.shared.experimental = switchExperimental.isOn
         AppSettings.shared.rememberHWIsOff = !switchRememberHW.isOn
-        AppSettings.shared.gdkSettings = gdkSettings
+        AppSettings.shared.gdkSettings = newSettings
 
         switch AnalyticsManager.shared.consent { // current value
         case .authorized:

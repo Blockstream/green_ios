@@ -14,6 +14,7 @@ public struct GdkSettings: Codable {
         case liquidElectrumSrv = "liquid_electrum_srv"
         case testnetElectrumSrv = "testnet_electrum_srv"
         case liquidTestnetElectrumSrv = "liquid_testnet_electrum_srv"
+        case electrumTls = "electrum_tls"
     }
     public let tor: Bool?
     public let proxy: Bool?
@@ -25,13 +26,14 @@ public struct GdkSettings: Codable {
     public let liquidElectrumSrv: String?
     public let testnetElectrumSrv: String?
     public let liquidTestnetElectrumSrv: String?
+    public let electrumTls: Bool?
 
     public static let btcElectrumSrvDefaultEndPoint = "blockstream.info:700"
     public static let liquidElectrumSrvDefaultEndPoint = "blockstream.info:995"
     public static let testnetElectrumSrvDefaultEndPoint = "blockstream.info:993"
     public static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
 
-    public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, spvEnabled: Bool?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?) {
+    public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, spvEnabled: Bool?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?, electrumTls: Bool?) {
         self.tor = tor
         self.proxy = proxy
         self.socks5Hostname = socks5Hostname
@@ -42,6 +44,7 @@ public struct GdkSettings: Codable {
         self.liquidElectrumSrv = liquidElectrumSrv
         self.testnetElectrumSrv = testnetElectrumSrv
         self.liquidTestnetElectrumSrv = liquidTestnetElectrumSrv
+        self.electrumTls = electrumTls
     }
 
     public static func read() -> GdkSettings? {
@@ -80,7 +83,9 @@ public struct GdkSettings: Codable {
             userAgent: String(format: "green_ios_%@", version),
             spvEnabled: (gdkSettings?.spvEnabled ?? false) && !gdkNetwork.liquid,
             electrumUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
-            electrumOnionUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil)
+            electrumOnionUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
+            electrumTls: gdkSettings?.electrumTls ?? true
+        )
     }
 
     public static func enableTor() {
@@ -96,7 +101,9 @@ public struct GdkSettings: Codable {
             btcElectrumSrv: current?.btcElectrumSrv,
             liquidElectrumSrv: current?.liquidElectrumSrv,
             testnetElectrumSrv: current?.testnetElectrumSrv,
-            liquidTestnetElectrumSrv: current?.liquidTestnetElectrumSrv)
+            liquidTestnetElectrumSrv: current?.liquidTestnetElectrumSrv,
+            electrumTls: current?.electrumTls
+        )
 
         AppSettings.shared.gdkSettings = new
     }
