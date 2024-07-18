@@ -6351,8 +6351,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.21.0;
+				kind = exactVersion;
+				version = 10.28.1;
 			};
 		};
 		81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */ = {
@@ -6375,16 +6375,16 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/Semaphore";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.8;
+				kind = exactVersion;
+				version = 0.0.8;
 			};
 		};
 		818BA7012A2F6A6300DFB03A /* XCRemoteSwiftPackageReference "AsyncBluetooth" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/manolofdez/AsyncBluetooth";
 			requirement = {
-				kind = revision;
-				revision = 1dd29c190a62f95d8f5d6820567f90a52cac3847;
+				kind = exactVersion;
+				version = 1.9.0;
 			};
 		};
 		81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */ = {
