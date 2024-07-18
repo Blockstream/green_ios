@@ -5,12 +5,14 @@ import gdk
 
 protocol DialogNodeViewControllerProtocol {
     func onSendAll()
+    func rescanSwaps()
     func navigateMnemonic()
 }
 
 enum DialogNodeAction {
     case mnemonic
     case sendAll
+    case rescanSwaps
     case cancel
 }
 
@@ -26,7 +28,7 @@ class DialogNodeViewController: KeyboardViewController {
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var btnMnemonic: UIButton!
     @IBOutlet weak var btnCloseChannel: UIButton!
-
+    @IBOutlet weak var btnRescanSwap: UIButton!
     @IBOutlet weak var btnShareLogs: UIButton!
     var viewModel: DialogNodeViewModel!
     var delegate: DialogNodeViewControllerProtocol?
@@ -113,6 +115,7 @@ class DialogNodeViewController: KeyboardViewController {
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
         btnCloseChannel.setTitle("Empty Lightning Account".localized, for: .normal)
         btnShareLogs.setTitle("Share logs".localized, for: .normal)
+        btnRescanSwap.setTitle("Rescan Swaps".localized, for: .normal)
     }
 
     func setStyle() {
@@ -142,6 +145,8 @@ class DialogNodeViewController: KeyboardViewController {
                     self.delegate?.navigateMnemonic()
                 case .sendAll:
                     self.delegate?.onSendAll()
+                case .rescanSwaps:
+                    self.delegate?.rescanSwaps()
                 default:
                     break
                 }
@@ -186,6 +191,10 @@ class DialogNodeViewController: KeyboardViewController {
                 }
             }
         }
+    }
+    
+    @IBAction func btnRescanSwaps(_ sender: Any) {
+        dismiss(.rescanSwaps)
     }
 }
 

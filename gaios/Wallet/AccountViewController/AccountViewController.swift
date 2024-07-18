@@ -995,6 +995,14 @@ extension AccountViewController: DialogScanViewControllerDelegate {
     }
 }
 extension AccountViewController: DialogNodeViewControllerProtocol {
+    func rescanSwaps() {
+        Task { [weak self] in
+            self?.startLoader(message: "Scanning swaps".localized)
+            try? await self?.viewModel.rescanSwaps()
+            self?.stopLoader()
+            await self?.getTransactions()
+        }
+    }
 
     func navigateMnemonic() {
         navigateToBip85Mnemonic()

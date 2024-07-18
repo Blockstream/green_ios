@@ -235,6 +235,10 @@ class AccountViewModel {
         try await wm?.removeLightningShortcut()
     }
 
+    func rescanSwaps() async throws {
+        try await wm?.lightningSession?.lightBridge?.rescanSwaps()
+    }
+
     var headerIcon: UIImage {
         UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!
         .maskWithColor(color: .white)

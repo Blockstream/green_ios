@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
- 
+
+### Added
+- Rescan lightning swaps
+- Set electrum TLS for custom electrum server
+
 ### Changed
 - Updates in wallet preferences dialog
 - Update breez to 0.5.1-rc5
-
-### Added
-- Set electrum TLS for custom electrum server
 
 ## [4.0.30] - 2024-06-13
 
