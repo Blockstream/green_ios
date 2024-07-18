@@ -86,6 +86,7 @@ public class AccountsRepository {
 
     public func remove(_ account: Account) async {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
+        try? await wm.unregisterLightning()
         try? await wm.removeLightningShortcut()
         if !account.isDerivedLightning {
             // full wallet deletion

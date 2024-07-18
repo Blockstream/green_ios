@@ -595,6 +595,7 @@ public class WalletManager {
     public func removeLightningShortcut() async throws {
         let keychain = account.isDerivedLightning ? account.keychain : account.getDerivedLightningAccount()?.keychain ?? ""
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: keychain)
+
     }
 
     public func removeLightning() async throws {
@@ -608,7 +609,23 @@ public class WalletManager {
             _ = try await subaccounts()
         }
     }
-    
+
+    public func unregisterLightning()  async throws {
+        // unregister lightning webhook
+        let keychain = account.isDerivedLightning ? account.keychain : account.getDerivedLightningAccount()?.keychain ?? ""
+        let derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: keychain)
+        if let session = lightningSession, !session.logged {
+            try await session.smartLogin(
+                credentials: derivedCredentials,
+                listener: session)
+        }
+        let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
+        if let token = defaults?.string(forKey: "token"),
+           let xpubHashId = account.xpubHashId {
+           lightningSession?.unregisterNotification(token: token, xpubHashId: xpubHashId)
+        }
+        try? await lightningSession?.disconnect()
+    }
 
     public func getLightningMnemonic(credentials: Credentials) throws -> String? {
         guard let mnemonic = credentials.mnemonic else {
