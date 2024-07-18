@@ -72,6 +72,8 @@ class LTWithdrawViewController: KeyboardViewController {
                     presentAlertSuccess()
                 case .errorStatus(let data):
                     DropAlert().error(message: data.reason)
+                case .timeout(let data):
+                    DropAlert().error(message: "Timeout".localized)
                 case .none:
                     DropAlert().error(message: "id_operation_failure".localized)
                 }

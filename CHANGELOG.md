@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
  
 ### Changed
 - Updates in wallet preferences dialog
+- Update breez to 0.5.1-rc5
 
 ### Added
 - Set electrum TLS for custom electrum server

@@ -262,6 +262,8 @@ class BleViewModel {
         }
         if let err = err as? BluetoothError {
             switch err {
+            case .operationCancelled:
+                return BLEManagerError.genericErr(txt: "Operation cancelled")
             case .bluetoothUnavailable:
                 return BLEManagerError.genericErr(txt: "\(defaultMsg). Error: Bluetooth Unavailable")
             case .cancelledConnectionToPeripheral:

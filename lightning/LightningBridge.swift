@@ -16,7 +16,7 @@ public class LightningBridge {
     static var CREDENTIALS: GreenlightCredentials? {
         if let cert = Bundle.main.greenlightDeviceCert,
            let key = Bundle.main.greenlightDeviceKey {
-            return GreenlightCredentials(deviceKey: [UInt8](key), deviceCert: [UInt8](cert))
+            return GreenlightCredentials(developerKey: [UInt8](key), developerCert: [UInt8](cert))
         }
         return nil
     }
