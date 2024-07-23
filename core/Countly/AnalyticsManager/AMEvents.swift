@@ -42,6 +42,8 @@ public enum AnalyticsEventName: String {
     case jadeVerifyAddress = "verify_address"
     case jadeOtaStart = "ota_start"
     case jadeOtaComplete = "ota_complete"
+    case jadeOtaRefuse = "ota_refuse"
+    case jadeOtaFailed = "ota_failed"
 
     case qrScan = "qr_scan"
 
@@ -322,6 +324,17 @@ extension AnalyticsManager {
     public func otaCompleteJade(account: Account?, firmware: Firmware) {
         let s = firmwareSgmt(account, firmware: firmware)
         endEvent(.jadeOtaComplete, sgmt: s)
+    }
+
+    public func otaRefuseJade(account: Account?) {
+        let s = sessSgmt(account)
+        recordEvent(.jadeOtaRefuse, sgmt: s)
+    }
+
+    public func otaFailedJade(account: Account?, error: String?) {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strError] = error ?? ""
+        recordEvent(.jadeOtaFailed, sgmt: s)
     }
 
     public func scanQr(account: Account?, screen: QrScanScreen) {

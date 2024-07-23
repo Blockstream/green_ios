@@ -17,12 +17,37 @@ public class BleJadeConnection: HWConnectionProtocol {
     private var semaphore = AsyncSemaphore(value: 1)
     private var semaphoreQueue = AsyncSemaphore(value: 0)
     private var mtu = 128
-    private var cancellable: AnyCancellable?
+    private var centralCancellables = Set<AnyCancellable>()
+    private var characteristicCancellables = Set<AnyCancellable>()
     private var queue = [Data]()
+    private var closed = true
 
     public init(peripheral: Peripheral, centralManager: CentralManager?) {
         self.peripheral = peripheral
         self.centralManager = centralManager
+        self.listening()
+    }
+    
+    public func listening() {
+        centralManager?.eventPublisher
+            .sink {
+                switch $0 {
+                case .didUpdateState(let state):
+                    guard state == .poweredOff else {
+                        return
+                    }
+                    Task { try await self.close() }
+                case .didConnectPeripheral(let peripheral):
+                    self.closed = false
+                case .didDisconnectPeripheral(let peripheral, let isReconnecting, let error):
+                    print("Disconnected to \(error?.localizedDescription)")
+                    self.closed = true
+                    Task { try await self.close() }
+                default:
+                    break
+                }
+            }
+            .store(in: &centralCancellables)
     }
 
     public func open() async throws {
@@ -41,7 +66,7 @@ public class BleJadeConnection: HWConnectionProtocol {
         }
         try await setNotifyValue()
         var buffer = Data()
-        cancellable = peripheral.characteristicValueUpdatedPublisher
+        peripheral.characteristicValueUpdatedPublisher
             // .map { print("Data '\($0.value)'"); return $0 }
             .filter { $0.uuid.uuidString == self.CLIENT_CHARACTERISTIC_CONFIG.uuidString }
             .map { try? $0.parsedValue() as Data? } // replace `String?` with your type
@@ -53,7 +78,7 @@ public class BleJadeConnection: HWConnectionProtocol {
                     semaphoreQueue.signal()
                     buffer = Data()
                 }
-            })
+            }).store(in: &characteristicCancellables)
     }
 
     func setNotifyValue() async throws {
@@ -88,6 +113,9 @@ public class BleJadeConnection: HWConnectionProtocol {
 
     public func exchange(_ data: Data) async throws -> Data {
         try await semaphore.waitUnlessCancelled()
+        if closed {
+            throw HWError.InvalidResponse("Disconnected")
+        }
 #if DEBUG
         print(">= \(data.hex)")
 #endif
@@ -106,7 +134,13 @@ public class BleJadeConnection: HWConnectionProtocol {
     public func close() async throws {
         semaphore.signal()
         semaphoreQueue.signal()
-        try await centralManager?.cancelPeripheralConnection(peripheral)
-        cancellable?.cancel()
+        try? await peripheral.cancelAllOperations()
+        try? await centralManager?.cancelAllOperations()
+        try? await centralManager?.cancelPeripheralConnection(peripheral)
+        characteristicCancellables.forEach { $0.cancel() }
+    }
+    
+    deinit {
+        centralCancellables.forEach { $0.cancel() }
     }
 }
