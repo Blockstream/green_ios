@@ -120,7 +120,9 @@ class AlertCardCell: UITableViewCell {
             lblTitle.text = NSLocalizedString("id_warning", comment: "")
             let errorString: String = {
                 switch error {
-                case LoginError.connectionFailed(let txt), LoginError.walletNotFound(let txt):
+                case LoginError.connectionFailed(let txt):
+                    return (txt ?? "") + "\n\n" + "Ensure your app is up to date.".localized
+                case LoginError.walletNotFound(let txt):
                     return txt ?? ""
                 case LoginError.hostUnblindingDisabled(_):
                     return "Some wallet functionalities have been disabled or will not work properly"
