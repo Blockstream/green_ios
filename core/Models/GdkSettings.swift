@@ -76,6 +76,13 @@ public struct GdkSettings: Codable {
                 return nil
             }
         }()
+        let isDefaultEletrumEndpoint = [
+            GdkSettings.btcElectrumSrvDefaultEndPoint,
+            GdkSettings.liquidElectrumSrvDefaultEndPoint,
+            GdkSettings.testnetElectrumSrvDefaultEndPoint,
+            GdkSettings.liquidTestnetElectrumSrvDefaultEndPoint,
+            "", nil].contains(electrumUrl)
+        let electrumTls = isDefaultEletrumEndpoint ? nil : gdkSettings?.electrumTls
         return NetworkSettings(
             name: network,
             useTor: gdkSettings?.tor ?? false,
@@ -84,7 +91,7 @@ public struct GdkSettings: Codable {
             spvEnabled: (gdkSettings?.spvEnabled ?? false) && !gdkNetwork.liquid,
             electrumUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
             electrumOnionUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
-            electrumTls: gdkSettings?.electrumTls ?? true
+            electrumTls: gdkSettings?.personalNodeEnabled ?? false ? electrumTls : nil
         )
     }
 
