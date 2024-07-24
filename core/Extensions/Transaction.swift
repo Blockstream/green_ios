@@ -67,7 +67,6 @@ extension Transaction {
     public static func fromPayment(_ payment: BreezSDK.Payment, subaccount: Int) -> Transaction {
         var tx = Transaction([:])
         tx.subaccount = subaccount
-        tx.blockHeight = UInt32(payment.paymentTime)
         tx.canRBF = false
         tx.memo = payment.description ?? ""
         tx.fee = payment.feeMsat / 1000
@@ -78,6 +77,16 @@ extension Transaction {
         tx.isLightningSwap = false
         tx.isPendingCloseChannel = payment.paymentType == PaymentType.closedChannel && payment.status == PaymentStatus.pending
 
+        var blockHeight: UInt32 = {
+            if tx.isPendingCloseChannel ?? false || payment.status == PaymentStatus.pending {
+                return 0
+            } else if payment.status == PaymentStatus.complete {
+                return UInt32(payment.paymentTime)
+            } else {
+                return 0
+            }
+        }()
+        tx.blockHeight = blockHeight
         switch payment.details {
         case .ln(let data):
             switch data.lnurlSuccessAction {
