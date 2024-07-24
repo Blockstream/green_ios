@@ -182,10 +182,21 @@ class LTRecoverFundsViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error) {
+        stopAnimating()
         sliderNext.reset()
-        showError(error)
+        presentSendFailViewController(error)
     }
 
+    @MainActor
+    func presentSendFailViewController(_ error: Error) {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendFailViewController") as? SendFailViewController {
+            vc.delegate = self
+            vc.error = error
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
     @MainActor
     func success() {
         stopAnimating()
@@ -203,6 +214,25 @@ class LTRecoverFundsViewController: KeyboardViewController {
                                               hint: "id_transaction_sent".localized)
             }
             vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+    @MainActor
+    func presentDialogErrorViewController(error: Error, paymentHash: String?) {
+        let request = DialogErrorRequest(
+            account: AccountsRepository.shared.current,
+            networkType: viewModel.wallet?.networkType ?? .bitcoinSS,
+            error: error.description()?.localized ?? "",
+            screenName: "EmptyLightningAccount",
+            paymentHash: paymentHash)
+        if AppSettings.shared.gdkSettings?.tor ?? false {
+            self.showOpenSupportUrl(request)
+            return
+        }
+        if let vc = UIStoryboard(name: "Dialogs", bundle: nil)
+            .instantiateViewController(withIdentifier: "DialogErrorViewController") as? DialogErrorViewController {
+            vc.request = request
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
         }
@@ -391,5 +421,15 @@ extension LTRecoverFundsViewController: SliderViewDelegate {
         if position == 1 {
             send()
         }
+    }
+}
+
+extension LTRecoverFundsViewController: SendFailViewControllerDelegate {
+    func onAgain() {
+        send()
+    }
+    
+    func onSupport(error: Error) {
+        presentDialogErrorViewController(error: error, paymentHash: nil)
     }
 }

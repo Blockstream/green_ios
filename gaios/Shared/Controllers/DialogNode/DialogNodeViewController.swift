@@ -124,7 +124,7 @@ class DialogNodeViewController: KeyboardViewController {
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         btnMnemonic.setStyle(.primary)
-        btnCloseChannel.setStyle(.outlined)
+        btnCloseChannel.setStyle(.outlinedWhite)
     }
 
     func register() {
