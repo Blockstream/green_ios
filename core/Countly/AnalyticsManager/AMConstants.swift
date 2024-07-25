@@ -85,7 +85,7 @@ public extension AnalyticsManager {
     static let maxOffsetProduction = 12 * 60 * 60 * 1000 // 12 hours
     static let maxOffsetDevelopment = 30 * 60 * 1000 // 30 mins
 
-    static let ratingWidgetId = "5f15c01425f83c169c33cb65"
+    static let ratingWidgetId = "63a5b28802962d16dabcd451"
 
     enum NtwTypeDescriptor: String {
         /// mainnet / liquid / mainnet-mixed / testnet / testnet-liquid / testnet-mixed
