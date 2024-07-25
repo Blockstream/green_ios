@@ -52,7 +52,7 @@ class EnableTorViewController: UIViewController {
             $0?.setStyle(.subTitle)
         }
         btnConnect.setStyle(.primary)
-        btnClose.setStyle(.outlined)
+        btnClose.setStyle(.outlinedWhite)
     }
 
     override func viewWillAppear(_ animated: Bool) {
