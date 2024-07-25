@@ -240,15 +240,13 @@ extension DialogAboutViewController: DialogFeedbackViewControllerDelegate {
     func didSend(rating: Int, email: String?, comment: String) {
         Task {
             AnalyticsManager.shared.recordFeedback(rating: rating, email: email, comment: comment)
-            if Bundle.main.dev {
-                await ZendeskSdk.shared.submitNewTicket(
-                    subject: "Feedback",
-                    email: email,
-                    message: comment,
-                    error: "",
-                    network: nil,
-                    hw: nil)
-            }
+            await ZendeskSdk.shared.submitNewTicket(
+                subject: "Feedback",
+                email: email,
+                message: comment,
+                error: "",
+                network: nil,
+                hw: nil)
             DropAlert().info(message: "id_thank_you_for_your_feedback".localized)
         }
     }
