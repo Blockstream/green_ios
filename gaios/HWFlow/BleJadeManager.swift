@@ -262,7 +262,7 @@ extension BleJadeManager: JadeGdkRequest {
     }
 
     func validateTor(urls: [String]) async -> Bool {
-        if !(urls.filter { $0.contains(".onion")}).isEmpty && AppSettings.shared.gdkSettings?.tor == false {
+        if urls.allSatisfy({ $0.contains(".onion") || $0.isEmpty }) && AppSettings.shared.gdkSettings?.tor == false {
             switch await showTorWarning(domains: urls) {
             case .continue:
                 if AppSettings.shared.gdkSettings?.tor == true {
