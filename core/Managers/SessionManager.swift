@@ -332,10 +332,6 @@ public class SessionManager {
         _ = try await resolve(res)
     }
 
-    public func setWatchOnly(username: String, password: String) async throws {
-        _ = try self.session?.setWatchOnly(username: username, password: password)
-    }
-
     public func getWatchOnlyUsername() async throws -> String? {
         return try session?.getWatchOnlyUsername()
     }

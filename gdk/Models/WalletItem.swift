@@ -8,8 +8,6 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
         case receivingId = "receiving_id"
         case type
         case satoshi
-        case recoveryChainCode = "recovery_chain_code"
-        case recoveryPubKey = "recovery_pub_key"
         case recoveryXpub = "recovery_xpub"
         case hidden
         case bip44Discovered = "bip44_discovered"
@@ -22,8 +20,6 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
     public let pointer: UInt32
     public let receivingId: String
     public let type: AccountType
-    public var recoveryChainCode: String?
-    public var recoveryPubKey: String?
     public let bip44Discovered: Bool?
     public let recoveryXpub: String?
     public let hidden: Bool
@@ -81,9 +77,7 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
             lhs.name == rhs.name &&
             lhs.pointer == rhs.pointer &&
             lhs.receivingId == rhs.receivingId &&
-            lhs.type == rhs.type &&
-            lhs.recoveryChainCode == rhs.recoveryChainCode &&
-            lhs.recoveryPubKey == rhs.recoveryPubKey
+            lhs.type == rhs.type
     }
 
     public static func < (lhs: WalletItem, rhs: WalletItem) -> Bool {
@@ -104,13 +98,11 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
         hasher.combine(type)
     }
 
-    public init(name: String, pointer: UInt32, receivingId: String, type: AccountType, recoveryChainCode: String? = nil, recoveryPubKey: String? = nil, bip44Discovered: Bool? = nil, recoveryXpub: String? = nil, hidden: Bool, network: String? = nil, coreDescriptors: [String]? = nil, extendedPubkey: String? = nil, userPath: [Int]? = nil, hasTxs: Bool = false, satoshi: [String: Int64]? = nil) {
+    public init(name: String, pointer: UInt32, receivingId: String, type: AccountType, bip44Discovered: Bool? = nil, recoveryXpub: String? = nil, hidden: Bool, network: String? = nil, coreDescriptors: [String]? = nil, extendedPubkey: String? = nil, userPath: [Int]? = nil, hasTxs: Bool = false, satoshi: [String: Int64]? = nil) {
         self.name = name
         self.pointer = pointer
         self.receivingId = receivingId
         self.type = type
-        self.recoveryChainCode = recoveryChainCode
-        self.recoveryPubKey = recoveryPubKey
         self.bip44Discovered = bip44Discovered
         self.recoveryXpub = recoveryXpub
         self.hidden = hidden

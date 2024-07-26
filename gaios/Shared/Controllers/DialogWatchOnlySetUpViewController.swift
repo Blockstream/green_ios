@@ -97,7 +97,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         startAnimating()
         Task {
             do {
-                try await session.setWatchOnly(username: username, password: password)
+                try await session.register(credentials: Credentials(username: username, password: password))
                 load()
                 dismiss(action)
             } catch {

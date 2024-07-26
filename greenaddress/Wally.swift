@@ -1,5 +1,5 @@
 import Foundation
-import ga.wally
+import green.wally
 
 public class Wally {
 
@@ -78,8 +78,8 @@ public class Wally {
             })
     }
 
-    public static func bip32KeyFromBase58(_ input: String) throws -> ga.ext_key {
-        var output: UnsafeMutablePointer<ga.ext_key>?
+    public static func bip32KeyFromBase58(_ input: String) throws -> green.ext_key {
+        var output: UnsafeMutablePointer<green.ext_key>?
         let base58: UnsafeMutablePointer<CChar> = strdup(input)!
         if bip32_key_from_base58_alloc(base58, &output) != WALLY_OK {
             throw GaError.GenericError()
@@ -99,7 +99,7 @@ public class Wally {
     ) -> String? {
         let version = isTestnet ? BIP32_VER_TEST_PRIVATE : BIP32_VER_MAIN_PRIVATE
         let seed512Ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(BIP39_SEED_LEN_512))
-        var bip32KeyPtr: UnsafeMutablePointer<ga.ext_key>?
+        var bip32KeyPtr: UnsafeMutablePointer<green.ext_key>?
         let bip85Ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(HMAC_SHA512_LEN))
         var bip85Len: Int = 0
         var wordlistPtr: OpaquePointer?
@@ -146,9 +146,9 @@ public class Wally {
         tx: [UInt8],
         elements: Bool = false,
         segwit: Bool = false
-    ) -> UnsafeMutablePointer<ga.wally_tx>? {
+    ) -> UnsafeMutablePointer<green.wally_tx>? {
         let txPtr: UnsafePointer<UInt8> = UnsafePointer(tx)
-        var bufferPtr: UnsafeMutablePointer<ga.wally_tx>?
+        var bufferPtr: UnsafeMutablePointer<green.wally_tx>?
         let flag = elements ? WALLY_TX_FLAG_USE_ELEMENTS : segwit ? WALLY_TX_FLAG_USE_WITNESS : 0
         if wally_tx_from_bytes(txPtr, tx.count, UInt32(flag), &bufferPtr) != WALLY_OK {
             return nil
@@ -157,19 +157,19 @@ public class Wally {
     }
 
     public static func txVersion(
-        wallyTx: UnsafeMutablePointer<ga.wally_tx>
+        wallyTx: UnsafeMutablePointer<green.wally_tx>
     ) -> UInt32 {
         return wallyTx.pointee.version
     }
 
     public static func txLocktime(
-        wallyTx: UnsafeMutablePointer<ga.wally_tx>
+        wallyTx: UnsafeMutablePointer<green.wally_tx>
     ) -> UInt32 {
         return wallyTx.pointee.locktime
     }
 
     public static func txGetOutputAsset(
-        wallyTx: UnsafeMutablePointer<ga.wally_tx>,
+        wallyTx: UnsafeMutablePointer<green.wally_tx>,
         index: Int
     ) -> [UInt8]? {
         let output = wallyTx.pointee.outputs[index]
@@ -177,7 +177,7 @@ public class Wally {
     }
 
     public static func txGetOutputValue(
-        wallyTx: UnsafeMutablePointer<ga.wally_tx>,
+        wallyTx: UnsafeMutablePointer<green.wally_tx>,
         index: Int
     ) -> [UInt8]? {
         let output = wallyTx.pointee.outputs[index]
@@ -218,5 +218,12 @@ public class Wally {
             return nil
         }
         return String(cString: resultPtr)
+    }
+    public func signPsbt(psbt: UnsafeMutablePointer<green.wally_psbt>) {
+        let wallyTx: green.wally_tx
+        
+        wally_psbt_finalize(psbt, 0)
+        //wally_psbt_extract(psbt, 0, &wallyTx)
+        
     }
 }

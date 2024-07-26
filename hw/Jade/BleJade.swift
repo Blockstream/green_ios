@@ -65,7 +65,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
     }
 
     // swiftlint:disable:next function_parameter_count
-    public func newReceiveAddress(chain: String, mainnet: Bool, multisig: Bool, chaincode: String?, recoveryPubKey: String?, walletPointer: UInt32?, walletType: String?, path: [UInt32], csvBlocks: UInt32) async throws -> String {
+    public func newReceiveAddress(chain: String, mainnet: Bool, multisig: Bool, recoveryXPub: String?, walletPointer: UInt32?, walletType: String?, path: [UInt32], csvBlocks: UInt32) async throws -> String {
 
         if multisig {
             // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
@@ -73,19 +73,12 @@ public class BleJade: BleJadeCommands, HWProtocol {
             let pathlen = path.count
             let branch = path[pathlen - 2]
             let pointer = path[pathlen - 1]
-            var recoveryxpub: String?
-            if let chaincode = chaincode, !chaincode.isEmpty {
-                recoveryxpub = try? Wally.bip32KeyFromParentToBase58(isMainnet: mainnet,
-                                                               pubKey: [UInt8](recoveryPubKey?.hexToData() ?? Data()),
-                                                               chainCode: [UInt8](chaincode.hexToData()),
-                                                               branch: branch)
-            }
             // Get receive address from Jade for the path elements given
             let params = JadeGetReceiveMultisigAddress(network: chain,
                                                     pointer: pointer,
                                                              subaccount: walletPointer ?? 0,
                                                              branch: branch,
-                                                             recoveryXpub: recoveryxpub,
+                                                             recoveryXpub: recoveryXPub ?? "",
                                                              csvBlocks: csvBlocks)
             return try await getReceiveAddress(params)
         } else {

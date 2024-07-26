@@ -64,11 +64,11 @@ fi
 PGPKEY="04BEBF2E35A2AF2FFDF1FA5DE7F054AA2E76E792"
 gpg --recv-keys $PGPKEY
 # Download the key file
-curl -sL -o IOS_SHA256SUMS.asc https://github.com/Blockstream/gdk/releases/download/$TAGNAME/IOS_SHA256SUMS.asc
+curl -sL -o SHA256SUMS.asc https://github.com/Blockstream/gdk/releases/download/$TAGNAME/SHA256SUMS.asc
 # Check the signed key
-gpg --verify IOS_SHA256SUMS.asc
+gpg --verify SHA256SUMS.asc
 # Inspect the key file
-gpg --keyid-format long --list-options show-keyring IOS_SHA256SUMS.asc
+gpg --keyid-format long --list-options show-keyring SHA256SUMS.asc
 
 
 update() {
@@ -77,7 +77,7 @@ update() {
     TARURL="https://github.com/Blockstream/gdk/releases/download/$TAGNAME/$TARFILE"
     curl -sL -o $TARFILE $TARURL
     SHA256_TAR=$(shasum -a256 $TARFILE | awk '{print $1;}')
-    SHA256_SUM=$(cat IOS_SHA256SUMS.asc | grep $TARFILE | awk '{print $1;}')
+    SHA256_SUM=$(cat SHA256SUMS.asc | grep $TARFILE | awk '{print $1;}')
     if [ "$SHA256_TAR" != "$SHA256_SUM" ]; then
         echo "Shasum ${TARFILE} mismatch"
         exit 1

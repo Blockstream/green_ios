@@ -26,14 +26,14 @@ ARM_TARBALL="gdk-iphone.tar.gz"
 ARM_SIM_TARBALL="gdk-iphone-sim.tar.gz"
 X86_SIM_TARBALL="gdk-iphone-sim-x86_64.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.71.3"
+TAGNAME="release_0.72.2"
 RELEASES_URL="https://github.com/Blockstream/gdk/releases"
 ARM_URL="${RELEASES_URL}/download/${TAGNAME}/${ARM_TARBALL}"
 ARM_SIM_URL="${RELEASES_URL}/download/${TAGNAME}/${ARM_SIM_TARBALL}"
 X86_SIM_URL="${RELEASES_URL}/download/${TAGNAME}/${X86_SIM_TARBALL}"
-ARM_SHA256="8c5be13bd8cbfaba6bb0e8bfb10fda89541010e15bfee062e8ed6ce468fc48b5"
-ARM_SIM_SHA256="ca6f71031aba6af807ac12172fc0cd15e7ff4ee3873d77ae46efe1b748f8702c"
-X86_SIM_SHA256="42f5f78d2da0667f291ec43e5c1505cd100967eba812958f406ea9547e1f7242"
+ARM_SHA256="f77e292a0a308cd33771e2b17cac21db76f83cc85bc1b2a681f78a8178f57107"
+ARM_SIM_SHA256="f3237c142b8d03308e376b54d1de92d865c968b36be959255a1244b97495c644"
+X86_SIM_SHA256="5a11fff9dc5c42e5d3287b75859ada27b59f85ed3164c58ebd71db5d5f753686"
 VALIDATE_CHECKSUM=true
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
 
@@ -103,7 +103,7 @@ download() {
 
   if [[ $IS_SIM = true ]]; then
     mkdir -p $COMMON_MODULE_ROOT/libs/ios_simulator_$PLATFORM
-    cp $NAME/lib/iphonesimulator/libgreenaddress_full.a $COMMON_MODULE_ROOT/libs/ios_simulator_$PLATFORM
+    cp $NAME/lib/*/libgreen_gdk_full.a $COMMON_MODULE_ROOT/libs/ios_simulator_$PLATFORM
   else
 
     # Copy header files
@@ -114,7 +114,7 @@ download() {
     cp -r $NAME/share $COMMON_MODULE_ROOT/
 
     mkdir -p $COMMON_MODULE_ROOT/libs/ios_$PLATFORM
-    cp $NAME/lib/iphoneos/libgreenaddress_full.a $COMMON_MODULE_ROOT/libs/ios_$PLATFORM
+    cp $NAME/lib/*/libgreen_gdk_full.a $COMMON_MODULE_ROOT/libs/ios_$PLATFORM
   fi
 
   # Cleanup

@@ -110,7 +110,7 @@ public class BleLedger: BleLedgerCommands, HWProtocol {
     }
 
     // swiftlint:disable:next function_parameter_count
-    public func newReceiveAddress(chain: String, mainnet: Bool, multisig: Bool, chaincode: String?, recoveryPubKey: String?, walletPointer: UInt32?, walletType: String?, path: [UInt32], csvBlocks: UInt32) async throws -> String {
+    public func newReceiveAddress(chain: String, mainnet: Bool, multisig: Bool, recoveryXPub: String?, walletPointer: UInt32?, walletType: String?, path: [UInt32], csvBlocks: UInt32) async throws -> String {
         fatalError()
     }
 
