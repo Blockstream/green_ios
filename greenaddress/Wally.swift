@@ -22,29 +22,34 @@ public class Wally {
         return der
     }
 
-    public static func bip32KeyFromParentToBase58(isMainnet: Bool = true, pubKey: [UInt8], chainCode: [UInt8], branch: UInt32 ) throws -> String {
-        let version = isMainnet ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC
-        var subactkey: UnsafeMutablePointer<ext_key>?
+    public static func bip32KeyFromParent(
+        hdkey: UnsafePointer<ext_key>,
+        childNum: UInt32,
+        flags: UInt32
+    ) throws -> ext_key {
+        //let hdkey: UnsafePointer<ext_key> = UnsafePointer(&hdkey)
         var branchkey: UnsafeMutablePointer<ext_key>?
-        var xpubPtr: UnsafeMutablePointer<Int8>?
-        let pubKey_: UnsafePointer<UInt8> = UnsafePointer(pubKey)
-        let chainCode_: UnsafePointer<UInt8> = UnsafePointer(chainCode)
         defer {
-            bip32_key_free(subactkey)
             bip32_key_free(branchkey)
-            wally_free_string(xpubPtr)
         }
-        if bip32_key_init_alloc(UInt32(version), UInt32(0), UInt32(0), chainCode_, chainCode.count,
-                                pubKey_, pubKey.count, nil, 0, nil, 0, nil, 0, &subactkey) != WALLY_OK {
+        if bip32_key_from_parent_alloc(hdkey, childNum, UInt32(BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH), &branchkey) != WALLY_OK {
             throw GaError.GenericError()
         }
-        if bip32_key_from_parent_alloc(subactkey, branch, UInt32(BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH), &branchkey) != WALLY_OK {
+        guard let branchkey = branchkey else {
             throw GaError.GenericError()
         }
-        if bip32_key_to_base58(branchkey, UInt32(BIP32_FLAG_KEY_PUBLIC), &xpubPtr) != WALLY_OK {
+        return branchkey.pointee
+    }
+    
+    public static func bip32KeyToBase58(key: UnsafePointer<ext_key>, flags: UInt32) throws -> String {
+        var base58Ptr: UnsafeMutablePointer<Int8>?
+        if bip32_key_to_base58(key, flags, &base58Ptr) != WALLY_OK {
             throw GaError.GenericError()
         }
-        return String(cString: xpubPtr!)
+        guard let base58Ptr = base58Ptr else {
+            throw GaError.GenericError()
+        }
+        return String(cString: base58Ptr)
     }
 
     public static func sha256d(_ input: [UInt8]) throws -> [UInt8] {
