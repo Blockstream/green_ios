@@ -535,8 +535,10 @@ extension LoginViewController: DialogRenameViewControllerDelegate, DialogDeleteV
     }
     func didDelete(_ index: String?) {
         Task {
+            self.startLoader()
             await AccountsRepository.shared.remove(account)
             await MainActor.run {
+                self.stopLoader()
                 navigationController?.popViewController(animated: true)
                 AnalyticsManager.shared.deleteWallet()
             }

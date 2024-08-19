@@ -431,8 +431,10 @@ extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteVi
     func didDelete(_ index: String?) {
         if let index = index, let account = AccountsRepository.shared.get(for: index) {
             Task {
+                self.startLoader()
                 await AccountsRepository.shared.remove(account)
                 await MainActor.run {
+                    self.stopLoader()
                     AnalyticsManager.shared.deleteWallet()
                     tableView.reloadData()
                 }
@@ -450,8 +452,10 @@ extension HomeViewController: LTRemoveShortcutViewControllerDelegate {
     func onRemove(_ index: String?) {
         if let index = index, let account = AccountsRepository.shared.get(for: index), account.isDerivedLightning {
             Task {
+                self.startLoader()
                 await AccountsRepository.shared.remove(account)
                 await MainActor.run {
+                    self.stopLoader()
                     AnalyticsManager.shared.deleteWallet()
                     tableView.reloadData()
                 }

@@ -207,37 +207,40 @@ class SetPinViewController: UIViewController {
             Task {
                 do {
                     try await self.viewModel.setup(pin: pin)
+                    self.stopLoader()
                     await MainActor.run {
                         navigationController?.popToRootViewController(animated: true)
+                        //self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
                     }
                 } catch {
+                    self.stopLoader()
                     self.failure(error)
                 }
-                self.stopLoader()
-                self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
             }
         case .restore:
             self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""), isRive: true)
             Task {
                 do {
                     try await self.viewModel.restore(pin: pin)
+                    self.stopLoader()
                     AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
                     OnBoardParams.shared.restoreSuccess = true
                 } catch {
+                    self.stopLoader()
                     self.failure(error)
                 }
-                self.stopLoader()
             }
         case .create:
             self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: true)
             Task {
                 do {
                     try await self.viewModel.create(pin: pin)
+                    self.stopLoader()
                     AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
                 } catch {
+                    self.stopLoader()
                     self.failure(error)
                 }
-                self.stopLoader()
             }
         }
     }

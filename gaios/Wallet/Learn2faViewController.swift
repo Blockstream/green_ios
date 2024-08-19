@@ -64,55 +64,63 @@ class Learn2faViewController: UIViewController {
 
     func canceltwoFactorReset() {
         // AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
-        self.startAnimating()
         Task {
             do {
+                self.startAnimating()
                 guard let session = session else { return }
                 try await session.cancelTwoFactorReset()
                 try await session.loadTwoFactorConfig()
-                DropAlert().success(message: "Reset Cancelled")
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                    self.navigationController?.popViewController(animated: true)
+                self.stopAnimating()
+                await MainActor.run {
+                    DropAlert().success(message: "Reset Cancelled")
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             } catch {
+                self.stopAnimating()
                 self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
             }
         }
-        self.stopAnimating()
     }
 
     func disputeReset(email: String) {
         // AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
-        self.startAnimating()
         Task {
             do {
+                self.startAnimating()
                 guard let session = session else { return }
                 try await session.resetTwoFactor(email: email, isDispute: true)
                 try await session.loadTwoFactorConfig()
-                DropAlert().success(message: "Reset Disputed")
-                self.dismiss(animated: true, completion: nil)
+                self.stopAnimating()
+                await MainActor.run {
+                    DropAlert().success(message: "Reset Disputed")
+                    self.dismiss(animated: true, completion: nil)
+                }
             } catch {
+                self.stopAnimating()
                 self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
             }
         }
-        self.stopAnimating()
     }
 
     func undoReset(email: String) {
         // AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
-        self.startAnimating()
         Task {
             do {
+                self.startAnimating()
                 guard let session = session else { return }
                 try await session.undoTwoFactorReset(email: email)
                 try await session.loadTwoFactorConfig()
-                DropAlert().success(message: "Reset Undone")
-                self.dismiss(animated: true, completion: nil)
+                self.stopAnimating()
+                await MainActor.run {
+                    DropAlert().success(message: "Reset Undone")
+                    self.dismiss(animated: true, completion: nil)
+                }
             } catch {
+                self.stopAnimating()
                 self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
             }
-
-            self.stopAnimating()
         }
     }
 

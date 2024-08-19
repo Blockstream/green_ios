@@ -94,12 +94,13 @@ extension UIViewController {
             if loader == nil {
                 let loader = Loader()
                 window.addSubview(loader)
+                loader.message = message
+                loader.activateConstraints(in: window)
+                if !(loader.loadingIndicator.isAnimating) {
+                    loader.start(isRive)
+                }
             }
             loader?.message = message
-            loader?.activateConstraints(in: window)
-            if !(loader?.loadingIndicator.isAnimating ?? false) {
-                loader?.start(isRive)
-            }
         }
     }
 
