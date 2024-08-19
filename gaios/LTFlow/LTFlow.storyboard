@@ -901,8 +901,8 @@
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" misplaced="YES" text="lbl_fee_fiat_amount" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BkO-fz-Qm1">
-                                                                    <rect key="frame" x="223" y="33" width="136" height="17"/>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="lbl_fee_fiat_amount" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BkO-fz-Qm1">
+                                                                    <rect key="frame" x="226" y="33" width="136" height="17"/>
                                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
@@ -1149,23 +1149,23 @@
                                     <outlet property="delegate" destination="nDv-gG-ppT" id="7dD-gb-rtd"/>
                                 </connections>
                             </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="67f-wj-MxB" customClass="SliderView" customModule="gaios" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="awc-Py-Iat" customClass="SquareSliderView" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="25" y="734" width="364" height="54"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="54" id="Nv2-DK-ljq"/>
+                                    <constraint firstAttribute="height" constant="54" id="vVZ-ot-JjY"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
+                            <constraint firstItem="awc-Py-Iat" firstAttribute="leading" secondItem="Tvm-SW-cll" secondAttribute="leading" constant="25" id="4Cw-jE-yR7"/>
+                            <constraint firstItem="awc-Py-Iat" firstAttribute="top" secondItem="Tvm-SW-cll" secondAttribute="bottom" constant="20" id="8YI-EM-es5"/>
                             <constraint firstItem="Tvm-SW-cll" firstAttribute="top" secondItem="ucQ-L9-8un" secondAttribute="bottom" constant="20" id="C5F-CH-mR5"/>
-                            <constraint firstItem="67f-wj-MxB" firstAttribute="top" secondItem="Tvm-SW-cll" secondAttribute="bottom" constant="20" id="G7O-cN-Uuf"/>
-                            <constraint firstAttribute="trailing" secondItem="67f-wj-MxB" secondAttribute="trailing" constant="25" id="Gv9-YS-eHk"/>
-                            <constraint firstItem="nKT-UV-Iwr" firstAttribute="top" secondItem="67f-wj-MxB" secondAttribute="bottom" constant="16" id="MSr-E7-2a3"/>
+                            <constraint firstItem="awc-Py-Iat" firstAttribute="trailing" secondItem="Tvm-SW-cll" secondAttribute="trailing" constant="-25" id="MwF-1y-Q6f"/>
                             <constraint firstItem="Tvm-SW-cll" firstAttribute="leading" secondItem="kvi-hq-XKJ" secondAttribute="leading" id="ghL-4W-X5N"/>
                             <constraint firstAttribute="trailing" secondItem="Tvm-SW-cll" secondAttribute="trailing" id="tRB-Aw-0HR"/>
-                            <constraint firstItem="67f-wj-MxB" firstAttribute="leading" secondItem="kvi-hq-XKJ" secondAttribute="leading" constant="25" id="y3K-HN-lnW"/>
+                            <constraint firstItem="nKT-UV-Iwr" firstAttribute="top" secondItem="awc-Py-Iat" secondAttribute="bottom" constant="16" id="wNf-jM-Si2"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="et9-9G-HfK">
@@ -1173,7 +1173,7 @@
                     </navigationItem>
                     <size key="freeformSize" width="414" height="838"/>
                     <connections>
-                        <outlet property="sliderNext" destination="67f-wj-MxB" id="GkS-Vv-vDk"/>
+                        <outlet property="squareSliderView" destination="awc-Py-Iat" id="7pW-Bh-wYY"/>
                         <outlet property="tableView" destination="Tvm-SW-cll" id="dQV-8R-NrU"/>
                     </connections>
                 </viewController>

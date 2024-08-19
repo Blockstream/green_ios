@@ -119,7 +119,8 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var sliderNext: SliderView!
+    @IBOutlet weak var squareSliderView: SquareSliderView!
+
     private var headerH: CGFloat = 36.0
 
     var viewModel: LTRecoverFundsViewModel!
@@ -141,7 +142,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
         case .sendAll:
             title = "Empty Lightning Account".localized
         }
-        sliderNext.delegate = self
+        squareSliderView.delegate = self
     }
 
     func setStyle() {
@@ -149,8 +150,8 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     var btnNextIsEnabled: Bool {
-        get { sliderNext.isUserInteractionEnabled }
-        set { sliderNext.isUserInteractionEnabled = newValue }
+        get { squareSliderView.isUserInteractionEnabled }
+        set { squareSliderView.isUserInteractionEnabled = newValue }
     }
 
     override func keyboardWillHide(notification: Notification) {
@@ -183,7 +184,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
     @MainActor
     func failure(_ error: Error) {
         stopAnimating()
-        sliderNext.reset()
+        squareSliderView.reset()
         presentSendFailViewController(error)
     }
 
@@ -413,8 +414,8 @@ extension LTRecoverFundsViewController: LTRecoverFundsFeeDelegate {
     }
 }
 
-extension LTRecoverFundsViewController: SliderViewDelegate {
-    func sliderThumbIsMoving(_ sliderView: SliderView) {
+extension LTRecoverFundsViewController: SquareSliderViewDelegate {
+    func sliderThumbIsMoving(_ sliderView: SquareSliderView) {
     }
 
     func sliderThumbDidStopMoving(_ position: Int) {
