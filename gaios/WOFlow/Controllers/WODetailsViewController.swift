@@ -115,6 +115,7 @@ class WODetailsViewController: KeyboardViewController {
     @IBAction func btnPaste(_ sender: Any) {
         if let txt = UIPasteboard.general.string {
             textView.text = txt
+            segment.selectedSegmentIndex = txt.contains("(") ? 1 : 0
             refresh()
         }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
