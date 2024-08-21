@@ -187,7 +187,9 @@ class WalletViewModel {
         guard let wm = wm, let session = session else { return }
         var cards: [AlertCardType] = []
         cards += self.loadMetadataCards()
-        cards += self.loadDisputeCards()
+        if !watchOnly {
+            cards += self.loadDisputeCards()
+        }
 
         if Balance.fromSatoshi(0, assetId: session.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" {
             cards.append(AlertCardType.fiatMissing)
@@ -210,7 +212,7 @@ class WalletViewModel {
             }
         }
         let expired = try? await wm.getExpiredSubaccounts()
-        if let expired = expired, !expired.isEmpty {
+        if let expired = expired, !expired.isEmpty && !watchOnly {
             expiredSubaccounts = expired
             cards.append(.reEnable2fa)
         }
