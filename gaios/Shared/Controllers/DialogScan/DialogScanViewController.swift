@@ -14,30 +14,15 @@ enum DialogScanAction {
 
 class DialogScanViewController: KeyboardViewController {
 
-    @IBOutlet weak var tappableBg: UIView!
-    @IBOutlet weak var handle: UIView!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var qrScanView: QRCodeReaderView!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var btnClose: UIButton!
 
     var index: Int?
     var delegate: DialogScanViewControllerDelegate?
-
-    lazy var blurredView: UIView = {
-        let containerView = UIView()
-        let blurEffect = UIBlurEffect(style: .dark)
-        let customBlurEffectView = CustomVisualEffectView(effect: blurEffect, intensity: 0.4)
-        customBlurEffectView.frame = self.view.bounds
-
-        let dimmedView = UIView()
-        dimmedView.backgroundColor = .black.withAlphaComponent(0.3)
-        dimmedView.frame = self.view.bounds
-        containerView.addSubview(customBlurEffectView)
-        containerView.addSubview(dimmedView)
-        return containerView
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,17 +30,7 @@ class DialogScanViewController: KeyboardViewController {
         setContent()
         setStyle()
 
-        view.addSubview(blurredView)
-        view.sendSubviewToBack(blurredView)
-
         view.alpha = 0.0
-        anchorBottom.constant = -cardView.frame.size.height
-
-        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
-            swipeDown.direction = .down
-            self.view.addGestureRecognizer(swipeDown)
-        let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
-            tappableBg.addGestureRecognizer(tapToClose)
 
         qrScanView.delegate = self
         AnalyticsManager.shared.recordView(.camera)
@@ -65,41 +40,20 @@ class DialogScanViewController: KeyboardViewController {
         print("deinit")
     }
 
-    @objc func didSwipe(gesture: UIGestureRecognizer) {
-
-        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
-            switch swipeGesture.direction {
-            case .down:
-                dismiss(.stop)
-            default:
-                break
-            }
-        }
-    }
-
-    @objc func didTap(gesture: UIGestureRecognizer) {
-
-        dismiss(.stop)
-    }
-
     func setContent() {
         lblTitle.text = NSLocalizedString("id_scan_qr_code", comment: "")
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        handle.cornerRadius = 1.5
-        lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
+        lblTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
+        btnClose.setImage((UIImage(named: "cancel")!.maskWithColor(color: .white)), for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        anchorBottom.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
-            self.view.layoutIfNeeded()
             self.startCapture()
         }
     }
@@ -110,10 +64,8 @@ class DialogScanViewController: KeyboardViewController {
     }
 
     func dismiss(_ action: DialogScanAction) {
-        anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
-            self.view.layoutIfNeeded()
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             switch action {
@@ -145,6 +97,10 @@ class DialogScanViewController: KeyboardViewController {
             return vc
         }
         return nil
+    }
+
+    @IBAction func btnClose(_ sender: Any) {
+        dismiss(.stop)
     }
 }
 
