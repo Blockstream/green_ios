@@ -13,6 +13,8 @@ class ReEnable2faViewController: UIViewController {
     var obs: NSKeyValueObservation?
 
     var vm: ReEnable2faViewModel!
+    private var selectedSubaccount: WalletItem?
+    private var verifyOnDeviceViewController: VerifyOnDeviceViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,18 +54,42 @@ class ReEnable2faViewController: UIViewController {
         SafeNavigationManager.shared.navigate(ExternalUrls.reEnable2faLearnMore)
     }
 
-    func send(from subaccount: WalletItem) async {
+    func send() async {
         do {
-            startLoader()
-            let sendViewModel = try await vm.sendAmountViewModel(subaccount: subaccount)
-            stopLoader()
-            presentSendAmountViewController(sendViewModel: sendViewModel)
+            try await vm.newAddress()
+            await MainActor.run {
+                if let viewModel = vm.sendVerifyOnDeviceViewModel() {
+                    presentVerifyOnDeviceViewController(viewModel: viewModel)
+                }
+            }
+            let res = try await vm.validateHW()
+            await MainActor.run {
+                verifyOnDeviceViewController?.dismiss()
+                if res {
+                    DropAlert().success(message: "id_the_address_is_valid".localized)
+                    if let viewModel = vm.sendAmountViewModel() {
+                        presentSendAmountViewController(sendViewModel: viewModel)
+                    }
+                } else {
+                    DropAlert().error(message: "id_the_addresses_dont_match".localized)
+                }
+            }
         } catch {
             stopLoader()
             DropAlert().error(message: error.description()?.localized ?? "")
         }
     }
-    
+
+    @MainActor
+    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) {
+        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
+            vc.viewModel = viewModel
+            verifyOnDeviceViewController = vc
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @MainActor
     func presentSendAmountViewController(sendViewModel: SendAmountViewModel) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -101,6 +127,7 @@ extension ReEnable2faViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let subaccount = vm.expiredSubaccounts[indexPath.row]
-        Task.detached() { [weak self] in await self?.send(from: subaccount) }
+        vm.subaccount = subaccount
+        Task.detached() { [weak self] in await self?.send() }
     }
 }

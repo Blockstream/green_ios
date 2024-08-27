@@ -374,6 +374,9 @@
 		34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9E10826B92F0B00200D2F /* DynamicTableView.swift */; };
 		34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */; };
 		34CBA41F270AE23800C85B05 /* Overview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CBA41E270AE23800C85B05 /* Overview.swift */; };
+		34CD348E2C7D981B00018824 /* VerifyOnDevice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */; };
+		34CD34912C7D98CF00018824 /* VerifyOnDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */; };
+		34CD34932C7D98E700018824 /* VerifyOnDeviceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */; };
 		34CED8262A9F2FC500DD0683 /* LTShortcutFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34CED8252A9F2FC500DD0683 /* LTShortcutFlow.storyboard */; };
 		34CED82A2A9F330600DD0683 /* LTShortcutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CED8292A9F330600DD0683 /* LTShortcutViewController.swift */; };
 		34CED82D2A9F3BC000DD0683 /* LTShortcutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CED82C2A9F3BC000DD0683 /* LTShortcutViewModel.swift */; };
@@ -1208,6 +1211,9 @@
 		34C9E10826B92F0B00200D2F /* DynamicTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTableView.swift; sourceTree = "<group>"; };
 		34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogLoginPassphraseViewController.swift; sourceTree = "<group>"; };
 		34CBA41E270AE23800C85B05 /* Overview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overview.swift; sourceTree = "<group>"; };
+		34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VerifyOnDevice.storyboard; sourceTree = "<group>"; };
+		34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewController.swift; sourceTree = "<group>"; };
+		34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewModel.swift; sourceTree = "<group>"; };
 		34CED8252A9F2FC500DD0683 /* LTShortcutFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LTShortcutFlow.storyboard; sourceTree = "<group>"; };
 		34CED8292A9F330600DD0683 /* LTShortcutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTShortcutViewController.swift; sourceTree = "<group>"; };
 		34CED82C2A9F3BC000DD0683 /* LTShortcutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTShortcutViewModel.swift; sourceTree = "<group>"; };
@@ -2635,8 +2641,10 @@
 				818BA70D2A2F8FF300DFB03A /* Scan */,
 				817A0B422A43008B00E2F80D /* Setup */,
 				34B385D729B888A70097220B /* Controllers */,
+				34CD348F2C7D987800018824 /* VerifyOnDevice */,
 				34B385D529B888610097220B /* HWFlow.storyboard */,
 				34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */,
+				34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */,
 			);
 			path = HWFlow;
 			sourceTree = "<group>";
@@ -2756,6 +2764,15 @@
 				34C978A7268DC14D0061264D /* Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		34CD348F2C7D987800018824 /* VerifyOnDevice */ = {
+			isa = PBXGroup;
+			children = (
+				34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */,
+				34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */,
+			);
+			path = VerifyOnDevice;
 			sourceTree = "<group>";
 		};
 		34CED82B2A9F3B9900DD0683 /* LTShortcut */ = {
@@ -3994,6 +4011,7 @@
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
 				3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */,
 				3499655829E569D60092B5BD /* Jade 01 - Adjusted.riv in Resources */,
+				34CD348E2C7D981B00018824 /* VerifyOnDevice.storyboard in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */,
 				81C2F2042B879B1C000845EA /* GoogleService-Prod-Info.plist in Resources */,
@@ -4253,6 +4271,7 @@
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				34A883A82BA82C2D004A1826 /* TxDetailsActionCell.swift in Sources */,
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
+				34CD34932C7D98E700018824 /* VerifyOnDeviceViewModel.swift in Sources */,
 				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
 				34287B772A8385820065471F /* AlertViewModel.swift in Sources */,
@@ -4324,6 +4343,7 @@
 				3457F4B82923A72900EF33B5 /* WalletPrefs.swift in Sources */,
 				3415CB072A67BDEE00B66882 /* AddressAuthViewController.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
+				34CD34912C7D98CF00018824 /* VerifyOnDeviceViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				34560B9E29BF2120007E916F /* LedgerWaitViewController.swift in Sources */,

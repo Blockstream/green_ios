@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
+### Added
+- HW Address verification on expired 2FA ractivation
+
 ### Changed
 - Improve QR code scanner
 - 2fa dialog: improved usability with native keyboard
