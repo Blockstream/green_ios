@@ -213,7 +213,7 @@ class BleViewModel {
             updated = try await jade.updateFirmware(firmware: firmware, binary: binary)
         } catch {
             otaError(error)
-            //return updated
+            // return updated
             throw error
         }
         AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)

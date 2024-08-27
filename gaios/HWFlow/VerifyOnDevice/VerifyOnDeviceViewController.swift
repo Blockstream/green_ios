@@ -18,7 +18,7 @@ class VerifyOnDeviceViewController: UIViewController {
     @IBOutlet weak var copyView: UIView!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var imgTopPadding: NSLayoutConstraint!
-    
+
     var viewModel: VerifyOnDeviceViewModel!
 
     lazy var blurredView: UIView = {
@@ -80,7 +80,7 @@ class VerifyOnDeviceViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
     }
 
-    @objc func didTapToClose(gesture: UIGestureRecognizer) { 
+    @objc func didTapToClose(gesture: UIGestureRecognizer) {
         if viewModel.isDismissible {
             dismiss()
         }

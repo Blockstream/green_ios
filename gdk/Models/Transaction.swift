@@ -70,8 +70,8 @@ public struct Addressee: Codable {
                          maxAmount: nil,
                          domain: nil,
                          metadata: nil,
-                         type: .transaction, 
-                         bip21: bip21, 
+                         type: .transaction,
+                         bip21: bip21,
                          bip21Params: nil)
     }
 
@@ -165,18 +165,18 @@ public struct TransactionInputOutput: Codable {
             isRelevant: nil
         )
     }
-    
+
     public func hasBlindingData() -> Bool {
         return assetId != "" && satoshi != 0 && amountBlinder != "" && assetBlinder != ""
     }
-    
+
     public func txoBlindingString() -> String? {
         if !hasBlindingData() {
             return nil
         }
         return String(format: "%lu,%@,%@,%@", satoshi, assetId ?? "", amountBlinder ?? "", assetBlinder ?? "")
     }
-    
+
     public func txoBlindingData(isUnspent: Bool) -> TxoBlindingData {
         return TxoBlindingData.init(vin: !isUnspent ? ptIdx : nil,
                                     vout: isUnspent ? ptIdx : nil,
@@ -350,7 +350,6 @@ public struct Transaction: Comparable {
         }
         set { details["inputs"] = newValue?.map { $0.toDict() } }
     }
-
 
     public var spvVerified: String? {
         get { return get("spv_verified") }

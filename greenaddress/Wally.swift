@@ -27,7 +27,7 @@ public class Wally {
         childNum: UInt32,
         flags: UInt32
     ) throws -> ext_key {
-        //let hdkey: UnsafePointer<ext_key> = UnsafePointer(&hdkey)
+        // let hdkey: UnsafePointer<ext_key> = UnsafePointer(&hdkey)
         var branchkey: UnsafeMutablePointer<ext_key>?
         defer {
             bip32_key_free(branchkey)
@@ -40,7 +40,7 @@ public class Wally {
         }
         return branchkey.pointee
     }
-    
+
     public static func bip32KeyToBase58(key: UnsafePointer<ext_key>, flags: UInt32) throws -> String {
         var base58Ptr: UnsafeMutablePointer<Int8>?
         if bip32_key_to_base58(key, flags, &base58Ptr) != WALLY_OK {
@@ -226,9 +226,7 @@ public class Wally {
     }
     public func signPsbt(psbt: UnsafeMutablePointer<green.wally_psbt>) {
         let wallyTx: green.wally_tx
-        
         wally_psbt_finalize(psbt, 0)
-        //wally_psbt_extract(psbt, 0, &wallyTx)
-        
+        // wally_psbt_extract(psbt, 0, &wallyTx)
     }
 }

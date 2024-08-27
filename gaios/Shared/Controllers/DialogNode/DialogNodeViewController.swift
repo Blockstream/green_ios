@@ -192,7 +192,7 @@ class DialogNodeViewController: KeyboardViewController {
             }
         }
     }
-    
+
     @IBAction func btnRescanSwaps(_ sender: Any) {
         dismiss(.rescanSwaps)
     }

@@ -3,7 +3,7 @@ import gdk
 import core
 
 struct SendHWConfirmViewModel {
-    
+
     var isLedger = false
     var tx: Transaction
     var denomination: DenominationType

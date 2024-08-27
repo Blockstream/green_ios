@@ -10,31 +10,31 @@ class SendDialogFeeViewModel {
     var feeEstimator: FeeEstimator?
     var denominationType: DenominationType?
     var subaccount: WalletItem?
-    
+
     var fastFeeTx: Transaction?
     var mediumFeeTx: Transaction?
     var lowFeeTx: Transaction?
     var customFeeTx: Transaction?
-    
+
     var fastFeeRate: UInt64? { feeEstimator?.feeRate(at: .High) }
     var mediumFeeRate: UInt64? { feeEstimator?.feeRate(at: .Medium) }
     var lowFeeRate: UInt64? { feeEstimator?.feeRate(at: .Low) }
-    
+
     var isLiquid: Bool { transaction.isLiquid }
- 
+
     init(transaction: Transaction?, feeEstimator: FeeEstimator?, denominationType: DenominationType?, subaccount: WalletItem?) {
         self.transaction = transaction ?? Transaction([:])
         self.feeEstimator = feeEstimator
         self.denominationType = denominationType
         self.subaccount = subaccount
     }
-    
+
     func loadTx(feeRate: UInt64) async throws -> Transaction? {
         var tx = transaction
         tx.feeRate = feeRate
         return try await subaccount?.session?.createTransaction(tx: tx)
     }
-    
+
     func loadTxs() async {
         lowFeeTx = try? await loadTx(feeRate: lowFeeRate ?? 0)
         mediumFeeTx = try? await loadTx(feeRate: mediumFeeRate ?? 0)
@@ -55,7 +55,7 @@ class SendDialogFeeViewModel {
         let feePerByte = Double(value) / 1000.0
         return String(format: "%.2f sats / vbyte", feePerByte)
     }
-    
+
     var fastSendFeeCellModel: SendFeeCellModel {
         SendFeeCellModel(speedName: "id_fast".localized,
                          time: TransactionPriority.High.time(isLiquid: subaccount?.networkType.liquid ?? false),
@@ -86,7 +86,7 @@ class SendDialogFeeViewModel {
                          feeRate: lowFeeRate,
                          transactionPriority: TransactionPriority.Low)
     }
-    
+
     var cellModels: [SendFeeCellModel] {
         return [
             fastSendFeeCellModel,

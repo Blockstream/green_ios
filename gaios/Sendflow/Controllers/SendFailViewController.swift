@@ -11,7 +11,7 @@ protocol SendFailViewControllerDelegate: AnyObject {
 }
 
 class SendFailViewController: UIViewController {
-    
+
     @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -21,20 +21,20 @@ class SendFailViewController: UIViewController {
     @IBOutlet weak var errorTextView: UITextView!
     @IBOutlet weak var btnAgain: UIButton!
     @IBOutlet weak var btnSupport: UIButton!
-    
+
     weak var delegate: SendFailViewControllerDelegate?
     var error: Error!
-    
+
     var viewModel: LTSuccessViewModel!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setStyle()
         setContent()
         view.alpha = 0.0
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         UIView.animate(withDuration: 0.3) {

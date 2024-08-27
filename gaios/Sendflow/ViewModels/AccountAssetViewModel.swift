@@ -9,13 +9,13 @@ class AccountAssetViewModel {
     var createTx: CreateTx? = nil
     var accountAssetCellModels: [AccountAssetCellModel] = []
     var wm: WalletManager? { WalletManager.current }
-    
+
     init(accounts: [WalletItem], createTx: CreateTx?) {
         self.createTx = createTx
         self.accounts = accounts
         load()
     }
-    
+
     func load() {
         var models: [AccountAssetCellModel] = []
         for subaccount in accounts {
@@ -39,7 +39,7 @@ class AccountAssetViewModel {
         }
         self.accountAssetCellModels = models.sorted()
     }
-    
+
     func select(cell: AccountAssetCellModel) {
         createTx?.subaccount = cell.account
         if createTx?.isLiquid ?? false {

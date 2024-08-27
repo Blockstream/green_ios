@@ -158,7 +158,7 @@ class SendAmountViewController: KeyboardViewController {
         viewModel.createTx.satoshi = balance?.satoshi
         lblFiat.text = "≈ \(viewModel.subamountText ?? "")"
         lblConversion.text = "≈ \(viewModel?.conversionText ?? "")"
-        
+
         lblWithdrawRangeTitle.text = String(format: "id_withdraw_limits_s__s".localized, withDrawMinMax.0, withDrawMinMax.1)
         validateWithdraw()
     }

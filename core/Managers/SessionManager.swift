@@ -398,18 +398,18 @@ public class SessionManager {
         return result?["unspent_outputs"] as? [String: Any]
     }
 
-    public func getUnspentOutputs(_ params: GetUnspentOutputsParams, funcName: String = #function) async throws -> [String: [[String:Any]]] {
+    public func getUnspentOutputs(_ params: GetUnspentOutputsParams, funcName: String = #function) async throws -> [String: [[String: Any]]] {
         logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params.toDict()!)")
         let utxos = try self.session?.getUnspentOutputs(details: params.toDict()!)
         let res = try await resolve(utxos)
         logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
         let result = res?["result"] as? [String: Any]
-        return result?["unspent_outputs"] as? [String: [[String:Any]]] ?? [:]
+        return result?["unspent_outputs"] as? [String: [[String: Any]]] ?? [:]
     }
 
     func wrapperTransaction(fun: GdkFunc?, tx: Transaction, funcName: String = #function) async throws -> Transaction {
         logger.info("GDK \(self.networkType.rawValue) \(funcName) \(tx.details)")
-        if let fun = try fun?(tx.details) { 
+        if let fun = try fun?(tx.details) {
             let res = try await resolve(fun)
             logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
             let result = res?["result"] as? [String: Any]

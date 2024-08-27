@@ -217,7 +217,7 @@ class SendAmountViewModel {
 
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel? {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
-        let selected = denominationType //session?.settings?.denomination ?? .BTC
+        let selected = denominationType // session?.settings?.denomination ?? .BTC
         let network: NetworkSecurityCase = session?.gdkNetwork.mainnet ?? true ? .bitcoinSS : .testnetSS
         return DialogInputDenominationViewModel(
             denomination: selected,
@@ -325,7 +325,7 @@ class SendAmountViewModel {
                 createTx.addressee = addressees.first
             }
         }
-        
+
         if [TxType.transaction, TxType.bumpFee, TxType.redepositExpiredUtxos].contains(where: {$0 == createTx.txType }) && tx.utxos == nil {
             let unspent = try? await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
             tx.utxos = unspent ?? [:]

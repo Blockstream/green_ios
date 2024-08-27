@@ -6,10 +6,21 @@ enum AddressDisplayStyle {
     case txDetails
 }
 
+enum AddressDisplayAppearance {
+    case light
+    case dark
+}
+
 class AddressDisplay {
 
-    static func configure(address: String, textView: UITextView, style: AddressDisplayStyle = .default) {
-
+    static func configure(address: String,
+                          textView: UITextView,
+                          style: AddressDisplayStyle = .default,
+                          truncate: Bool = false,
+                          appearance: AddressDisplayAppearance = .dark,
+                          wordsPerRow: Int = 4
+    ) {
+        var address = address
         var fontSize: CGFloat = 16.0
         var align: NSTextAlignment = .center
         if style == .txDetails {
@@ -17,7 +28,7 @@ class AddressDisplay {
             fontSize = 12.0
             align = .right
         }
-        let rowL = 4 * 4 + 3 * 2
+        let rowL = 4 * wordsPerRow + (wordsPerRow - 1) * 2
         var visibleAddress = ""
         var rangeA = NSRange() // all chars
         var rangeH = NSRange() // head chars
@@ -27,12 +38,17 @@ class AddressDisplay {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = align
 
+        let shouldTruncate = truncate && address.count > 4 * wordsPerRow * 3 // exceeds 3 rows
+
+        if shouldTruncate {
+            address = String(address.prefix(4 * wordsPerRow)) + String(address.suffix(4 * wordsPerRow))
+        }
         for i in 0...address.count {
             if i > 0 && i < address.count {
-                if i % 4 == 0 && i % 16 != 0 {
+                if i % 4 == 0 && i % (4 * wordsPerRow) != 0 {
                     visibleAddress.append("  ")
                 }
-                if i % 16 == 0 {
+                if i % (4 * wordsPerRow) == 0 {
                     visibleAddress.append("\n")
                 }
             }
@@ -56,9 +72,30 @@ class AddressDisplay {
         rangeP.location = visibleAddress.count
 
         visibleAddress += pad
+
+        if shouldTruncate {
+            let rows = visibleAddress.components(separatedBy: "\n")
+            if rows.count == 2, let rowF = rows.first, let rowL = rows.last {
+                visibleAddress = rowF + "\n" + "⋯\n" + rowL
+                rangeA.location = 0
+                rangeA.length = visibleAddress.count
+                rangeH.location = 0
+                rangeH.length = 8 + 2
+                rangeT.location = visibleAddress.count - (8 + 2)
+                rangeT.length = 8 + 2
+                rangeP.length = visibleAddress.count
+                rangeP.length = 0
+            }
+        }
+
         let attrS = NSMutableAttributedString(string: visibleAddress)
         attrS.addAttribute(.paragraphStyle, value: paragraph, range: rangeA)
-        attrS.setColor(color: .white, forText: visibleAddress)
+        switch appearance {
+        case .light:
+            attrS.setColor(color: .black, forText: visibleAddress)
+        case .dark:
+            attrS.setColor(color: .white, forText: visibleAddress)
+        }
         attrS.setFont(font: .monospacedSystemFont(ofSize: fontSize, weight: .regular), stringValue: visibleAddress)
 
         if visibleAddress.count > 10 {

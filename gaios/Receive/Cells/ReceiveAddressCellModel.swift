@@ -15,6 +15,8 @@ struct ReceiveAddressCellModel {
     var nodeState: NodeState?
     var lspInfo: LspInformation?
     var breezSdk: LightningBridge?
+    var textNoURI: String?
+    let isLightning: Bool
 
     var btc: String? {
         if let satoshi = satoshi {

@@ -8,7 +8,6 @@ class ReEnable2faViewModel {
     let expiredSubaccounts: [WalletItem]
     var address: Address?
     var subaccount: WalletItem?
-    
 
     internal init(expiredSubaccounts: [WalletItem]) {
         self.expiredSubaccounts = expiredSubaccounts
@@ -24,7 +23,7 @@ class ReEnable2faViewModel {
         createTx.address = address.address
         return SendAmountViewModel(createTx: createTx)
     }
-    
+
     func newAddress() async throws {
         guard let subaccount = subaccount else { return }
         let address = try await subaccount.session?.getReceiveAddress(subaccount: subaccount.pointer)

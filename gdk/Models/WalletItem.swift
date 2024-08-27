@@ -45,11 +45,11 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
     public var manyAssets: Int {
         satoshi?.filter { $0.value > 0 }.keys.count ?? 0
     }
-    
+
     public func hasAsset(_ assetId: String) -> Bool {
         satoshi?.filter { $0.key == assetId && $0.value > 0 }.count ?? 0 > 0
     }
-    
+
     public var isMultisig: Bool {
         switch type {
         case .standard, .amp, .twoOfThree:

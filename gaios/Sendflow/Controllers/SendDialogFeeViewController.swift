@@ -49,17 +49,17 @@ class SendDialogFeeViewController: KeyboardViewController {
         register()
         setContent()
         setStyle()
-        
+
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
-        
+
         view.alpha = 0.0
         anchorBottom.constant = -cardView.frame.size.height
-        
+
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
             self?.tableViewHeight.constant = table.contentSize.height
         }
-        
+
         Task { [weak self] in
             await self?.viewModel.loadTxs()
             await MainActor.run { self?.tableView.reloadData() }
@@ -126,7 +126,7 @@ class SendDialogFeeViewController: KeyboardViewController {
     }
 
     @IBAction func tapCustomFee(_ sender: Any) {
-        presentDialogCustomFeeViewController() 
+        presentDialogCustomFeeViewController()
     }
 
     @IBAction func btnLearmore(_ sender: Any) {

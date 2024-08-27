@@ -25,6 +25,7 @@ class ReceiveViewController: KeyboardViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnShare: UIButton!
+
     @IBOutlet weak var btnEdit: UIButton!
     @IBOutlet weak var btnOptions: UIButton!
     @IBOutlet weak var btnVerify: UIButton!
@@ -39,7 +40,11 @@ class ReceiveViewController: KeyboardViewController {
     private var loading = true
     private var keyboardVisible = false
     var viewModel: ReceiveViewModel!
-    var dialogReceiveVerifyAddressViewController: DialogReceiveVerifyAddressViewController?
+    weak var verifyOnDeviceViewController: VerifyOnDeviceViewController?
+
+    var hideVerify: Bool {
+        return !(viewModel.wm.account.isJade && !viewModel.account.isLightning)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,9 +118,11 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        btnShare.setStyle(.primary)
-        [btnEdit, btnOptions, btnVerify].forEach { $0.setStyle(.outlinedWhite) }
+        btnShare.setStyle(hideVerify ? .primary : .outlined)
+        btnShare.setTitleColor(.white, for: .normal)
+        [btnEdit, btnOptions].forEach { $0.setStyle(.outlinedWhite) }
         btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
+        btnVerify.setStyle(.primary)
         stateDidChange(.disabled)
     }
 
@@ -140,15 +147,15 @@ class ReceiveViewController: KeyboardViewController {
     func reload() {
         let network = viewModel.account.gdkNetwork
         btnOnChain.isHidden = !network.lightning || keyboardVisible
-        btnEdit.isHidden = network.liquid || network.lightning || viewModel.satoshi == nil
-        btnOptions.isHidden = network.lightning
+        btnEdit.isHidden = true // network.liquid || network.lightning || viewModel.satoshi == nil
+        btnOptions.isHidden = true // network.lightning
         btnConfirm.isHidden = !(network.lightning && lightningAmountEditing)
         btnShare.isHidden = !(!network.lightning || !lightningAmountEditing)
         if viewModel.type == .swap {
             btnConfirm.isHidden = true
             btnShare.isHidden = false
         }
-        btnVerify.isHidden = !(viewModel.wm.account.isJade && !viewModel.account.isLightning)
+        btnVerify.isHidden = hideVerify
         btnOnChain.setTitle(viewModel.type == .bolt11 ? "id_show_onchain_address".localized : "id_show_lightning_invoice".localized, for: .normal)
         reloadNavigationBtns()
         tableView.reloadData()
@@ -166,7 +173,10 @@ class ReceiveViewController: KeyboardViewController {
             let helpBtn = UIButton(type: .system)
             helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
             helpBtn.addTarget(self, action: #selector(helpBtnTap), for: .touchUpInside)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpBtn)
+            let optBtn = UIButton(type: .system)
+            optBtn.setImage(UIImage(named: "ic_dots_three"), for: .normal)
+            optBtn.addTarget(self, action: #selector(optBtnTap), for: .touchUpInside)
+            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: helpBtn), UIBarButtonItem(customView: optBtn)]
         }
     }
 
@@ -211,31 +221,14 @@ class ReceiveViewController: KeyboardViewController {
             paymentHash: nil)
     }
 
-    func validate() {
-        Task {
-            do {
-                let res = try await viewModel?.validateHw()
-                await MainActor.run {
-                    if res ?? false {
-                        dialogReceiveVerifyAddressViewController?.dismiss()
-                        DropAlert().success(message: "id_the_address_is_valid".localized)
-                    } else {
-                        DropAlert().error(message: "id_the_addresses_dont_match".localized)
-                    }
-                }
-            } catch {
-                await MainActor.run {
-                    dialogReceiveVerifyAddressViewController?.dismiss()
-                    switch error {
-                    case HWError.Abort(let desc),
-                        HWError.URLError(let desc),
-                        HWError.Declined(let desc):
-                        DropAlert().error(message: desc)
-                    default:
-                        DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-                    }
-                }
-            }
+    @MainActor
+    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) {
+        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
+            vc.viewModel = viewModel
+            verifyOnDeviceViewController = vc
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -280,7 +273,7 @@ class ReceiveViewController: KeyboardViewController {
     func optSweep() {
         presentSendAddressInputViewController()
     }
-    
+
     func presentSendAddressInputViewController() {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
@@ -317,6 +310,9 @@ class ReceiveViewController: KeyboardViewController {
         let stb = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
             vc.qrTxt = viewModel.text
+            vc.textNoURI = viewModel.textNoURI
+            vc.showTxt = true
+            vc.showClose = true
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -359,6 +355,19 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
+    @objc func optBtnTap() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+
+            vc.viewModel = DialogListViewModel(title: "id_more_options".localized,
+                                               type: .moreOptPrefs,
+                                               items: MoreOptPrefs.getItems(account: viewModel.account))
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnShare(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
@@ -376,28 +385,29 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @IBAction func btnOptions(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            vc.delegate = self
-
-            vc.viewModel = DialogListViewModel(title: "id_more_options".localized,
-                                               type: .moreOptPrefs,
-                                               items: MoreOptPrefs.getItems(account: viewModel.account))
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
+        optBtnTap()
     }
 
     @IBAction func btnVerify(_ sender: Any) {
         AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: viewModel.account)
-        validate()
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveVerifyAddressViewController") as? DialogReceiveVerifyAddressViewController {
-            vc.address = viewModel.address?.address ?? ""
-            vc.walletItem = viewModel.account
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-            dialogReceiveVerifyAddressViewController = vc
+        if let vm = viewModel.receiveVerifyOnDeviceViewModel() {
+            presentVerifyOnDeviceViewController(viewModel: vm)
+        }
+        Task {
+            do {
+                let res = try await viewModel.validateHW()
+                await MainActor.run {
+                    verifyOnDeviceViewController?.dismiss()
+                    if res {
+                        DropAlert().success(message: "id_the_address_is_valid".localized)
+                    } else {
+                        DropAlert().error(message: "id_the_addresses_dont_match".localized)
+                    }
+                }
+            } catch {
+                verifyOnDeviceViewController?.dismiss()
+                DropAlert().error(message: error.description()?.localized ?? "")
+            }
         }
     }
 
@@ -406,7 +416,6 @@ class ReceiveViewController: KeyboardViewController {
             lightningAmountEditing = false
             newAddress()
         }
-
     }
 
     @IBAction func btnOnChain(_ sender: Any) {

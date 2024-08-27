@@ -16,13 +16,13 @@ class SendAddressInputViewController: KeyboardViewController {
     @IBOutlet weak var btnClear: UIButton!
     @IBOutlet weak var btnPasteSmall: UIButton!
     @IBOutlet weak var lblPlaceholder: UILabel!
-    
+
     @IBOutlet weak var addressTextView: UITextView!
     @IBOutlet weak var btnQR: UIButton!
     @IBOutlet weak var btnPaste: UIButton!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
-    
+
     var viewModel: SendAddressInputViewModel!
 
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ class SendAddressInputViewController: KeyboardViewController {
         setStyle()
         navigationItem.backBarButtonItem = UIBarButtonItem(
             title: "id_back".localized, style: .plain, target: nil, action: nil)
-        
+
         addressTextView.text = ""
         reload()
         enableError(false)
@@ -62,7 +62,7 @@ class SendAddressInputViewController: KeyboardViewController {
 
     func setContent() {
         title = "id_recipient".localized
-        //addressTextView.place = "Enter address or invoice".localized
+        // addressTextView.place = "Enter address or invoice".localized
         lblInvalid.text = "id_invalid_address".localized
         btnQR.setTitle("id_scan_qr_code".localized, for: .normal)
         btnPaste.setTitle("id_paste".localized, for: .normal)
@@ -159,7 +159,7 @@ class SendAddressInputViewController: KeyboardViewController {
             enableError(true, text: error.description())
         }
     }
-    
+
     @MainActor
     func reload() {
         let emptyText = addressTextView.text?.isEmpty ?? true
@@ -237,7 +237,7 @@ class SendAddressInputViewController: KeyboardViewController {
             }
         }
     }
-    
+
     func presentQrcodeScanner() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
@@ -265,7 +265,7 @@ class SendAddressInputViewController: KeyboardViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     func presentLtAuthViewController(requestData: LnUrlAuthRequestData) {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTAuthViewController") as? LTAuthViewController {
@@ -292,19 +292,13 @@ class SendAddressInputViewController: KeyboardViewController {
     }
 
     func presentSendForWithdraw(requestData: LnUrlWithdrawRequestData) {
-        
+
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewController") as? SendAmountViewController {
             vc.viewModel = SendAmountViewModel(createTx: viewModel.createTx!)
             vc.withdrawData = requestData
             navigationController?.pushViewController(vc, animated: true)
         }
-        
-//        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "LTWithdrawViewController") as? LTWithdrawViewController {
-//            vc.requestData = requestData
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
     }
 
     func presentSendAmountViewController() {

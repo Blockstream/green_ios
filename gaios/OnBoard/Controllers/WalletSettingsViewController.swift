@@ -206,7 +206,7 @@ class WalletSettingsViewController: KeyboardViewController {
 
         switchPSPVPersonalNode(switchPSPVPersonalNode)
         switchProxyChange(switchProxy)
-        
+
     }
 
     override func keyboardWillShow(notification: Notification) {

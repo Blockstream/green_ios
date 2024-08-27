@@ -65,12 +65,20 @@ class ReceiveViewModel {
         return session?.validBip21Uri(uri: addr) ?? false
     }
 
-    func validateHw() async throws -> Bool {
-        guard let addr = address else {
-            throw GaError.GenericError()
+    func validateHW() async throws -> Bool {
+        guard let address = address else {
+            throw GaError.GenericError("Invalid address".localized)
         }
-        let res = try await BleViewModel.shared.validateAddress(account: account, address: addr)
-        return res
+        return try await BleViewModel.shared.validateAddress(account: account, address: address)
+    }
+
+    func receiveVerifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
+        guard let address = address?.address else { return nil }
+        let account = AccountsRepository.shared.current
+        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
+                                       address: address,
+                                       isRedeposit: false,
+                                       isDismissible: false)
     }
 
     func addressToUri(address: String, satoshi: Int64, assetId: String) -> String {
@@ -78,7 +86,7 @@ class ReceiveViewModel {
         if account.gdkNetwork.liquid {
             ntwPrefix = account.gdkNetwork.mainnet ? "liquidnetwork" :  "liquidtestnet"
         }
-        let amount = String(format:"%.8f", toBTC(satoshi))
+        let amount = String(format: "%.8f", toBTC(satoshi))
         if satoshi == 0 {
             return address
         } else if !account.gdkNetwork.liquid {
@@ -150,6 +158,20 @@ class ReceiveViewModel {
         }
     }
 
+    var textNoURI: String? {
+        switch type {
+        case .bolt11:
+            if let txt = invoice?.bolt11 {
+                return "\( (txt).uppercased() )"
+            }
+            return nil
+        case .swap:
+            return swap?.bitcoinAddress
+        case .address:
+            return address?.address
+        }
+    }
+
     var addressCellModel: ReceiveAddressCellModel {
         let nodeState = account.lightningSession?.nodeState
         let lspInfo = account.lightningSession?.lspInfo
@@ -161,7 +183,9 @@ class ReceiveViewModel {
                                        inputDenomination: inputDenomination,
                                        nodeState: nodeState,
                                        lspInfo: lspInfo,
-                                       breezSdk: account.lightningSession?.lightBridge
+                                       breezSdk: account.lightningSession?.lightBridge,
+                                       textNoURI: textNoURI,
+                                       isLightning: account.gdkNetwork.lightning
         )
     }
 

@@ -18,6 +18,8 @@ enum ButtonStyle {
     case qrEnlarge
     case underline(txt: String)
     case underlineGray(txt: String)
+    case blackWithImg
+    case underlineBlack(txt: String, alpha: Float)
 }
 
 @IBDesignable
@@ -250,6 +252,23 @@ extension UIButton {
                     attributes: attr
                  )
             setAttributedTitle(attributeString, for: .normal)
+        case .underlineBlack(let txt, let alpha):
+            backgroundColor = UIColor.clear
+            let attr: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.black.withAlphaComponent(CGFloat(alpha)),
+                .underlineStyle: NSUnderlineStyle.single.rawValue
+            ]
+            let attributeString = NSMutableAttributedString(
+                    string: txt,
+                    attributes: attr
+                 )
+            setAttributedTitle(attributeString, for: .normal)
+        case .blackWithImg:
+            backgroundColor = .black
+            setTitleColor(.white, for: .normal)
+            tintColor = .white
+            layer.cornerRadius = 3.0
+            titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .semibold)
         }
     }
 }

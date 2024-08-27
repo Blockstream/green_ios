@@ -4,16 +4,20 @@ class ReceiveAddressCell: UITableViewCell {
 
     @IBOutlet weak var bgCard: UIView!
     @IBOutlet weak var bgCardQR: UIView!
+    @IBOutlet weak var envelopeView: UIView!
+    @IBOutlet weak var envelopeBorderView: UIView!
     @IBOutlet weak var btnQRCode: UIButton!
-    @IBOutlet weak var lblAddress: UILabel!
-    @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var qrFrame: UIView!
     @IBOutlet weak var loader: UIActivityIndicatorView!
-
     @IBOutlet weak var lnBannerBox: UIView!
     @IBOutlet weak var lnBanner: UIView!
     @IBOutlet weak var lblInfo: UILabel!
     @IBOutlet weak var btnRefresh: UIButton!
+    @IBOutlet weak var btnMagnify: UIButton!
+    @IBOutlet weak var btnCopyAddress: UIButton!
+
+    @IBOutlet weak var plainTxt: UILabel!
+    @IBOutlet weak var groupedTxt: UITextView!
 
     static var identifier: String { return String(describing: self) }
 
@@ -25,15 +29,23 @@ class ReceiveAddressCell: UITableViewCell {
         super.awakeFromNib()
 
         bgCard.layer.cornerRadius = 5.0
-        // btnCopy.setTitle("id_copy_address".localized, for: .normal)
-        btnCopy.cornerRadius = 5.0
-
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         qrFrame.addGestureRecognizer(longPressRecognizer)
-        lnBanner.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
+        lnBanner.backgroundColor = UIColor.gGreenMatrix()
         lnBanner.cornerRadius = 5.0
-        lblInfo.setStyle(.txtSmaller)
+        lblInfo.setStyle(.txtCard)
+        lblInfo.textColor = .black
         lnBannerBox.isHidden = true
+        envelopeBorderView.backgroundColor = .clear
+        envelopeBorderView.borderWidth = 5.0
+        envelopeBorderView.borderColor = UIColor.gGreenMatrix()
+        envelopeBorderView.cornerRadius = 20.0
+        btnMagnify.setTitle("Increase QR Size".localized, for: .normal)
+        btnCopyAddress.setTitle("Copy Address".localized, for: .normal)
+        [btnMagnify, btnCopyAddress].forEach {
+            $0.setStyle(.blackWithImg)
+        }
+        plainTxt.lineBreakMode = .byTruncatingTail
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -46,8 +58,21 @@ class ReceiveAddressCell: UITableViewCell {
                    onRefreshClick: (() -> Void)?,
                    onLongpress: (() -> Void)? = nil
     ) {
-        lblAddress.text = model.text
-        lblAddress.lineBreakMode = .byTruncatingMiddle
+        plainTxt.isHidden = true
+        groupedTxt.isHidden = true
+        bgCard.borderWidth = 1.0
+        bgCard.borderColor = .clear
+        if model.text == model.textNoURI && model.isLightning == false {
+            groupedTxt.isHidden = false
+            AddressDisplay.configure(
+                address: model.textNoURI ?? "",
+                textView: groupedTxt,
+                style: .default,
+                truncate: true)
+        } else {
+            plainTxt.isHidden = false
+            plainTxt.text = model.text
+        }
         self.onCopyToClipboard = onCopyToClipboard
         self.onRefreshClick = onRefreshClick
         if let uri = model.text {
@@ -55,6 +80,8 @@ class ReceiveAddressCell: UITableViewCell {
             let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
             btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
             btnQRCode.imageView?.contentMode = .scaleAspectFit
+            qrFrame.backgroundColor = .white
+            qrFrame.cornerRadius = 10.0
             if model.type == .bolt11 {
                 qrFrame.backgroundColor = .white
             }
@@ -74,7 +101,7 @@ class ReceiveAddressCell: UITableViewCell {
             lnBannerBox.isHidden = false
             lblInfo.text = onChaininfo
             btnRefresh.isHidden = true
-        }
+            bgCard.borderColor = UIColor.gGreenMatrix()        }
 
         self.onLongpress = onLongpress
     }
@@ -86,11 +113,19 @@ class ReceiveAddressCell: UITableViewCell {
         }
     }
 
-    @IBAction func copyAction(_ sender: Any) {
+    @IBAction func refreshClick(_ sender: Any) {
+        onRefreshClick?()
+    }
+
+    @IBAction func btnMagnify(_ sender: Any) {
+        onLongpress?()
+    }
+
+    @IBAction func btnCopyaddress(_ sender: Any) {
         onCopyToClipboard?()
     }
 
-    @IBAction func refreshClick(_ sender: Any) {
-        onRefreshClick?()
+    @IBAction func btnQRCode(_ sender: Any) {
+        onCopyToClipboard?()
     }
 }

@@ -51,7 +51,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var btnVerifyAddress: UIButton!
 
     var viewModel: SendTxConfirmViewModel!
-    var verifyOnDeviceViewController: VerifyOnDeviceViewController?
+    weak var verifyOnDeviceViewController: VerifyOnDeviceViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()

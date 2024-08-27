@@ -429,7 +429,7 @@ extension LTRecoverFundsViewController: SendFailViewControllerDelegate {
     func onAgain() {
         send()
     }
-    
+
     func onSupport(error: Error) {
         presentDialogErrorViewController(error: error, paymentHash: nil)
     }

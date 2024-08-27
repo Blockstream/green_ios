@@ -36,7 +36,7 @@ class AccountAssetViewController: UIViewController {
 
         setContent()
         setStyle()
-        
+
     }
 
     override func viewWillAppear(_ animated: Bool) {

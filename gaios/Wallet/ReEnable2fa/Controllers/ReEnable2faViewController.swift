@@ -14,6 +14,7 @@ class ReEnable2faViewController: UIViewController {
 
     var vm: ReEnable2faViewModel!
     private var selectedSubaccount: WalletItem?
+    private var verifyOnDeviceViewController: VerifyOnDeviceViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,9 +37,7 @@ class ReEnable2faViewController: UIViewController {
 
     func setContent() {
         lblHint1.text = "Some coins in your wallet haven't move for a long time, so 2FA expired to keep you in control. To reactivate 2FA:".localized
-        
         lblHint2.text = "\u{2022} " + "Send normally and refresh the 2FA on change coins (optimizes fees)".localized + "\n\u{2022} " + "Redeposit all your expired 2FA coins".localized
-                                                        
         btnLearnmore.setTitle("id_learn_more".localized, for: .normal)
     }
 

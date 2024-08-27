@@ -260,14 +260,14 @@ class TxDetailsViewController: UIViewController {
         DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
-    
-    func createTx(session : SessionManager) async throws -> CreateTx {
+
+    func createTx(session: SessionManager) async throws -> CreateTx {
         let feeRates = try await session.getFeeEstimates()
         let feeRate = feeRates?.first ?? session.gdkNetwork.defaultFee
         return CreateTx(feeRate: vm.transaction.feeRate + feeRate, subaccount: vm.wallet, previousTransaction: vm.transaction.details, txType: .bumpFee)
     }
 
-    func createTransaction(createTx: CreateTx, session : SessionManager) async throws -> Transaction {
+    func createTransaction(createTx: CreateTx, session: SessionManager) async throws -> Transaction {
         let unspentOutputs = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: vm.wallet.pointer, numConfs: 1))
         var tx = Transaction([:], subaccount: vm.transaction.subaccount)
         tx.previousTransaction = createTx.previousTransaction
@@ -295,7 +295,7 @@ class TxDetailsViewController: UIViewController {
             }
         }
     }
-    
+
     @MainActor
     func presentSendAmountViewController(createTx: CreateTx, tx: Transaction) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -304,7 +304,7 @@ class TxDetailsViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     func didSelectInfoAt(_ index: Int) {
         let m: TxDetailsInfoCellModel = vm.txDetailsInfoCellModels[index]
         let txInfo = m.type
@@ -564,4 +564,3 @@ extension TxDetailsViewController: SendFeeInfoViewControllerDelegate {
         SafeNavigationManager.shared.navigate( ExternalUrls.feesInfo )
     }
 }
-

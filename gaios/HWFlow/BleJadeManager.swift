@@ -269,7 +269,7 @@ extension BleJadeManager: JadeGdkRequest {
                     try? await self.pinServerSession?.connect()
                 }
                 return true
-            case .cancel: 
+            case .cancel:
                 return false
             }
         } else {

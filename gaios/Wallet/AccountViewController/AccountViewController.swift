@@ -402,7 +402,7 @@ class AccountViewController: UIViewController {
     @MainActor
     func presentLTShortcutViewController(isOn: Bool) {
         let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, 
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController,
             let account = WalletManager.current?.account {
             vc.vm = LTShortcutViewModel(account: account,
                                         action: isOn ? .addFromAccount : .remove)
@@ -971,7 +971,7 @@ extension AccountViewController: DialogScanViewControllerDelegate {
         let sendAddressInputViewModel = SendAddressInputViewModel(preferredAccount: viewModel.account, txType: .transaction)
         presentSendAddressInputViewController(sendAddressInputViewModel)
     }
-    
+
     func presentSendAddressInputViewController(_ sendAddressInputViewModel: SendAddressInputViewModel) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {

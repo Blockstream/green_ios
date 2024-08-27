@@ -398,12 +398,12 @@ public class WalletManager {
     public var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
     public var bitcoinNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [bitcoinMultisigNetwork] }
     public var liquidNetworks: [NetworkSecurityCase] { [liquidSinglesigNetwork] + [liquidMultisigNetwork] }
-    
+
     public var liquidSinglesigSession: SessionManager? { sessions[liquidSinglesigNetwork.rawValue] }
     public var bitcoinSinglesigSession: SessionManager? { sessions[bitcoinSinglesigNetwork.rawValue] }
     public var liquidMultisigSession: SessionManager? { sessions[liquidMultisigNetwork.rawValue] }
     public var bitcoinMultisigSession: SessionManager? { sessions[bitcoinMultisigNetwork.rawValue] }
-    
+
     public var activeBitcoinSessions: [SessionManager] {
         bitcoinNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
     }
@@ -425,7 +425,7 @@ public class WalletManager {
 
     public var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
     public var activeLiquidMultisig: Bool { sessions[liquidMultisigNetwork.rawValue]?.logged ?? false }
-    
+
     public var bitcoinSubaccounts: [WalletItem] {
         subaccounts.filter { !$0.hidden }
             .filter { bitcoinNetworks.contains($0.networkType) }
@@ -674,7 +674,7 @@ extension WalletManager {
     public func refreshIfNeeded() async throws {
         try await registry.refreshIfNeeded(provider: self)
     }
-    
+
     public func info(for key: String?) -> AssetInfo {
         registry.info(for: key ?? "", provider: self)
     }

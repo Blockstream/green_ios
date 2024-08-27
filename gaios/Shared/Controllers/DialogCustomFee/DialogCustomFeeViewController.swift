@@ -22,7 +22,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
     @IBOutlet weak var lblCustomFeeHint: UILabel!
     @IBOutlet weak var feeTextField: UITextField!
     @IBOutlet weak var btnSave: UIButton!
-    
+
     @IBOutlet weak var submitBottom: NSLayoutConstraint!
 
     weak var delegate: DialogCustomFeeViewControllerDelegate?

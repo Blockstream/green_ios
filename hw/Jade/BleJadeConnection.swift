@@ -27,7 +27,7 @@ public class BleJadeConnection: HWConnectionProtocol {
         self.centralManager = centralManager
         self.listening()
     }
-    
+
     public func listening() {
         centralManager?.eventPublisher
             .sink {
@@ -139,7 +139,7 @@ public class BleJadeConnection: HWConnectionProtocol {
         try? await centralManager?.cancelPeripheralConnection(peripheral)
         characteristicCancellables.forEach { $0.cancel() }
     }
-    
+
     deinit {
         centralCancellables.forEach { $0.cancel() }
     }

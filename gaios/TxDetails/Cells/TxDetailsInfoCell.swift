@@ -6,7 +6,7 @@ class TxDetailsInfoCell: UITableViewCell {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var addressTextView: UITextView!
     @IBOutlet weak var innerPad: UIView!
-    
+
     class var identifier: String { return String(describing: self) }
 
     var model: TxDetailsInfoCellModel?

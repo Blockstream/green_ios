@@ -79,7 +79,7 @@ class LTAuthViewController: UIViewController {
             squareSliderView.reset()
         }
     }
-    
+
     @MainActor
     func next() {
         let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first

@@ -50,12 +50,9 @@ class LTAmountCell: UITableViewCell {
         bg.borderWidth = 1.0
         infoPanel.cornerRadius = 5.0
         lblAmount.setStyle(.txtCard)
-        lblInfo.setStyle(.txtCard)
-        lblMoreInfo.setStyle(.txtCard)
         lblAsset.setStyle(.txtBigger)
         lblMoreInfo.text = "For more information,".localized
-        btnFeeInfo.setTitle("read more".localized, for: .normal)
-        btnFeeInfo.setStyle(.inlineGray)
+        btnFeeInfo.setStyle(.underlineBlack(txt: "read more".localized, alpha: 0.6))
         [lblToReceiveTitle, lblToReceiveHint].forEach {
             $0?.setStyle(.sectionTitle)
         }
@@ -178,6 +175,9 @@ class LTAmountCell: UITableViewCell {
     }
 
     func updateState() {
+        [lblInfo, lblMoreInfo].forEach{
+            $0.setStyle(.txtCard)
+        }
         switch model.state {
         case .invalidAmount:
             let text = "id_invalid_amount".localized
@@ -186,8 +186,8 @@ class LTAmountCell: UITableViewCell {
             disableState()
             lblAmount.isHidden = false
         case .validFunding:
-            bg.borderColor = UIColor.gGreenFluo()
-            infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
+            bg.borderColor = UIColor.gGreenMatrix()
+            infoPanel.backgroundColor = UIColor.gGreenMatrix().withAlphaComponent(1.0)
             let amount = model.openChannelFee
             lblInfo.text = String(format: "id_a_set_up_funding_fee_of_s_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             lblInfo.isHidden = false
@@ -196,6 +196,9 @@ class LTAmountCell: UITableViewCell {
             lblAmount.isHidden = true
             toReceiveAmount(show: true)
             lblToReceiveHint.text = model.toReceiveAmountStr
+            [lblInfo, lblMoreInfo].forEach {
+                $0?.textColor = .black
+            }
         case .tooHigh:
             let amount = Int64(model.nodeState?.maxReceivableSatoshi ?? 0)
             let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")

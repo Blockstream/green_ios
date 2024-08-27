@@ -285,7 +285,7 @@ public class LightningBridge {
         }
         try breezSdk.configureNode(req: ConfigureNodeRequest(closeToAddress: closeToAddress))
     }
-    
+
     public func rescanSwaps() async throws {
         try breezSdk?.rescanSwaps()
     }

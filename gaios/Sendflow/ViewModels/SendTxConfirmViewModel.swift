@@ -23,7 +23,7 @@ class SendTxConfirmViewModel {
     var error: Error?
     var txType: TxType
     var txAddress: Address?
-    
+
     var isWithdraw: Bool {
         return withdrawData != nil
     }
@@ -169,9 +169,9 @@ class SendTxConfirmViewModel {
     func urlForTxUnblinded() -> URL? {
         return URL(string: (subaccount?.gdkNetwork.txExplorerUrl ?? "") + (sendTransaction?.txHash ?? "") + (transaction?.blindingUrlString(address: address) ?? ""))
     }
-    
+
     func withdrawLnurl(desc: String) async throws -> LnUrlWithdrawSuccessData? {
-        guard let withdrawData = withdrawData else { 
+        guard let withdrawData = withdrawData else {
             throw TransactionError.failure(localizedDescription: "No data found", paymentHash: "")
         }
         let res = try wm?.lightningSession?.lightBridge?.withdrawLnurl(requestData: withdrawData, amount: withdrawAmount, description: desc)
@@ -186,7 +186,7 @@ class SendTxConfirmViewModel {
             throw TransactionError.failure(localizedDescription: "No data found", paymentHash: "")
         }
     }
-    
+
     func validateHW() async throws -> Bool {
         guard let subaccount = subaccount, let address = txAddress else {
             throw GaError.GenericError("Invalid address".localized)
@@ -197,7 +197,7 @@ class SendTxConfirmViewModel {
     func sendVerifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
         guard let _ = subaccount, let address = txAddress?.address else { return nil }
         let account = AccountsRepository.shared.current
-        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false, 
+        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
                                        address: address,
                                        isRedeposit: true,
                                        isDismissible: false)

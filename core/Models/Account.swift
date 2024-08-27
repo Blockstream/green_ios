@@ -202,7 +202,7 @@ public struct Account: Codable, Equatable {
                 name: name,
                 network: .bitcoinSS,
                 isJade: isJade,
-                xpubHashId: xpubHashId, 
+                xpubHashId: xpubHashId,
                 walletHashId: walletHashId,
                 lightningWalletHashId: lightningWalletHashId,
                 isDerivedLightning: true,

@@ -206,7 +206,7 @@ public struct HWBlindingFactorsParams {
     }
     let transactionInputs: [InputOutput]
     let transactionOutputs: [InputOutput]
-    
+
     init(_ details: [String: Any]) {
         transactionInputs = details["transactionInputs"] as? [InputOutput] ?? []
         transactionOutputs = details["transactionOutputs"] as? [InputOutput] ?? []
