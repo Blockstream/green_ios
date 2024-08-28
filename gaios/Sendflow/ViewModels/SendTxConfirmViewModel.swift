@@ -116,7 +116,7 @@ class SendTxConfirmViewModel {
         tx = try await session.signTransaction(tx: tx)
         self.transaction = tx
         if tx.isSweep {
-            return try await session.broadcastTransaction(txHex: tx.transaction ?? "")
+            return try await session.broadcastTransaction(BroadcastTransactionParams(transaction: tx.transaction))
         } else {
             return try await session.sendTransaction(tx: tx)
         }

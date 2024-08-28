@@ -171,6 +171,8 @@ public struct SendTransactionSuccess: Codable {
         case paymentId = "payment_id"
         case message
         case url
+        case psbt
+        case transaction
     }
     public let txHash: String?
     public var sendAll: Bool?
@@ -178,13 +180,18 @@ public struct SendTransactionSuccess: Codable {
     public let paymentId: String?
     public let message: String?
     public let url: String?
-    public init(txHash: String? = nil, sendAll: Bool? = nil, signedTransaction: String? = nil, paymentId: String? = nil, message: String? = nil, url: String? = nil) {
+    public let psbt: String?
+    public let transaction: String?
+    
+    public init(txHash: String? = nil, sendAll: Bool? = nil, signedTransaction: String? = nil, paymentId: String? = nil, message: String? = nil, url: String? = nil, psbt: String? = nil, transaction: String? = nil) {
         self.txHash = txHash
         self.sendAll = sendAll
         self.signedTransaction = signedTransaction
         self.paymentId = paymentId
         self.message = message
         self.url = url
+        self.psbt = psbt
+        self.transaction = transaction
     }
 }
 
@@ -410,6 +417,36 @@ public struct UnspentOutput: Codable {
     public let expiryHeight: UInt64?
     public let assetId: String?
     public let isConfidential: Bool?
+}
+
+public struct BroadcastTransactionParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case transaction
+        case psbt
+        case memo
+        case simulateOnly = "simulate_only"
+    }
+    public let transaction: String?
+    public let psbt: String?
+    public let memo: String?
+    public let simulateOnly: String?
+    public init(transaction: String? = nil, psbt: String? = nil, memo: String? = nil, simulateOnly: String? = nil) {
+        self.transaction = transaction
+        self.psbt = psbt
+        self.memo = memo
+        self.simulateOnly = simulateOnly
+    }
+}
+
+public struct BroadcastTransactionResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case transaction
+        case psbt
+        case txHash = "tx_hash"
+    }
+    public let transaction: String?
+    public let psbt: String?
+    public let txHash: String?
 }
 
 public struct GdkInit: Codable {

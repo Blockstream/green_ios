@@ -440,9 +440,12 @@ public class SessionManager {
         throw GaError.GenericError()
     }
 
-    public func broadcastTransaction(txHex: String) async throws -> SendTransactionSuccess {
-        if let txHash = try self.session?.broadcastTransaction(tx_hex: txHex) as? String {
-            return SendTransactionSuccess(txHash: txHash)
+    public func broadcastTransaction(_ params: BroadcastTransactionParams) async throws -> SendTransactionSuccess {
+        if let res = try self.session?.broadcastTransaction(details: params.toDict() ?? [:]) as? BroadcastTransactionResult {
+            if params.psbt != nil {
+                return SendTransactionSuccess(txHash: res.txHash, psbt: res.psbt, transaction: res.transaction)
+            }
+            return SendTransactionSuccess(txHash: res.txHash)
         }
         throw GaError.GenericError()
     }

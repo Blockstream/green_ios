@@ -195,16 +195,6 @@ class AccountViewController: UIViewController {
     func setActionBar() {
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
-        // Sweep is only supported in watch-only for btc multisig wallets
-        if viewModel.watchOnly {
-            if let account = AccountsRepository.shared.current, !account.gdkNetwork.liquid {
-                   btnSend.setTitle( "id_sweep".localized, for: .normal )
-                   btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
-               } else {
-                   btnSend.isEnabled = false
-                   btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
-               }
-        }
     }
 
     func setContent() {
@@ -456,7 +446,7 @@ class AccountViewController: UIViewController {
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
             preferredAccount: viewModel.account,
-            txType: viewModel.watchOnly ? .sweep : .transaction)
+            txType: .transaction)
         self.presentSendAddressInputViewController(sendAddressInputViewModel)
     }
 
