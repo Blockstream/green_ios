@@ -77,6 +77,7 @@ class AccountNavigator {
         }
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             appDelegate.resolve2faOff()
+            appDelegate.window?.endEditing(true)
         }
     }
 

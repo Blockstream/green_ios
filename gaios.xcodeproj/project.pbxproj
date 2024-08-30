@@ -110,7 +110,6 @@
 		343BC94E2AA702F600F0FEE5 /* GreenPickerCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 343BC94C2AA702F600F0FEE5 /* GreenPickerCell.xib */; };
 		343BC9522AA8772600F0FEE5 /* DrawerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9512AA8772600F0FEE5 /* DrawerAnimationManager.swift */; };
 		343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */; };
-		343BC9572AA9BF1200F0FEE5 /* TwoFAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */; };
 		344471BC2C46B2A20051957E /* DialogGroupListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471BB2C46B2A20051957E /* DialogGroupListViewController.swift */; };
 		344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471BD2C46B31F0051957E /* DialogGroupListViewModel.swift */; };
 		344471C22C478DBD0051957E /* DialogGroupListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344471C12C478DBD0051957E /* DialogGroupListCell.xib */; };
@@ -386,6 +385,7 @@
 		34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D51B6A2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift */; };
 		34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E329A773AF00D3B5C5 /* SharePrefs.swift */; };
 		34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */; };
+		34D648002C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D647FF2C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift */; };
 		34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */; };
 		34D761342A384EF800DE57F5 /* DenominationExchangeFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34D761332A384EF800DE57F5 /* DenominationExchangeFlow.storyboard */; };
 		34D761362A38501F00DE57F5 /* DenominationExchangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D761352A38501F00DE57F5 /* DenominationExchangeViewController.swift */; };
@@ -943,7 +943,6 @@
 		343BC94C2AA702F600F0FEE5 /* GreenPickerCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GreenPickerCell.xib; sourceTree = "<group>"; };
 		343BC9512AA8772600F0FEE5 /* DrawerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimationManager.swift; sourceTree = "<group>"; };
 		343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TwoFAFlow.storyboard; sourceTree = "<group>"; };
-		343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFAViewController.swift; sourceTree = "<group>"; };
 		344471BB2C46B2A20051957E /* DialogGroupListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListViewController.swift; sourceTree = "<group>"; };
 		344471BD2C46B31F0051957E /* DialogGroupListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListViewModel.swift; sourceTree = "<group>"; };
 		344471C12C478DBD0051957E /* DialogGroupListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialogGroupListCell.xib; sourceTree = "<group>"; };
@@ -1220,6 +1219,7 @@
 		34D51B6A2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationFooter.swift; sourceTree = "<group>"; };
 		34D535E329A773AF00D3B5C5 /* SharePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePrefs.swift; sourceTree = "<group>"; };
 		34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptPrefs.swift; sourceTree = "<group>"; };
+		34D647FF2C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorAuthViewController.swift; sourceTree = "<group>"; };
 		34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuHomeViewController.swift; sourceTree = "<group>"; };
 		34D761332A384EF800DE57F5 /* DenominationExchangeFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DenominationExchangeFlow.storyboard; sourceTree = "<group>"; };
 		34D761352A38501F00DE57F5 /* DenominationExchangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationExchangeViewController.swift; sourceTree = "<group>"; };
@@ -3514,7 +3514,7 @@
 				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
 				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
 				343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */,
-				343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */,
+				34D647FF2C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift */,
 				3450C85F2AAF0616002B67AE /* TwoFAMethodViewController.swift */,
 				81E04A3A2AA63C6800867705 /* Country.swift */,
 			);
@@ -4378,7 +4378,6 @@
 				816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				34560B7829B9C6E7007E916F /* JadeWaitViewController.swift in Sources */,
-				343BC9572AA9BF1200F0FEE5 /* TwoFAViewController.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				812DBDC029725F8A002992D6 /* WatchOnlySettingsCellModel.swift in Sources */,
 				34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */,
@@ -4496,6 +4495,7 @@
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				346EB2782BE8BB3A0043139F /* SendFeeCell.swift in Sources */,
 				818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */,
+				34D648002C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift in Sources */,
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
 				34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */,

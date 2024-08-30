@@ -50,4 +50,26 @@ extension UITextField {
 
         self.inputAccessoryView = doneToolbar
     }
+
+    @objc func keyboardPaste() {
+        let notification = NSNotification.Name(rawValue: "KeyboardPaste")
+        NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+    }
+    
+    func addPasteButtonOnKeyboard() {
+        let keyboardToolbar = UIToolbar()
+        keyboardToolbar.sizeToFit()
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace,
+                                            target: nil, action: nil)
+       
+       let pasteBtn = UIButton(type: .system)
+       pasteBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+       pasteBtn.setImage(UIImage(named: "ic_paste"), for: .normal)
+       pasteBtn.tintColor = .white
+       pasteBtn.addTarget(self, action: #selector(keyboardPaste), for: .touchUpInside)
+       
+       let doneButton = UIBarButtonItem(customView: pasteBtn)
+       keyboardToolbar.items = [flexibleSpace, doneButton]
+       self.inputAccessoryView = keyboardToolbar
+   }
 }

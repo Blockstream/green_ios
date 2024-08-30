@@ -191,8 +191,16 @@ class SetPhoneViewController: KeyboardViewController {
         print("country")
     }
 
+    func validate() {
+        guard let countryCode = countryCodeField.text, var phone = textField.text else { return }
+                phone = phone.trimmingCharacters(in: .whitespacesAndNewlines)
+        let isEnabled = !countryCode.isEmpty && !phone.isEmpty && phone.count > 7
+        nextButton.setStyle(isEnabled ? .primary : .primaryDisabled)
+    }
+
     func didSelectCountry(_ country: Country) {
         countryCodeField.text = country.dialCodeString
+        validate()
     }
 
     @objc func click(_ sender: UIButton) {
@@ -234,10 +242,7 @@ class SetPhoneViewController: KeyboardViewController {
     }
 
     @IBAction func editingChange(_ sender: Any) {
-        guard let countryCode = countryCodeField.text, var phone = textField.text else { return }
-                phone = phone.trimmingCharacters(in: .whitespacesAndNewlines)
-        let isEnabled = !countryCode.isEmpty && !phone.isEmpty && phone.count > 7
-        nextButton.setStyle(isEnabled ? .primary : .primaryDisabled)
+        validate()
     }
 
     @IBAction func btnCountryPicker(_ sender: Any) {

@@ -3,7 +3,7 @@ import UIKit
 import gdk
 import core
 
-class TwoFAViewController: UIViewController {
+class TwoFactorAuthViewController: KeyboardViewController {
 
     @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var cardView: UIView!
@@ -25,6 +25,11 @@ class TwoFAViewController: UIViewController {
     @IBOutlet var lblsDigit: [UILabel]!
 
     @IBOutlet weak var lblAttempts: UILabel!
+    @IBOutlet weak var pinField: UITextField!
+
+    private var updateToken: NSObjectProtocol?
+    @IBOutlet weak var keyboardPad: NSLayoutConstraint!
+
     var digits: [Int] = []
 
     var onCancel: (() -> Void)?
@@ -54,6 +59,7 @@ class TwoFAViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        dismissDisabled = true
         setStyle()
         setContent()
         view.alpha = 0.0
@@ -74,12 +80,27 @@ class TwoFAViewController: UIViewController {
                 icon.image = UIImage(named: "ic_2fa_code_sms")!
             }
         }
+        pinField.addPasteButtonOnKeyboard()
+        pinField.becomeFirstResponder()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "KeyboardPaste"), object: nil, queue: .main, using: keyboardPaste)
+
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = updateToken {
+            NotificationCenter.default.removeObserver(token)
         }
     }
 
@@ -101,9 +122,10 @@ class TwoFAViewController: UIViewController {
             $0.borderWidth = 1.0
             $0.borderColor = .white.withAlphaComponent(0.05)
         }
-        lblTitle.setStyle(.txtBigger)
+        lblTitle.setStyle(.subTitle)
         btnHelp.setStyle(.inline)
         btnCancel.setStyle(.inline)
+        btnCancel.setTitleColor(.white, for: .normal)
         orderedPlaceHolders.forEach {
             $0.cornerRadius = $0.frame.width / 2
         }
@@ -113,7 +135,7 @@ class TwoFAViewController: UIViewController {
         [btnInfoRetry, btnInfoSupport, btnInfoEnableCall].forEach {
             $0?.setStyle(.inline)
         }
-        lblAttempts.setStyle(.txtSmaller)
+        lblAttempts.setStyle(.txtCard)
     }
 
     func updateAttempts() {
@@ -132,8 +154,30 @@ class TwoFAViewController: UIViewController {
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    @objc func sendCode() {
+        self.dismiss(.code(digits: (self.digits.map(String.init)).joined()))
+    }
+
+    func end() {
+        if self.digits.count == 6 {
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.sendCode), object: nil)
+            perform(#selector(self.sendCode), with: nil, afterDelay: 0.5)
+        }
+    }
+
+    func keyboardPaste(_ notification: Notification) {
+        if let txt = UIPasteboard.general.string {
+            if txt.isCode6Digits() {
+                digits = []
+                for c in txt {
+                    if let n = Int("\(c)") {
+                        digits.append(n)
+                    }
+                }
+                fill()
+                end()
+            }
+        }
     }
 
     func refresh() {
@@ -159,6 +203,15 @@ class TwoFAViewController: UIViewController {
         })
     }
 
+    override func keyboardWillShow(notification: Notification) {
+        super.keyboardWillShow(notification: notification)
+
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+            self.keyboardPad.constant = keyboardFrame.height
+        })
+    }
+
     @IBAction func btnHelp(_ sender: Any) {
         refresh()
     }
@@ -167,40 +220,17 @@ class TwoFAViewController: UIViewController {
         dismiss(.cancel)
     }
 
-    @IBAction func btnDigit(_ sender: UIButton) {
-        if digits.count < 6 {
-            digits.append(sender.tag)
-            fill()
-        }
-        if digits.count == 6 {
-            dismiss(.code(digits: (digits.map(String.init)).joined()))
-        }
-    }
-
-    @IBAction func btnPaste(_ sender: Any) {
-        if let txt = UIPasteboard.general.string {
-            if txt.isCode6Digits() {
-                digits = []
-                for c in txt {
-                    if let n = Int("\(c)") {
-                        digits.append(n)
-                    }
-                }
-                fill()
-
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
-                    if self.digits.count == 6 {
-                        self.dismiss(.code(digits: (self.digits.map(String.init)).joined()))
-                    }
+    @IBAction func textdidChange(_ sender: Any) {
+        if let str = pinField.text {
+            digits = []
+            for c in str {
+                if let d = Int(String(c)) {
+                    digits.append(d)
                 }
             }
         }
-    }
-
-    @IBAction func btnCursorBack(_ sender: Any) {
-        guard digits.count > 0 else { return }
-        digits.removeLast()
         fill()
+        end()
     }
 
     @IBAction func btnInfoEnableCall(_ sender: Any) {
@@ -220,5 +250,15 @@ class TwoFAViewController: UIViewController {
             paymentHash: nil)
         showOpenSupportUrl(request)
         dismiss(.cancel)
+    }
+}
+
+extension TwoFactorAuthViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let maxLength = 6
+        let currentString = (textField.text ?? "") as NSString
+        let newString = currentString.replacingCharacters(in: range, with: string)
+
+        return newString.count <= maxLength
     }
 }
