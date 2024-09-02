@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - HW Address verification on expired 2FA ractivation
 
+### Added
+- Add OTA support for Jade v2
+
 ### Changed
 - Improve QR code scanner
 - 2fa dialog: improved usability with native keyboard

@@ -370,17 +370,14 @@ extension Jade {
     }
 
     public func firmwarePath(_ verInfo: JadeVersionInfo) -> String? {
-        if ![Jade.BOARD_TYPE_JADE, Jade.BOARD_TYPE_JADE_V1_1].contains(verInfo.boardType) {
-            return nil
-        }
-        let isV1BoardType = verInfo.boardType == Jade.BOARD_TYPE_JADE
         // Alas the first version of the jade fmw didn't have 'BoardType' - so we assume an early jade.
         if verInfo.jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
             // Production Jade (Secure-Boot [and flash-encryption] enabled)
-            return isV1BoardType ? Jade.FW_JADE_PATH : Jade.FW_JADE1_1_PATH
+
+            return "/bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)/"
         } else {
             // Unsigned/development/testing Jade
-            return isV1BoardType ? Jade.FW_JADEDEV_PATH : Jade.FW_JADE1_1DEV_PATH
+            return "/bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)dev/"
         }
     }
 

@@ -84,7 +84,7 @@ class ConnectViewController: HWFlowBaseViewController {
                     let version = try await bleViewModel?.jade?.version()
                     AnalyticsManager.shared.hwwConnected(account: account,
                                                          fwVersion: version?.jadeVersion,
-                                                         model: version?.boardType)
+                                                         model: "\(version?.boardType)")
                     if version?.jadeHasPin ?? false {
                         progress("id_unlock_jade_to_continue".localized)
                     } else {

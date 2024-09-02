@@ -19,12 +19,6 @@ public class JadeCommands {
     public static let PIN_SERVERv2_HTTPS = "https://j8d.io"
 
     public static let MIN_ALLOWED_FW_VERSION = "0.1.44"
-    public static let FW_JADE_PATH = "/bin/jade/"
-    public static let FW_JADEDEV_PATH = "/bin/jadedev/"
-    public static let FW_JADE1_1_PATH = "/bin/jade1.1/"
-    public static let FW_JADE1_1DEV_PATH = "/bin/jade1.1dev/"
-    public static let BOARD_TYPE_JADE = "JADE"
-    public static let BOARD_TYPE_JADE_V1_1 = "JADE_V1.1"
     public static let FEATURE_SECURE_BOOT = "SB"
 
     public let blockstreamUrls = [

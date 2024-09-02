@@ -233,7 +233,7 @@ public struct JadeVersionInfo: Codable {
     public var jadeVersion: String
     public let jadeOtaMaxChunk: Int
     public let jadeConfig: String
-    public let boardType: String
+    public let boardType: JadeBoardType
     public let jadeState: String
     public let jadeNetworks: String
     public let jadeFeatures: String

@@ -488,6 +488,7 @@
 		812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */; };
 		812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */; };
 		813872962A04AF450092CFD2 /* LNExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813872952A04AF450092CFD2 /* LNExtensions.swift */; };
+		81430C0D2C85D2A000C57B3E /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81430C0C2C85D2A000C57B3E /* Enums.swift */; };
 		8150EE1B2BB721B700E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE1F2BB727EE00E70A12 /* greenlight_device_cert.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */; };
@@ -1371,6 +1372,7 @@
 		812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsCellModel.swift; sourceTree = "<group>"; };
 		813872932A0480E20092CFD2 /* LightningSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningSessionManager.swift; sourceTree = "<group>"; };
 		813872952A04AF450092CFD2 /* LNExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNExtensions.swift; sourceTree = "<group>"; };
+		81430C0C2C85D2A000C57B3E /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_key.txt; sourceTree = "<group>"; };
 		8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_cert.txt; sourceTree = "<group>"; };
 		8152772629F9B52F00853EA1 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
@@ -3460,6 +3462,7 @@
 				81F328F329E9ABBE00D54F1D /* AuthResolver.swift */,
 				81D404E02A1D6138002631F5 /* Utils.swift */,
 				81E6897D2A234DAC00102BFC /* InputOutput.swift */,
+				81430C0C2C85D2A000C57B3E /* Enums.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4875,6 +4878,7 @@
 				81961B1029E4EE3C00E9B94D /* HWDevice.swift in Sources */,
 				81961B1129E4EE3C00E9B94D /* TxInput.swift in Sources */,
 				81961B1329E4EE3C00E9B94D /* TxChangeOutput.swift in Sources */,
+				81430C0D2C85D2A000C57B3E /* Enums.swift in Sources */,
 				81961B1429E4EE3C00E9B94D /* Commitment.swift in Sources */,
 				816184602A3B7596007D6569 /* JadeCommands.swift in Sources */,
 				816184582A3B0DD1007D6569 /* BleJadeConnection.swift in Sources */,
