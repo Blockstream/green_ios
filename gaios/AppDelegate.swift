@@ -107,6 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         resolve2faWindow?.isHidden = false
         ScreenLocker.shared.applicationDidBecomeActive()
+        Loader.resume()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

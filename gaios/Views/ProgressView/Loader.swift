@@ -20,6 +20,7 @@ class Loader: UIView {
     var message: NSMutableAttributedString? {
         didSet { self.lblHint.attributedText = self.message }
     }
+    var isRive = false
 
     init() {
         super.init(frame: .zero)
@@ -44,7 +45,7 @@ class Loader: UIView {
         ])
     }
 
-    func start(_ isRive: Bool) {
+    func start() {
         self.addSubview(loadingIndicator)
 
         NSLayoutConstraint.activate([
@@ -70,6 +71,16 @@ class Loader: UIView {
     func stop() {
         loadingIndicator.isAnimating = false
     }
+
+    static func resume() {
+        if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
+            if let loader = window.viewWithTag(Loader.tag) as? Loader {
+                if !loader.isRive {
+                    loader.loadingIndicator.isAnimating = true
+                }
+            }
+        }
+    }
 }
 
 extension UIViewController {
@@ -93,11 +104,12 @@ extension UIViewController {
         if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
             if loader == nil {
                 let loader = Loader()
+                loader.isRive = isRive
                 window.addSubview(loader)
                 loader.message = message
                 loader.activateConstraints(in: window)
                 if !(loader.loadingIndicator.isAnimating) {
-                    loader.start(isRive)
+                    loader.start()
                 }
             }
             loader?.message = message
