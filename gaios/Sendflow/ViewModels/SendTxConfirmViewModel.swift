@@ -5,6 +5,12 @@ import greenaddress
 import UIKit
 import BreezSDK
 
+enum VerifyAddressState {
+    case noneed
+    case unverified
+    case verified
+}
+
 class SendTxConfirmViewModel {
 
     var transaction: Transaction?
@@ -87,6 +93,7 @@ class SendTxConfirmViewModel {
     var addressTitle: String { isLightning ? "id_recipient" : isConsolitating ? "Your Redeposit Address" : "id_address" }
     var amountTitle: String { isWithdraw ? "id_amount_to_receive" : isConsolitating ? "Redepositing" : "Recipient Receives" }
     var recipientReceivesHidden: Bool { isConsolitating }
+    var verifyAddressState: VerifyAddressState = .noneed
 
     private func _send() async throws -> SendTransactionSuccess {
         guard let session = session,

@@ -48,6 +48,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var lblNoteTitle: UILabel!
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var btnInfoFee: UIButton!
+    @IBOutlet weak var btnVerifyAddress: UIButton!
 
     var viewModel: SendTxConfirmViewModel!
 
@@ -58,6 +59,7 @@ class SendTxConfirmViewController: UIViewController {
         setContent()
         setStyle()
         reload()
+        updateVerifyAddressState()
     }
 
     func setContent() {
@@ -117,6 +119,28 @@ class SendTxConfirmViewController: UIViewController {
             [addressCard, lblAddressTitle].forEach {
                 $0.isHidden = true
             }
+        }
+    }
+
+    func updateVerifyAddressState() {
+        btnVerifyAddress.isHidden = false
+        btnVerifyAddress.backgroundColor = UIColor.clear
+        btnVerifyAddress.setTitleColor(UIColor.white, for: .normal)
+        btnVerifyAddress.layer.borderWidth = 1.0
+        btnVerifyAddress.cornerRadius = 5.0
+        btnVerifyAddress.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        switch viewModel.verifyAddressState {
+        case .noneed:
+            btnVerifyAddress.isHidden = true
+        case .unverified:
+            btnVerifyAddress.borderColor = .white
+            btnVerifyAddress.setImage(UIImage(), for: .normal)
+            btnVerifyAddress.setTitle("Verify address on device".localized, for: .normal)
+        case .verified:
+            btnVerifyAddress.isUserInteractionEnabled = false
+            btnVerifyAddress.borderColor = .gray
+            btnVerifyAddress.setTitle("Address verified!".localized, for: .normal)
+            btnVerifyAddress.setImage(UIImage(named: "ic_check_circle")?.maskWithColor(color: .white), for: .normal)
         }
     }
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -840,7 +840,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x7D-Uf-bEK">
-                                <rect key="frame" x="0.0" y="50" width="393" height="906"/>
+                                <rect key="frame" x="0.0" y="50" width="393" height="836"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tdR-qQ-krp">
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="734.66666666666663"/>
@@ -1102,7 +1102,7 @@
                                 <viewLayoutGuide key="frameLayoutGuide" id="gFz-El-n0B"/>
                             </scrollView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="pWL-mh-RM1">
-                                <rect key="frame" x="25" y="956" width="343" height="293"/>
+                                <rect key="frame" x="25" y="886" width="343" height="363"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="4Ed-n3-lg5">
                                         <rect key="frame" x="0.0" y="0.0" width="343" height="219"/>
@@ -1163,7 +1163,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_amount_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QQh-8Q-XYm">
-                                                        <rect key="frame" x="193.66666666666663" y="16.666666666666742" width="149.33333333333337" height="17"/>
+                                                        <rect key="frame" x="193.66666666666663" y="16.666666666666629" width="149.33333333333337" height="17"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -1238,6 +1238,17 @@
                                             <constraint firstAttribute="height" constant="54" id="Prz-Wv-Zbe"/>
                                         </constraints>
                                     </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O1L-EB-7g4" userLabel="Next">
+                                        <rect key="frame" x="0.0" y="313" width="343" height="50"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="sr7-gZ-t1G"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="-6" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        <state key="normal" title="btn_verify_state" image="ic_check_circle">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -1262,6 +1273,7 @@
                         <outlet property="amountCard" destination="fl8-ff-Dmr" id="P55-qR-q12"/>
                         <outlet property="assetCard" destination="3Md-mU-X8f" id="MJ1-jo-v7T"/>
                         <outlet property="btnInfoFee" destination="qOg-xA-CCD" id="kdZ-79-14I"/>
+                        <outlet property="btnVerifyAddress" destination="O1L-EB-7g4" id="hoB-oW-2bF"/>
                         <outlet property="iconAsset" destination="hd6-Os-nNS" id="zg3-yU-id9"/>
                         <outlet property="iconType" destination="3RA-Hf-O5s" id="VRV-Ve-SDy"/>
                         <outlet property="lblAccount1" destination="zNM-zt-TzG" id="MZm-FC-DtZ"/>
@@ -1947,14 +1959,14 @@
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_hww_jade_new" translatesAutoresizingMaskIntoConstraints="NO" id="e8p-ic-3Rf">
-                                                                                <rect key="frame" x="72.666666666666686" y="78.666666666666657" width="230" height="100"/>
+                                                                                <rect key="frame" x="72.666666666666686" y="78.666666666666686" width="230" height="100"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="100" id="bWV-cl-uwr"/>
                                                                                     <constraint firstAttribute="width" constant="230" id="rzQ-Zj-piM"/>
                                                                                 </constraints>
                                                                             </imageView>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FF6-7G-wEt">
-                                                                                <rect key="frame" x="148.66666666666666" y="126.66666666666666" width="24" height="24"/>
+                                                                                <rect key="frame" x="148.66666666666666" y="126.66666666666669" width="24" height="24"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="24" id="gQg-ST-j7a"/>
@@ -1962,7 +1974,7 @@
                                                                                 </constraints>
                                                                             </view>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bdp-Yj-ub3">
-                                                                                <rect key="frame" x="114" y="122.33333333333334" width="15" height="15"/>
+                                                                                <rect key="frame" x="114" y="122.33333333333331" width="15" height="15"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="15" id="h98-ra-xlW"/>
@@ -2022,7 +2034,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_fee_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ViE-qP-fLR">
-                                                                                                <rect key="frame" x="204.33333333333334" y="16.666666666666686" width="120.66666666666666" height="17"/>
+                                                                                                <rect key="frame" x="204.33333333333334" y="16.666666666666742" width="120.66666666666666" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>
@@ -2047,7 +2059,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_amount_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GSa-TJ-bWl">
-                                                                                                <rect key="frame" x="175.66666666666663" y="16.666666666666686" width="149.33333333333337" height="17"/>
+                                                                                                <rect key="frame" x="175.66666666666663" y="16.666666666666742" width="149.33333333333337" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>
@@ -2091,7 +2103,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_total_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3op-Fe-evd">
-                                                                                                <rect key="frame" x="195.66666666666663" y="16.666666666666629" width="129.33333333333337" height="17"/>
+                                                                                                <rect key="frame" x="195.66666666666663" y="16.666666666666742" width="129.33333333333337" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>
@@ -2549,6 +2561,7 @@
         <image name="cancel" width="14" height="14"/>
         <image name="ic_amount_clear" width="20" height="20"/>
         <image name="ic_amount_drop_down" width="7.3333334922790527" height="4.3333334922790527"/>
+        <image name="ic_check_circle" width="23" height="23"/>
         <image name="ic_clipboard" width="24" height="24.333333969116211"/>
         <image name="ic_copy_small" width="15.333333015441895" height="16"/>
         <image name="ic_hww_jade_new" width="197" height="111"/>
