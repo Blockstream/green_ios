@@ -14,7 +14,6 @@ class ReEnable2faViewController: UIViewController {
 
     var vm: ReEnable2faViewModel!
     private var selectedSubaccount: WalletItem?
-    private var verifyOnDeviceViewController: VerifyOnDeviceViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,35 +57,12 @@ class ReEnable2faViewController: UIViewController {
         do {
             try await vm.newAddress()
             await MainActor.run {
-                if let viewModel = vm.sendVerifyOnDeviceViewModel() {
-                    presentVerifyOnDeviceViewController(viewModel: viewModel)
-                }
-            }
-            let res = try await vm.validateHW()
-            await MainActor.run {
-                verifyOnDeviceViewController?.dismiss()
-                if res {
-                    DropAlert().success(message: "id_the_address_is_valid".localized)
-                    if let viewModel = vm.sendAmountViewModel() {
-                        presentSendAmountViewController(sendViewModel: viewModel)
-                    }
-                } else {
-                    DropAlert().error(message: "id_the_addresses_dont_match".localized)
+                if let viewModel = vm.sendAmountViewModel() {
+                    presentSendAmountViewController(sendViewModel: viewModel)
                 }
             }
         } catch {
-            stopLoader()
             DropAlert().error(message: error.description()?.localized ?? "")
-        }
-    }
-
-    @MainActor
-    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) {
-        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
-            vc.viewModel = viewModel
-            verifyOnDeviceViewController = vc
-            navigationController?.pushViewController(vc, animated: true)
         }
     }
 

@@ -241,7 +241,8 @@ class SendAmountViewModel {
             subaccount: subaccount,
             denominationType: denominationType,
             isFiat: isFiat,
-            txType: createTx.txType
+            txType: createTx.txType,
+            txAddress: createTx.txAddress
         )
     }
 

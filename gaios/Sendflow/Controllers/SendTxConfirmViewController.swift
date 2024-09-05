@@ -51,6 +51,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var btnVerifyAddress: UIButton!
 
     var viewModel: SendTxConfirmViewModel!
+    var verifyOnDeviceViewController: VerifyOnDeviceViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -141,6 +142,37 @@ class SendTxConfirmViewController: UIViewController {
             btnVerifyAddress.borderColor = .gray
             btnVerifyAddress.setTitle("Address verified!".localized, for: .normal)
             btnVerifyAddress.setImage(UIImage(named: "ic_check_circle")?.maskWithColor(color: .white), for: .normal)
+        }
+    }
+    @IBAction func btnVerifyAddress(_ sender: Any) {
+        if let vm = viewModel.sendVerifyOnDeviceViewModel() {
+            presentVerifyOnDeviceViewController(viewModel: vm)
+        }
+        Task {
+            do {
+                let res = try await viewModel.validateHW()
+                await MainActor.run {
+                    verifyOnDeviceViewController?.dismiss()
+                    if res {
+                        viewModel.verifyAddressState = .verified
+                        DropAlert().success(message: "id_the_address_is_valid".localized)
+                    } else {
+                        DropAlert().error(message: "id_the_addresses_dont_match".localized)
+                    }
+                }
+            } catch {
+                DropAlert().error(message: error.description()?.localized ?? "")
+            }
+        }
+    }
+    
+    @MainActor
+    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) {
+        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
+            vc.viewModel = viewModel
+            verifyOnDeviceViewController = vc
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 

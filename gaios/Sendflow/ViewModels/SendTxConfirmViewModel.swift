@@ -22,6 +22,7 @@ class SendTxConfirmViewModel {
     var sendTransaction: SendTransactionSuccess?
     var error: Error?
     var txType: TxType
+    var txAddress: Address?
     
     var isWithdraw: Bool {
         return withdrawData != nil
@@ -36,12 +37,14 @@ class SendTxConfirmViewModel {
     }
     var withdrawAmount: UInt64 = 0
 
-    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType) {
+    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, txAddress: Address?) {
         self.transaction = transaction
         self.subaccount = subaccount
         self.denominationType = denominationType
         self.isFiat = isFiat
         self.txType = txType
+        self.txAddress = txAddress
+        self.verifyAddressState = txType == .redepositExpiredUtxos && (WalletManager.current?.account.isHW ?? false) ? .unverified : .noneed
     }
 
     var isLightning: Bool { subaccount?.networkType == .lightning }
@@ -93,7 +96,7 @@ class SendTxConfirmViewModel {
     var addressTitle: String { isLightning ? "id_recipient" : isConsolitating ? "Your Redeposit Address" : "id_address" }
     var amountTitle: String { isWithdraw ? "id_amount_to_receive" : isConsolitating ? "Redepositing" : "Recipient Receives" }
     var recipientReceivesHidden: Bool { isConsolitating }
-    var verifyAddressState: VerifyAddressState = .noneed
+    var verifyAddressState: VerifyAddressState
 
     private func _send() async throws -> SendTransactionSuccess {
         guard let session = session,
@@ -182,5 +185,18 @@ class SendTxConfirmViewModel {
         case .none:
             throw TransactionError.failure(localizedDescription: "No data found", paymentHash: "")
         }
+    }
+    
+    func validateHW() async throws -> Bool {
+        guard let subaccount = subaccount, let address = txAddress else {
+            throw GaError.GenericError("Invalid address".localized)
+        }
+        return try await BleViewModel.shared.validateAddress(account: subaccount, address: address)
+    }
+
+    func sendVerifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
+        guard let subaccount = subaccount, let address = txAddress?.address else { return nil }
+        let account = AccountsRepository.shared.current
+        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false, address: address)
     }
 }

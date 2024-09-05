@@ -174,7 +174,8 @@ class SendAddressInputViewModel {
             subaccount: lightningSubaccount,
             denominationType: settings?.denomination ?? .Sats,
             isFiat: false,
-            txType: createTx?.txType ?? .transaction)
+            txType: createTx?.txType ?? .transaction, 
+            txAddress: nil)
     }
 
     func accountAssetViewModel() -> AccountAssetViewModel {
