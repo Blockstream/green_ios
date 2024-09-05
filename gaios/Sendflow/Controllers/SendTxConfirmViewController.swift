@@ -144,6 +144,7 @@ class SendTxConfirmViewController: UIViewController {
             btnVerifyAddress.setImage(UIImage(named: "ic_check_circle")?.maskWithColor(color: .white), for: .normal)
         }
     }
+
     @IBAction func btnVerifyAddress(_ sender: Any) {
         if let vm = viewModel.sendVerifyOnDeviceViewModel() {
             presentVerifyOnDeviceViewController(viewModel: vm)
@@ -155,24 +156,27 @@ class SendTxConfirmViewController: UIViewController {
                     verifyOnDeviceViewController?.dismiss()
                     if res {
                         viewModel.verifyAddressState = .verified
+                        updateVerifyAddressState()
                         DropAlert().success(message: "id_the_address_is_valid".localized)
                     } else {
                         DropAlert().error(message: "id_the_addresses_dont_match".localized)
                     }
                 }
             } catch {
+                verifyOnDeviceViewController?.dismiss()
                 DropAlert().error(message: error.description()?.localized ?? "")
             }
         }
     }
-    
+
     @MainActor
     func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) {
         let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
             vc.viewModel = viewModel
             verifyOnDeviceViewController = vc
-            navigationController?.pushViewController(vc, animated: true)
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 

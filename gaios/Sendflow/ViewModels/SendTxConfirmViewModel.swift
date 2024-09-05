@@ -195,8 +195,11 @@ class SendTxConfirmViewModel {
     }
 
     func sendVerifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
-        guard let subaccount = subaccount, let address = txAddress?.address else { return nil }
+        guard let _ = subaccount, let address = txAddress?.address else { return nil }
         let account = AccountsRepository.shared.current
-        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false, address: address)
+        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false, 
+                                       address: address,
+                                       isRedeposit: true,
+                                       isDismissible: false)
     }
 }
