@@ -434,6 +434,12 @@ public struct GetUnspentOutputsParams: Codable {
         self.sortBy = sortBy
     }
 }
+public struct GetUnspentOutputsResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case unspentOutputs = "unspent_outputs"
+    }
+    public let unspentOutputs: [String: [UnspentOutput]]
+}
 
 public struct GetUnspentOutputsResult: Codable {
     enum CodingKeys: String, CodingKey {
@@ -521,6 +527,36 @@ public struct BroadcastTransactionResult: Codable {
     public let transaction: String?
     public let psbt: String?
     public let txHash: String?
+}
+
+public struct SignPsbtParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        // The PSBT or PSET encoded in base64 format.
+        case psbt
+        // Mandatory. The UTXOs that should be signed, Unspent outputs JSON as returned by GA_get_unspent_outputs
+        case utxos
+        // For "2of2_no_recovery" subaccounts only, the blinding nonces in hex format for all outputs.
+        case blindingNonces = "blinding_nonces"
+    }
+    public let psbt: String
+    public let utxos: [String: [UnspentOutput]]
+    public let blindingNonces: [String]?
+    public init(psbt: String, utxos: [String: [UnspentOutput]], blindingNonces: [String]? = nil) {
+        self.psbt = psbt
+        self.utxos = utxos
+        self.blindingNonces = blindingNonces
+    }
+}
+
+public struct SignPsbtResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case psbt
+        case txhash
+        case error
+    }
+    public let psbt: String
+    public let txhash: String
+    public let error: String?
 }
 
 public struct GdkInit: Codable {

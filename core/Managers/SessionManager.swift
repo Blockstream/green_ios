@@ -411,6 +411,10 @@ public class SessionManager {
         return try await wrapperAsync(fun: self.session?.getUnspentOutputs, params: params)
     }
 
+    public func getUtxos(_ params: GetUnspentOutputsParams) async throws -> GetUnspentOutputsResult {
+        return try await wrapperAsync(fun: self.session?.getUnspentOutputs, params: params)
+    }
+
     func wrapperTransaction(fun: GdkFunc?, tx: Transaction, funcName: String = #function) async throws -> Transaction {
         logger.info("GDK \(self.networkType.rawValue) \(funcName) \(tx.details)")
         if let fun = try fun?(tx.details) {
@@ -587,8 +591,13 @@ public class SessionManager {
 
     public func psbtGetDetails(params: PsbtGetDetailParams) async throws -> PsbtGetDetailResult {
         try await wrapperAsync(fun: session?.PsbtGetDetails, params: params)
+    
+    public func signPsbt(params: SignPsbtParams) async throws -> SignPsbtResult {
+        try await wrapperAsync(fun: session?.signPsbt, params: params)
     }
 }
+
+
 extension SessionManager {
     @MainActor
     public func newNotification(notification: [String: Any]?) {

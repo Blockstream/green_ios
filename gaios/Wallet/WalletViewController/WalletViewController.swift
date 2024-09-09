@@ -1120,6 +1120,14 @@ extension WalletViewController: DialogScanViewControllerDelegate {
 
     func didScan(value: ScanResult, index: Int?) {
         let account = viewModel.accountCellModels[sIdx].account
+        if let psbt = value.bcur?.psbt {
+            Task {
+                let utxos = try await account.session?.getUtxos(GetUnspentOutputsParams(subaccount: account.pointer, numConfs: 0))
+                let res = try await account.session?.signPsbt(params: SignPsbtParams(psbt: psbt, utxos: utxos?.unspentOutputs ?? [:], blindingNonces: nil))
+                let res1 = try await account.session?.broadcastTransaction(BroadcastTransactionParams(psbt: res?.psbt))
+            }
+            return
+        }
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: value.result,
             preferredAccount: account,
