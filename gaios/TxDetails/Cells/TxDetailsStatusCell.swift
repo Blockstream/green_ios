@@ -84,6 +84,9 @@ class TxDetailsStatusCell: UITableViewCell {
             applyColor(UIColor.gGreenTx())
             lblStateTitle.text = "Transaction Completed".localized
             lblStateStatus.text = model.txStatus
+            if isLightning && !(model.transaction.closingTxid?.isEmpty ?? true) {
+                lblStateStatus.text = "Closed Channel".localized
+            }
             stateIcon.image = UIImage(named: "ic_tx_confirmed")!
         }
 
