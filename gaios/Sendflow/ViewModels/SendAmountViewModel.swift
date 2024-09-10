@@ -160,15 +160,20 @@ class SendAmountViewModel {
     var totalWithoutFee: Balance? {
         let feeAsset = session?.gdkNetwork.getFeeAsset()
         let assetId = createTx.assetId ?? feeAsset ?? "btc"
-        guard let amount = transaction?.amounts[assetId] else {
-            return nil
+        var amount = transaction?.amounts[assetId]
+        if createTx.txType == .redepositExpiredUtxos {
+            amount = createTx.addressee?.satoshi ?? 0
         }
+        guard let amount = amount else { return nil }
         return Balance.fromSatoshi(abs(amount), assetId: assetId)
     }
 
     var total: Balance? {
         let feeAsset = session?.gdkNetwork.getFeeAsset()
         var satoshi = totalWithoutFee?.satoshi ?? 0
+        if createTx.txType == .redepositExpiredUtxos {
+            satoshi = createTx.addressee?.satoshi ?? 0
+        }
         if feeAsset == assetId {
             satoshi += Int64(transaction?.fee ?? 0)
         }
@@ -195,14 +200,14 @@ class SendAmountViewModel {
     var walletBalanceText: String? { isFiat ? walletBalanceFiatText : walletBalanceDenomText }
 
     var amountText: String? {
-        if sendAll || createTx.txType == .sweep || createTx.txType == .redepositExpiredUtxos {
+        if createTx.txType == .sweep || (sendAll && createTx.txType != .redepositExpiredUtxos) {
             return isFiat ? totalWithoutFeeFiat : totalWithoutFeeDenom
         } else {
             return isFiat ? amountFiatText : amountDenomText
         }
     }
     var subamountText: String? {
-        if sendAll || createTx.txType == .sweep || createTx.txType == .redepositExpiredUtxos {
+        if createTx.txType == .sweep || (sendAll && createTx.txType != .redepositExpiredUtxos) {
             return isFiat ? "\(totalWithoutFeeDenom ?? "") \(denomination ?? "")" : "\(totalWithoutFeeFiat ?? "") \(fiatCurrency ?? "")"
         } else {
             return isFiat ? "\(subamountDenomText ?? "") \(denomination ?? "")" : "\(subamountFiatText ?? "") \(fiatCurrency ?? "")"
@@ -241,8 +246,7 @@ class SendAmountViewModel {
             subaccount: subaccount,
             denominationType: denominationType,
             isFiat: isFiat,
-            txType: createTx.txType,
-            txAddress: createTx.txAddress
+            txType: createTx.txType
         )
     }
 
@@ -310,23 +314,16 @@ class SendAmountViewModel {
             }
             tx.anyAmouts = createTx.anyAmounts ?? false
         case .redepositExpiredUtxos:
-            tx.sessionSubaccount = subaccount?.pointer ?? 0
-            if tx.utxos == nil {
-                let receiveAddress = try await session?.getReceiveAddress(subaccount: subaccount?.pointer ?? 0)
-                guard let address = receiveAddress?.address else {
-                    throw GaError.GenericError("Invalid address")
-                }
-                let utxos = try await getExpiredUtxos()
-                let assetIds = utxos.keys
-                let addressees = assetIds.map { Addressee.from(address: address, satoshi: 0, assetId: $0 == "btc" ? nil : $0, isGreedy: true) }
-                tx.addressees = addressees
-                tx.details["transaction_inputs"] = utxos.values.joined().compactMap { $0 } as? [[String: Any]]
-                tx.utxoStrategy = "manual"
-                createTx.addressee = addressees.first
-            }
+            let feeRate = createTx.feeRate ?? feeRate
+            let guParams = GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 1)
+            let res = try await session?.getUtxos(guParams)
+            let crtParams = CreateRedepositTransactionParams(utxos: res?.unspentOutputs ?? [:], feeRate: feeRate, feeSubaccount: subaccount?.pointer ?? 0)
+            var created = try await session?.createRedepositTransaction(params: crtParams)
+            created?.subaccount = subaccount?.hashValue
+            createTx.addressee = created?.addressees.first
+            return created
         }
-
-        if [TxType.transaction, TxType.bumpFee, TxType.redepositExpiredUtxos].contains(where: {$0 == createTx.txType }) && tx.utxos == nil {
+        if [TxType.transaction, TxType.bumpFee].contains(where: {$0 == createTx.txType }) && tx.utxos == nil {
             let unspent = try? await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
             tx.utxos = unspent ?? [:]
         }

@@ -52,16 +52,9 @@ class ReEnable2faViewController: UIViewController {
         SafeNavigationManager.shared.navigate(ExternalUrls.reEnable2faLearnMore)
     }
 
-    func send() async {
-        do {
-            try await vm.newAddress()
-            await MainActor.run {
-                if let viewModel = vm.sendAmountViewModel() {
-                    presentSendAmountViewController(sendViewModel: viewModel)
-                }
-            }
-        } catch {
-            DropAlert().error(message: error.description()?.localized ?? "")
+    func send() {
+        if let viewModel = vm.sendAmountViewModel() {
+            presentSendAmountViewController(sendViewModel: viewModel)
         }
     }
 
@@ -103,6 +96,6 @@ extension ReEnable2faViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let subaccount = vm.expiredSubaccounts[indexPath.row]
         vm.subaccount = subaccount
-        Task.detached() { [weak self] in await self?.send() }
+        send()
     }
 }

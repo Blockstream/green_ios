@@ -110,6 +110,7 @@ class VerifyOnDeviceViewController: UIViewController {
         }
     }
 
+    @MainActor
     func dismiss() {
         anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {

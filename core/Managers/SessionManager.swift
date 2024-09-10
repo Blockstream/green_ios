@@ -406,6 +406,10 @@ public class SessionManager {
         let result = res?["result"] as? [String: Any]
         return result?["unspent_outputs"] as? [String: [[String: Any]]] ?? [:]
     }
+    
+    public func getUtxos(_ params: GetUnspentOutputsParams) async throws -> GetUnspentOutputsResult {
+        return try await wrapperAsync(fun: self.session?.getUnspentOutputs, params: params)
+    }
 
     func wrapperTransaction(fun: GdkFunc?, tx: Transaction, funcName: String = #function) async throws -> Transaction {
         logger.info("GDK \(self.networkType.rawValue) \(funcName) \(tx.details)")
@@ -557,6 +561,32 @@ public class SessionManager {
             privateKey = secureRandomData(count: Wally.EC_PRIVATE_KEY_LEN)
         } while(privateKey != nil && !Wally.ecPrivateKeyVerify(privateKey: [UInt8](privateKey!)))
         return privateKey
+    }
+    
+    public func getPsbt(tx: Transaction) async throws -> String? {
+        logger.info("GDK \(self.networkType.rawValue) PsbtFromJSON \(tx.details)")
+        if let fun = try session?.PsbtFromJSON(details: tx.details) {
+            let res = try await resolve(fun)
+            logger.info("GDK \(self.networkType.rawValue) PsbtFromJSON \(res ?? [:])")
+            let result = res?["result"] as? [String: Any]
+            return result?["psbt"] as? String
+        }
+        throw GaError.GenericError()
+    }
+
+    public func createRedepositTransaction(params: CreateRedepositTransactionParams) async throws -> Transaction {
+        logger.info("GDK \(self.networkType.rawValue) createRedepositTransaction \(params.toDict() ?? [:])")
+        if let fun = try session?.createRedepositTransaction(details: params.toDict() ?? [:]) {
+            let res = try await resolve(fun)
+            logger.info("GDK \(self.networkType.rawValue) createRedepositTransaction \(res ?? [:])")
+            let result = res?["result"] as? [String: Any]
+            return Transaction(result ?? [:], subaccount: nil)
+        }
+        throw GaError.GenericError()
+    }
+
+    public func psbtGetDetails(params: PsbtGetDetailParams) async throws -> PsbtGetDetailResult {
+        try await wrapperAsync(fun: session?.PsbtGetDetails, params: params)
     }
 }
 extension SessionManager {

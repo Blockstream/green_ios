@@ -46,6 +46,8 @@ public struct Addressee: Codable {
         case type
         case bip21
         case bip21Params = "bip21-params"
+        case subtype
+        case userPath = "user_path"
     }
     public var address: String
     public var satoshi: Int64?
@@ -59,6 +61,8 @@ public struct Addressee: Codable {
     public let type: TxType?
     public var bip21: Bool?
     public let bip21Params: Bip21Params?
+    public let subtype: UInt32?
+    public let userPath: [UInt32]?
 
     public static func from(address: String, satoshi: Int64?, assetId: String?, isGreedy: Bool = false, bip21: Bool = false) -> Addressee {
         return Addressee(address: address,
@@ -72,7 +76,10 @@ public struct Addressee: Codable {
                          metadata: nil,
                          type: .transaction,
                          bip21: bip21,
-                         bip21Params: nil)
+                         bip21Params: nil,
+                         subtype: nil,
+                         userPath: nil
+        )
     }
 
     public static func fromLnInvoice(_ invoice: LnInvoice, fallbackAmount: UInt64) -> Addressee {
@@ -86,7 +93,9 @@ public struct Addressee: Codable {
                          metadata: nil,
                          type: .bolt11,
                          bip21: false,
-                         bip21Params: nil)
+                         bip21Params: nil,
+                         subtype: nil,
+                         userPath: nil)
     }
 
     public static func fromRequestData(_ requestData: LnUrlPayRequestData, input: String, satoshi: UInt64?) -> Addressee {
@@ -101,7 +110,9 @@ public struct Addressee: Codable {
             metadata: requestData.metadata,
             type: .lnurl,
             bip21: false,
-            bip21Params: nil)
+            bip21Params: nil,
+            subtype: nil,
+            userPath: nil)
     }
 }
 
@@ -116,6 +127,7 @@ public struct TransactionInputOutput: Codable {
         case assetBlinder = "assetblinder"
         case ptIdx = "pt_idx"
         case isRelevant = "is_relevant"
+        
     }
     public let address: String?
     public let domain: String?

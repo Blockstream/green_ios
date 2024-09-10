@@ -662,7 +662,7 @@ public class WalletManager {
 
     public func getExpiredSubaccounts() async throws -> [WalletItem] {
         var expiredSubaccounts = [WalletItem]()
-        for subaccount in subaccounts.filter({$0.gdkNetwork.multisig && !$0.gdkNetwork.liquid}) {
+        for subaccount in subaccounts.filter({$0.gdkNetwork.multisig}) {
             if let session = subaccount.session {
                 let params = GetUnspentOutputsParams(subaccount: subaccount.pointer, numConfs: 1, addressType: "csv", expiredAt: UInt64(session.blockHeight))
                 let res = try await subaccount.session?.getUnspentOutputs(params)

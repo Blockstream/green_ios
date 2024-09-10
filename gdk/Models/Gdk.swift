@@ -195,6 +195,53 @@ public struct SendTransactionSuccess: Codable {
     }
 }
 
+public struct CreateRedepositTransactionParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case utxos
+        case feeRate = "fee_rate"
+        case feeSubaccount = "fee_subaccount"
+    }
+    public let utxos: [String: [UnspentOutput]]
+    public let feeRate: UInt64?
+    public let feeSubaccount: UInt32
+    public init(utxos: [String: [UnspentOutput]], feeRate: UInt64?, feeSubaccount: UInt32) {
+        self.utxos = utxos
+        self.feeRate = feeRate
+        self.feeSubaccount = feeSubaccount
+    }
+}
+
+public typealias CreateRedepositTransactionResult = Transaction
+
+public struct PsbtGetDetailParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case psbt
+        case utxos
+    }
+    public let psbt: String?
+    public let utxos: [UnspentOutput]
+}
+
+public struct PsbtGetDetailItem: Codable {
+    enum CodingKeys: String, CodingKey {
+        case assetId = "asset_id"
+        case satoshi
+        case suibaccount
+    }
+    public let assetId: String?
+    public let satoshi: Int64?
+    public let suibaccount: UInt32?
+}
+
+public struct PsbtGetDetailResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case inputs
+        case outputs
+    }
+    public let inputs: [PsbtGetDetailItem]
+    public let outputs: [PsbtGetDetailItem]
+}
+
 public struct GetPreviousAddressesParams: Codable {
     enum CodingKeys: String, CodingKey {
         case subaccount
@@ -386,6 +433,13 @@ public struct GetUnspentOutputsParams: Codable {
         self.dustLimit = dustLimit
         self.sortBy = sortBy
     }
+}
+
+public struct GetUnspentOutputsResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case unspentOutputs = "unspent_outputs"
+    }
+    public let unspentOutputs: [String: [UnspentOutput]]
 }
 
 public struct UnspentOutput: Codable {

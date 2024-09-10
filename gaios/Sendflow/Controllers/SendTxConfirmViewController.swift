@@ -123,6 +123,7 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
+    @MainActor
     func updateVerifyAddressState() {
         btnVerifyAddress.isHidden = false
         btnVerifyAddress.backgroundColor = UIColor.clear
@@ -145,38 +146,52 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
-    @IBAction func btnVerifyAddress(_ sender: Any) {
-        if let vm = viewModel.sendVerifyOnDeviceViewModel() {
-            presentVerifyOnDeviceViewController(viewModel: vm)
+    @MainActor
+    func dismissVerifyOnDeviceViewController() async {
+        await verifyOnDeviceViewController?.dismissAsync(animated: true)
+    }
+    
+    func verifySingleAddress(_ address: Address) async throws {
+        if let vm = viewModel.sendVerifyOnDeviceViewModel(address) {
+            await presentVerifyOnDeviceViewController(viewModel: vm)
         }
+        do {
+            let res = try await viewModel.validateHW(address)
+            if res == false {
+                throw TransactionError.invalid(localizedDescription: "id_the_addresses_dont_match")
+            }
+            await dismissVerifyOnDeviceViewController()
+        } catch {
+            await dismissVerifyOnDeviceViewController()
+            throw TransactionError.invalid(localizedDescription: "id_the_addresses_dont_match")
+        }
+    }
+
+    @IBAction func btnVerifyAddress(_ sender: Any) {
         Task {
             do {
-                let res = try await viewModel.validateHW()
+                for address in viewModel.txAddresses ?? [] {
+                    try await verifySingleAddress(address)
+                }
                 await MainActor.run {
-                    verifyOnDeviceViewController?.dismiss()
-                    if res {
-                        viewModel.verifyAddressState = .verified
-                        updateVerifyAddressState()
-                        DropAlert().success(message: "id_the_address_is_valid".localized)
-                    } else {
-                        DropAlert().error(message: "id_the_addresses_dont_match".localized)
-                    }
+                    viewModel.verifyAddressState = .verified
+                    updateVerifyAddressState()
+                    DropAlert().success(message: "id_the_address_is_valid".localized)
                 }
             } catch {
-                verifyOnDeviceViewController?.dismiss()
                 DropAlert().error(message: error.description()?.localized ?? "")
             }
         }
     }
 
     @MainActor
-    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) {
+    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) async {
         let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
             vc.viewModel = viewModel
             verifyOnDeviceViewController = vc
             vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+            await presentAsync(vc, animated: false)
         }
     }
 
@@ -216,6 +231,13 @@ class SendTxConfirmViewController: UIViewController {
             addressTextView.text = viewModel.address ?? ""
             addressTextView.textContainer.maximumNumberOfLines = 1
             addressTextView.textContainer.lineBreakMode = .byTruncatingMiddle
+        } else if viewModel.multiAddressees {
+            payRequestByStack.isHidden = true
+            addressTextView.text = "Multiple addresses".localized
+            lblAssetName.text = "id_multiple_assets".localized
+            lblAmountValue.text = "id_multiple_assets".localized
+            lblAmountFee.text = ""
+            totalsView.isHidden = true
         } else {
             payRequestByStack.isHidden = true
             AddressDisplay.configure(

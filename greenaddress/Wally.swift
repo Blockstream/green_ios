@@ -224,9 +224,4 @@ public class Wally {
         }
         return String(cString: resultPtr)
     }
-    public func signPsbt(psbt: UnsafeMutablePointer<green.wally_psbt>) {
-        let wallyTx: green.wally_tx
-        wally_psbt_finalize(psbt, 0)
-        // wally_psbt_extract(psbt, 0, &wallyTx)
-    }
 }

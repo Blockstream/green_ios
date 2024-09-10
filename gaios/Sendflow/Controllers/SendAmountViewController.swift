@@ -271,7 +271,7 @@ class SendAmountViewController: KeyboardViewController {
 
     func configureRedeposit() {
         if viewModel.redeposit2faType != nil {
-            btnNext.setTitle("Redeposit".localized, for: .normal)
+            btnNext.setTitle("id_redeposit".localized, for: .normal)
             [lblAvailable, amountStack, actionsStack, totalsSeparator, totalsSumView, btnSendall, btnClear].forEach { $0?.isHidden = true }
         }
         switch viewModel.redeposit2faType {
@@ -315,7 +315,7 @@ class SendAmountViewController: KeyboardViewController {
     @MainActor
     func reloadNavigationBar() {
         if viewModel.redeposit2faType != nil {
-            title = "Re-enable 2FA".localized
+            title = "id_reenable_2fa".localized
         } else if isWithdraw {
             title = "id_withdraw".localized
         } else {
@@ -501,7 +501,7 @@ class SendAmountViewController: KeyboardViewController {
         default:
             break
         }
-        if viewModel.sendAll || viewModel.createTx.txType == .sweep {
+        if viewModel.sendAll || viewModel.createTx.txType == .sweep || viewModel.createTx.txType == .redepositExpiredUtxos {
             reloadAmount()
         }
         reloadError(viewModel.error != nil)

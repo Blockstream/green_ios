@@ -22,7 +22,6 @@ class SendTxConfirmViewModel {
     var sendTransaction: SendTransactionSuccess?
     var error: Error?
     var txType: TxType
-    var txAddress: Address?
 
     var isWithdraw: Bool {
         return withdrawData != nil
@@ -36,14 +35,16 @@ class SendTxConfirmViewModel {
         return withdrawData.defaultDescription
     }
     var withdrawAmount: UInt64 = 0
+    var txAddresses: [Address]? {
+        transaction?.addressees.compactMap { Address(address: $0.address, subtype: $0.subtype, userPath: $0.userPath, isGreedy: $0.isGreedy) }
+    }
 
-    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, txAddress: Address?) {
+    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType) {
         self.transaction = transaction
         self.subaccount = subaccount
         self.denominationType = denominationType
         self.isFiat = isFiat
         self.txType = txType
-        self.txAddress = txAddress
         self.verifyAddressState = txType == .redepositExpiredUtxos && (WalletManager.current?.account.isHW ?? false) ? .unverified : .noneed
     }
 
@@ -97,6 +98,13 @@ class SendTxConfirmViewModel {
     var amountTitle: String { isWithdraw ? "id_amount_to_receive" : isConsolitating ? "Redepositing" : "Recipient Receives" }
     var recipientReceivesHidden: Bool { isConsolitating }
     var verifyAddressState: VerifyAddressState
+
+    var multiAddressees: Bool {
+        if txType != .redepositExpiredUtxos {
+            return false
+        }
+        return (transaction?.addressees.count ?? 0) > 1 ? true : false
+    }
 
     private func _send() async throws -> SendTransactionSuccess {
         guard let session = session,
@@ -187,15 +195,15 @@ class SendTxConfirmViewModel {
         }
     }
 
-    func validateHW() async throws -> Bool {
-        guard let subaccount = subaccount, let address = txAddress else {
-            throw GaError.GenericError("Invalid address".localized)
+    func validateHW(_ address: Address) async throws -> Bool {
+        guard let subaccount = subaccount else {
+            throw GaError.GenericError("Invalid subaccount".localized)
         }
         return try await BleViewModel.shared.validateAddress(account: subaccount, address: address)
     }
 
-    func sendVerifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
-        guard let _ = subaccount, let address = txAddress?.address else { return nil }
+    func sendVerifyOnDeviceViewModel(_ address: Address) -> VerifyOnDeviceViewModel? {
+        guard let _ = subaccount, let address = address.address else { return nil }
         let account = AccountsRepository.shared.current
         return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
                                        address: address,

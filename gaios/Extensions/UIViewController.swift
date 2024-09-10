@@ -118,4 +118,22 @@ extension UIViewController {
         view.removeFromSuperview()
         removeFromParent()
     }
+    
+    @MainActor
+    public func presentAsync(_ vc: UIViewController, animated: Bool) async {
+      await withCheckedContinuation { continuation in
+        present(vc, animated: animated) {
+          continuation.resume()
+        }
+      }
+    }
+
+    @MainActor
+    public func dismissAsync(animated: Bool) async {
+      await withCheckedContinuation { continuation in
+        dismiss(animated: animated) {
+          continuation.resume()
+        }
+      }
+    }
 }
