@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improve QR code scanner
 - 2fa dialog: improved usability with native keyboard
 - Receive screen UI updates
+- Update gdk to 0.73.0
 
 ## [4.0.32] - 2024-08-22
 
