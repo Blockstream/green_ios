@@ -69,6 +69,11 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblSPVliquidTestnetServer: UILabel!
     @IBOutlet weak var fieldSPVliquidTestnetServer: UITextField!
 
+    @IBOutlet weak var cardElectrumGapLimit: UIView!
+    @IBOutlet weak var lblElectrumGapLimit: UILabel!
+    @IBOutlet weak var fieldElectrumGapLimit: UITextField!
+    @IBOutlet weak var lblDescElectrumGapLimit: UILabel!
+
     @IBOutlet weak var cardTxCheck: UIView!
     @IBOutlet weak var lblTxCheckTitle: UILabel!
     @IBOutlet weak var lblTxCheckHint: UILabel!
@@ -136,6 +141,7 @@ class WalletSettingsViewController: KeyboardViewController {
         lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_server", comment: "")
         lblSPVliquidTestnetServer.text = NSLocalizedString("id_liquid_testnet_electrum_server", comment: "")
         lblSPVtestnetServer.text = NSLocalizedString("id_testnet_electrum_server", comment: "")
+        lblElectrumGapLimit.text = NSLocalizedString("Electrum server gap limit", comment: "")
         fieldSPVbtcServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVliquidServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVtestnetServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
@@ -144,6 +150,7 @@ class WalletSettingsViewController: KeyboardViewController {
         lblTxCheckHint.text = NSLocalizedString("id_verify_your_bitcoin", comment: "")
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
         lblMultiHint.text = NSLocalizedString("id_double_check_spv_with_other", comment: "")
+        lblDescElectrumGapLimit.text = "Number of consecutive empty addresses to monitor".localized
         btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         fieldSPVbtcServer.placeholder = GdkSettings.btcElectrumSrvDefaultEndPoint
@@ -155,7 +162,7 @@ class WalletSettingsViewController: KeyboardViewController {
     func setStyle() {
         btnCancel.cornerRadius = 4.0
         btnSave.cornerRadius = 4.0
-        let fields = [fieldProxyIp, fieldSPVbtcServer, fieldSPVliquidServer, fieldSPVtestnetServer, fieldSPVliquidTestnetServer]
+        let fields = [fieldProxyIp, fieldSPVbtcServer, fieldSPVliquidServer, fieldSPVtestnetServer, fieldSPVliquidTestnetServer, fieldElectrumGapLimit]
         fields.forEach {
             $0?.setLeftPaddingPoints(10.0)
             $0?.setRightPaddingPoints(10.0)
@@ -203,7 +210,9 @@ class WalletSettingsViewController: KeyboardViewController {
         if let uri = gdkSettings.liquidTestnetElectrumSrv, !uri.isEmpty {
             fieldSPVliquidTestnetServer.text = uri
         }
-
+        if let gap = gdkSettings.gapLimit {
+            fieldElectrumGapLimit.text = "\(gap)"
+        }
         switchPSPVPersonalNode(switchPSPVPersonalNode)
         switchProxyChange(switchProxy)
 
@@ -259,6 +268,10 @@ class WalletSettingsViewController: KeyboardViewController {
             return
         }
         let gdkSettings = AppSettings.shared.gdkSettings
+        var gapLimit: Int? = nil
+        if let gapText = fieldElectrumGapLimit.text, !gapText.isEmpty {
+            gapLimit = Int(gapText)
+        }
         let newSettings = GdkSettings(
             tor: switchTor.isOn,
             proxy: switchProxy.isOn,
@@ -267,10 +280,11 @@ class WalletSettingsViewController: KeyboardViewController {
             spvEnabled: switchTxCheck.isOn,
             personalNodeEnabled: switchPSPVPersonalNode.isOn,
             btcElectrumSrv: fieldSPVbtcServer.text,
-            liquidElectrumSrv: fieldSPVliquidServer.text ?? "",
+            liquidElectrumSrv: fieldSPVliquidServer.text,
             testnetElectrumSrv: fieldSPVtestnetServer.text,
             liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text,
-            electrumTls: switchPSPVPersonalNode.isOn && switchElectrumTls.isOn
+            electrumTls: switchPSPVPersonalNode.isOn && switchElectrumTls.isOn,
+            gapLimit: gapLimit
         )
         AppSettings.shared.testnet = switchTestnet.isOn
         AppSettings.shared.experimental = switchExperimental.isOn
