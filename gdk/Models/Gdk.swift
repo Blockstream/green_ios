@@ -442,7 +442,7 @@ public struct BroadcastTransactionResult: Codable {
     enum CodingKeys: String, CodingKey {
         case transaction
         case psbt
-        case txHash = "tx_hash"
+        case txHash = "txhash"
     }
     public let transaction: String?
     public let psbt: String?
