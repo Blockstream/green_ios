@@ -38,7 +38,7 @@ class ReEnable2faSuccessViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.subTitle)
         btnDone.setStyle(.primary)
         lblHint.setStyle(.txtCard)

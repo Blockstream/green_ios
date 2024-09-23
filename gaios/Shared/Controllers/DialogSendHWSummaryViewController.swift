@@ -105,8 +105,7 @@ class DialogSendHWSummaryViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         bg.cornerRadius = 8.0
     }
 

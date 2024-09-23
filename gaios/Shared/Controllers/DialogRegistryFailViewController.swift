@@ -33,8 +33,7 @@ class DialogRegistryFailViewController: UIViewController {
         btnContinue.cornerRadius = 4.0
         btnContinue.borderWidth = 2.0
 
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
 
         view.alpha = 0.0
         updateUI()

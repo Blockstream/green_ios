@@ -121,8 +121,7 @@ class DialogErrorViewController: DialogViewController {
         btnCopy.setStyle(.outlinedWhite)
         emailField.setLeftPaddingPoints(10.0)
         emailField.setRightPaddingPoints(10.0)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         emailField.cornerRadius = 5.0
         messageTextView.cornerRadius = 5.0
     }

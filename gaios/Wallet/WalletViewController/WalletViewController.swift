@@ -320,6 +320,7 @@ class WalletViewController: UIViewController {
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
+        actionsBg.backgroundColor = UIColor.gGrayElement()
         btnWelcomeCreate.setStyle(.primary)
         btnScanView.layer.cornerRadius = 10.0
     }

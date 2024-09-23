@@ -44,8 +44,7 @@ class DialogSafeNavigationViewController: UIViewController {
         btnContinue.setStyle(.primary)
         btnCancel.setStyle(.outlined)
         btnCopy.setStyle(.outlined)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
     }
 
     override func viewDidAppear(_ animated: Bool) {

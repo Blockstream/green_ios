@@ -37,8 +37,7 @@ class DialogRecipientDeleteViewController: KeyboardViewController {
         btnDelete.backgroundColor = UIColor.customDestructiveRed()
         btnDelete.setTitleColor(.white, for: .normal)
 
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
 
         view.alpha = 0.0
         view.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletDeleteScreen.view

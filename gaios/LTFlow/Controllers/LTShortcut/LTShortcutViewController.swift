@@ -63,9 +63,7 @@ class LTShortcutViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
-        cardView.borderWidth = 1.0
-        cardView.borderColor = .white.withAlphaComponent(0.05)
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.titleCard)
         lblHint.setStyle(.txtCard)
         btnLearnMore.setStyle(.inline)

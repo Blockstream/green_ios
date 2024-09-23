@@ -92,8 +92,7 @@ class DialogDenominationViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
     }

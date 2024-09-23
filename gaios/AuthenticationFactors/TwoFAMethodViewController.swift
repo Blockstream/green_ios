@@ -61,9 +61,7 @@ class TwoFAMethodViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
-        cardView.borderWidth = 1.0
-        cardView.borderColor = .white.withAlphaComponent(0.05)
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.txtBigger)
         btnCancel.setStyle(.inline)
 
@@ -77,6 +75,7 @@ class TwoFAMethodViewController: UIViewController {
         }
         [cardSms, cardCall, cardEmail, cardGauth].forEach {
             $0?.cornerRadius = 5.0
+            $0?.backgroundColor = UIColor.gGrayElement()
         }
     }
 

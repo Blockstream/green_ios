@@ -61,7 +61,7 @@ class SendSuccessViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.subTitle)
         btnTxId.setStyle(.inlineGray)
         lblAddress.setStyle(.txtBigger)

@@ -130,8 +130,7 @@ class DialogFeedbackViewController: KeyboardViewController {
         btnCopy.setStyle(.outlinedWhite)
         emailField.setLeftPaddingPoints(10.0)
         emailField.setRightPaddingPoints(10.0)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         segment.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
         segment.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.lightGray], for: .normal)
         emailField.cornerRadius = 5.0

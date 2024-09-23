@@ -45,6 +45,9 @@ class WOSetupViewController: KeyboardViewController {
         passwordTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.passwordField
         loginButton.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.loginBtn
 
+        [usernameTextField, passwordTextField].forEach{
+            $0?.setStyle(.input)
+        }
         AnalyticsManager.shared.recordView(.onBoardWatchOnlyCredentials)
     }
 

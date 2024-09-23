@@ -5,6 +5,15 @@ import core
 class DesignableView: UIView {
 }
 
+enum PanelStyle {
+    case alert
+    case bottomsheet
+}
+
+enum ElementStyle {
+    case input
+}
+
 extension UIView {
 
     var cornerRadius: CGFloat {
@@ -156,5 +165,30 @@ extension UIView {
         rotation.isCumulative = true
         rotation.repeatCount = .greatestFiniteMagnitude
         self.layer.add(rotation, forKey: "rotationAnimation")
+    }
+}
+
+extension UIView {
+    func setStyle(_ type: PanelStyle) {
+        switch type {
+        case .alert:
+            backgroundColor = UIColor.gGrayPanel()
+            layer.cornerRadius = 10
+            borderWidth = 1.0
+            borderColor = UIColor.white.withAlphaComponent(0.1)
+        case .bottomsheet:
+            backgroundColor = UIColor.gGrayPanel()
+            layer.cornerRadius = 20.0
+            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        }
+    }
+}
+
+extension UIView {
+    func setStyle(_ type: ElementStyle) {
+        switch type {
+        case .input:
+            backgroundColor = UIColor.gGrayElement()
+        }
     }
 }

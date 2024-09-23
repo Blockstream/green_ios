@@ -29,7 +29,7 @@ class Loader: UIView {
         setup()
         rectangle.cornerRadius = 5.0
         rectangle.borderWidth = 1.0
-        rectangle.borderColor = .white.withAlphaComponent(0.05)
+        rectangle.borderColor = UIColor.white.withAlphaComponent(0.1)
     }
 
     required init?(coder aDecoder: NSCoder) {

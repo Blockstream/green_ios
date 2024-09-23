@@ -131,8 +131,7 @@ class DialogPassphraseViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         askView.borderWidth = 1.0
@@ -142,6 +141,7 @@ class DialogPassphraseViewController: KeyboardViewController {
         fieldPassphrase.setLeftPaddingPoints(15.0)
         fieldPassphrase.setRightPaddingPoints(15.0)
         fieldPassphrase.leftViewMode = .always
+        fieldPassphrase.backgroundColor = UIColor.gGrayElement()
         btnConfirm.setStyle(.primary)
         btnClear.setStyle(.inline)
     }

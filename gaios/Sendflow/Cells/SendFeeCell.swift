@@ -21,8 +21,10 @@ class SendFeeCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
         bg.cornerRadius = 4.0
         bgTopBox.cornerRadius = 4.0
+        bgTopBox.backgroundColor = UIColor.gGrayElement()
         btnDisclose.isUserInteractionEnabled = false
         btnDisclose.cornerRadius = 4.0
 

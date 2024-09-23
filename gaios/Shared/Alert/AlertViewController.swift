@@ -39,12 +39,10 @@ class AlertViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.title)
         lblHint.setStyle(.txt)
         btnOK.setStyle(.primary)
-        cardView.borderWidth = 1.0
-        cardView.borderColor = .white.withAlphaComponent(0.05)
     }
 
     override func viewWillAppear(_ animated: Bool) {

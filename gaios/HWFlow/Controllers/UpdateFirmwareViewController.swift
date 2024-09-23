@@ -58,7 +58,7 @@ class UpdateFirmwareViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         lblHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         lblTitle.textColor = .white

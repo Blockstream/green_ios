@@ -59,8 +59,7 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
         btnConfirm.setStyle(.primaryDisabled)
         fieldPassphrase.setLeftPaddingPoints(10.0)
         fieldPassphrase.setRightPaddingPoints(10.0)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         btnLearn.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
     }
 

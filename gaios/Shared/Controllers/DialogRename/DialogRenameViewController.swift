@@ -137,14 +137,14 @@ class DialogRenameViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         nameTextField.layer.cornerRadius = 5.0
         nameTextField.setLeftPaddingPoints(15.0)
         nameTextField.setRightPaddingPoints(15.0)
         nameTextField.leftViewMode = .always
+        nameTextField.setStyle(.input)
     }
 
     func dismiss(_ action: RenameAction) {

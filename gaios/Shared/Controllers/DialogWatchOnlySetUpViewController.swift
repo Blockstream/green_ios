@@ -76,8 +76,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         usernameField.setRightPaddingPoints(10.0)
         passwordField.setLeftPaddingPoints(10.0)
         passwordField.setRightPaddingPoints(10.0)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
     }
 
     func updateSecureBtn() {

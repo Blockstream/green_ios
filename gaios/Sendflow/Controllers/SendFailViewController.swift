@@ -50,7 +50,7 @@ class SendFailViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         bgTextView.cornerRadius = 4.0
         lblTitle.setStyle(.subTitle)
         btnAgain.setStyle(.primary)

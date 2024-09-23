@@ -62,7 +62,7 @@ class BleUnavailableViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.subTitle)
         lblHint.setStyle(.txtCard)
         btnCancel.setStyle(.outlinedWhite)

@@ -97,8 +97,8 @@ class DialogCustomFeeViewController: KeyboardViewController {
         feeTextField.placeholder = ""
         feeTextField.setLeftPaddingPoints(10.0)
         feeTextField.setRightPaddingPoints(10.0)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
+        feeTextField.setStyle(.input)
         handle.cornerRadius = 1.5
     }
 

@@ -49,8 +49,8 @@ class LTRemoveShortcutViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
-
+        cardView.setStyle(.alert)
+        
         lblTitle.setStyle(.subTitle)
         lblHint.setStyle(.txt)
         btnCancel.setStyle(.outlinedWhite)

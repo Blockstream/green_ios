@@ -23,8 +23,7 @@ class DialogAccountIdViewController: UIViewController {
 
         lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
         lblHint.text = NSLocalizedString("id_provide_this_id_to_the_asset", comment: "")
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         view.alpha = 0.0
 
         lblAccountId.text = wallet?.receivingId ?? ""

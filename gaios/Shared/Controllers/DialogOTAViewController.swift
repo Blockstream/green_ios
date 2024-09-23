@@ -54,8 +54,7 @@ class DialogOTAViewController: UIViewController {
         btnUpdate.setStyle(.primary)
         btnReadMore.setStyle(.primary)
         btnCancel.setStyle(.outlined)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
     }
 
     override func viewDidAppear(_ animated: Bool) {

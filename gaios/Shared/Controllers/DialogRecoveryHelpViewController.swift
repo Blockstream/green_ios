@@ -40,8 +40,7 @@ class DialogRecoveryHelpViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
 
         btnHelpCenter.cornerRadius = 4.0
         btnHelpCenter.backgroundColor = UIColor.customMatrixGreen()

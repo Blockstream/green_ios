@@ -232,6 +232,7 @@ class AccountViewController: UIViewController {
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
+        actionsBg.backgroundColor = UIColor.gGrayElement()
         btnScanView.layer.cornerRadius = 10.0
     }
 

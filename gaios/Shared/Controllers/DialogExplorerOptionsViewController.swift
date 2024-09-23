@@ -37,8 +37,7 @@ class DialogExplorerOptionsViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
     }
 
     override func viewDidAppear(_ animated: Bool) {

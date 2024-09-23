@@ -120,7 +120,7 @@ class TwoFactorAuthViewController: KeyboardViewController {
         [cardInfo, cardView].forEach {
             $0.layer.cornerRadius = 10
             $0.borderWidth = 1.0
-            $0.borderColor = .white.withAlphaComponent(0.05)
+            $0.borderColor = UIColor.white.withAlphaComponent(0.1)
         }
         lblTitle.setStyle(.subTitle)
         btnHelp.setStyle(.inline)

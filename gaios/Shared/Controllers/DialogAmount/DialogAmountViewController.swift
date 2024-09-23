@@ -167,8 +167,7 @@ class DialogAmountViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         amountTextField.font = UIFont.systemFont(ofSize: 20.0, weight: .medium)
@@ -176,6 +175,7 @@ class DialogAmountViewController: KeyboardViewController {
         lblHint.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         lblHint.textColor = .white.withAlphaComponent(0.4)
         bgField.layer.cornerRadius = 5.0
+        amountTextField.backgroundColor = UIColor.gGrayElement()
     }
 
     func getSatoshi() -> Int64? {

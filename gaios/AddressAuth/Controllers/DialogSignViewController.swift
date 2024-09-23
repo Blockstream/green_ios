@@ -105,8 +105,7 @@ class DialogSignViewController: KeyboardViewController {
 
     func setStyle() {
         btnSign.setStyle(.primaryDisabled)
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        cardView.setStyle(.bottomsheet)
         messageTextView.cornerRadius = 5.0
         [btnPaste, btnCopy].forEach {
             $0?.cornerRadius = 5.0

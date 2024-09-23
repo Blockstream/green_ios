@@ -38,7 +38,7 @@ class LTExperimentalViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.txtBigger)
         lblHint.setStyle(.txt)
         btnContinue.setStyle(.primary)

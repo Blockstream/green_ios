@@ -173,6 +173,9 @@ extension UIColor {
     class func gGrayPanel() -> UIColor {
         return UIColor(named: "gGrayPanel")!
     }
+    class func gGrayElement() -> UIColor {
+        return UIColor(named: "gGrayElement")!
+    }
 }
 
 extension UIColor {

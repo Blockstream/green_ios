@@ -51,7 +51,7 @@ class LTErrorViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.txtBigger)
         lblHint1.setStyle(.txtCard)
         lblHint2.setStyle(.txtCard)

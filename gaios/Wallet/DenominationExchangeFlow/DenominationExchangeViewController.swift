@@ -56,9 +56,7 @@ class DenominationExchangeViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
-        cardView.borderWidth = 1
-        cardView.borderColor = .white.withAlphaComponent(0.05)
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.titleCard)
         btnCancel.setStyle(.inline)
         btnOk.setStyle(.inline)
@@ -71,6 +69,7 @@ class DenominationExchangeViewController: UIViewController {
         }
         [denBg, exBg].forEach {
             $0?.cornerRadius = 5.0
+            $0?.backgroundColor = UIColor.gGrayElement()
         }
     }
 
