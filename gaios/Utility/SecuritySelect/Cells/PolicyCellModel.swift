@@ -15,19 +15,19 @@ struct PolicyCellModel {
     static func from(policy: PolicyCellType) -> PolicyCellModel {
         switch policy {
         case .LegacySegwit:
-            return PolicyCellModel(hint: "Simple, portable, standard account, secured by your key, the recovery phrase.", policy: policy)
+            return PolicyCellModel(hint: "id_simple_portable_standard".localized, policy: policy)
         case .Lightning:
-            return PolicyCellModel(hint: "Fast transactions on the Lightning Network, powered by Greenlight.", policy: policy)
+            return PolicyCellModel(hint: "id_fast_transactions_on_the".localized, policy: policy)
         case .TwoFAProtected:
-            return PolicyCellModel(hint: "Quick setup 2FA account, ideal for active spenders (2FA expires if you don't move funds for 1 year).", policy: policy)
+            return PolicyCellModel(hint: "id_quick_setup_2fa_account_ideal".localized, policy: policy)
         case .TwoOfThreeWith2FA:
-            return PolicyCellModel(hint: "Permanent 2FA account, ideal for long term hodling, optionally with 3rd emergency key on hardware wallet.", policy: policy)
+            return PolicyCellModel(hint: "id_permanent_2fa_account_ideal_for".localized, policy: policy)
         case .NativeSegwit:
-            return PolicyCellModel(hint: "Cheaper singlesig option. Addresses are Native SegWit Bech32.", policy: policy)
+            return PolicyCellModel(hint: "id_cheaper_singlesig_option".localized, policy: policy)
         // case .Taproot:
         //    return PolicyCellModel(hint: "Cheaper and more private singlesig option. Addresses are Bech32m.", policy: policy)
         case .Amp:
-            return PolicyCellModel(hint: "Account for special assets, monitored or authorized by the asset issuer.", policy: policy)
+            return PolicyCellModel(hint: "id_account_for_special_assets".localized, policy: policy)
         }
     }
 }

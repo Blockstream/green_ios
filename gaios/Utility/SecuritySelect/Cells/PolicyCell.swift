@@ -29,8 +29,8 @@ class PolicyCell: UITableViewCell {
         bgTypeDesc.cornerRadius = bgType.frame.size.height / 2.0
         lblName.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         disableView.cornerRadius = 5.0
-        lblDisableTitle.text = "Added Already!".localized
-        lblDisableHint.text = "You cannot add more than one\nLightning Account.".localized
+        lblDisableTitle.text = "id_added_already".localized
+        lblDisableHint.text = "id_you_cannot_add_more_than_one".localized
         lblDisableTitle.setStyle(.txtBigger)
         [lblHint, lblDisableHint].forEach {
             $0.setStyle(.txtCard)

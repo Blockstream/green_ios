@@ -88,12 +88,12 @@ class VerifyOnDeviceViewController: UIViewController {
 
     func setContent() {
         copyView.isHidden = false
-        lblTitle.text = "Verify on Device".localized
+        lblTitle.text = "id_verify_on_device".localized
         if viewModel.isRedeposit {
             lblTitle.text = "Verify redeposit address".localized
             copyView.isHidden = true
         }
-        lblHint.text = "Please verify that the address shown on your hardware wallet matches the one on your phone.".localized
+        lblHint.text = "id_please_verify_that_the_address".localized
         btnCopy.setTitle("id_copy".localized, for: .normal)
     }
 

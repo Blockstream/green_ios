@@ -13,7 +13,7 @@ enum MoreOptPrefs: Int, CaseIterable {
         case .sweep:
             return "id_sweep_from_paper_wallet".localized
         case .addressAuth:
-            return "List of Addresses"
+            return "id_list_of_addresses".localized
         }
     }
 

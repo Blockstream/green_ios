@@ -30,16 +30,15 @@ class TxDetailsStatusCellModel {
 
     var txStatusExtended: String {
 
-        let str = "Your transaction was successfully" + " "
         switch transaction.type {
         case .redeposit:
-            return str + "id_redeposited".localized.lowercased()
+            return "id_your_transaction_was".localized
         case .incoming:
-            return str + "id_received".localized.lowercased()
+            return "id_the_transaction_was".localized
         case .outgoing:
-            return str + "id_sent".localized.lowercased()
+            return "id_your_transaction_was".localized
         case .mixed:
-            return str + "id_swapped".localized.lowercased()
+            return "id_your_transaction_was".localized
         }
     }
 

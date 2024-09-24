@@ -42,10 +42,10 @@ class LTRemoveShortcutViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Payments Will Fail!".localized
-        lblHint.text = "You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.".localized
+        lblTitle.text = "id_payments_will_fail".localized
+        lblHint.text = "id_you_will_stop_receiving_push.".localized
         btnCancel.setTitle("id_cancel".localized, for: .normal)
-        btnRemove.setTitle("Remove Shortcut".localized, for: .normal)
+        btnRemove.setTitle("id_remove_lightning_shortcut".localized, for: .normal)
     }
 
     func setStyle() {

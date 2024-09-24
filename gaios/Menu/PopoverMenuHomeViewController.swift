@@ -61,7 +61,7 @@ extension PopoverMenuHomeViewController: UITableViewDataSource, UITableViewDeleg
             case .edit:
                 cell.textLabel?.text = "id_rename_wallet".localized
             case .delete:
-                cell.textLabel?.text = isDerivedLightning ? "Remove Lightning Shortcut".localized : "id_remove_wallet".localized
+                cell.textLabel?.text = isDerivedLightning ? "id_remove_lightning_shortcut".localized : "id_remove_wallet".localized
             }
             return cell
         }

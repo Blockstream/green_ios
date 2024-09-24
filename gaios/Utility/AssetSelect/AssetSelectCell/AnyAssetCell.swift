@@ -30,7 +30,7 @@ class AnyAssetCell: UITableViewCell {
             self.lblAny.text = "id_receive_any_liquid_asset".localized
             imgView.image = UIImage(named: "default_asset_liquid_icon")!
         case .amp:
-            self.lblAny.text = "Receive any Amp Asset".localized
+            self.lblAny.text = "id_receive_any_amp_asset".localized
             imgView.image = UIImage(named: "default_asset_amp_icon")!
         }
     }

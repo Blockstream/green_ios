@@ -127,12 +127,12 @@ class WalletSettingsViewController: KeyboardViewController {
         lblAnalyticsTitle.text = NSLocalizedString("id_help_green_improve", comment: "")
         lblAnalyticsHint.text = NSLocalizedString("id_enable_limited_usage_data", comment: "")
         btnAnalytics.setTitle(NSLocalizedString("id_more_info", comment: ""), for: .normal)
-        lblExperimentalTitle.text = "Enable experimental features"
-        lblExperimentalHint.text = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk."
+        lblExperimentalTitle.text = "id_enable_experimental_features".localized
+        lblExperimentalHint.text = "id_experimental_features_might".localized
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
         fieldProxyIp.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
-        lblRememberHWTitle.text = "Remember hardware devices".localized
+        lblRememberHWTitle.text = "id_remember_hardware_devices".localized
         lblRememberHWHint.text = ""
         lblSPVTitle.text = NSLocalizedString("id_custom_servers_and_validation", comment: "")
         lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_electrum_server", comment: "")
@@ -141,16 +141,16 @@ class WalletSettingsViewController: KeyboardViewController {
         lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_server", comment: "")
         lblSPVliquidTestnetServer.text = NSLocalizedString("id_liquid_testnet_electrum_server", comment: "")
         lblSPVtestnetServer.text = NSLocalizedString("id_testnet_electrum_server", comment: "")
-        lblElectrumGapLimit.text = NSLocalizedString("Electrum server gap limit", comment: "")
+        lblElectrumGapLimit.text = NSLocalizedString("id_electrum_server_gap_limit", comment: "")
         fieldSPVbtcServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVliquidServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVtestnetServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
-        lblElectrumTls.text = NSLocalizedString("Enable TLS", comment: "")
+        lblElectrumTls.text = NSLocalizedString("id_enable_tls", comment: "")
         lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
         lblTxCheckHint.text = NSLocalizedString("id_verify_your_bitcoin", comment: "")
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
         lblMultiHint.text = NSLocalizedString("id_double_check_spv_with_other", comment: "")
-        lblDescElectrumGapLimit.text = "Number of consecutive empty addresses to monitor".localized
+        lblDescElectrumGapLimit.text = "id_number_of_consecutive_empty".localized
         btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         fieldSPVbtcServer.placeholder = GdkSettings.btcElectrumSrvDefaultEndPoint

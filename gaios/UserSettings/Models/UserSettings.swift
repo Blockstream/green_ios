@@ -12,7 +12,7 @@ enum USSection: String, Codable, CaseIterable {
 
 enum USItem: String, Codable, CaseIterable {
     case Logout = "id_logout"
-    case UnifiedDenominationExchange = "Denomination & Exchange Rate"
+    case UnifiedDenominationExchange = "id_denomination__exchange_rate"
     case ArchievedAccounts = "id_archived_accounts"
     case WatchOnly = "id_watchonly"
     case ChangePin = "id_change_pin"

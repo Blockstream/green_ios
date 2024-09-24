@@ -68,8 +68,8 @@ class MasterKeyViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Green needs the master blinding key from Jade".localized
-        lblHint.text = "to show balances and transactions on Liquid accounts up to 10x faster at every login, and it's necessary to use Liquid singlesig accounts."
+        lblTitle.text = "id_green_needs_the_master_blinding".localized
+        lblHint.text = "id_to_show_balances_and".localized
         btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
     }
 

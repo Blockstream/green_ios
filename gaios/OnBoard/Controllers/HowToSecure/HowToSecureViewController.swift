@@ -28,7 +28,7 @@ class HowToSecureViewController: UIViewController {
 
     func setContent() {
 
-        lblTitle.text = "How do you want to secure your funds?".localized
+        lblTitle.text = "id_how_do_you_want_to_secure_your".localized
         btnWatchOnly.setTitle(NSLocalizedString("id_watchonly", comment: ""), for: .normal)
     }
 
@@ -40,7 +40,7 @@ class HowToSecureViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Select Network", type: .networkPrefs, items: NetworkPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "id_select_network".localized, type: .networkPrefs, items: NetworkPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }

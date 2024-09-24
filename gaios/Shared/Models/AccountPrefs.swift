@@ -23,9 +23,9 @@ enum AccountPrefs {
         case .enhanceSecurity:
             return "id_enhance_security".localized
         case .nodeInfo:
-            return "Node Info".localized
+            return "id_node_info".localized
         case .shortcut:
-            return "Lightning shortcut".localized
+            return "id_lightning_shortcut".localized
         case .logout:
             return "id_logout".localized
         case .settings:

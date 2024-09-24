@@ -75,7 +75,7 @@ class AlertCardCell: UITableViewCell {
             btnLeft.isHidden = true
         case .reactivate:
             lblTitle.text = NSLocalizedString("id_2fa_expired", comment: "")
-            lblHint.text = "2FA protection on some of your funds has expired"
+            lblHint.text = "id_show_coins_with_expiring".localized
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.setTitle("Reactivate 2FA", for: .normal)
         case .systemMessage(let system):
@@ -148,22 +148,22 @@ class AlertCardCell: UITableViewCell {
                 break
             }
         case .lightningMaintenance:
-            lblTitle.text = "Lightning account"
-            lblHint.text = "The Lightning service is currently unavailable for maintenance, but it will be back soon."
+            lblTitle.text = "id_lightning_account".localized
+            lblHint.text = "id_lightning_service_is_undergoing".localized
             lblHint.text = NSLocalizedString("id_this_wallet_is_based_on_your", comment: "")
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
         case .lightningServiceDisruption:
-            lblTitle.text = "Lightning account"
-            lblHint.text = "The Lightning service is currently unavailable. We apologize for the disruption, we are working to bring the service back online."
+            lblTitle.text = "id_lightning_account".localized
+            lblHint.text = "id_the_lightning_service_is".localized
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
         case .reEnable2fa:
-            lblTitle.text = "Re-enable 2FA".localized
+            lblTitle.text = "id_reenable_2fa".localized
             lblHint.text = "Some coins are no longer 2FA protected.".localized
-            btnRight.setTitle("Re-enable 2FA".localized, for: .normal)
+            btnRight.setTitle("id_reenable_2fa".localized, for: .normal)
             btnLeft.isHidden = true
         }
     }

@@ -65,12 +65,12 @@ class SendTxConfirmViewController: UIViewController {
 
     func setContent() {
         if viewModel.isWithdraw {
-            title = "Confirm Withdraw".localized
+            title = "id_withdraw".localized
         } else {
             title = "id_confirm_transaction".localized
         }
 
-        lblAssetTitle.text = "Asset & Account".localized
+        lblAssetTitle.text = "id_account__asset".localized
         lblAddressTitle.text = viewModel.addressTitle.localized
         lblAmountTitle.text = viewModel.amountTitle.localized
         lblAmountValue.text = ""
@@ -81,14 +81,14 @@ class SendTxConfirmViewController: UIViewController {
 
         lblSumFeeKey.text = "id_network_fee".localized
         lblSumFeeValue.text = ""
-        lblSumAmountKey.text = "Recipient Receives"
+        lblSumAmountKey.text = "Recipient Receives".localized
         lblSumAmountValue.text = ""
-        lblSumTotalKey.text = "Total Spent"
+        lblSumTotalKey.text = "id_total_spent".localized
         lblSumTotalValue.text = ""
-        lblNoteTitle.text = "Notes"
+        lblNoteTitle.text = "id_my_notes".localized
         lblNoteTxt.text = ""
 
-        lblPayRequestByTitle.text = "Payment requested by".localized
+        lblPayRequestByTitle.text = "id_payment_requested_by_s".localized
         lblPayRequestByValue.text = ""
         lblPayRequestByHint.text = ""
         payRequestByStack.isHidden = true
@@ -140,7 +140,7 @@ class SendTxConfirmViewController: UIViewController {
         case .verified:
             btnVerifyAddress.isUserInteractionEnabled = false
             btnVerifyAddress.borderColor = .gray
-            btnVerifyAddress.setTitle("Address verified!".localized, for: .normal)
+            btnVerifyAddress.setTitle("id_address_verified".localized, for: .normal)
             btnVerifyAddress.setImage(UIImage(named: "ic_check_circle")?.maskWithColor(color: .white), for: .normal)
         }
     }

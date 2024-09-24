@@ -7,9 +7,9 @@ enum RedeemPrefs: Int, CaseIterable {
     var name: String {
         switch self {
         case .scan:
-            return "Scan QR Code"
+            return "id_scan_qr_code".localized
         case .type:
-            return "Enter Code"
+            return "id_enter_your_code".localized
         }
     }
 

@@ -36,7 +36,7 @@ enum WalletPrefs: Int, CaseIterable {
         case .logout:
             return "id_logout".localized
         case .denominations:
-            return "Denominations".localized
+            return "id_denomination".localized
         case .rename:
             return "id_rename".localized
         case .refresh:

@@ -33,9 +33,9 @@ class AssetExpandableView: UIView {
         }
         // Any AMP asset
         if model.anyAmp {
-            title.text = "Receive any Amp Asset".localized
+            title.text = "id_receive_any_amp_asset".localized
             icon.image = UIImage(named: "default_asset_amp_icon")!
-            lblAmp.text = "You need an AMP account in order to receive it.".localized
+            lblAmp.text = "id_you_need_an_amp_account_in".localized
             ampTip.isHidden = !open
             return
         }

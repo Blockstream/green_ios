@@ -48,7 +48,7 @@ class LTShortcutViewController: UIViewController {
         btnLearnMore.setTitle(vm.btnMore, for: .normal)
         btnMain.setTitle(vm.btnMain, for: .normal)
         lblJadeExtraNote.isHidden = true
-        lblJadeExtraNote.text = "You will need to export the account from Jade at your next login.".localized
+        lblJadeExtraNote.text = "id_you_will_need_to_export_the".localized
         switch vm.action {
         case .addFromAccount:
             DrawerAnimationManager.shared.accountId = vm.account.id

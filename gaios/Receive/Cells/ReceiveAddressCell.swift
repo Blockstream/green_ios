@@ -40,8 +40,8 @@ class ReceiveAddressCell: UITableViewCell {
         envelopeBorderView.borderWidth = 5.0
         envelopeBorderView.borderColor = UIColor.gGreenMatrix()
         envelopeBorderView.cornerRadius = 20.0
-        btnMagnify.setTitle("Increase QR Size".localized, for: .normal)
-        btnCopyAddress.setTitle("Copy Address".localized, for: .normal)
+        btnMagnify.setTitle("id_increase_qr_size".localized, for: .normal)
+        btnCopyAddress.setTitle("id_copy_address".localized, for: .normal)
         [btnMagnify, btnCopyAddress].forEach {
             $0.setStyle(.blackWithImg)
         }

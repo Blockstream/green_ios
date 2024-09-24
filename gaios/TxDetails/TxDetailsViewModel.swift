@@ -108,13 +108,13 @@ class TxDetailsViewModel {
             var title = ""
             switch transaction.type {
             case .redeposit:
-                title = "Redeposited to".localized
+                title = "id_redeposited".localized
             case .incoming:
                 title = "id_received_on".localized
             case .outgoing:
                 title = "id_sent_to".localized
             case .mixed:
-                title = "Swapped to".localized
+                title = "id_swapped".localized
             }
 
             let hint = address
@@ -134,7 +134,7 @@ class TxDetailsViewModel {
                 let (fiat, fiatCurrency) = balance.toFiat()
                 let str = "\(amount) \(denom) ≈ \(fiat) \(fiatCurrency)"
 
-                items.append(TxDetailsInfoCellModel(title: "Network fees".localized, hint: str, type: .fee, hideBalance: hideBalance))
+                items.append(TxDetailsInfoCellModel(title: "id_network_fees".localized, hint: str, type: .fee, hideBalance: hideBalance))
             }
 
             // fee rate
@@ -161,7 +161,7 @@ class TxDetailsViewModel {
 
         // message
         if transaction.isLightning && transaction.message != nil {
-            items.append(TxDetailsInfoCellModel(title: "Message".localized,
+            items.append(TxDetailsInfoCellModel(title: "id_message".localized,
                                                 hint: transaction.message ?? "",
                                                 type: .message,
                                                 hideBalance: hideBalance))
@@ -193,7 +193,7 @@ class TxDetailsViewModel {
         if showBumpFee() {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_speed")!,
-                                         title: "Speed up Transaction".localized,
+                                         title: "id_speed_up_transaction".localized,
                                          action: .speedUp)
             )
         }
@@ -207,14 +207,14 @@ class TxDetailsViewModel {
         if (transaction.isLightning) {} else {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_explorer")!.maskWithColor(color: UIColor.gGreenMatrix()),
-                                         title: "View in Explorer".localized,
+                                         title: "id_view_in_explorer".localized,
                                          action: .explorer)
             )
         }
         if transaction.isLightning {} else {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_share")!,
-                                         title: "Share Transaction".localized,
+                                         title: "id_share_transaction".localized,
                                          action: .shareTx)
             )
         }
@@ -222,7 +222,7 @@ class TxDetailsViewModel {
         if transaction.isLightning && !(transaction.isRefundableSwap ?? false) {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_more")!,
-                                         title: "More Details".localized,
+                                         title: "id_more_details".localized,
                                          action: .more)
             )
         }
@@ -230,7 +230,7 @@ class TxDetailsViewModel {
         if transaction.isLightning && transaction.isRefundableSwap ?? false {
             models.append(
                 TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_revert")!.maskWithColor(color: UIColor.gGreenMatrix()),
-                                         title: "Initiate Refund".localized,
+                                         title: "id_initiate_refund".localized,
                                          action: .refund)
             )
         }

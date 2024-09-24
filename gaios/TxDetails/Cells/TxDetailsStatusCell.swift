@@ -56,36 +56,36 @@ class TxDetailsStatusCell: UITableViewCell {
         let isLightning = model.transaction.subaccountItem?.gdkNetwork.lightning ?? false
 
         if model.transaction.isRefundableSwap ?? false {
-            lblStateTitle.text = "Transaction Failed".localized
-            lblStateInfo.text = "Your transactions failed".localized
-            lblStateStatus.text = NSLocalizedString("Failed", comment: "")
+            lblStateTitle.text = "id_transaction_failed".localized
+            lblStateInfo.text = String(format: "id_your_transaction_failed_s".localized, "")
+            lblStateStatus.text = NSLocalizedString("id_failed", comment: "")
             applyColor(UIColor.gRedTx())
             stateIcon.image = UIImage(named: "ic_tx_failed")!
         } else if model.transaction.isUnconfirmed(block: model.blockHeight) {
-            lblStateTitle.text = "Transaction Unconfirmed".localized + " 0/6"
+            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "0", "6")
             lblStateStatus.text = model.txUnconfirmedStatus
             applyColor(UIColor.gOrangeTx())
             setPendingIcon()
         } else if !isLightning && model.transaction.isLiquid && model.blockHeight < model.transaction.blockHeight + 1 {
             step = Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1
-            lblStateTitle.text = "Transaction Unconfirmed".localized + " \(step)/\(steps)"
+            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "\(step)", "\(steps)")
             lblStateStatus.text = model.txStatus
             applyColor(UIColor.gOrangeTx())
             setPendingIcon()
         } else if !isLightning && !model.transaction.isLiquid && model.blockHeight < model.transaction.blockHeight + 5 {
             if model.blockHeight >= model.transaction.blockHeight {
                 step = Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1
-                lblStateTitle.text = "Transaction Confirmed".localized + " \(step)/\(steps)"
+                lblStateTitle.text = String(format: "id_transaction_confirmed_ss".localized, "\(step)", "\(steps)")
                 lblStateStatus.text = model.txStatus
                 applyColor(UIColor.gGreenTx())
                 stateIcon.image = UIImage(named: "ic_tx_confirmed")!
             }
         } else {
             applyColor(UIColor.gGreenTx())
-            lblStateTitle.text = "Transaction Completed".localized
+            lblStateTitle.text = "id_transaction_completed".localized
             lblStateStatus.text = model.txStatus
             if isLightning && !(model.transaction.closingTxid?.isEmpty ?? true) {
-                lblStateStatus.text = "Closed Channel".localized
+                lblStateStatus.text = "id_close_channel".localized
             }
             stateIcon.image = UIImage(named: "ic_tx_confirmed")!
         }

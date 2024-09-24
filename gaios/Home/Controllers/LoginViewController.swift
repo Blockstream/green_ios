@@ -165,7 +165,7 @@ class LoginViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = account.isDerivedLightning ? "Lightning Shortcut".localized : "id_enter_pin".localized
+        lblTitle.text = account.isDerivedLightning ? "id_lightning_shortcut".localized : "id_enter_pin".localized
         lblWalletLockHint1.text = "\("id_youve_entered_an_invalid_pin".localized)\n\("id_youll_need_your_recovery_phrase".localized)"
         lblWalletLockHint2.isHidden = true
         btnWalletLock.setTitle("id_restore_with_recovery_phrase".localized, for: .normal)

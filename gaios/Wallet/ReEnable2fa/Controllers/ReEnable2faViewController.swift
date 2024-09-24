@@ -19,7 +19,7 @@ class ReEnable2faViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Re-enable 2FA"
+        title = "id_reenable_2fa".localized
         setContent()
         setStyle()
 
@@ -36,8 +36,8 @@ class ReEnable2faViewController: UIViewController {
     }
 
     func setContent() {
-        lblHint1.text = "Some coins in your wallet haven't move for a long time, so 2FA expired to keep you in control. To reactivate 2FA:".localized
-        lblHint2.text = "\u{2022} " + "Send normally and refresh the 2FA on change coins (optimizes fees)".localized + "\n\u{2022} " + "Redeposit all your expired 2FA coins".localized
+        lblHint1.text = "id_some_coins_in_your_wallet".localized
+        lblHint2.text = ""
         btnLearnmore.setTitle("id_learn_more".localized, for: .normal)
     }
 

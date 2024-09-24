@@ -48,14 +48,14 @@ class SecuritySelectViewController: UIViewController {
     }
 
     func unarchiveCreateDialog(completion: @escaping (Bool) -> ()) {
-        let alert = UIAlertController(title: NSLocalizedString("Archived Account", comment: ""),
-                                          message: NSLocalizedString("There is already an archived account. Do you want to create a new one?", comment: ""),
+        let alert = UIAlertController(title: NSLocalizedString("id_archived_account", comment: ""),
+                                          message: NSLocalizedString("id_there_is_already_an_archived", comment: ""),
                                           preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("Unarchived Account", comment: ""),
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_unarchive_account", comment: ""),
                                           style: .cancel) { (_: UIAlertAction) in
                 completion(false)
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("Create", comment: ""),
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_create", comment: ""),
                                           style: .default) { (_: UIAlertAction) in
                 completion(true)
             })
@@ -165,7 +165,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             return headerView( "id_asset".localized )
         case .policy:
-            return headerView( "Security Policy".localized )
+            return headerView("id_choose_security_policy".localized )
         default:
             return nil
         }
