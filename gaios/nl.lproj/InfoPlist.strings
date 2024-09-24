@@ -2,4 +2,3 @@ NSFaceIDUsageDescription = "Green ondersteunt biometrische authenticatie voor ee
 NSBluetoothAlwaysUsageDescription = "Green gebruikt Bluetooth voor communicatie met hardware wallets";
 NSBluetoothPeripheralUsageDescription = "Green gebruikt Bluetooth om te verbinden met hardware wallets";
 NSCameraUsageDescription = "We gebruiken de camera om QR-codes te scannen";
-NSUserNotificationsUsageDescription = "Receive notifications for lightning payments";

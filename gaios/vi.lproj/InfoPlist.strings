@@ -2,4 +2,3 @@ NSFaceIDUsageDescription = "Green sử dụng xác thực sinh trắc để cho 
 NSBluetoothAlwaysUsageDescription = "Green uses Bluetooth for communication with hardware wallets";
 NSBluetoothPeripheralUsageDescription = "Green uses Bluetooth to connect to hardware wallets";
 NSCameraUsageDescription = "Chúng tôi dùng camera để quét mã QR";
-NSUserNotificationsUsageDescription = "Receive notifications for lightning payments";

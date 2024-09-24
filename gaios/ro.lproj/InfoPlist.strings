@@ -2,4 +2,3 @@ NSFaceIDUsageDescription = "Green folosește autentificare biometrică pentru a 
 NSBluetoothAlwaysUsageDescription = "Green folosește comunicarea prin bluetooth atunci când este conectat cu portofelele hardware.";
 NSBluetoothPeripheralUsageDescription = "Green folosește bluetooth pentru a se conecta la portofele hardware";
 NSCameraUsageDescription = "Folosim camera pentru a scana coduri QR";
-NSUserNotificationsUsageDescription = "Receive notifications for lightning payments";
