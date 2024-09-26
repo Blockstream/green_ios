@@ -7,8 +7,9 @@ import core
 class ShowMnemonicsViewController: UIViewController {
 
     @IBOutlet weak var lblHint: UILabel!
-
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var btnShowQR: UIButton!
+
     var items: [String] = []
     var bip39Passphrase: String?
     var showBip85: Bool = false
@@ -33,6 +34,9 @@ class ShowMnemonicsViewController: UIViewController {
         }
         let isHW = AccountsRepository.shared.current?.isHW ?? false
         let derivedAccount = AccountsRepository.shared.current?.getDerivedLightningAccount()
+        btnShowQR.setStyle(.outlined)
+        btnShowQR.setTitleColor(.white, for: .normal)
+        btnShowQR.setTitle("id_show_qr_code".localized, for: .normal)
         Task {
             do {
                 if isHW {
@@ -61,10 +65,16 @@ class ShowMnemonicsViewController: UIViewController {
         let stb = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
             vc.qrTxt = self.items.joined(separator: " ")
+            vc.isMnemonic = true
+            vc.showClose = true
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
+    }
+
+    @IBAction func btnShowQR(_ sender: Any) {
+        magnifyQR()
     }
 }
 
@@ -88,13 +98,10 @@ extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionVie
                                                                          withReuseIdentifier: "FooterQrCell",
                                                                          for: indexPath) as? FooterQrCell {
               if showBip85 {
-                  fView.configureBip85(mnemonic: self.items.joined(separator: " ")) {[weak self] in self?.magnifyQR()
-                  }
+                  fView.configureBip85(mnemonic: self.items.joined(separator: " "))
                   return fView
               } else {
-                  fView.configure(mnemonic: self.items.joined(separator: " "),
-                                  bip39Passphrase: self.bip39Passphrase) {[weak self] in self?.magnifyQR()
-                  }
+                  fView.configure(mnemonic: self.items.joined(separator: " "), bip39Passphrase: self.bip39Passphrase)
                   return fView
               }
           }

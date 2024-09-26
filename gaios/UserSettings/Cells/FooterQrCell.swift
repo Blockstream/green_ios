@@ -10,28 +10,16 @@ class FooterQrCell: UICollectionReusableView {
     @IBOutlet weak var bip85View: UIView!
     @IBOutlet weak var infoPanel: UIView!
     @IBOutlet weak var lblBip85: UILabel!
-    @IBOutlet weak var actionBtn: UIButton!
-    @IBOutlet weak var qrImg: UIImageView!
 
     var mnemonic: String?
-    var onLongpress: (() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
-        qrImg.isUserInteractionEnabled = true
-        qrImg.addGestureRecognizer(longPressRecognizer)
     }
 
     func configure(mnemonic: String?,
-                   bip39Passphrase: String?,
-                   onLongpress: (() -> Void)?) {
+                   bip39Passphrase: String?) {
         self.mnemonic = mnemonic
-        self.onLongpress = onLongpress
-        qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
-        qrImg.isHidden = true
-
         let isEphemeral = bip39Passphrase != nil
         passphraseView.isHidden = !isEphemeral
         lblQrInfo.isHidden = !isEphemeral
@@ -45,30 +33,14 @@ class FooterQrCell: UICollectionReusableView {
         bip85View.isHidden = true
     }
 
-    func configureBip85(mnemonic: String?,
-                        onLongpress: (() -> Void)?) {
+    func configureBip85(mnemonic: String?) {
         self.mnemonic = mnemonic
-        self.onLongpress = onLongpress
-        qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
-        qrImg.isHidden = true
         passphraseView.isHidden = true
         lblQrInfo.isHidden = true
         bip85View.isHidden = false
         infoPanel.cornerRadius = 5.0
         infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
-        lblBip85.text = "This is your BIP85 derived recovery phrase only for your Lightning account.\n\nWARNING: You can't fully restore your wallet with that."
-    }
-
-    @objc func longPressed(sender: UILongPressGestureRecognizer) {
-
-        if sender.state == UIGestureRecognizer.State.began {
-            onLongpress?()
-        }
-    }
-
-    @IBAction func actionBtn(_ sender: Any) {
-        qrImg.isHidden = false
-        actionBtn.isHidden = true
+        lblBip85.text = "This is your BIP85 derived recovery phrase only for your Lightning account.\n\nWARNING: You can't fully restore your wallet with that.".localized
     }
 
     @IBAction func btnLearnMore(_ sender: Any) {
