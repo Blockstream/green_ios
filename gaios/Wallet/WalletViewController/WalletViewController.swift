@@ -280,10 +280,18 @@ class WalletViewController: UIViewController {
         lblWelcomeTitle.text = NSLocalizedString("id_welcome_to_your_wallet", comment: "")
         lblWelcomeHint.text = NSLocalizedString("id_create_your_first_account_to", comment: "")
         btnWelcomeCreate.setTitle(NSLocalizedString("id_create_account", comment: ""), for: .normal)
-
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
-
+        // Sweep is only supported in watch-only for btc multisig wallets
+        if viewModel.watchOnly {
+            if let account = AccountsRepository.shared.current, !account.gdkNetwork.liquid {
+                btnSend.setTitle( "id_sweep".localized, for: .normal )
+                btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
+            } else {
+                btnSend.isEnabled = false
+                btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
+            }
+        }
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(callPullToRefresh(_:)), for: .valueChanged)
