@@ -1056,6 +1056,7 @@ extension WalletViewController: DialogGroupListViewControllerDelegate {
                         present(vc, animated: false, completion: nil)
                     }
                 case .refresh:
+                    tableView.beginRefreshing()
                     reload(discovery: true)
                 case .archive:
                     showArchived()
