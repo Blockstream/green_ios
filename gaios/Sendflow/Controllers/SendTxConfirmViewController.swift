@@ -11,6 +11,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var assetCard: UIView!
     @IBOutlet weak var addressCard: UIView!
     @IBOutlet weak var amountCard: UIView!
+    @IBOutlet weak var amountMultiAddrCard: UIView!
     @IBOutlet weak var payRequestByCard: UIView!
     @IBOutlet weak var notesCard: UIView!
 
@@ -49,6 +50,12 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var btnInfoFee: UIButton!
     @IBOutlet weak var btnVerifyAddress: UIButton!
+
+    @IBOutlet weak var lblMultiAddrHint: UILabel!
+    @IBOutlet weak var iconsView: UIView!
+    @IBOutlet weak var iconsStack: UIStackView!
+    @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
+    private let iconW: CGFloat = 36.0
 
     var viewModel: SendTxConfirmViewModel!
     weak var verifyOnDeviceViewController: VerifyOnDeviceViewController?
@@ -92,10 +99,11 @@ class SendTxConfirmViewController: UIViewController {
         lblPayRequestByValue.text = ""
         lblPayRequestByHint.text = ""
         payRequestByStack.isHidden = true
+        lblMultiAddrHint.text = "id_multiple_assets".localized
     }
 
     func setStyle() {
-        [assetCard, addressCard, amountCard, notesCard, payRequestByCard].forEach {
+        [assetCard, addressCard, amountCard, amountMultiAddrCard, notesCard, payRequestByCard].forEach {
             $0?.cornerRadius = 4.0
         }
         [lblAssetTitle, lblAddressTitle, lblAmountTitle, lblPayRequestByTitle, lblNoteTitle].forEach {
@@ -121,6 +129,7 @@ class SendTxConfirmViewController: UIViewController {
                 $0.isHidden = true
             }
         }
+        lblMultiAddrHint.setStyle(.txtCard)
     }
 
     @MainActor
@@ -150,7 +159,7 @@ class SendTxConfirmViewController: UIViewController {
     func dismissVerifyOnDeviceViewController() async {
         await verifyOnDeviceViewController?.dismissAsync(animated: true)
     }
-    
+
     func verifySingleAddress(_ address: Address) async throws {
         if let vm = viewModel.sendVerifyOnDeviceViewModel(address) {
             await presentVerifyOnDeviceViewController(viewModel: vm)
@@ -214,6 +223,7 @@ class SendTxConfirmViewController: UIViewController {
         noteView.isHidden = viewModel.isLightning && viewModel.note == nil
         noteView.isHidden = viewModel.note?.isEmpty ?? true
         lblSumAmountView.isHidden = viewModel.recipientReceivesHidden
+        amountMultiAddrCard.isHidden = true
 
         if viewModel.isLightning {
             if let text = viewModel.addressee?.domain {
@@ -235,9 +245,13 @@ class SendTxConfirmViewController: UIViewController {
             payRequestByStack.isHidden = true
             addressTextView.text = "Multiple addresses".localized
             lblAssetName.text = "id_multiple_assets".localized
-            lblAmountValue.text = "id_multiple_assets".localized
+            amountCard.isHidden = true
+            amountMultiAddrCard.isHidden = false
+            lblMultiAddrHint.text = "id_multiple_assets".localized
+            configureMultiAddrIcons()
             lblAmountFee.text = ""
-            totalsView.isHidden = true
+            totalsView.isHidden = false
+            lblSumTotalValue.text = viewModel.feeText
         } else {
             payRequestByStack.isHidden = true
             AddressDisplay.configure(
@@ -261,6 +275,25 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
+    func configureMultiAddrIcons() {
+        for v in iconsStack.subviews { v.removeFromSuperview() }
+        var icons = viewModel.getAssetIcons()
+        icons = Array(icons.prefix(4))
+        iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
+        setImages(icons)
+        iconsView.isHidden = false
+    }
+    func setImages(_ images: [UIImage]) {
+        for img in images {
+            let imageView = UIImageView()
+            imageView.image = img
+            imageView.borderColor = UIColor.gBlackBg()
+            imageView.borderWidth = 2.0
+            imageView.layer.cornerRadius = iconW / 2.0
+            imageView.layer.masksToBounds = true
+            iconsStack.addArrangedSubview(imageView)
+        }
+    }
     func updateNavigationItem() {
         let noteBtn = UIButton(type: .system)
         noteBtn.setStyle(.inline)

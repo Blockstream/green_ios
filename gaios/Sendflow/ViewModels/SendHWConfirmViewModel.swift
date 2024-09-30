@@ -7,8 +7,9 @@ struct SendHWConfirmViewModel {
     var isLedger = false
     var tx: Transaction
     var denomination: DenominationType
-
     var subaccount: WalletItem?
+    var isMultiAddressees: Bool = false
+
     var session: SessionManager? { subaccount?.session }
 
     var addressee: Addressee? { tx.addressees.first }

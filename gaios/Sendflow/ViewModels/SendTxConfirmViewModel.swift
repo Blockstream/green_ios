@@ -45,7 +45,7 @@ class SendTxConfirmViewModel {
         self.denominationType = denominationType
         self.isFiat = isFiat
         self.txType = txType
-        self.verifyAddressState = txType == .redepositExpiredUtxos && (WalletManager.current?.account.isHW ?? false) ? .unverified : .noneed
+        self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletManager.current?.account.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
     }
 
     var isLightning: Bool { subaccount?.networkType == .lightning }
@@ -60,6 +60,9 @@ class SendTxConfirmViewModel {
     var isLiquid: Bool { transaction?.subaccountItem?.gdkNetwork.liquid ?? false }
 
     var assetImage: UIImage? {
+        if multiAddressees {
+            return wm?.image(for: transaction?.feeAsset ?? "btc")
+        }
         if isLightning {
             return UIImage(named: "ic_lightning_btc")
         }
@@ -105,7 +108,9 @@ class SendTxConfirmViewModel {
         }
         return (transaction?.addressees.count ?? 0) > 1 ? true : false
     }
-
+    func getAssetIcons() -> [UIImage] {
+        transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
+    }
     private func _send() async throws -> SendTransactionSuccess {
         guard let session = session,
               var tx = transaction else {
@@ -167,7 +172,8 @@ class SendTxConfirmViewModel {
             isLedger: wm?.account.isLedger ?? false,
             tx: transaction!,
             denomination: denominationType,
-            subaccount: self.subaccount)
+            subaccount: self.subaccount,
+            isMultiAddressees: self.multiAddressees)
     }
 
     func urlForTx() -> URL? {

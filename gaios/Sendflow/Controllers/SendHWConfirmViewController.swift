@@ -26,6 +26,9 @@ class SendHWConfirmViewController: UIViewController {
     @IBOutlet weak var lblSumTotalKey: UILabel!
     @IBOutlet weak var lblSumTotalValue: UILabel!
     @IBOutlet weak var lblConversion: UILabel!
+    @IBOutlet weak var recipientReceiveView: UIView!
+    @IBOutlet weak var multiAddrView: UIView!
+    @IBOutlet weak var lblMultiAddr: UILabel!
 
     private var obs: NSObjectProtocol?
     var viewModel: SendHWConfirmViewModel!
@@ -122,6 +125,18 @@ class SendHWConfirmViewController: UIViewController {
         lblSumTotalKey.text = "Total Spent"
         lblSumTotalValue.text = viewModel.totalText
         lblConversion.text = "≈ \(viewModel?.totalFiatText ?? "")"
+        multiAddrView.isHidden = true
+        AddressDisplay.configure(address: viewModel.address ?? "",
+                                 textView: addressTextView)
+
+        if viewModel.isMultiAddressees {
+            lblAddressTitle.text = "id_your_redeposit_address".localized
+            recipientReceiveView.isHidden = true
+            lblSumTotalValue.text = viewModel.feeText
+            addressCard.isHidden = true
+            multiAddrView.isHidden = false
+            lblMultiAddr.text = "id_multiple_assets".localized
+        }
     }
 
     func setStyle() {
@@ -137,9 +152,6 @@ class SendHWConfirmViewController: UIViewController {
         [lblSumTotalKey, lblSumTotalValue].forEach {
             $0?.setStyle(.txtBigger)
         }
-
-        AddressDisplay.configure(address: viewModel.address ?? "",
-                                 textView: addressTextView)
     }
 
     func dismiss() {
