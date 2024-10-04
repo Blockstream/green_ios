@@ -57,7 +57,7 @@ extension NodeState {
     public var channelsBalanceSatoshi: UInt64 { channelsBalanceMsat.satoshi }
     public var onchainBalanceSatoshi: UInt64 { onchainBalanceMsat.satoshi }
     public var maxReceivableSatoshi: UInt64 { maxReceivableMsat.satoshi }
-    public var inboundLiquiditySatoshi: UInt64 { inboundLiquidityMsats.satoshi }
+    public var inboundLiquiditySatoshi: UInt64 { totalInboundLiquidityMsats.satoshi }
     public var maxPaybleSatoshi: UInt64 { maxPayableMsat.satoshi }
     public var maxSinglePaymentAmountSatoshi: UInt64 { maxSinglePaymentAmountMsat.satoshi }
 }

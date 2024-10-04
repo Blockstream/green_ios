@@ -165,12 +165,12 @@ public class LightningBridge {
         return try? breezSdk?.recommendedFees()
     }
 
-    public func sendPayment(bolt11: String, satoshi: UInt64? = nil) throws -> SendPaymentResponse? {
-        return try breezSdk?.sendPayment(req: SendPaymentRequest(bolt11: bolt11, useTrampoline: true, amountMsat: satoshi?.milliSatoshi))
+    public func sendPayment(bolt11: String, satoshi: UInt64? = nil, useTrampoline: Bool) throws -> SendPaymentResponse? {
+        return try breezSdk?.sendPayment(req: SendPaymentRequest(bolt11: bolt11, useTrampoline: useTrampoline, amountMsat: satoshi?.milliSatoshi))
     }
 
-    public func payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String) throws -> LnUrlPayResult? {
-        return try breezSdk?.payLnurl(req: LnUrlPayRequest(data: requestData, amountMsat: amount.milliSatoshi, useTrampoline: true, comment: comment))
+    public func payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String, useTrampoline: Bool) throws -> LnUrlPayResult? {
+        return try breezSdk?.payLnurl(req: LnUrlPayRequest(data: requestData, amountMsat: amount.milliSatoshi, useTrampoline: useTrampoline, comment: comment))
     }
 
     public func authLnUrl(requestData: LnUrlAuthRequestData) throws -> LnUrlCallbackStatus? {

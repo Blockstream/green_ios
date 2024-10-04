@@ -181,7 +181,7 @@ public class LightningSessionManager: SessionManager {
                 throw TransactionError.invalid(localizedDescription: "id_invoice_expired")
             }
             do {
-                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: satoshi) {
+                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: satoshi, useTrampoline: AppSettings.shared.useTrampoline) {
                     return SendTransactionSuccess.create(from: res.payment)
                 }
             } catch {
@@ -189,7 +189,7 @@ public class LightningSessionManager: SessionManager {
                 throw TransactionError.failure(localizedDescription: msg, paymentHash: invoice.paymentHash)
             }
         case .lnUrlPay(let data):
-            let res = try lightBridge?.payLnUrl(requestData: data, amount: satoshi ?? 0, comment: comment)
+            let res = try lightBridge?.payLnUrl(requestData: data, amount: satoshi ?? 0, comment: comment, useTrampoline: AppSettings.shared.useTrampoline)
             switch res {
             case .endpointSuccess(let data):
                 print("payLnUrl success: \(data)")
