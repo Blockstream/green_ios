@@ -144,35 +144,6 @@ class WalletViewModel {
         return cards
     }
 
-    func loadMetadataCards() -> [AlertCardType] {
-        guard let wm = wm else { return [] }
-        var cards: [AlertCardType] = []
-        // All sessions should login with the passphrase
-        if wm.account.isEphemeral {
-            // Bip39 ephemeral wallet
-            cards.append(.ephemeralWallet)
-        }
-        if session?.gdkNetwork.mainnet == false {
-            // Testnet wallet
-            cards.append(AlertCardType.testnetNoValue)
-        }
-        // countly alerts
-        if let remoteAlert = remoteAlert {
-            cards.append(AlertCardType.remoteAlert(remoteAlert))
-        }
-        // Failure login session
-        cards += wm.failureSessionsError
-            .filter {
-                switch $0.value {
-                case TwoFactorCallError.failure(localizedDescription: let txt):
-                    return txt != "id_login_failed"
-                default:
-                    return true
-                }
-            }.map { AlertCardType.login($0.key, $0.value) }
-        return cards
-    }
-
     func loadFailureMessage() -> String? {
         guard let wm = wm else { return nil }
         for key in wm.activeSessions.keys {
@@ -186,20 +157,45 @@ class WalletViewModel {
     func reloadAlertCards() async {
         guard let wm = wm, let session = session else { return }
         var cards: [AlertCardType] = []
-        cards += self.loadMetadataCards()
+        // All sessions should login with the passphrase
+        if wm.account.isEphemeral {
+            // Bip39 ephemeral wallet
+            cards.append(.ephemeralWallet)
+        }
+        if session.gdkNetwork.mainnet == false {
+            // Testnet wallet
+            cards.append(AlertCardType.testnetNoValue)
+        }
+        // countly alerts
+        if let remoteAlert = remoteAlert {
+            cards.append(AlertCardType.remoteAlert(remoteAlert))
+        }
+        // Failure login session
+        cards += await wm.failureSessionsError.errors
+            .filter {
+                switch $0.value {
+                case TwoFactorCallError.failure(localizedDescription: let txt):
+                    return txt != "id_login_failed"
+                default:
+                    return true
+                }
+            }.map { AlertCardType.login($0.key, $0.value) }
+        // Load dispute on not wo session
         if !watchOnly {
             cards += self.loadDisputeCards()
         }
-
+        // Load missing princing
         if Balance.fromSatoshi(0, assetId: session.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" {
             cards.append(AlertCardType.fiatMissing)
         }
+        // Load system messages
         let messages = try? await wm.loadSystemMessages()
         messages?.forEach { msg in
             if !msg.text.isEmpty {
                 cards.append(AlertCardType.systemMessage(msg))
             }
         }
+        // Load lightning errors
         if let lightningSession = wm.lightningSession {
             let res = lightningSession.lightBridge?.serviceHealthCheck()
             switch res?.status {
@@ -211,6 +207,7 @@ class WalletViewModel {
                 break
             }
         }
+        // Load expired 2fa utxos
         let expired = try? await wm.getExpiredSubaccounts()
         if let expired = expired, !expired.isEmpty && !watchOnly {
             expiredSubaccounts = expired

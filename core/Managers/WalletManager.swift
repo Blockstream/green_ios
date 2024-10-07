@@ -5,6 +5,25 @@ import greenaddress
 import hw
 import lightning
 
+public actor Failures {
+    public var errors = [String: Error]()
+    func add(for network: NetworkSecurityCase, error: Error) {
+        switch error {
+        case TwoFactorCallError.failure(let txt):
+            if txt.contains("HWW must enable host unblinding for singlesig wallets") {
+                errors[network.rawValue] = LoginError.hostUnblindingDisabled(txt)
+            } else if txt != "id_login_failed" {
+                errors[network.rawValue] = error
+            }
+        default:
+            errors[network.rawValue] = error
+        }
+    }
+    func reset() {
+        errors.removeAll()
+    }
+}
+
 public class WalletManager {
 
     // Return current WalletManager used for the active user session
@@ -152,7 +171,7 @@ public class WalletManager {
         return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
     }
 
-    public var failureSessionsError = [String: Error]()
+    public var failureSessionsError = Failures()
 
     public func loginWithPin(
         pin: String,
@@ -329,7 +348,6 @@ public class WalletManager {
         guard let prominentSession = sessions[prominentNetwork.rawValue] else { fatalError() }
         let existDatadir = try prominentSession.existDatadir(walletHashId: walletId(prominentSession)!.walletHashId)
         let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir
-        failureSessionsError = [:]
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
                 logger.info(">> mnemonic \(credentials.debugDescription)")
@@ -357,19 +375,10 @@ public class WalletManager {
             } catch {
                 logger.info(">> login \(session.networkType.rawValue) failure: \(error)")
                 try? await session.disconnect()
-                switch error {
-                case TwoFactorCallError.failure(let txt):
-                    if txt.contains("HWW must enable host unblinding for singlesig wallets") {
-                        self.failureSessionsError[session.gdkNetwork.network] = LoginError.hostUnblindingDisabled(txt)
-                    } else if txt != "id_login_failed" {
-                        self.failureSessionsError[session.gdkNetwork.network] = error
-                    }
-                default:
-                    self.failureSessionsError[session.gdkNetwork.network] = error
-                }
+                await failureSessionsError.add(for: session.networkType, error: error)
             }
         }
-        failureSessionsError = [:]
+        await failureSessionsError.reset()
         let sessions = self.sessions.values.filter { !$0.logged }
         logger.info(">> login start: \(sessions.count) sessions")
         await withTaskGroup(of: Void.self) { group -> () in
