@@ -148,8 +148,8 @@ class LoginViewController: UIViewController {
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkType]).first
         if remoteAlert != nil {
             alertCard.isHidden = false
-            alertTitle.text = remoteAlert?.title
-            alertHint.text = remoteAlert?.message
+            alertTitle.text = remoteAlert?.title?.htmlDecoded
+            alertHint.text = remoteAlert?.message?.htmlDecoded
             alertTitle.isHidden = remoteAlert?.title?.isEmpty ?? true
             alertHint.isHidden = remoteAlert?.message?.isEmpty ?? true
             alertIconWarn.isHidden = !(remoteAlert?.isWarning ?? false)

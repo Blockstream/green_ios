@@ -654,6 +654,7 @@
 		81CDF3452BF2D50500AA4C19 /* SendHWConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */; };
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D932122A77968500356D06 /* DialogSignViewModel.swift */; };
+		81DFA9962CB3EEE500EE0277 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DFA9952CB3EEE500EE0277 /* String.swift */; };
 		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
 		81E6897E2A234DAC00102BFC /* InputOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E6897D2A234DAC00102BFC /* InputOutput.swift */; };
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
@@ -1491,6 +1492,7 @@
 		81DA3D922541F0D1001159D6 /* TxInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInput.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
+		81DFA9952CB3EEE500EE0277 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		81E04A3A2AA63C6800867705 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
 		81E6897D2A234DAC00102BFC /* InputOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputOutput.swift; sourceTree = "<group>"; };
@@ -3652,6 +3654,7 @@
 				3448B5CE29D59ADF008D5746 /* UITapGestureRecognizer.swift */,
 				8152772629F9B52F00853EA1 /* UIApplication.swift */,
 				8162A1C82B500CF70065D9EB /* UIImageView.swift */,
+				81DFA9952CB3EEE500EE0277 /* String.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -4420,6 +4423,7 @@
 				34F580072BA1EE3700DCB076 /* TxDetailsAmountCellModel.swift in Sources */,
 				3447553329098DA000B9C1AF /* WalletViewController.swift in Sources */,
 				349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */,
+				81DFA9962CB3EEE500EE0277 /* String.swift in Sources */,
 				3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */,
 				3415CB102A67C92C00B66882 /* AddressAuthCellModel.swift in Sources */,
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,

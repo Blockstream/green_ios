@@ -102,8 +102,8 @@ class AlertCardCell: UITableViewCell {
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
         case .remoteAlert(let remoteAlert):
-            lblTitle.text = remoteAlert.title
-            lblHint.text = remoteAlert.message
+            lblTitle.text = remoteAlert.title?.htmlDecoded
+            lblHint.text = remoteAlert.message?.htmlDecoded
             lblTitle.isHidden = remoteAlert.title?.isEmpty ?? true
             lblHint.isHidden = remoteAlert.message?.isEmpty ?? true
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
