@@ -145,7 +145,7 @@ class WODetailsViewController: KeyboardViewController {
         let account = viewModel.newAccountSinglesig(for: network.gdkNetwork)
         let isXpubs = segment.selectedSegmentIndex == 0
         let keys = textView.text
-            .split(whereSeparator: { $0 == "\n" || ($0 == ","  && isXpubs) })
+            .split(whereSeparator: { $0 == "\n" || $0 == " " || ($0 == ","  && isXpubs) })
             .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: " ")) }
         dismissKeyboard()
         self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
