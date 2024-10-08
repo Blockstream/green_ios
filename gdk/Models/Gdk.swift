@@ -457,6 +457,16 @@ public struct UnspentOutput: Codable {
         case expiryHeight = "expiry_height"
         case assetId = "asset_id"
         case isConfidential = "is_confidential"
+        case amountblinder
+        case assetTag = "asset_tag"
+        case assetblinder
+        case commitment
+        case isBlinded = "is_blinded"
+        case isInternal = "is_internal"
+        case nonceCommitment = "nonce_commitment"
+        case publicKey = "public_key"
+        case userPath = "user_path"
+        case script
     }
     public let subaccount: UInt32
     public let pointer: UInt32
@@ -471,6 +481,16 @@ public struct UnspentOutput: Codable {
     public let expiryHeight: UInt64?
     public let assetId: String?
     public let isConfidential: Bool?
+    public let amountblinder: String?
+    public let assetTag: String?
+    public let assetblinder: String?
+    public let commitment: String?
+    public let isBlinded: Bool?
+    public let isInternal: Bool?
+    public let nonceCommitment: String?
+    public let publicKey: String?
+    public let userPath: [UInt32]?
+    public let script: String?
 }
 
 public struct BroadcastTransactionParams: Codable {

@@ -10,10 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Recovery phrase: improve QR view
-<<<<<<< HEAD
 - Minor bug fixes
 - Update to breez 0.6.1
-- Update gdk to 0.73.1
+- Update gdk to 0.73.2
 
 ## [4.0.35] - 2024-09-24
 
