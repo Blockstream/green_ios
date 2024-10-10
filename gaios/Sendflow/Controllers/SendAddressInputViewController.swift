@@ -361,7 +361,11 @@ extension SendAddressInputViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
         addressTextView.text = value.result
         reload()
-        Task { [weak self] in await self?.validate(text: value.result ?? "") }
+        Task { [weak self] in
+            self?.btnNext.setStyle(.primaryDisabled)
+            await self?.validate(text: value.result ?? "")
+            self?.btnNext.setStyle(.primary)
+        }
     }
     func didStop() {
     }
