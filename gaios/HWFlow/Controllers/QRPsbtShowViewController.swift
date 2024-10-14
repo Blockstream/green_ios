@@ -52,12 +52,12 @@ class QRPsbtShowViewController: UIViewController {
 
     func setContent() {
         btnBack.setTitle("id_back".localized, for: .normal)
-        lblNavTitle.text = "Scan with Jade"
+        lblNavTitle.text = "id_scan_with_jade".localized
         lblStep.text = "\("id_step".localized) 1".uppercased()
         lblTitle.text = "id_scan_qr_with_jade".localized
-        lblHint.text = "Start Scan QR on Jade and validate the transaction details on Jade".localized
-        btnVerify.setTitle("Check Transaction Details", for: .normal)
-        btnNext.setTitle("Import Signed Transaction", for: .normal)
+        lblHint.text = "id_start_scan_qr_on_jade_and".localized
+        btnVerify.setTitle("id_check_transaction_details".localized, for: .normal)
+        btnNext.setTitle("id_import_signed_transaction".localized, for: .normal)
         btnTrouble.setTitle("id_troubleshoot".localized, for: .normal)
     }
 

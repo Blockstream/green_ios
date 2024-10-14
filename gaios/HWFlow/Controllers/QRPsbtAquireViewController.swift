@@ -39,10 +39,10 @@ class QRPsbtAquireViewController: UIViewController {
     func setContent() {
         btnBack.setTitle("id_back".localized, for: .normal)
         btnBack.setImage(UIImage(named: "ic_qr_nav_back")?.maskWithColor(color: .white), for: .normal)
-        lblNavTitle.text = "Scan with Jade"
+        lblNavTitle.text = "id_scan_qr_with_jade".localized
         lblStep.text = "\("id_step".localized) 2".uppercased()
-        lblTitle.text = "Scan animated QR on Jade"
-        lblHint.text = "Import signed transaction"
+        lblTitle.text = "id_scan_qr_with_jade".localized
+        lblHint.text = "id_import_signed_transaction".localized
         btnTrouble.setTitle("id_troubleshoot".localized, for: .normal)
     }
 

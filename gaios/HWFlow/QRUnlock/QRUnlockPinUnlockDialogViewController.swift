@@ -93,11 +93,11 @@ class QRUnlockPinUnlockDialogViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Unlock Jade before signing via QR".localized
-        lblHint.text = "QR Airgapped Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).".localized
+        lblTitle.text = "id_unlock_jade_before_signing_the".localized
+        lblHint.text = "id_qr_mode_allows_you_to.".localized
         btnLearMore.setTitle("id_learn_more".localized, for: .normal)
-        btnPinUnlock.setTitle("PIN Unlock via QR".localized, for: .normal)
-        btnAlreadyUnlocked.setTitle("Already unlocked via SeedQR".localized, for: .normal)
+        btnPinUnlock.setTitle("id_qr_pin_unlock".localized, for: .normal)
+        btnAlreadyUnlocked.setTitle("id_jade_already_unlocked".localized, for: .normal)
     }
 
     func setStyle() {

@@ -41,11 +41,11 @@ class QRUnlockInfoAlertViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Set a PIN via QR".localized
-        lblHint.text = "QR Airgapped Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).".localized
+        lblTitle.text = "id_qr_airgapped_mode".localized
+        lblHint.text = "id_qr_mode_allows_you_to".localized
         btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
-        btnSetup.setTitle("Setup PIN via QR".localized, for: .normal)
-        btnAlreadyUnlocked.setTitle("Already unlocked via SeedQR".localized, for: .normal)
+        btnSetup.setTitle("id_qr_pin_unlock".localized, for: .normal)
+        btnAlreadyUnlocked.setTitle("id_jade_already_unlocked".localized, for: .normal)
     }
 
     func setStyle() {

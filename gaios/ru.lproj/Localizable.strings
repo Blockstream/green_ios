@@ -30,6 +30,7 @@
 "id_5_seconds_minimum" = "5 секунд минимум";
 "id_6_months_25920_blocks" = "6 месяцев (25920 блоков)";
 "id_a_2of3_account_requires_two_out" = "Аккаунт 2-из-3 требует двух подписей из трех, чтобы тратить монеты. Третья подпись — это резервный ключ, известный только вам. Это дает вам преимущества безопасности стандартной учетной записи, одновременно позволяя вам самостоятельно перемещать свои монеты в любой момент.";
+"id_a_fully_airgapped_workflow_no" = "A fully air-gapped workflow, no USB or Bluetooth required";
 "id_a_funding_fee_of_s_is_applied" = "A funding fee of %@ is applied when receiving amounts above your current receive capacity of %@";
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_funding_fee_of_s_s_is_applied" = "A funding fee of %@ (%@) is applied when receiving amounts above your current receive capacity %@ (%@)";
@@ -100,6 +101,7 @@
 "id_allow_data_collection" = "Разрешить сбор данных";
 "id_allow_nondefault_connection" = "Allow Non-Default Connection";
 "id_allows_you_to_quickly_check" = "Позволяет быстро проверять баланс, получать средства или смести бумажный кошелек. Вы не можете отправлять средства в режиме \"только для просмотра\".";
+"id_allows_you_to_sign_transactions" = "Allows you to sign transactions and validate addresses using Jade's camera";
 "id_always" = "Всегда";
 "id_always_ask" = "Всегда спрашивать";
 "id_amount" = "Сумма";
@@ -214,6 +216,7 @@
 "id_check_for_updates_on_startup" = "Проверять обновления при запуске";
 "id_check_our_6_easy_steps_to_be" = "Ознакомьтесь с нашими 6 простыми шагами, чтобы иметь возможность отправлять и получать AMP-активы.";
 "id_check_our_store" = "Check our store";
+"id_check_transaction_details" = "Check transaction Details";
 "id_check_your_backup" = "Проверьте свою резервную копию";
 "id_check_your_device" = "Check your device";
 "id_choose" = "Выбрать";
@@ -424,12 +427,14 @@
 "id_enable" = "Включить";
 "id_enable_2fa" = "Включить 2FA";
 "id_enable_2fa_call_method" = "Enable 2FA Call method";
+"id_enable_an_extra_layer_of" = "Enable an extra layer of security when accessing your watch-only.";
 "id_enable_bluetooth" = "Включить Bluetooth";
 "id_enable_bluetooth_from_system" = "Включите bluetooth в системных настройках";
 "id_enable_custom_networks_debug" = "Включение параметров отладки настраиваемых сетей";
 "id_enable_email_notifications_to" = "Включить уведомления по электронной почте, чтобы изменить nlocktime";
 "id_enable_experimental_features" = "Включить экспериментальные функции";
 "id_enable_face_id" = "Включить Face ID";
+"id_enable_faceid" = "Enable FaceID";
 "id_enable_limited_usage_data" = "Включить ограниченный режим сбора данных об использовании";
 "id_enable_location_services" = "Активируйте сервисы локации";
 "id_enable_or_change_your_pin_to" = "Активировать или изменить PIN-код для быстрого доступа к вашему кошельку";
@@ -439,6 +444,7 @@
 "id_enable_testnet_in_app_settings" = "Включите тестнет в настройках приложения, чтобы использовать Jade";
 "id_enable_tls" = "Enable TLS";
 "id_enable_touch_id" = "Включить Touch ID";
+"id_enable_touchid" = "Enable TouchID";
 "id_enable_twofactor_authentication" = "Включить двухфакторную аутентификацию для защиты средств и критически важных настроек от несанкционированного доступа ";
 "id_enabled" = "Включено";
 "id_enabled_1s" = "Включено: %1$@";
@@ -542,7 +548,7 @@
 "id_for_more_information_read_more" = "For more information, Read More";
 "id_for_most_users" = "Для большинства пользователей";
 "id_format_is_not_supported_or_no" = "Format is not supported or no data was found.";
-"id_from" = "ОТ";
+"id_from" = "From";
 "id_fully_airgapped_with_qr" = "Fully air-gapped with QR";
 "id_funding_transaction_id" = "Funding Transaction ID";
 "id_funds_received" = "Funds Received!";
@@ -555,6 +561,7 @@
 "id_get_id" = "Получить ID";
 "id_get_jade" = "Получить Jade";
 "id_get_started" = "Get Started";
+"id_get_watchonly_information_from" = "Get watch-only information from Jade";
 "id_give_bluetooth_permissions" = "Разрешить использовать Bluetooth";
 "id_give_us_your_feedback" = "Оставьте ваш отзыв";
 "id_go_to_account" = "Перейти к учетной записи";
@@ -610,6 +617,7 @@
 "id_i_understand_amounts_could_be" = "Я понимаю, что суммы могут быть неправильными";
 "id_id" = "ID";
 "id_if_for_any_reason_you_cant" = "Если по какой-либо причине вы не можете войти в свой кошелек, вы можете восстановить фразу восстановления с помощью PIN-кода/биометрии.";
+"id_if_jade_is_already_set_up" = "If Jade is already set up, choose QR Mode > QR PIN Unlock > Continue > Enter your PIN";
 "id_if_you_agree_green_will_collect" = "Если вы согласитесь, Green будет собирать ограниченные данные об использовании для оптимизации пользовательского опыта. Никакая конфиденциальная информация о пользователе или кошельке не собирается.";
 "id_if_you_are_the_rightful_owner" = "Если вы являетесь владельцем этого кошелька и у вас все еще есть один из активных методов 2FA, отмените сброс, чтобы иметь возможность потратить средства и очистить этот кошелек.";
 "id_if_you_did_not_change_your" = "If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.";
@@ -623,6 +631,7 @@
 "id_import_a_wallet_created_on" = "Импортируйте кошелек, созданный в Blockstream Green.";
 "id_import_a_wallet_created_with" = "Импортируйте кошелек, созданный в других приложениях. Эта опция работает только с одноподписными кошельками, использующими мнемонику BIP39 и ее производные BIP44, BIP49 или BIP84.";
 "id_import_from_file" = "Import from file";
+"id_import_signed_transaction" = "Import signed transaction";
 "id_in_progress" = "In Progress";
 "id_inbound_liquidity" = "Inbound Liquidity";
 "id_incoming" = "Поступление";
@@ -679,6 +688,7 @@
 "id_issuer" = "Эмитент";
 "id_issuer_domain_s" = "Домен эмитента: %@";
 "id_it_looks_like_you_have_no" = "Похоже, у вас нет кошельков. Нажмите ниже, чтобы добавить кошелек.";
+"id_jade_already_unlocked" = "Jade already unlocked";
 "id_jade_is_a_specialized_device" = "Jade – это специализированное устройство, предназначенное для безопасного хранения ключей, необходимых для траты ваших биткоинов.";
 "id_jade_is_an_isolated_device_not" = "Jade – это изолированное устройство, не подключенное к интернету, что означает, что ваши средства защищены от взломанного или скомпрометированного телефона.";
 "id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
@@ -687,6 +697,7 @@
 "id_jade_was_initialized_for_testnet" = "Jade инициализирован для тестнета";
 "id_jade_will_securely_create_and" = "Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon't worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.";
 "id_just_a_few_more_steps_to_get" = "Еще несколько шагов для настройки.";
+"id_keep_your_keys_encrypted_on" = "Keep your keys encrypted on Jade, easily accessible with PIN";
 "id_label" = "Метка";
 "id_language" = "Язык";
 "id_last_attempt_if_failed_you_will" = "Последняя попытка: в случае неудачи вам придется восстановить свой кошелек с помощью фразы восстановления.";
@@ -697,6 +708,7 @@
 "id_learn_more" = "Узнать больше";
 "id_learn_more_about_amp_the_assets" = "Узнайте больше об AMP, активах и соответствии требованиям";
 "id_learn_more_about_s" = "Узнать больше о %@.";
+"id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
 "id_ledger_bitcoin_app_detected" = "Ledger Bitcoin app detected, please open the Bitcoin Legacy app to access.";
 "id_ledger_dashboard_detected" = "Обнаружена панель Ledger, пожалуйста, откройте приложение для доступа.";
 "id_ledger_devices" = "Устройства Ledger";
@@ -810,6 +822,7 @@
 "id_my_notes" = "МОИ ЗАМЕТКИ";
 "id_name" = "Имя";
 "id_native_segwit" = "Нативный SegWit";
+"id_navigate_on_your_jade_to" = "Navigate on your Jade to Options > Wallet > Export Xpub (ensure the derivation path is m/84'/0'/0')";
 "id_need_help" = "Нужна помощь?";
 "id_network" = "Сеть";
 "id_network_configuration" = "Конфигурация сети";
@@ -867,6 +880,7 @@
 "id_not_initialized" = "Не инициализировано";
 "id_not_now" = "Не сейчас";
 "id_not_on_longest_chain" = "Не на самой длинной цепочке";
+"id_not_vulnerable_to_bruteforce" = "Not vulnerable to brute-force attacks due to Jade’s unique security model";
 "id_note" = "Примечание";
 "id_note_down_your_recovery_phrase" = "Запишите свою фразу восстановления. Храните ее в безопасном месте!";
 "id_notifications" = "Уведомления";
@@ -880,6 +894,7 @@
 "id_old_fee" = "Old fee";
 "id_on_average" = "в среднем";
 "id_on_hardware_wallet" = "On Hardware Wallet";
+"id_on_jade_select_qr__continue_" = "On Jade select QR > Continue > Enter your PIN";
 "id_on_this_device" = "On This Device";
 "id_once_selected_this_spending" = "После выбора политику расходов изменить нельзя. Чтобы узнать, какой тип безопасности подходит вам лучше всего, посетите наш Справочный центр.";
 "id_onchain_address" = "Onchain Address";
@@ -972,6 +987,7 @@
 "id_proxy_port" = "Порт прокси";
 "id_proxy_settings" = "НАСТРОЙКИ ПРОКСИ-СЕРВЕРА";
 "id_pseudonymous_identifier_country" = "Псевдонимный идентификатор, страна";
+"id_qr_airgapped_mode" = "QR Airgapped Mode";
 "id_qr_code" = "QR-код";
 "id_qr_mode_allows_you_to" = "QR Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).";
 "id_qr_pin_unlock" = "QR PIN Unlock";
@@ -1090,6 +1106,7 @@
 "id_scan_qr_with_jade" = "Scan QR with Jade";
 "id_scan_the_qr_code_with_an" = "Отсканируйте QR-код с помощью приложения Authenticator";
 "id_scan_to_send_here" = "Отсканируйте, чтобы отправить сюда";
+"id_scan_with_jade" = "Scan with Jade";
 "id_screen_lock" = "Блокировка экрана";
 "id_search" = "Поиск";
 "id_search_address" = "Адрес поиска";
@@ -1108,10 +1125,12 @@
 "id_select_account__asset" = "Select account & asset";
 "id_select_an_app_on_s" = "Выберите приложение на %@";
 "id_select_asset" = "Выберите актив";
+"id_select_connection_via_qr_than" = "Select connection via QR, than continue and choose a PIN";
 "id_select_duration_of_twofactor" = "Выберите продолжительность защиты ваших монет двухфакторной аутентификацией. Эта новая опция применяется к вновь полученным монетам.";
 "id_select_initalize_to_create_a" = "Выберите Initalize для создания нового кошелька, затем создайте резервную копию и проверьте фразу восстановления";
 "id_select_initialize_and_choose_to" = "Выберите Initialize и выберите создание нового кошелька";
 "id_select_network" = "Выберите сеть";
+"id_select_s_on_jade_and_scan_this" = "Select %@ on Jade and scan this QR code";
 "id_select_the_s_app_on_your_ledger" = "Выберите приложение %@ в Ledger и повторите попытку.";
 "id_select_wallet" = "Выберите кошелек";
 "id_select_watchonly_type" = "Выберите тип \"Только для просмотра\"";
@@ -1154,6 +1173,7 @@
 "id_set_up_watchonly" = "Настроить watch-only кошелек";
 "id_set_up_watchonly_credentials" = "Установить учетные данные для работы в режиме watch-only для этого кошелька";
 "id_set_wallet_name" = "Установить название кошелька";
+"id_set_your_pin_via_qr_on_your" = "Set your PIN via QR on your Jade to get started";
 "id_setting_up_your_wallet" = "Настройка вашего кошелька";
 "id_setting_updated" = "Настройки обновлены";
 "id_settings" = "Настройки";
@@ -1161,8 +1181,10 @@
 "id_setup_a_new_wallet" = "Установите новый кошелек";
 "id_setup_guide" = "Руководство по установке";
 "id_setup_jade" = "Настроить Jade";
+"id_setup_jade_and_backup_the" = "Setup Jade and backup the recovery phrase";
 "id_setup_pin" = "Установить PIN-код";
 "id_setup_pin_and_s" = "Установить PIN-код и %@";
+"id_setup_pin_via_qr" = "Setup PIN via QR";
 "id_setup_your_jade" = "Установите свой Jade";
 "id_share" = "Поделиться";
 "id_share_address" = "Поделиться адресом";
@@ -1186,6 +1208,7 @@
 "id_show_recovery_phrase" = "Показать фразу восстановления";
 "id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
+"id_sign_transaction_via_qr" = "Sign transaction via QR";
 "id_signature" = "Signature";
 "id_signature_validation_failed_if" = "Проверка подписи не удалась. Если эта ошибка является неожиданной и повторяется неоднократно, возможно, аппаратный кошелек неисправен или был взломан. Возможно, произошла утечка ваших ключей, что может привести к потере средств. Пожалуйста, подумайте о замене аппаратного кошелька.";
 "id_signing" = "Signing…";
@@ -1225,7 +1248,9 @@
 "id_standard_accounts_allow_you_to" = "Стандартные счета позволяют разделить ваши средства. У каждой учетной записи будут свои собственные адреса получения, а для перемещения средств между счетами потребуется выполнить транзакцию.";
 "id_standard_wallet" = "Стандартный кошелек";
 "id_start_a_2fa_reset_process_if" = "Если вы потеряли доступ ко всем методам двухфакторной аутентификации, запустите процесс сброса 2FA.";
+"id_start_qr_unlock" = "Start QR Unlock";
 "id_start_receiving_funds_and_set" = "Начните получать средства и укажите адрес электронной почты для получения данных для восстановления вашего кошелька";
+"id_start_scan_qr_on_jade_and" = "Start Scan QR on Jade and validate the transaction details on Jade";
 "id_status" = "Статус";
 "id_step" = "Шаг";
 "id_step_1s" = "Step %1$@";
@@ -1309,7 +1334,7 @@
 "id_time_s" = "Время:%@";
 "id_tip_we_recommend_you_enable" = "Совет: мы рекомендуем вам включить более одного метода 2FA. Если вы настроили только один метод 2FA, а затем потеряете его, вам придется подождать как минимум один год, пока не истечет срок действия 2FA.";
 "id_tip_you_can_use_the" = "Совет: Вы можете использовать xPub/yPub/zPub только для просмотра своего кошелька в Green или импортировать его на другую платформу. Каждый аккаунт в вашем кошельке имеет отдельный xPub/yPub/zPub.";
-"id_to" = "ДО";
+"id_to" = "To";
 "id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Для предоставления вам возможности управлять вашими средствами, защита с помощью двухфакторной аутентификации истекает примерно через %d дней после вашего последнего платежа. Если вы недостаточно часто переводите средства, вам будет предложено совершить транзакцию для реактивации двухфакторной аутентификации.";
 "id_to_show_balances_and" = "to show balances and transactions on Liquid accounts up to 10x faster at every login, and it's necessary to use Liquid singlesig accounts.";
@@ -1355,6 +1380,7 @@
 "id_twofactor_threshold" = "Двухфакторный порог";
 "id_tx_count" = "Количество транзакций TX";
 "id_txid" = "TXID";
+"id_type_an_amount_between_s_and_s" = "Type an amount between %@ and %@. A minimum setup fee of %@ will be applied to the received amount.";
 "id_type_the_next_word" = "Type the next word";
 "id_unable_to_contact_the_green" = "Не удалось связаться с Green. Проверьте соединение и дождитесь повторного подключения.";
 "id_unarchive" = "Разархивировать";
@@ -1368,6 +1394,7 @@
 "id_unknown_firmware" = "Неизвестная прошивка";
 "id_unlock" = "Разблокировать";
 "id_unlock_green" = "Разблокировать Green";
+"id_unlock_jade_before_signing_the" = "Unlock Jade before signing the transaction";
 "id_unlock_jade_to_continue" = "Разблокируйте Jade, чтобы продолжить";
 "id_unlock_your_device_to_continue" = "Разблокируйте устройство, чтобы продолжить";
 "id_unlock_your_jade_to_continue" = "Unlock your Jade to continue";
@@ -1386,6 +1413,7 @@
 "id_use_android_screen_lock_to_log" = "Используйте блокировку экрана Android для входа в систему";
 "id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Использовать аппаратное устройство";
+"id_use_s_for_quick_access" = "Use %@ for Quick Access";
 "id_use_secure_display_and_screen" = "Использовать защищенный дисплей и блокировку экрана";
 "id_use_the_jogwheel_to_select_the" = "С помощью колеса прокрутки выберите слово, соответствующее вашей фразе восстановления.";
 "id_use_this_recovery_phrase_to" = "Use this recovery phrase to restore your lightning account.\n\nWARNING: This recovery phrase does not restore all your other bitcoin or liquid accounts.";
@@ -1502,6 +1530,7 @@
 "id_you_have_to_authenticate_to" = "You have to Authenticate to unlock your device";
 "id_you_have_to_authenticate_using" = "Вы должны пройти аутентификацию с помощью биометрии";
 "id_you_have_tor_enabled_are_you" = "У вас включен Tor, вы уверены, что хотите открыть эту веб-страницу?";
+"id_you_just_created_a_pin_to" = "You just created a PIN to unlock your Jade and sign transactions!";
 "id_you_must_first_log_out_before" = "Прежде, чем войти, произведите выход.";
 "id_you_must_save_this_mnemonic_now" = "Вы ДОЛЖНЫ сохранить эту мнемоническую фразу СЕЙЧАС";
 "id_you_need_a_liquid_account_in" = "Вам нужен аккаунт Liquid, чтобы получить это.";

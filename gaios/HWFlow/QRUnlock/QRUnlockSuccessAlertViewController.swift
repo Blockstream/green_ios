@@ -33,6 +33,20 @@ class QRUnlockSuccessAlertViewController: UIViewController {
         setStyle()
         setContent()
         view.alpha = 0.0
+
+        if AuthenticationTypeHandler.biometryType == .faceID {
+            imgBio.image = UIImage(named: "ic_airgap_faceid")!
+            btnBio.setTitle("id_enable_face_id".localized, for: .normal)
+            lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "Face ID")
+        } else if AuthenticationTypeHandler.biometryType == .touchID {
+            imgBio.image = UIImage(named: "ic_airgap_biometrics")!
+            btnBio.setTitle("id_enable_touch_id".localized, for: .normal)
+            lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "Touch ID")
+        } else {
+            imgBio.image = UIImage(named: "ic_airgap_biometrics")!
+            btnBio.setTitle("id_touchface_id_not_available", for: .normal)
+            lblTitle.text = "id_success".localized
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -43,12 +57,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_success".localized
-        lblHint.text = "You just created a PIN to unlock your Jade in order to sign your transactions!".localized
-        lblLearnMore.text = "Learn more about  Jade’s QR functionality"
-        lblInfoCredentials.text = "You can enable an extra layer of security when accessing your watch-only view."
-        btnFaceID.setTitle("id_enable_face_id".localized, for: .normal)
-        btnLater.setTitle("id_maybe_later".localized, for: .normal)
+        lblHint.text = "Access your wallet to check your wallet balance and transactions.\n\nSign transactions offline using your Jade.".localized
     }
 
     func setStyle() {

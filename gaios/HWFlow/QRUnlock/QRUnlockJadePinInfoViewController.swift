@@ -22,13 +22,13 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Set Pin via QR"
-        lblTitle.text = "Set your PIN via QR on your Jade to get started".localized
-        lblHint.text = "This allows you to sign transactions and validate addresses using Jade's camera".localized
-        btnNext.setTitle("Start QR Unlock".localized, for: .normal)
-        lblInfo1.text = "A fully air-gapped workflow, no USB or Bluetooth required"
-        lblInfo2.text = "Keep your keys encrypted on Jade, easily accessible with PIN"
-        lblInfo3.text = "Not vulnerable to brute-force attacks due to Jade’s unique security model"
+        title = "id_setup_pin".localized
+        lblTitle.text = "id_qr_pin_unlock".localized
+        lblHint.text = "id_allows_you_to_sign_transactions".localized
+        btnNext.setTitle("id_start_qr_unlock".localized, for: .normal)
+        lblInfo1.text = "id_setup_jade_and_backup_the".localized
+        lblInfo2.text = "id_on_jade_select_qr__continue_".localized
+        lblInfo3.text = "id_if_jade_is_already_set_up".localized
     }
 
     func setStyle() {

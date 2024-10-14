@@ -85,7 +85,7 @@ class QRUnlockJadeViewController: UIViewController {
         progress.isHidden = true
         lblStep.isHidden = false
         lblUserHelpTitle.text = "Import PubKey".localized
-        lblUserHelpHint.text = "Navigate on your Jade to Options > Wallet > Export Xpub (ensure the derivation path is m/84'/0'/0')".localized
+        lblUserHelpHint.text = "id_navigate_on_your_jade_to".localized
         btnUserHelpScan.setTitle("Scan PubKey".localized, for: .normal)
         btnUserHelpLearn.setTitle("id_learn_more".localized, for: .normal)
     }

@@ -62,6 +62,7 @@ public class AuthenticationTypeHandler {
 
         var error: NSError?
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
+            NSLog(error?.localizedDescription ?? "")
             return nil
         }
         return context.biometryType

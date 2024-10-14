@@ -30,6 +30,7 @@
 "id_5_seconds_minimum" = "5 seconds minimum";
 "id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
+"id_a_fully_airgapped_workflow_no" = "A fully air-gapped workflow, no USB or Bluetooth required";
 "id_a_funding_fee_of_s_is_applied" = "A funding fee of %@ is applied when receiving amounts above your current receive capacity of %@";
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_funding_fee_of_s_s_is_applied" = "A funding fee of %@ (%@) is applied when receiving amounts above your current receive capacity %@ (%@)";
@@ -100,6 +101,7 @@
 "id_allow_data_collection" = "Allow data collection";
 "id_allow_nondefault_connection" = "Allow Non-Default Connection";
 "id_allows_you_to_quickly_check" = "Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can't send funds in watch-only mode.";
+"id_allows_you_to_sign_transactions" = "Allows you to sign transactions and validate addresses using Jade's camera";
 "id_always" = "Always";
 "id_always_ask" = "Always ask";
 "id_amount" = "Amount";
@@ -214,6 +216,7 @@
 "id_check_for_updates_on_startup" = "Check for updates on startup";
 "id_check_our_6_easy_steps_to_be" = "Check our 6 easy steps to be able to send and receive AMP assets.";
 "id_check_our_store" = "Check our store";
+"id_check_transaction_details" = "Check transaction Details";
 "id_check_your_backup" = "Check your backup";
 "id_check_your_device" = "Check your device";
 "id_choose" = "Choose";
@@ -424,12 +427,14 @@
 "id_enable" = "Enable";
 "id_enable_2fa" = "Enable 2FA";
 "id_enable_2fa_call_method" = "Enable 2FA Call method";
+"id_enable_an_extra_layer_of" = "Enable an extra layer of security when accessing your watch-only.";
 "id_enable_bluetooth" = "Enable Bluetooth";
 "id_enable_bluetooth_from_system" = "Enable bluetooth from system settings";
 "id_enable_custom_networks_debug" = "Enable custom networks debug options";
 "id_enable_email_notifications_to" = "Enable email notifications to change nlocktime";
 "id_enable_experimental_features" = "Enable experimental features";
 "id_enable_face_id" = "Enable Face ID";
+"id_enable_faceid" = "Enable FaceID";
 "id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Enable location services";
 "id_enable_or_change_your_pin_to" = "Enable or change your PIN to quickly access your wallet";
@@ -439,6 +444,7 @@
 "id_enable_testnet_in_app_settings" = "Enable testnet in app settings to use Jade";
 "id_enable_tls" = "Enable TLS";
 "id_enable_touch_id" = "Enable Touch ID";
+"id_enable_touchid" = "Enable TouchID";
 "id_enable_twofactor_authentication" = "Enable Two-Factor Authentication to protect your wallet from unauthorized transactions or changes to critical security settings";
 "id_enabled" = "Enabled";
 "id_enabled_1s" = "Enabled: %1$@";
@@ -555,6 +561,7 @@
 "id_get_id" = "Get ID";
 "id_get_jade" = "Get Jade";
 "id_get_started" = "Get Started";
+"id_get_watchonly_information_from" = "Get watch-only information from Jade";
 "id_give_bluetooth_permissions" = "Give Bluetooth Permissions";
 "id_give_us_your_feedback" = "Give us your feedback";
 "id_go_to_account" = "Go to Account";
@@ -610,6 +617,7 @@
 "id_i_understand_amounts_could_be" = "I understand amounts could be incorrect";
 "id_id" = "ID";
 "id_if_for_any_reason_you_cant" = "If for any reason you can't login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.";
+"id_if_jade_is_already_set_up" = "If Jade is already set up, choose QR Mode > QR PIN Unlock > Continue > Enter your PIN";
 "id_if_you_agree_green_will_collect" = "If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "If you are the rightful owner of this wallet, and you still possess one of its active 2FA methods, cancel the reset to be able to spend and empty this wallet.";
 "id_if_you_did_not_change_your" = "If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.";
@@ -623,6 +631,7 @@
 "id_import_a_wallet_created_on" = "Import a wallet created on Blockstream Green.";
 "id_import_a_wallet_created_with" = "Import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.";
 "id_import_from_file" = "Import from file";
+"id_import_signed_transaction" = "Import signed transaction";
 "id_in_progress" = "In Progress";
 "id_inbound_liquidity" = "Inbound Liquidity";
 "id_incoming" = "Incoming";
@@ -679,6 +688,7 @@
 "id_issuer" = "Issuer";
 "id_issuer_domain_s" = "Issuer Domain: %@";
 "id_it_looks_like_you_have_no" = "It looks like you have no wallets. Click below to add one.";
+"id_jade_already_unlocked" = "Jade already unlocked";
 "id_jade_is_a_specialized_device" = "Jade is a specialized device designed to securely store the keys needed to spend your bitcoin.";
 "id_jade_is_an_isolated_device_not" = "Jade is an isolated device not connected to the internet, which means your funds are protected from a hacked or compromised phone.";
 "id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
@@ -687,6 +697,7 @@
 "id_jade_was_initialized_for_testnet" = "Jade was initialized for testnet";
 "id_jade_will_securely_create_and" = "Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon't worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.";
 "id_just_a_few_more_steps_to_get" = "Just a few more steps to get you set up.";
+"id_keep_your_keys_encrypted_on" = "Keep your keys encrypted on Jade, easily accessible with PIN";
 "id_label" = "Label";
 "id_language" = "Language";
 "id_last_attempt_if_failed_you_will" = "Last attempt: if failed, you will have to restore your wallet with your recovery phrase.";
@@ -697,6 +708,7 @@
 "id_learn_more" = "Learn more";
 "id_learn_more_about_amp_the_assets" = "Learn more about AMP, the assets and your eligibility";
 "id_learn_more_about_s" = "Learn more about %@.";
+"id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
 "id_ledger_bitcoin_app_detected" = "Ledger Bitcoin app detected, please open the Bitcoin Legacy app to access.";
 "id_ledger_dashboard_detected" = "Ledger Dashboard detected, please open the correct app to access.";
 "id_ledger_devices" = "Ledger devices";
@@ -810,6 +822,7 @@
 "id_my_notes" = "MY NOTES";
 "id_name" = "Name";
 "id_native_segwit" = "Native SegWit";
+"id_navigate_on_your_jade_to" = "Navigate on your Jade to Options > Wallet > Export Xpub (ensure the derivation path is m/84'/0'/0')";
 "id_need_help" = "Need help?";
 "id_network" = "Network";
 "id_network_configuration" = "Network Configuration";
@@ -867,6 +880,7 @@
 "id_not_initialized" = "Not initialized";
 "id_not_now" = "Not now";
 "id_not_on_longest_chain" = "Not on longest chain";
+"id_not_vulnerable_to_bruteforce" = "Not vulnerable to brute-force attacks due to Jade’s unique security model";
 "id_note" = "Note";
 "id_note_down_your_recovery_phrase" = "Note down your recovery phrase. Keep it somewhere safe!";
 "id_notifications" = "Notifications";
@@ -880,6 +894,7 @@
 "id_old_fee" = "Old fee";
 "id_on_average" = "on average";
 "id_on_hardware_wallet" = "On Hardware Wallet";
+"id_on_jade_select_qr__continue_" = "On Jade select QR > Continue > Enter your PIN";
 "id_on_this_device" = "On This Device";
 "id_once_selected_this_spending" = "Once selected, this spending policy cannot be changed. For tips on what type of security is best for you, visit our Help Center.";
 "id_onchain_address" = "Onchain Address";
@@ -972,6 +987,7 @@
 "id_proxy_port" = "Proxy port";
 "id_proxy_settings" = "PROXY SETTINGS";
 "id_pseudonymous_identifier_country" = "Pseudonymous identifier, country";
+"id_qr_airgapped_mode" = "QR Airgapped Mode";
 "id_qr_code" = "QR Code";
 "id_qr_mode_allows_you_to" = "QR Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).";
 "id_qr_pin_unlock" = "QR PIN Unlock";
@@ -1090,6 +1106,7 @@
 "id_scan_qr_with_jade" = "Scan QR with Jade";
 "id_scan_the_qr_code_with_an" = "Scan the QR Code with an Authenticator app";
 "id_scan_to_send_here" = "Scan to send here";
+"id_scan_with_jade" = "Scan with Jade";
 "id_screen_lock" = "Screen Lock";
 "id_search" = "Search";
 "id_search_address" = "Search address";
@@ -1108,10 +1125,12 @@
 "id_select_account__asset" = "Select account & asset";
 "id_select_an_app_on_s" = "Select an app on %@";
 "id_select_asset" = "Select asset";
+"id_select_connection_via_qr_than" = "Select connection via QR, than continue and choose a PIN";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
 "id_select_initalize_to_create_a" = "Select Initalize to create a New Wallet then backup and verify your recovery phrase";
 "id_select_initialize_and_choose_to" = "Select Initialize and choose to create a New wallet";
 "id_select_network" = "Select network";
+"id_select_s_on_jade_and_scan_this" = "Select %@ on Jade and scan this QR code";
 "id_select_the_s_app_on_your_ledger" = "Select the %@ app on your Ledger and retry.";
 "id_select_wallet" = "Select Wallet";
 "id_select_watchonly_type" = "Select Watch-only type";
@@ -1154,6 +1173,7 @@
 "id_set_up_watchonly" = "Set up watch-only";
 "id_set_up_watchonly_credentials" = "Set up watch-only credentials for this wallet";
 "id_set_wallet_name" = "Set wallet name";
+"id_set_your_pin_via_qr_on_your" = "Set your PIN via QR on your Jade to get started";
 "id_setting_up_your_wallet" = "Setting Up Your Wallet";
 "id_setting_updated" = "Setting updated";
 "id_settings" = "Settings";
@@ -1161,8 +1181,10 @@
 "id_setup_a_new_wallet" = "Setup a New Wallet";
 "id_setup_guide" = "Setup Guide";
 "id_setup_jade" = "Setup Jade";
+"id_setup_jade_and_backup_the" = "Setup Jade and backup the recovery phrase";
 "id_setup_pin" = "Setup PIN";
 "id_setup_pin_and_s" = "Setup PIN and %@";
+"id_setup_pin_via_qr" = "Setup PIN via QR";
 "id_setup_your_jade" = "Setup your Jade";
 "id_share" = "Share";
 "id_share_address" = "Share Address";
@@ -1186,6 +1208,7 @@
 "id_show_recovery_phrase" = "Show Recovery Phrase";
 "id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
+"id_sign_transaction_via_qr" = "Sign transaction via QR";
 "id_signature" = "Signature";
 "id_signature_validation_failed_if" = "Signature validation failed. If this error is unexpected and has happened repeatedly, it is possible the hardware wallet is faulty or has been compromised. It could be leaking your keys, which could lead to loss of funds. Please consider replacing the hardware wallet.";
 "id_signing" = "Signing…";
@@ -1225,7 +1248,9 @@
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_standard_wallet" = "Standard Wallet";
 "id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_start_qr_unlock" = "Start QR Unlock";
 "id_start_receiving_funds_and_set" = "Start receiving funds and set an email to receive recovery data for your wallet";
+"id_start_scan_qr_on_jade_and" = "Start Scan QR on Jade and validate the transaction details on Jade";
 "id_status" = "Status";
 "id_step" = "Step";
 "id_step_1s" = "Step %1$@";
@@ -1355,6 +1380,7 @@
 "id_twofactor_threshold" = "Two-Factor threshold";
 "id_tx_count" = "TX Count";
 "id_txid" = "TXID";
+"id_type_an_amount_between_s_and_s" = "Type an amount between %@ and %@. A minimum setup fee of %@ will be applied to the received amount.";
 "id_type_the_next_word" = "Type the next word";
 "id_unable_to_contact_the_green" = "Unable to contact the Green service. Please check your network connection and wait to be reconnected.";
 "id_unarchive" = "Unarchive";
@@ -1368,6 +1394,7 @@
 "id_unknown_firmware" = "Unknown firmware";
 "id_unlock" = "Unlock";
 "id_unlock_green" = "Unlock Green";
+"id_unlock_jade_before_signing_the" = "Unlock Jade before signing the transaction";
 "id_unlock_jade_to_continue" = "Unlock Jade to continue";
 "id_unlock_your_device_to_continue" = "Unlock your Device to continue";
 "id_unlock_your_jade_to_continue" = "Unlock your Jade to continue";
@@ -1386,6 +1413,7 @@
 "id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Use Hardware Device";
+"id_use_s_for_quick_access" = "Use %@ for Quick Access";
 "id_use_secure_display_and_screen" = "Use Secure Display and Screen Lock";
 "id_use_the_jogwheel_to_select_the" = "Use the jog-wheel to select the word that matches your recovery phrase.";
 "id_use_this_recovery_phrase_to" = "Use this recovery phrase to restore your lightning account.\n\nWARNING: This recovery phrase does not restore all your other bitcoin or liquid accounts.";
@@ -1502,6 +1530,7 @@
 "id_you_have_to_authenticate_to" = "You have to Authenticate to unlock your device";
 "id_you_have_to_authenticate_using" = "You have to Authenticate using biometrics";
 "id_you_have_tor_enabled_are_you" = "You have Tor enabled, are you sure you want to open this webpage?";
+"id_you_just_created_a_pin_to" = "You just created a PIN to unlock your Jade and sign transactions!";
 "id_you_must_first_log_out_before" = "You must first log out before logging in.";
 "id_you_must_save_this_mnemonic_now" = "You MUST save this mnemonic NOW";
 "id_you_need_a_liquid_account_in" = "You need a Liquid account in order to receive it.";

@@ -30,6 +30,7 @@
 "id_5_seconds_minimum" = "最低5秒";
 "id_6_months_25920_blocks" = "6ヶ月 (25920ブロック)";
 "id_a_2of3_account_requires_two_out" = "2of3アカウントからの送金には3つの鍵のうち2つによる署名が必要です。3つ目の鍵は貴方のみが知るバックアップ用の秘密鍵となります。この選択肢はスタンダードアカウントと同じセキュリティ水準で、いつでもご自身の鍵のみで自由に送金することができます。";
+"id_a_fully_airgapped_workflow_no" = "A fully air-gapped workflow, no USB or Bluetooth required";
 "id_a_funding_fee_of_s_is_applied" = "A funding fee of %@ is applied when receiving amounts above your current receive capacity of %@";
 "id_a_funding_fee_of_s_minimum_s_is" = "A funding fee of %@ (minimum %@) is applied when receiving amounts above your current receive capacity of %@";
 "id_a_funding_fee_of_s_s_is_applied" = "A funding fee of %@ (%@) is applied when receiving amounts above your current receive capacity %@ (%@)";
@@ -100,6 +101,7 @@
 "id_allow_data_collection" = "データ収集を許可する";
 "id_allow_nondefault_connection" = "Allow Non-Default Connection";
 "id_allows_you_to_quickly_check" = "残高の確認、資金の受け取り、また、ペーパーウォレットの読み取りができます。読み取りモードでは資金の送金はできません。";
+"id_allows_you_to_sign_transactions" = "Allows you to sign transactions and validate addresses using Jade's camera";
 "id_always" = "いつも";
 "id_always_ask" = "常に確認する";
 "id_amount" = "額";
@@ -214,6 +216,7 @@
 "id_check_for_updates_on_startup" = "起動時にアップデートを確認";
 "id_check_our_6_easy_steps_to_be" = "AMPアセットの送受信方法を簡単な6ステップの手順で確認できます。";
 "id_check_our_store" = "Check our store";
+"id_check_transaction_details" = "Check transaction Details";
 "id_check_your_backup" = "バックアップを確認する";
 "id_check_your_device" = "Check your device";
 "id_choose" = "選択";
@@ -424,12 +427,14 @@
 "id_enable" = "有効";
 "id_enable_2fa" = "2段階認証を有効化";
 "id_enable_2fa_call_method" = "Enable 2FA Call method";
+"id_enable_an_extra_layer_of" = "Enable an extra layer of security when accessing your watch-only.";
 "id_enable_bluetooth" = "Bluetoothを有効化する";
 "id_enable_bluetooth_from_system" = "システム環境設定からBluetoothを有効化する";
 "id_enable_custom_networks_debug" = "カスタムネットワークのデバッグオプションをオンにする";
 "id_enable_email_notifications_to" = "nlocktimeの設定変更時にメールで確認する";
 "id_enable_experimental_features" = "試験的機能を有効化する";
 "id_enable_face_id" = "顔ID機能をONにする";
+"id_enable_faceid" = "Enable FaceID";
 "id_enable_limited_usage_data" = "限られた範囲で利用データの収集を許可する";
 "id_enable_location_services" = "位置情報を有効化する";
 "id_enable_or_change_your_pin_to" = "PINを有効化するか変更してウォレットをすぐ開けるようにします";
@@ -439,6 +444,7 @@
 "id_enable_testnet_in_app_settings" = "Jadeを利用するにはアプリ内設定からTestnetを有効化してください";
 "id_enable_tls" = "Enable TLS";
 "id_enable_touch_id" = "タッチID機能をONにする";
+"id_enable_touchid" = "Enable TouchID";
 "id_enable_twofactor_authentication" = "2段階認証を有効化して不正送金や重要なセキュリティ設定の無断変更を防ぎましょう";
 "id_enabled" = "有効";
 "id_enabled_1s" = "有効: %1$@";
@@ -542,7 +548,7 @@
 "id_for_more_information_read_more" = "For more information, Read More";
 "id_for_most_users" = "大半のユーザー向け";
 "id_format_is_not_supported_or_no" = "Format is not supported or no data was found.";
-"id_from" = "送信者";
+"id_from" = "From";
 "id_fully_airgapped_with_qr" = "Fully air-gapped with QR";
 "id_funding_transaction_id" = "Funding Transaction ID";
 "id_funds_received" = "Funds Received!";
@@ -555,6 +561,7 @@
 "id_get_id" = "IDを取得する";
 "id_get_jade" = "Jadeを購入する";
 "id_get_started" = "Get Started";
+"id_get_watchonly_information_from" = "Get watch-only information from Jade";
 "id_give_bluetooth_permissions" = "Bluetoothの権限を与える";
 "id_give_us_your_feedback" = "ご意見はこちらへ";
 "id_go_to_account" = "アカウントを見る";
@@ -610,6 +617,7 @@
 "id_i_understand_amounts_could_be" = "金額が不正確な可能性があることを理解した";
 "id_id" = "ID";
 "id_if_for_any_reason_you_cant" = "もしウォレットにログインできなくなった場合、PINや生体認証でリカバリーフレーズを復元することができます。";
+"id_if_jade_is_already_set_up" = "If Jade is already set up, choose QR Mode > QR PIN Unlock > Continue > Enter your PIN";
 "id_if_you_agree_green_will_collect" = "同意するとGreenはユーザー体験向上のために限られた範囲内で利用データを収集します。機密性の高いユーザーやウォレットについてのデータは収集しません。";
 "id_if_you_are_the_rightful_owner" = "あなたがこのウォレットの所有者で2段階認証手段が１つでも残されている場合、リセットをキャンセルしてウォレット内の資金を退避させてください。";
 "id_if_you_did_not_change_your" = "If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.";
@@ -623,6 +631,7 @@
 "id_import_a_wallet_created_on" = "Blockstream Greenで作成されたウォレットを取り込みます。";
 "id_import_a_wallet_created_with" = "他のアプリで作成されたウォレットを取り込みます。BIP39のニモニックとBIP44, BIP49, BIP84のいずれかの標準デリベーションを使って作成されたウォレットのみ対応しています。";
 "id_import_from_file" = "Import from file";
+"id_import_signed_transaction" = "Import signed transaction";
 "id_in_progress" = "In Progress";
 "id_inbound_liquidity" = "Inbound Liquidity";
 "id_incoming" = "受信中";
@@ -679,6 +688,7 @@
 "id_issuer" = "発行者";
 "id_issuer_domain_s" = "発行者のドメイン: %@";
 "id_it_looks_like_you_have_no" = "ウォレットが存在しないようです。下から新しく作成しましょう";
+"id_jade_already_unlocked" = "Jade already unlocked";
 "id_jade_is_a_specialized_device" = "Jadeはビットコインで使用する秘密鍵をセキュアに守るために設計された専用デバイスです。";
 "id_jade_is_an_isolated_device_not" = "Jadeはインターネットから隔離されたデバイスのため、ハッキングやスマホのウィルス感染に対して堅牢です。";
 "id_jade_is_an_opensource_hardware" = "Jade is an open-source hardware wallet for Bitcoin and Liquid assets.";
@@ -687,6 +697,7 @@
 "id_jade_was_initialized_for_testnet" = "JadeがTestnet用に初期化されました";
 "id_jade_will_securely_create_and" = "Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon't worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.";
 "id_just_a_few_more_steps_to_get" = "セットアップはあと少しで完了します。";
+"id_keep_your_keys_encrypted_on" = "Keep your keys encrypted on Jade, easily accessible with PIN";
 "id_label" = "ラベル";
 "id_language" = "言語";
 "id_last_attempt_if_failed_you_will" = "忠告: 最後の試行です。今回入力を間違えるとリカバリーフレーズからウォレットを復元する必要があります。";
@@ -697,6 +708,7 @@
 "id_learn_more" = "詳しく知る";
 "id_learn_more_about_amp_the_assets" = "AMP、アセット、利用資格について詳しく知る";
 "id_learn_more_about_s" = "%@についてより詳しく知る。";
+"id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
 "id_ledger_bitcoin_app_detected" = "Ledger Bitcoin app detected, please open the Bitcoin Legacy app to access.";
 "id_ledger_dashboard_detected" = "Ledgerダッシュボードを検知しました。正しいアプリを使ってアクセスして下さい。";
 "id_ledger_devices" = "Ledgerデバイス";
@@ -810,6 +822,7 @@
 "id_my_notes" = "メモ";
 "id_name" = "名前";
 "id_native_segwit" = "Native SegWit";
+"id_navigate_on_your_jade_to" = "Navigate on your Jade to Options > Wallet > Export Xpub (ensure the derivation path is m/84'/0'/0')";
 "id_need_help" = "サポート";
 "id_network" = "ネットワーク";
 "id_network_configuration" = "ネットワーク設定";
@@ -867,6 +880,7 @@
 "id_not_initialized" = "初期化されていません";
 "id_not_now" = "後で";
 "id_not_on_longest_chain" = "最長のチェーンではありません";
+"id_not_vulnerable_to_bruteforce" = "Not vulnerable to brute-force attacks due to Jade’s unique security model";
 "id_note" = "メモ";
 "id_note_down_your_recovery_phrase" = "リカバリーフレーズを書き留め、安全な場所に保管してください。";
 "id_notifications" = "告知事項";
@@ -880,6 +894,7 @@
 "id_old_fee" = "Old fee";
 "id_on_average" = "平均で";
 "id_on_hardware_wallet" = "On Hardware Wallet";
+"id_on_jade_select_qr__continue_" = "On Jade select QR > Continue > Enter your PIN";
 "id_on_this_device" = "On This Device";
 "id_once_selected_this_spending" = "このポリシーを一度選択すると以後変更できません。あなたに最適なセキュリティポリシーの選び方はヘルプセンターより確認できます。";
 "id_onchain_address" = "Onchain Address";
@@ -972,6 +987,7 @@
 "id_proxy_port" = "プロキシのポート";
 "id_proxy_settings" = "プロキシ設定";
 "id_pseudonymous_identifier_country" = "匿名化された識別子、利用国";
+"id_qr_airgapped_mode" = "QR Airgapped Mode";
 "id_qr_code" = "QRコード";
 "id_qr_mode_allows_you_to" = "QR Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).";
 "id_qr_pin_unlock" = "QR PIN Unlock";
@@ -1090,6 +1106,7 @@
 "id_scan_qr_with_jade" = "Scan QR with Jade";
 "id_scan_the_qr_code_with_an" = "AuthenticatorアプリでQRコードをスキャンする";
 "id_scan_to_send_here" = "スキャンしてここに送る";
+"id_scan_with_jade" = "Scan with Jade";
 "id_screen_lock" = "画面ロック";
 "id_search" = "検索";
 "id_search_address" = "アドレスを検索する";
@@ -1108,10 +1125,12 @@
 "id_select_account__asset" = "Select account & asset";
 "id_select_an_app_on_s" = "%@でアプリを選択してください";
 "id_select_asset" = "アセットを選択";
+"id_select_connection_via_qr_than" = "Select connection via QR, than continue and choose a PIN";
 "id_select_duration_of_twofactor" = "2段階認証による保護の期間を設定します。新しい設定はこれから受け取るコインにのみ適用されます。";
 "id_select_initalize_to_create_a" = "初期化してウォレットを新規作成後、リカバリーフレーズのバックアップと検証を行う";
 "id_select_initialize_and_choose_to" = "初期化を選択し、ウォレットの新規作成を行う";
 "id_select_network" = "ネットワークを選択";
+"id_select_s_on_jade_and_scan_this" = "Select %@ on Jade and scan this QR code";
 "id_select_the_s_app_on_your_ledger" = "Ledgerの%@アプリを選択して再試行してください。";
 "id_select_wallet" = "ウォレットを選択";
 "id_select_watchonly_type" = "読み取りモードの種類を選択してください";
@@ -1154,6 +1173,7 @@
 "id_set_up_watchonly" = "読み取りモードの設定";
 "id_set_up_watchonly_credentials" = "このウォレットに読み取りモードを追加する";
 "id_set_wallet_name" = "ウォレット名を設定する";
+"id_set_your_pin_via_qr_on_your" = "Set your PIN via QR on your Jade to get started";
 "id_setting_up_your_wallet" = "ウォレットのセットアップ";
 "id_setting_updated" = "設定が保存されました。";
 "id_settings" = "設定";
@@ -1161,8 +1181,10 @@
 "id_setup_a_new_wallet" = "ウォレットの新規作成";
 "id_setup_guide" = "セットアップガイド";
 "id_setup_jade" = "Jadeのセットアップ";
+"id_setup_jade_and_backup_the" = "Setup Jade and backup the recovery phrase";
 "id_setup_pin" = "PINの設定";
 "id_setup_pin_and_s" = "PINと%@の設定";
+"id_setup_pin_via_qr" = "Setup PIN via QR";
 "id_setup_your_jade" = "Jadeのセットアップ";
 "id_share" = "シェアする";
 "id_share_address" = "アドレスを共有";
@@ -1186,6 +1208,7 @@
 "id_show_recovery_phrase" = "リカバリーフレーズを表示する";
 "id_sign_message" = "Sign message";
 "id_sign_transaction" = "Sign Transaction";
+"id_sign_transaction_via_qr" = "Sign transaction via QR";
 "id_signature" = "Signature";
 "id_signature_validation_failed_if" = "署名の検証に失敗しました。このエラーが原因不明で繰り返し発生する場合、ハードウェアウォレットの故障か改造が疑われます。秘密鍵の流出と資金の盗難につながる恐れがあるので、ハードウェアウォレットの交換をお勧めします。";
 "id_signing" = "Signing…";
@@ -1225,7 +1248,9 @@
 "id_standard_accounts_allow_you_to" = "スタンダードアカウントは資金の分割管理に向きます。各アカウントは独自の受け取り用アドレスを持ち、アカウント間の資金のやり取りにはトランザクションが必要になります。";
 "id_standard_wallet" = "スタンダード・ウォレット";
 "id_start_a_2fa_reset_process_if" = "2段階認証方法のすべてを失った場合は、2段階認証のリセット手順を開始してください。";
+"id_start_qr_unlock" = "Start QR Unlock";
 "id_start_receiving_funds_and_set" = "資金の受け取り時にアカウントのリカバリーデータを受け取るためのメールアドレスを設定してから、資金を受け取りましょう";
+"id_start_scan_qr_on_jade_and" = "Start Scan QR on Jade and validate the transaction details on Jade";
 "id_status" = "ステータス";
 "id_step" = "Step";
 "id_step_1s" = "Step %1$@";
@@ -1309,7 +1334,7 @@
 "id_time_s" = "時間: %@";
 "id_tip_we_recommend_you_enable" = "おすすめ: 複数の2段階認証手段を有効化しましょう。唯一の2段階認証手段を失った場合、保護が失効するまで1年以上待つ必要があります。";
 "id_tip_you_can_use_the" = "ちなみに、xPub/yPub/zPubによる読み取りモードのウォレットはGreenのみならず、別のウォレットに読み込むことでも利用できます。また、ウォレット内の各アカウントには個別にxPub/yPub/zPubがあります。";
-"id_to" = "送り先";
+"id_to" = "To";
 "id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "資金を動かせない状況を回避するため、2段階認証による保護は前回の送金からおよそ%d日後に解除されます。頻繁に取引されない方は、2段階認証を再度有効化するためのトランザクションを推奨する通知を受け取る可能性があります。";
 "id_to_show_balances_and" = "to show balances and transactions on Liquid accounts up to 10x faster at every login, and it's necessary to use Liquid singlesig accounts.";
@@ -1355,6 +1380,7 @@
 "id_twofactor_threshold" = "2段階認証の閾値";
 "id_tx_count" = "トランザクション数";
 "id_txid" = "TXID";
+"id_type_an_amount_between_s_and_s" = "Type an amount between %@ and %@. A minimum setup fee of %@ will be applied to the received amount.";
 "id_type_the_next_word" = "Type the next word";
 "id_unable_to_contact_the_green" = "Greenサービスに接続できません。ネットワーク状態を確認してからもう一度お試しください。";
 "id_unarchive" = "アーカイブから戻す";
@@ -1368,6 +1394,7 @@
 "id_unknown_firmware" = "不明なファームウェア";
 "id_unlock" = "アンロック";
 "id_unlock_green" = "Greenをアンロックする";
+"id_unlock_jade_before_signing_the" = "Unlock Jade before signing the transaction";
 "id_unlock_jade_to_continue" = "Jadeのロックを解除して続行してください";
 "id_unlock_your_device_to_continue" = "デバイスをアンロックしてください";
 "id_unlock_your_jade_to_continue" = "Unlock your Jade to continue";
@@ -1386,6 +1413,7 @@
 "id_use_android_screen_lock_to_log" = "Android画面ロックでログインする";
 "id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "ハードウェアデバイスを利用する";
+"id_use_s_for_quick_access" = "Use %@ for Quick Access";
 "id_use_secure_display_and_screen" = "セキュアディスプレイおよびスクリーンロック機能を利用する";
 "id_use_the_jogwheel_to_select_the" = "ダイヤルを使ってあなたのリカバリーフレーズと同じ単語を選択してください。";
 "id_use_this_recovery_phrase_to" = "Use this recovery phrase to restore your lightning account.\n\nWARNING: This recovery phrase does not restore all your other bitcoin or liquid accounts.";
@@ -1502,6 +1530,7 @@
 "id_you_have_to_authenticate_to" = "You have to Authenticate to unlock your device";
 "id_you_have_to_authenticate_using" = "生体認証が必要です";
 "id_you_have_tor_enabled_are_you" = "Torが有効です。本当にこのページを開きますか？";
+"id_you_just_created_a_pin_to" = "You just created a PIN to unlock your Jade and sign transactions!";
 "id_you_must_first_log_out_before" = "ログインする前にログアウトして下さい。";
 "id_you_must_save_this_mnemonic_now" = "このニモニックを直ちに保存して下さい";
 "id_you_need_a_liquid_account_in" = "受け取りにはLiquidアカウントが必要です。";

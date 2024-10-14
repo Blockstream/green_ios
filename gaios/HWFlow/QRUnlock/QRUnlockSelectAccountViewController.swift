@@ -130,9 +130,9 @@ extension QRUnlockSelectAccountViewController: UITableViewDelegate, UITableViewD
 
         switch QRUnlockSelectAccountSection(rawValue: section) {
         case .asset:
-            return headerView( "Asset" )
+            return headerView( "id_asset".localized )
         case .policy:
-            return headerView( "Security Policy" )
+            return headerView( "id_choose_security_policy".localized )
         default:
             return nil
         }

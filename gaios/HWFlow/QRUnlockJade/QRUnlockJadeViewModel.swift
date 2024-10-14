@@ -32,7 +32,7 @@ class QRUnlockJadeViewModel {
         case .handshakeInit:
             return "\("id_step".localized) 2".uppercased()
         case .handshakeInitReply:
-            return "\("id_step".localized) 3".uppercased()
+            return "\("id_step".localized) 2".uppercased()
         case .xpub:
             return "Export Xpub".localized.uppercased()
         }
@@ -67,13 +67,13 @@ class QRUnlockJadeViewModel {
     func hint() -> String {
         switch scope {
         case .oracle:
-            return "id_initiate_oracle_communication".localized
+            return "id_on_jade_select_qr__continue_".localized
         case .handshakeInit:
-            return "id_validate_pin_and_unlock".localized
+            return "id_on_jade_select_qr__continue_".localized
         case .handshakeInitReply:
-            return "Select ✅ On Jade and then scan this QR".localized
+            return String(format: "id_select_s_on_jade_and_scan_this".localized, "✅")
         case .xpub:
-            return "Scan your xpub on Jade by Options -> Wallet -> Export Xpub".localized
+            return "id_get_watchonly_information_from".localized
         }
     }
 
