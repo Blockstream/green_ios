@@ -104,9 +104,8 @@ class SendTxConfirmViewController: UIViewController {
         payRequestByStack.isHidden = true
         lblMultiAddrHint.text = "id_multiple_assets".localized
         btnSignViaQr.setTitle("Sign Transaction via QR".localized, for: .normal)
-        let isWo = viewModel.wm?.account.isWatchonly ?? false
-        btnSignViaQr.isHidden = !isWo
-        squareSliderView.isHidden = isWo
+        btnSignViaQr.isHidden = !viewModel.enableExportPsbt()
+        squareSliderView.isHidden = viewModel.enableExportPsbt()
     }
 
     func setStyle() {
@@ -524,14 +523,14 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
             if viewModel.isWithdraw {
                 widthdraw()
             } else {
-                if viewModel.wm?.account.isWatchonly ?? false && viewModel.signedPsbt == nil {
+                if viewModel.needExportPsbt() {
                     exportPsbt()
                 } else {
                     send()
                 }
             }
         } else {
-            if viewModel.wm?.account.isWatchonly ?? false {
+            if viewModel.enableExportPsbt() {
                 viewModel.signedPsbt = nil
             }
         }
@@ -583,7 +582,7 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnab
 
 extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func onAgain() {
-        if viewModel.wm?.account.isWatchonly ?? false && viewModel.signedPsbt == nil {
+        if viewModel.needExportPsbt() {
             exportPsbt()
         } else {
             send()

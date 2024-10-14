@@ -116,6 +116,12 @@ class SendTxConfirmViewModel {
     func getAssetIcons() -> [UIImage] {
         transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
     }
+    func enableExportPsbt() -> Bool {
+        wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep
+    }
+    func needExportPsbt() -> Bool {
+        wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
+    }
     private func sendTx() async throws -> SendTransactionSuccess {
         guard let session = session,
               var tx = transaction else {
