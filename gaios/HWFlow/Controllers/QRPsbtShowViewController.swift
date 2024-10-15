@@ -58,7 +58,6 @@ class QRPsbtShowViewController: UIViewController {
         lblHint.text = "id_start_scan_qr_on_jade_and".localized
         btnVerify.setTitle("id_check_transaction_details".localized, for: .normal)
         btnNext.setTitle("id_import_signed_transaction".localized, for: .normal)
-        btnTrouble.setTitle("id_troubleshoot".localized, for: .normal)
     }
 
     func setStyle() {
@@ -73,6 +72,7 @@ class QRPsbtShowViewController: UIViewController {
         lblHint.textColor = .black
         btnVerify.setStyle(.outlinedBlack)
         btnNext.setStyle(.primary)
+        btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

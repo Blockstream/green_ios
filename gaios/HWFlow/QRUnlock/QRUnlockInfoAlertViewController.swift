@@ -9,6 +9,7 @@ enum QRUnlockInfoAlertAction {
     case learnMore
     case setup
     case alreadyUnlocked
+    case cancel
 }
 
 class QRUnlockInfoAlertViewController: UIViewController {
@@ -22,6 +23,7 @@ class QRUnlockInfoAlertViewController: UIViewController {
     @IBOutlet weak var btnLearnMore: UIButton!
     @IBOutlet weak var btnSetup: UIButton!
     @IBOutlet weak var btnAlreadyUnlocked: UIButton!
+    @IBOutlet weak var btnClose: UIButton!
 
     weak var delegate: QRUnlockInfoAlertViewControllerDelegate?
 
@@ -49,14 +51,12 @@ class QRUnlockInfoAlertViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
-        cardView.borderWidth = 1.0
-        cardView.borderColor = .white.withAlphaComponent(0.05)
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.titleCard)
         lblHint.setStyle(.txtCard)
         btnLearnMore.setStyle(.inline)
         btnSetup.setStyle(.primary)
-        btnAlreadyUnlocked.setStyle(.inline)
+        btnAlreadyUnlocked.setStyle(.inlineWhite)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +73,9 @@ class QRUnlockInfoAlertViewController: UIViewController {
         })
     }
 
+    @IBAction func btnClose(_ sender: Any) {
+        dismiss(.cancel)
+    }
     @IBAction func btnLearnMore(_ sender: Any) {
         dismiss(.learnMore)
     }

@@ -246,6 +246,8 @@ extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
                 vc.delegate = self
                 present(vc, animated: true)
             }
+        case .cancel:
+            break
         }
     }
 }

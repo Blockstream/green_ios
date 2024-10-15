@@ -11,6 +11,7 @@ enum ButtonStyle {
     case outlinedWhiteDisabled
     case inline
     case inlineGray
+    case inlineWhite
     case inlineDisabled
     case destructive
     case destructiveOutlined
@@ -154,7 +155,7 @@ final class CheckButton: UIButton {
 extension UIButton {
 
     func setStyle(_ type: ButtonStyle) {
-        titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        titleLabel?.font = UIFont.systemFont(ofSize: 13.0, weight: .semibold)
         layer.cornerRadius = 4.0
         switch type {
         case .primary:
@@ -210,6 +211,10 @@ extension UIButton {
         case .inlineGray:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.gW40(), for: .normal)
+            isEnabled = true
+        case .inlineWhite:
+            backgroundColor = UIColor.clear
+            setTitleColor(.white, for: .normal)
             isEnabled = true
         case .inlineDisabled:
             backgroundColor = UIColor.clear

@@ -43,7 +43,6 @@ class QRPsbtAquireViewController: UIViewController {
         lblStep.text = "\("id_step".localized) 2".uppercased()
         lblTitle.text = "id_scan_qr_with_jade".localized
         lblHint.text = "id_import_signed_transaction".localized
-        btnTrouble.setTitle("id_troubleshoot".localized, for: .normal)
     }
 
     func setStyle() {
@@ -51,13 +50,15 @@ class QRPsbtAquireViewController: UIViewController {
 
         btnBack.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        btnTrouble.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.textColor = UIColor.gGreenMatrix()
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        lblHint.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        lblHint.textColor = .black
+        lblHint.setStyle(.txtCard)
+        btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
+        qrScanView.layer.masksToBounds = true
+        qrScanView.borderWidth = 10.0
+        qrScanView.borderColor = UIColor.gGrayCamera()
+        qrScanView.cornerRadius = 10.0
     }
 
     override func viewDidAppear(_ animated: Bool) {

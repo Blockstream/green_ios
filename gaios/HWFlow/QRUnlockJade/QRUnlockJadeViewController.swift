@@ -15,6 +15,7 @@ class QRUnlockJadeViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnTrouble: UIButton!
+    @IBOutlet weak var stepView: UIView!
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var imgStep: UIImageView!
     @IBOutlet weak var progress: UIProgressView!
@@ -56,7 +57,6 @@ class QRUnlockJadeViewController: UIViewController {
         theme(.dark)
         setContent()
         setStyle()
-        loadNavigationBtns()
         qrScanView.delegate = self
         self.view.alpha = 0.0
         userHelp.isHidden = true
@@ -77,8 +77,7 @@ class QRUnlockJadeViewController: UIViewController {
         lblTitle.text = vm.title()
         lblHint.text = vm.hint()
         lblStep.text = vm.stepTitle()
-        btnNext.setTitle("id_continue".localized, for: .normal)
-        btnTrouble.setTitle("id_troubleshoot".localized, for: .normal)
+        btnNext.setTitle("id_next".localized, for: .normal)
         qrcodeImageView.isHidden = !vm.showQRCode()
         qrcodeBgView.isHidden = !vm.showQRCode()
         btnNext.isHidden = !vm.showQRCode()
@@ -93,35 +92,22 @@ class QRUnlockJadeViewController: UIViewController {
     func setStyle() {
 
         progress.isHidden = true
-        lblHint.setStyle(.titleCard)
-        lblHint.textColor = .gW60()
-        btnTrouble.setStyle(.inline)
+        lblHint.setStyle(.txtCard)
         lblStep.setStyle(.txtSmaller)
-
         btnBack.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-
-        btnTrouble.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.textColor = UIColor.gGreenMatrix()
-
-        lblHint.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        lblHint.textColor = .white
         btnNext.setStyle(.primary)
         lblUserHelpTitle.setStyle(.subTitle)
         lblUserHelpHint.setStyle(.txtCard)
         btnUserHelpScan.setStyle(.primary)
         btnUserHelpLearn.setStyle(.inline)
-    }
-
-    func loadNavigationBtns() {
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
-        settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
-        settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        qrScanView.layer.masksToBounds = true
+        qrScanView.borderWidth = 10.0
+        qrScanView.borderColor = UIColor.gGrayCamera()
+        qrScanView.cornerRadius = 10.0
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -164,6 +150,8 @@ class QRUnlockJadeViewController: UIViewController {
                 qrcodeImageView.bcurQrCode(bcur: qrBcur)
             }
         case .xpub:
+            lblNavTitle.isHidden = true
+            stepView.isHidden = true
             theme(.dark)
             startCapture()
         }
@@ -173,6 +161,8 @@ class QRUnlockJadeViewController: UIViewController {
         view.bringSubviewToFront(userHelp)
         userHelp.alpha = 0.0
         userHelp.isHidden = false
+        lblNavTitle.isHidden = true
+        btnTrouble.isHidden = true
         UIView.animate(withDuration: 0.3) {
             self.userHelp.alpha = 1.0
             self.theme(.dark)
@@ -180,6 +170,8 @@ class QRUnlockJadeViewController: UIViewController {
     }
 
     func dismissUserHelp() {
+        lblNavTitle.isHidden = false
+        btnTrouble.isHidden = false
         UIView.animate(withDuration: 0.3, delay: 0.3) {
             self.userHelp.alpha = 0.0
         } completion: { _ in
@@ -197,40 +189,56 @@ class QRUnlockJadeViewController: UIViewController {
             btnBack.setImage(UIImage(named: "ic_qr_nav_back")?.maskWithColor(color: .black), for: .normal)
             btnBack.setTitleColor(.black, for: .normal)
             view.backgroundColor = .white
+            btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: .black), for: .normal)
         case .dark:
             imgStep.image = vm.icon()
             lblNavTitle.textColor = .white
             lblTitle.textColor = .white
-            lblHint.textColor = .white
+            lblHint.textColor = UIColor.gW40()
             btnBack.setImage(UIImage(named: "ic_qr_nav_back")?.maskWithColor(color: .white), for: .normal)
             btnBack.setTitleColor(.white, for: .normal)
+            btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: .white), for: .normal)
             view.backgroundColor = UIColor.gBlackBg()
+        }
+    }
+
+    func onScanOracle(_ result: ScanResult) async {
+        guard let bcur = result.bcur else {
+            vm.oracle = result.result
+            vm.scope = .handshakeInit
+            refresh()
+            return
+        }
+        await onScanHandshakeInit(result)
+    }
+
+    func onScanHandshakeInit(_ result: ScanResult) async {
+        guard let bcur = result.bcur else {
+            startCapture()
+            return
+        }
+        do {
+            let bcurHandshake = try await vm.jade.handshakeInit(bcur: bcur)
+            await MainActor.run {
+                vm.scope = .handshakeInitReply
+                qrBcur = bcurHandshake
+                refresh()
+            }
+        } catch {
+            startCapture()
+            showError(error)
         }
     }
 
     func onScanCompleted(_ result: ScanResult) {
         switch vm.scope {
         case .oracle:
-            vm.oracle = result.result
-            vm.scope = .handshakeInit
-            refresh()
-        case .handshakeInit:
-            guard let bcur = result.bcur else {
-                startCapture()
-                return
-            }
             Task {
-                do {
-                    let bcurHandshake = try await vm.jade.handshakeInit(bcur: bcur)
-                    await MainActor.run {
-                        vm.scope = .handshakeInitReply
-                        qrBcur = bcurHandshake
-                        refresh()
-                    }
-                } catch {
-                    startCapture()
-                    showError(error)
-                }
+                await onScanOracle(result)
+            }
+        case .handshakeInit:
+            Task {
+                await onScanHandshakeInit(result)
             }
         case .handshakeInitReply:
             vm.scope = .xpub
@@ -311,29 +319,11 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
     func onTap(_ action: QRUnlockSuccessAlertAction) {
         guard let credentials = credentials else { return }
         switch action {
-        case .learnMore:
-            let url = "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage"
-            if let url = URL(string: url) {
-                if UIApplication.shared.canOpenURL(url) {
-                    SafeNavigationManager.shared.navigate(url)
-                }
-            }
-        case .faceID:
+        case .bio:
             startLoader(message: "id_logging_in".localized)
             Task {
                 do {
                     try await vm.exportXpub(enableBio: true, credentials: credentials)
-                    try await vm.login()
-                    success(account: vm.account)
-                } catch {
-                    failure(error, account: vm.account)
-                }
-            }
-        case .later:
-            startLoader(message: "id_logging_in".localized)
-            Task {
-                do {
-                    try await vm.exportXpub(enableBio: false, credentials: credentials)
                     try await vm.login()
                     success(account: vm.account)
                 } catch {

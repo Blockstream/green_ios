@@ -1,4 +1,5 @@
 import Foundation
+import core
 import UIKit
 
 protocol QRUnlockSuccessAlertViewControllerDelegate: AnyObject {
@@ -6,9 +7,7 @@ protocol QRUnlockSuccessAlertViewControllerDelegate: AnyObject {
 }
 
 enum QRUnlockSuccessAlertAction {
-    case learnMore
-    case faceID
-    case later
+    case bio
 }
 
 class QRUnlockSuccessAlertViewController: UIViewController {
@@ -18,12 +17,8 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-
-    @IBOutlet weak var lblLearnMore: UILabel!
-    @IBOutlet weak var btnLearnMore: UIButton!
-    @IBOutlet weak var btnFaceID: UIButton!
-    @IBOutlet weak var btnLater: UIButton!
-    @IBOutlet weak var lblInfoCredentials: UILabel!
+    @IBOutlet weak var btnBio: UIButton!
+    @IBOutlet weak var imgBio: UIImageView!
 
     weak var delegate: QRUnlockSuccessAlertViewControllerDelegate?
 
@@ -61,17 +56,10 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
-        cardView.borderWidth = 1.0
-        cardView.borderColor = .white.withAlphaComponent(0.05)
+        cardView.setStyle(.alert)
         lblTitle.setStyle(.titleCard)
         lblHint.setStyle(.txtCard)
-        lblLearnMore.setStyle(.txt)
-        lblLearnMore.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblLearnMore.textColor = UIColor.gGreenMatrix()
-        btnFaceID.setStyle(.primary)
-        lblInfoCredentials.setStyle(.txtCard)
-        btnLater.setStyle(.inline)
+        btnBio.setStyle(.primary)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -87,14 +75,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
             })
         })
     }
-
-    @IBAction func btnLearnMore(_ sender: Any) {
-        dismiss(.learnMore)
-    }
-    @IBAction func btnFaceID(_ sender: Any) {
-        dismiss(.faceID)
-    }
-    @IBAction func btnLater(_ sender: Any) {
-        dismiss(.later)
+    @IBAction func btnBio(_ sender: Any) {
+        dismiss(.bio)
     }
 }

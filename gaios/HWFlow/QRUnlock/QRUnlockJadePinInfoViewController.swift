@@ -22,7 +22,7 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 
     func setContent() {
-        title = "id_setup_pin".localized
+        title = "id_setup_pin_via_qr".localized
         lblTitle.text = "id_qr_pin_unlock".localized
         lblHint.text = "id_allows_you_to_sign_transactions".localized
         btnNext.setTitle("id_start_qr_unlock".localized, for: .normal)
@@ -32,9 +32,8 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 
     func setStyle() {
-        lblTitle.setStyle(.title)
-        lblHint.font = UIFont.systemFont(ofSize: 20.0, weight: .regular)
-        lblHint.textColor = .gW60()
+        lblTitle.setStyle(.subTitle)
+        lblHint.setStyle(.txtCard)
         btnNext.setStyle(.primary)
         [lblInfo1, lblInfo2, lblInfo3].forEach {
             $0?.setStyle(.txt)
@@ -42,12 +41,10 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 
     func loadNavigationBtns() {
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
-        settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
-        settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        let helpBtn = UIButton(type: .system)
+        helpBtn.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
+        helpBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpBtn)
     }
 
     @objc func setupBtnTapped() {

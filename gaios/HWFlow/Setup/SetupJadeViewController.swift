@@ -156,7 +156,11 @@ class SetupJadeViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnExit(_ sender: Any) {
-        navigationController?.popViewController(animated: true)
+        if navigationController == nil {
+            dismiss(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
     }
 
     @IBAction func didTap(_ sender: UIButton) {
