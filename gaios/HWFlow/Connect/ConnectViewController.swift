@@ -379,6 +379,6 @@ extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
 
 extension ConnectViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
-        navigationController?.popViewController(animated: true)
+        // navigationController?.popViewController(animated: true)
     }
 }

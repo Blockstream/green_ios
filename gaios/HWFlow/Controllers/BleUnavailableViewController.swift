@@ -47,15 +47,12 @@ class BleUnavailableViewController: UIViewController {
 
     func setContent() {
         lblHint.text = "id_green_uses_bluetooth_for".localized
-        btnCancel.setTitle("I understand", for: .normal)
+        btnCancel.setTitle("id_cancel".localized, for: .normal)
         switch state {
-        case .powerOff:
-            lblTitle.text = "Enable Bluetooth".localized
-            btnSettings.isHidden = true
         case .unauthorized:
             lblTitle.text = "Grant Green Bluetooth permission".localized
             btnSettings.setTitle("Open Permissions".localized, for: .normal)
-        case .other:
+        case .other, .powerOff:
             lblTitle.text = "Enable Bluetooth from iOS settings to continue".localized
             btnSettings.isHidden = true
         }

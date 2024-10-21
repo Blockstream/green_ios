@@ -267,7 +267,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
 extension JadeWaitViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
-        navigationController?.popViewController(animated: true)
+        // navigationController?.popViewController(animated: true)
     }
 }
 
