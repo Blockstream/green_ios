@@ -40,11 +40,6 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblRememberHWHint: UILabel!
     @IBOutlet weak var switchRememberHW: UISwitch!
     
-    @IBOutlet weak var cardUseTrampoline: UIView!
-    @IBOutlet weak var lblUseTrampolineTitle: UILabel!
-    @IBOutlet weak var lblUseTrampolineHint: UILabel!
-    @IBOutlet weak var switchUseTrampoline: UISwitch!
-    
     @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
@@ -156,8 +151,6 @@ class WalletSettingsViewController: KeyboardViewController {
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
         lblMultiHint.text = NSLocalizedString("id_double_check_spv_with_other", comment: "")
         lblDescElectrumGapLimit.text = "id_number_of_consecutive_empty".localized
-        lblUseTrampolineTitle.text = "Use trampoline payment"
-        lblUseTrampolineHint.text = ""
         btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         fieldSPVbtcServer.placeholder = GdkSettings.btcElectrumSrvDefaultEndPoint
@@ -181,7 +174,6 @@ class WalletSettingsViewController: KeyboardViewController {
         [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach { $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
-        cardUseTrampoline.isHidden = !Bundle.main.dev
     }
 
     @objc func donePressed() {
@@ -201,7 +193,6 @@ class WalletSettingsViewController: KeyboardViewController {
         switchRememberHW.setOn(!appSettings.rememberHWIsOff, animated: true)
         cardExperimental.isHidden = false
         switchExperimental.setOn(appSettings.experimental, animated: true)
-        switchUseTrampoline.setOn(appSettings.useTrampoline, animated: true)
         
         switchTestnet.setOn(appSettings.testnet, animated: true)
         switchTxCheck.setOn(gdkSettings.spvEnabled ?? false, animated: true)
@@ -298,7 +289,6 @@ class WalletSettingsViewController: KeyboardViewController {
         )
         AppSettings.shared.testnet = switchTestnet.isOn
         AppSettings.shared.experimental = switchExperimental.isOn
-        AppSettings.shared.useTrampoline = switchUseTrampoline.isOn
         AppSettings.shared.rememberHWIsOff = !switchRememberHW.isOn
         AppSettings.shared.gdkSettings = newSettings
 
