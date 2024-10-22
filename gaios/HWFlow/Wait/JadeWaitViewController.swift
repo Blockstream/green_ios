@@ -291,6 +291,8 @@ extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
                 vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false)
                 vc.delegate = self
+                vc.forceUserhelp = true
+                vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: true)
             }
         case .cancel:

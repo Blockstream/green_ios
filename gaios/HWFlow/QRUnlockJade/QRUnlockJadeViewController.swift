@@ -44,6 +44,7 @@ class QRUnlockJadeViewController: UIViewController {
     var isStarted = false
 
     var requireSignerFlow = false
+    var forceUserhelp = false
 
     enum Theme {
         case light
@@ -60,6 +61,9 @@ class QRUnlockJadeViewController: UIViewController {
         qrScanView.delegate = self
         self.view.alpha = 0.0
         userHelp.isHidden = true
+        if forceUserhelp {
+            presentUserHelp()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

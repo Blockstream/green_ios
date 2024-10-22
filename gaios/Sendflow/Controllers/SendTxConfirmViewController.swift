@@ -306,7 +306,9 @@ class SendTxConfirmViewController: UIViewController {
         noteBtn.setStyle(.inline)
         noteBtn.setTitle(Common.noteActionName(viewModel.transaction?.memo ?? ""), for: .normal)
         noteBtn.addTarget(self, action: #selector(noteBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: noteBtn)]
+        if !viewModel.enableExportPsbt() {
+            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: noteBtn)]
+        }
     }
 
     @objc func noteBtnTapped(_ sender: Any) {
@@ -446,7 +448,7 @@ class SendTxConfirmViewController: UIViewController {
                 startLoader(message: "id_sending".localized)
                 if viewModel.isLightning {
                     presentLTConfirmingViewController()
-                } else if viewModel.hasHW {
+                } else if viewModel.hasHW && !viewModel.enableExportPsbt() {
                     presentSendHWConfirmViewController()
                 }
                 let res = try await self.viewModel.send()

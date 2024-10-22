@@ -28,10 +28,6 @@ class ShowMnemonicsViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_recovery_phrase", comment: "")
         lblHint.text = "id_the_recovery_phrase_can_be_used".localized
-        if credentials != nil {
-            self.collectionView.reloadData()
-            return
-        }
         let isHW = AccountsRepository.shared.current?.isHW ?? false
         let derivedAccount = AccountsRepository.shared.current?.getDerivedLightningAccount()
         btnShowQR.setStyle(.outlined)
@@ -39,6 +35,10 @@ class ShowMnemonicsViewController: UIViewController {
         btnShowQR.setTitle("id_show_qr_code".localized, for: .normal)
         Task {
             do {
+                if credentials != nil {
+                    self.collectionView.reloadData()
+                    return
+                }
                 if isHW {
                     if !showBip85 {
                         throw GaError.GenericError("No export mnemonic from HW")
