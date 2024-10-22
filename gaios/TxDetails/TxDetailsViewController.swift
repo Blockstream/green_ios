@@ -28,6 +28,8 @@ class TxDetailsViewController: UIViewController {
 
     var vm: TxDetailsViewModel!
 
+    private var isReloading = false
+
     var isWatchonly: Bool {
         WalletManager.current?.account.isWatchonly ?? false
     }
@@ -57,8 +59,6 @@ class TxDetailsViewController: UIViewController {
         super.viewDidLoad()
 
         register()
-        setContent()
-        setStyle()
 
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
@@ -73,7 +73,7 @@ class TxDetailsViewController: UIViewController {
         super.viewWillAppear(animated)
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: refreshTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: refreshTransaction)
-        tableView.reloadData()
+        handleRefresh()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -88,17 +88,6 @@ class TxDetailsViewController: UIViewController {
         }
     }
 
-    func setContent() {
-//        lblTitle.text = "id_bitcoin_denomination".localized
-    }
-
-    func setStyle() {
-//        cardView.layer.cornerRadius = 20
-//        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-//        handle.cornerRadius = 1.5
-//        lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-    }
-
     func register() {
         vm.cells.forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
@@ -108,14 +97,14 @@ class TxDetailsViewController: UIViewController {
         title = "id_transaction_details".localized
         navigationItem.backBarButtonItem = UIBarButtonItem(
             title: "id_back".localized, style: .plain, target: nil, action: nil)
-//        let shareBtn = UIButton(type: .system)
-//        shareBtn.setImage(UIImage(named: "ic_export"), for: .normal)
-//        shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: shareBtn)
     }
 
+    @MainActor
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
+        if isReloading { return }
+        isReloading = true
         tableView.reloadData { [weak self] in
+            self?.isReloading = false
             self?.tableView.refreshControl?.endRefreshing()
         }
     }
@@ -247,9 +236,7 @@ class TxDetailsViewController: UIViewController {
     }
 
     func refreshTransaction(_ notification: Notification) {
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
+        handleRefresh()
     }
 
     func copyToClipboard(_ value: String) {
@@ -504,7 +491,7 @@ extension TxDetailsViewController: DialogEditViewControllerDelegate {
             self.vm.transaction.memo = note
             self.delegate?.onMemoEdit()
             self.stopAnimating()
-            self.tableView.reloadData()
+            self.handleRefresh()
         }
     }
 
