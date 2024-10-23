@@ -49,7 +49,7 @@ class TxDetailsViewModel {
 
     var showTotals: Bool {
         if !transaction.isLightning && transaction.type == .outgoing && assetAmountList.amounts.count == 1 {
-            let amount: (String,Int64) = assetAmountList.amounts[0]
+            let amount: (String, Int64) = assetAmountList.amounts[0]
             let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
             if amount.0 == assetId {
                 return true
@@ -67,10 +67,10 @@ class TxDetailsViewModel {
         var ntwFees: String?
         var receive: String?
 
-        let amount: (String,Int64) = assetAmountList.amounts[0]
+        let amount: (String, Int64) = assetAmountList.amounts[0]
         let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
         if amount.0 == assetId {
-            let tSpent = amount.1 - Int64(transaction.fee ?? 0)
+            let tSpent = abs(amount.1)
             if let balance = Balance.fromSatoshi(tSpent, assetId: assetId) {
                 let (amount, denom) = balance.toValue()
                 let (fiat, fiatCurrency) = balance.toFiat()
@@ -81,7 +81,7 @@ class TxDetailsViewModel {
                 let (amount, denom) = balance.toValue()
                 ntwFees = "\(amount) \(denom)"
             }
-            let spent = amount.1
+            let spent = abs(amount.1) - Int64(transaction.fee ?? 0)
             if let balance = Balance.fromSatoshi(spent, assetId: assetId) {
                 let (amount, denom) = balance.toValue()
                 receive = "\(amount) \(denom)"
