@@ -389,7 +389,7 @@ extension BcurDecodedData {
     public var descriptors: [String]? { self.get("descriptors") }
     public var masterFingerprint: String? { self.get("master_fingerprint") }
     public var encrypted: String? { self.get("encrypted") }
-    public var publicΚey: String? { self.get("publicΚey") }
+    public var publicΚey: String? { self.get("public_key") }
     public var res: [String: Any?]? { self.get("result") }
     //public var result: String {
     //    descriptors?.joined(separator: ",") ?? descriptor ?? psbt ?? data ?? ""
