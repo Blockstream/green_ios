@@ -193,9 +193,10 @@ class ReceiveViewController: KeyboardViewController {
     func newAddress(_ notification: Notification? = nil) {
         loading = true
         reload()
-        Task.detached() { [weak self] in
+        let viewModel = self.viewModel
+        Task.detached(priority: .background) { [weak self] in
             do {
-                try await self?.viewModel?.newAddress()
+                try await viewModel?.newAddress()
             } catch {
                 await self?.failure(error)
             }
