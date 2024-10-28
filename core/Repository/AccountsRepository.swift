@@ -101,10 +101,6 @@ public class AccountsRepository {
         for account in accounts {
             await remove(account)
         }
-        reset()
-    }
-
-    public func reset() {
         accounts = []
         try? storage.removeAll()
     }

@@ -50,11 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Initialize gdk
         GdkInit.defaults().run()
 
-        // Checking for migrations
-        MigratorManager.shared.migrate()
-
         // Set screen lock
-        AccountNavigator.goFirstPage()
         ScreenLockWindow.shared.setup()
 
         #if targetEnvironment(simulator)
@@ -65,11 +61,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .forEach { $0.perform(setHardwareLayout, with: nil) }
         #endif
 
+        // start analytics
         AnalyticsManager.shared.countlyStart()
         AnalyticsManager.shared.setupSession(session: nil)
 
+        // register notifications
         UNUserNotificationCenter.current().delegate = AppNotifications.shared
         AppNotifications.shared.registerForFcmPushNotifications()
+        
+        // Open first page
+        AccountNavigator.goFirstPage()
+        
+        // run account migration
+        Task {
+            await MigratorManager.shared.migrate()
+        }
         return true
     }
 

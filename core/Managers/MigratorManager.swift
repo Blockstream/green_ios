@@ -8,15 +8,30 @@ public enum MigrationFlag: String {
 public class MigratorManager {
 
     public static let shared = MigratorManager()
+    private var appDataVersion: Int {
+        get {
+            let version = UserDefaults.standard.integer(forKey: MigrationFlag.appDataVersion.rawValue)
+            if version == 0 {
+                return 2
+            }
+            return version
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: MigrationFlag.appDataVersion.rawValue)
+        }
+    }
+    public var firstInitialization: Bool {
+        get { !UserDefaults.standard.bool(forKey: MigrationFlag.firstInitialization.rawValue) }
+        set { UserDefaults.standard.set(newValue, forKey: MigrationFlag.firstInitialization.rawValue) }
+    }
 
-    public func migrate() {
-        let appDataVersion = UserDefaults.standard.integer(forKey: MigrationFlag.appDataVersion.rawValue)
-        let firstInitialization = !UserDefaults.standard.bool(forKey: MigrationFlag.firstInitialization.rawValue)
+    public func migrate() async {
         if firstInitialization {
             // first installation or app upgrade from app version < v3.5.5
-            clean()
+            await clean()
             migrateWallets()
-            UserDefaults.standard.set(true, forKey: MigrationFlag.firstInitialization.rawValue)
+            firstInitialization = true
+            return
         }
         if appDataVersion < 1 {
             // upgrade from app < v4.0.0
@@ -26,7 +41,7 @@ public class MigratorManager {
             // upgrade from app < v4.0.25
             updateKeychainPolicy()
         }
-        UserDefaults.standard.set(2, forKey: MigrationFlag.appDataVersion.rawValue)
+        appDataVersion = 2
     }
 
     private func migrateDatadir() { // from "4.0.0"
@@ -57,7 +72,7 @@ public class MigratorManager {
         AccountsRepository.shared.accounts = accounts
     }
 
-    private func clean() {
+    private func clean() async {
         for network in ["mainnet", "testnet", "liquid"] {
             if !UserDefaults.standard.bool(forKey: network + "FirstInitialization") {
                 _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, forNetwork: network)
@@ -65,7 +80,7 @@ public class MigratorManager {
                 UserDefaults.standard.set(true, forKey: network + "FirstInitialization")
             }
         }
-        AccountsRepository.shared.reset()
+        await AccountsRepository.shared.removeAll()
     }
 
     func updateKeychainPolicy() { // from  "4.0.25"
