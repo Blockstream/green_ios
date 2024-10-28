@@ -200,14 +200,20 @@ public struct CreateRedepositTransactionParams: Codable {
         case utxos
         case feeRate = "fee_rate"
         case feeSubaccount = "fee_subaccount"
+        case expiredAt = "expired_at"
+        case expiresIn = "expires_in"
     }
     public let utxos: [String: [UnspentOutput]]
     public let feeRate: UInt64?
     public let feeSubaccount: UInt32
-    public init(utxos: [String: [UnspentOutput]], feeRate: UInt64?, feeSubaccount: UInt32) {
+    public let expiredAt: UInt64?
+    public let expiresIn: UInt64?
+    public init(utxos: [String: [UnspentOutput]], feeRate: UInt64?, feeSubaccount: UInt32, expiredAt: UInt64?, expiresIn: UInt64?) {
         self.utxos = utxos
         self.feeRate = feeRate
         self.feeSubaccount = feeSubaccount
+        self.expiredAt = expiredAt
+        self.expiresIn = expiresIn
     }
 }
 
@@ -402,6 +408,7 @@ public struct GetUnspentOutputsParams: Codable {
         case addressType = "address_type"
         case allCoins = "all_coins"
         case expiredAt = "expired_at"
+        case expiresIn = "expires_in"
         case confidential
         case dustLimit = "dust_limit"
         case sortBy = "sort_by"
@@ -411,16 +418,18 @@ public struct GetUnspentOutputsParams: Codable {
     public let addressType: String?
     public let allCoins: Bool?
     public let expiredAt: UInt64?
+    public let expiresIn: UInt64?
     public let confidential: Bool?
     public let dustLimit: UInt64?
     public let sortBy: String?
 
-    public init(subaccount: UInt32, numConfs: Int? = nil, addressType: String? = nil, allCoins: Bool? = nil, expiredAt: UInt64? = nil, confidential: Bool? = nil, dustLimit: UInt64? = nil, sortBy: String? = nil) {
+    public init(subaccount: UInt32, numConfs: Int? = nil, addressType: String? = nil, allCoins: Bool? = nil, expiredAt: UInt64? = nil, expiresIn: UInt64? = nil, confidential: Bool? = nil, dustLimit: UInt64? = nil, sortBy: String? = nil) {
         self.subaccount = subaccount
         self.numConfs = numConfs
         self.addressType = addressType
         self.allCoins = allCoins
         self.expiredAt = expiredAt
+        self.expiresIn = expiresIn
         self.confidential = confidential
         self.dustLimit = dustLimit
         self.sortBy = sortBy
