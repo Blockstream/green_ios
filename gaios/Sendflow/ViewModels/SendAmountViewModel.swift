@@ -319,7 +319,7 @@ class SendAmountViewModel {
             let feeRate = createTx.feeRate ?? feeRate
             let guParams = GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 1)
             let res = try await session?.getUtxos(guParams)
-            let crtParams = CreateRedepositTransactionParams(utxos: res?.unspentOutputs ?? [:], feeRate: feeRate, feeSubaccount: subaccount?.pointer ?? 0)
+            let crtParams = CreateRedepositTransactionParams(utxos: res?.unspentOutputs ?? [:], feeRate: feeRate, feeSubaccount: subaccount?.pointer ?? 0, expiredAt: nil, expiresIn: nil)
             var created = try await session?.createRedepositTransaction(params: crtParams)
             created?.subaccount = subaccount?.hashValue
             createTx.addressee = created?.addressees.first
