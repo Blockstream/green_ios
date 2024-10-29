@@ -20,6 +20,9 @@ class QRCodeReaderView: UIView {
     var validating = false
     var session: SessionManager?
 
+    var timer: Timer?
+
+    var activeFrameView = UIView()
     var cFrame: CGRect {
         return CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
     }
@@ -113,6 +116,12 @@ class QRCodeReaderView: UIView {
     private func setupCaptureView() {
         if previewLayer != nil {
             layer.addSublayer(previewLayer!)
+
+            activeFrameView.layer.borderColor = UIColor.clear.cgColor
+            activeFrameView.layer.borderWidth = 3
+            activeFrameView.layer.cornerRadius = 10
+            addSubview(activeFrameView)
+            bringSubviewToFront(activeFrameView)
         }
     }
 
@@ -155,6 +164,7 @@ class QRCodeReaderView: UIView {
             }
         }
 #endif
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(hideActiveFrame), userInfo: nil, repeats: true)
     }
 
     func isSessionNotDetermined() -> Bool {
@@ -171,6 +181,8 @@ class QRCodeReaderView: UIView {
                 self.captureSession.stopRunning()
         }
 #endif
+        hideActiveFrame()
+        timer?.invalidate()
     }
 
     @objc func onAllowCameraTap(_ sender: Any) {
@@ -224,6 +236,8 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             buffer.append(stringValue)
             logger.info(">> append \(stringValue)")
 
+            self.addActiveFrame(metadataObject)
+
             if !stringValue.uppercased().starts(with: "UR:") {
                 self.delegate?.onQRCodeReadSuccess(result: ScanResult.from(result: stringValue, bcur: nil))
                 previous = nil
@@ -252,6 +266,27 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                     validating = false
                 }
             }
+        }
+    }
+
+    func addActiveFrame(_ metadataObject: AVMetadataObject) {
+        if let barCodeObject = previewLayer?.transformedMetadataObject(for: metadataObject) {
+            print(barCodeObject)
+            let qrCodeFrame = barCodeObject.bounds
+            DispatchQueue.main.async {
+                self.activeFrameView.borderColor = UIColor.gGreenMatrix()
+                self.activeFrameView.frame = CGRect(x: qrCodeFrame.origin.x - 3, y: qrCodeFrame.origin.y - 3, width: qrCodeFrame.width + 6, height: qrCodeFrame.height + 6)
+            }
+        } else {
+            DispatchQueue.main.async {
+                self.activeFrameView.isHidden = true
+            }
+        }
+    }
+
+    @objc func hideActiveFrame() {
+        DispatchQueue.main.async {
+            self.activeFrameView.borderColor = .clear
         }
     }
 

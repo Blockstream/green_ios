@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Update gdk to 0.73.3
+- QR code scan: improve visual feedback
 
 ## [4.0.36] - 2024-10-23
 
