@@ -3,14 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [4.0.37] - 2024-11-06
 
 ### Added
-- Jade upsells campaign
+- Jade upsells
 
 ### Changed
 - Update gdk to 0.73.3
 - QR code scan: improve visual feedback
+- Various bug fixes
 
 ## [4.0.36] - 2024-10-23
 

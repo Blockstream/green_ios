@@ -5218,7 +5218,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.36;
+				MARKETING_VERSION = 4.0.37;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -5261,7 +5261,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.36;
+				MARKETING_VERSION = 4.0.37;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6317,7 +6317,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.36;
+				MARKETING_VERSION = 4.0.37;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
