@@ -15,12 +15,17 @@ class GetStartedOnBoardViewController: UIViewController {
     @IBOutlet weak var labelAgree: UILabel!
 
     var actionToButton: ActionToButton?
-    var iAgree: Bool = false
+
     let mash = UIImageView(image: UIImage(named: "il_mash")!)
 
     let strIAgree = "id_i_agree_to_the_terms_of_service".localized
     let strTerms = "id_terms_of_service".localized
     let strPrivacy = "id_privacy_policy".localized
+
+    var acceptedTerms: Bool {
+        get { UserDefaults.standard.bool(forKey: AppStorageConstants.acceptedTerms.rawValue) == true }
+        set { UserDefaults.standard.set(newValue, forKey: AppStorageConstants.acceptedTerms.rawValue) }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,8 +40,6 @@ class GetStartedOnBoardViewController: UIViewController {
             mash.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
             mash.heightAnchor.constraint(equalToConstant: view.frame.height / 1.8)
         ])
-
-        iAgree = AccountsRepository.shared.swAccounts.count + AccountsRepository.shared.hwAccounts.count > 0
 
         setContent()
         setStyle()
@@ -85,10 +88,10 @@ class GetStartedOnBoardViewController: UIViewController {
     }
 
     func updateUI() {
-        btnCheckTerms.isSelected = iAgree
-        btnGetStarted.isEnabled = iAgree
+        btnCheckTerms.isSelected = acceptedTerms
+        btnGetStarted.isEnabled = acceptedTerms
 
-        if iAgree {
+        if acceptedTerms {
             btnGetStarted.setStyle(.primary)
         } else {
             btnGetStarted.setStyle(.primaryDisabled)
@@ -132,8 +135,7 @@ class GetStartedOnBoardViewController: UIViewController {
     }
 
     @IBAction func btnCheckTerms(_ sender: Any) {
-        print(btnCheckTerms.isSelected)
-        iAgree = btnCheckTerms.isSelected
+        acceptedTerms = btnCheckTerms.isSelected
         updateUI()
     }
 
