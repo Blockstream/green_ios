@@ -537,10 +537,18 @@ class WalletViewController: UIViewController {
     }
 
     func onPromo(_ promo: Promo) {
-        let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
-            vc.promo = promo
-            navigationController?.pushViewController(vc, animated: true)
+        if promo.is_small == true {
+            PromoManager.shared.promoAction(promo)
+            if let url = URL(string: promo.link ?? "") {
+                SafeNavigationManager.shared.navigate(url)
+            }
+        } else {
+            PromoManager.shared.promoOpen(promo)
+            let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
+                vc.promo = promo
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 

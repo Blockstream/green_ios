@@ -3,10 +3,11 @@ import gdk
 import core
 
 enum HomeSection: Int, CaseIterable {
-    case remoteAlerts = 0
-    case swWallet = 1
-    case ephWallet = 2
-    case hwWallet = 3
+    case promo
+    case remoteAlerts
+    case swWallet
+    case ephWallet
+    case hwWallet
 }
 
 class HomeViewController: UIViewController {
@@ -21,6 +22,8 @@ class HomeViewController: UIViewController {
     var footerH: CGFloat = 54.0
 
     private var remoteAlert: RemoteAlert?
+    var promoCardCellModel = [PromoCellModel]()
+    var promoImpressionSent: Bool?
 
     private var ephAccounts: [Account] {
         AccountsRepository.shared.ephAccounts.filter { account in
@@ -37,19 +40,25 @@ class HomeViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
 
-        tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
-        tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
-
+        ["WalletListCell", "AlertCardCell", "PromoCell"].forEach {
+            tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
+        }
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
 
         AnalyticsManager.shared.delegate = self
         AnalyticsManager.shared.recordView(.home)
         AnalyticsManager.shared.appLoadingFinished()
+        PromoManager.shared.delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
+        Task {
+            do {
+                await self.reloadPromoCards()
+                self.tableView.reloadData()
+            }
+        }
     }
 
     func setContent() {
@@ -169,6 +178,41 @@ class HomeViewController: UIViewController {
         return false
     }
 
+    func onPromo(_ promo: Promo) {
+        if promo.is_small == true {
+            PromoManager.shared.promoAction(promo)
+            if let url = URL(string: promo.link ?? "") {
+                SafeNavigationManager.shared.navigate(url)
+            }
+        } else {
+            PromoManager.shared.promoOpen(promo)
+            let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
+                vc.promo = promo
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+
+    // dismiss promo
+    func promoDismiss() {
+        Task {
+            await reloadPromoCards()
+            tableView.reloadData()
+        }
+    }
+
+    func reloadPromoCards() async {
+        promoCardCellModel = PromoManager.shared.promoCellModels(.home)
+    }
+
+    func promoImpression(_ promo: Promo) {
+        if promoImpressionSent != true {
+            promoImpressionSent = true
+            PromoManager.shared.promoView(promo)
+        }
+    }
+
     @IBAction func btnNewWallet(_ sender: Any) {
         let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "GetStartedOnBoardViewController") as? GetStartedOnBoardViewController {
@@ -201,6 +245,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         switch HomeSection(rawValue: section) {
+        case .promo:
+            return promoCardCellModel.count
         case .remoteAlerts:
             return remoteAlert != nil ? 1 : 0
         case .swWallet:
@@ -218,6 +264,19 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch HomeSection(rawValue: indexPath.section) {
 
+        case .promo:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoCell", for: indexPath) as? PromoCell {
+                let model = promoCardCellModel[indexPath.row]
+                cell.configure(model, onAction: {
+                    [weak self] in
+                    self?.onPromo(model.promo)
+                }, onDismiss: { [weak self] in
+                    self?.promoDismiss()
+                })
+                cell.selectionStyle = .none
+                promoImpression(model.promo)
+                return cell
+            }
         case .remoteAlerts:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
                 cell.configure(AlertCardCellModel(type: .remoteAlert(remoteAlert)),
@@ -325,7 +384,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
                 return 0.1
             }
-        case .remoteAlerts:
+        case .remoteAlerts, .promo:
             return 0.1
         default:
             break
@@ -339,7 +398,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch HomeSection(rawValue: section) {
-        case .remoteAlerts:
+        case .remoteAlerts, .promo:
             return nil
         case .swWallet:
             if AccountsRepository.shared.swAccounts.isEmpty {
@@ -461,6 +520,17 @@ extension HomeViewController: LTRemoveShortcutViewControllerDelegate {
                 }
             }
             return
+        }
+    }
+}
+
+extension HomeViewController: PromoManagerDelegate {
+    func preloadDidEnd() {
+        Task {
+            do {
+                await self.reloadPromoCards()
+                self.tableView.reloadData()
+            }
         }
     }
 }

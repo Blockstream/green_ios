@@ -619,7 +619,7 @@
                                                                                 </constraints>
                                                                             </view>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F1G-l1-9Ag">
-                                                                                <rect key="frame" x="0.0" y="52" width="393" height="523.33333333333326"/>
+                                                                                <rect key="frame" x="0.0" y="52" width="393" height="523.33333333333337"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="pnX-Bd-wI6" id="WXX-qy-nuM"/>
@@ -767,24 +767,20 @@
                                             <constraint firstAttribute="height" constant="64" id="jSH-uy-uvu"/>
                                         </constraints>
                                     </view>
-                                    <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KkP-ik-YAK">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qiB-cC-ENb">
                                         <rect key="frame" x="0.0" y="64" width="393" height="695"/>
-                                        <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <wkWebViewConfiguration key="configuration">
-                                            <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                            <wkPreferences key="preferences"/>
-                                        </wkWebViewConfiguration>
-                                    </wkWebView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="KkP-ik-YAK" firstAttribute="top" secondItem="cKR-Vg-r3b" secondAttribute="bottom" id="2xd-A6-Hkf"/>
-                                    <constraint firstAttribute="trailing" secondItem="KkP-ik-YAK" secondAttribute="trailing" id="3Ty-8r-VEy"/>
+                                    <constraint firstAttribute="bottom" secondItem="qiB-cC-ENb" secondAttribute="bottom" id="2JO-n8-zQM"/>
+                                    <constraint firstItem="qiB-cC-ENb" firstAttribute="top" secondItem="cKR-Vg-r3b" secondAttribute="bottom" id="9NG-sB-zlN"/>
                                     <constraint firstAttribute="trailing" secondItem="cKR-Vg-r3b" secondAttribute="trailing" id="EWr-6b-iv3"/>
                                     <constraint firstItem="cKR-Vg-r3b" firstAttribute="leading" secondItem="DYX-Gc-f74" secondAttribute="leading" id="NpJ-td-9Fo"/>
                                     <constraint firstItem="cKR-Vg-r3b" firstAttribute="top" secondItem="DYX-Gc-f74" secondAttribute="top" id="Q1F-l6-7tw"/>
-                                    <constraint firstItem="KkP-ik-YAK" firstAttribute="leading" secondItem="DYX-Gc-f74" secondAttribute="leading" id="SG2-7n-EKI"/>
-                                    <constraint firstAttribute="bottom" secondItem="KkP-ik-YAK" secondAttribute="bottom" id="SNO-hB-C70"/>
+                                    <constraint firstItem="qiB-cC-ENb" firstAttribute="leading" secondItem="DYX-Gc-f74" secondAttribute="leading" id="pOb-hP-Okv"/>
+                                    <constraint firstAttribute="trailing" secondItem="qiB-cC-ENb" secondAttribute="trailing" id="yNs-qc-eRI"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -799,7 +795,7 @@
                     </view>
                     <connections>
                         <outlet property="btnClose" destination="WYZ-5T-OGZ" id="uVU-Sg-Nc3"/>
-                        <outlet property="webView" destination="KkP-ik-YAK" id="f6t-Jt-uca"/>
+                        <outlet property="layoutView" destination="qiB-cC-ENb" id="aGi-C3-jUs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pjl-Hu-bzE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

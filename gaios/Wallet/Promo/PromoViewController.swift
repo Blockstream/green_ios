@@ -72,7 +72,7 @@ class PromoViewController: UIViewController {
 
     @IBAction func btnAction(_ sender: Any) {
         if let promo {
-            PromoManager.shared.promoOpen1(promo)
+            PromoManager.shared.promoAction(promo)
         }
         if let url = URL(string: promo?.link ?? "") {
             SafeNavigationManager.shared.navigate(url)

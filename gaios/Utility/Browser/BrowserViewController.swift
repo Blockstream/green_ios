@@ -9,7 +9,7 @@ enum BrowserAction {
 class BrowserViewController: UIViewController {
 
     @IBOutlet weak var btnClose: UIButton!
-    @IBOutlet weak var webView: WKWebView!
+    @IBOutlet weak var layoutView: UIView!
 
     var url: URL?
     var onClose: (() -> Void)?
@@ -20,6 +20,9 @@ class BrowserViewController: UIViewController {
         view.alpha = 0.0
 
         if let url = url {
+            let frame = CGRect(x: 0.0, y: 0.0, width: layoutView.frame.size.width, height: layoutView.frame.size.height)
+            let webView = WKWebView(frame: frame, configuration: webViewConfiguration)
+            self.layoutView.addSubview(webView)
             webView.load(URLRequest(url: url))
         }
     }
@@ -45,6 +48,12 @@ class BrowserViewController: UIViewController {
             })
         })
     }
+
+    lazy var webViewConfiguration: WKWebViewConfiguration = {
+        let configuration = WKWebViewConfiguration()
+        configuration.allowsInlineMediaPlayback = true
+        return configuration
+    }()
 
     @IBAction func btnClose(_ sender: Any) {
         dismiss(.close)

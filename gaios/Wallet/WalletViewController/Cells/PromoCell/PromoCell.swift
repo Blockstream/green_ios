@@ -74,9 +74,6 @@ class PromoCell: UITableViewCell {
     }
 
     @IBAction func btnAction(_ sender: Any) {
-        if let promo = model?.promo {
-            PromoManager.shared.promoOpen0(promo)
-        }
         onAction?()
     }
 

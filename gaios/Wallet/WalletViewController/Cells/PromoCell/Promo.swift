@@ -15,6 +15,7 @@ class Promo: Decodable {
     let cta_large: String?
     let screens: [String]?
     var imgData: Data?
+    let is_small: Bool?
 
     var thumb: UIImage? {
         if let imgData {
@@ -26,13 +27,6 @@ class Promo: Decodable {
     func isVisible() -> Bool {
         if is_visible == true &&
             id?.isEmpty == false &&
-            title_small?.isEmpty == false &&
-            text_small?.isEmpty == false &&
-            cta_small?.isEmpty == false &&
-            link?.isEmpty == false &&
-            title_large?.isEmpty == false &&
-            text_large?.isEmpty == false &&
-            cta_large?.isEmpty == false &&
             screens?.isEmpty == false {
 
             if let id {

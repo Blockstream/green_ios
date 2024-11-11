@@ -3,6 +3,11 @@ import core
 
 enum PromoScreen: String {
     case walletOverview = "WalletOverview"
+    case home = "Home"
+}
+
+protocol PromoManagerDelegate: AnyObject {
+    func preloadDidEnd()
 }
 
 class PromoManager {
@@ -12,6 +17,8 @@ class PromoManager {
     struct PromosConfig: Decodable {
         let promos: [Promo]
     }
+    weak var delegate: PromoManagerDelegate?
+
     func start() {
         NotificationCenter.default.addObserver(self, selector: #selector(remoteConfigIsReady), name: NSNotification.Name(rawValue: "remote_config_is_ready"), object: nil)
     }
@@ -21,7 +28,7 @@ class PromoManager {
             return []
         }
 
-        if let promo = (promos.filter { $0.isVisible() == true && ($0.screens ?? []).contains(PromoScreen.walletOverview.rawValue)}).first {
+        if let promo = (promos.filter { $0.isVisible() == true && ($0.screens ?? []).contains(screen.rawValue)}).first {
             if (promo.image_small ?? "").isEmpty || promo.imgData != nil {
                 return [PromoCellModel(promo)]
             } else {
@@ -58,6 +65,7 @@ class PromoManager {
                 await promo.preload()
             }
         }
+        delegate?.preloadDidEnd()
     }
     func promoView(_ promo: Promo) {
         if let id = promo.id {
@@ -70,14 +78,14 @@ class PromoManager {
             AnalyticsManager.shared.promoDismiss(account: AccountsRepository.shared.current, promoId: id)
         }
     }
-    func promoOpen0(_ promo: Promo) {
+    func promoOpen(_ promo: Promo) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoOpen0(account: AccountsRepository.shared.current, promoId: id)
+            AnalyticsManager.shared.promoOpen(account: AccountsRepository.shared.current, promoId: id)
         }
     }
-    func promoOpen1(_ promo: Promo) {
+    func promoAction(_ promo: Promo) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoOpen1(account: AccountsRepository.shared.current, promoId: id)
+            AnalyticsManager.shared.promoAction(account: AccountsRepository.shared.current, promoId: id)
         }
     }
     @objc func remoteConfigIsReady() {
@@ -90,6 +98,5 @@ class PromoManager {
                 await PromoManager.shared.preloadThumbs()
             }
         }
-        
     }
 }
