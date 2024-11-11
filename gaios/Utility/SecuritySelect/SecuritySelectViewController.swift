@@ -191,14 +191,16 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                let assetIds = WalletManager.current?.registry.all.map { ($0.assetId, Int64(0)) }
+                let allAssets = WalletManager.current?.registry.all
+                let assetInfos = viewModel.onlyBtc ? [AssetInfo.btc] : allAssets
+                let assetIds = assetInfos?.map { ($0.assetId, Int64(0)) }
                 let dict = Dictionary(uniqueKeysWithValues: assetIds ?? [])
                 let list = AssetAmountList(dict)
-
+                
                 // TODO: handle amp case
                 vc.viewModel = AssetSelectViewModel(assets: list,
-                                                    enableAnyLiquidAsset: true,
-                                                    enableAnyAmpAsset: true)
+                                                    enableAnyLiquidAsset: viewModel.onlyBtc ? false : true,
+                                                    enableAnyAmpAsset: viewModel.onlyBtc ? false : true)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }

@@ -55,6 +55,9 @@ public enum AnalyticsEventName: String {
     case promoOpen = "promo_open"
     case promoDismiss = "promo_dismiss"
     case promoAction = "promo_action"
+    
+    case buyInitiate = "buy_initiate"
+    case buyRedirect = "buy_redirect"
 }
 
 extension AnalyticsManager {
@@ -407,6 +410,15 @@ extension AnalyticsManager {
         s[AnalyticsManager.strPromoId] = promoId
         s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoAction, sgmt: s)
+    }
+
+    public func buyInitiate(account: Account?) {
+        var s = sessSgmt(account)
+        recordEvent(.buyInitiate, sgmt: s)
+    }
+    public func buyRedirect(account: Account?) {
+        var s = sessSgmt(account)
+        recordEvent(.buyRedirect, sgmt: s)
     }
 }
 

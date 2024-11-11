@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Buy btc through meld.io
+
 ### Changed
 - Update gdk to 0.73.4
 

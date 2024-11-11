@@ -23,6 +23,7 @@ class AccountAssetViewController: UIViewController {
     private var footerH: CGFloat = 54.0
 
     var viewModel: AccountAssetViewModel!
+    var delegate: AccountAssetViewControllerDelegate? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -133,12 +134,16 @@ extension AccountAssetViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         switch AccountAssetSection(rawValue: indexPath.section) {
         case .accountAsset:
             guard let cellModel = viewModel?.accountAssetCellModels[indexPath.row] else { return }
             viewModel?.select(cell: cellModel)
-            sendAmountViewController()
+            if let delegate = delegate {
+                delegate.didSelectAccountAsset(account: cellModel.account, asset: cellModel.asset)
+                navigationController?.popViewController(animated: true)
+            } else {
+                sendAmountViewController()
+            }
         default:
             break
         }

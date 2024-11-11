@@ -7,13 +7,17 @@ import greenaddress
 class AccountAssetViewModel {
 
     let accounts: [WalletItem]
+    let funded: Bool
+    let showBalance: Bool
     var createTx: CreateTx? = nil
     var accountAssetCellModels: [AccountAssetCellModel] = []
     var wm: WalletManager? { WalletManager.current }
 
-    init(accounts: [WalletItem], createTx: CreateTx?) {
+    init(accounts: [WalletItem], createTx: CreateTx?, funded: Bool, showBalance: Bool) {
         self.createTx = createTx
         self.accounts = accounts
+        self.funded = funded
+        self.showBalance = showBalance
         load()
     }
 
@@ -28,11 +32,12 @@ class AccountAssetViewModel {
                     let asset = wm?.info(for: id)
                     let assetBalance = balance.filter { $0.key == asset!.assetId }
                     let satoshi = assetBalance.first?.value ?? 0
-                    if let assetId = createTx?.assetId, createTx?.bip21 ?? false, assetId != id {
-                    } else if satoshi > 0 {
+                    if let assetId = createTx?.assetId, createTx?.bip21 ?? false && assetId != id {
+                    } else if satoshi > 0 || !funded {
                         models.append(AccountAssetCellModel(account: subaccount,
                                                             asset: asset!,
-                                                            balance: assetBalance)
+                                                            balance: assetBalance,
+                                                            showBalance: showBalance)
                                       )
                     }
                 }

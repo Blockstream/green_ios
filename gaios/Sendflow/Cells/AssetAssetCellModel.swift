@@ -8,11 +8,13 @@ class AccountAssetCellModel: Comparable {
     var account: WalletItem
     var asset: AssetInfo
     var balance: [String: Int64]
+    var showBalance: Bool
 
-    init(account: WalletItem, asset: AssetInfo, balance: [String: Int64] ) {
+    init(account: WalletItem, asset: AssetInfo, balance: [String: Int64], showBalance: Bool) {
         self.account = account
         self.asset = asset
         self.balance = balance
+        self.showBalance = showBalance
     }
 
     var icon: UIImage? {

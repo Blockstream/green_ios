@@ -10,6 +10,7 @@ class SecuritySelectViewModel {
     var asset: String? = nil
     var anyLiquidAsset: Bool = false
     var anyLiquidAmpAsset: Bool = false
+    var onlyBtc: Bool = false
     var assetCellModel: AssetSelectCellModel? {
         if anyLiquidAmpAsset {
             return AssetSelectCellModel(anyAmp: true)
@@ -22,10 +23,11 @@ class SecuritySelectViewModel {
     }
     private var wm: WalletManager { WalletManager.current! }
 
-    init(asset: String? = nil, anyLiquidAsset: Bool = false, anyLiquidAmpAsset: Bool = false) {
+    init(asset: String? = nil, anyLiquidAsset: Bool = false, anyLiquidAmpAsset: Bool = false, onlyBtc: Bool = false) {
         self.asset = asset
         self.anyLiquidAsset = anyLiquidAsset
         self.anyLiquidAmpAsset = anyLiquidAmpAsset
+        self.onlyBtc = onlyBtc
     }
 
     var unarchiveCreateDialog: (( @escaping (Bool) -> ()) -> ())?
@@ -117,7 +119,10 @@ class SecuritySelectViewModel {
             if Bundle.main.debug {
                 // try await wm.setCloseToAddress()
             }
-            return try await session.subaccount(0)
+            let account = try await session.subaccount(0)
+            _ = try await self.wm.subaccounts()
+            _ = try await self.wm.balances(subaccounts: [account])
+            return account
         } else if let session = getSession(for: network) {
             let params = params ?? CreateSubaccountParams(name: uniqueName(policy.accountType, liquid: isLiquid),
                                                           type: policy.accountType,
@@ -146,6 +151,9 @@ class SecuritySelectViewModel {
             let txs = try await self.wm.transactions(subaccounts: accounts)
             let account = try await self.createOrUnarchiveSubaccount(session: session, accounts: accounts, txs: txs, params: params)
             _ = try await self.wm.subaccounts()
+            if let account = account {
+                _ = try await self.wm.balances(subaccounts: [account])
+            }
             return account
         } else {
            throw GaError.GenericError("Invalid session")

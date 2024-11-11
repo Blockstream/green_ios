@@ -323,7 +323,7 @@ class WalletViewController: UIViewController {
         actionsBg.layer.cornerRadius = 5.0
         actionsBg.backgroundColor = UIColor.gGrayElement()
         btnWelcomeCreate.setStyle(.primary)
-        btnScanView.layer.cornerRadius = 10.0
+        btnScanView.layer.cornerRadius = 30.0
     }
 
     // tableview refresh gesture
@@ -389,6 +389,19 @@ class WalletViewController: UIViewController {
             guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
             vc.viewModel = ReceiveViewModel(account: model.account,
                                             accounts: viewModel.subaccounts)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func buyScreen() {
+        let storyboard = UIStoryboard(name: "BuyFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "BuyViewController") as? BuyViewController {
+            guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
+            var account: WalletItem? = model.account
+            if account?.networkType.liquid ?? false {
+                account = viewModel.wm?.bitcoinSubaccounts.first
+            }
+            vc.viewModel = BuyViewModel(account: account)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -580,11 +593,12 @@ class WalletViewController: UIViewController {
     }
 
     @IBAction func btnQr(_ sender: Any) {
-        if let vc = DialogScanViewController.vc {
+        
+        let storyboard = UIStoryboard(name: "ActionsSheetFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ActionsSheetViewController") as? ActionsSheetViewController {
             vc.delegate = self
-            present(vc, animated: false, completion: nil)
-
-            AnalyticsManager.shared.scanQr(account: AccountsRepository.shared.current, screen: .walletOverview)
+            vc.modalPresentationStyle = .overFullScreen
+            self.view.window?.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
 }
@@ -1189,5 +1203,25 @@ extension WalletViewController: DenominationExchangeViewControllerDelegate {
 extension WalletViewController: LTShortcutViewControllerDelegate {
     func onTap(_ action: LTShortcutUserAction) {
         // permission requested
+    }
+}
+extension WalletViewController: ActionsSheetViewControllerDelegate {
+
+    func didSelectActionSheet(_ type: ActionsSheetType?) {
+        switch type {
+        case .buy:
+            buyScreen()
+        case .transfer:
+            print("transfer")
+        case .scan:
+        if let vc = DialogScanViewController.vc {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.view.window?.rootViewController?.present(vc, animated: false, completion: nil)
+            AnalyticsManager.shared.scanQr(account: AccountsRepository.shared.current, screen: .walletOverview)
+        }
+        default:
+            break
+        }
     }
 }

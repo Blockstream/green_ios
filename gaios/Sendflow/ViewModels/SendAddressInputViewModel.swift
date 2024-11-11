@@ -212,7 +212,9 @@ class SendAddressInputViewModel {
         let isBitcoin = createTx?.isBitcoin ?? true
         return AccountAssetViewModel(
             accounts: isBitcoin ? bitcoinSubaccountsWithFunds : liquidSubaccountsWithFunds,
-            createTx: createTx)
+            createTx: createTx,
+            funded: true,
+            showBalance: true)
     }
     
     func sendPsbtConfirmViewModel() async throws -> SendTxConfirmViewModel {

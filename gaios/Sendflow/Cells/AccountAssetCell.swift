@@ -50,5 +50,7 @@ class AccountAssetCell: UITableViewCell {
         if let balance = Balance.fromSatoshi(satoshi, assetId: model.asset.assetId)?.toFiat() {
             lblFiat.text = "\(balance.0) \(balance.1)"
         }
+        lblAmount.isHidden = !model.showBalance
+        lblFiat.isHidden = !model.showBalance
     }
 }
