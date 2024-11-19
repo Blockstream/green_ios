@@ -180,12 +180,12 @@ class HomeViewController: UIViewController {
 
     func onPromo(_ promo: Promo) {
         if promo.is_small == true {
-            PromoManager.shared.promoAction(promo)
+            PromoManager.shared.promoAction(promo: promo, source: .home)
             if let url = URL(string: promo.link ?? "") {
                 SafeNavigationManager.shared.navigate(url)
             }
         } else {
-            PromoManager.shared.promoOpen(promo)
+            PromoManager.shared.promoOpen(promo: promo, source: .home)
             let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
                 vc.promo = promo
@@ -209,7 +209,7 @@ class HomeViewController: UIViewController {
     func promoImpression(_ promo: Promo) {
         if promoImpressionSent != true {
             promoImpressionSent = true
-            PromoManager.shared.promoView(promo)
+            PromoManager.shared.promoView(promo: promo, source: .home)
         }
     }
 

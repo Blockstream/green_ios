@@ -72,6 +72,7 @@ public extension AnalyticsManager {
     static let strSelectedVersion = "selected_version"
 
     static let strPromoId = "promo_id"
+    static let strPromoScreen = "screen"
 
     enum OnBoardFlow: String {
         case strCreate = "create"

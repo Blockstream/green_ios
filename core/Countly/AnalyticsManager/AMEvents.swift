@@ -381,27 +381,31 @@ extension AnalyticsManager {
         recordEvent(.hideAmount, sgmt: s)
     }
 
-    public func promoImpression(account: Account?, promoId: String) {
+    public func promoImpression(account: Account?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
+        s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoImpression, sgmt: s)
     }
 
-    public func promoDismiss(account: Account?, promoId: String) {
+    public func promoDismiss(account: Account?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
+        s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoDismiss, sgmt: s)
     }
 
-    public func promoOpen(account: Account?, promoId: String) {
+    public func promoOpen(account: Account?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
+        s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoOpen, sgmt: s)
     }
 
-    public func promoAction(account: Account?, promoId: String) {
+    public func promoAction(account: Account?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
+        s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoAction, sgmt: s)
     }
 }

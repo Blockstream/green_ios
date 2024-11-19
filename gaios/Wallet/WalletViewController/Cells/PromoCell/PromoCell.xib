@@ -18,16 +18,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Et-Dy-SC5">
-                        <rect key="frame" x="20" y="10" width="561" height="224"/>
+                        <rect key="frame" x="25" y="10" width="556" height="224"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="K0m-ol-rd9">
-                                <rect key="frame" x="210" y="0.0" width="351" height="100"/>
+                                <rect key="frame" x="203.5" y="0.0" width="352.5" height="100"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JSP-GW-6JQ">
-                                        <rect key="frame" x="0.0" y="0.0" width="351" height="100"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="352.5" height="100"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_promo_jade_full" translatesAutoresizingMaskIntoConstraints="NO" id="HbQ-iP-gOH">
-                                                <rect key="frame" x="0.0" y="0.0" width="351" height="100"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="352.5" height="100"/>
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -42,7 +42,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XyA-o8-ysT">
-                                <rect key="frame" x="517" y="0.0" width="44" height="44"/>
+                                <rect key="frame" x="512" y="0.0" width="44" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="efc-1g-1Gv"/>
                                     <constraint firstAttribute="width" constant="44" id="kiw-1D-3q0"/>
@@ -54,23 +54,23 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="lbl_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bqd-GG-V1w">
-                                <rect key="frame" x="25" y="20" width="185" height="19.5"/>
+                                <rect key="frame" x="20" y="20" width="183.5" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="lbl_hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J93-Ti-V1g">
-                                <rect key="frame" x="20" y="127" width="521" height="17"/>
+                                <rect key="frame" x="20" y="127" width="516" height="17"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="bCf-OZ-q6R">
-                                <rect key="frame" x="20" y="154" width="521" height="50"/>
+                                <rect key="frame" x="20" y="154" width="516" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F6M-dL-2HG">
-                                        <rect key="frame" x="0.0" y="0.0" width="521" height="50"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="516" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="jFF-kd-398"/>
                                         </constraints>
@@ -103,7 +103,7 @@
                             <constraint firstAttribute="bottom" secondItem="bCf-OZ-q6R" secondAttribute="bottom" constant="20" id="oRF-mh-4jG"/>
                             <constraint firstItem="bCf-OZ-q6R" firstAttribute="top" secondItem="J93-Ti-V1g" secondAttribute="bottom" constant="10" id="sOZ-06-Fsw"/>
                             <constraint firstItem="J93-Ti-V1g" firstAttribute="top" relation="greaterThanOrEqual" secondItem="bqd-GG-V1w" secondAttribute="bottom" constant="20" id="uzM-zg-IF0"/>
-                            <constraint firstItem="bqd-GG-V1w" firstAttribute="leading" secondItem="2Et-Dy-SC5" secondAttribute="leading" constant="25" id="wqw-JJ-6uc"/>
+                            <constraint firstItem="bqd-GG-V1w" firstAttribute="leading" secondItem="2Et-Dy-SC5" secondAttribute="leading" constant="20" id="wqw-JJ-6uc"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -112,7 +112,7 @@
                     <constraint firstAttribute="bottom" secondItem="2Et-Dy-SC5" secondAttribute="bottom" constant="10" id="0jz-1F-Dex"/>
                     <constraint firstAttribute="trailing" secondItem="2Et-Dy-SC5" secondAttribute="trailing" constant="25" id="cMZ-r7-6GU"/>
                     <constraint firstItem="2Et-Dy-SC5" firstAttribute="top" secondItem="eMa-7z-Sl4" secondAttribute="top" constant="10" id="jlq-V8-Qaz"/>
-                    <constraint firstItem="2Et-Dy-SC5" firstAttribute="leading" secondItem="eMa-7z-Sl4" secondAttribute="leading" constant="20" id="msL-Ro-e5t"/>
+                    <constraint firstItem="2Et-Dy-SC5" firstAttribute="leading" secondItem="eMa-7z-Sl4" secondAttribute="leading" constant="25" id="msL-Ro-e5t"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

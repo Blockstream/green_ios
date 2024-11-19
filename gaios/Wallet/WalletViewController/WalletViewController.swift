@@ -536,14 +536,14 @@ class WalletViewController: UIViewController {
         }
     }
 
-    func onPromo(_ promo: Promo) {
+    func onPromo(promo: Promo, source: PromoScreen) {
         if promo.is_small == true {
-            PromoManager.shared.promoAction(promo)
+            PromoManager.shared.promoAction(promo: promo, source: source)
             if let url = URL(string: promo.link ?? "") {
                 SafeNavigationManager.shared.navigate(url)
             }
         } else {
-            PromoManager.shared.promoOpen(promo)
+            PromoManager.shared.promoOpen(promo: promo, source: source)
             let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
                 vc.promo = promo
@@ -749,7 +749,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 let model = viewModel.promoCardCellModel[indexPath.row]
                 cell.configure(model, onAction: {
                     [weak self] in
-                    self?.onPromo(model.promo)
+                    self?.onPromo(promo: model.promo, source: model.source)
                 }, onDismiss: { [weak self] in
                     self?.promoDismiss()
                 })

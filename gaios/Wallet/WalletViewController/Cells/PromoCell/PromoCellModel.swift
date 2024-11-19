@@ -4,8 +4,10 @@ import UIKit
 class PromoCellModel {
 
     var promo: Promo
+    var source: PromoScreen
 
-    init(_ promo: Promo) {
+    init(promo: Promo, source: PromoScreen) {
         self.promo = promo
+        self.source = source
     }
 }

@@ -11,6 +11,7 @@ class PromoViewController: UIViewController {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
 
     var promo: Promo?
+    var source: PromoScreen?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,8 +72,8 @@ class PromoViewController: UIViewController {
     }
 
     @IBAction func btnAction(_ sender: Any) {
-        if let promo {
-            PromoManager.shared.promoAction(promo)
+        if let promo, let source {
+            PromoManager.shared.promoAction(promo: promo, source: source)
         }
         if let url = URL(string: promo?.link ?? "") {
             SafeNavigationManager.shared.navigate(url)

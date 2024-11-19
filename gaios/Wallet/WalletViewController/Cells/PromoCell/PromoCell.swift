@@ -78,8 +78,8 @@ class PromoCell: UITableViewCell {
     }
 
     @IBAction func onDismiss(_ sender: Any) {
-        if let promo = model?.promo {
-            PromoManager.shared.onDismiss(promo)
+        if let promo = model?.promo, let source = model?.source {
+            PromoManager.shared.onDismiss(promo: promo, source: source)
         }
         onDismiss?()
     }

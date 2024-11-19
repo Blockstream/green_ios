@@ -30,7 +30,7 @@ class PromoManager {
 
         if let promo = (promos.filter { $0.isVisible() == true && ($0.screens ?? []).contains(screen.rawValue)}).first {
             if (promo.image_small ?? "").isEmpty || promo.imgData != nil {
-                return [PromoCellModel(promo)]
+                return [PromoCellModel(promo: promo, source: screen)]
             } else {
                 return []
             }
@@ -67,25 +67,25 @@ class PromoManager {
         }
         delegate?.preloadDidEnd()
     }
-    func promoView(_ promo: Promo) {
+    func promoView(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoImpression(account: AccountsRepository.shared.current, promoId: id)
+            AnalyticsManager.shared.promoImpression(account: AccountsRepository.shared.current, promoId: id, screen: source.rawValue)
         }
     }
-    func onDismiss(_ promo: Promo) {
+    func onDismiss(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
             dismissPromo(id)
-            AnalyticsManager.shared.promoDismiss(account: AccountsRepository.shared.current, promoId: id)
+            AnalyticsManager.shared.promoDismiss(account: AccountsRepository.shared.current, promoId: id, screen: source.rawValue)
         }
     }
-    func promoOpen(_ promo: Promo) {
+    func promoOpen(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoOpen(account: AccountsRepository.shared.current, promoId: id)
+            AnalyticsManager.shared.promoOpen(account: AccountsRepository.shared.current, promoId: id, screen: source.rawValue)
         }
     }
-    func promoAction(_ promo: Promo) {
+    func promoAction(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoAction(account: AccountsRepository.shared.current, promoId: id)
+            AnalyticsManager.shared.promoAction(account: AccountsRepository.shared.current, promoId: id, screen: source.rawValue)
         }
     }
     @objc func remoteConfigIsReady() {
