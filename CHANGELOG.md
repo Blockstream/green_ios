@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [4.1.0] - 2024-11-20
 
 ### Added
 - Buy btc through meld.io
@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Update gdk to 0.73.4
 - Update breez to 0.6.3-rc2
+- Countly promo data
 
 ## [4.0.38] - 2024-11-12
 
