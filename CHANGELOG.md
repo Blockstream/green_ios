@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Update gdk to 0.73.4
+- Update breez to 0.6.3-rc2
 
 ## [4.0.38] - 2024-11-12
 
