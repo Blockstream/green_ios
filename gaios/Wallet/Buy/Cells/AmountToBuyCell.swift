@@ -54,6 +54,7 @@ class AmountToBuyCell: UITableViewCell {
         lblAsset.attributedText = model.denomUnderlineText
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         triggerTextChange()
+        textField.addDoneButtonToKeyboard(myAction: #selector(self.textField.resignFirstResponder))
     }
 
     func reload() {

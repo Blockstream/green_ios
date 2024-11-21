@@ -29,7 +29,7 @@ class BuyViewController: KeyboardViewController {
         setContent()
         setStyle()
         reload()
-        
+
         AnalyticsManager.shared.buyInitiate(account: viewModel.wm.account)
         Task { [weak self] in await self?.asyncLoad() }
     }
@@ -40,6 +40,16 @@ class BuyViewController: KeyboardViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+    }
+
+    func updateResponder() {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.tableView.visibleCells.forEach {
+                if let cell = $0 as? AmountToBuyCell, self.viewModel.assetCellModel != nil {
+                    cell.textField.becomeFirstResponder()
+                }
+            }
+        }
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -79,7 +89,7 @@ class BuyViewController: KeyboardViewController {
 
     func asyncLoad() async {
         try? await viewModel.load()
-        await MainActor.run { tableView.reloadData() }
+        await MainActor.run { tableView.reloadData { self.updateResponder() } }
     }
 
     @MainActor
@@ -285,7 +295,6 @@ extension BuyViewController: AmountToBuyCellDelegate {
 
 extension BuyViewController: DialogInputDenominationViewControllerDelegate {
 
-
     func didSelectFiat() {
         viewModel.isFiat = true
         tableView.reloadData()
@@ -299,7 +308,7 @@ extension BuyViewController: DialogInputDenominationViewControllerDelegate {
 }
 
 extension BuyViewController: AccountAssetViewControllerDelegate {
-    
+
     func didSelectAccountAsset(account: WalletItem, asset: AssetInfo) {
         viewModel.asset = asset.assetId
         viewModel.account = account
