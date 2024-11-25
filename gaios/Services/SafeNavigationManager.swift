@@ -14,7 +14,7 @@ class SafeNavigationManager {
     }
 
     public func navigate(_ url: URL, exitApp: Bool = false) {
-            confirm(url, exitApp: exitApp)
+        confirm(url, exitApp: exitApp)
     }
 
     private func confirm(_ url: URL, exitApp: Bool) {
@@ -52,7 +52,7 @@ class SafeNavigationManager {
     }
 
     private func browse(_ url: URL, exitApp: Bool) {
-        
+
         if exitApp == true {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -62,7 +62,7 @@ class SafeNavigationManager {
             appDelegate?.navigateWindow = UIWindow(frame: UIScreen.main.bounds)
             appDelegate?.navigateWindow?.windowLevel = .alert
             appDelegate?.navigateWindow?.tag = 999
-            
+
             if let vc = UIStoryboard(name: "Utility", bundle: .main)
                 .instantiateViewController(
                     withIdentifier: "BrowserViewController") as? BrowserViewController {

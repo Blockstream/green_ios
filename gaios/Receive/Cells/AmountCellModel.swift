@@ -4,7 +4,11 @@ import BreezSDK
 import gdk
 import lightning
 
-struct LTAmountCellModel {
+enum AmountCellScope {
+    case ltReceive
+    case buyBtc
+}
+struct AmountCellModel {
     var satoshi: Int64?
     var openChannelFee: Int64?
     var maxLimit: UInt64?
@@ -14,16 +18,67 @@ struct LTAmountCellModel {
     var nodeState: NodeState?
     var lspInfo: LspInformation?
     var breezSdk: LightningBridge?
+    var scope: AmountCellScope
 
-    var amountText: String? { isFiat ? fiat : btc }
-    var denomText: String? {
+    var network: NetworkSecurityCase?
+    var swapInfo: SwapInfo?
+    var amount: String? { isFiat ? fiat : btc }
+    var subamountText: String? { isFiat ? "≈ \(btc ?? "") \(denomText ?? "")" : "≈ \(fiat ?? "") \(currency ?? "")" }
+    var ticker: String? {
         if isFiat {
             return currency == nil ? defaultCurrency : currency
         } else {
-            if let gdkNetwork = gdkNetwork {
+            return denomText
+        }
+    }
+    var minAllowedDepositText: String? {
+        guard let minAllowedDeposit = swapInfo?.minAllowedDeposit else { return nil }
+        let balance = Balance.fromSatoshi(minAllowedDeposit, assetId: AssetInfo.btcId)
+        return isFiat ? balance?.toFiatText() : balance?.toText(inputDenomination)
+    }
+    var maxAllowedDepositText: String? {
+        guard let maxAllowedDeposit = swapInfo?.maxAllowedDeposit else { return nil }
+        let balance = Balance.fromSatoshi(maxAllowedDeposit, assetId: AssetInfo.btcId)
+        return isFiat ? balance?.toFiatText() : balance?.toText(inputDenomination)
+    }
+    var channelOpeningFeesText: String? {
+        guard let channelOpeningFees = swapInfo?.channelOpeningFees?.minMsat.satoshi else { return nil }
+        return "\(channelOpeningFees) sats"
+    }
+    func message(_ state: AmountCellState) -> String? {
+        if network == .lightning {
+            if state == .invalidBuy {
+                return "Type an amount between \(minAllowedDepositText ?? "-") and \(maxAllowedDepositText ?? "-"). A minimum setup fee of \(channelOpeningFeesText ?? "-") will be applied to the received amount."
+            }
+            let amount = Int64(swapInfo?.channelOpeningFees?.minMsat.satoshi ?? 0)
+            return String(format: "id_a_set_up_funding_fee_of_s_s".localized, toBtcText(amount) ?? "", toFiatText(amount) ?? "")
+        }
+        return nil
+    }
+    var showMessage: Bool {
+        return network == .lightning && swapInfo != nil && satoshi != nil
+    }
+    var hideSubamount: Bool {
+        return satoshi == nil
+    }
+
+    var amountText: String? { isFiat ? fiat : btc }
+    var denomText: String? {
+        if scope == .buyBtc {
+            if let gdkNetwork = network?.gdkNetwork {
                 return inputDenomination.string(for: gdkNetwork)
             } else {
                 return defaultDenomination
+            }
+        } else {
+            if isFiat {
+                return currency == nil ? defaultCurrency : currency
+            } else {
+                if let gdkNetwork = gdkNetwork {
+                    return inputDenomination.string(for: gdkNetwork)
+                } else {
+                    return defaultDenomination
+                }
             }
         }
     }
@@ -36,8 +91,13 @@ struct LTAmountCellModel {
         return ""
     }
     var denomUnderlineText: NSAttributedString {
-        return NSAttributedString(string: denomText ?? "", attributes:
-            [.underlineStyle: NSUnderlineStyle.single.rawValue])
+        if scope == .buyBtc {
+            return NSAttributedString(string: ticker ?? "", attributes:
+                [.underlineStyle: NSUnderlineStyle.single.rawValue])
+        } else {
+            return NSAttributedString(string: denomText ?? "", attributes:
+                [.underlineStyle: NSUnderlineStyle.single.rawValue])
+        }
     }
 
     var btc: String? {
@@ -67,7 +127,16 @@ struct LTAmountCellModel {
         return nil
     }
 
-    var state: LTAmountCellState {
+    var state: AmountCellState {
+        if scope == .buyBtc {
+            guard let satoshi = satoshi else { return .valid }
+            if let maxAllowedDeposit = swapInfo?.maxAllowedDeposit,
+                let minAllowedDeposit = swapInfo?.minAllowedDeposit,
+               satoshi >= maxAllowedDeposit || satoshi < minAllowedDeposit {
+                return .invalidBuy
+            }
+            return .valid
+        }
         guard let satoshi = satoshi else {
             return .disabled
         }

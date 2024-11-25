@@ -49,15 +49,12 @@ struct ReceiveAddressCellModel {
         return nil
     }
 
-    var channelFee: String? {
-        let channelFeeSatoshi = try? breezSdk?.openChannelFee(satoshi: Long(satoshi ?? 0))?.feeMsat?.satoshi
-        if let channelFeeSatoshi = channelFeeSatoshi {
-            return Balance.fromSatoshi(channelFeeSatoshi, assetId: AssetInfo.btcId)?.toText(inputDenomination)
-        }
-        return nil
+   var channelOpeningFeesText: String? {
+       guard let channelOpeningFees = swapInfo?.channelOpeningFees?.minMsat.satoshi else { return nil }
+       return "\(channelOpeningFees) sats"
     }
 
     var onChaininfo: String? {
-        return String(format: "Send more than %@ and up to %@ to this address. A minimum setup fee of %@ will be applied on the received amount.\n\nThis address can be used only once.".localized, onChainMin ?? "", onChainMax ?? "", channelFee ?? "")
+        return String(format: "Send more than %@ and up to %@ to this address. A minimum setup fee of %@ will be applied on the received amount.\n\nThis address can be used only once.".localized, onChainMin ?? "", onChainMax ?? "", channelOpeningFeesText ?? "")
     }
 }

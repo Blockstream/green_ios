@@ -103,7 +103,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func register() {
-        ["ReceiveAssetCell", "ReceiveAddressCell", "LTAmountCell", "LTInfoCell", "LTNoteCell"].forEach {
+        ["ReceiveAssetCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -581,7 +581,7 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case ReceiveSection.amount:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "LTAmountCell") as? LTAmountCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AmountCell") as? AmountCell {
                 let model = viewModel.amountCellModel
                 cell.configure(model: model, delegate: self, enabled: lightningAmountEditing)
                 cell.selectionStyle = .none
@@ -715,7 +715,7 @@ extension ReceiveViewController: LTSuccessViewControllerDelegate {
     }
 }
 
-extension ReceiveViewController: LTAmountCellDelegate {
+extension ReceiveViewController: AmountCellDelegate {
 
     func onInputDenomination() {
         showDialogInputDenominations()
@@ -736,7 +736,7 @@ extension ReceiveViewController: LTAmountCellDelegate {
         tableView.beginUpdates()
         tableView.endUpdates()
     }
-    func stateDidChange(_ state: LTAmountCellState) {
+    func stateDidChange(_ state: AmountCellState) {
         viewModel.state = state
         btnConfirm.isEnabled = viewModel.state == .valid || viewModel.state == .validFunding
         btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryGray)

@@ -401,8 +401,10 @@ class WalletViewController: UIViewController {
             if account?.networkType.liquid ?? false {
                 account = viewModel.wm?.bitcoinSubaccounts.first
             }
-            vc.viewModel = BuyViewModel(account: account)
-            navigationController?.pushViewController(vc, animated: true)
+            if let account {
+                vc.viewModel = BuyViewModel(account: account, side: .buy)
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 

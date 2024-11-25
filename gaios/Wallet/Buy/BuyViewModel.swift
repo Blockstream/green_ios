@@ -12,22 +12,24 @@ class BuyViewModel {
     var asset: String
     var satoshi: Int64?
     var isFiat: Bool = true
-    var account: WalletItem?
+    var account: WalletItem
     var inputDenomination: gdk.DenominationType = .Sats
-    var state: AmountToBuyCellState = .invalid
+    var state: AmountCellState = .invalidBuy
     var meld: Meld
     var wm: WalletManager { WalletManager.current! }
     var swapInfo: SwapInfo?
+    var side: ActionSide
 
-    init(account: WalletItem?) {
+    init(account: WalletItem, side: ActionSide) {
         self.account = account
-        self.asset = account?.gdkNetwork.getFeeAsset() ?? "btc"
+        self.asset = account.gdkNetwork.getFeeAsset()
         self.meld = Meld.init(isSandboxEnvironment: WalletManager.current?.testnet ?? false)
         self.inputDenomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .Sats
+        self.side = side
     }
 
     func accountType() -> String {
-        return account?.localizedName ?? ""
+        return account.localizedName
     }
 
     func toBTC(_ satoshi: Int64) -> Double {
@@ -35,13 +37,12 @@ class BuyViewModel {
     }
 
     var assetCellModel: ReceiveAssetCellModel? {
-        guard let account = account else { return nil }
         return ReceiveAssetCellModel(assetId: asset, account: account)
     }
 
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
-        let gdkNetwork = account?.session?.gdkNetwork
+        let gdkNetwork = account.session?.gdkNetwork
         let network: NetworkSecurityCase = gdkNetwork?.mainnet ?? true ? .bitcoinSS : .testnetSS
         return DialogInputDenominationViewModel(
             denomination: inputDenomination,
@@ -55,12 +56,20 @@ class BuyViewModel {
         return Balance.fromSatoshi(satoshi ?? 0.0, assetId: asset)
     }
 
-    var amountCellModel: AmountToBuyCellModel {
-        return AmountToBuyCellModel(satoshi: satoshi,
-                                 isFiat: isFiat,
-                                 inputDenomination: inputDenomination,
-                                 network: account?.session?.networkType,
-                                 swapInfo: swapInfo
+    var amountCellModel: AmountCellModel {
+        let nodeState = account.lightningSession?.nodeState
+        let lspInfo = account.lightningSession?.lspInfo
+        return AmountCellModel(satoshi: satoshi,
+                               maxLimit: nodeState?.maxReceivableSatoshi,
+                               isFiat: isFiat,
+                               inputDenomination: inputDenomination,
+                               gdkNetwork: account.session?.gdkNetwork,
+                               nodeState: nodeState,
+                               lspInfo: lspInfo,
+                               breezSdk: account.lightningSession?.lightBridge,
+                               scope: .buyBtc,
+                               network: account.session?.networkType,
+                               swapInfo: swapInfo
         )
     }
 
@@ -81,12 +90,10 @@ class BuyViewModel {
     }
 
     func buy() async throws -> String {
-        guard let pointer = account?.pointer else {
-            throw GaError.GenericError("Invalid account")
-        }
-        let address = try await account?.session?.getReceiveAddress(subaccount: pointer)
+        let pointer = account.pointer
+        let address = try await account.session?.getReceiveAddress(subaccount: pointer)
         let ticker = wm.info(for: asset).ticker
-        let balance = Balance.fromSatoshi(satoshi, assetId: asset)
+        let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset)
         guard let address = address?.address else {
            throw GaError.GenericError("Invalid address")
         }

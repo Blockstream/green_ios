@@ -12,13 +12,18 @@ enum BuySection: Int, CaseIterable {
     case account
     case amount
 }
-
+enum ActionSide {
+    case buy
+    case sell
+}
 class BuyViewController: KeyboardViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var lblClaim: UILabel!
+    @IBOutlet weak var sideControl: UISegmentedControl!
 
+    @IBOutlet weak var tableViewBottom: NSLayoutConstraint!
     private var headerH: CGFloat = 36.0
     var viewModel: BuyViewModel!
 
@@ -28,7 +33,10 @@ class BuyViewController: KeyboardViewController {
         register()
         setContent()
         setStyle()
+
         reload()
+
+        sideControl.isHidden = true
 
         AnalyticsManager.shared.buyInitiate(account: viewModel.wm.account)
         Task { [weak self] in await self?.asyncLoad() }
@@ -38,14 +46,18 @@ class BuyViewController: KeyboardViewController {
         super.viewWillAppear(animated)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
     }
 
     func updateResponder() {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
             self.tableView.visibleCells.forEach {
-                if let cell = $0 as? AmountToBuyCell, self.viewModel.assetCellModel != nil {
+                if let cell = $0 as? AmountCell, self.viewModel.assetCellModel != nil {
                     cell.textField.becomeFirstResponder()
                 }
             }
@@ -54,21 +66,31 @@ class BuyViewController: KeyboardViewController {
 
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        self.tableViewBottom.constant =  keyboardFrame.height - 100
+            scrollToBottom()
     }
 
+    func scrollToBottom() {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            let point = CGPoint(x: 0, y: self.tableView.contentSize.height + self.tableView.contentInset.bottom - self.tableView.frame.height)
+            if point.y >= 0 {
+                self.tableView.setContentOffset(point, animated: true)
+            }
+        }
+    }
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
+        tableViewBottom.constant = 10.0
     }
 
     func register() {
-        ["ReceiveAssetCell", "AssetToBuyCell", "AmountToBuyCell", "CreateAccountCell"].forEach {
+        ["ReceiveAssetCell", "AssetToBuyCell", "AmountCell", "CreateAccountCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
 
     func setContent() {
-        title = "Buy".localized
-        btnNext.setTitle("Buy with meld.io".localized, for: .normal)
         lblClaim.text = "Provided by meld.io".localized
         if viewModel.meld.isSandboxEnvironment {
             lblClaim.text = "\(lblClaim.text ?? "") Testnet"
@@ -76,11 +98,17 @@ class BuyViewController: KeyboardViewController {
         let image = UIImage(named: "ic_squared_out_small")
         btnNext.setImage(image?.withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: .normal)
         btnNext.tintColor = UIColor.white
+        sideControl.setTitle("Buy".localized, forSegmentAt: 0)
+        sideControl.setTitle("Sell".localized, forSegmentAt: 1)
     }
 
     func setStyle() {
         btnNext.setStyle(.primary)
         lblClaim.setStyle(.txtCard)
+        sideControl.setTitleTextAttributes (
+            [NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
+        sideControl.setTitleTextAttributes (
+            [NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
     }
 
     var sections: [BuySection] {
@@ -89,12 +117,23 @@ class BuyViewController: KeyboardViewController {
 
     func asyncLoad() async {
         try? await viewModel.load()
-        await MainActor.run { tableView.reloadData { self.updateResponder() } }
+        await MainActor.run { tableView.reloadData {
+            self.updateResponder()
+        }
+        }
     }
 
     @MainActor
     func reload() {
-        tableView.reloadData()
+        tableView.reloadData ()
+        switch viewModel.side {
+        case .buy:
+            title = "Buy".localized
+            btnNext.setTitle("Buy with meld.io".localized, for: .normal)
+        case .sell:
+            title = "Sell".localized
+            btnNext.setTitle("Sell with meld.io".localized, for: .normal)
+        }
     }
 
     func presentDialogInputDenominations() {
@@ -126,12 +165,24 @@ class BuyViewController: KeyboardViewController {
         }
     }
 
+    @IBAction func sideControl(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            viewModel.side = .buy
+        case 1:
+            viewModel.side = .sell
+        default:
+            break
+        }
+        reload()
+    }
+
     @IBAction func btnNext(_ sender: Any) {
         Task.detached { [weak self] in
             let url = try await self?.viewModel.buy()
             await MainActor.run { [weak self] in
                 AnalyticsManager.shared.buyRedirect(account: self?.viewModel.wm.account)
-                SafeNavigationManager.shared.navigate(url)
+                SafeNavigationManager.shared.navigate(url, exitApp: true)
             }
         }
     }
@@ -209,9 +260,9 @@ extension BuyViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
         case BuySection.amount:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "AmountToBuyCell") as? AmountToBuyCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AmountCell") as? AmountCell {
                 let model = viewModel.amountCellModel
-                cell.configure(model: model, delegate: self)
+                cell.configure(model: model, delegate: self, enabled: true)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -237,7 +288,12 @@ extension BuyViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch sections[section] {
         case BuySection.asset:
-            return headerView("Asset to buy".localized)
+            switch viewModel.side {
+            case .buy:
+                return headerView("Asset to buy".localized)
+            case .sell:
+                return headerView("Asset to sell".localized)
+            }
         case BuySection.account:
             return headerView("Account".localized)
         case BuySection.amount:
@@ -269,7 +325,10 @@ extension BuyViewController {
     }
 }
 
-extension BuyViewController: AmountToBuyCellDelegate {
+extension BuyViewController: AmountCellDelegate {
+    func onFeeInfo() {
+        //
+    }
 
     func onInputDenomination() {
         presentDialogInputDenominations()
@@ -284,8 +343,9 @@ extension BuyViewController: AmountToBuyCellDelegate {
         viewModel.isFiat = isFiat
         tableView.beginUpdates()
         tableView.endUpdates()
+        scrollToBottom()
     }
-    func stateDidChange(_ state: AmountToBuyCellState) {
+    func stateDidChange(_ state: AmountCellState) {
         viewModel.state = state
         btnNext.isEnabled = viewModel.account != nil && viewModel.state == .valid && viewModel.satoshi != nil
         btnNext.isUserInteractionEnabled = btnNext.isEnabled

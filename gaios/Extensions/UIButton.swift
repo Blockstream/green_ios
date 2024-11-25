@@ -18,10 +18,8 @@ enum ButtonStyle {
     case warnWhite
     case warnRed
     case qrEnlarge
-    case underline(txt: String)
-    case underlineGray(txt: String)
+    case underline(txt: String, color: UIColor)
     case blackWithImg
-    case underlineBlack(txt: String, alpha: Float)
 }
 
 @IBDesignable
@@ -243,32 +241,10 @@ extension UIButton {
         case .qrEnlarge:
             backgroundColor = UIColor.gGrayBtn()
             cornerRadius = 5.0
-        case .underline(let txt):
+        case .underline(let txt, let color):
             backgroundColor = UIColor.clear
             let attr: [NSAttributedString.Key: Any] = [
-                .foregroundColor: UIColor.gGreenMatrix(),
-                .underlineStyle: NSUnderlineStyle.single.rawValue
-            ]
-            let attributeString = NSMutableAttributedString(
-                    string: txt,
-                    attributes: attr
-                 )
-            setAttributedTitle(attributeString, for: .normal)
-        case .underlineGray(let txt):
-            backgroundColor = UIColor.clear
-            let attr: [NSAttributedString.Key: Any] = [
-                .foregroundColor: UIColor.gW40(),
-                .underlineStyle: NSUnderlineStyle.single.rawValue
-            ]
-            let attributeString = NSMutableAttributedString(
-                    string: txt,
-                    attributes: attr
-                 )
-            setAttributedTitle(attributeString, for: .normal)
-        case .underlineBlack(let txt, let alpha):
-            backgroundColor = UIColor.clear
-            let attr: [NSAttributedString.Key: Any] = [
-                .foregroundColor: UIColor.black.withAlphaComponent(CGFloat(alpha)),
+                .foregroundColor: color,
                 .underlineStyle: NSUnderlineStyle.single.rawValue
             ]
             let attributeString = NSMutableAttributedString(

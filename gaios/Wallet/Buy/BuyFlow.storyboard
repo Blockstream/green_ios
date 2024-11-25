@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,8 +17,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Se1-zl-yao">
+                                <rect key="frame" x="25" y="59" width="343" height="36"/>
+                                <subviews>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Yya-NP-m3r">
+                                        <rect key="frame" x="0.0" y="0.0" width="343" height="37"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="36" id="oL3-GP-KLH"/>
+                                        </constraints>
+                                        <segments>
+                                            <segment title="First"/>
+                                            <segment title="Second"/>
+                                        </segments>
+                                        <color key="selectedSegmentTintColor" name="gGreenMatrix"/>
+                                        <connections>
+                                            <action selector="sideControl:" destination="u13-Ac-3Ub" eventType="valueChanged" id="5r6-hz-Sle"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                            </stackView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="nkm-My-qlZ">
-                                <rect key="frame" x="0.0" y="59" width="393" height="672"/>
+                                <rect key="frame" x="0.0" y="95" width="393" height="631"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="u13-Ac-3Ub" id="vhV-bg-r5c"/>
@@ -26,7 +46,7 @@
                                 </connections>
                             </tableView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="9M2-PP-VpF">
-                                <rect key="frame" x="20" y="741" width="353" height="77"/>
+                                <rect key="frame" x="20" y="736" width="353" height="77"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_claim" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MF9-Fr-uqv">
                                         <rect key="frame" x="0.0" y="0.0" width="57" height="17"/>
@@ -55,12 +75,15 @@
                         <viewLayoutGuide key="safeArea" id="448-Uq-eFY"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
-                            <constraint firstItem="nkm-My-qlZ" firstAttribute="top" secondItem="448-Uq-eFY" secondAttribute="top" id="EnK-eg-KOR"/>
+                            <constraint firstItem="nkm-My-qlZ" firstAttribute="top" secondItem="Se1-zl-yao" secondAttribute="bottom" id="2bH-90-rRM"/>
+                            <constraint firstItem="Se1-zl-yao" firstAttribute="top" secondItem="448-Uq-eFY" secondAttribute="top" id="8Tw-tK-6An"/>
                             <constraint firstItem="9M2-PP-VpF" firstAttribute="leading" secondItem="448-Uq-eFY" secondAttribute="leading" constant="20" id="UoG-5r-cNE"/>
+                            <constraint firstItem="Se1-zl-yao" firstAttribute="leading" secondItem="448-Uq-eFY" secondAttribute="leading" constant="25" id="ZTR-TZ-OI1"/>
                             <constraint firstItem="9M2-PP-VpF" firstAttribute="top" secondItem="nkm-My-qlZ" secondAttribute="bottom" constant="10" id="dzq-Cm-bac"/>
                             <constraint firstItem="448-Uq-eFY" firstAttribute="trailing" secondItem="9M2-PP-VpF" secondAttribute="trailing" constant="20" id="kH6-jD-jQV"/>
+                            <constraint firstItem="448-Uq-eFY" firstAttribute="trailing" secondItem="Se1-zl-yao" secondAttribute="trailing" constant="25" id="n7a-jh-cHv"/>
                             <constraint firstItem="nkm-My-qlZ" firstAttribute="leading" secondItem="448-Uq-eFY" secondAttribute="leading" id="p3F-ue-DBD"/>
-                            <constraint firstItem="448-Uq-eFY" firstAttribute="bottom" secondItem="9M2-PP-VpF" secondAttribute="bottom" id="rrO-Py-Rum"/>
+                            <constraint firstItem="448-Uq-eFY" firstAttribute="bottom" secondItem="9M2-PP-VpF" secondAttribute="bottom" constant="5" id="rrO-Py-Rum"/>
                             <constraint firstItem="448-Uq-eFY" firstAttribute="trailing" secondItem="nkm-My-qlZ" secondAttribute="trailing" id="wd4-K6-YJp"/>
                         </constraints>
                     </view>
@@ -68,7 +91,9 @@
                     <connections>
                         <outlet property="btnNext" destination="CG8-4w-7CE" id="xXT-Jj-OhA"/>
                         <outlet property="lblClaim" destination="MF9-Fr-uqv" id="xxh-2h-i79"/>
+                        <outlet property="sideControl" destination="Yya-NP-m3r" id="45q-0H-hGY"/>
                         <outlet property="tableView" destination="nkm-My-qlZ" id="3Wp-t0-O00"/>
+                        <outlet property="tableViewBottom" destination="dzq-Cm-bac" id="46F-FR-4s3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jae-rq-g5E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -80,6 +105,9 @@
         <image name="ic_squared_out_small" width="20" height="20"/>
         <namedColor name="gBlackBg">
             <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGreenMatrix">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

@@ -1,7 +1,7 @@
 import UIKit
 import gdk
 
-enum LTAmountCellState: Int {
+enum AmountCellState: Int {
     case valid
     case validFunding
     case tooHigh
@@ -9,17 +9,18 @@ enum LTAmountCellState: Int {
     case disabled
     case invalidAmount
     case disconnected
+    case invalidBuy
 }
 
-protocol LTAmountCellDelegate: AnyObject {
+protocol AmountCellDelegate: AnyObject {
     func textFieldDidChange(_ satoshi: Int64?, isFiat: Bool)
     func textFieldEnabled()
     func onFeeInfo()
     func onInputDenomination()
-    func stateDidChange(_ state: LTAmountCellState)
+    func stateDidChange(_ state: AmountCellState)
 }
 
-class LTAmountCell: UITableViewCell {
+class AmountCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var textField: UITextField!
@@ -36,10 +37,11 @@ class LTAmountCell: UITableViewCell {
     @IBOutlet weak var btnFeeInfo: UIButton!
     @IBOutlet weak var lblToReceiveTitle: UILabel!
     @IBOutlet weak var lblToReceiveHint: UILabel!
+    @IBOutlet weak var bottomStackPad: NSLayoutConstraint!
 
-    var state: LTAmountCellState = .valid
-    weak var delegate: LTAmountCellDelegate?
-    var model: LTAmountCellModel!
+    var state: AmountCellState = .valid
+    weak var delegate: AmountCellDelegate?
+    var model: AmountCellModel!
     var enabled: Bool = true
 
     static var identifier: String { return String(describing: self) }
@@ -52,7 +54,7 @@ class LTAmountCell: UITableViewCell {
         lblAmount.setStyle(.txtCard)
         lblAsset.setStyle(.txtBigger)
         lblMoreInfo.text = "For more information,".localized
-        btnFeeInfo.setStyle(.underlineBlack(txt: "read more".localized, alpha: 0.6))
+        btnFeeInfo.setStyle(.underline(txt: "read more".localized, color: .white))
         [lblToReceiveTitle, lblToReceiveHint].forEach {
             $0?.setStyle(.sectionTitle)
         }
@@ -64,7 +66,7 @@ class LTAmountCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(model: LTAmountCellModel, delegate: LTAmountCellDelegate?, enabled: Bool) {
+    func configure(model: AmountCellModel, delegate: AmountCellDelegate?, enabled: Bool) {
         self.delegate = delegate
         self.model = model
         self.enabled = enabled
@@ -75,6 +77,9 @@ class LTAmountCell: UITableViewCell {
             state = .disabled
         }
         triggerTextChange()
+        if model.scope == .buyBtc {
+            textField.addDoneButtonToKeyboard(myAction: #selector(self.textField.resignFirstResponder))
+        }
     }
 
     func reload() {
@@ -87,6 +92,12 @@ class LTAmountCell: UITableViewCell {
         let balance = "\(model?.maxLimitAmount ?? "") \(model?.denomText ?? "")"
         lblAmount.text = String(format: "id_max_limit_s".localized, balance)
         lblAsset.attributedText = model?.denomUnderlineText
+        if model.scope == .buyBtc {
+            lblInfo.isHidden = !model.showMessage
+            lblToReceiveHint.isHidden = model.hideSubamount
+            lblAmount.isHidden = true
+            bottomStackPad.constant = model.showMessage ? 10 : -24
+        }
     }
 
     func toReceiveAmount(show: Bool) {
@@ -153,8 +164,9 @@ class LTAmountCell: UITableViewCell {
     }
 
     func errorState(text: String) {
-        bg.borderColor = UIColor.gRedFluo()
-        infoPanel.backgroundColor = UIColor.gRedFluo().withAlphaComponent(0.2)
+        bg.borderColor = UIColor.gRedWarn()
+        infoPanel.backgroundColor = UIColor.gRedWarn()
+        btnFeeInfo.setStyle(.underline(txt: "read more".localized, color: .white))
         lblInfo.text = text
         lblInfo.isHidden = false
         btnFeeInfo.isHidden = false
@@ -175,8 +187,8 @@ class LTAmountCell: UITableViewCell {
     }
 
     func updateState() {
-        [lblInfo, lblMoreInfo].forEach{
-            $0.setStyle(.txtCard)
+        [lblInfo, lblMoreInfo].forEach {
+            $0.setStyle(.txt)
         }
         switch model.state {
         case .invalidAmount:
@@ -185,6 +197,15 @@ class LTAmountCell: UITableViewCell {
         case .valid:
             disableState()
             lblAmount.isHidden = false
+            if model.scope == .buyBtc {
+                lblToReceiveHint.isHidden = model.hideSubamount
+                lblToReceiveHint.text = model.subamountText
+                if model.showMessage {
+                    bg.borderColor = UIColor.gGreenMatrix()
+                    infoPanel.backgroundColor = UIColor.gGreenMatrix()
+                    lblInfo.text = model.message(.valid) ?? ""
+                }
+            }
         case .validFunding:
             bg.borderColor = UIColor.gGreenMatrix()
             infoPanel.backgroundColor = UIColor.gGreenMatrix().withAlphaComponent(1.0)
@@ -197,8 +218,9 @@ class LTAmountCell: UITableViewCell {
             toReceiveAmount(show: true)
             lblToReceiveHint.text = model.toReceiveAmountStr
             [lblInfo, lblMoreInfo].forEach {
-                $0?.textColor = .black
+                $0?.textColor = .white
             }
+            btnFeeInfo.setStyle(.underline(txt: "read more".localized, color: .white))
         case .tooHigh:
             let amount = Int64(model.nodeState?.maxReceivableSatoshi ?? 0)
             let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
@@ -211,7 +233,20 @@ class LTAmountCell: UITableViewCell {
             disableState()
         case .disconnected:
             let text = "No LSP connected".localized
-            errorState(text: text)
+        case .invalidBuy:
+            lblInfo.text = model.message(.invalidBuy) ?? ""
+            lblInfo.isHidden = !model.showMessage
+            lblToReceiveHint.text = model.subamountText
+            lblToReceiveHint.isHidden = false
+            if !model.showMessage {
+                bg.borderColor = UIColor.clear
+                infoPanel.backgroundColor = UIColor.clear
+            } else {
+                bg.borderColor = UIColor.gRedWarn()
+                infoPanel.backgroundColor = UIColor.gRedWarn()
+            }
+            lblMoreInfo.isHidden = true
+            btnFeeInfo.isHidden = true
         }
     }
 

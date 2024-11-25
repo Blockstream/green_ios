@@ -27,7 +27,7 @@ class ReceiveViewModel {
     var invoice: LnInvoice? { receivePaymentResponse?.lnInvoice }
     var swap: SwapInfo?
     var inputDenomination: gdk.DenominationType = .Sats
-    var state: LTAmountCellState = .disabled
+    var state: AmountCellState = .disabled
 
     var wm: WalletManager { WalletManager.current! }
 
@@ -100,17 +100,18 @@ class ReceiveViewModel {
         return Double(satoshi) / 100000000
     }
 
-    var amountCellModel: LTAmountCellModel {
+    var amountCellModel: AmountCellModel {
         let nodeState = account.lightningSession?.nodeState
         let lspInfo = account.lightningSession?.lspInfo
-        return LTAmountCellModel(satoshi: satoshi,
-                                 maxLimit: nodeState?.maxReceivableSatoshi,
-                                 isFiat: isFiat,
-                                 inputDenomination: inputDenomination,
-                                 gdkNetwork: account.session?.gdkNetwork,
-                                 nodeState: nodeState,
-                                 lspInfo: lspInfo,
-                                 breezSdk: account.lightningSession?.lightBridge
+        return AmountCellModel(satoshi: satoshi,
+                               maxLimit: nodeState?.maxReceivableSatoshi,
+                               isFiat: isFiat,
+                               inputDenomination: inputDenomination,
+                               gdkNetwork: account.session?.gdkNetwork,
+                               nodeState: nodeState,
+                               lspInfo: lspInfo,
+                               breezSdk: account.lightningSession?.lightBridge,
+                               scope: .ltReceive
         )
     }
 
