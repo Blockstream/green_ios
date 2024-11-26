@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Update gdk to 0.74.0
 - Added support for multilayout and video promos
+- Update breez to 0.6.6
 
 ## [4.1.0] - 2024-11-20
 
