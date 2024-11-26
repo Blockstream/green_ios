@@ -55,8 +55,7 @@ struct LTRecoverFundsViewModel {
             let fee = currentFee.map {UInt32($0)}
             _ = try await lightBridge.sweep(toAddress: address, satPerVbyte: fee)
         case .sendAll:
-            let fee = currentFee.map {UInt($0)}
-            _ = try await lightBridge.sendAllOnChain(toAddress: address, satPerVbyte: fee)
+            _ = try await lightBridge.sendAllOnChain(toAddress: address, satPerVbyte: currentFee)
             AnalyticsManager.shared.emptiedAccount = wallet
         }
     }
@@ -102,7 +101,7 @@ struct LTRecoverFundsViewModel {
             }
         case .sendAll:
             if let address = address {
-                try await lightBridge.prepareSendAllOnChain(toAddress: address, satPerVbyte: UInt(currentFee))
+                try await lightBridge.prepareSendAllOnChain(toAddress: address, satPerVbyte: currentFee)
             }
         }
     }

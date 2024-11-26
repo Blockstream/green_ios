@@ -723,7 +723,7 @@
 		81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F5C98B2ADD45AB004B020A /* LNWithdrawAmountCell.swift */; };
 		81F7FE722BE2FD4D00F44FC2 /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F7FE712BE2FD4D00F44FC2 /* AppNotifications.swift */; };
 		81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC542BC56F5D002E384D /* NotificationService.swift */; };
-		81F8AC572BC5A4A4002E384D /* RedeemSwap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */; };
+		81F8AC572BC5A4A4002E384D /* ConfirmTransactionTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */; };
 		81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */; };
 		81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
@@ -1621,7 +1621,7 @@
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81F7FE712BE2FD4D00F44FC2 /* AppNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotifications.swift; sourceTree = "<group>"; };
 		81F8AC542BC56F5D002E384D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
-		81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemSwap.swift; sourceTree = "<group>"; };
+		81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmTransactionTask.swift; sourceTree = "<group>"; };
 		81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskProtocol.swift; sourceTree = "<group>"; };
 		81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTExportJadeViewController.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
@@ -3485,7 +3485,6 @@
 				8177EDB12B6C743B00C2271C /* Tasks */,
 				816E9BD72BC48011008DBFA7 /* BreezSDKConnector.swift */,
 				81F8AC542BC56F5D002E384D /* NotificationService.swift */,
-				81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */,
 			);
 			path = NotificationService;
 			sourceTree = "<group>";
@@ -3522,7 +3521,8 @@
 			isa = PBXGroup;
 			children = (
 				8177ED482B6C567100C2271C /* PaymentReceiverTask.swift */,
-				81F8AC562BC5A4A4002E384D /* RedeemSwap.swift */,
+				81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */,
+				81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */,
 			);
 			path = Tasks;
 			sourceTree = "<group>";
@@ -4935,7 +4935,7 @@
 			files = (
 				8177EDB02B6C742700C2271C /* PaymentReceiverTask.swift in Sources */,
 				81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */,
-				81F8AC572BC5A4A4002E384D /* RedeemSwap.swift in Sources */,
+				81F8AC572BC5A4A4002E384D /* ConfirmTransactionTask.swift in Sources */,
 				816E9BD82BC48011008DBFA7 /* BreezSDKConnector.swift in Sources */,
 				81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */,
 			);

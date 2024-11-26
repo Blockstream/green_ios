@@ -9,7 +9,9 @@ struct ReceivePaymentNotificationRequest: Codable {
 }
 
 class PaymentReceiverTask: TaskProtocol {
-    static let NOTIFICATION_THREAD_PAYMENT_RECEIVED = "PAYMENT_RECEIVED"
+    var TAG: String { return String(describing: self) }
+    let PAYMENT_RECEIVED_NOTIFICATION_TITLE = "id_payment_received"
+    let PAYMENT_RECEIVED_NOTIFICATION_FAILURE_TITLE = "id_open_wallet_to_receive_a_payment"
 
     internal var payload: String
     internal var contentHandler: ((UNNotificationContent) -> Void)?
@@ -43,11 +45,8 @@ class PaymentReceiverTask: TaskProtocol {
     }
 
     func onShutdown() {
-        if receivedPayment != nil {
-            self.displayPushNotification(title: "Payment received", threadIdentifier: PaymentReceiverTask.NOTIFICATION_THREAD_PAYMENT_RECEIVED)
-        } else {
-            self.displayPushNotification(title: "Open wallet to receive a payment", threadIdentifier: PaymentReceiverTask.NOTIFICATION_THREAD_PAYMENT_RECEIVED)
-        }
+        let title = receivedPayment != nil ? PAYMENT_RECEIVED_NOTIFICATION_TITLE : PAYMENT_RECEIVED_NOTIFICATION_FAILURE_TITLE
+        displayPushNotification(title: title, threadIdentifier: TAG)
     }
 
     func onEvent(e: BreezEvent) {
@@ -56,7 +55,7 @@ class PaymentReceiverTask: TaskProtocol {
             self.logger.info("Received payment. Bolt11: \(details.bolt11, privacy: .public)\nPayment Hash:\(details.paymentHash, privacy: .public)")
             receivedPayment = details.payment
         case .synced:
-            logger.error("Received synced event")
+            logger.info("Received synced event")
             if self.receivedPayment != nil {
                 logger.info("Received synced event and receivedPayment != nil")
                 self.onShutdown()

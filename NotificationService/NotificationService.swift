@@ -113,7 +113,7 @@ class NotificationService: UNNotificationServiceExtension {
         switch(notification.notificationType) {
         case .addressTxsConfirmed:
             logger.info("creating task for tx received")
-            return RedeemSwapTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
+            return ConfirmTransactionTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
         case .paymentReceived:
             logger.info("creating task for payment received")
             return PaymentReceiverTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
@@ -128,8 +128,8 @@ class NotificationService: UNNotificationServiceExtension {
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
         // otherwise the original push payload will be used.
-        self.shutdown()
         self.currentTask?.onShutdown()
+        self.shutdown()
     }
 
     private func shutdown() -> Void {
