@@ -359,6 +359,7 @@ extension SecuritySelectViewController {
 
 extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     func didSelectAsset(_ assetId: String) {
+        viewModel?.resetSelection()
         viewModel?.asset = assetId
         reloadSections([.asset, .policy], animated: true)
         navigationController?.popViewController(animated: true)
@@ -366,6 +367,7 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
 
     func didSelectAnyAsset(_ type: AnyAssetType) {
         // handle any asset case
+        viewModel?.resetSelection()
         switch type {
         case .liquid:
             viewModel?.anyLiquidAsset = true

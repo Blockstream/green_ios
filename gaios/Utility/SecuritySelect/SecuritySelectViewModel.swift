@@ -64,6 +64,11 @@ class SecuritySelectViewModel {
         }
     }
 
+    func resetSelection() {
+        anyLiquidAsset = false
+        anyLiquidAmpAsset = false
+    }
+
     func hasLightning() -> Bool {
         return wm.lightningSubaccount != nil
     }
