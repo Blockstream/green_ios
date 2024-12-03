@@ -672,6 +672,7 @@
 		81A8F92329E515410052B214 /* LightningBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A8F92229E515410052B214 /* LightningBridge.swift */; };
 		81AC527B2D093D7E00299E91 /* GenuineCheckDialogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AC527A2D093D7D00299E91 /* GenuineCheckDialogViewModel.swift */; };
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
+		81AF88162CFF59CA00834F0C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81073D7A21E8B27700E08F86 /* Localizable.strings */; };
 		81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B1EB2928E3703200F409A3 /* AssetAmountView.swift */; };
 		81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */; };
 		81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */ = {isa = PBXBuildFile; productRef = 81B2350E2A6A8BCD00B8FF5D /* Countly */; };
@@ -4374,6 +4375,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81AF88162CFF59CA00834F0C /* Localizable.strings in Resources */,
 				3460D3192BC0603100CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 				8150EE212BB72C4000E70A12 /* greenlight_device_key.txt in Resources */,
 				8150EE222BB72C5400E70A12 /* greenlight_device_cert.txt in Resources */,
