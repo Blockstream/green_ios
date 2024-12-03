@@ -95,10 +95,18 @@ class SetupJadeViewController: HWFlowBaseViewController {
 
     func update() {
         animateView.subviews.forEach({ $0.removeFromSuperview() })
-        let riveView = viewModel.steps[idx].riveModel.createRiveView()
-        animateView.addSubview(riveView)
-        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
-//        imgDevice.image = self.viewModel.steps[idx].img
+
+        if let phn = viewModel.steps[idx].placeholderName {
+            let v = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height))
+            v.image = UIImage(named: phn)
+            v.contentMode = .scaleAspectFit
+            animateView.addSubview(v)
+        } else {
+            let riveView = viewModel.steps[idx].riveModel.createRiveView()
+            animateView.addSubview(riveView)
+            riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
+        }
+
         [lblStep1Hint, lblStep2Hint, lblStep3Hint].forEach {
             $0?.isHidden = true
         }

@@ -20,7 +20,7 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Et-Dy-SC5">
                         <rect key="frame" x="25" y="10" width="556" height="359"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_hww_jade" translatesAutoresizingMaskIntoConstraints="NO" id="HbQ-iP-gOH">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_jade_frame_v1" translatesAutoresizingMaskIntoConstraints="NO" id="HbQ-iP-gOH">
                                 <rect key="frame" x="186.5" y="276" width="183" height="82"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cAZ-PS-TyT">
@@ -127,7 +127,7 @@
     </objects>
     <resources>
         <image name="cancel" width="14" height="14"/>
-        <image name="ic_hww_jade" width="183" height="82"/>
+        <image name="il_jade_frame_v1" width="183" height="82"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

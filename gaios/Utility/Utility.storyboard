@@ -847,7 +847,7 @@
                                                                                     <constraint firstAttribute="height" constant="50" id="Xv7-9B-zoF"/>
                                                                                 </constraints>
                                                                             </imageView>
-                                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_hww_jade" translatesAutoresizingMaskIntoConstraints="NO" id="7L8-0z-SMA">
+                                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_jade_frame_v1" translatesAutoresizingMaskIntoConstraints="NO" id="7L8-0z-SMA">
                                                                                 <rect key="frame" x="90" y="80" width="213" height="60"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="60" id="gNh-ak-zqf"/>
@@ -999,10 +999,10 @@
         <image name="bg_actions" width="375" height="192"/>
         <image name="cancel" width="14" height="14"/>
         <image name="ic_hww_arrow" width="60" height="60"/>
-        <image name="ic_hww_jade" width="183" height="82"/>
         <image name="ic_info_home" width="24" height="24"/>
         <image name="ic_qr" width="60" height="60"/>
         <image name="ic_search" width="16.666666030883789" height="16.666666030883789"/>
+        <image name="il_jade_frame_v1" width="183" height="82"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

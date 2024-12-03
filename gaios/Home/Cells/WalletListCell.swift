@@ -101,7 +101,7 @@ class WalletListCell: UITableViewCell {
         }
         if item.isHW {
             if item.isJade {
-                iconHW.image = UIImage(named: "ic_hww_jade")!
+                iconHW.image = JadeAsset.img(.logo, nil)
             }
             if item.isLedger {
                 iconHW.image = UIImage(named: "ic_hww_ledger")!

@@ -29,6 +29,7 @@ class QRUnlockSignDialogViewController: UIViewController {
     @IBOutlet weak var btnConnect: UIButton!
     @IBOutlet weak var btnUnlocked: UIButton!
     @IBOutlet weak var btnUnlock: UIButton!
+    @IBOutlet weak var jadeImg: UIImageView!
 
     weak var delegate: QRUnlockSignDialogViewControllerDelegate?
 
@@ -95,6 +96,7 @@ class QRUnlockSignDialogViewController: UIViewController {
     }
 
     func setContent() {
+        jadeImg.image = JadeAsset.img(.normalDual, nil)
         lblTitle.text = "id_qr_pin_unlock".localized
         lblHint.text = "id_unlock_your_jade_to_continue".localized
 

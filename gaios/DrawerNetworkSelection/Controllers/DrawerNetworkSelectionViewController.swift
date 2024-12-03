@@ -116,7 +116,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
 extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return HomeSection.allCases.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

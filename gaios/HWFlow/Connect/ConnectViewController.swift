@@ -13,7 +13,6 @@ enum PairingState: Int {
 }
 
 class ConnectViewController: HWFlowBaseViewController {
-    
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
@@ -32,7 +31,6 @@ class ConnectViewController: HWFlowBaseViewController {
     private var cancellables = Set<AnyCancellable>()
     private var genuineCheckContinuation: CheckedContinuation<Bool, Error>?
 
-
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
         progress.translatesAutoresizingMaskIntoConstraints = false
@@ -49,15 +47,23 @@ class ConnectViewController: HWFlowBaseViewController {
 
     @MainActor
     func setContent() {
-        if account.isJade {
-            image.image = UIImage(named: "il_jade_unlock")
-        } else {
-            image.image = UIImage(named: "il_ledger")
-        }
+        updateImage()
         retryButton.isHidden = true
         retryButton.setTitle("Retry".localized, for: .normal)
         retryButton.setStyle(.primary)
         progress(firstConnection ? "id_logging_in".localized : "id_looking_for_device".localized)
+    }
+
+    func updateImage(_ version: JadeVersionInfo? = nil) {
+        if account.isJade {
+                if let version = version {
+                    image.image = JadeAsset.img(.select, version.boardType == .v2 ? .v2 : .v1)
+                } else {
+                   image.image = JadeAsset.img(.selectDual, nil)
+               }
+        } else {
+            image.image = UIImage(named: "il_ledger")
+        }
     }
 
     @objc func progressTor(_ notification: NSNotification) {
@@ -96,6 +102,7 @@ class ConnectViewController: HWFlowBaseViewController {
                     } else {
                         progress("id_follow_the_instructions_on_jade".localized)
                     }
+                    updateImage(version)
                 } else {
                     let _ = try await bleViewModel?.ledger?.getLedgerNetwork()
                     let version = try await bleViewModel?.ledger?.version()

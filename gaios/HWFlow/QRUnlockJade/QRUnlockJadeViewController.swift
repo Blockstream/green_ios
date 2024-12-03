@@ -30,6 +30,7 @@ class QRUnlockJadeViewController: UIViewController {
     @IBOutlet weak var lblUserHelpHint: UILabel!
     @IBOutlet weak var btnUserHelpScan: UIButton!
     @IBOutlet weak var btnUserHelpLearn: UIButton!
+    @IBOutlet weak var jadeImg: UIImageView!
 
     var vm: QRUnlockJadeViewModel!
     weak var delegate: QRUnlockJadeViewControllerDelegate?
@@ -75,6 +76,7 @@ class QRUnlockJadeViewController: UIViewController {
     }
 
     func setContent() {
+        jadeImg.image = JadeAsset.img(.normalDual, nil)
         btnBack.setTitle("id_back".localized, for: .normal)
         lblNavTitle.text = "id_qr_pin_unlock".localized
 

@@ -56,7 +56,8 @@ class VerifyOnDeviceViewController: UIViewController {
         if viewModel.isLedger {
             icWallet.image = UIImage(named: "il_check_addr_ledger")
         } else {
-            icWallet.image = UIImage(named: "il_check_addr_jade")
+            let isV2 = BleViewModel.shared.jade?.version?.boardType == .v2
+            icWallet.image = JadeAsset.img(.select, isV2 ? .v2 : .v1)
         }
 
         if viewModel.isDismissible {

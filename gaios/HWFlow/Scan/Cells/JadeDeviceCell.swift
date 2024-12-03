@@ -7,6 +7,7 @@ class JadeDeviceCell: UITableViewCell {
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var iconSensor: UIImageView!
     @IBOutlet weak var lblBlockstream: UILabel!
+    @IBOutlet weak var jadeImg: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -17,6 +18,7 @@ class JadeDeviceCell: UITableViewCell {
         btnDisclose.cornerRadius = 4.0
         lblBlockstream.text = "Blockstream"
         iconSensor.image = iconSensor.image?.maskWithColor(color: .white)
+        jadeImg.image = JadeAsset.img(.normalDual, nil)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

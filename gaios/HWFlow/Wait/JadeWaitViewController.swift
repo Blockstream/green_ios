@@ -165,13 +165,13 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func refresh() {
         UIView.animate(withDuration: 0.25, animations: {
-            [self.lblStepNumber, self.lblStepTitle, self.lblStepHint, self.animateView].forEach {
+            [self.lblStepNumber, self.lblStepTitle, self.lblStepHint/*, self.animateView*/].forEach {
                 $0?.alpha = 0.0
             }}, completion: { _ in
                 if self.idx < 2 { self.idx += 1 } else { self.idx = 0}
                 self.update()
                 UIView.animate(withDuration: 0.4, animations: {
-                    [self.lblStepNumber, self.lblStepTitle, self.lblStepHint, self.animateView].forEach {
+                    [self.lblStepNumber, self.lblStepTitle, self.lblStepHint /*, self.animateView */].forEach {
                         $0?.alpha = 1.0
                     }
                 })
@@ -180,9 +180,16 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func update() {
         animateView.subviews.forEach({ $0.removeFromSuperview() })
-        let riveView = viewModel.steps[idx].riveModel.createRiveView()
-        animateView.addSubview(riveView)
-        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
+        if let phn = viewModel.steps[idx].placeholderName {
+            let v = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height))
+            v.image = UIImage(named: phn)
+            v.contentMode = .scaleAspectFit
+            animateView.addSubview(v)
+        } else {
+            let riveView = viewModel.steps[idx].riveModel.createRiveView()
+            animateView.addSubview(riveView)
+            riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
+        }
         self.lblStepNumber.text = self.viewModel.steps[idx].titleStep
         self.lblStepTitle.text = self.viewModel.steps[idx].title
         self.lblStepHint.text = self.viewModel.steps[idx].hint

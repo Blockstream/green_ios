@@ -9,9 +9,6 @@ class SendHWConfirmViewController: UIViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
 
-    @IBOutlet weak var loaderPlaceholderJ: UIView!
-    @IBOutlet weak var loaderPlaceholderL: UIView!
-
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var icWallet: UIImageView!
 
@@ -30,7 +27,6 @@ class SendHWConfirmViewController: UIViewController {
     @IBOutlet weak var multiAddrView: UIView!
     @IBOutlet weak var lblMultiAddr: UILabel!
 
-    private var obs: NSObjectProtocol?
     var viewModel: SendHWConfirmViewModel!
     var isDismissible = false
 
@@ -46,12 +42,6 @@ class SendHWConfirmViewController: UIViewController {
         containerView.addSubview(customBlurEffectView)
         containerView.addSubview(dimmedView)
         return containerView
-    }()
-
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.gGreenMatrix()], lineWidth: 2)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
     }()
 
     override func viewDidLoad() {
@@ -73,15 +63,12 @@ class SendHWConfirmViewController: UIViewController {
             tappableBg.addGestureRecognizer(tapToClose)
 
         if viewModel.isLedger {
-            icWallet.image = UIImage(named: "ic_hww_ledger")
+            icWallet.image = UIImage(named: "il_check_addr_ledger")
         } else {
-            icWallet.image = UIImage(named: "ic_hww_jade_new")
+            let isV2 = BleViewModel.shared.jade?.version?.boardType == .v2
+            icWallet.image = JadeAsset.img(.select, isV2 ? .v2 : .v1)
         }
 
-        obs = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] notification in
-            self.stop()
-            self.start()
-        }
         if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
             [lblConversion].forEach {
                 $0?.isHidden = true
@@ -92,15 +79,11 @@ class SendHWConfirmViewController: UIViewController {
 
     deinit {
         print("deinit")
-        if let obs = obs {
-            NotificationCenter.default.removeObserver(obs)
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        loadingIndicator.isAnimating = true
-        start()
+
         anchorBottom.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
@@ -109,7 +92,7 @@ class SendHWConfirmViewController: UIViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        stop()
+
     }
 
     @objc func didTapToClose(gesture: UIGestureRecognizer) {
@@ -179,30 +162,5 @@ class SendHWConfirmViewController: UIViewController {
                 break
             }
         }
-    }
-
-    func start() {
-        let lph = viewModel.isLedger ? loaderPlaceholderL : loaderPlaceholderJ
-        guard let lph = lph else { return }
-
-        lph.addSubview(loadingIndicator)
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor
-                .constraint(equalTo: lph.centerXAnchor),
-            loadingIndicator.centerYAnchor
-                .constraint(equalTo: lph.centerYAnchor),
-            loadingIndicator.widthAnchor
-                .constraint(equalToConstant: lph.frame.width),
-            loadingIndicator.heightAnchor
-                .constraint(equalTo: lph.widthAnchor)
-        ])
-
-        loadingIndicator.isAnimating = true
-        loadingIndicator.isHidden = false
-    }
-
-    func stop() {
-        loadingIndicator.isAnimating = false
-        loadingIndicator.isHidden = true
     }
 }

@@ -280,9 +280,9 @@
 		3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */; };
 		3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */; };
 		3487657B29D43B2A0059D05F /* Illustration Envelope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656F29D43B2A0059D05F /* Illustration Envelope.riv */; };
-		3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */; };
+		3487657C29D43B2A0059D05F /* animation_04_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657029D43B2A0059D05F /* animation_04_jade_v1.riv */; };
 		3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */; };
-		3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */; };
+		3487657F29D43B2A0059D05F /* animation_03_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657329D43B2A0059D05F /* animation_03_jade_v1.riv */; };
 		3488FC69290AE26E00122628 /* BalanceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3488FC68290AE26E00122628 /* BalanceCell.xib */; };
 		3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6A290AE28000122628 /* BalanceCell.swift */; };
 		3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6C290AE28700122628 /* BalanceCellModel.swift */; };
@@ -301,6 +301,7 @@
 		34955C102B67B7560056DE90 /* HowToSecureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */; };
 		34955C122B67B8380056DE90 /* HowToSecureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */; };
 		34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */; };
+		349693C62CFEF613000F308E /* JadeAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349693C52CFEF613000F308E /* JadeAsset.swift */; };
 		3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3497935325F8B18C0029ECB1 /* OnBoard.storyboard */; };
 		3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */; };
 		3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497935B25F8B18C0029ECB1 /* SetPinViewController.swift */; };
@@ -315,8 +316,8 @@
 		3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */; };
 		3498079F291CF05700F8DB95 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079E291CF05600F8DB95 /* Collection.swift */; };
 		3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655429E542D70092B5BD /* DialogRenameViewController.swift */; };
-		3499655829E569D60092B5BD /* Jade 01 - Adjusted.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */; };
-		3499655929E569D60092B5BD /* Jade 02 - Adjusted.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */; };
+		3499655829E569D60092B5BD /* animation_01_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655629E569D60092B5BD /* animation_01_jade_v1.riv */; };
+		3499655929E569D60092B5BD /* animation_02_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655729E569D60092B5BD /* animation_02_jade_v1.riv */; };
 		3499655C29E576300092B5BD /* DialogDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655B29E576300092B5BD /* DialogDetailViewController.swift */; };
 		3499655F29E5962D0092B5BD /* DialogEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655E29E5962D0092B5BD /* DialogEditViewController.swift */; };
 		3499656229E5A2620092B5BD /* DialogAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499656129E5A2620092B5BD /* DialogAboutViewController.swift */; };
@@ -1168,9 +1169,9 @@
 		3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checkmark.riv"; sourceTree = "<group>"; };
 		3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Stars Success.riv"; sourceTree = "<group>"; };
 		3487656F29D43B2A0059D05F /* Illustration Envelope.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Envelope.riv"; sourceTree = "<group>"; };
-		3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 04 - Faster + BG + Refresh.riv"; sourceTree = "<group>"; };
+		3487657029D43B2A0059D05F /* animation_04_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_04_jade_v1.riv; sourceTree = "<group>"; };
 		3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Recovery Phrase.riv"; sourceTree = "<group>"; };
-		3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 03 - Faster + BG + Side Scroll.riv"; sourceTree = "<group>"; };
+		3487657329D43B2A0059D05F /* animation_03_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_03_jade_v1.riv; sourceTree = "<group>"; };
 		3488FC68290AE26E00122628 /* BalanceCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BalanceCell.xib; sourceTree = "<group>"; };
 		3488FC6A290AE28000122628 /* BalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCell.swift; sourceTree = "<group>"; };
 		3488FC6C290AE28700122628 /* BalanceCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCellModel.swift; sourceTree = "<group>"; };
@@ -1189,6 +1190,7 @@
 		34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureCell.swift; sourceTree = "<group>"; };
 		34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureViewModel.swift; sourceTree = "<group>"; };
 		34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureCellModel.swift; sourceTree = "<group>"; };
+		349693C52CFEF613000F308E /* JadeAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeAsset.swift; sourceTree = "<group>"; };
 		3497935325F8B18C0029ECB1 /* OnBoard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = OnBoard.storyboard; sourceTree = "<group>"; };
 		3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettingsViewController.swift; sourceTree = "<group>"; };
 		3497935B25F8B18C0029ECB1 /* SetPinViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetPinViewController.swift; sourceTree = "<group>"; };
@@ -1203,8 +1205,8 @@
 		3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectCellModel.swift; sourceTree = "<group>"; };
 		3498079E291CF05600F8DB95 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		3499655429E542D70092B5BD /* DialogRenameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRenameViewController.swift; sourceTree = "<group>"; };
-		3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 01 - Adjusted.riv"; sourceTree = "<group>"; };
-		3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 02 - Adjusted.riv"; sourceTree = "<group>"; };
+		3499655629E569D60092B5BD /* animation_01_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_01_jade_v1.riv; sourceTree = "<group>"; };
+		3499655729E569D60092B5BD /* animation_02_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_02_jade_v1.riv; sourceTree = "<group>"; };
 		3499655B29E576300092B5BD /* DialogDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDetailViewController.swift; sourceTree = "<group>"; };
 		3499655E29E5962D0092B5BD /* DialogEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogEditViewController.swift; sourceTree = "<group>"; };
 		3499656129E5A2620092B5BD /* DialogAboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAboutViewController.swift; sourceTree = "<group>"; };
@@ -1740,6 +1742,7 @@
 				81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */,
 				3457F4AA292394DD00EF33B5 /* CustomVisualEffectView.swift */,
 				34675B0929409D9900771D50 /* Common.swift */,
+				349693C52CFEF613000F308E /* JadeAsset.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -2763,10 +2766,10 @@
 				3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */,
 				3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */,
 				3487656A29D43B2A0059D05F /* Illustration Wallet.riv */,
-				3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */,
-				3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */,
-				3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */,
-				3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */,
+				3499655629E569D60092B5BD /* animation_01_jade_v1.riv */,
+				3499655729E569D60092B5BD /* animation_02_jade_v1.riv */,
+				3487657329D43B2A0059D05F /* animation_03_jade_v1.riv */,
+				3487657029D43B2A0059D05F /* animation_04_jade_v1.riv */,
 			);
 			path = Rive;
 			sourceTree = "<group>";
@@ -4241,8 +4244,8 @@
 				34287B722A8385330065471F /* Alert.storyboard in Resources */,
 				34D51B692A77939D00C0AF12 /* DialogInputDenominationFooter.xib in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
-				3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */,
-				3499655829E569D60092B5BD /* Jade 01 - Adjusted.riv in Resources */,
+				3487657C29D43B2A0059D05F /* animation_04_jade_v1.riv in Resources */,
+				3499655829E569D60092B5BD /* animation_01_jade_v1.riv in Resources */,
 				34CD348E2C7D981B00018824 /* VerifyOnDevice.storyboard in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */,
@@ -4262,7 +4265,7 @@
 				345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */,
 				81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
-				3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */,
+				3487657F29D43B2A0059D05F /* animation_03_jade_v1.riv in Resources */,
 				347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
 				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
@@ -4302,7 +4305,7 @@
 				34B0D0042CE2553100A90080 /* ActionsSheetFlow.storyboard in Resources */,
 				3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */,
 				34A883BF2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib in Resources */,
-				3499655929E569D60092B5BD /* Jade 02 - Adjusted.riv in Resources */,
+				3499655929E569D60092B5BD /* animation_02_jade_v1.riv in Resources */,
 				346EB26C2BE8BB0B0043139F /* SendFlow.storyboard in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
@@ -4613,6 +4616,7 @@
 				34927BC72971452300D741DB /* AccountAssetViewController.swift in Sources */,
 				346EB28B2BE8BC400043139F /* SquareSliderView.swift in Sources */,
 				34FE20172A1CADC200301746 /* DialogDetailCell.swift in Sources */,
+				349693C62CFEF613000F308E /* JadeAsset.swift in Sources */,
 				34560B8529BA28F7007E916F /* SetupJadeViewModel.swift in Sources */,
 				342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */,
 				345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */,

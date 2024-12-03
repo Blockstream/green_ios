@@ -12,7 +12,8 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblSlide3Hint: UILabel!
     @IBOutlet weak var lblSlide4Title: UILabel!
     @IBOutlet weak var lblSlide4Hint: UILabel!
-    
+    @IBOutlet weak var imgSlide1: UIImageView!
+
     @IBOutlet weak var btnConnectJade: UIButton!
     @IBOutlet weak var btnConnectOther: UIButton!
     @IBOutlet weak var btnCheckStore: UIButton!
@@ -28,6 +29,7 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
     }
 
     func setContent() {
+        imgSlide1.image = JadeAsset.img(.normalDual, nil)
         lblSlide1Title.text = "id_welcome_to_blockstream_jade".localized
         lblSlide1Hint.text = "id_jade_is_a_specialized_device".localized
         btnConnectJade.setTitle("id_connect_jade".localized, for: .normal)

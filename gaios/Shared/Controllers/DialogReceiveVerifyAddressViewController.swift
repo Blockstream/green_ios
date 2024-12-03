@@ -28,7 +28,8 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
         if isLedger {
             icWallet.image = UIImage(named: "ic_hww_ledger")
         } else {
-            icWallet.image = UIImage(named: "ic_hww_jade")
+            let isV2 = BleViewModel.shared.jade?.version?.boardType == .v2
+            icWallet.image = JadeAsset.img(.load, isV2 ? .v2 : .v1)
         }
         lblAddress.text = address
 

@@ -5,21 +5,21 @@ import core
 import hw
 
 class PairingSuccessViewController: HWFlowBaseViewController {
-    
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnContinue: UIButton!
     @IBOutlet weak var imgDevice: UIImageView!
     @IBOutlet weak var btnAppSettings: UIButton!
-    
+
     var bleViewModel: BleViewModel?
     var scanViewModel: ScanViewModel?
     var version: JadeVersionInfo?
-    
+
     var rememberIsOn = !AppSettings.shared.rememberHWIsOff
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         mash.isHidden = true
         setContent()
         setStyle()
@@ -27,16 +27,21 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             loadNavigationBtns()
         }
     }
-    
+
     func setContent() {
         lblTitle.text = bleViewModel?.peripheral?.name
         lblHint.text = "id_follow_the_instructions_on_your".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
-        imgDevice.image = UIImage(named: bleViewModel?.type == .Jade ? "il_jade_welcome_1" : "il_ledger")
+        switch bleViewModel?.type {
+        case .Ledger:
+            imgDevice.image = UIImage(named: "il_ledger")
+        default:
+            imgDevice.image = JadeAsset.img(.normalDual, nil)
+        }
         lblHint.text = bleViewModel?.type == .Jade ? "Blockstream" : ""
         btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
-    
+
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         lblTitle.textColor = .white
@@ -48,7 +53,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         btnAppSettings.setStyle(.inline)
         btnAppSettings.setTitleColor(.white.withAlphaComponent(0.6), for: .normal)
     }
-    
+
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
@@ -57,14 +62,14 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
-    
+
     @objc func setupBtnTapped() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "SetupJadeViewController") as? SetupJadeViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     @IBAction func btnContinue(_ sender: Any) {
         startLoader(message: "id_logging_in".localized)
         Task {
@@ -79,7 +84,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                     try await bleViewModel.connect()
                 }
                 try await bleViewModel.ping()
-                
+
                 if bleViewModel.type == .Jade {
                     version = try await bleViewModel.jade?.version()
                     if version?.boardType == .v2 {
@@ -97,7 +102,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             }
         }
     }
-        
+
     @MainActor
     func onGenuineCheck() {
         let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
@@ -217,7 +222,7 @@ extension PairingSuccessViewController: GenuineCheckDialogViewControllerDelegate
             presentGenuineEndViewController()
         }
     }
-    
+
     @MainActor
     func presentGenuineEndViewController() {
         let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
