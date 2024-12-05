@@ -48,7 +48,7 @@ public class GDKResolver {
                 bcurDelegate: BcurResolver? = nil,
                 hwDevice: HWProtocol? = nil,
                 network: NetworkSecurityCase,
-                connected: @escaping() -> Bool = { true }) {
+                connected: @escaping () -> Bool = { true }) {
         self.twoFactorCall = twoFactorCall
         self.gdkSession = gdkSession
         self.popupDelegate = popupDelegate

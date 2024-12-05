@@ -12,7 +12,7 @@ public class ResolverManager {
     public init(
         _ factor: TwoFactorCall?,
         network: NetworkSecurityCase,
-        connected: @escaping() -> Bool = { true },
+        connected: @escaping () -> Bool = { true },
         hwDevice: HWProtocol?,
         session: SessionManager? = nil,
         popupResolver: PopupResolverDelegate? = nil,

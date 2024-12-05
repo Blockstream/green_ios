@@ -14,7 +14,7 @@ enum UIAlertOption: String {
 extension UIViewController {
 
     @MainActor
-    func showAlert(title: String, message: String, completion: @escaping() -> () = { }) {
+    func showAlert(title: String, message: String, completion: @escaping () -> () = { }) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message.localized, preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in completion() })

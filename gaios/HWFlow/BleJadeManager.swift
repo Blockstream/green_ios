@@ -212,7 +212,7 @@ extension JadeManager: JadeGdkRequest {
     
 
     @MainActor
-    func showUrlValidationWarning(domains: [String], completion: @escaping(UIAlertOption) -> () = { _ in }) {
+    func showUrlValidationWarning(domains: [String], completion: @escaping (UIAlertOption) -> () = { _ in }) {
         if warningPinShowed {
             completion(.continue)
             return
@@ -246,7 +246,7 @@ extension JadeManager: JadeGdkRequest {
     }
 
     @MainActor
-    func showTorWarning(domains: [String], completion: @escaping(UIAlertOption) -> () = { _ in }) {
+    func showTorWarning(domains: [String], completion: @escaping (UIAlertOption) -> () = { _ in }) {
         DispatchQueue.main.async {
             let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
             if let vc = hwFlow.instantiateViewController(withIdentifier: "EnableTorViewController") as? EnableTorViewController {

@@ -12,7 +12,6 @@ stages:
 test_format:
   stage: format
   tags:
-    - fastosx
     - osx
   script:
     - fastlane run swiftlint
