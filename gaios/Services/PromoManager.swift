@@ -28,7 +28,7 @@ class PromoManager {
             return []
         }
 
-        if let promo = (promos.filter { $0.isVisible() == true && ($0.screens ?? []).contains(screen.rawValue)}).first {
+        if let promo = (promos.filter { $0.isVisible() == true && ($0.screens ?? []).contains(screen.rawValue)}).first, mediaIsReady(promo) {
             if (promo.image_small ?? "").isEmpty || promo.imgData != nil {
                 return [PromoCellModel(promo: promo, source: screen)]
             } else {
@@ -49,11 +49,63 @@ class PromoManager {
             dismissed.append(id)
             UserDefaults.standard.set(dismissed, forKey: AppStorageConstants.dismissedPromos.rawValue)
             sessionDismiss = true
+            // remove associated video if present and not shared
+            if let promo = promos?.filter({ $0.id == id }).first {
+                if let remotePath = promo.video_large, let url = URL(string: remotePath) {
+                    var fileName = url.lastPathComponent
+                    let fm = FileManager.default
+                    let cachesURL = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+                    let mediaURL = cachesURL.appendingPathComponent("media")
+                    if !isSharingVideo(promoId: id, remotePath: remotePath) {
+                        removeCachedFile(mediaURL.appendingPathComponent(fileName).path)
+                    }
+                }
+            }
         }
+    }
+    func isSharingVideo(promoId: String, remotePath: String) -> Bool {
+        var dismissed = dismissedPromos()
+        let sharingPromos = promos?.filter({ $0.video_large == remotePath && $0.isVisible() == true && $0.id != promoId && dismissed.contains(promoId) })
+        print("promodbg, sharing video promos: \(sharingPromos?.count ?? 0)")
+        return sharingPromos?.count ?? 0 > 0
     }
     func clearDismissed() {
         sessionDismiss = false
         UserDefaults.standard.removeObject(forKey: AppStorageConstants.dismissedPromos.rawValue)
+    }
+    func mediaIsReady(_ promo: Promo) -> Bool {
+        if let path = promo.video_large, let url = URL(string: path) {
+            var fileName = url.lastPathComponent
+            let fm = FileManager.default
+            let cachesURL = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            let mediaURL = cachesURL.appendingPathComponent("media")
+            let filePath = mediaURL.appendingPathComponent(fileName).path
+            return fm.fileExists(atPath: filePath) == true
+        }
+        return true
+    }
+    func resetVideoCache() {
+        let fm = FileManager.default
+        let cachesURL = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let mediaURL = cachesURL.appendingPathComponent("media")
+        if fm.fileExists(atPath: mediaURL.path) {
+            do {
+                let items = try fm.contentsOfDirectory(atPath: mediaURL.path)
+                for item in items {
+                    let filePath = mediaURL.appendingPathComponent(item).path
+                    removeCachedFile(filePath)
+                }
+            } catch {}
+        }
+    }
+    func removeCachedFile(_ filePath: String) {
+        let fm = FileManager.default
+        if fm.fileExists(atPath: filePath) {
+            print("promodbg, removing: \(filePath)")
+            do {
+                try fm.removeItem(atPath: filePath)
+            } catch {}
+        }
     }
     func preloadThumbs() async {
         if let config: Any = AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigPromos) {
@@ -62,10 +114,14 @@ class PromoManager {
         }
         if let promos {
             for promo in promos {
-                await promo.preload()
+                let dismissed = dismissedPromos()
+                guard let id = promo.id else { return }
+                if promo.isVisible() && !dismissed.contains(id) {
+                    await promo.preload()
+                    delegate?.preloadDidEnd()
+                }
             }
         }
-        delegate?.preloadDidEnd()
     }
     func promoView(promo: Promo, source: PromoScreen) {
         if let id = promo.id {

@@ -6,20 +6,20 @@ class SafeNavigationManager {
 
     static let shared = SafeNavigationManager()
 
-    public func navigate(_ urlString: String?) {
+    public func navigate(_ urlString: String?, exitApp: Bool = false) {
         guard let urlString = urlString, let url = URL(string: urlString) else {
             return
         }
-        confirm(url)
+        confirm(url, exitApp: exitApp)
     }
 
-    public func navigate(_ url: URL) {
-        confirm(url)
+    public func navigate(_ url: URL, exitApp: Bool = false) {
+            confirm(url, exitApp: exitApp)
     }
 
-    private func confirm(_ url: URL) {
+    private func confirm(_ url: URL, exitApp: Bool) {
         guard GdkSettings.read()?.tor ?? false else {
-            browse(url)
+            browse(url, exitApp: exitApp)
             return
         }
 
@@ -37,7 +37,7 @@ class SafeNavigationManager {
 
                 switch action {
                 case .authorize:
-                    self?.browse(url)
+                    self?.browse(url, exitApp: exitApp)
                 case .cancel:
                     break
                 case .copy:
@@ -51,22 +51,28 @@ class SafeNavigationManager {
         appDelegate?.navigateWindow?.makeKeyAndVisible()
     }
 
-    private func browse(_ url: URL) {
-
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        appDelegate?.navigateWindow = UIWindow(frame: UIScreen.main.bounds)
-        appDelegate?.navigateWindow?.windowLevel = .alert
-        appDelegate?.navigateWindow?.tag = 999
-
-        if let vc = UIStoryboard(name: "Utility", bundle: .main)
-            .instantiateViewController(
-                withIdentifier: "BrowserViewController") as? BrowserViewController {
-            vc.url = url
-            vc.onClose = { () in
-                appDelegate?.navigateWindow = nil
+    private func browse(_ url: URL, exitApp: Bool) {
+        
+        if exitApp == true {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
-            appDelegate?.navigateWindow?.rootViewController = vc
+        } else {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.navigateWindow = UIWindow(frame: UIScreen.main.bounds)
+            appDelegate?.navigateWindow?.windowLevel = .alert
+            appDelegate?.navigateWindow?.tag = 999
+            
+            if let vc = UIStoryboard(name: "Utility", bundle: .main)
+                .instantiateViewController(
+                    withIdentifier: "BrowserViewController") as? BrowserViewController {
+                vc.url = url
+                vc.onClose = { () in
+                    appDelegate?.navigateWindow = nil
+                }
+                appDelegate?.navigateWindow?.rootViewController = vc
+            }
+            appDelegate?.navigateWindow?.makeKeyAndVisible()
         }
-        appDelegate?.navigateWindow?.makeKeyAndVisible()
     }
 }

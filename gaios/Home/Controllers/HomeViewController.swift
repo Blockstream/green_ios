@@ -40,7 +40,7 @@ class HomeViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
 
-        ["WalletListCell", "AlertCardCell", "PromoCell"].forEach {
+        ["WalletListCell", "AlertCardCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
@@ -182,14 +182,15 @@ class HomeViewController: UIViewController {
         if promo.is_small == true {
             PromoManager.shared.promoAction(promo: promo, source: .home)
             if let url = URL(string: promo.link ?? "") {
-                SafeNavigationManager.shared.navigate(url)
+                SafeNavigationManager.shared.navigate(url, exitApp: true)
             }
         } else {
             PromoManager.shared.promoOpen(promo: promo, source: .home)
             let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
                 vc.promo = promo
-                navigationController?.pushViewController(vc, animated: true)
+                vc.modalPresentationStyle = .overFullScreen
+                present(vc, animated: false, completion: nil)
             }
         }
     }
@@ -265,17 +266,43 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         switch HomeSection(rawValue: indexPath.section) {
 
         case .promo:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoCell", for: indexPath) as? PromoCell {
-                let model = promoCardCellModel[indexPath.row]
-                cell.configure(model, onAction: {
-                    [weak self] in
-                    self?.onPromo(model.promo)
-                }, onDismiss: { [weak self] in
-                    self?.promoDismiss()
-                })
-                cell.selectionStyle = .none
-                promoImpression(model.promo)
-                return cell
+            let model = promoCardCellModel[indexPath.row]
+            if model.promo.layout_small == 2 {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout2Cell", for: indexPath) as? PromoLayout2Cell {
+                    cell.configure(model, onAction: {
+                        [weak self] in
+                        self?.onPromo(model.promo)
+                    }, onDismiss: { [weak self] in
+                        self?.promoDismiss()
+                    })
+                    cell.selectionStyle = .none
+                    promoImpression(model.promo)
+                    return cell
+                }
+            } else if model.promo.layout_small == 1 {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout1Cell", for: indexPath) as? PromoLayout1Cell {
+                    cell.configure(model, onAction: {
+                        [weak self] in
+                        self?.onPromo(model.promo)
+                    }, onDismiss: { [weak self] in
+                        self?.promoDismiss()
+                    })
+                    cell.selectionStyle = .none
+                    promoImpression(model.promo)
+                    return cell
+                }
+            } else {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout0Cell", for: indexPath) as? PromoLayout0Cell {
+                    cell.configure(model, onAction: {
+                        [weak self] in
+                        self?.onPromo(model.promo)
+                    }, onDismiss: { [weak self] in
+                        self?.promoDismiss()
+                    })
+                    cell.selectionStyle = .none
+                    promoImpression(model.promo)
+                    return cell
+                }
             }
         case .remoteAlerts:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {

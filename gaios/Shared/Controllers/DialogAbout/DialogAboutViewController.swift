@@ -276,6 +276,7 @@ extension DialogAboutViewController: DialogListViewControllerDelegate {
             handleDebugID()
         case .promos:
             PromoManager.shared.clearDismissed()
+            PromoManager.shared.resetVideoCache()
         case .none:
             break
         }

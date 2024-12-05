@@ -2,6 +2,7 @@ import UIKit
 import gdk
 import UserNotifications
 import core
+import AVFoundation
 
 func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
@@ -78,6 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Task {
             await MigratorManager.shared.migrate()
         }
+
         return true
     }
 

@@ -65,7 +65,7 @@ class WalletViewController: UIViewController {
         drawerItem.configure(img: viewModel.headerIcon, onTap: {[weak self] () in
                 self?.switchNetwork()
         })
-        ["AccountCell", "BalanceCell", "TransactionCell", "AlertCardCell", "PromoCell" ].forEach {
+        ["AccountCell", "BalanceCell", "TransactionCell", "AlertCardCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         viewModel.preselectAccount = {[weak self] idx in
@@ -553,14 +553,15 @@ class WalletViewController: UIViewController {
         if promo.is_small == true {
             PromoManager.shared.promoAction(promo: promo, source: source)
             if let url = URL(string: promo.link ?? "") {
-                SafeNavigationManager.shared.navigate(url)
+                SafeNavigationManager.shared.navigate(url, exitApp: true)
             }
         } else {
             PromoManager.shared.promoOpen(promo: promo, source: source)
             let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
                 vc.promo = promo
-                navigationController?.pushViewController(vc, animated: true)
+                vc.modalPresentationStyle = .overFullScreen
+                present(vc, animated: false, completion: nil)
             }
         }
     }
@@ -593,7 +594,6 @@ class WalletViewController: UIViewController {
     }
 
     @IBAction func btnQr(_ sender: Any) {
-        
         let storyboard = UIStoryboard(name: "ActionsSheetFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ActionsSheetViewController") as? ActionsSheetViewController {
             vc.delegate = self
@@ -759,16 +759,40 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .promo:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoCell", for: indexPath) as? PromoCell {
-                let model = viewModel.promoCardCellModel[indexPath.row]
-                cell.configure(model, onAction: {
-                    [weak self] in
-                    self?.onPromo(promo: model.promo, source: model.source)
-                }, onDismiss: { [weak self] in
-                    self?.promoDismiss()
-                })
-                cell.selectionStyle = .none
-                return cell
+            let model = viewModel.promoCardCellModel[indexPath.row]
+            if model.promo.layout_small == 2 {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout2Cell", for: indexPath) as? PromoLayout2Cell {
+                    cell.configure(model, onAction: {
+                        [weak self] in
+                        self?.onPromo(promo: model.promo, source: model.source)
+                    }, onDismiss: { [weak self] in
+                        self?.promoDismiss()
+                    })
+                    cell.selectionStyle = .none
+                    return cell
+                }
+            } else if model.promo.layout_small == 1 {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout1Cell", for: indexPath) as? PromoLayout1Cell {
+                    cell.configure(model, onAction: {
+                        [weak self] in
+                        self?.onPromo(promo: model.promo, source: model.source)
+                    }, onDismiss: { [weak self] in
+                        self?.promoDismiss()
+                    })
+                    cell.selectionStyle = .none
+                    return cell
+                }
+            } else {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout0Cell", for: indexPath) as? PromoLayout0Cell {
+                    cell.configure(model, onAction: {
+                        [weak self] in
+                        self?.onPromo(promo: model.promo, source: model.source)
+                    }, onDismiss: { [weak self] in
+                        self?.promoDismiss()
+                    })
+                    cell.selectionStyle = .none
+                    return cell
+                }
             }
         case .transaction:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {

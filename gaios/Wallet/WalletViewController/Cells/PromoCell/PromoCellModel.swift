@@ -9,5 +9,7 @@ class PromoCellModel {
     init(promo: Promo, source: PromoScreen) {
         self.promo = promo
         self.source = source
+
+        self.promo.preDecode()
     }
 }

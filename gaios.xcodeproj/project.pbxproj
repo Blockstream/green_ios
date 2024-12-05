@@ -256,8 +256,8 @@
 		34742D442CE4B3F00064F327 /* AmountToBuyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D432CE4B3F00064F327 /* AmountToBuyCell.swift */; };
 		34742D462CE4B4330064F327 /* AmountToBuyCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D452CE4B4330064F327 /* AmountToBuyCellModel.swift */; };
 		3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3478E8892A2DD0190080B50E /* Illustration Rocket.riv */; };
-		347B7C242C3280FE0016A5C0 /* PromoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347B7C232C3280FE0016A5C0 /* PromoCell.xib */; };
-		347B7C262C3281190016A5C0 /* PromoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C252C3281190016A5C0 /* PromoCell.swift */; };
+		347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */; };
+		347B7C262C3281190016A5C0 /* PromoLayout0Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */; };
 		347B7C282C3281260016A5C0 /* PromoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C272C3281260016A5C0 /* PromoCellModel.swift */; };
 		347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C037B272838D500C2EEF6 /* ReceiveViewController.swift */; };
 		347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */; };
@@ -349,6 +349,8 @@
 		34A883BF2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A883BE2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib */; };
 		34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883C02BAB0329004A1826 /* TxDetailsMoreInfoCell.swift */; };
 		34A883C32BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A883C22BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift */; };
+		34B0A4EE2D0198A6002E9A5C /* PromoLayout2Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B0A4ED2D0198A6002E9A5C /* PromoLayout2Cell.xib */; };
+		34B0A4F02D0198B8002E9A5C /* PromoLayout2Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B0A4EF2D0198B8002E9A5C /* PromoLayout2Cell.swift */; };
 		34B0D0032CE2553100A90080 /* ActionsSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B0D0002CE2553100A90080 /* ActionsSheetViewController.swift */; };
 		34B0D0042CE2553100A90080 /* ActionsSheetFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B0D0012CE2553100A90080 /* ActionsSheetFlow.storyboard */; };
 		34B0D0052CE2553100A90080 /* ActionsSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B0D0022CE2553100A90080 /* ActionsSheetViewModel.swift */; };
@@ -372,6 +374,9 @@
 		34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */; };
 		34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */; };
 		34BBCEFA297151C50057DF4A /* AssetAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBCEF9297151C50057DF4A /* AssetAssetCellModel.swift */; };
+		34BC63612D0979A2001CC38F /* PromoLayout1Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34BC63602D0979A2001CC38F /* PromoLayout1Cell.xib */; };
+		34BC63632D0979BA001CC38F /* PromoLayout1Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BC63622D0979BA001CC38F /* PromoLayout1Cell.swift */; };
+		34BC63652D097A09001CC38F /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BC63642D097A09001CC38F /* UIImage.swift */; };
 		34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEEAEE2857274700C0187D /* DialogWatchOnlySetUpViewController.swift */; };
 		34BF09DE2A658BB800523E4C /* DialogQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BF09DD2A658BB800523E4C /* DialogQRViewController.swift */; };
 		34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C246502670F0BB009E8FCE /* UINavigationController.swift */; };
@@ -1132,8 +1137,8 @@
 		34742D432CE4B3F00064F327 /* AmountToBuyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountToBuyCell.swift; sourceTree = "<group>"; };
 		34742D452CE4B4330064F327 /* AmountToBuyCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountToBuyCellModel.swift; sourceTree = "<group>"; };
 		3478E8892A2DD0190080B50E /* Illustration Rocket.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Rocket.riv"; sourceTree = "<group>"; };
-		347B7C232C3280FE0016A5C0 /* PromoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoCell.xib; sourceTree = "<group>"; };
-		347B7C252C3281190016A5C0 /* PromoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCell.swift; sourceTree = "<group>"; };
+		347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoLayout0Cell.xib; sourceTree = "<group>"; };
+		347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoLayout0Cell.swift; sourceTree = "<group>"; };
 		347B7C272C3281260016A5C0 /* PromoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCellModel.swift; sourceTree = "<group>"; };
 		347C037B272838D500C2EEF6 /* ReceiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewController.swift; sourceTree = "<group>"; };
 		347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCell.swift; sourceTree = "<group>"; };
@@ -1226,6 +1231,8 @@
 		34A883C02BAB0329004A1826 /* TxDetailsMoreInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsMoreInfoCell.swift; sourceTree = "<group>"; };
 		34A883C22BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsMoreInfoCellModel.swift; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
+		34B0A4ED2D0198A6002E9A5C /* PromoLayout2Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoLayout2Cell.xib; sourceTree = "<group>"; };
+		34B0A4EF2D0198B8002E9A5C /* PromoLayout2Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoLayout2Cell.swift; sourceTree = "<group>"; };
 		34B0D0002CE2553100A90080 /* ActionsSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionsSheetViewController.swift; sourceTree = "<group>"; };
 		34B0D0012CE2553100A90080 /* ActionsSheetFlow.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ActionsSheetFlow.storyboard; sourceTree = "<group>"; };
 		34B0D0022CE2553100A90080 /* ActionsSheetViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionsSheetViewModel.swift; sourceTree = "<group>"; };
@@ -1250,6 +1257,9 @@
 		34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccountAssetCell.xib; sourceTree = "<group>"; };
 		34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAssetCell.swift; sourceTree = "<group>"; };
 		34BBCEF9297151C50057DF4A /* AssetAssetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAssetCellModel.swift; sourceTree = "<group>"; };
+		34BC63602D0979A2001CC38F /* PromoLayout1Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoLayout1Cell.xib; sourceTree = "<group>"; };
+		34BC63622D0979BA001CC38F /* PromoLayout1Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoLayout1Cell.swift; sourceTree = "<group>"; };
+		34BC63642D097A09001CC38F /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		34BEEAEE2857274700C0187D /* DialogWatchOnlySetUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogWatchOnlySetUpViewController.swift; sourceTree = "<group>"; };
 		34BF09DD2A658BB800523E4C /* DialogQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogQRViewController.swift; sourceTree = "<group>"; };
 		34C2464E2670ECE0009E8FCE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
@@ -2449,8 +2459,12 @@
 			children = (
 				3472798C2CD3788F00A272D2 /* Promo.swift */,
 				347B7C272C3281260016A5C0 /* PromoCellModel.swift */,
-				347B7C252C3281190016A5C0 /* PromoCell.swift */,
-				347B7C232C3280FE0016A5C0 /* PromoCell.xib */,
+				347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */,
+				347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */,
+				34BC63622D0979BA001CC38F /* PromoLayout1Cell.swift */,
+				34BC63602D0979A2001CC38F /* PromoLayout1Cell.xib */,
+				34B0A4EF2D0198B8002E9A5C /* PromoLayout2Cell.swift */,
+				34B0A4ED2D0198A6002E9A5C /* PromoLayout2Cell.xib */,
 			);
 			path = PromoCell;
 			sourceTree = "<group>";
@@ -3842,6 +3856,7 @@
 				8152772629F9B52F00853EA1 /* UIApplication.swift */,
 				8162A1C82B500CF70065D9EB /* UIImageView.swift */,
 				81DFA9952CB3EEE500EE0277 /* String.swift */,
+				34BC63642D097A09001CC38F /* UIImage.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -4220,7 +4235,7 @@
 				81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */,
-				347B7C242C3280FE0016A5C0 /* PromoCell.xib in Resources */,
+				347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
 				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
@@ -4231,6 +4246,7 @@
 				3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */,
 				3447553C290A5BD300B9C1AF /* AccountCell.xib in Resources */,
 				34019C2728D35F2400E64BEE /* DrawerBarItem.xib in Resources */,
+				34B0A4EE2D0198A6002E9A5C /* PromoLayout2Cell.xib in Resources */,
 				345402E92A1E43D5002CB598 /* DialogDenominationCell.xib in Resources */,
 				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
@@ -4302,6 +4318,7 @@
 				34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */,
 				34C680EE2A72784900369639 /* DialogInputDenominationCell.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
+				34BC63612D0979A2001CC38F /* PromoLayout1Cell.xib in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
 				3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */,
 				34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */,
@@ -4408,7 +4425,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
-				347B7C262C3281190016A5C0 /* PromoCell.swift in Sources */,
+				347B7C262C3281190016A5C0 /* PromoLayout0Cell.swift in Sources */,
 				81C3014E2BBFFB3900A16A84 /* UITextView.swift in Sources */,
 				81C3014D2BBFFB1100A16A84 /* BleJadeManager.swift in Sources */,
 				346EB2852BE8BB480043139F /* SendFailViewController.swift in Sources */,
@@ -4438,6 +4455,7 @@
 				34A883C32BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift in Sources */,
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */,
+				34B0A4F02D0198B8002E9A5C /* PromoLayout2Cell.swift in Sources */,
 				816685DA2BEE50EF00B03B02 /* SendTxConfirmViewModel.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
 				81E56A642C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift in Sources */,
@@ -4683,6 +4701,7 @@
 				345402F72A20A6A7002CB598 /* LTAuthViewController.swift in Sources */,
 				34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */,
 				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,
+				34BC63632D0979BA001CC38F /* PromoLayout1Cell.swift in Sources */,
 				34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */,
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
@@ -4728,6 +4747,7 @@
 				812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */,
 				348EB95229FA93860001CC47 /* LTAmountCell.swift in Sources */,
 				81961AAC29E4B01F00E9B94D /* NetworkSecurityCase.swift in Sources */,
+				34BC63652D097A09001CC38F /* UIImage.swift in Sources */,
 				346EB2812BE8BB480043139F /* SendAmountViewController.swift in Sources */,
 				3407F5D42A4ABC94005EF8E1 /* DialogFeedbackViewController.swift in Sources */,
 				3468AFF02A96648300EDFC34 /* LTInvitationViewController.swift in Sources */,
@@ -5307,7 +5327,7 @@
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -5322,7 +5342,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.0;
+				MARKETING_VERSION = 4.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -5353,7 +5373,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -5365,7 +5385,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.0;
+				MARKETING_VERSION = 4.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6406,7 +6426,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -6421,7 +6441,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.0;
+				MARKETING_VERSION = 4.1.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
