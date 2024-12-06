@@ -491,7 +491,7 @@ public struct Transaction: Comparable {
         if lhs.createdAtTs == 0 {
             return false
         } else if rhs.createdAtTs == 0 {
-            return false
+            return true
         } else if lhs.createdAtTs == rhs.createdAtTs {
             if (lhs.type == .incoming && rhs.type == .outgoing) && (lhs.blockHeight == rhs.blockHeight) {
                 return false
