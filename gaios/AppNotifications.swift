@@ -61,7 +61,7 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
 
     // Delivers a notification to an app running in the foreground.
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .badge, .sound])
+        completionHandler([])
     }
 
     func getAccount(xpub: String) -> Account? {

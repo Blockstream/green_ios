@@ -72,9 +72,9 @@ class ConfirmTransactionTask: TaskProtocol {
             try breezSDK.redeemSwap(swapAddress: address)
             logger.info("Found swap for \(address, privacy: .public)")
             self.dismiss?()
+            return
         } catch let e {
             logger.error("Failed to redeem swap: \(e, privacy: .public)")
-            throw e
         }
         
         do {
