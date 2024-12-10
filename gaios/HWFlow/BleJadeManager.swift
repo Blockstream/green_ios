@@ -105,17 +105,20 @@ class JadeManager {
         var account = account
         account.xpubHashId = walletId?.xpubHashId
         account = normalizeAccount(account)
-        walletManager = WalletsRepository.shared.getOrAdd(for: account)
-        walletManager?.popupResolver = await PopupResolver()
-        walletManager?.hwInterfaceResolver = await HwPopupResolver()
-        walletManager?.hwDevice = device
-        walletManager?.hwProtocol = jade
+        let walletManager = WalletsRepository.shared.getOrAdd(for: account)
+        walletManager.popupResolver = await PopupResolver()
+        walletManager.hwInterfaceResolver = await HwPopupResolver()
+        walletManager.hwDevice = device
+        walletManager.hwProtocol = jade
         var derivedCredentials: Credentials?
         if let derivedAccount = account.getDerivedLightningAccount() {
             derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain)
         }
-        try await walletManager?.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
-        AccountsRepository.shared.current = walletManager?.account
+        try await walletManager.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
+        walletManager.account.efusemac = version.efusemac
+        account = walletManager.account
+        self.walletManager = walletManager
+        AccountsRepository.shared.current = account
         return account
     }
 
@@ -195,6 +198,33 @@ class JadeManager {
         } catch {
             throw BLEManagerError.timeoutErr(txt: "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.")
         }
+    }
+    
+    func genuineCheck() async throws -> Bool {
+        let extPubKey = "-----BEGIN PUBLIC KEY-----\n" +
+        "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyBnvF2+06j87PL4GztOf\n" +
+        "6OVPXoHObwU/fV3PJDWAY1kpWO2MRQUaM7xtb+XwEzt+Vw9it378nCVvREJ/4IWQ\n" +
+        "uVO8qQn2V1eASIoRtfM5HjERRtL4JUc7D1U2Vr4ecJEhQ1nSQuhuU9N2noo/tTxX\n" +
+        "nYIMiFOBJNPqzjWr9gTzcLdE23UjpasKMKyWEVPw0AGWl/aOGo8oAaGYjqB870s4\n" +
+        "29FBJeqOpaTHZqI/xp9Ac+R8gCP6H77vnSHGIxyZBIfcoPc9AFL83Ch0ugPLMQDf\n" +
+        "BsUzfi8gANHp6tKAjrH00wgHV1JC1hT7BRHffeqh9Tc7ERUmxg06ajBZf0XdWbIr\n" +
+        "tpNs6/YZJbv4S8+0VP9SRDOYigOuv/2nv16RyMO+TphH6PvwLQoRGixswICT2NBh\n" +
+        "oqTDi2kIwse51EYjLZ5Wi/n5WH+YtKs0O5cVY+0/mUMvknD7fBPv6+rvOr0OZu28\n" +
+        "1Qi+vZuP8it3qIdYybNmyD2FMGsYOb2OkIG2JC5GSn7YGwc+dRa87DGrG7S4rh4I\n" +
+        "qRCB9pudTntGoQNhs0G9aNNa36sUSp+FUAPB8r55chmQPVDv2Uqt/2cpfgy/UIPE\n" +
+        "DvMN0FWJF/3y6x0UOJiNK3VJKjhorYi6dRuJCmk6n+BLXHCaYvfLD7mEp0IEapo7\n" +
+        "VTWr98cwCwEqT+NTHm2FaNMCAwEAAQ==\n" +
+        "-----END PUBLIC KEY-----"
+        let session = SessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
+        try? await session.connect()
+        let challenge = try Data.random(length: 32)
+        let signAttestationResult = try await jade.signAttestation(JadeSignAttestation(challenge: challenge))
+        let verifyAttestationJade = RSAVerifyParams(pem: signAttestationResult.pubkeyPem, challenge: challenge.hex, signature: signAttestationResult.signature.hex)
+        let verifiedAttestationJade = try? await session.rsaVerify(details: verifyAttestationJade)
+        let pemChallenge = signAttestationResult.pubkeyPem.toData() ?? Data()
+        let verifyAttestation = RSAVerifyParams(pem: extPubKey, challenge: pemChallenge.hex, signature: signAttestationResult.extSignature.hex)
+        let verifiedAttestation = try? await session.rsaVerify(details: verifyAttestation)
+        return verifiedAttestationJade?.result ?? false && verifiedAttestation?.result ?? false
     }
 }
 

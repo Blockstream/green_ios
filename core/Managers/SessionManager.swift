@@ -281,9 +281,13 @@ public class SessionManager {
         if let fun = try fun?(dict ?? [:]) {
             let res = try await resolve(fun, bcurResolver: bcurResolver)
             logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
-            let result = res?["result"] as? [String: Any]
-            if let res = K.from(result ?? [:]) as? K {
+            if let res = res?["result"] as? K {
                 return res
+            } else {
+                let result = res?["result"] as? [String: Any]
+                if let res = K.from(result ?? [:]) as? K {
+                    return res
+                }
             }
         }
         throw GaError.GenericError()
@@ -615,6 +619,10 @@ public class SessionManager {
     
     public func signPsbt(params: SignPsbtParams) async throws -> SignPsbtResult {
         try await wrapperAsync(fun: session?.signPsbt, params: params)
+    }
+    
+    public func rsaVerify(details: RSAVerifyParams) async throws -> RSAVerifyResult {
+        try await wrapperAsync(fun: session?.rsaVerify, params: details)
     }
 }
  

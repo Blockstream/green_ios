@@ -66,6 +66,27 @@ public struct JadeSignMessage: Codable {
     let aeHostCommitment: Data?
 }
 
+public struct JadeSignAttestation: Codable {
+    enum CodingKeys: String, CodingKey {
+        case challenge
+    }
+    let challenge: Data
+    public init(challenge: Data) {
+        self.challenge = challenge
+    }
+}
+
+public struct JadeSignAttestationResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case extSignature = "ext_signature"
+        case pubkeyPem = "pubkey_pem"
+        case signature = "signature"
+    }
+    public let extSignature: Data
+    public let pubkeyPem: String
+    public let signature: Data
+}
+
 public struct JadeGetSignature: Codable {
     enum CodingKeys: String, CodingKey {
         case aeHostEntropy = "ae_host_entropy"
@@ -229,6 +250,7 @@ public struct JadeVersionInfo: Codable {
         case jadeNetworks = "JADE_NETWORKS"
         case jadeFeatures = "JADE_FEATURES"
         case jadeHasPin = "JADE_HAS_PIN"
+        case efusemac = "EFUSEMAC"
     }
     public var jadeVersion: String
     public let jadeOtaMaxChunk: Int
@@ -238,6 +260,8 @@ public struct JadeVersionInfo: Codable {
     public let jadeNetworks: String
     public let jadeFeatures: String
     public let jadeHasPin: Bool
+    public let efusemac: String?
+    
     var hasSwapSupport: Bool { jadeVersion >= "0.1.48" }
 }
 

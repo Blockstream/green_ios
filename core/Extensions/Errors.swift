@@ -13,10 +13,12 @@ extension Error {
         }
         if let hwError = self as? HWError {
             switch hwError {
-            case HWError.Abort(let txt), HWError.Declined(let txt), HWError.Disconnected(let txt):
+            case HWError.Abort(let txt), HWError.Declined(let txt):
                 return txt
+            case HWError.Disconnected(let txt):
+                return "id_disconnect".localized
             case .URLError(_):
-                return "Invalid URL"
+                return "id_invalid_url".localized
             case .InvalidResponse(_):
                 return "Invalid Response"
             }

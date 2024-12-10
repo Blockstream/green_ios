@@ -22,6 +22,7 @@ public struct Account: Codable, Equatable {
         case uuid
         case lightningWalletHashId = "lightning_wallet_hash_id"
         case watchonly
+        case efusemac
     }
 
     public var name: String
@@ -45,6 +46,7 @@ public struct Account: Codable, Equatable {
     public var lightningWalletHashId: String?
     private var watchonly: Bool?
     public var isWatchonly: Bool { watchonly ?? false || username != nil }
+    public var efusemac: String?
 
     public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil, watchonly: Bool? = nil) {
         // Software / Hardware wallet account

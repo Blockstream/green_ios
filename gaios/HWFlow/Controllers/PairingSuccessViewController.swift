@@ -2,22 +2,24 @@ import UIKit
 import AsyncBluetooth
 import Combine
 import core
+import hw
 
 class PairingSuccessViewController: HWFlowBaseViewController {
-
+    
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnContinue: UIButton!
     @IBOutlet weak var imgDevice: UIImageView!
     @IBOutlet weak var btnAppSettings: UIButton!
-
+    
     var bleViewModel: BleViewModel?
     var scanViewModel: ScanViewModel?
-
+    var version: JadeVersionInfo?
+    
     var rememberIsOn = !AppSettings.shared.rememberHWIsOff
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         mash.isHidden = true
         setContent()
         setStyle()
@@ -25,7 +27,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             loadNavigationBtns()
         }
     }
-
+    
     func setContent() {
         lblTitle.text = bleViewModel?.peripheral?.name
         lblHint.text = "id_follow_the_instructions_on_your".localized
@@ -34,7 +36,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         lblHint.text = bleViewModel?.type == .Jade ? "Blockstream" : ""
         btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
-
+    
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         lblTitle.textColor = .white
@@ -46,7 +48,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         btnAppSettings.setStyle(.inline)
         btnAppSettings.setTitleColor(.white.withAlphaComponent(0.6), for: .normal)
     }
-
+    
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
@@ -55,14 +57,14 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
-
+    
     @objc func setupBtnTapped() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "SetupJadeViewController") as? SetupJadeViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-
+    
     @IBAction func btnContinue(_ sender: Any) {
         startLoader(message: "id_logging_in".localized)
         Task {
@@ -70,16 +72,22 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                 await scanViewModel.stopScan()
             }
             guard let bleViewModel = bleViewModel else {
-                fatalError()
+                return
             }
             do {
                 if !bleViewModel.isConnected() {
                     try await bleViewModel.connect()
                 }
                 try await bleViewModel.ping()
+                
                 if bleViewModel.type == .Jade {
-                    let version = try await bleViewModel.jade?.version()
-                    onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
+                    version = try await bleViewModel.jade?.version()
+                    if version?.boardType == .v2 {
+                        // Perform jade genuine check only for v2
+                        onGenuineCheck()
+                    } else {
+                        onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
+                    }
                 } else {
                     onLogin()
                 }
@@ -87,6 +95,16 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                 try? await bleViewModel.disconnect()
                 onError(error)
             }
+        }
+    }
+        
+    @MainActor
+    func onGenuineCheck() {
+        let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckDialogViewController") as? GenuineCheckDialogViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -106,6 +124,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
 
     @MainActor
     func onJadeConnected(jadeHasPin: Bool) {
+        startLoader(message: "id_logging_in".localized)
         let testnetAvailable = AppSettings.shared.testnet
         if !jadeHasPin {
             if testnetAvailable {
@@ -133,11 +152,13 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                         vc.account = account
                         vc.bleViewModel = bleViewModel
                         vc.scanViewModel = scanViewModel
+                        vc.firstConnection = true
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 }
             } catch {
                 try? await bleViewModel?.disconnect()
+                stopLoader()
                 onError(error)
             }
         }
@@ -169,7 +190,7 @@ extension PairingSuccessViewController: DialogListViewControllerDelegate {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Select Network", type: .networkPrefs, items: NetworkPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "id_select_network".localized, type: .networkPrefs, items: NetworkPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -183,6 +204,76 @@ extension PairingSuccessViewController: DialogListViewControllerDelegate {
             onJadeInitialize(testnet: true)
         case .none:
             break
+        }
+    }
+}
+
+extension PairingSuccessViewController: GenuineCheckDialogViewControllerDelegate {
+    func onAction(_ action: GenuineCheckDialogAction) {
+        switch action {
+        case .cancel:
+            stopLoader()
+        case .next:
+            presentGenuineEndViewController()
+        }
+    }
+    
+    @MainActor
+    func presentGenuineEndViewController() {
+        let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckEndViewController") as? GenuineCheckEndViewController {
+            vc.model = GenuineCheckEndViewModel(bleViewModel: BleViewModel.shared)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+}
+
+extension PairingSuccessViewController: GenuineCheckEndViewControllerDelegate {
+    func onTap(_ action: GenuineCheckEndAction) {
+        switch action {
+        case .cancel, .continue, .diy:
+            onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
+        case .retry:
+            presentGenuineEndViewController()
+        case .support:
+            stopLoader()
+            presentDialogErrorViewController(error: HWError.Abort(""))
+        case .error(let err):
+            stopLoader()
+            if let err = err as? HWError {
+                switch err {
+                case HWError.Disconnected(_):
+                    DropAlert().error(message: "id_your_device_was_disconnected".localized)
+                    self.navigationController?.popToRootViewController(animated: true)
+                    return
+                default:
+                    break
+                }
+            }
+            let message = err?.description()?.localized
+            showError(message ?? "id_operation_failure".localized)
+        }
+    }
+
+    @MainActor
+    func presentDialogErrorViewController(error: Error) {
+        let request = DialogErrorRequest(
+            account: AccountsRepository.shared.current,
+            networkType: .bitcoinSS,
+            error: error.description()?.localized ?? "",
+            screenName: "FailedGenuineCheck",
+            paymentHash: nil)
+        if AppSettings.shared.gdkSettings?.tor ?? false {
+            self.showOpenSupportUrl(request)
+            return
+        }
+        if let vc = UIStoryboard(name: "Dialogs", bundle: nil)
+            .instantiateViewController(withIdentifier: "DialogErrorViewController") as? DialogErrorViewController {
+            vc.request = request
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
         }
     }
 }

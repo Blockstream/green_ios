@@ -13,6 +13,7 @@ enum PairingState: Int {
 }
 
 class ConnectViewController: HWFlowBaseViewController {
+    
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
@@ -20,6 +21,7 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBOutlet weak var retryButton: UIButton!
 
     var account: Account!
+    var firstConnection: Bool = false
     var bleViewModel: BleViewModel?
     var scanViewModel: ScanViewModel?
 
@@ -28,6 +30,8 @@ class ConnectViewController: HWFlowBaseViewController {
     private var selectedItem: ScanListItem?
     private var scanCancellable: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
+    private var genuineCheckContinuation: CheckedContinuation<Bool, Error>?
+
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -53,7 +57,7 @@ class ConnectViewController: HWFlowBaseViewController {
         retryButton.isHidden = true
         retryButton.setTitle("Retry".localized, for: .normal)
         retryButton.setStyle(.primary)
-        lblTitle.text = "id_looking_for_device".localized
+        progress(firstConnection ? "id_logging_in".localized : "id_looking_for_device".localized)
     }
 
     @objc func progressTor(_ notification: NSNotification) {
@@ -72,7 +76,9 @@ class ConnectViewController: HWFlowBaseViewController {
                 bleViewModel?.type = item.type
                 bleViewModel?.peripheralID = item.identifier
                 // connection
-                progress("id_connecting".localized)
+                if !firstConnection {
+                    progress("id_connecting".localized)
+                }
                 if !(bleViewModel?.isConnected() ?? false) {
                     try await bleViewModel?.connect()
                 }
@@ -98,6 +104,7 @@ class ConnectViewController: HWFlowBaseViewController {
                                                          model: "Ledger Nano X")
                     progress("id_connect_your_ledger_to_use_it".localized)
                 }
+
                 for i in 0..<3 {
                     if let res = try await bleViewModel?.authenticating(), res == true {
                         break
@@ -192,7 +199,7 @@ class ConnectViewController: HWFlowBaseViewController {
                     switch state {
                     case .poweredOn:
                         DispatchQueue.main.async {
-                            self.progress("id_looking_for_device".localized)
+                            self.progress(self.firstConnection ? "id_logging_in".localized : "id_looking_for_device".localized)
                             self.startScan()
                         }
                     case .poweredOff:
@@ -236,7 +243,7 @@ class ConnectViewController: HWFlowBaseViewController {
             selectedItem = nil
             do {
                 try await scanViewModel?.scan(deviceType: self.account.isJade ? .Jade : .Ledger)
-                self.progress("id_looking_for_device".localized)
+                self.progress(firstConnection ? "id_logging_in".localized : "id_looking_for_device".localized)
             } catch {
                 switch error {
                 case BluetoothError.bluetoothUnavailable:

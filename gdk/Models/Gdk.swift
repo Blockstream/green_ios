@@ -553,6 +553,31 @@ public struct SignPsbtResult: Codable {
     public let error: String?
 }
 
+public struct RSAVerifyParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case pem
+        case challenge
+        case signature
+    }
+    public let pem: String
+    public let challenge: String
+    public let signature: String
+    public init(pem: String, challenge: String, signature: String) {
+        self.pem = pem
+        self.challenge = challenge
+        self.signature = signature
+    }
+}
+
+public struct RSAVerifyResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case result
+        case error
+    }
+    public let result: Bool
+    public let error: String?
+}
+
 public struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

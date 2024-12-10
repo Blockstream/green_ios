@@ -119,6 +119,10 @@
 		3445499329FBFC8F006725D2 /* LTNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3445499129FBFC8F006725D2 /* LTNoteCell.swift */; };
 		3445499429FBFC8F006725D2 /* LTNoteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3445499229FBFC8F006725D2 /* LTNoteCell.xib */; };
 		3445499629FBFDB5006725D2 /* LTNoteCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3445499529FBFDB5006725D2 /* LTNoteCellModel.swift */; };
+		34465B992D075629002E5033 /* GenuineCheckFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34465B982D075629002E5033 /* GenuineCheckFlow.storyboard */; };
+		34465B9B2D075785002E5033 /* GenuineCheckDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34465B9A2D075785002E5033 /* GenuineCheckDialogViewController.swift */; };
+		34465BA12D082EF7002E5033 /* GenuineCheckEndViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34465BA02D082EF7002E5033 /* GenuineCheckEndViewController.swift */; };
+		34465BA32D082FDA002E5033 /* GenuineCheckEndViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34465BA22D082FDA002E5033 /* GenuineCheckEndViewModel.swift */; };
 		344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344698EA268A215800387BA7 /* ChooseSecurity.swift */; };
 		3447553329098DA000B9C1AF /* WalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3447553229098DA000B9C1AF /* WalletViewController.swift */; };
 		3447553529098DB300B9C1AF /* WalletViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3447553429098DB300B9C1AF /* WalletViewModel.swift */; };
@@ -666,6 +670,7 @@
 		81A8F8FC29E5069F0052B214 /* lightning.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81A8F92029E5138C0052B214 /* AppGreenlightCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A8F91F29E5138C0052B214 /* AppGreenlightCredentials.swift */; };
 		81A8F92329E515410052B214 /* LightningBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A8F92229E515410052B214 /* LightningBridge.swift */; };
+		81AC527B2D093D7E00299E91 /* GenuineCheckDialogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AC527A2D093D7D00299E91 /* GenuineCheckDialogViewModel.swift */; };
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
 		81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B1EB2928E3703200F409A3 /* AssetAmountView.swift */; };
 		81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */; };
@@ -687,6 +692,7 @@
 		81CDF3452BF2D50500AA4C19 /* SendHWConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */; };
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D932122A77968500356D06 /* DialogSignViewModel.swift */; };
+		81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEB82F2CF3966B0084FFF0 /* Data.swift */; };
 		81DFA9962CB3EEE500EE0277 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DFA9952CB3EEE500EE0277 /* String.swift */; };
 		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
 		81E56A532C2476870012A5A3 /* QRUnlockFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81E56A522C2476870012A5A3 /* QRUnlockFlow.storyboard */; };
@@ -1002,6 +1008,10 @@
 		3445499129FBFC8F006725D2 /* LTNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTNoteCell.swift; sourceTree = "<group>"; };
 		3445499229FBFC8F006725D2 /* LTNoteCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTNoteCell.xib; sourceTree = "<group>"; };
 		3445499529FBFDB5006725D2 /* LTNoteCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTNoteCellModel.swift; sourceTree = "<group>"; };
+		34465B982D075629002E5033 /* GenuineCheckFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GenuineCheckFlow.storyboard; sourceTree = "<group>"; };
+		34465B9A2D075785002E5033 /* GenuineCheckDialogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenuineCheckDialogViewController.swift; sourceTree = "<group>"; };
+		34465BA02D082EF7002E5033 /* GenuineCheckEndViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenuineCheckEndViewController.swift; sourceTree = "<group>"; };
+		34465BA22D082FDA002E5033 /* GenuineCheckEndViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenuineCheckEndViewModel.swift; sourceTree = "<group>"; };
 		344698EA268A215800387BA7 /* ChooseSecurity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseSecurity.swift; sourceTree = "<group>"; };
 		3447553229098DA000B9C1AF /* WalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewController.swift; sourceTree = "<group>"; };
 		3447553429098DB300B9C1AF /* WalletViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewModel.swift; sourceTree = "<group>"; };
@@ -1541,6 +1551,7 @@
 		81A8F91B29E510210052B214 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		81A8F91F29E5138C0052B214 /* AppGreenlightCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGreenlightCredentials.swift; sourceTree = "<group>"; };
 		81A8F92229E515410052B214 /* LightningBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningBridge.swift; sourceTree = "<group>"; };
+		81AC527A2D093D7D00299E91 /* GenuineCheckDialogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenuineCheckDialogViewModel.swift; sourceTree = "<group>"; };
 		81ACC4B0227337F3004B1E92 /* Wallet.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Wallet.storyboard; sourceTree = "<group>"; };
 		81B1EB2928E3703200F409A3 /* AssetAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountView.swift; sourceTree = "<group>"; };
 		81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetAmountView.xib; sourceTree = "<group>"; };
@@ -1571,6 +1582,7 @@
 		81DA3D922541F0D1001159D6 /* TxInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInput.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
+		81DEB82F2CF3966B0084FFF0 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		81DFA9952CB3EEE500EE0277 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		81E04A3A2AA63C6800867705 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
@@ -2055,6 +2067,18 @@
 				344471C12C478DBD0051957E /* DialogGroupListCell.xib */,
 			);
 			path = DialogGroupListCell;
+			sourceTree = "<group>";
+		};
+		34465B972D0755F4002E5033 /* GenuineCheck */ = {
+			isa = PBXGroup;
+			children = (
+				34465B982D075629002E5033 /* GenuineCheckFlow.storyboard */,
+				34465B9A2D075785002E5033 /* GenuineCheckDialogViewController.swift */,
+				81AC527A2D093D7D00299E91 /* GenuineCheckDialogViewModel.swift */,
+				34465BA02D082EF7002E5033 /* GenuineCheckEndViewController.swift */,
+				34465BA22D082FDA002E5033 /* GenuineCheckEndViewModel.swift */,
+			);
+			path = GenuineCheck;
 			sourceTree = "<group>";
 		};
 		3447553129098D7000B9C1AF /* WalletViewController */ = {
@@ -3244,6 +3268,7 @@
 				676FCF2D1F9D0CF800354E93 /* Info.plist */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
+				34465B972D0755F4002E5033 /* GenuineCheck */,
 				3415CB022A67BCD700B66882 /* AddressAuth */,
 				34C8585229F900AE004A3F83 /* LTFlow */,
 				345FC45A29ED47E9009FCF43 /* WOFlow */,
@@ -3839,6 +3864,7 @@
 		FF29CA7022374D670035F95A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				81DEB82F2CF3966B0084FFF0 /* Data.swift */,
 				092C7BD420D599D700F90DF2 /* UIView.swift */,
 				0926C14721178FEE0008F94A /* UITextField.swift */,
 				092E1EAF20CF993700362253 /* UIColor.swift */,
@@ -4226,6 +4252,7 @@
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
 				3460D2FF2BC02F8700CB8033 /* PrivacyInfo.xcprivacy in Resources */,
 				34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */,
+				34465B992D075629002E5033 /* GenuineCheckFlow.storyboard in Resources */,
 				34B0D00B2CE2555300A90080 /* ActionsSheetCell.xib in Resources */,
 				34742D3C2CE4AB400064F327 /* AssetToBuyCell.xib in Resources */,
 				34A883A62BA82C11004A1826 /* TxDetailsActionCell.xib in Resources */,
@@ -4462,6 +4489,7 @@
 				3419B44E2BEE304900492198 /* ReEnable2faAccountCell.swift in Sources */,
 				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
 				34742D442CE4B3F00064F327 /* AmountToBuyCell.swift in Sources */,
+				81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,
@@ -4474,6 +4502,7 @@
 				81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */,
 				34955C0A2B67B34B0056DE90 /* HowToSecureViewController.swift in Sources */,
 				34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */,
+				34465BA12D082EF7002E5033 /* GenuineCheckEndViewController.swift in Sources */,
 				6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */,
 				8173B8F22AB1B10C00C15C85 /* DialogViewController.swift in Sources */,
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
@@ -4488,6 +4517,7 @@
 				34A883B02BA85F3E004A1826 /* TxDetailsInfoCell.swift in Sources */,
 				345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */,
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
+				34465B9B2D075785002E5033 /* GenuineCheckDialogViewController.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
 				3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
@@ -4619,6 +4649,7 @@
 				81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */,
 				346EB2862BE8BB480043139F /* SendSuccessViewController.swift in Sources */,
 				3447553A290A5BB100B9C1AF /* AccountCell.swift in Sources */,
+				34465BA32D082FDA002E5033 /* GenuineCheckEndViewModel.swift in Sources */,
 				345402E82A1E43D5002CB598 /* DialogDenominationCell.swift in Sources */,
 				347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */,
 				34F164EF29E84B3800FE5B64 /* DialogDeleteViewController.swift in Sources */,
@@ -4714,6 +4745,7 @@
 				3407F5D62A4AD034005EF8E1 /* LTErrorViewController.swift in Sources */,
 				81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
+				81AC527B2D093D7E00299E91 /* GenuineCheckDialogViewModel.swift in Sources */,
 				3445499629FBFDB5006725D2 /* LTNoteCellModel.swift in Sources */,
 				3499655C29E576300092B5BD /* DialogDetailViewController.swift in Sources */,
 				3423C6E727C380DD001D9E2C /* DialogMnemonicLengthViewController.swift in Sources */,

@@ -118,7 +118,7 @@ extension WOSelectViewController: DialogListViewControllerDelegate {
             let cells = networks.map { DialogListCellModel(type: .list,
                                                            icon: nil,
                                                            title: $0.name()) }
-            vc.viewModel = DialogListViewModel(title: "Select Network", type: .watchOnlyPrefs, items: cells)
+            vc.viewModel = DialogListViewModel(title: "id_select_network".localized, type: .watchOnlyPrefs, items: cells)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)

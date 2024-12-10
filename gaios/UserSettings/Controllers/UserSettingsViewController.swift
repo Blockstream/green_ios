@@ -2,6 +2,7 @@ import UIKit
 import core
 import gdk
 import greenaddress
+import hw
 
 protocol UserSettingsViewControllerDelegate: AnyObject {
     func userLogout()
@@ -170,8 +171,21 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             if let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlySettingsViewController") as? WatchOnlySettingsViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
+        case .GenuineCheck:
+            presentGenuineCheckEndViewController()
         case .none:
             break
+        }
+    }
+    
+    @MainActor
+    func presentGenuineCheckEndViewController() {
+        let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckEndViewController") as? GenuineCheckEndViewController {
+            vc.delegate = self
+            vc.model = GenuineCheckEndViewModel(bleViewModel: BleViewModel.shared)
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: true)
         }
     }
 }
@@ -375,5 +389,41 @@ extension UserSettingsViewController: DenominationExchangeViewControllerDelegate
     func onDenominationExchangeSave() {
         self.viewModel.load()
         self.delegate?.refresh()
+    }
+}
+
+extension UserSettingsViewController: GenuineCheckEndViewControllerDelegate {
+    func onTap(_ action: GenuineCheckEndAction) {
+        switch action {
+        case .cancel, .continue, .diy:
+            tableView.reloadData()
+        case .retry:
+            presentGenuineCheckEndViewController()
+        case .support:
+            presentDialogErrorViewController(error: HWError.Abort(""))
+        case .error(let err):
+            let message = err?.description()?.localized
+            showError(message ?? "id_operation_failure".localized)
+        }
+    }
+
+    @MainActor
+    func presentDialogErrorViewController(error: Error) {
+        let request = DialogErrorRequest(
+            account: AccountsRepository.shared.current,
+            networkType: .bitcoinSS,
+            error: error.description()?.localized ?? "",
+            screenName: "FailedGenuineCheck",
+            paymentHash: nil)
+        if AppSettings.shared.gdkSettings?.tor ?? false {
+            self.showOpenSupportUrl(request)
+            return
+        }
+        if let vc = UIStoryboard(name: "Dialogs", bundle: nil)
+            .instantiateViewController(withIdentifier: "DialogErrorViewController") as? DialogErrorViewController {
+            vc.request = request
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
     }
 }

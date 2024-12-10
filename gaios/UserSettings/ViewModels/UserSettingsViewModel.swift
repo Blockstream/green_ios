@@ -89,15 +89,32 @@ class UserSettingsViewModel {
             subtitle: (settings?.autolock ?? .fiveMinutes).string,
             section: .Security,
             type: .AutoLogout)
-        if isWatchonly {
-            return [autolock]
-        } else if isHW {
-            return [twoFactorAuth, pgpKey, autolock]
-        } else if wm?.hasMultisig ?? false {
-            return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]
-        } else {
-            return [changePin, loginWithBiometrics, autolock]
+        let genuineCheck = UserSettingsItem(
+            title: USItem.GenuineCheck.string,
+            subtitle: "Verify the authenticity of your Jade.".localized,
+            section: .Security,
+            type: .GenuineCheck)
+        var menu = [UserSettingsItem]()
+        if !isWatchonly && !isHW {
+            menu += [changePin, loginWithBiometrics]
         }
+        if !isWatchonly && wm?.hasMultisig ?? false {
+            menu += [twoFactorAuth, pgpKey]
+        }
+        menu += [autolock]
+        if !isWatchonly && showGenuineCheck() {
+            menu += [genuineCheck]
+        }
+        return menu
+    }
+    
+    func showGenuineCheck() -> Bool {
+        if BleViewModel.shared.isConnected() {
+            if let version = BleViewModel.shared.jade?.version, version.boardType == .v2 {
+                return true
+            }
+        }
+        return false
     }
 
     func getGeneral() -> [UserSettingsItem] {
@@ -150,21 +167,20 @@ class UserSettingsViewModel {
     }
 
     func load() {
-        sections = [ .Logout, .General, .Security, .Recovery, .About ]
-        items = [
-            .Logout: getLogout(),
-            .General: getGeneral(),
-            .Security: getSecurity(),
-            .Recovery: getRecovery(),
-            .About: getAbout()]
-
         if isDerivedLightning {
             sections = [ .Logout, .General, .About ]
             items = [ .Logout: getLogout(), .General: getGeneral(), .About: getAbout()]
-        }
-        if isWatchonly {
+        } else if isWatchonly || isHW {
             sections = [ .Logout, .General, .Security, .About ]
             items = [ .Logout: getLogout(), .General: getGeneral(), .Security: getSecurity(), .About: getAbout()]
+        } else {
+            sections = [ .Logout, .General, .Security, .Recovery, .About ]
+            items = [
+                .Logout: getLogout(),
+                .General: getGeneral(),
+                .Security: getSecurity(),
+                .Recovery: getRecovery(),
+                .About: getAbout()]
         }
         cellModels = items.mapValues { $0.map { UserSettingsCellModel($0) } }
     }

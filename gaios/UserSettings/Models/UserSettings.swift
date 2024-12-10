@@ -23,6 +23,7 @@ enum USItem: String, Codable, CaseIterable {
     case BackUpRecoveryPhrase = "id_back_up_recovery_phrase"
     case Version = "id_version"
     case SupportID = "id_support"
+    case GenuineCheck = "Genuine Check"
 
     var string: String { NSLocalizedString(self.rawValue, comment: "") }
 }

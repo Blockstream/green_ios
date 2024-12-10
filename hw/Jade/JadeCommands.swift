@@ -104,6 +104,12 @@ public class JadeCommands {
         return res
     }
 
+    public func signAttestation(_ params: JadeSignAttestation) async throws -> JadeSignAttestationResult {
+        let res: JadeResponse<JadeSignAttestationResult> = try await exchange(JadeRequest<JadeSignAttestation>(method: "sign_attestation", params: params))
+        guard let res = res.result else { throw HWError.Abort("Invalid response") }
+        return res
+    }
+
     public func signMessage(_ params: JadeSignMessage) async throws -> Data {
         let res: JadeResponse<Data> = try await exchange(JadeRequest<JadeSignMessage>(method: "sign_message", params: params))
         guard let res = res.result else { throw HWError.Abort("Invalid response") }

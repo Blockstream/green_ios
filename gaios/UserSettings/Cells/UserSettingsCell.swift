@@ -5,7 +5,6 @@ class UserSettingsCell: UITableViewCell {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var bg: UIView!
-    @IBOutlet weak var actionSwitch: UISwitch!
     @IBOutlet weak var disclosure: UIImageView!
     @IBOutlet weak var copyImg: UIImageView!
 
@@ -26,9 +25,6 @@ class UserSettingsCell: UITableViewCell {
         didSet {
             lblTitle.text = viewModel?.title
             lblHint.text = viewModel?.subtitle
-            actionSwitch.isEnabled = false
-            actionSwitch.isOn = viewModel?.switcher ?? false
-            actionSwitch.isHidden = viewModel?.switcher == nil
             disclosure.isHidden = !(viewModel?.disclosure ?? false)
             disclosure.image = viewModel?.disclosureImage
             copyImg.isHidden = viewModel?.type != .SupportID

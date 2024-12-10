@@ -114,7 +114,7 @@ public class BleJadeConnection: HWConnectionProtocol {
     public func exchange(_ data: Data) async throws -> Data {
         try await semaphore.waitUnlessCancelled()
         if closed {
-            throw HWError.InvalidResponse("Disconnected")
+            throw HWError.Disconnected("")
         }
 #if DEBUG
         print(">= \(data.hex)")
@@ -128,7 +128,7 @@ public class BleJadeConnection: HWConnectionProtocol {
             return result
         }
         semaphore.signal()
-        throw HWError.InvalidResponse("")
+        throw HWError.Disconnected("")
     }
 
     public func close() async throws {

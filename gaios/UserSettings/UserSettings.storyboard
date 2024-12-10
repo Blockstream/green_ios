@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -33,28 +33,22 @@
                                                     <rect key="frame" x="16" y="8" width="382" height="100"/>
                                                     <subviews>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="hdc-vI-Hov">
-                                                            <rect key="frame" x="20" y="20" width="273" height="60"/>
+                                                            <rect key="frame" x="20" y="20" width="316" height="60"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1l4-lG-s5s">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="273" height="18"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="316" height="18"/>
                                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2hz-Nh-bF9">
-                                                                    <rect key="frame" x="0.0" y="21" width="273" height="39"/>
+                                                                    <rect key="frame" x="0.0" y="21" width="316" height="39"/>
                                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                             </subviews>
                                                         </stackView>
-                                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MUx-YI-eK2">
-                                                            <rect key="frame" x="313" y="34.5" width="51" height="31"/>
-                                                            <connections>
-                                                                <action selector="actionSwitchChanged:" destination="kwp-L5-r46" eventType="valueChanged" id="nRJ-4N-4of"/>
-                                                            </connections>
-                                                        </switch>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_settings_disclose" translatesAutoresizingMaskIntoConstraints="NO" id="V3E-BS-FyU">
                                                             <rect key="frame" x="356" y="44" width="6" height="12"/>
                                                             <constraints>
@@ -73,13 +67,12 @@
                                                     </subviews>
                                                     <color key="backgroundColor" name="gGrayCard"/>
                                                     <constraints>
+                                                        <constraint firstAttribute="trailing" secondItem="hdc-vI-Hov" secondAttribute="trailing" priority="100" constant="20" id="4K3-QO-Db6"/>
                                                         <constraint firstAttribute="trailing" secondItem="9eX-Z7-H3d" secondAttribute="trailing" constant="20" id="5Jz-6l-xoK"/>
+                                                        <constraint firstItem="V3E-BS-FyU" firstAttribute="leading" secondItem="hdc-vI-Hov" secondAttribute="trailing" constant="20" id="CtC-Lr-TzP"/>
                                                         <constraint firstItem="V3E-BS-FyU" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="EHy-Lh-UOc"/>
                                                         <constraint firstItem="hdc-vI-Hov" firstAttribute="top" secondItem="mC4-DN-WsT" secondAttribute="top" constant="20" id="IaR-NM-LMH"/>
-                                                        <constraint firstItem="MUx-YI-eK2" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="NcF-NV-VOH"/>
                                                         <constraint firstAttribute="bottom" secondItem="hdc-vI-Hov" secondAttribute="bottom" constant="20" id="REl-3v-rtu"/>
-                                                        <constraint firstItem="MUx-YI-eK2" firstAttribute="leading" secondItem="hdc-vI-Hov" secondAttribute="trailing" constant="20" id="Uc7-eJ-FA6"/>
-                                                        <constraint firstAttribute="trailing" secondItem="MUx-YI-eK2" secondAttribute="trailing" constant="20" id="cmY-08-HiC"/>
                                                         <constraint firstItem="hdc-vI-Hov" firstAttribute="leading" secondItem="mC4-DN-WsT" secondAttribute="leading" constant="20" id="gss-Qu-gUe"/>
                                                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="64" id="jw4-2Y-XQa"/>
                                                         <constraint firstAttribute="trailing" secondItem="V3E-BS-FyU" secondAttribute="trailing" constant="20" id="kbZ-cF-dGm"/>
@@ -97,7 +90,6 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
-                                            <outlet property="actionSwitch" destination="MUx-YI-eK2" id="O2T-gT-B0d"/>
                                             <outlet property="bg" destination="mC4-DN-WsT" id="Tck-se-ZNx"/>
                                             <outlet property="copyImg" destination="9eX-Z7-H3d" id="0Im-iQ-sus"/>
                                             <outlet property="disclosure" destination="V3E-BS-FyU" id="dO0-iA-Rco"/>
