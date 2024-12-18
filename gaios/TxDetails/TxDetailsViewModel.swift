@@ -39,10 +39,15 @@ class TxDetailsViewModel {
 
     var txDetailsAmountCellModels: [TxDetailsAmountCellModel] {
         return assetAmountList.amounts.map {
-            TxDetailsAmountCellModel(tx: transaction,
+            var amount = $0.1
+            let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+            if ($0.0 == assetId) && transaction.type == .outgoing {
+                amount = -(abs($0.1) - Int64(transaction.fee ?? 0))
+            }
+            return TxDetailsAmountCellModel(tx: transaction,
                                      isLightning: wallet.type.lightning,
                                      id: $0.0,
-                                     value: $0.1,
+                                     value: amount,
                                      hideBalance: hideBalance)
         }
     }
