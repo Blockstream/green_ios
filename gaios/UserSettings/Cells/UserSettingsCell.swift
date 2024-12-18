@@ -7,7 +7,8 @@ class UserSettingsCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var disclosure: UIImageView!
     @IBOutlet weak var copyImg: UIImageView!
-
+    @IBOutlet weak var switcher: UISwitch!
+    
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -28,6 +29,9 @@ class UserSettingsCell: UITableViewCell {
             disclosure.isHidden = !(viewModel?.disclosure ?? false)
             disclosure.image = viewModel?.disclosureImage
             copyImg.isHidden = viewModel?.type != .SupportID
+            switcher.isOn = viewModel?.switcher ?? false
+            switcher.isHidden = viewModel?.switcher == nil
+            switcher.isUserInteractionEnabled = false
             if viewModel?.type == .UnifiedDenominationExchange {
                 lblHint.attributedText = viewModel?.attributed ?? NSAttributedString(string: viewModel?.subtitle ?? "")
                 lblHint.numberOfLines = 0

@@ -64,6 +64,9 @@
                                                                 <constraint firstAttribute="width" constant="16" id="lxb-fY-csI"/>
                                                             </constraints>
                                                         </imageView>
+                                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fak-Cr-upz">
+                                                            <rect key="frame" x="315" y="34.5" width="51" height="31"/>
+                                                        </switch>
                                                     </subviews>
                                                     <color key="backgroundColor" name="gGrayCard"/>
                                                     <constraints>
@@ -73,6 +76,8 @@
                                                         <constraint firstItem="V3E-BS-FyU" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="EHy-Lh-UOc"/>
                                                         <constraint firstItem="hdc-vI-Hov" firstAttribute="top" secondItem="mC4-DN-WsT" secondAttribute="top" constant="20" id="IaR-NM-LMH"/>
                                                         <constraint firstAttribute="bottom" secondItem="hdc-vI-Hov" secondAttribute="bottom" constant="20" id="REl-3v-rtu"/>
+                                                        <constraint firstAttribute="trailing" secondItem="Fak-Cr-upz" secondAttribute="trailing" constant="18" id="U8s-I5-3gT"/>
+                                                        <constraint firstItem="Fak-Cr-upz" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="dcF-F6-3cj"/>
                                                         <constraint firstItem="hdc-vI-Hov" firstAttribute="leading" secondItem="mC4-DN-WsT" secondAttribute="leading" constant="20" id="gss-Qu-gUe"/>
                                                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="64" id="jw4-2Y-XQa"/>
                                                         <constraint firstAttribute="trailing" secondItem="V3E-BS-FyU" secondAttribute="trailing" constant="20" id="kbZ-cF-dGm"/>
@@ -95,6 +100,7 @@
                                             <outlet property="disclosure" destination="V3E-BS-FyU" id="dO0-iA-Rco"/>
                                             <outlet property="lblHint" destination="2hz-Nh-bF9" id="LjF-Id-tcA"/>
                                             <outlet property="lblTitle" destination="1l4-lG-s5s" id="KTt-ca-g1R"/>
+                                            <outlet property="switcher" destination="Fak-Cr-upz" id="ToA-BL-IZ7"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
