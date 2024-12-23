@@ -168,9 +168,7 @@ public class Jade: JadeCommands, HWProtocol {
         let txInputs = params.signingInputs.map { input -> TxInputBtc? in
             var txhash: String? = input.txHash
             var satoshi: UInt64? = input.satoshi
-            if input.isSegwit && params.signingInputs.count == 1 {
-                txhash = nil
-            } else if let hash = txhash, let tx = params.signingTxs[hash] {
+            if let hash = txhash, let tx = params.signingTxs[hash] {
                 satoshi = nil
                 txhash = tx
             } else {
