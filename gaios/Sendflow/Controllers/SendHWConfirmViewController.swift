@@ -29,6 +29,7 @@ class SendHWConfirmViewController: UIViewController {
 
     var viewModel: SendHWConfirmViewModel!
     var isDismissible = false
+    var isQRMode = false
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -65,8 +66,12 @@ class SendHWConfirmViewController: UIViewController {
         if viewModel.isLedger {
             icWallet.image = UIImage(named: "il_check_addr_ledger")
         } else {
-            let isV2 = BleViewModel.shared.jade?.version?.boardType == .v2
-            icWallet.image = JadeAsset.img(.select, isV2 ? .v2 : .v1)
+            if isQRMode {
+                icWallet.image = JadeAsset.img(.selectDual, nil)
+            } else {
+                let isV2 = BleViewModel.shared.jade?.version?.boardType == .v2
+                icWallet.image = JadeAsset.img(.select, isV2 ? .v2 : .v1)
+            }
         }
 
         if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {

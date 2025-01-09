@@ -117,6 +117,7 @@ class QRPsbtShowViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendHWConfirmViewController") as? SendHWConfirmViewController, let model = confirmModel {
             vc.viewModel = model
             vc.isDismissible = true
+            vc.isQRMode = true
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
