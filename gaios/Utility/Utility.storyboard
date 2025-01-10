@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -619,7 +619,7 @@
                                                                                 </constraints>
                                                                             </view>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F1G-l1-9Ag">
-                                                                                <rect key="frame" x="0.0" y="52" width="393" height="523.33333333333337"/>
+                                                                                <rect key="frame" x="0.0" y="52.000000000000057" width="393" height="523.33333333333348"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="pnX-Bd-wI6" id="WXX-qy-nuM"/>
@@ -847,7 +847,7 @@
                                                                                     <constraint firstAttribute="height" constant="50" id="Xv7-9B-zoF"/>
                                                                                 </constraints>
                                                                             </imageView>
-                                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_jade_frame_v1" translatesAutoresizingMaskIntoConstraints="NO" id="7L8-0z-SMA">
+                                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_jade_load_v1" translatesAutoresizingMaskIntoConstraints="NO" id="7L8-0z-SMA">
                                                                                 <rect key="frame" x="90" y="80" width="213" height="60"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="60" id="gNh-ak-zqf"/>
@@ -984,6 +984,7 @@
                         <outlet property="btnLearnMore" destination="qg3-D3-RUk" id="ShJ-vQ-Zjv"/>
                         <outlet property="cardView" destination="Njf-1r-QVr" id="oHX-Gp-49y"/>
                         <outlet property="handle" destination="rzu-iG-g2l" id="Vk7-0D-3JZ"/>
+                        <outlet property="icon" destination="7L8-0z-SMA" id="pt6-sI-Rlu"/>
                         <outlet property="lblHint" destination="JlP-dt-L4H" id="Qzo-tz-kE8"/>
                         <outlet property="lblTitle" destination="6s0-f6-R8A" id="dr7-vq-Ouy"/>
                         <outlet property="scrollView" destination="9gn-Lc-2cl" id="qcu-Rf-ufh"/>
@@ -1002,7 +1003,7 @@
         <image name="ic_info_home" width="24" height="24"/>
         <image name="ic_qr" width="60" height="60"/>
         <image name="ic_search" width="16.666666030883789" height="16.666666030883789"/>
-        <image name="il_jade_frame_v1" width="183" height="82"/>
+        <image name="il_jade_load_v1" width="197" height="111"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -12,6 +12,7 @@ class MasterKeyViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnLearnMore: UIButton!
+    @IBOutlet weak var icon: UIImageView!
 
     var indexPath: IndexPath?
 
@@ -47,6 +48,8 @@ class MasterKeyViewController: UIViewController {
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTapToClose))
             tappableBg.addGestureRecognizer(tapToClose)
 
+        let isV2 = BleViewModel.shared.jade?.version?.boardType == .v2
+        icon.image = JadeAsset.img(.load, isV2 ? .v2 : .v1)
     }
 
     deinit {
