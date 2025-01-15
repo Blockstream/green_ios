@@ -151,7 +151,7 @@ class ConnectViewController: HWFlowBaseViewController {
         print("peripheral.identifier \(item.identifier)")
         account.uuid = item.identifier
         AccountsRepository.shared.upsert(account)
-        _ = AccountNavigator.goLogged(account: account)
+        AccountNavigator.goLogged(account: account)
     }
 
     @MainActor

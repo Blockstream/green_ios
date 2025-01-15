@@ -31,6 +31,11 @@
 		3407F5D62A4AD034005EF8E1 /* LTErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */; };
 		340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */; };
 		340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */; };
+		340ACC8A2D4B72E200CEB4F7 /* jadeplus_3.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC872D4B72E200CEB4F7 /* jadeplus_3.riv */; };
+		340ACC8B2D4B72E200CEB4F7 /* jadeplus_1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC852D4B72E200CEB4F7 /* jadeplus_1.riv */; };
+		340ACC8C2D4B72E200CEB4F7 /* jadeplus_rejected.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC892D4B72E200CEB4F7 /* jadeplus_rejected.riv */; };
+		340ACC8D2D4B72E200CEB4F7 /* jadeplus_electricity.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC882D4B72E200CEB4F7 /* jadeplus_electricity.riv */; };
+		340ACC8E2D4B72E200CEB4F7 /* jadeplus_2.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC862D4B72E200CEB4F7 /* jadeplus_2.riv */; };
 		340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340EF8D628B3718D001AE87B /* WalletListCell.swift */; };
 		340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340EF8D728B3718D001AE87B /* WalletListCell.xib */; };
 		340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */; };
@@ -922,6 +927,11 @@
 		3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTErrorViewController.swift; sourceTree = "<group>"; };
 		340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeNavigationManager.swift; sourceTree = "<group>"; };
 		340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSafeNavigationViewController.swift; sourceTree = "<group>"; };
+		340ACC852D4B72E200CEB4F7 /* jadeplus_1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_1.riv; sourceTree = "<group>"; };
+		340ACC862D4B72E200CEB4F7 /* jadeplus_2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_2.riv; sourceTree = "<group>"; };
+		340ACC872D4B72E200CEB4F7 /* jadeplus_3.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_3.riv; sourceTree = "<group>"; };
+		340ACC882D4B72E200CEB4F7 /* jadeplus_electricity.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_electricity.riv; sourceTree = "<group>"; };
+		340ACC892D4B72E200CEB4F7 /* jadeplus_rejected.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_rejected.riv; sourceTree = "<group>"; };
 		340EF8D628B3718D001AE87B /* WalletListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListCell.swift; sourceTree = "<group>"; };
 		340EF8D728B3718D001AE87B /* WalletListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletListCell.xib; sourceTree = "<group>"; };
 		340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkSelectorBarItem.xib; sourceTree = "<group>"; };
@@ -2772,6 +2782,11 @@
 				3499655729E569D60092B5BD /* animation_02_jade_v1.riv */,
 				3487657329D43B2A0059D05F /* animation_03_jade_v1.riv */,
 				3487657029D43B2A0059D05F /* animation_04_jade_v1.riv */,
+				340ACC852D4B72E200CEB4F7 /* jadeplus_1.riv */,
+				340ACC862D4B72E200CEB4F7 /* jadeplus_2.riv */,
+				340ACC872D4B72E200CEB4F7 /* jadeplus_3.riv */,
+				340ACC882D4B72E200CEB4F7 /* jadeplus_electricity.riv */,
+				340ACC892D4B72E200CEB4F7 /* jadeplus_rejected.riv */,
 			);
 			path = Rive;
 			sourceTree = "<group>";
@@ -4277,6 +4292,11 @@
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				34742D372CE4923B0064F327 /* BuyFlow.storyboard in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
+				340ACC8A2D4B72E200CEB4F7 /* jadeplus_3.riv in Resources */,
+				340ACC8B2D4B72E200CEB4F7 /* jadeplus_1.riv in Resources */,
+				340ACC8C2D4B72E200CEB4F7 /* jadeplus_rejected.riv in Resources */,
+				340ACC8D2D4B72E200CEB4F7 /* jadeplus_electricity.riv in Resources */,
+				340ACC8E2D4B72E200CEB4F7 /* jadeplus_2.riv in Resources */,
 				3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */,
 				3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */,
 				3447553C290A5BD300B9C1AF /* AccountCell.xib in Resources */,

@@ -38,7 +38,7 @@ class JadeManager {
         }
         return nil
     }
-    
+
     var name: String? {
         peripheral?.name
     }
@@ -199,7 +199,7 @@ class JadeManager {
             throw BLEManagerError.timeoutErr(txt: "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.")
         }
     }
-    
+
     func genuineCheck() async throws -> Bool {
         let extPubKey = "-----BEGIN PUBLIC KEY-----\n" +
         "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyBnvF2+06j87PL4GztOf\n" +
@@ -239,7 +239,6 @@ extension JadeManager: JadeGdkRequest {
         }
         return res
     }
-    
 
     @MainActor
     func showUrlValidationWarning(domains: [String], completion: @escaping (UIAlertOption) -> () = { _ in }) {

@@ -25,7 +25,7 @@ class UpdateFirmwareViewController: UIViewController {
     var firmware: Firmware!
     var needCableUpdate: Bool { version < "0.1.28" }
     var isRequired: Bool { version < Jade.MIN_ALLOWED_FW_VERSION }
-    let rvm = RiveModel.animationViewModel(.animationJadeFirmware, .v1)
+    let rvm = RiveModel.animationTwoArrows
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,14 +40,9 @@ class UpdateFirmwareViewController: UIViewController {
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
         }
-//        let riveView = rvm.createRiveView()
-//        animateView.addSubview(riveView)
-//        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
-
-        let v = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height))
-        v.image = UIImage(named: "il_jade_placeholder")
-        v.contentMode = .scaleAspectFit
-        animateView.addSubview(v)
+        let riveView = rvm.createRiveView()
+        animateView.addSubview(riveView)
+        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
     }
 
     func setContent() {

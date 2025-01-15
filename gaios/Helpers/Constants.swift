@@ -57,8 +57,13 @@ enum RiveModel {
     static let animationRocket = RiveViewModel(fileName: "Illustration Rocket")
     static let animationLightningTransaction = RiveViewModel(fileName: "Illustration Lightning Transaction")
     static let animationCheckMark = RiveViewModel(fileName: "Illustration Checkmark")
-    static func animationViewModel(_ name: JadeAnimAsset, _ version: JadeVersion?) -> RiveViewModel {
-        let name = name.rawValue + "_" + (version?.rawValue ?? JadeAsset.defaultVersion.rawValue)
-        return RiveViewModel(fileName: name)
-    }
+
+    static let animationSideBtns = RiveViewModel(fileName: "jadeplus_1")
+    static let animationTwoArrows = RiveViewModel(fileName: "jadeplus_2")
+    static let animationFrontBtn = RiveViewModel(fileName: "jadeplus_3")
 }
+
+// animationSideBtns, animationFrontBtn, animationSideBtns
+// old: 01, 02, 03
+// new: 1 3 2
+// fw -> twoarr
