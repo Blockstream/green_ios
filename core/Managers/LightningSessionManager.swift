@@ -196,10 +196,10 @@ public class LightningSessionManager: SessionManager {
                 return SendTransactionSuccess.create(from: data)
             case .endpointError(let data):
                 print("payLnUrl endpointError: \(data.reason)")
-                throw TransactionError.invalid(localizedDescription: data.reason)
+                throw TransactionError.invalid(localizedDescription: data.reason.errorMessage ?? data.reason)
             case .payError(let data):
                 print("payLnUrl payError: \(data.reason)")
-                throw TransactionError.failure(localizedDescription: data.reason, paymentHash: data.paymentHash)
+                throw TransactionError.failure(localizedDescription: data.reason.errorMessage ?? data.reason, paymentHash: data.paymentHash)
             case .none:
                 break
             }

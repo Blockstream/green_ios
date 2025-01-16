@@ -79,3 +79,16 @@ extension Array<Array<String>>? {
             .first
     }
 }
+
+extension String {
+    public var errorMessage: String? {
+        if #available(iOSApplicationExtension 16.0, *) {
+            let txt = String(self.replacingOccurrences(of: "\\", with: "").utf8)
+            if let startIndex = txt.ranges(of: "message: \"").last?.upperBound,
+               let endIndex = txt.suffix(from: startIndex).firstIndex(of: "\"") {
+                return String(txt[startIndex..<endIndex])
+            }
+        }
+        return nil
+    }
+}
