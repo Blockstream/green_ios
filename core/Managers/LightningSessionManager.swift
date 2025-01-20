@@ -393,11 +393,10 @@ extension LightningSessionManager: EventListener {
 
 extension LightningSessionManager: LogStream {
     public func log(l: LogEntry) {
-        switch l.level {
-        case "info": logger.info("\(l.line, privacy: .public)")
-        case "error": logger.error("\(l.line, privacy: .public)")
-        case "warning": logger.info("\(l.line, privacy: .public)")
-        default: logger.info("\(l.line, privacy: .public)")
+        switch l.level.lowercased() {
+        case "error", "warning":
+            logger.error("\(l.line, privacy: .public)")
+        default: break
         }
     }
 }

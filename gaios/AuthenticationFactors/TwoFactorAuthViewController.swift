@@ -242,12 +242,11 @@ class TwoFactorAuthViewController: KeyboardViewController {
     }
 
     @IBAction func btnInfoSupport(_ sender: Any) {
-        let request = DialogErrorRequest(
-            account: AccountsRepository.shared.current,
-            networkType: .bitcoinMS,
-            error: "",
-            screenName: "2FA",
-            paymentHash: nil)
+        let request = ZendeskErrorRequest(
+            network: .bitcoinMS,
+            shareLogs: true,
+            screenName: "2FA"
+        )
         showOpenSupportUrl(request)
         dismiss(.cancel)
     }

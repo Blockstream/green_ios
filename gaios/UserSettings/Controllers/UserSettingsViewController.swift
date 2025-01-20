@@ -409,21 +409,20 @@ extension UserSettingsViewController: GenuineCheckEndViewControllerDelegate {
 
     @MainActor
     func presentDialogErrorViewController(error: Error) {
-        let request = DialogErrorRequest(
-            account: AccountsRepository.shared.current,
-            networkType: .bitcoinSS,
+        let request = ZendeskErrorRequest(
             error: error.description()?.localized ?? "",
-            screenName: "FailedGenuineCheck",
-            paymentHash: nil)
+            network: .bitcoinSS,
+            shareLogs: true,
+            screenName: "FailedGenuineCheck")
         if AppSettings.shared.gdkSettings?.tor ?? false {
             self.showOpenSupportUrl(request)
             return
         }
-        if let vc = UIStoryboard(name: "Dialogs", bundle: nil)
-            .instantiateViewController(withIdentifier: "DialogErrorViewController") as? DialogErrorViewController {
+        if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
+            .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
             vc.request = request
             vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
+            self.present(vc, animated: true, completion: nil)
         }
     }
 }

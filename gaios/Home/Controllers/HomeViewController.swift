@@ -225,6 +225,7 @@ class HomeViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
             vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
     }
@@ -558,6 +559,16 @@ extension HomeViewController: PromoManagerDelegate {
                 await self.reloadPromoCards()
                 self.tableView.reloadData()
             }
+        }
+    }
+}
+
+extension HomeViewController: DialogAboutViewControllerDelegate {
+    func openContactUs() {
+        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = ZendeskErrorRequest(shareLogs: true)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

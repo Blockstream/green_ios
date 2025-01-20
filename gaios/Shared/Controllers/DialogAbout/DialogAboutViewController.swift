@@ -2,6 +2,14 @@ import Foundation
 import core
 import UIKit
 
+protocol DialogAboutViewControllerDelegate: AnyObject {
+    func openContactUs()
+}
+
+enum DialogAboutAction {
+    case contactUs
+    case close
+}
 class DialogAboutViewController: KeyboardViewController {
 
     @IBOutlet weak var tappableBg: UIView!
@@ -13,6 +21,8 @@ class DialogAboutViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var lblCopy: UILabel!
+
+    weak var delegate: DialogAboutViewControllerDelegate?
 
     var obs: NSKeyValueObservation?
 
@@ -93,7 +103,7 @@ class DialogAboutViewController: KeyboardViewController {
 
     @objc func didTapToClose(gesture: UIGestureRecognizer) {
 
-        dismiss()
+        dismiss(.close)
     }
 
     func setContent() {
@@ -112,13 +122,20 @@ class DialogAboutViewController: KeyboardViewController {
         }
     }
 
-    func dismiss() {
+    func dismiss(_ action: DialogAboutAction) {
         anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
             self.view.layoutIfNeeded()
         }, completion: { _ in
-            self.dismiss(animated: false, completion: nil)
+            self.dismiss(animated: false, completion: { [weak self] in
+                switch action {
+                case .contactUs:
+                    self?.delegate?.openContactUs()
+                default:
+                    break
+                }
+            })
         })
     }
 
@@ -127,7 +144,7 @@ class DialogAboutViewController: KeyboardViewController {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
             case .down:
-                dismiss()
+                dismiss(.close)
             default:
                 break
             }
@@ -136,6 +153,10 @@ class DialogAboutViewController: KeyboardViewController {
 
     func navigate(_ url: URL) {
         SafeNavigationManager.shared.navigate(url)
+    }
+
+    func openContactUs() {
+        dismiss(.contactUs)
     }
 
     func openFeedback() {
@@ -197,7 +218,7 @@ extension DialogAboutViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 5
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -207,10 +228,12 @@ extension DialogAboutViewController: UITableViewDelegate, UITableViewDataSource 
             case 0:
                 cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_give_us_your_feedback".localized))
             case 1:
-                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_visit_the_blockstream_help".localized))
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "Get Support".localized))
             case 2:
-                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_terms_of_service".localized))
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_visit_the_blockstream_help".localized))
             case 3:
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_terms_of_service".localized))
+            case 4:
                 cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_privacy_policy".localized))
             default:
                 break
@@ -225,10 +248,12 @@ extension DialogAboutViewController: UITableViewDelegate, UITableViewDataSource 
         case 0:
             openFeedback()
         case 1:
-            navigate(ExternalUrls.aboutHelpCenter)
+            openContactUs()
         case 2:
-            navigate(ExternalUrls.aboutTermsOfService)
+            navigate(ExternalUrls.aboutHelpCenter)
         case 3:
+            navigate(ExternalUrls.aboutTermsOfService)
+        case 4:
             navigate(ExternalUrls.aboutPrivacyPolicy)
         default:
             break
@@ -243,17 +268,8 @@ extension DialogAboutViewController: DialogFeedbackViewControllerDelegate {
     }
 
     func didSend(rating: Int, email: String?, comment: String) {
-        Task {
-            AnalyticsManager.shared.recordFeedback(rating: rating, email: email, comment: comment)
-            await ZendeskSdk.shared.submitNewTicket(
-                subject: "Feedback",
-                email: email,
-                message: comment,
-                error: "",
-                network: nil,
-                hw: nil)
-            DropAlert().info(message: "id_thank_you_for_your_feedback".localized)
-        }
+        AnalyticsManager.shared.recordFeedback(rating: rating, email: email, comment: comment)
+        DropAlert().success(message: "id_thank_you_for_your_feedback".localized)
     }
 }
 

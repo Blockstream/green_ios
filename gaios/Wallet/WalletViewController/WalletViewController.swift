@@ -551,6 +551,14 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func showContactSupport() {
+        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = ZendeskErrorRequest(shareLogs: true)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     func onPromo(promo: Promo, source: PromoScreen) {
         if promo.is_small == true {
             PromoManager.shared.promoAction(promo: promo, source: source)
@@ -905,13 +913,6 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
             navigationController?.pushViewController(vc, animated: true)
         }
-
-//        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-//            vc.transaction = tx
-//            vc.wallet = tx.subaccountItem
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
     }
 }
 
@@ -1109,6 +1110,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
                 vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
                 self.present(vc, animated: false, completion: nil)
             }
         })
@@ -1153,6 +1155,8 @@ extension WalletViewController: DialogGroupListViewControllerDelegate {
                     reload(discovery: true)
                 case .archive:
                     showArchived()
+                case .contact:
+                    showContactSupport()
                 }
             }
         }
@@ -1248,6 +1252,16 @@ extension WalletViewController: ActionsSheetViewControllerDelegate {
         }
         default:
             break
+        }
+    }
+}
+
+extension WalletViewController: DialogAboutViewControllerDelegate {
+    func openContactUs() {
+        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = ZendeskErrorRequest(shareLogs: true)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

@@ -355,10 +355,7 @@ public class WalletManager {
         let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
-                logger.info(">> mnemonic \(credentials.debugDescription)")
-                logger.info(">> lightningCredentials \(lightningCredentials.debugDescription)")
-                logger.info(">> login \(session.networkType.rawValue) begin")
-
+                logger.info("login \(session.networkType.rawValue) begin")
                 if session.networkType == .lightning {
                     if let session = session as? LightningSessionManager,
                        let credentials = lightningCredentials {
@@ -376,16 +373,16 @@ public class WalletManager {
                         masterXpub: masterXpub,
                         fullRestore: fullRestore)
                 }
-                logger.info(">> login \(session.networkType.rawValue) success")
+                logger.info("login \(session.networkType.rawValue) success")
             } catch {
-                logger.info(">> login \(session.networkType.rawValue) failure: \(error)")
+                logger.info("login \(session.networkType.rawValue) failure: \(error)")
                 try? await session.disconnect()
                 await failureSessionsError.add(for: session.networkType, error: error)
             }
         }
         await failureSessionsError.reset()
         let sessions = self.sessions.values.filter { !$0.logged }
-        logger.info(">> login start: \(sessions.count) sessions")
+        logger.info("login start: \(sessions.count) sessions")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in sessions {
                 group.addTask { try? await loginTask(session) }
@@ -393,7 +390,7 @@ public class WalletManager {
             for await _ in group {
             }
         }
-        logger.info(">> login complete")
+        logger.info("login end: \(self.activeSessions.count) sessions")
         if self.activeSessions.count == 0 {
             throw LoginError.failed()
         }

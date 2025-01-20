@@ -9,6 +9,7 @@ enum WalletPrefs: Int, CaseIterable {
     case rename
     case refresh
     case archive
+    case contact
 
     enum Sections: Int, CaseIterable {
         case wallet
@@ -43,6 +44,8 @@ enum WalletPrefs: Int, CaseIterable {
             return "id_refresh".localized
         case .archive:
             return "id_view_archived_accounts".localized
+        case .contact:
+            return "Get Support".localized
         }
     }
 
@@ -62,6 +65,8 @@ enum WalletPrefs: Int, CaseIterable {
             return UIImage(named: "ic_dialog_refresh")!
         case .archive:
             return UIImage(named: "ic_dialog_archive")!
+        case .contact:
+            return UIImage(named: "ic_contact_support")!
         }
     }
 
@@ -91,7 +96,7 @@ enum WalletPrefs: Int, CaseIterable {
         return ([0: Sections.wallet.name,
                  1: Sections.account.name,
                  2: Sections.session.name],
-                [0: [.rename, .denominations, .settings],
+                [0: [.contact, .rename, .denominations, .settings],
                  1: (showArchive ? [.createAccount, .archive] : [.createAccount]),
                  2: [.refresh, .logout]])
     }

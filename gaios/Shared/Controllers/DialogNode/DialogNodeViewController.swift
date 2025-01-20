@@ -184,7 +184,7 @@ class DialogNodeViewController: KeyboardViewController {
             logger?.write(category: "Lightning")
             await MainActor.run { [weak self] in
                 self?.stopLoader()
-                if let url = logger?.logFile() {
+                if let url = logger?.logFile(category: "Lightning") {
                     let shareVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
                     self?.present(shareVC, animated: true, completion: nil)
                 }

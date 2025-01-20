@@ -28,7 +28,7 @@ extension Error {
         }
 
         if let _ = self as? BleLedgerConnection.LedgerError {
-            return "id_operation_failed"
+            return "id_operation_failure"
         }
         if let loginError = self as? LoginError {
             switch loginError {
@@ -39,7 +39,7 @@ extension Error {
             case LoginError.walletNotFound:
                 return "id_wallet_not_found"
             case LoginError.hostUnblindingDisabled(let txt):
-                return txt ?? "id_operation_failed"
+                return txt ?? "id_operation_failure"
             case LoginError.walletMismatch( _):
                 return "Wallet mismatch"
             case LoginError.walletsJustRestored(_):
@@ -53,7 +53,7 @@ extension Error {
             case GaError.NotAuthorizedError:
                 return "Not Authorized Error"
             case GaError.GenericError(let txt):
-                return txt ?? "id_operation_failed"
+                return txt ?? "id_operation_failure"
             case .ReconnectError(_):
                 return "Reconnect Error"
             case .SessionLost(_):

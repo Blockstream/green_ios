@@ -1090,6 +1090,7 @@ extension AccountViewController: DrawerNetworkSelectionDelegate {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
                 vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
                 self.present(vc, animated: false, completion: nil)
             }
         })
@@ -1126,5 +1127,15 @@ extension AccountViewController: LTRemoveShortcutViewControllerDelegate {
     }
     func onRemove(_ index: String?) {
         handleShortcut(isOn: false)
+    }
+}
+
+extension AccountViewController: DialogAboutViewControllerDelegate {
+    func openContactUs() {
+        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = ZendeskErrorRequest(network: viewModel.account.networkType, shareLogs: true)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }

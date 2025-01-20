@@ -43,15 +43,9 @@ extension UIViewController {
     }
 
     @MainActor
-    func showOpenSupportUrl(_ request: DialogErrorRequest) {
+    func showOpenSupportUrl(_ request: ZendeskErrorRequest) {
         Task {
-            let url = await ZendeskSdk.shared.createNewTicketUrl(
-                subject: request.subject,
-                email: nil,
-                message: nil,
-                error: request.msg,
-                network: request.network,
-                hw: request.hw)
+            let url = await ZendeskSdk.shared.createNewTicketUrl(req: request)
             if let url = url {
                 SafeNavigationManager.shared.navigate(url)
             }
@@ -60,12 +54,11 @@ extension UIViewController {
 
     @MainActor
     func showReportError(account: Account?, wallet: WalletItem?, prettyError: String, screenName: String, paymentHash: String? = nil) {
-        let request = DialogErrorRequest(
-            account: account,
-            networkType: wallet?.networkType ?? .bitcoinSS,
+        let request = ZendeskErrorRequest(
             error: prettyError,
-            screenName: screenName,
-            paymentHash: paymentHash)
+            network: wallet?.networkType ?? .bitcoinSS,
+            paymentHash: paymentHash,
+            screenName: screenName)
         let alert = UIAlertController(
             title: "id_error".localized,
             message: prettyError.localized,
@@ -76,11 +69,11 @@ extension UIViewController {
             })
         } else {
             alert.addAction(UIAlertAction(title: "id_report".localized, style: .default) { _ in
-                if let vc = UIStoryboard(name: "Dialogs", bundle: nil)
-                    .instantiateViewController(withIdentifier: "DialogErrorViewController") as? DialogErrorViewController {
+                if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
+                    .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
                     vc.request = request
                     vc.modalPresentationStyle = .overFullScreen
-                    self.present(vc, animated: false, completion: nil)
+                    self.present(vc, animated: true, completion: nil)
                 }
             })
         }

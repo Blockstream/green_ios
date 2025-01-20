@@ -141,8 +141,8 @@ class DialogFeedbackViewController: KeyboardViewController {
         lblCounter.text = "\(messageTextView.text.count)/\(limit)"
 
         if messageTextView.text.count > 3,
-           isValidEmail(emailField.text ?? ""),
-           segment.selectedSegmentIndex != -1 {
+           isValidEmail(emailField.text ?? "") /* ,
+           segment.selectedSegmentIndex != -1 */ {
             btnSend.setStyle(.primary)
         } else {
             btnSend.setStyle( isLightningScope ? .primary : .primaryDisabled)
@@ -172,6 +172,7 @@ class DialogFeedbackViewController: KeyboardViewController {
         })
     }
 
+    @MainActor
     func dismiss(_ action: DialogFeedbackAction) {
         anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
@@ -183,15 +184,10 @@ class DialogFeedbackViewController: KeyboardViewController {
             case .cancel:
                 self.delegate?.didCancel()
             case .send:
-                if self.segment.selectedSegmentIndex > -1,
-                   var comment = self.messageTextView.text {
-                    if let nodeId = self.nodeId, let breezErrStr = self.breezErrStr {
-                        comment += "\n" + "nodeId: \(nodeId)" + "\n" + breezErrStr
-                    }
-                    self.delegate?.didSend(rating: self.segment.selectedSegmentIndex + 1,
-                                           email: self.emailField.text,
-                                           comment: comment)
-                }
+                self.delegate?.didSend(
+                    rating: self.segment.selectedSegmentIndex + 1,
+                    email: self.emailField.text,
+                    comment: self.messageTextView.text)
             }
         })
     }
@@ -225,7 +221,22 @@ class DialogFeedbackViewController: KeyboardViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
-        dismiss(.send)
+        var request = ZendeskErrorRequest(shareLogs: false, type: .feedback)
+        request.email = emailField.text
+        request.message = messageTextView.text
+        Task {
+            startAnimating()
+            let res = await Task.detached(priority: .background) {
+                try await ZendeskSdk.shared.submitNewTicket(req: request)
+            }.result
+            stopAnimating()
+            switch res {
+            case .success:
+                dismiss(.send)
+            case .failure:
+                dismiss(.cancel)
+            }
+        }
     }
 }
 

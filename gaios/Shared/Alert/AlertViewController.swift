@@ -40,7 +40,7 @@ class AlertViewController: UIViewController {
 
     func setStyle() {
         cardView.setStyle(.alert)
-        lblTitle.setStyle(.title)
+        lblTitle.setStyle(.subTitle)
         lblHint.setStyle(.txt)
         btnOK.setStyle(.primary)
     }

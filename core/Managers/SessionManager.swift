@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import gdk
 import greenaddress
 import hw
@@ -170,11 +171,9 @@ public class SessionManager {
     }
 
     public func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
-        let txs = try self.session?.getTransactions(details: ["subaccount": subaccount,
-                                                              "first": first,
-                                                              "count": 30])
-        let res = try await resolve(txs)
-        let result = res?["result"] as? [String: Any]
+        let params = ["subaccount": subaccount,"first": first, "count": 30]
+        let res = try await wrap(fun: self.session?.getTransactions, params: params)
+        let result = res["result"] as? [String: Any]
         let dict = result?["transactions"] as? [[String: Any]]
         let list = dict?.map { Transaction($0) }
         return Transactions(list: list ?? [])
@@ -191,7 +190,7 @@ public class SessionManager {
 
     public func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
         let params = GetSubaccountsParams(refresh: refresh)
-        let res: GetSubaccountsResult = try await wrapperAsync(fun: self.session?.getSubaccounts, params: params)
+        let res: GetSubaccountsResult = try await wrapper(fun: self.session?.getSubaccounts, params: params)
         let wallets = res.subaccounts
         wallets.forEach { $0.network = self.gdkNetwork.network }
         return wallets.sorted()
@@ -201,7 +200,7 @@ public class SessionManager {
         let asset = assetId == AssetInfo.btcId ? nil : assetId
         let addressee = Addressee.from(address: input, satoshi: satoshi, assetId: asset)
         let addressees = ValidateAddresseesParams(addressees: [addressee], network: network?.network ?? networkType.network)
-        return try await self.wrapperAsync(fun: self.session?.validate, params: addressees)
+        return try await self.wrapper(fun: self.session?.validate, params: addressees)
     }
     
 
@@ -226,26 +225,24 @@ public class SessionManager {
     public func createDefaultSubaccount(wallets: [WalletItem]) async throws {
         let notFound = !wallets.contains(where: {$0.type == AccountType.segWit })
         if gdkNetwork.electrum && notFound {
-            let res = try self.session?.createSubaccount(details: ["name": "", "type": AccountType.segWit.rawValue])
-            _ = try await resolve(res)
+            _ = try await wrap(fun: self.session?.createSubaccount, params: ["name": "", "type": AccountType.segWit.rawValue])
         }
     }
 
     public func reconnect() async throws {
-        let res = try self.session?.loginUserSW(details: [:])
-        _ = try await resolve(res)
+        _ = try await wrap(fun: self.session?.loginUserSW, params: [:])
     }
 
     public func loginUser(_ params: Credentials, restore: Bool) async throws -> LoginUserResult {
         try await connect()
-        let res: LoginUserResult = try await self.wrapperAsync(fun: self.session?.loginUserSW, params: params)
+        let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserSW, params: params)
         try await onLogin(res)
         return res
     }
 
     public func loginUser(_ params: HWDevice, restore: Bool) async throws -> LoginUserResult {
         try await connect()
-        let res: LoginUserResult = try await self.wrapperAsync(fun: self.session?.loginUserHW, params: params)
+        let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserHW, params: params)
         try await onLogin(res)
         return res
     }
@@ -268,51 +265,72 @@ public class SessionManager {
     }
 
     typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
+    
+    func log(
+        _ funcName: String,
+        _ params: [String: Any]
+    ) {
+        let mask = ["mnemonic", "password", "pin"]
+        var sensitive = !params.keys.filter { mask.contains($0) }.isEmpty
+        if let result = params["result"] as? [String: Any] {
+            sensitive = sensitive || !result.keys.filter { mask.contains($0) }.isEmpty
+        }
+        if sensitive {
+            logger.info("GDK \(self.networkType.rawValue) \(funcName)")
+        } else {
+            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params)")
+        }
+    }
 
-    func wrapperAsync<T: Codable, K: Codable>(
+    func wrap(
+        fun: GdkFunc?,
+        params: Dictionary<String, Any>,
+        funcName: String = #function,
+        bcurResolver: BcurResolver? = nil
+    )
+    async throws -> Dictionary<String, Any> {
+        log(funcName, params)
+        do {
+            if let fun = try fun?(params) {
+                if let res = try await resolve(fun, bcurResolver: bcurResolver) {
+                    log(funcName, res)
+                    return res
+                }
+            }
+        } catch {
+            logger.error("GDK \(self.networkType.rawValue) \(funcName) \(error)")
+            throw error
+        }
+        logger.error("GDK \(self.networkType.rawValue) \(funcName)")
+        throw GaError.GenericError()
+    }
+    
+    func wrapper<T: Codable, K: Codable>(
         fun: GdkFunc?,
         params: T,
         funcName: String = #function,
         bcurResolver: BcurResolver? = nil
     )
     async throws -> K {
-        let dict = params.toDict()
-        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params.stringify() ?? "")")
-        if let fun = try fun?(dict ?? [:]) {
-            let res = try await resolve(fun, bcurResolver: bcurResolver)
-            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
-            if let res = res?["result"] as? K {
+        let res = try await wrap(
+            fun: fun,
+            params: params.toDict() ?? [:],
+            funcName: funcName,
+            bcurResolver: bcurResolver)
+        if let res = res["result"] as? K {
+            return res
+        } else {
+            let result = res["result"] as? [String: Any]
+            if let res = K.from(result ?? [:]) as? K {
                 return res
-            } else {
-                let result = res?["result"] as? [String: Any]
-                if let res = K.from(result ?? [:]) as? K {
-                    return res
-                }
             }
         }
-        throw GaError.GenericError()
-    }
-    
-    func wrapperBcurAsync(
-        params: BcurDecodeParams,
-        funcName: String = #function,
-        bcurResolver: BcurResolver
-    )
-    async throws -> BcurDecodedData {
-        let dict = params.toDict()
-        let fun: GdkFunc? = session?.bcurDecode
-        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params.stringify() ?? "")")
-        if let fun = try fun?(dict ?? [:]) {
-            let res = try await resolve(fun, bcurResolver: bcurResolver)
-            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
-            guard let result = res?["result"] as? [String: Any] else { throw GaError.GenericError() }
-            return result
-        }
+        logger.error("GDK \(self.networkType.rawValue) \(funcName) Invalid conversion")
         throw GaError.GenericError()
     }
 
     public func decryptWithPin(_ params: DecryptWithPinParams) async throws -> Credentials {
-        return try await wrapperAsync(fun: self.session?.decryptWithPin, params: params)
+        return try await wrapper(fun: self.session?.decryptWithPin, params: params)
     }
 
     public func load(refreshSubaccounts: Bool = true) async throws {
@@ -327,7 +345,7 @@ public class SessionManager {
 
     public func getCredentials(password: String) async throws -> Credentials? {
         let cred = Credentials(password: password)
-        let res: Credentials = try await wrapperAsync(fun: self.session?.getCredentials, params: cred)
+        let res: Credentials = try await wrapper(fun: self.session?.getCredentials, params: cred)
         return res
     }
 
@@ -338,7 +356,7 @@ public class SessionManager {
     }
 
     public func encryptWithPin(_ params: EncryptWithPinParams) async throws -> EncryptWithPinResult {
-        return try await wrapperAsync(fun: self.session?.encryptWithPin, params: params)
+        return try await wrapper(fun: self.session?.encryptWithPin, params: params)
     }
 
     public func resetTwoFactor(email: String, isDispute: Bool) async throws {
@@ -361,13 +379,11 @@ public class SessionManager {
     }
 
     public func setCSVTime(value: Int) async throws {
-        let res = try self.session?.setCSVTime(details: ["value": value])
-        _ = try await resolve(res)
+        _ = try await wrap(fun: self.session?.setCSVTime, params: ["value": value])
     }
 
     public func setTwoFactorLimit(details: [String: Any]) async throws {
-        let res = try self.session?.setTwoFactorLimit(details: details)
-        _ = try await resolve(res)
+        _ = try await wrap(fun: self.session?.setTwoFactorLimit, params: details)
     }
 
     public func convertAmount(input: [String: Any]) throws -> [String: Any] {
@@ -380,14 +396,12 @@ public class SessionManager {
 
     public func getReceiveAddress(subaccount: UInt32) async throws -> Address {
         let params = Address(address: nil, pointer: nil, branch: nil, subtype: nil, userPath: nil, subaccount: subaccount, addressType: nil, script: nil)
-        let res: Address = try await wrapperAsync(fun: self.session?.getReceiveAddress, params: params)
-        return res
+        return try await wrapper(fun: self.session?.getReceiveAddress, params: params)
     }
 
     public func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
-        let balance = try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs])
-        let res = try await resolve(balance)
-        return res?["result"] as? [String: Int64] ?? [:]
+        let res = try await wrap(fun: self.session?.getBalance, params: ["subaccount": subaccount, "num_confs": numConfs])
+        return res["result"] as? [String: Int64] ?? [:]
     }
 
     public func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) async throws {
@@ -396,72 +410,57 @@ public class SessionManager {
     }
 
     public func updateSubaccount(subaccount: UInt32, hidden: Bool) async throws {
-        let res = try self.session?.updateSubaccount(details: ["subaccount": subaccount, "hidden": hidden])
-        _ = try await resolve(res)
+        _ = try await wrap(fun: self.session?.updateSubaccount, params: ["subaccount": subaccount, "hidden": hidden])
     }
 
     public func createSubaccount(_ details: CreateSubaccountParams) async throws -> WalletItem {
-        let wallet: WalletItem = try await wrapperAsync(fun: self.session?.createSubaccount, params: details)
+        let wallet: WalletItem = try await wrapper(fun: self.session?.createSubaccount, params: details)
         wallet.network = self.gdkNetwork.network
         return wallet
     }
 
     public func renameSubaccount(subaccount: UInt32, newName: String) async throws {
-        let res = try self.session?.updateSubaccount(details: ["subaccount": subaccount, "name": newName])
-        _ = try await resolve(res)
+        _ = try await wrap(fun: self.session?.updateSubaccount, params: ["subaccount": subaccount, "name": newName])
     }
 
     public func changeSettings(settings: Settings) async throws -> Settings? {
-        return try await wrapperAsync(fun: self.session?.changeSettings, params: settings)
+        return try await wrapper(fun: self.session?.changeSettings, params: settings)
     }
 
     public func getUnspentOutputsForPrivateKey(_ params: UnspentOutputsForPrivateKeyParams) async throws -> [String: Any]? {
-        let utxos = try self.session?.getUnspentOutputsForPrivateKey(details: params.toDict()!)
-        let res = try await resolve(utxos)
-        let result = res?["result"] as? [String: Any]
+        let res = try await wrap(fun: self.session?.getUnspentOutputsForPrivateKey, params: params.toDict() ?? [:])
+        let result = res["result"] as? [String: Any]
         return result?["unspent_outputs"] as? [String: Any]
     }
 
     public func getUnspentOutputs(_ params: GetUnspentOutputsParams, funcName: String = #function) async throws -> [String: [[String: Any]]] {
-        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params.toDict()!)")
-        let utxos = try self.session?.getUnspentOutputs(details: params.toDict()!)
-        let res = try await resolve(utxos)
-        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
-        let result = res?["result"] as? [String: Any]
+        let res = try await wrap(fun: self.session?.getUnspentOutputs, params: params.toDict() ?? [:])
+       let result = res["result"] as? [String: Any]
         return result?["unspent_outputs"] as? [String: [[String: Any]]] ?? [:]
     }
     
     public func getUtxos(_ params: GetUnspentOutputsParams) async throws -> GetUnspentOutputsResult {
-        return try await wrapperAsync(fun: self.session?.getUnspentOutputs, params: params)
-    }
-
-    func wrapperTransaction(fun: GdkFunc?, tx: Transaction, funcName: String = #function) async throws -> Transaction {
-        logger.info("GDK \(self.networkType.rawValue) \(funcName) \(tx.details)")
-        if let fun = try fun?(tx.details) {
-            let res = try await resolve(fun)
-            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(res ?? [:])")
-            let result = res?["result"] as? [String: Any]
-            return Transaction(result ?? [:], subaccount: tx.subaccount)
-        }
-        throw GaError.GenericError()
+        return try await wrapper(fun: self.session?.getUnspentOutputs, params: params)
     }
 
     public func createTransaction(tx: Transaction) async throws -> Transaction {
-        try await wrapperTransaction(fun: self.session?.createTransaction, tx: tx)
+        let res = try await wrap(fun: self.session?.createTransaction, params: tx.details)
+        return Transaction(res["result"] as? [String: Any] ?? [:], subaccount: tx.subaccount)
     }
 
     public func blindTransaction(tx: Transaction) async throws -> Transaction {
-        try await wrapperTransaction(fun: self.session?.blindTransaction, tx: tx)
+        let res = try await wrap(fun: self.session?.blindTransaction, params: tx.details)
+        return Transaction(res["result"] as? [String: Any] ?? [:], subaccount: tx.subaccount)
     }
 
     public func signTransaction(tx: Transaction) async throws -> Transaction {
-        try await wrapperTransaction(fun: self.session?.signTransaction, tx: tx)
+        let res = try await wrap(fun: self.session?.signTransaction, params: tx.details)
+        return Transaction(res["result"] as? [String: Any] ?? [:], subaccount: tx.subaccount)
     }
 
     public func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
-        let fun = try self.session?.sendTransaction(details: tx.details)
-        let res = try await resolve(fun)
-        let result = res?["result"] as? [String: Any]
+        let res = try await wrap(fun: self.session?.sendTransaction, params: tx.details)
+        let result = res["result"] as? [String: Any]
         if let res = SendTransactionSuccess.from(result ?? [:]) as? SendTransactionSuccess {
             return res
         }
@@ -469,7 +468,7 @@ public class SessionManager {
     }
 
     public func broadcastTransaction(_ params: BroadcastTransactionParams) async throws -> SendTransactionSuccess {
-        let res: BroadcastTransactionResult = try await wrapperAsync(fun: self.session?.broadcastTransaction, params: params)
+        let res: BroadcastTransactionResult = try await wrapper(fun: self.session?.broadcastTransaction, params: params)
         if params.psbt != nil {
             return SendTransactionSuccess(txHash: res.txHash, psbt: res.psbt, transaction: res.transaction)
         }
@@ -496,11 +495,11 @@ public class SessionManager {
     }
 
     public func getPreviousAddresses(_ params: GetPreviousAddressesParams) async throws -> GetPreviousAddressesResult? {
-        return try await wrapperAsync(fun: self.session?.getPreviousAddresses, params: params)
+        return try await wrapper(fun: self.session?.getPreviousAddresses, params: params)
     }
 
     public func signMessage(_ params: SignMessageParams) async throws -> SignMessageResult? {
-        return try await wrapperAsync(fun: self.session?.signMessage, params: params)
+        return try await wrapper(fun: self.session?.signMessage, params: params)
     }
 
     public func validBip21Uri(uri: String) -> Bool {
@@ -530,15 +529,17 @@ public class SessionManager {
 
     public func networkConnect() async {
         try? await reconnectionTasks.add {
-            logger.info("tor_hint: async connect \(self.gdkNetwork.network)")
-            try? self.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
+            let hint = ["tor_hint": "connect", "hint": "connect"]
+            self.log("reconnectHint", hint)
+            try? self.session?.reconnectHint(hint: hint)
         }
     }
 
     public func networkDisconnect() async {
         paused = true
         try? await reconnectionTasks.add {
-            logger.info("tor_hint: async disconnect \(self.gdkNetwork.network)")
+            let hint = ["tor_hint": "disconnect", "hint": "disconnect"]
+            self.log("reconnectHint", hint)
             try? self.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
         }
     }
@@ -549,12 +550,13 @@ public class SessionManager {
 
     public func bcurEncode(params: BcurEncodeParams) async throws -> BcurEncodedData? {
         try? await connect()
-        return try await wrapperAsync(fun: self.session?.bcurEncode, params: params)
+        return try await wrapper(fun: self.session?.bcurEncode, params: params)
     }
 
     public func bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver) async throws -> BcurDecodedData? {
         try await connect()
-        return try await wrapperBcurAsync(params: params, bcurResolver: bcurResolver)
+        let res = try await wrap(fun: self.session?.bcurDecode, params: params.toDict() ?? [:], bcurResolver: bcurResolver)
+        return res["result"] as? BcurDecodedData
     }
 
     public func jadeBip8539Request() async -> (Data?, BcurEncodedData?) {
@@ -586,43 +588,29 @@ public class SessionManager {
     }
     
     public func getPsbt(tx: Transaction) async throws -> String? {
-        logger.info("GDK \(self.networkType.rawValue) PsbtFromJSON \(tx.details)")
-        if let fun = try session?.PsbtFromJSON(details: tx.details) {
-            let res = try await resolve(fun)
-            logger.info("GDK \(self.networkType.rawValue) PsbtFromJSON \(res ?? [:])")
-            let result = res?["result"] as? [String: Any]
-            return result?["psbt"] as? String
-        }
-        throw GaError.GenericError()
+        let res = try await wrap(fun: session?.signPsbt, params: tx.details)
+        let result = res["result"] as? [String: Any]
+        return result?["psbt"] as? String
     }
 
     public func createRedepositTransaction(params: CreateRedepositTransactionParams) async throws -> Transaction {
-        logger.info("GDK \(self.networkType.rawValue) createRedepositTransaction \(params.toDict() ?? [:])")
-        if let fun = try session?.createRedepositTransaction(details: params.toDict() ?? [:]) {
-            let res = try await resolve(fun)
-            logger.info("GDK \(self.networkType.rawValue) createRedepositTransaction \(res ?? [:])")
-            let result = res?["result"] as? [String: Any]
-            return Transaction(result ?? [:], subaccount: nil)
-        }
-        throw GaError.GenericError()
+        let res = try await wrap(fun: session?.createRedepositTransaction, params: params.toDict() ?? [:])
+        let result = res["result"] as? [String: Any]
+        return Transaction(result ?? [:], subaccount: nil)
     }
 
     public func psbtGetDetails(params: PsbtGetDetailParams) async throws -> Transaction {
-        if let fun = try session?.PsbtGetDetails(details: params.toDict() ?? [:]) {
-            let res = try await resolve(fun)
-            logger.info("GDK \(self.networkType.rawValue) \("PsbtGetDetails") \(res ?? [:])")
-            let result = res?["result"] as? [String: Any]
-            return Transaction(result ?? [:], subaccount: nil)
-        }
-        throw GaError.GenericError()
+        let res = try await wrap(fun: session?.signPsbt, params: params.toDict() ?? [:])
+        let result = res["result"] as? [String: Any]
+        return Transaction(result ?? [:], subaccount: nil)
     }
     
     public func signPsbt(params: SignPsbtParams) async throws -> SignPsbtResult {
-        try await wrapperAsync(fun: session?.signPsbt, params: params)
+        try await wrapper(fun: session?.signPsbt, params: params)
     }
     
     public func rsaVerify(details: RSAVerifyParams) async throws -> RSAVerifyResult {
-        try await wrapperAsync(fun: session?.rsaVerify, params: details)
+        try await wrapper(fun: session?.rsaVerify, params: details)
     }
 }
  
@@ -636,7 +624,7 @@ extension SessionManager {
             return
         }
         #if DEBUG
-        logger.info("\(self.gdkNetwork.network) \(event.rawValue): \(data)")
+        log("newNotification", notification ?? [:])
         #endif
         switch event {
         case .Block:
@@ -647,7 +635,7 @@ extension SessionManager {
                 post(event: .Block, userInfo: data)
             }
         case .Subaccount:
-            let txEvent = SubaccountEvent.from(data) as? SubaccountEvent
+            _ = SubaccountEvent.from(data) as? SubaccountEvent
             post(event: .Block, userInfo: data)
             post(event: .Transaction, userInfo: data)
         case .Transaction:
