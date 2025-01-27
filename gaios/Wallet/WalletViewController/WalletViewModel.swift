@@ -160,7 +160,7 @@ class WalletViewModel {
     }
 
     func reloadPromoCards() async {
-        promoCardCellModel = PromoManager.shared.promoCellModels(.walletOverview)
+        promoCardCellModel = subaccounts.count == 0 ? [] : PromoManager.shared.promoCellModels(.walletOverview)
     }
 
     func reloadAlertCards() async {
@@ -222,7 +222,7 @@ class WalletViewModel {
             expiredSubaccounts = expired
             cards.append(.reEnable2fa)
         }
-        self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
+        self.alertCardCellModel = subaccounts.count == 0 ? [] : cards.map { AlertCardCellModel(type: $0) }
     }
 
     func reEnable2faViewModel() -> ReEnable2faViewModel {
