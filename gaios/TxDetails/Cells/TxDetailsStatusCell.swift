@@ -62,7 +62,7 @@ class TxDetailsStatusCell: UITableViewCell {
             applyColor(UIColor.gRedTx())
             stateIcon.image = UIImage(named: "ic_tx_failed")!
         } else if model.transaction.isUnconfirmed(block: model.blockHeight) {
-            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "0", "6")
+            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "0", model.transaction.isLiquid ? "2": "6")
             lblStateStatus.text = model.txUnconfirmedStatus
             applyColor(UIColor.gOrangeTx())
             setPendingIcon()

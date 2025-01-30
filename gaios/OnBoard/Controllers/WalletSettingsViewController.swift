@@ -28,6 +28,11 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblExperimentalHint: UILabel!
     @IBOutlet weak var switchExperimental: UISwitch!
 
+    @IBOutlet weak var cardDiscountFees: UIView!
+    @IBOutlet weak var lblDiscountFeesTitle: UILabel!
+    @IBOutlet weak var lblDiscountFeesHint: UILabel!
+    @IBOutlet weak var switchDiscountFees: UISwitch!
+
     @IBOutlet weak var cardProxy: UIView!
     @IBOutlet weak var lblProxyTitle: UILabel!
     @IBOutlet weak var lblProxyHint: UILabel!
@@ -39,7 +44,7 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblRememberHWTitle: UILabel!
     @IBOutlet weak var lblRememberHWHint: UILabel!
     @IBOutlet weak var switchRememberHW: UISwitch!
-    
+
     @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
@@ -95,6 +100,7 @@ class WalletSettingsViewController: KeyboardViewController {
         super.viewDidLoad()
 
         cardExperimental.isHidden = false
+        cardDiscountFees.isHidden = true
 
         fieldProxyIp.delegate = self
         fieldSPVbtcServer.delegate = self
@@ -129,6 +135,8 @@ class WalletSettingsViewController: KeyboardViewController {
         btnAnalytics.setTitle(NSLocalizedString("id_more_info", comment: ""), for: .normal)
         lblExperimentalTitle.text = "id_enable_experimental_features".localized
         lblExperimentalHint.text = "id_experimental_features_might".localized
+        lblDiscountFeesTitle.text = "Discount Fees".localized
+        lblDiscountFeesHint.text = "".localized
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
         fieldProxyIp.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
@@ -170,8 +178,8 @@ class WalletSettingsViewController: KeyboardViewController {
         cardMulti.alpha = 0.5
         lblTitle.setStyle(.title)
         lblHint.setStyle(.txtBigger)
-        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblProxyTitle, lblRememberHWTitle, lblSPVPersonalNodeTitle, lblMultiTitle, lblTxCheckTitle].forEach { $0?.setStyle(.txtBigger)}
-        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach { $0?.setStyle(.txtCard)}
+        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblDiscountFeesTitle, lblProxyTitle, lblRememberHWTitle, lblSPVPersonalNodeTitle, lblMultiTitle, lblTxCheckTitle].forEach { $0?.setStyle(.txtBigger)}
+        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblDiscountFeesHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach { $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
     }
@@ -193,7 +201,8 @@ class WalletSettingsViewController: KeyboardViewController {
         switchRememberHW.setOn(!appSettings.rememberHWIsOff, animated: true)
         cardExperimental.isHidden = false
         switchExperimental.setOn(appSettings.experimental, animated: true)
-        
+        switchDiscountFees.setOn(gdkSettings.discountFees ?? false, animated: true)
+
         switchTestnet.setOn(appSettings.testnet, animated: true)
         switchTxCheck.setOn(gdkSettings.spvEnabled ?? false, animated: true)
         switchPSPVPersonalNode.setOn(gdkSettings.personalNodeEnabled ?? false, animated: true)
@@ -285,7 +294,8 @@ class WalletSettingsViewController: KeyboardViewController {
             testnetElectrumSrv: fieldSPVtestnetServer.text,
             liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text,
             electrumTls: switchPSPVPersonalNode.isOn && switchElectrumTls.isOn,
-            gapLimit: gapLimit
+            gapLimit: gapLimit,
+            discountFees: switchDiscountFees.isOn
         )
         AppSettings.shared.testnet = switchTestnet.isOn
         AppSettings.shared.experimental = switchExperimental.isOn

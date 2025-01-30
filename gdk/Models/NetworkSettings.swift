@@ -12,6 +12,7 @@ public struct NetworkSettings: Codable {
         case electrumOnionUrl = "electrum_onion_url"
         case electrumTls = "electrum_tls"
         case gapLimit = "gap_limit"
+        case discountFees = "discount_fees"
     }
 
     public let name: String
@@ -23,6 +24,7 @@ public struct NetworkSettings: Codable {
     public let electrumOnionUrl: String?
     public let electrumTls: Bool?
     public let gapLimit: Int?
+    public let discountFees: Bool?
 
     public init(
         name: String,
@@ -33,7 +35,8 @@ public struct NetworkSettings: Codable {
         electrumUrl: String? = nil,
         electrumOnionUrl: String? = nil,
         electrumTls: Bool? = nil,
-        gapLimit: Int? = nil) {
+        gapLimit: Int? = nil,
+        discountFees: Bool? = nil) {
         self.name = name
         self.useTor = useTor
         self.proxy = proxy
@@ -43,5 +46,6 @@ public struct NetworkSettings: Codable {
         self.electrumOnionUrl = electrumOnionUrl
         self.electrumTls = electrumTls
         self.gapLimit = gapLimit
+        self.discountFees = discountFees
     }
 }

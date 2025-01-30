@@ -16,6 +16,7 @@ public struct GdkSettings: Codable {
         case liquidTestnetElectrumSrv = "liquid_testnet_electrum_srv"
         case electrumTls = "electrum_tls"
         case gapLimit = "gap_limit"
+        case discountFees = "discount_fees"
     }
     public let tor: Bool?
     public let proxy: Bool?
@@ -29,6 +30,7 @@ public struct GdkSettings: Codable {
     public let liquidTestnetElectrumSrv: String?
     public let electrumTls: Bool?
     public let gapLimit: Int?
+    public let discountFees: Bool?
 
     public static let btcElectrumSrvDefaultEndPoint = "blockstream.info:700"
     public static let liquidElectrumSrvDefaultEndPoint = "blockstream.info:995"
@@ -36,7 +38,7 @@ public struct GdkSettings: Codable {
     public static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
     public static let defaultGapLimit = 20
 
-    public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, spvEnabled: Bool?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?, electrumTls: Bool?, gapLimit: Int?) {
+    public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, spvEnabled: Bool?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?, electrumTls: Bool?, gapLimit: Int?, discountFees: Bool?) {
         self.tor = tor
         self.proxy = proxy
         self.socks5Hostname = socks5Hostname
@@ -49,6 +51,7 @@ public struct GdkSettings: Codable {
         self.liquidTestnetElectrumSrv = liquidTestnetElectrumSrv
         self.electrumTls = electrumTls
         self.gapLimit = gapLimit
+        self.discountFees = discountFees
     }
 
     public static func read() -> GdkSettings? {
@@ -96,7 +99,8 @@ public struct GdkSettings: Codable {
             electrumUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
             electrumOnionUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
             electrumTls: gdkSettings?.personalNodeEnabled ?? false ? electrumTls : nil,
-            gapLimit: gdkSettings?.gapLimit
+            gapLimit: gdkSettings?.gapLimit,
+            discountFees: true // gdkSettings?.discountFees ?? false
         )
     }
 
@@ -115,7 +119,8 @@ public struct GdkSettings: Codable {
             testnetElectrumSrv: current?.testnetElectrumSrv,
             liquidTestnetElectrumSrv: current?.liquidTestnetElectrumSrv,
             electrumTls: current?.electrumTls,
-            gapLimit: current?.gapLimit
+            gapLimit: current?.gapLimit,
+            discountFees: current?.discountFees
         )
 
         AppSettings.shared.gdkSettings = new
