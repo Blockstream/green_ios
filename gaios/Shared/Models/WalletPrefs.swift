@@ -90,7 +90,7 @@ enum WalletPrefs: Int, CaseIterable {
         if AccountsRepository.shared.current?.isWatchonly == true {
             return ([0: Sections.wallet.name,
                      1: Sections.session.name],
-                    [0: [.denominations, .settings],
+                    [0: [.contact, .denominations, .settings],
                      1: [.refresh, .logout]])
         }
         return ([0: Sections.wallet.name,
