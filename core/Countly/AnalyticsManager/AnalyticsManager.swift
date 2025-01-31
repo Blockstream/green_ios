@@ -67,11 +67,11 @@ public class AnalyticsManager {
     public var analyticsUUID: String {
         get {
             if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
-                logger.info("analyticsUUID \(uuid)")
+                logger.info("analyticsUUID \(uuid, privacy: .public)")
                 return uuid
             } else {
                 let uuid = UUID().uuidString
-                logger.info("analyticsUUID \(uuid)")
+                logger.info("analyticsUUID \(uuid, privacy: .public)")
                 UserDefaults.standard.setValue(uuid, forKey: AppStorageConstants.analyticsUUID.rawValue)
                 return uuid
             }

@@ -270,17 +270,45 @@ public class SessionManager {
         _ funcName: String,
         _ params: [String: Any]
     ) {
-        let mask = ["mnemonic", "password", "pin"]
+        let mask = ["mnemonic", "password", "pin", "pin_data", "bip39_passphrase", "encrypted_data"]
         var sensitive = !params.keys.filter { mask.contains($0) }.isEmpty
         if let result = params["result"] as? [String: Any] {
             sensitive = sensitive || !result.keys.filter { mask.contains($0) }.isEmpty
         }
         if sensitive {
-            logger.info("GDK \(self.networkType.rawValue) \(funcName)")
+            logger.info("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public)")
         } else {
-            logger.info("GDK \(self.networkType.rawValue) \(funcName) \(params)")
+            let params = params.stringify() ?? ""
+            logger.info("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
         }
     }
+    
+    func logError(_ funcName: String, error: Error) {
+        if let error = error as? TwoFactorCallError {
+            switch error {
+            case .failure(let txt):
+                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
+            case .cancel(let txt):
+                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
+            }
+        } else if let error = error as? GaError {
+            switch error {
+            case .GenericError(let txt):
+                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public)")
+            case .ReconnectError(let txt):
+                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+            case .SessionLost(let txt):
+                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+            case .TimeoutError(let txt):
+                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+            case .NotAuthorizedError(let txt):
+                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+            }
+        } else {
+            logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public)")
+        }
+    }
+    
 
     func wrap(
         fun: GdkFunc?,
@@ -298,10 +326,9 @@ public class SessionManager {
                 }
             }
         } catch {
-            logger.error("GDK \(self.networkType.rawValue) \(funcName) \(error)")
+            logError(funcName, error: error)
             throw error
         }
-        logger.error("GDK \(self.networkType.rawValue) \(funcName)")
         throw GaError.GenericError()
     }
     
@@ -325,8 +352,9 @@ public class SessionManager {
                 return res
             }
         }
-        logger.error("GDK \(self.networkType.rawValue) \(funcName) Invalid conversion")
-        throw GaError.GenericError()
+        let error = GaError.GenericError("Invalid conversion")
+        logError(funcName, error: error)
+        throw error
     }
 
     public func decryptWithPin(_ params: DecryptWithPinParams) async throws -> Credentials {
@@ -405,8 +433,16 @@ public class SessionManager {
     }
 
     public func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) async throws {
-        let res = try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:])
-        _ = try await resolve(res)
+        do {
+            log("changeSettingsTwoFactor", ["method": method, "config": config])
+            let res = try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:])
+            if let res = try await resolve(res) {
+                log("changeSettingsTwoFactor", res)
+            }
+        } catch {
+            logger.error("GDK \(self.networkType.rawValue) \("changeSettingsTwoFactor") \(error)")
+            throw error
+        }
     }
 
     public func updateSubaccount(subaccount: UInt32, hidden: Bool) async throws {
@@ -674,13 +710,13 @@ extension SessionManager {
             // Restore connection through hidden login
             Task {
                 do {
-                    logger.info("\(self.gdkNetwork.network) reconnect")
+                    logger.info("GDK \(self.gdkNetwork.network, privacy: .public) reconnect")
                     try await reconnect()
-                    logger.info("\(self.gdkNetwork.network) reconnected")
+                    logger.info("GDK \(self.gdkNetwork.network, privacy: .public) reconnected")
                     paused = false
                     post(event: EventType.Network, userInfo: data)
                 } catch {
-                    logger.info("Error on reconnected: \(error.localizedDescription)")
+                    logger.error("GDK Error on reconnected: \(error.localizedDescription, privacy: .public)")
                 }
             }
         case .Tor:

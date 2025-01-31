@@ -92,3 +92,31 @@ extension String {
         return nil
     }
 }
+
+extension BreezEvent {
+    
+    public var description: String {
+        switch self {
+        case .newBlock(let block):
+            return "newBlock \(block)"
+        case .invoicePaid(details: let details):
+            return "invoicePaid \(details.bolt11)"
+        case .synced:
+            return "synced"
+        case .paymentSucceed(details: let details):
+            return "paymentSucceed \(details)"
+        case .paymentFailed(details: let details):
+            return "paymentFailed \(details)"
+        case .backupStarted:
+            return "backupStarted"
+        case .backupSucceeded:
+            return "backupSucceeded"
+        case .backupFailed(details: let details):
+            return "backupFailed \(details)"
+        case .reverseSwapUpdated(details: let details):
+            return "reverseSwapUpdated \(details)"
+        case .swapUpdated(details: let details):
+            return "swapUpdated \(details)"
+        }
+    }
+}

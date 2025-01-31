@@ -14,3 +14,14 @@ public func secureRandomData(count: Int) -> Data? {
     }
     return nil
 }
+
+
+public extension Dictionary {
+
+    func stringify() -> String? {
+        if let data = try? JSONSerialization.data(withJSONObject: self, options: .fragmentsAllowed) {
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
+    }
+}

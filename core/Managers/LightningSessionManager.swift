@@ -354,39 +354,31 @@ public class LightningSessionManager: SessionManager {
 
 extension LightningSessionManager: EventListener {
     public func onEvent(e: BreezEvent) {
-        logger.info("Breez onEvent")
+        logger.info("Breez event \(e.description, privacy: .public)")
         switch e {
         case .synced:
-            logger.info("onLightningEvent synced")
             DispatchQueue.main.async {
                 self.post(event: .InvoicePaid)
             }
         case .newBlock(let block):
-            logger.info("onLightningEvent newBlock")
             blockHeight = block
             DispatchQueue.main.async {
                 self.post(event: .Block)
             }
         case .invoicePaid(let data):
-            logger.info("onLightningEvent invoicePaid")
             DispatchQueue.main.async {
                 self.post(event: .InvoicePaid, object: data)
-               // DropAlert().success(message: "Invoice Paid".localized)
             }
         case .paymentSucceed(let details):
-            logger.info("onLightningEvent paymentSucceed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentSucceed)
-                // DropAlert().success(message: "Payment Successful \(details.amountSatoshi) sats".localized)
             }
         case .paymentFailed(_):
-            logger.info("onLightningEvent paymentFailed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentFailed)
-                // DropAlert().error(message: "Payment Failure".localized)
             }
         default:
-            logger.info("onLightningEvent others")
+            break
         }
     }
 }

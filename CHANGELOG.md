@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Update GDK to 0.74.3
+- Improve support report
 
 ## [4.1.5] - 2025-02-03
 

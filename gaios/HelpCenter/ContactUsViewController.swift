@@ -31,7 +31,8 @@ class ContactUsViewController: KeyboardViewController {
     @IBOutlet weak var modalBar: UIView!
     @IBOutlet weak var lblModalTitle: UILabel!
     @IBOutlet weak var torCheckbox: UIView!
-
+    @IBOutlet weak var btnCopy: UIButton!
+    
     var request: ZendeskErrorRequest!
 
     var imgUnchecked: UIImage {
@@ -82,16 +83,18 @@ class ContactUsViewController: KeyboardViewController {
         btnSubmit.setTitle("id_submit".localized, for: .normal)
         emailField.attributedPlaceholder = NSAttributedString(string: "Email address".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
         lblPlaceMessage.text = "Issue description".localized
-        lblLogs.text = "Share Logs".localized
+        lblLogs.text = "id_share_logs".localized
         lblTor.text = "I understand that asking for support through Tor will reduce my anonymity".localized
         lblPubkey.text = "Share pubkey/descriptors".localized
         lblSettings.text = "Share App Settings".localized
         btnScreenRecord.setTitle("Take a screen recording".localized, for: .normal)
         btnScreenshot.setTitle("Take a screenshot".localized, for: .normal)
         btnGallery.setTitle("Upload from gallery".localized, for: .normal)
+        btnCopy.setTitle("id_copy_to_clipboard".localized, for: .normal)
         [btnScreenRecord, btnScreenshot, btnGallery].forEach {
             $0?.isHidden = true
         }
+        btnCopy.isHidden = !Bundle.main.dev
     }
 
     func setStyle() {
@@ -109,7 +112,7 @@ class ContactUsViewController: KeyboardViewController {
             $0?.setStyle(.txt)
             $0?.textColor = UIColor.gW40()
         }
-        [btnScreenRecord, btnScreenshot, btnGallery].forEach {
+        [btnScreenRecord, btnScreenshot, btnGallery, btnCopy].forEach {
             $0?.setStyle(.outlinedWhite)
         }
         emailField.addDoneButtonToKeyboard(myAction: #selector(self.emailField.resignFirstResponder))
@@ -134,6 +137,13 @@ class ContactUsViewController: KeyboardViewController {
         super.keyboardWillShow(notification: notification)
     }
 
+    @IBAction func btnCopy(_ sender: Any) {
+        startAnimating()
+        UIPasteboard.general.string = self.request.logs
+        stopAnimating()
+        DropAlert().warning(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+    }
+    
     @IBAction func btnSubmit(_ sender: Any) {
         request.email = emailField.text
         request.message = messageTextView.text

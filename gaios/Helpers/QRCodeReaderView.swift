@@ -234,7 +234,6 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             }
             previous = stringValue
             buffer.append(stringValue)
-            logger.info(">> append \(stringValue)")
 
             self.addActiveFrame(metadataObject)
 
@@ -252,7 +251,6 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                     validating = true
                     var value = ""
                     if !buffer.isEmpty { value = buffer.removeFirst() }
-                    logger.info(">> value \(value)")
                     if let result = try await validate(value) {
                         delegate?.onQRCodeReadSuccess(result: ScanResult.from(result: nil, bcur: result))
                         previous = nil
@@ -260,7 +258,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
                         validating = false
                     }
                 } catch {
-                    print(error)
+                    logger.error("metadataOutput \(error, privacy: .public)")
                     previous = nil
                     buffer = []
                     validating = false

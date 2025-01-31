@@ -113,9 +113,9 @@ class DialogNodeViewController: KeyboardViewController {
     func setContent() {
         lblTitle.text = "id_node_info".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
-        btnCloseChannel.setTitle("Empty Lightning Account".localized, for: .normal)
-        btnShareLogs.setTitle("Share logs".localized, for: .normal)
-        btnRescanSwap.setTitle("Rescan Swaps".localized, for: .normal)
+        btnCloseChannel.setTitle("id_empty_lightning_account".localized, for: .normal)
+        btnShareLogs.setTitle("id_shared_logs".localized, for: .normal)
+        btnRescanSwap.setTitle("id_rescan_swaps".localized, for: .normal)
     }
 
     func setStyle() {

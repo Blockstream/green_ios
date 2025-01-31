@@ -355,7 +355,7 @@ public class WalletManager {
         let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
-                logger.info("login \(session.networkType.rawValue) begin")
+                logger.info("WM login \(session.networkType.rawValue, privacy: .public) begin")
                 if session.networkType == .lightning {
                     if let session = session as? LightningSessionManager,
                        let credentials = lightningCredentials {
@@ -373,16 +373,16 @@ public class WalletManager {
                         masterXpub: masterXpub,
                         fullRestore: fullRestore)
                 }
-                logger.info("login \(session.networkType.rawValue) success")
+                logger.info("WM login \(session.networkType.rawValue, privacy: .public) success")
             } catch {
-                logger.info("login \(session.networkType.rawValue) failure: \(error)")
+                logger.info("WM login \(session.networkType.rawValue, privacy: .public) failure: \(error, privacy: .public)")
                 try? await session.disconnect()
                 await failureSessionsError.add(for: session.networkType, error: error)
             }
         }
         await failureSessionsError.reset()
         let sessions = self.sessions.values.filter { !$0.logged }
-        logger.info("login start: \(sessions.count) sessions")
+        logger.info("WM login start: \(sessions.count) sessions")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in sessions {
                 group.addTask { try? await loginTask(session) }
@@ -390,7 +390,7 @@ public class WalletManager {
             for await _ in group {
             }
         }
-        logger.info("login end: \(self.activeSessions.count) sessions")
+        logger.info("WM login end: \(self.activeSessions.count) sessions")
         if self.activeSessions.count == 0 {
             throw LoginError.failed()
         }
@@ -566,7 +566,7 @@ public class WalletManager {
     }
 
     public func pause() async {
-        logger.info("pause networkDisconnect")
+        logger.info("WM pause networkDisconnect")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in activeSessions.values {
                 if session.connected {
@@ -577,7 +577,7 @@ public class WalletManager {
     }
 
     public func resume() async {
-        logger.info("resume networkConnect")
+        logger.info("WM resume networkConnect")
         await withTaskGroup(of: Void.self) { group -> () in
             for session in activeSessions.values {
                 if session.connected {

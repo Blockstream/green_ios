@@ -37,7 +37,7 @@ class AppNotifications: NSObject {
 
 extension AppNotifications: UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        logger.info("Firebase failed registration token: \(String(describing: error))")
+        logger.info("Firebase failed registration token: \(String(describing: error), privacy: .public)")
     }
 
     // Called to let your app know which action was selected by the user for a given notification.
@@ -77,7 +77,7 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
 
 extension AppNotifications: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        logger.info("Firebase registration token: \(String(describing: fcmToken))")
+        logger.info("Firebase registration token: \(String(describing: fcmToken), privacy: .public)")
         let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
         defaults?.setValue(fcmToken, forKey: "token")
     }
