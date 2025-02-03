@@ -154,9 +154,8 @@ class ContactUsViewController: KeyboardViewController {
                     vc.modalPresentationStyle = .overFullScreen
                     self.present(vc, animated: false, completion: nil)
                 }
-                
-            case .failure:
-                DropAlert().error(message: "id_operation_failure".localized)
+            case .failure(let error):
+                DropAlert().error(message: error.localizedDescription)
             }
         }
     }

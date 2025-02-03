@@ -233,7 +233,8 @@ class DialogFeedbackViewController: KeyboardViewController {
             switch res {
             case .success:
                 dismiss(.send)
-            case .failure:
+            case .failure(let error):
+                DropAlert().error(message: error.localizedDescription)
                 dismiss(.cancel)
             }
         }
