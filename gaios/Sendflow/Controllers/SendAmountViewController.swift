@@ -210,11 +210,10 @@ class SendAmountViewController: KeyboardViewController {
     var btnNextEnabled: Bool = false {
         didSet {
             btnNext.isEnabled = btnNextEnabled
-            btnNext.isUserInteractionEnabled = btnNextEnabled
             if btnNextEnabled {
                 btnNext.setStyle(.primary)
             } else {
-                btnNext.setStyle(.primaryGray)
+                btnNext.setStyle(.primaryDisabled)
             }
         }
     }
@@ -481,7 +480,8 @@ class SendAmountViewController: KeyboardViewController {
         lblNtwFee.text = viewModel?.feeText ?? ""
     }
 
-    @IBAction func amountChanged(_ sender: Any) {
+    @objc func triggerTextChange() {
+        Task { [weak self] in await self?.validate() }
     }
 
     func validate() async {
@@ -593,7 +593,10 @@ extension SendAmountViewController {
         viewModel.createTx.satoshi = balance?.satoshi
         lblFiat.text = "≈ \(viewModel.subamountText ?? "")"
         lblConversion.text = "≈ \(viewModel?.conversionText ?? "")"
-        Task { [weak self] in await self?.validate() }
+
+        btnNextEnabled = false
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
+        perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.3)
     }
 }
 extension SendAmountViewController: SendDialogFeeViewControllerProtocol {

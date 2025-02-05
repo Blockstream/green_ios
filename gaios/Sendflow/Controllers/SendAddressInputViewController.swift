@@ -152,10 +152,12 @@ class SendAddressInputViewController: KeyboardViewController {
 
     func validate(text: String) async {
         do {
+            btnNext.setStyle(.primaryDisabled)
             viewModel.input = text
             try await viewModel.parse()
             try await viewModel.loadSubaccountBalance()
             enableError(false)
+            btnNext.setStyle(.primary)
             next()
         } catch {
             enableError(true, text: error.description())
@@ -179,7 +181,7 @@ class SendAddressInputViewController: KeyboardViewController {
             presentSendAmountViewController()
             return
         }
-        
+
         if createTx.txType == .psbt {
             presentSendPsbtConfirmViewController()
         } else if createTx.isLightning {
@@ -321,7 +323,7 @@ class SendAddressInputViewController: KeyboardViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     func presentSendPsbtConfirmViewController() {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
@@ -362,9 +364,7 @@ extension SendAddressInputViewController: DialogScanViewControllerDelegate {
         addressTextView.text = value.result
         reload()
         Task { [weak self] in
-            self?.btnNext.setStyle(.primaryDisabled)
             await self?.validate(text: value.result ?? "")
-            self?.btnNext.setStyle(.primary)
         }
     }
     func didStop() {
