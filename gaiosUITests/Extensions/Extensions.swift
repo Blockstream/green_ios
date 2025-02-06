@@ -7,7 +7,7 @@ extension XCUIElementQuery {
 extension String {
    public func localized(for aClass: AnyClass) -> String {
       let bundle = Bundle(for: aClass)
-      return NSLocalizedString(self, tableName: nil, bundle: bundle, comment: "")
+      return self, tableName: nil, bundle: bundle.localized
    }
 }
 

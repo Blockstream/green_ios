@@ -23,7 +23,7 @@ class TwoFaCsvTimeCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func configure(item: Settings.CsvTime, current: Int?, gdkNetwork: GdkNetwork) {
+    func configure(item: CsvTime, current: Int?, gdkNetwork: GdkNetwork) {
         self.lblTitle.text = item.label()
         self.lblHint.text = item.description()
         if current == item.value(for: gdkNetwork) {

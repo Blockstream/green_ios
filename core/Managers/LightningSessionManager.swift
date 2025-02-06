@@ -185,7 +185,7 @@ public class LightningSessionManager: SessionManager {
                     return SendTransactionSuccess.create(from: res.payment)
                 }
             } catch {
-                let msg = error.description()?.localized ?? "id_operation_failure"
+                let msg = error.description() ?? "id_operation_failure"
                 throw TransactionError.failure(localizedDescription: msg, paymentHash: invoice.paymentHash)
             }
         case .lnUrlPay(let data):

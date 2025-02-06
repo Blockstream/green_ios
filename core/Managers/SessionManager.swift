@@ -434,7 +434,7 @@ public class SessionManager {
 
     public func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) async throws {
         do {
-            log("changeSettingsTwoFactor", ["method": method, "config": config])
+            log("changeSettingsTwoFactor", ["method": method.rawValue, "config": config.toDict() ?? [:]])
             let res = try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:])
             if let res = try await resolve(res) {
                 log("changeSettingsTwoFactor", res)
@@ -682,7 +682,7 @@ extension SessionManager {
                     post(event: .AddressChanged, userInfo: ["pointer": UInt32(pointer)])
                 }
                 DispatchQueue.main.async {
-                    // DropAlert().success(message: NSLocalizedString("id_new_transaction", comment: ""))
+                    // DropAlert().success(message: "id_new_transaction".localized)
                 }
             }
         case .TwoFactorReset:
@@ -695,7 +695,7 @@ extension SessionManager {
             guard let connection = Connection.from(data) as? Connection else { return }
             let hasElectrumUrl = !(getPersonalElectrumServer()?.isEmpty ?? true)
             if !logged && gdkNetwork.singlesig && hasElectrumUrl && connection.currentState == "disconnected" {
-                let msg = "Your Personal Electrum Server for %@ can\'t be reached. Check your settings or your internet connection.".localized
+                let msg = "Your Personal Electrum Server for %@ can\'t be reached. Check your settings or your internet connection."
                 gdkFailures = [String(format: msg, gdkNetwork.chain)]
                 return
             }

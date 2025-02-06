@@ -48,14 +48,14 @@ class SecuritySelectViewController: UIViewController {
     }
 
     func unarchiveCreateDialog(completion: @escaping (Bool) -> ()) {
-        let alert = UIAlertController(title: NSLocalizedString("id_archived_account", comment: ""),
-                                          message: NSLocalizedString("id_there_is_already_an_archived", comment: ""),
+        let alert = UIAlertController(title: "id_archived_account".localized,
+                                          message: "id_there_is_already_an_archived".localized,
                                           preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_unarchive_account", comment: ""),
+            alert.addAction(UIAlertAction(title: "id_unarchive_account".localized,
                                           style: .cancel) { (_: UIAlertAction) in
                 completion(false)
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_create", comment: ""),
+            alert.addAction(UIAlertAction(title: "id_create".localized,
                                           style: .default) { (_: UIAlertAction) in
                 completion(true)
             })

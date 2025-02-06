@@ -42,7 +42,7 @@ class QRCodeReaderView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = true
         label.center = CGPoint(x: placeholderTextView.bounds.midX, y: placeholderTextView.bounds.midY)
         label.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
-        label.setTitle(NSLocalizedString("id_please_enable_camera", comment: ""), for: .normal)
+        label.setTitle("id_please_enable_camera".localized, for: .normal)
         label.setTitleColor(UIColor.customTitaniumMedium(), for: .normal)
         label.titleLabel?.adjustsFontSizeToFitWidth = false
         label.titleLabel?.numberOfLines = 0
@@ -203,9 +203,9 @@ class QRCodeReaderView: UIView {
                 self.sessionQueue.resume()
             })
         } else if authorizationStatus == .denied {
-            let alert = UIAlertController(title: NSLocalizedString("id_please_enable_camera", comment: ""), message: NSLocalizedString("id_we_use_the_camera_to_scan_qr", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
+            let alert = UIAlertController(title: "id_please_enable_camera".localized, message: "id_we_use_the_camera_to_scan_qr".localized, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: "id_next".localized, style: .default) { _ in
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     if UIApplication.shared.canOpenURL(url) {
                         UIApplication.shared.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)

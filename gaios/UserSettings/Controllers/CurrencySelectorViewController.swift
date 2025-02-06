@@ -16,13 +16,13 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_reference_exchange_rate", comment: "")
+        title = "id_reference_exchange_rate".localized
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
         tableView.separatorColor = UIColor.customTitaniumMedium()
         textField.delegate = self
-        textField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_search", comment: ""),
+        textField.attributedPlaceholder = NSAttributedString(string: "id_search".localized,
                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
 
@@ -96,7 +96,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
                 self.delegate?.refresh()
                 self.navigationController?.popViewController(animated: true)
             } catch {
-                self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+                self.showError("id_your_favourite_exchange_rate_is".localized)
             }
         }
     }

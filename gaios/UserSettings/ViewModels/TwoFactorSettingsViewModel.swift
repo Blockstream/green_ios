@@ -14,7 +14,7 @@ class TwoFactorSettingsViewModel {
     var networks: [NetworkSecurityCase] { wm.testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS] }
     var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0.network] }}
 
-    private var csvTypes = [Settings.CsvTime]()
+    private var csvTypes = [CsvTime]()
     private var csvValues = [Int]()
     private var newCsv: Int?
     private var currentCsv: Int?
@@ -29,10 +29,10 @@ class TwoFactorSettingsViewModel {
         guard let twoFactorConfig = twoFactorConfig else {
             return []
         }
-        return [ TwoFactorItem(name: NSLocalizedString("id_email", comment: ""), enabled: twoFactorConfig.email.enabled, confirmed: twoFactorConfig.email.confirmed, maskedData: twoFactorConfig.email.data, type: TwoFactorType.email),
-                 TwoFactorItem(name: NSLocalizedString("id_sms", comment: ""), enabled: twoFactorConfig.sms.enabled, confirmed: twoFactorConfig.sms.confirmed, maskedData: twoFactorConfig.sms.data, type: TwoFactorType.sms),
-                 TwoFactorItem(name: NSLocalizedString("id_call", comment: ""), enabled: twoFactorConfig.phone.enabled, confirmed: twoFactorConfig.phone.confirmed, maskedData: twoFactorConfig.phone.data, type: TwoFactorType.phone),
-                 TwoFactorItem(name: NSLocalizedString("id_authenticator_app", comment: ""), enabled: twoFactorConfig.gauth.enabled, confirmed: twoFactorConfig.gauth.confirmed, type: TwoFactorType.gauth) ]
+        return [ TwoFactorItem(name: "id_email".localized, enabled: twoFactorConfig.email.enabled, confirmed: twoFactorConfig.email.confirmed, maskedData: twoFactorConfig.email.data, type: TwoFactorType.email),
+                 TwoFactorItem(name: "id_sms".localized, enabled: twoFactorConfig.sms.enabled, confirmed: twoFactorConfig.sms.confirmed, maskedData: twoFactorConfig.sms.data, type: TwoFactorType.sms),
+                 TwoFactorItem(name: "id_call".localized, enabled: twoFactorConfig.phone.enabled, confirmed: twoFactorConfig.phone.confirmed, maskedData: twoFactorConfig.phone.data, type: TwoFactorType.phone),
+                 TwoFactorItem(name: "id_authenticator_app".localized, enabled: twoFactorConfig.gauth.enabled, confirmed: twoFactorConfig.gauth.confirmed, type: TwoFactorType.gauth) ]
     }
 
     func isSmsOnly(_ items: [TwoFactorItem]) -> Bool {
@@ -45,7 +45,7 @@ class TwoFactorSettingsViewModel {
         try await session.loadTwoFactorConfig()
     }
 
-    func setCsvTimeLock(session: SessionManager, csv: Settings.CsvTime) async throws {
+    func setCsvTimeLock(session: SessionManager, csv: CsvTime) async throws {
         try await session.setCSVTime(value: csv.value(for: session.gdkNetwork)!)
         try await session.loadSettings()
         newCsv = nil

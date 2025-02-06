@@ -17,7 +17,7 @@ extension UIViewController {
     func showAlert(title: String, message: String, completion: @escaping () -> () = { }) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message.localized, preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in completion() })
+            alert.addAction(UIAlertAction(title: "id_continue".localized, style: .cancel) { _ in completion() })
             self.present(alert, animated: true, completion: nil)
         }
     }
@@ -25,8 +25,8 @@ extension UIViewController {
     @MainActor
     func showError(_ message: String) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: message.localized, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            let alert = UIAlertController(title: "id_error".localized, message: message.localized, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "id_continue".localized, style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
         }
     }
@@ -36,8 +36,8 @@ extension UIViewController {
             return
         }
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: msg.localized, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            let alert = UIAlertController(title: "id_error".localized, message: msg.localized, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "id_continue".localized, style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
         }
     }

@@ -52,13 +52,13 @@ class WOSetupViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_login", comment: "")
-        lblHint.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
-        warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
-        loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
+        lblTitle.text = "id_login".localized
+        lblHint.text = "id_log_in_via_watchonly_to_receive".localized
+        warningLabel.text = "id_watchonly_mode_can_be_activated".localized
+        loginButton.setTitle("id_log_in".localized, for: .normal)
         lblUsername.text = "id_username".localized
         lblPassword.text = "id_password".localized
-        lblRem.text = NSLocalizedString("id_remember_me", comment: "")
+        lblRem.text = "id_remember_me".localized
     }
 
     func setStyle() {
@@ -69,7 +69,7 @@ class WOSetupViewController: KeyboardViewController {
         lblPassword.setStyle(.sectionTitle)
         warningLabel.textColor = UIColor.gW40()
         loginButton.setStyle(.primary)
-        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        btnSettings.setTitle("id_app_settings".localized, for: .normal)
         usernameTextField.setLeftPaddingPoints(10.0)
         usernameTextField.setRightPaddingPoints(10.0)
         passwordTextField.setLeftPaddingPoints(10.0)
@@ -89,11 +89,11 @@ class WOSetupViewController: KeyboardViewController {
 
     @objc func rememberSwitchChange(_ sender: UISwitch) {
         if sender.isOn {
-            let alert = UIAlertController(title: NSLocalizedString("id_warning_watchonly_credentials", comment: ""), message: NSLocalizedString("id_your_watchonly_username_and", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
+            let alert = UIAlertController(title: "id_warning_watchonly_credentials".localized, message: "id_your_watchonly_username_and".localized, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in
                 sender.isOn = false
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
+            alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default) { _ in
                 sender.isOn = true
             })
             DispatchQueue.main.async {
@@ -124,9 +124,9 @@ class WOSetupViewController: KeyboardViewController {
     @objc func progress(_ notification: Notification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
            let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
-            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            var text = "id_tor_status".localized + " \(tor.progress)%"
             if tor.progress == 100 {
-                text = NSLocalizedString("id_logging_in", comment: "")
+                text = "id_logging_in".localized
             }
             DispatchQueue.main.async {
                 self.startLoader(message: text)
@@ -165,7 +165,7 @@ class WOSetupViewController: KeyboardViewController {
             password: isRem ? self.passwordTextField.text ?? "" : "",
             remember: isRem)
         dismissKeyboard()
-        self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        self.startLoader(message: "id_logging_in".localized)
         Task {
             do {
                 try await self.viewModel.loginMultisig(for: account, password: self.passwordTextField.text)
@@ -196,7 +196,7 @@ class WOSetupViewController: KeyboardViewController {
             break
         }
         stopLoader()
-        DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        DropAlert().error(message: prettyError.localized)
         AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: account)
     }

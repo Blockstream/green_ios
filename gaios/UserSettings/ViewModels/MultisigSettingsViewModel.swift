@@ -40,7 +40,7 @@ class MultisigSettingsViewModel {
     }
 
     func getItems(username: String) -> [MultisigSettingsItem] {
-        let watchOnlyStatus = String(format: NSLocalizedString(username.isEmpty ? "id_disabled" : "id_enabled_1s", comment: ""), username)
+        let watchOnlyStatus = String(format: username.isEmpty ? "id_disabled" : "id_enabled_1s".localized, username)
         let watchOnly = MultisigSettingsItem(
             title: MSItem.WatchOnly.string,
             subtitle: watchOnlyStatus,

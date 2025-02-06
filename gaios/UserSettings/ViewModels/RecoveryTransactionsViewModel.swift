@@ -16,7 +16,7 @@ class RecoveryTransactionsViewModel {
             return nil
         }
         if let twoFactorConfig = try await session.loadTwoFactorConfig() {
-            return TwoFactorItem(name: NSLocalizedString("id_email", comment: ""),
+            return TwoFactorItem(name: "id_email".localized,
                                  enabled: twoFactorConfig.email.enabled,
                                  confirmed: twoFactorConfig.email.confirmed,
                                  maskedData: twoFactorConfig.email.data,

@@ -6,7 +6,7 @@ enum MSItem: String, Codable, CaseIterable {
     case RecoveryTransactions = "id_recovery_transactions"
     case Pgp = "id_pgp_key"
 
-    var string: String { NSLocalizedString(self.rawValue, comment: "") }
+    var string: String { self.rawValue.localized }
 }
 
 struct MultisigSettingsItem {

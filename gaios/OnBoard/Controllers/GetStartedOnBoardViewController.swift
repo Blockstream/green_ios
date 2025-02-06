@@ -54,7 +54,7 @@ class GetStartedOnBoardViewController: UIViewController {
         lblTitle.text = "id_simple__secure_selfcustody".localized
         lblHint.text = "id_everything_you_need_to_take".localized
         btnGetStarted.setTitle("id_get_started".localized, for: .normal)
-        btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        btnAppSettings.setTitle("id_app_settings".localized, for: .normal)
     }
 
     func setStyle() {

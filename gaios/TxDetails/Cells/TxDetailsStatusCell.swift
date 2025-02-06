@@ -58,7 +58,7 @@ class TxDetailsStatusCell: UITableViewCell {
         if model.transaction.isRefundableSwap ?? false {
             lblStateTitle.text = "id_transaction_failed".localized
             lblStateInfo.text = String(format: "id_your_transaction_failed_s".localized, "")
-            lblStateStatus.text = NSLocalizedString("id_failed", comment: "")
+            lblStateStatus.text = "id_failed".localized
             applyColor(UIColor.gRedTx())
             stateIcon.image = UIImage(named: "ic_tx_failed")!
         } else if model.transaction.isUnconfirmed(block: model.blockHeight) {

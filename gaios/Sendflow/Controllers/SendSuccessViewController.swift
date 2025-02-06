@@ -94,7 +94,7 @@ class SendSuccessViewController: UIViewController {
         } else {
             UIPasteboard.general.string = sendTransactionSuccess.txHash
         }
-        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
+        DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 

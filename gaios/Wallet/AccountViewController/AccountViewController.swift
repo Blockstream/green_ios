@@ -543,7 +543,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
                 let onCopy: (() -> Void)? = {
                     UIPasteboard.general.string = model.account.receivingId
-                    DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+                    DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 2.0)
                 }
                 cell.configure(model: model,
                                cIdx: indexPath.row,
@@ -780,7 +780,7 @@ extension AccountViewController {
             lblNoTransactions.font = UIFont.systemFont(ofSize: 14, weight: .regular)
             lblNoTransactions.textColor = UIColor.gGrayTxt()
             lblNoTransactions.numberOfLines = 0
-            lblNoTransactions.text = NSLocalizedString("id_your_transactions_will_be_shown", comment: "")
+            lblNoTransactions.text = "id_your_transactions_will_be_shown".localized
             lblNoTransactions.translatesAutoresizingMaskIntoConstraints = false
             section.addSubview(lblNoTransactions)
 

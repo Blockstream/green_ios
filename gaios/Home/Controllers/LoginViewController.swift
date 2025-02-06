@@ -153,7 +153,7 @@ class LoginViewController: UIViewController {
             alertTitle.isHidden = remoteAlert?.title?.isEmpty ?? true
             alertHint.isHidden = remoteAlert?.message?.isEmpty ?? true
             alertIconWarn.isHidden = !(remoteAlert?.isWarning ?? false)
-            alertBtnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
+            alertBtnRight.setTitle("id_learn_more".localized, for: .normal)
             alertBtnDismiss.isHidden = !(remoteAlert?.dismissable ?? false)
             alertBtnsContainer.isHidden = true
             if remoteAlert?.link != nil {
@@ -232,9 +232,9 @@ class LoginViewController: UIViewController {
     @objc func progressTor(_ notification: NSNotification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
            let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
-            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            var text = "id_tor_status".localized + " \(tor.progress)%"
             if tor.progress == 100 {
-                text = NSLocalizedString("id_logging_in", comment: "")
+                text = "id_logging_in".localized
             }
             DispatchQueue.main.async {
                 self.updateLoader(message: text)
@@ -253,7 +253,7 @@ class LoginViewController: UIViewController {
     }
 
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
-        self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        self.startLoader(message: "id_logging_in".localized)
         Task.detached() { [weak self] in
             do {
                 let credentials = try await self?.viewModel.decryptCredentials(usingAuth: usingAuth, withPIN: withPIN)
@@ -281,7 +281,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithLightningShortcut() {
         AnalyticsManager.shared.loginWalletStart()
-        self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        self.startLoader(message: "id_logging_in".localized)
         Task.detached() { [weak self] in
             do {
                 try await self?.viewModel.loginWithLightningShortcut()
@@ -294,7 +294,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         AnalyticsManager.shared.loginWalletStart()
-        self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        self.startLoader(message: "id_logging_in".localized)
         Task.detached() { [weak self] in
             do {
                 try await self?.viewModel.loginWithPin(usingAuth: usingAuth, withPIN: withPIN, bip39passphrase: bip39passphrase)
@@ -307,7 +307,7 @@ class LoginViewController: UIViewController {
 
     @MainActor
     func success(withPIN: Bool) {
-        self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
+        self.startLoader(message: "id_loading_wallet".localized)
         AnalyticsManager.shared.loginWalletEnd(account: account,
                                                loginType: withPIN ? .pin : .biometrics)
         AnalyticsManager.shared.activeWalletStart()
@@ -375,10 +375,10 @@ class LoginViewController: UIViewController {
     }
 
     func onBioAuthError(_ message: String) {
-        let text = String(format: NSLocalizedString("id_syou_need_ton1_reset_greens", comment: ""), message)
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: text, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .default) { _ in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
+        let text = String(format: "id_syou_need_ton1_reset_greens".localized, message)
+        let alert = UIAlertController(title: "id_warning".localized, message: text, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in })
+        alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
             self.account.removeBioKeychainData()
         })
         DispatchQueue.main.async {
@@ -407,9 +407,9 @@ class LoginViewController: UIViewController {
         if pinattempts == MAXATTEMPTS {
             reload()
         } else if MAXATTEMPTS - pinattempts == 1 {
-            attempts.text = NSLocalizedString("id_last_attempt_if_failed_you_will", comment: "")
+            attempts.text = "id_last_attempt_if_failed_you_will".localized
         } else {
-            attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinattempts)
+            attempts.text = String(format: "id_attempts_remaining_d".localized, MAXATTEMPTS - pinattempts)
         }
         attempts.isHidden = emergencyRestore || pinattempts == 0
         attemptsView.isHidden = emergencyRestore || pinattempts == 0
@@ -471,11 +471,11 @@ class LoginViewController: UIViewController {
     }
 
     func showEmergencyDialog() {
-        let alert = UIAlertController(title: NSLocalizedString("Emergency Recovery Phrase Restore", comment: ""),
-                                      message: NSLocalizedString("If for any reason you can't login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.", comment: ""),
+        let alert = UIAlertController(title: "Emergency Recovery Phrase Restore".localized,
+                                      message: "If for any reason you can't login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.".localized,
                                       preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { (_: UIAlertAction) in
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { (_: UIAlertAction) in })
+        alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default) { (_: UIAlertAction) in
             self.emergencyRestore = true
             self.reload()
             if self.account.hasBioPin {

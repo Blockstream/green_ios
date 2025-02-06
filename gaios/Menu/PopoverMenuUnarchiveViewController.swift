@@ -52,7 +52,7 @@ extension PopoverMenuUnarchiveViewController: UITableViewDataSource, UITableView
             let option = menuOptions[indexPath.row]
             switch option {
             case .unarchive:
-                cell.textLabel?.text = NSLocalizedString("id_unarchive", comment: "")
+                cell.textLabel?.text = "id_unarchive".localized
             }
             return cell
         }

@@ -129,11 +129,11 @@ class DialogRenameViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_rename_wallet", comment: "")
+        lblTitle.text = "id_rename_wallet".localized
         if isAccountRename {
-            lblTitle.text = NSLocalizedString("id_rename_account", comment: "")
+            lblTitle.text = "id_rename_account".localized
         }
-        btnSave.setTitle(NSLocalizedString("id_submit", comment: ""), for: .normal)
+        btnSave.setTitle("id_submit".localized, for: .normal)
     }
 
     func setStyle() {

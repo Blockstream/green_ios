@@ -53,7 +53,7 @@ class Screen {
     func localized(key: String, referenceClass:AnyClass) -> String
     {
         let bundle = Bundle(for: referenceClass)
-        return Foundation.NSLocalizedString(key, tableName:nil, bundle: bundle, comment: "")
+        return Foundation.key, tableName:nil, bundle: bundle.localized
     }
     
     @discardableResult

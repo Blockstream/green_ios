@@ -117,7 +117,7 @@ class AccountCell: UITableViewCell {
         self.onExperiental = onExperiental
 
         lblType.text = model.lblType
-        lblName.text = NSLocalizedString(model.name, comment: "")
+        lblName.text = model.name.localized
 
         if hideBalance {
             lblFiat.attributedText = Common.obfuscate(color: .white, size: 12, length: 5)

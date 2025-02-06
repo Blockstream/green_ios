@@ -252,13 +252,13 @@ class BleViewModel {
         if let err = err as? DeviceError {
             switch err {
             case DeviceError.dashboard:
-                return BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
+                return BLEManagerError.dashboardErr(txt: String(format: "id_select_the_s_app_on_your_ledger".localized, self.networkLabel(network ?? "mainnet")))
             case DeviceError.notlegacy_app:
                 return BLEManagerError.dashboardErr(txt: "Install legacy companion app")
             case DeviceError.outdated_app:
                 return BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
             case DeviceError.wrong_app:
-                return BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
+                return BLEManagerError.wrongAppErr(txt: String(format: "id_select_the_s_app_on_your_ledger".localized, self.networkLabel(network ?? "mainnet")))
             }
         }
         if let err = err as? HWError {

@@ -19,7 +19,7 @@ class AssetsListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_select_asset", comment: "")
+        title = "id_select_asset".localized
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.AssetsListScreen.view
         tableView.accessibilityIdentifier = AccessibilityIdentifiers.AssetsListScreen.table

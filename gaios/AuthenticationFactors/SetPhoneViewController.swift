@@ -88,7 +88,7 @@ class SetPhoneViewController: KeyboardViewController {
         countryCodeField.attributedPlaceholder = NSAttributedString(string: "id_country".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
 
-        nextButton.setTitle("Setup 2FA".localized, for: .normal)
+        nextButton.setTitle("id_setup_2fa_now".localized, for: .normal)
 
         [lblAgree, lblFrequency, lblHelp].forEach {
             $0?.isHidden = !sms
@@ -207,7 +207,7 @@ class SetPhoneViewController: KeyboardViewController {
         let method = self.sms == true ? TwoFactorType.sms : TwoFactorType.phone
         guard let countryCode = countryCodeField.text, let phone = textField.text else { return }
         if countryCode.isEmpty || phone.isEmpty {
-            DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
+            DropAlert().warning(message: "id_invalid_phone_number_format".localized)
             return
         }
         view.endEditing(true)
@@ -222,12 +222,14 @@ class SetPhoneViewController: KeyboardViewController {
                 try await session.changeSettingsTwoFactor(method: method, config: config)
                 _ = try await session.loadTwoFactorConfig()
                 await MainActor.run {
+                    self.stopAnimating()
                     if self.isSmsBackup {
                         DropAlert().success(message: "2FA Call is now enabled")
                     }
                     self.navigationController?.popViewController(animated: true)
                 }
             } catch {
+                self.stopAnimating()
                 if let twofaError = error as? TwoFactorCallError {
                     switch twofaError {
                     case .failure(let localizedDescription), .cancel(let localizedDescription):
@@ -237,7 +239,6 @@ class SetPhoneViewController: KeyboardViewController {
                     DropAlert().error(message: error.localizedDescription)
                 }
             }
-            self.stopAnimating()
         }
     }
 

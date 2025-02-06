@@ -34,9 +34,9 @@ class DialogReceiveShareTypeViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_share", comment: "")
-        btnShareAddress.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
-        btnShareQR.setTitle(NSLocalizedString("id_qr_code", comment: ""), for: .normal)
+        lblTitle.text = "id_share".localized
+        btnShareAddress.setTitle("id_share_address".localized, for: .normal)
+        btnShareQR.setTitle("id_qr_code".localized, for: .normal)
         btnShareQR.isHidden = true
         if #available(iOS 13.0, *) {
             btnShareQR.isHidden = false

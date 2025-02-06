@@ -119,10 +119,10 @@ class DialogFeedbackViewController: KeyboardViewController {
         btnSend.setTitle("id_send".localized, for: .normal)
         btnCopy.setTitle("id_copy".localized, for: .normal)
         emailField.attributedPlaceholder = NSAttributedString(
-            string: "\(NSLocalizedString("id_email", comment: "")) (\(NSLocalizedString("id_optional", comment: "").lowercased()))",
+            string: "\("id_email".localized) (\("id_optional".localized.lowercased()))",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        lblRateHint.text = NSLocalizedString("id_rate_your_experience", comment: "")
-        lblFeedback.text = NSLocalizedString("id_feedback", comment: "")
+        lblRateHint.text = "id_rate_your_experience".localized
+        lblFeedback.text = "id_feedback".localized
     }
 
     func setStyle() {
@@ -216,7 +216,7 @@ class DialogFeedbackViewController: KeyboardViewController {
         if let nodeId =  nodeId, let breezErrStr = breezErrStr {
             let msg = breezErrStr + ", {\"nodeId\": \(nodeId)}"
             UIPasteboard.general.string = msg
-            DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+            DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 2.0)
         }
     }
 

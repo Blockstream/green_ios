@@ -143,7 +143,7 @@ extension TxDetailsMoreInfoViewController: UITableViewDelegate, UITableViewDataS
 
         let m = vm.txDetailsMoreInfoCellModels[indexPath.row]
         UIPasteboard.general.string = m.hint
-        let msg = NSLocalizedString("\(m.title) copied to clipboard", comment: "")
+        let msg = "\(m.title) copied to clipboard".localized
         DropAlert().info(message: msg, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }

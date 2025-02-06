@@ -33,10 +33,10 @@ class DialogShareTxOptionViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_share", comment: "")
-        btnConfidential.setTitle(NSLocalizedString("id_confidential_transaction", comment: ""), for: .normal)
-        btnNonConfidential.setTitle(NSLocalizedString("id_non_confidential_transaction", comment: ""), for: .normal)
-        btnUnblindingData.setTitle(NSLocalizedString("id_unblinding_data", comment: ""), for: .normal)
+        lblTitle.text = "id_share".localized
+        btnConfidential.setTitle("id_confidential_transaction".localized, for: .normal)
+        btnNonConfidential.setTitle("id_non_confidential_transaction".localized, for: .normal)
+        btnUnblindingData.setTitle("id_unblinding_data".localized, for: .normal)
     }
 
     func setStyle() {

@@ -677,7 +677,7 @@ extension SendTxConfirmViewController: QRUnlockSignDialogViewControllerDelegate 
 //        case .copy:
 //            if let psbt = viewModel.unsignedPsbt {
 //                UIPasteboard.general.string = psbt
-//                DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+//                DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 2.0)
 //            }
         }
         squareSliderView.reset()

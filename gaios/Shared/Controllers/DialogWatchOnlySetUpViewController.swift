@@ -62,12 +62,12 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     func setContent() {
         lblTitle.text = "id_watchonly_credentials".localized
-        lblHint.text = NSLocalizedString("id_allows_you_to_quickly_check", comment: "")
+        lblHint.text = "id_allows_you_to_quickly_check".localized
         btnDelete.setTitle("id_delete_credentials".localized, for: .normal)
-        usernameField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_username", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        passwordField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_password", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        lblUsernameError.text = NSLocalizedString("id_at_least_8_characters_required", comment: "")
-        lblPasswordError.text = NSLocalizedString("id_at_least_8_characters_required", comment: "")
+        usernameField.attributedPlaceholder = NSAttributedString(string: "id_username".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        passwordField.attributedPlaceholder = NSAttributedString(string: "id_password".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        lblUsernameError.text = "id_at_least_8_characters_required".localized
+        lblPasswordError.text = "id_at_least_8_characters_required".localized
     }
 
     func setStyle() {
@@ -118,10 +118,10 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         Task {
             username = try? await session.getWatchOnlyUsername()
             if username != "" {
-                self.btnSave.setTitle(NSLocalizedString("id_update", comment: ""), for: .normal)
+                self.btnSave.setTitle("id_update".localized, for: .normal)
                 self.usernameField.text = username
             } else {
-                self.btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+                self.btnSave.setTitle("id_save".localized, for: .normal)
                 self.btnDelete.isHidden = true
             }
             self.validate()
@@ -193,10 +193,10 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         if let username = usernameField.text, let password = passwordField.text {
             // first validate
             if username.isEmpty {
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_enter_a_valid_username", comment: ""))
+                self.showAlert(title: "id_error".localized, message: "id_enter_a_valid_username".localized)
                 return
             } else if password.isEmpty {
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_the_password_cant_be_empty", comment: ""))
+                self.showAlert(title: "id_error".localized, message: "id_the_password_cant_be_empty".localized)
                 return
             }
             updateWatchOnly(username: username, password: password, action: .save)

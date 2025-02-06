@@ -29,7 +29,7 @@ class HowToSecureViewController: UIViewController {
     func setContent() {
 
         lblTitle.text = "id_how_do_you_want_to_secure_your".localized
-        btnWatchOnly.setTitle(NSLocalizedString("id_watchonly", comment: ""), for: .normal)
+        btnWatchOnly.setTitle("id_watchonly".localized, for: .normal)
     }
 
     func setStyle() {

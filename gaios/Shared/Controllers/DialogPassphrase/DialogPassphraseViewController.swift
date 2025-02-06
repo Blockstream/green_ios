@@ -121,13 +121,13 @@ class DialogPassphraseViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_login_with_bip39_passphrase", comment: "")
-        let hint = NSLocalizedString("id_bip39_passphrase", comment: "")
+        lblTitle.text = "id_login_with_bip39_passphrase".localized
+        let hint = "id_bip39_passphrase".localized
         fieldPassphrase.attributedPlaceholder = NSAttributedString(string: hint, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        lblHint1.text = NSLocalizedString("id_different_passphrases_generate", comment: "")
-        lblAskTitle.text = NSLocalizedString("id_always_ask", comment: "")
+        lblHint1.text = "id_different_passphrases_generate".localized
+        lblAskTitle.text = "id_always_ask".localized
         btnClear.setTitle("Clear Passphrase", for: .normal)
-        btnConfirm.setTitle(NSLocalizedString("id_submit", comment: ""), for: .normal)
+        btnConfirm.setTitle("id_submit".localized, for: .normal)
     }
 
     func setStyle() {

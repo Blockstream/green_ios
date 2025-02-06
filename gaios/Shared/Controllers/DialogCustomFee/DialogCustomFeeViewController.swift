@@ -87,9 +87,9 @@ class DialogCustomFeeViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblCustomFeeTitle.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")
+        lblCustomFeeTitle.text = "id_set_custom_fee_rate".localized
         lblCustomFeeHint.text = "satoshi/vbyte"
-        btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+        btnSave.setTitle("id_save".localized, for: .normal)
     }
 
     func setStyle() {

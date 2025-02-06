@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [4.1.6] - 2025-02-11
 
+### Added
+- Language preference in App Settings
+
 ### Changed
 - Update GDK to 0.74.3
 - Improve support report

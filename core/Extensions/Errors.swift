@@ -16,9 +16,9 @@ extension Error {
             case HWError.Abort(let txt), HWError.Declined(let txt):
                 return txt
             case HWError.Disconnected(let txt):
-                return "id_disconnect".localized
+                return "id_disconnect"
             case .URLError(_):
-                return "id_invalid_url".localized
+                return "id_invalid_url"
             case .InvalidResponse(_):
                 return "Invalid Response"
             }

@@ -85,7 +85,7 @@ class RecoveryCreateViewController: UIViewController {
         }
 
         lblHint.text = "id_store_it_somewhere_safe".localized
-        btnNext.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+        btnNext.setTitle("id_next".localized, for: .normal)
         lblNote.text = "id_make_sure_to_be_in_a_private".localized
     }
 

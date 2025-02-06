@@ -76,7 +76,7 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
         guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFactorAuthViewController") as? TwoFactorAuthViewController else { return }
 
         vc.methodEnum = methodEnum
-        vc.commontitle = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
+        vc.commontitle = String(format: "id_please_provide_your_1s_code".localized, methodDesc.localized)
         vc.attemptsRemaining = attemptsRemaining ?? 3
         vc.enable2faCallMethod = enable2faCallMethod
 

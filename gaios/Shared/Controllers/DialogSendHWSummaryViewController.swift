@@ -51,12 +51,12 @@ class DialogSendHWSummaryViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_confirm_on_your_device", comment: "")
+        lblTitle.text = "id_confirm_on_your_device".localized
         icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.customMatrixGreen())
 
         if let transaction = transaction, let addressee = transaction.addressees.first {
 
-            lblRecipientTitle.text = NSLocalizedString("id_recipient", comment: "")
+            lblRecipientTitle.text = "id_recipient".localized
             lblRecipientAddress.text = addressee.address
 
             let addreessee = transaction.addressees.first
@@ -72,7 +72,7 @@ class DialogSendHWSummaryViewController: UIViewController {
             }
             lblFiat.isHidden = account.gdkNetwork.liquid
             icon.image = registry?.image(for: assetId)
-            lblFeeTitle.text = NSLocalizedString("id_fee", comment: "")
+            lblFeeTitle.text = "id_fee".localized
             if let balance = Balance.fromSatoshi(transaction.fee, assetId: account.gdkNetwork.getFeeAsset()) {
                 let (amount, denom) = balance.toDenom()
                 let (fiat, fiatCurrency) = balance.toFiat()
@@ -97,7 +97,7 @@ class DialogSendHWSummaryViewController: UIViewController {
                 }
             }
             if !changeAddress.isEmpty {
-                lblChangeTitle.text = NSLocalizedString("id_change", comment: "")
+                lblChangeTitle.text = "id_change".localized
                 lblChangeHint.text = changeAddress.map { "\($0)"}.joined(separator: "\n")
                 lblChangeTitle.isHidden = false
                 lblChangeHint.isHidden = false

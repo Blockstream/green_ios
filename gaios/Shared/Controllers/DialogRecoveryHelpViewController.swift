@@ -48,10 +48,10 @@ class DialogRecoveryHelpViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_help", comment: "")
-        lblHint.text = NSLocalizedString("id_i_typed_all_my_recovery_phrase", comment: "")
-        btnHelpCenter.setTitle(NSLocalizedString("id_visit_the_blockstream_help", comment: ""), for: .normal)
-        lblDesc1.text = NSLocalizedString("id_1_double_check_all_of_your", comment: "")
+        lblTitle.text = "id_help".localized
+        lblHint.text = "id_i_typed_all_my_recovery_phrase".localized
+        btnHelpCenter.setTitle("id_visit_the_blockstream_help".localized, for: .normal)
+        lblDesc1.text = "id_1_double_check_all_of_your".localized
     }
 
     override func viewDidAppear(_ animated: Bool) {

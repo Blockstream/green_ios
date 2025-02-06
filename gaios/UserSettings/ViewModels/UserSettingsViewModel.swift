@@ -62,7 +62,7 @@ class UserSettingsViewModel {
             subtitle: "",
             section: .Security,
             type: .ChangePin)
-        let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "") : NSLocalizedString("id_touchface_id_not_available", comment: "")
+        let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id".localized : "id_touch_id".localized : "id_touchface_id_not_available".localized
         var bioSwitch: Bool?
         if AuthenticationTypeHandler.supportsBiometricAuthentication(), let keychain = wm?.account.keychain {
             bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: keychain)

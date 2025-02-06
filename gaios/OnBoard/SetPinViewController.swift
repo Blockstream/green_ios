@@ -80,13 +80,13 @@ class SetPinViewController: UIViewController {
 
         switch actionPin {
         case .set:
-            lblTitle.text = NSLocalizedString("id_set_a_pin", comment: "")
+            lblTitle.text = "id_set_a_pin".localized
         case .verify:
-            lblTitle.text = NSLocalizedString("id_verify_your_pin", comment: "")
+            lblTitle.text = "id_verify_your_pin".localized
         }
 
-        lblHint.text = NSLocalizedString("id_youll_need_your_pin_to_log_in", comment: "")
-        btnNext.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
+        lblHint.text = "id_youll_need_your_pin_to_log_in".localized
+        btnNext.setTitle("id_continue".localized, for: .normal)
     }
 
     func setStyle() {
@@ -142,7 +142,7 @@ class SetPinViewController: UIViewController {
         if pinCode == pinCodeToVerify {
             nextSetEnabled(true)
         } else {
-            DropAlert().error(message: NSLocalizedString("id_pins_do_not_match_please_try", comment: ""))
+            DropAlert().error(message: "id_pins_do_not_match_please_try".localized)
             navigationController?.popViewController(animated: true)
         }
     }
@@ -203,7 +203,7 @@ class SetPinViewController: UIViewController {
     fileprivate func setPin(_ pin: String) {
         switch pinFlow {
         case .settings:
-            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: true)
+            self.startLoader(message: "id_setting_up_your_wallet".localized, isRive: true)
             Task {
                 do {
                     try await self.viewModel.setup(pin: pin)
@@ -218,7 +218,7 @@ class SetPinViewController: UIViewController {
                 }
             }
         case .restore:
-            self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""), isRive: true)
+            self.startLoader(message: "id_restoring_your_wallet".localized, isRive: true)
             Task {
                 do {
                     try await self.viewModel.restore(pin: pin)
@@ -231,7 +231,7 @@ class SetPinViewController: UIViewController {
                 }
             }
         case .create:
-            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: true)
+            self.startLoader(message: "id_finishing_up".localized, isRive: true)
             Task {
                 do {
                     try await self.viewModel.create(pin: pin)

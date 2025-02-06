@@ -57,31 +57,31 @@ extension HelpViewController: UITableViewDataSource, UITableViewDelegate {
             let helpType = helpItems[indexPath.row]
             switch helpType {
             case .version:
-                cell.titleLabel.text = NSLocalizedString("id_version", comment: "")
-                let versionString = String(format: NSLocalizedString("id_version_1s", comment: ""), version)
-                let whatsNewString = NSLocalizedString("id_whats_new", comment: "")
+                cell.titleLabel.text = "id_version".localized
+                let versionString = String(format: "id_version_1s".localized, version)
+                let whatsNewString = "id_whats_new".localized
                 let detailString = String(format: "%@ %@", versionString, whatsNewString)
                 let attributedDetailString = NSMutableAttributedString(string: detailString)
                 attributedDetailString.setAttributes(linkAttributes, for: whatsNewString)
                 cell.detailLabel.attributedText = attributedDetailString
             case .support:
-                cell.titleLabel.text = NSLocalizedString("id_support", comment: "")
-                let supportPageString = NSLocalizedString("id_support_page", comment: "")
-                let supportDetailString = String(format: NSLocalizedString("id_read_more_at_our_s", comment: ""), supportPageString)
+                cell.titleLabel.text = "id_support".localized
+                let supportPageString = "id_support_page".localized
+                let supportDetailString = String(format: "id_read_more_at_our_s".localized, supportPageString)
                 let attributedSupportString = NSMutableAttributedString(string: supportDetailString)
                 attributedSupportString.setAttributes(linkAttributes, for: supportPageString)
                 cell.detailLabel.attributedText = attributedSupportString
             case .privacy:
-                cell.titleLabel.text = NSLocalizedString("id_privacy_policy", comment: "")
-                let hereString = NSLocalizedString("id_here", comment: "")
-                let privacyString = String(format: NSLocalizedString("id_see_our_privacy_policy_s", comment: ""), hereString)
+                cell.titleLabel.text = "id_privacy_policy".localized
+                let hereString = "id_here".localized
+                let privacyString = String(format: "id_see_our_privacy_policy_s".localized, hereString)
                 let attributedPrivacyString = NSMutableAttributedString(string: privacyString)
                 attributedPrivacyString.setAttributes(linkAttributes, for: hereString)
                 cell.detailLabel.attributedText = attributedPrivacyString
             case .terms:
-                cell.titleLabel.text = NSLocalizedString("id_terms_of_use", comment: "")
-                let hereString = NSLocalizedString("id_here", comment: "")
-                let termsDetailString = String(format: NSLocalizedString("id_see_our_terms_of_service_s", comment: ""), hereString)
+                cell.titleLabel.text = "id_terms_of_use".localized
+                let hereString = "id_here".localized
+                let termsDetailString = String(format: "id_see_our_terms_of_service_s".localized, hereString)
                 let attributedTermsString = NSMutableAttributedString(string: termsDetailString)
                 attributedTermsString.setAttributes(linkAttributes, for: hereString)
                 cell.detailLabel.attributedText = attributedTermsString

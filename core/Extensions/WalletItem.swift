@@ -16,9 +16,9 @@ extension WalletItem {
         if subaccountsSameType.count > 1 {
             let index = subaccountsSameType.filter { $0.pointer < self.pointer }.count
             if index > 0 {
-                return "\(type.string.localized)\(network)\(index+1)"
+                return "\(type.string)\(network)\(index+1)"
             }
         }
-        return "\(type.string.localized)\(network)"
+        return "\(type.string)\(network)"
     }
 }

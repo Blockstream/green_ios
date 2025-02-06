@@ -25,12 +25,12 @@ class MnemonicAuthViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_recovery_phrase", comment: "")
-        lblHint.text = NSLocalizedString("id_the_recovery_phrase_can_be_used", comment: "")
-        lblCard1Title.text = NSLocalizedString("id_write_down_your_recovery_phrase", comment: "")
-        lblCard2Title.text = NSLocalizedString("id_dont_store_your_recovery_phrase", comment: "")
-        lblCard3Title.text = NSLocalizedString("id_dont_take_screenshots_of_your", comment: "")
-        btnNext.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
+        lblTitle.text = "id_recovery_phrase".localized
+        lblHint.text = "id_the_recovery_phrase_can_be_used".localized
+        lblCard1Title.text = "id_write_down_your_recovery_phrase".localized
+        lblCard2Title.text = "id_dont_store_your_recovery_phrase".localized
+        lblCard3Title.text = "id_dont_take_screenshots_of_your".localized
+        btnNext.setTitle("id_continue".localized, for: .normal)
     }
 
     func setStyle() {

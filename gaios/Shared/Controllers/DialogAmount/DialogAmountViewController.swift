@@ -229,7 +229,7 @@ class DialogAmountViewController: KeyboardViewController {
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, _) = selectedType == TransactionBaseType.BTC ? balance.toDenom() : balance.toFiat()
             if amount.isEmpty {
-                showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+                showError("id_your_favourite_exchange_rate_is".localized)
                 return
             }
         }

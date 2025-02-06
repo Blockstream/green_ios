@@ -47,9 +47,9 @@ class DrawerNetworkSelectionViewController: UIViewController {
     }
 
     func setContent() {
-        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        btnSettings.setTitle("id_app_settings".localized, for: .normal)
         btnSettings.setTitleColor(.lightGray, for: .normal)
-        btnAbout.setTitle(NSLocalizedString("id_about", comment: ""), for: .normal)
+        btnAbout.setTitle("id_about".localized, for: .normal)
         btnAbout.setImage(UIImage(named: "ic_about")!, for: .normal)
         btnAbout.setTitleColor(.lightGray, for: .normal)
         lblNewWallet.text = "id_setup_a_new_wallet".localized
@@ -229,17 +229,17 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if AccountsRepository.shared.swAccounts.isEmpty {
                 return nil
             }
-            return headerView(NSLocalizedString("id_digital_wallets", comment: ""))
+            return headerView("id_digital_wallets".localized)
         case .ephWallet:
             if ephAccounts.isEmpty {
                 return nil
             }
-            return headerView(NSLocalizedString("id_ephemeral_wallets", comment: ""))
+            return headerView("id_ephemeral_wallets".localized)
         case .hwWallet:
             if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
                 return nil
             }
-            return headerView(NSLocalizedString("id_hardware_wallets", comment: ""))
+            return headerView("id_hardware_wallets".localized)
         default:
             return nil
         }

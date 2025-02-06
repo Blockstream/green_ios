@@ -19,17 +19,17 @@ class SetEmailViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        headerTitle.text = NSLocalizedString("id_enter_your_email_address", comment: "")
+        headerTitle.text = "id_enter_your_email_address".localized
         textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                              attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         textField.setLeftPaddingPoints(10.0)
         textField.setRightPaddingPoints(10.0)
-        nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
+        nextButton.setTitle("id_get_code".localized, for: .normal)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primaryDisabled)
         setRecoveryLabel.text = isSetRecovery ?
-            NSLocalizedString("id_set_up_an_email_to_get", comment: "") :
-            NSLocalizedString("id_the_email_will_also_be_used_to", comment: "")
+            "id_set_up_an_email_to_get".localized :
+            "id_the_email_will_also_be_used_to".localized
         headerTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         setRecoveryLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         setRecoveryLabel.textColor = .white.withAlphaComponent(0.6)

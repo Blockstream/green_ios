@@ -39,7 +39,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             imgDevice.image = JadeAsset.img(.normalDual, nil)
         }
         lblHint.text = bleViewModel?.type == .Jade ? "Blockstream" : ""
-        btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        btnAppSettings.setTitle("id_app_settings".localized, for: .normal)
     }
 
     func setStyle() {

@@ -21,8 +21,8 @@ class DialogAccountIdViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
-        lblHint.text = NSLocalizedString("id_provide_this_id_to_the_asset", comment: "")
+        lblTitle.text = "id_amp_id".localized
+        lblHint.text = "id_provide_this_id_to_the_asset".localized
         cardView.setStyle(.bottomsheet)
         view.alpha = 0.0
 
@@ -53,7 +53,7 @@ class DialogAccountIdViewController: UIViewController {
     @IBAction func btnCopy(_ sender: Any) {
         if let address = lblAccountId.text {
             UIPasteboard.general.string = address
-            DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+            DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 2.0)
             dismiss()
         }
     }

@@ -22,7 +22,7 @@ class UserSettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("id_settings", comment: "")
+        title = "id_settings".localized
         let btn = UIBarButtonItem(image: UIImage(named: "cancel")?.maskWithColor(color: .white), style: .plain, target: self, action: #selector(self.close))
         self.navigationItem.rightBarButtonItem  = btn
         view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
@@ -55,7 +55,7 @@ class UserSettingsViewController: UIViewController {
 
     func getSwitchValue() -> Bool {
         guard let screenlock = session?.settings?.getScreenLock() else {
-            DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
+            DropAlert().error(message: "id_operation_failure".localized)
             return false
         }
         if screenlock == .None {
@@ -111,7 +111,7 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return headerView(NSLocalizedString(viewModel.sections[section].rawValue, comment: ""))
+        return headerView(viewModel.sections[section].rawValue.localized)
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -160,7 +160,7 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 let supportId = await SupportManager.shared.str()
                 await MainActor.run {
                     UIPasteboard.general.string = supportId
-                    DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
+                    DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
             }
@@ -261,7 +261,7 @@ extension UserSettingsViewController {
         guard let settings = session?.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
         let selected = settings.autolock.string
-        let alert = UIAlertController(title: NSLocalizedString("id_auto_logout_timeout", comment: ""), message: "", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "id_auto_logout_timeout".localized, message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
             alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
                 settings.autolock = AutoLockType.from(item)
@@ -279,7 +279,7 @@ extension UserSettingsViewController {
                 }
             })
         }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
 }
@@ -289,7 +289,7 @@ extension UserSettingsViewController {
         guard let account = account else { return }
         // An auth key pin should be set before updating bio auth
         if !AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: account.keychain) {
-            onAuthError(message: NSLocalizedString("id_please_enable_pin", comment: ""))
+            onAuthError(message: "id_please_enable_pin".localized)
             return
         }
         guard let session = self.session else { return }
@@ -303,13 +303,13 @@ extension UserSettingsViewController {
                 viewModel.load()
             } catch {
                 if error is GaError {
-                    self.onAuthError(message: NSLocalizedString("id_connection_failed", comment: ""))
+                    self.onAuthError(message: "id_connection_failed".localized)
                 } else if let err = error as? AuthenticationTypeHandler.AuthError {
                     self.onBioAuthError(message: err.localizedDescription)
                 } else if !error.localizedDescription.isEmpty {
-                    self.onAuthError(message: NSLocalizedString(error.localizedDescription, comment: ""))
+                    self.onAuthError(message: error.localizedDescription.localized)
                 } else {
-                    self.onAuthError(message: NSLocalizedString("id_operation_failure", comment: ""))
+                    self.onAuthError(message: "id_operation_failure".localized)
                 }
             }
         }
@@ -323,13 +323,13 @@ extension UserSettingsViewController {
     }
 
     func onAuthRemoval(_ completionHandler: @escaping () -> Void) {
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("id_your_pin_or_your_mnemonic_will", comment: ""), preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { [weak self] _ in
+        let alert = UIAlertController(title: "id_warning".localized, message: "id_your_pin_or_your_mnemonic_will".localized, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { [weak self] _ in
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
             }
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default) { _ in
             DispatchQueue.main.async {
                 completionHandler()
             }
@@ -340,12 +340,12 @@ extension UserSettingsViewController {
     }
 
     func onBioAuthError(message: String) {
-        let text = String(format: NSLocalizedString("id_snnreset_this_setting_and_then", comment: ""), message)
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: text, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .default) { _ in
+        let text = String(format: "id_snnreset_this_setting_and_then".localized, message)
+        let alert = UIAlertController(title: "id_warning".localized, message: text, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in
             self.navigationController?.popViewController(animated: true)
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
+        alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
             self.account?.removeBioKeychainData()
             self.navigationController?.popViewController(animated: true)
         })
@@ -355,8 +355,8 @@ extension UserSettingsViewController {
     }
 
     func onAuthError(message: String) {
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .default) { _ in
+        let alert = UIAlertController(title: "id_warning".localized, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in
             self.navigationController?.popViewController(animated: true)
         })
         DispatchQueue.main.async {

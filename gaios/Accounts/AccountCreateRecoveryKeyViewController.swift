@@ -44,15 +44,15 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_select_your_recovery_key", comment: "")
-        lblHWTitle.text = NSLocalizedString("id_hardware_wallet", comment: "")
-        lblHWHint.text = NSLocalizedString("id_use_a_hardware_wallet_as_your", comment: "")
-        lblNewPhraseTitle.text = NSLocalizedString("id_new_recovery_phrase", comment: "")
-        lblNewPhraseHint.text = NSLocalizedString("id_generate_a_new_recovery_phrase", comment: "")
-        lblExistingPhraseTitle.text = NSLocalizedString("id_existing_recovery_phrase", comment: "")
-        lblExistingPhraseHint.text = NSLocalizedString("id_use_an_existing_recovery_phrase", comment: "")
-        lblPublicKeyTitle.text = NSLocalizedString("id_use_a_public_key", comment: "")
-        lblPublicKeyHint.text = NSLocalizedString("id_use_an_xpub_for_which_you_own", comment: "")
+        lblTitle.text = "id_select_your_recovery_key".localized
+        lblHWTitle.text = "id_hardware_wallet".localized
+        lblHWHint.text = "id_use_a_hardware_wallet_as_your".localized
+        lblNewPhraseTitle.text = "id_new_recovery_phrase".localized
+        lblNewPhraseHint.text = "id_generate_a_new_recovery_phrase".localized
+        lblExistingPhraseTitle.text = "id_existing_recovery_phrase".localized
+        lblExistingPhraseHint.text = "id_use_an_existing_recovery_phrase".localized
+        lblPublicKeyTitle.text = "id_use_a_public_key".localized
+        lblPublicKeyHint.text = "id_use_an_xpub_for_which_you_own".localized
     }
 
     func setStyle() {
@@ -91,7 +91,7 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
     func next(_ recoveryKeyType: RecoveryKeyType) {
         switch recoveryKeyType {
         case .hw:
-            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
+            DropAlert().warning(message: "id_this_feature_is_coming_soon".localized, delay: 3)
         case .newPhrase:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {

@@ -115,7 +115,7 @@ class DialogDetailViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_asset_details", comment: "")
+        lblTitle.text = "id_asset_details".localized
     }
 
     func setStyle() {
@@ -175,18 +175,18 @@ extension DialogDetailViewController: UITableViewDelegate, UITableViewDataSource
             let assetTicker = asset?.ticker == "" ? nil : asset?.ticker
             switch cellType {
             case .name:
-                cell.configure(NSLocalizedString("id_asset_name", comment: ""), assetName ?? NSLocalizedString("id_no_registered_name_for_this", comment: ""))
+                cell.configure("id_asset_name".localized, assetName ?? "id_no_registered_name_for_this".localized)
             case .identifier:
-                cell.configure(NSLocalizedString("id_asset_id", comment: ""), tag)
+                cell.configure("id_asset_id".localized, tag)
             case .amount:
                 let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset!.assetId)
-                cell.configureAmount(NSLocalizedString("id_total_balance", comment: ""), balance?.toValue().0 ?? "", hideBalance)
+                cell.configureAmount("id_total_balance".localized, balance?.toValue().0 ?? "", hideBalance)
             case .precision:
-                cell.configure(NSLocalizedString("id_precision", comment: ""), isLBTC ? "8" : String(asset?.precision ?? 0))
+                cell.configure("id_precision".localized, isLBTC ? "8" : String(asset?.precision ?? 0))
             case .ticker:
-                cell.configure(NSLocalizedString("id_ticker", comment: ""), assetTicker ?? NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
+                cell.configure("id_ticker".localized, assetTicker ?? "id_no_registered_ticker_for_this".localized)
             case .issuer:
-                cell.configure(NSLocalizedString("id_issuer", comment: ""), isLBTC ? NSLocalizedString("id_lbtc_has_no_issuer_and_is", comment: "") : asset?.entity?.domain ?? NSLocalizedString("id_unknown", comment: ""))
+                cell.configure("id_issuer".localized, isLBTC ? "id_lbtc_has_no_issuer_and_is".localized : asset?.entity?.domain ?? "id_unknown".localized)
             }
             return cell
         }

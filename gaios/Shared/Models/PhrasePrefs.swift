@@ -7,9 +7,9 @@ enum PhrasePrefs: Int, CaseIterable {
     var name: String {
         switch self {
         case ._12:
-            return String(format: NSLocalizedString("id_d_words", comment: ""), 12)
+            return String(format: "id_d_words".localized, 12)
         case ._24:
-            return String(format: NSLocalizedString("id_d_words", comment: ""), 24)
+            return String(format: "id_d_words".localized, 24)
         }
     }
 

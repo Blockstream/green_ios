@@ -122,25 +122,25 @@ class DialogCountlyViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_help_green_improve", comment: "")
-        lblHint.text = NSLocalizedString("id_if_you_agree_green_will_collect", comment: "")
-        btnDeny.setTitle(NSLocalizedString("id_dont_collect_data", comment: ""), for: .normal)
-        btnAllow.setTitle(NSLocalizedString("id_allow_data_collection", comment: ""), for: .normal)
+        lblTitle.text = "id_help_green_improve".localized
+        lblHint.text = "id_if_you_agree_green_will_collect".localized
+        btnDeny.setTitle("id_dont_collect_data".localized, for: .normal)
+        btnAllow.setTitle("id_allow_data_collection".localized, for: .normal)
         lblExpand.text = self.expandText
 
-        lblCollectTitle.text = NSLocalizedString("id_whats_collected", comment: "")
+        lblCollectTitle.text = "id_whats_collected".localized
 
-        let collectStr = NSLocalizedString("id_pseudonymous_identifier_country", comment: "") + "\n" + NSLocalizedString("id_page_visits_button_presses", comment: "") + "\n" + NSLocalizedString("id_os__app_version_loading_times", comment: "")
+        let collectStr = "id_pseudonymous_identifier_country".localized + "\n" + "id_page_visits_button_presses".localized + "\n" + "id_os__app_version_loading_times".localized
 
         lblCollectHint.text = collectStr
 
-        lblNotCollectTitle.text = NSLocalizedString("id_whats_not_collected", comment: "")
+        lblNotCollectTitle.text = "id_whats_not_collected".localized
 
-        let notCollectStr = NSLocalizedString("id_recovery_phrases_key_material", comment: "") + "\n" + NSLocalizedString("id_user_contact_info_ip_address", comment: "")
+        let notCollectStr = "id_recovery_phrases_key_material".localized + "\n" + "id_user_contact_info_ip_address".localized
 
         lblNotCollectHint.text = notCollectStr
-        btnMore.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
-        btnDebugID.setTitle(NSLocalizedString("id_copy_device_id", comment: ""), for: .normal)
+        btnMore.setTitle("id_learn_more".localized, for: .normal)
+        btnDebugID.setTitle("id_copy_device_id".localized, for: .normal)
     }
 
     func setStyle() {
@@ -213,7 +213,7 @@ class DialogCountlyViewController: UIViewController {
         var msg = "ID not available"
         if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
             UIPasteboard.general.string = uuid
-            msg = NSLocalizedString("UUID copied to clipboard", comment: "")
+            msg = "UUID copied to clipboard".localized
         }
         DropAlert().info(message: msg, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)

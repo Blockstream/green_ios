@@ -139,7 +139,7 @@ class TwoFactorAuthViewController: KeyboardViewController {
     }
 
     func updateAttempts() {
-        lblAttempts.text =  String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), attemptsRemaining)
+        lblAttempts.text =  String(format: "id_attempts_remaining_d".localized, attemptsRemaining)
     }
 
     func fill() {

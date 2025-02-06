@@ -11,9 +11,9 @@ class PgpViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_pgp_key", comment: "")
-        subtitle.text = NSLocalizedString("id_enter_a_pgp_public_key_to_have", comment: "")
-        btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+        title = "id_pgp_key".localized
+        subtitle.text = "id_enter_a_pgp_public_key_to_have".localized
+        btnSave.setTitle("id_save".localized, for: .normal)
         btnSave.addTarget(self, action: #selector(save), for: .touchUpInside)
         setStyle()
         textarea.text = getPgp() ?? ""

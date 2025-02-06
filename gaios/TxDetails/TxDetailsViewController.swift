@@ -190,14 +190,14 @@ class TxDetailsViewController: UIViewController {
             SafeNavigationManager.shared.navigate(url)
             return
         }
-        let message = String(format: NSLocalizedString("id_are_you_sure_you_want_to_view", comment: ""), host)
+        let message = String(format: "id_are_you_sure_you_want_to_view".localized, host)
         let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { (_: UIAlertAction) in
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_only_this_time", comment: ""), style: .default) { (_: UIAlertAction) in
+        alert.addAction(UIAlertAction(title: "id_only_this_time".localized, style: .default) { (_: UIAlertAction) in
             SafeNavigationManager.shared.navigate(url)
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_always", comment: ""), style: .default) { (_: UIAlertAction) in
+        alert.addAction(UIAlertAction(title: "id_always".localized, style: .default) { (_: UIAlertAction) in
             self.viewInExplorerPreference = true
             SafeNavigationManager.shared.navigate(url)
         })
@@ -244,7 +244,7 @@ class TxDetailsViewController: UIViewController {
         AnalyticsManager.shared.shareTransaction(account: AccountsRepository.shared.current, isShare: false)
 
         UIPasteboard.general.string = value
-        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
+        DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 

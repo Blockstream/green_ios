@@ -172,7 +172,7 @@ class DialogAboutViewController: KeyboardViewController {
         var msg = "ID not available"
         if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
             UIPasteboard.general.string = uuid
-            msg = NSLocalizedString("UUID copied to clipboard", comment: "")
+            msg = "UUID copied to clipboard".localized
         }
         DropAlert().info(message: msg, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)

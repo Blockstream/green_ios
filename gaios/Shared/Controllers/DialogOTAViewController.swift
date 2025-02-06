@@ -35,18 +35,18 @@ class DialogOTAViewController: UIViewController {
 
     func setContent() {
 
-        btnUpdate.setTitle(NSLocalizedString("id_update", comment: ""), for: .normal)
+        btnUpdate.setTitle("id_update".localized, for: .normal)
         btnUpdate.isHidden = needCableUpdate
         btnReadMore.setTitle("id_read_more", for: .normal)
         btnReadMore.isHidden = !needCableUpdate
-        btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
+        btnCancel.setTitle("id_cancel".localized, for: .normal)
 
-        lblTitle.text = isRequired ? NSLocalizedString("id_new_jade_firmware_required", comment: "") : NSLocalizedString("id_new_jade_firmware_available", comment: "")
+        lblTitle.text = isRequired ? "id_new_jade_firmware_required".localized : "id_new_jade_firmware_available".localized
 
         if needCableUpdate {
-            lblHint.text = NSLocalizedString("id_connect_jade_with_a_usb_cable", comment: "")
+            lblHint.text = "id_connect_jade_with_a_usb_cable".localized
         } else {
-            lblHint.text = String(format: NSLocalizedString("id_version_1s", comment: ""), firrmwareVersion)
+            lblHint.text = String(format: "id_version_1s".localized, firrmwareVersion)
         }
     }
 

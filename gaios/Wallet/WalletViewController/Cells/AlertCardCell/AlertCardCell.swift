@@ -64,40 +64,40 @@ class AlertCardCell: UITableViewCell {
 
         switch model.type {
         case .reset(let message):
-            lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
-            lblHint.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), message.twoFactorReset.daysRemaining)
-            btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
+            lblTitle.text = "id_2fa_reset_in_progress".localized
+            lblHint.text = String(format: "id_your_wallet_is_locked_for_a".localized, message.twoFactorReset.daysRemaining)
+            btnRight.setTitle("id_learn_more".localized, for: .normal)
             btnLeft.isHidden = true
         case .dispute(_):
-            lblTitle.text = NSLocalizedString("id_2fa_dispute_in_progress", comment: "")
-            lblHint.text = NSLocalizedString("id_warning_wallet_locked_by", comment: "")
-            btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
+            lblTitle.text = "id_2fa_dispute_in_progress".localized
+            lblHint.text = "id_warning_wallet_locked_by".localized
+            btnRight.setTitle("id_learn_more".localized, for: .normal)
             btnLeft.isHidden = true
         case .reactivate:
-            lblTitle.text = NSLocalizedString("id_2fa_expired", comment: "")
+            lblTitle.text = "id_2fa_expired".localized
             lblHint.text = "id_show_coins_with_expiring".localized
-            btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
-            btnLeft.setTitle("Reactivate 2FA", for: .normal)
+            btnRight.setTitle("id_learn_more".localized, for: .normal)
+            btnLeft.setTitle("Reactivate 2FA".localized, for: .normal)
         case .systemMessage(let system):
-            lblTitle.text = NSLocalizedString("id_system_message", comment: "")
+            lblTitle.text = "id_system_message".localized
             lblHint.text = system.text.count > 200 ? system.text.prefix(200) + " ..." : system.text
-            btnRight.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
+            btnRight.setTitle("id_accept".localized, for: .normal)
             btnLeft.isHidden = true
         case .fiatMissing:
-            lblTitle.text = NSLocalizedString("id_warning", comment: "")
-            lblHint.text = NSLocalizedString("id_your_favourite_exchange_rate_is", comment: "")
+            lblTitle.text = "id_warning".localized
+            lblHint.text = "id_your_favourite_exchange_rate_is".localized
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
         case .testnetNoValue:
-            lblTitle.text = NSLocalizedString("id_warning", comment: "")
-            lblHint.text = NSLocalizedString("id_this_wallet_operates_on_a_test", comment: "")
+            lblTitle.text = "id_warning".localized
+            lblHint.text = "id_this_wallet_operates_on_a_test".localized
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
         case .ephemeralWallet:
-            lblTitle.text = NSLocalizedString("id_passphrase_protected", comment: "")
-            lblHint.text = NSLocalizedString("id_this_wallet_is_based_on_your", comment: "")
+            lblTitle.text = "id_passphrase_protected".localized
+            lblHint.text = "id_this_wallet_is_based_on_your".localized
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
@@ -106,7 +106,7 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = remoteAlert.message?.htmlDecoded
             lblTitle.isHidden = remoteAlert.title?.isEmpty ?? true
             lblHint.isHidden = remoteAlert.message?.isEmpty ?? true
-            btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
+            btnRight.setTitle("id_learn_more".localized, for: .normal)
             btnRight.isHidden = onRight == nil
             btnLeft.isHidden = true
             btnsContainer.isHidden = onRight == nil
@@ -117,7 +117,7 @@ class AlertCardCell: UITableViewCell {
                 btnDismiss.isHidden = false
             }
         case .login(let network, let error):
-            lblTitle.text = NSLocalizedString("id_warning", comment: "")
+            lblTitle.text = "id_warning".localized
             let errorString: String = {
                 switch error {
                 case LoginError.connectionFailed(let txt):
@@ -141,7 +141,7 @@ class AlertCardCell: UITableViewCell {
             switch error {
             case LoginError.hostUnblindingDisabled(_):
                 lblHint.text = "\(errorString.localized)"
-                btnRight.setTitle(NSLocalizedString("id_try_again", comment: ""), for: .normal)
+                btnRight.setTitle("id_try_again".localized, for: .normal)
                 btnRight.isHidden = false
                 btnsContainer.isHidden = false
             default:
@@ -150,7 +150,7 @@ class AlertCardCell: UITableViewCell {
         case .lightningMaintenance:
             lblTitle.text = "id_lightning_account".localized
             lblHint.text = "id_lightning_service_is_undergoing".localized
-            lblHint.text = NSLocalizedString("id_this_wallet_is_based_on_your", comment: "")
+            lblHint.text = "id_this_wallet_is_based_on_your".localized
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true

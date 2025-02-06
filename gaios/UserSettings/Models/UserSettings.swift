@@ -25,7 +25,7 @@ enum USItem: String, Codable, CaseIterable {
     case SupportID = "id_support"
     case GenuineCheck = "Genuine Check"
 
-    var string: String { NSLocalizedString(self.rawValue, comment: "") }
+    var string: String { self.rawValue.localized }
 }
 
 struct UserSettingsItem {

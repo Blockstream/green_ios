@@ -14,11 +14,11 @@ class SystemMessageViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_system_message", comment: "")
+        title = "id_system_message".localized
         textView.text = msg.text
-        acceptLabel.text = NSLocalizedString("id_i_confirm_i_have_read_and", comment: "")
-        cancelBtn.setTitle(NSLocalizedString("id_later", comment: ""), for: .normal)
-        confirmBtn.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
+        acceptLabel.text = "id_i_confirm_i_have_read_and".localized
+        cancelBtn.setTitle("id_later".localized, for: .normal)
+        confirmBtn.setTitle("id_accept".localized, for: .normal)
         confirmBtn.isEnabled = false
         reload()
 

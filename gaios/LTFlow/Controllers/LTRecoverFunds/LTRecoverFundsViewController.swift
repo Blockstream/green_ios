@@ -78,7 +78,7 @@ struct LTRecoverFundsViewModel {
             maxReverseSwapAmount = await lightBridge.maxReverseSwapAmount()
         }
         guard let currentFee = currentFee else {
-            throw BreezSDK.SdkError.Generic(message: "id_invalid fee")
+            throw BreezSDK.SdkError.Generic(message: "Invalid fee")
         }
         switch type {
         case .refund:

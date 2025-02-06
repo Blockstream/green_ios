@@ -56,9 +56,9 @@ class WOLoginViewController: KeyboardViewController {
         lblHint.text = ""
         lblUsername.text = "id_username".localized
         lblPassword.text = "id_password".localized
-        loginMSButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
-        loginSSButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
-        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        loginMSButton.setTitle("id_log_in".localized, for: .normal)
+        loginSSButton.setTitle("id_log_in".localized, for: .normal)
+        btnSettings.setTitle("id_app_settings".localized, for: .normal)
     }
 
     func setStyle() {
@@ -105,9 +105,9 @@ class WOLoginViewController: KeyboardViewController {
     @objc func progress(_ notification: Notification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
            let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
-            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            var text = "id_tor_status".localized + " \(tor.progress)%"
             if tor.progress == 100 {
-                text = NSLocalizedString("id_logging_in", comment: "")
+                text = "id_logging_in".localized
             }
             DispatchQueue.main.async {
                 self.startLoader(message: text)
@@ -146,7 +146,7 @@ class WOLoginViewController: KeyboardViewController {
     func login() {
         let password = self.passwordTextField.text ?? ""
         dismissKeyboard()
-        startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        startLoader(message: "id_logging_in".localized)
         Task {
             do {
                 if self.isSS {
@@ -183,7 +183,7 @@ class WOLoginViewController: KeyboardViewController {
             break
         }
         stopLoader()
-        DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        DropAlert().error(message: prettyError.localized)
         AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: self.account)
     }

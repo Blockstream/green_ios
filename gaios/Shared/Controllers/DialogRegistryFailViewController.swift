@@ -25,11 +25,11 @@ class DialogRegistryFailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = NSLocalizedString("id_failed_to_load_asset_registry", comment: "")
-        lblHint.text = NSLocalizedString("id_the_asset_registry_is_currently", comment: "")
-        lblUnderstand.text = NSLocalizedString("id_i_understand_amounts_could_be", comment: "")
+        lblTitle.text = "id_failed_to_load_asset_registry".localized
+        lblHint.text = "id_the_asset_registry_is_currently".localized
+        lblUnderstand.text = "id_i_understand_amounts_could_be".localized
 
-        btnContinue.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
+        btnContinue.setTitle("id_continue".localized, for: .normal)
         btnContinue.cornerRadius = 4.0
         btnContinue.borderWidth = 2.0
 

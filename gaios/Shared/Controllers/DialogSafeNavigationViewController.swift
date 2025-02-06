@@ -32,12 +32,12 @@ class DialogSafeNavigationViewController: UIViewController {
 
     func setContent() {
 
-        lblTitle.text = NSLocalizedString("id_tor", comment: "")
-        lblHint.text = NSLocalizedString("id_you_have_tor_enabled_are_you", comment: "")
+        lblTitle.text = "id_tor".localized
+        lblHint.text = "id_you_have_tor_enabled_are_you".localized
 
-        btnContinue.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
-        btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
-        btnCopy.setTitle(NSLocalizedString("id_copy_to_clipboard", comment: ""), for: .normal)
+        btnContinue.setTitle("id_continue".localized, for: .normal)
+        btnCancel.setTitle("id_cancel".localized, for: .normal)
+        btnCopy.setTitle("id_copy_to_clipboard".localized, for: .normal)
     }
 
     func setStyle() {

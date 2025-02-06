@@ -52,7 +52,7 @@ class WODetailsViewController: KeyboardViewController {
         btnImport.setTitle("id_import".localized, for: .normal)
         lblError.text = "This is not a valid descriptor"
         btnFile.setTitle("id_import_from_file".localized, for: .normal)
-        lblBio.text = NSLocalizedString("id_login_with_biometrics", comment: "")
+        lblBio.text = "id_login_with_biometrics".localized
         if network.liquid {
             segment.selectedSegmentIndex = 1
             segment.setEnabled(false, forSegmentAt: 0)
@@ -148,7 +148,7 @@ class WODetailsViewController: KeyboardViewController {
             .split(whereSeparator: { $0 == "\n" || $0 == " " || ($0 == ","  && isXpubs) })
             .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: " ")) }
         dismissKeyboard()
-        self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        self.startLoader(message: "id_logging_in".localized)
         let credentials = self.segment.selectedSegmentIndex == 0 ? Credentials(slip132ExtendedPubkeys: keys) : Credentials(coreDescriptors: keys)
         Task {
             do {
@@ -182,7 +182,7 @@ class WODetailsViewController: KeyboardViewController {
             break
         }
         stopLoader()
-        DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        DropAlert().error(message: prettyError.localized)
         AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: account)
     }

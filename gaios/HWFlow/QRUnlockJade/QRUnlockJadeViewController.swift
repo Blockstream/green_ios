@@ -363,7 +363,7 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
             break
         }
         stopLoader()
-        DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        DropAlert().error(message: prettyError.localized)
         AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: account)
     }

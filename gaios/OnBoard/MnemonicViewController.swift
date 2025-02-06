@@ -37,9 +37,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         updateLblTitle()
         switch mnemonicActionType {
         case .recoverWallet:
-            doneButton.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
+            doneButton.setTitle("id_continue".localized, for: .normal)
         case .addSubaccount:
-            doneButton.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
+            doneButton.setTitle("id_continue".localized, for: .normal)
         }
 
         mnemonicWords.delegate = self
@@ -124,7 +124,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func updateLblTitle() {
-        lblTitle.text = NSLocalizedString("id_enter_your_recovery_phrase", comment: "")
+        lblTitle.text = "id_enter_your_recovery_phrase".localized
     }
 
     func updateDoneButton(_ enable: Bool) {
@@ -175,15 +175,15 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     func getMnemonicString(completition: @escaping (String?, String?) -> Void) {
         if self.itemsCount() == 27 {
-            let alert = UIAlertController(title: NSLocalizedString("id_encryption_passphrase", comment: ""), message: NSLocalizedString("id_please_provide_your_passphrase", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: "id_encryption_passphrase".localized, message: "id_please_provide_your_passphrase".localized, preferredStyle: .alert)
             alert.addTextField { textField in
                 textField.keyboardType = .asciiCapable
                 textField.isSecureTextEntry = true
             }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { (_: UIAlertAction) in
                 completition(nil, nil)
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: "id_next".localized, style: .default) { (_: UIAlertAction) in
                 let textField = alert.textFields![0]
                 completition(self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!)
             })
@@ -209,19 +209,19 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         self.stopLoader()
         switch err {
         case LoginError.walletMismatch:
-            showError(NSLocalizedString("Wallet mismatch", comment: ""))
+            showError("Wallet mismatch".localized)
         case LoginError.failed:
-            showError(NSLocalizedString("id_login_failed", comment: ""))
+            showError("id_login_failed".localized)
         case LoginError.walletNotFound:
-            showError(NSLocalizedString("id_wallet_not_found", comment: ""))
+            showError("id_wallet_not_found".localized)
         case LoginError.walletsJustRestored:
-            showError(NSLocalizedString("id_wallet_already_restored", comment: ""))
+            showError("id_wallet_already_restored".localized)
         case LoginError.invalidMnemonic:
-            showError(NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
+            showError("id_invalid_recovery_phrase".localized)
             page += 1
             AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardParams.shared, page: self.page)
         case LoginError.connectionFailed:
-            showError(NSLocalizedString("id_connection_failed", comment: ""))
+            showError("id_connection_failed".localized)
         case TwoFactorCallError.cancel(localizedDescription: let desc), TwoFactorCallError.failure(localizedDescription: let desc):
             showError(desc)
         default:

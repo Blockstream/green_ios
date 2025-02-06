@@ -42,25 +42,7 @@ public enum TransactionPriority: Int, CaseIterable {
     public static let strings = [TransactionPriority.Low: "id_slow", TransactionPriority.Medium: "id_medium", TransactionPriority.High: "id_fast", TransactionPriority.Custom: "id_custom"]
 
     public var text: String {
-        return NSLocalizedString(TransactionPriority.strings[self] ?? "", comment: "")
-    }
-
-    public static func from(_ string: String) -> TransactionPriority {
-        let priority = TransactionPriority.strings.filter { NSLocalizedString($0.value, comment: "") == string }.first
-        return priority?.key ?? .Medium
-    }
-
-    public func time(isLiquid: Bool) -> String {
-        let blocksPerHour = isLiquid ? 60 : 6
-        let blocks = self.rawValue
-        let n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour)
-        let time = NSLocalizedString((blocks % blocksPerHour) == 0 ? (blocks == blocksPerHour ? "id_hour" : "id_hours") : "id_minutes", comment: "")
-        return String(format: "%d %@", n, time)
-    }
-
-    public func description(isLiquid: Bool) -> String {
-        let confirmationInBlocks = String(format: NSLocalizedString("id_confirmation_in_d_blocks", comment: ""), self.rawValue)
-        return confirmationInBlocks + ", " + time(isLiquid: isLiquid) + " " + NSLocalizedString("id_on_average", comment: "")
+        return TransactionPriority.strings[self] ?? ""
     }
 }
 
@@ -126,27 +108,6 @@ public enum AutoLockType: Int {
     case fiveMinutes = 5
     case tenMinutes = 10
     case sixtyMinutes = 60
-
-    public var string: String {
-        let number = String(format: "%d", self.rawValue)
-        let localized = NSLocalizedString(self == .minute ? "id_minute" : "id_minutes", comment: "")
-        return "\(number) \(localized)"
-    }
-
-    public static func from(_ value: String) -> AutoLockType {
-        switch value {
-        case AutoLockType.minute.string:
-            return .minute
-        case AutoLockType.twoMinutes.string:
-            return .twoMinutes
-        case AutoLockType.fiveMinutes.string:
-            return .fiveMinutes
-        case AutoLockType.sixtyMinutes.string:
-            return .sixtyMinutes
-        default:
-            return .tenMinutes
-        }
-    }
 }
 
 // Screenlock time type
@@ -156,21 +117,6 @@ public enum ScreenLockType: Int {
     case TouchID = 2
     case FaceID = 3
     case All = 4
-
-    public func toString() -> String? {
-        switch self {
-        case .None:
-            return "None"
-        case .Pin:
-            return "Pin"
-        case .TouchID:
-            return "Touch ID"
-        case .FaceID:
-            return "Face ID"
-        default:
-            return ""
-        }
-    }
 }
 
 // Setting item
@@ -244,60 +190,6 @@ public class Settings: Codable {
         return self.pricing["currency"]!
     }
 
-    public enum CsvTime: Int {
-        case Short
-        case Medium
-        case Long
-
-        public static func all(for gdkNetwork: GdkNetwork) -> [CsvTime] {
-            if gdkNetwork.liquid {
-                return [Long]
-            } else {
-                return [Short, Medium, Long]
-            }
-        }
-
-        public static func values(for gdkNetwork: GdkNetwork) -> [Int]? {
-            return gdkNetwork.csvBuckets
-        }
-
-        public func value(for gdkNetwork: GdkNetwork) -> Int? {
-            let csvBuckets = CsvTime.values(for: gdkNetwork)
-            if gdkNetwork.liquid {
-                return csvBuckets?[0]
-            }
-            switch self {
-            case .Short:
-                return csvBuckets?[0]
-            case .Medium:
-                return csvBuckets?[1]
-            case .Long:
-                return csvBuckets?[2]
-            }
-        }
-
-        public func label() -> String {
-            switch self {
-            case .Short:
-                return NSLocalizedString("id_6_months_25920_blocks", comment: "")
-            case .Medium:
-                return NSLocalizedString("id_12_months_51840_blocks", comment: "")
-            case .Long:
-                return NSLocalizedString("id_15_months_65535_blocks", comment: "")
-            }
-        }
-
-        public func description() -> String {
-            switch self {
-            case .Short:
-                return NSLocalizedString("id_optimal_if_you_spend_coins", comment: "")
-            case .Medium:
-                return NSLocalizedString("id_wallet_coins_will_require", comment: "")
-            case .Long:
-                return NSLocalizedString("id_optimal_if_you_rarely_spend", comment: "")
-            }
-        }
-    }
 
     public static func from(_ data: [String: Any]) -> Settings? {
         if let json = try? JSONSerialization.data(withJSONObject: data, options: []) {
@@ -305,4 +197,38 @@ public class Settings: Codable {
         }
         return nil
     }
+}
+
+public enum CsvTime: Int {
+    case Short
+    case Medium
+    case Long
+
+    public static func all(for gdkNetwork: GdkNetwork) -> [CsvTime] {
+        if gdkNetwork.liquid {
+            return [Long]
+        } else {
+            return [Short, Medium, Long]
+        }
+    }
+
+    public static func values(for gdkNetwork: GdkNetwork) -> [Int]? {
+        return gdkNetwork.csvBuckets
+    }
+
+    public func value(for gdkNetwork: GdkNetwork) -> Int? {
+        let csvBuckets = CsvTime.values(for: gdkNetwork)
+        if gdkNetwork.liquid {
+            return csvBuckets?[0]
+        }
+        switch self {
+        case .Short:
+            return csvBuckets?[0]
+        case .Medium:
+            return csvBuckets?[1]
+        case .Long:
+            return csvBuckets?[2]
+        }
+    }
+
 }

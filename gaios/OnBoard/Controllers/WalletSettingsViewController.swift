@@ -28,6 +28,11 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblExperimentalHint: UILabel!
     @IBOutlet weak var switchExperimental: UISwitch!
 
+    @IBOutlet weak var cardLang: UIView!
+    @IBOutlet weak var lblLangTitle: UILabel!
+    @IBOutlet weak var lblLangHint: UILabel!
+    @IBOutlet weak var btnLang: UIButton!
+
     @IBOutlet weak var cardDiscountFees: UIView!
     @IBOutlet weak var lblDiscountFeesTitle: UILabel!
     @IBOutlet weak var lblDiscountFeesHint: UILabel!
@@ -124,43 +129,45 @@ class WalletSettingsViewController: KeyboardViewController {
 
     func setContent() {
         title = ""
-        lblTitle.text = NSLocalizedString("id_app_settings", comment: "")
-        lblHint.text = NSLocalizedString("id_these_settings_apply_for_every", comment: "")
-        lblTorTitle.text = NSLocalizedString("id_connect_with_tor", comment: "")
-        lblTorHint.text = NSLocalizedString("id_private_but_less_stable", comment: "")
-        lblTestnetTitle.text = NSLocalizedString("id_enable_testnet", comment: "")
+        lblTitle.text = "id_app_settings".localized
+        lblHint.text = "id_these_settings_apply_for_every".localized
+        lblTorTitle.text = "id_connect_with_tor".localized
+        lblTorHint.text = "id_private_but_less_stable".localized
+        lblTestnetTitle.text = "id_enable_testnet".localized
         lblTestnetHint.text = ""
-        lblAnalyticsTitle.text = NSLocalizedString("id_help_green_improve", comment: "")
-        lblAnalyticsHint.text = NSLocalizedString("id_enable_limited_usage_data", comment: "")
-        btnAnalytics.setTitle(NSLocalizedString("id_more_info", comment: ""), for: .normal)
+        lblAnalyticsTitle.text = "id_help_green_improve".localized
+        lblAnalyticsHint.text = "id_enable_limited_usage_data".localized
+        btnAnalytics.setTitle("id_more_info".localized, for: .normal)
         lblExperimentalTitle.text = "id_enable_experimental_features".localized
         lblExperimentalHint.text = "id_experimental_features_might".localized
+        lblLangTitle.text = "Language".localized
+        lblLangHint.text = "Current language".localized
         lblDiscountFeesTitle.text = "Discount Fees".localized
         lblDiscountFeesHint.text = "".localized
-        lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
+        lblProxyTitle.text = "id_connect_through_a_proxy".localized
         lblProxyHint.text = ""
-        fieldProxyIp.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
+        fieldProxyIp.placeholder = "id_server_ip_and_port_ipport".localized
         lblRememberHWTitle.text = "id_remember_hardware_devices".localized
         lblRememberHWHint.text = ""
-        lblSPVTitle.text = NSLocalizedString("id_custom_servers_and_validation", comment: "")
-        lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_electrum_server", comment: "")
-        lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
-        lblSPVbtcServer.text = NSLocalizedString("id_bitcoin_electrum_server", comment: "")
-        lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_server", comment: "")
-        lblSPVliquidTestnetServer.text = NSLocalizedString("id_liquid_testnet_electrum_server", comment: "")
-        lblSPVtestnetServer.text = NSLocalizedString("id_testnet_electrum_server", comment: "")
-        lblElectrumGapLimit.text = NSLocalizedString("id_electrum_server_gap_limit", comment: "")
-        fieldSPVbtcServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
-        fieldSPVliquidServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
-        fieldSPVtestnetServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
-        lblElectrumTls.text = NSLocalizedString("id_enable_tls", comment: "")
-        lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
-        lblTxCheckHint.text = NSLocalizedString("id_verify_your_bitcoin", comment: "")
-        lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
-        lblMultiHint.text = NSLocalizedString("id_double_check_spv_with_other", comment: "")
+        lblSPVTitle.text = "id_custom_servers_and_validation".localized
+        lblSPVPersonalNodeTitle.text = "id_personal_electrum_server".localized
+        lblSPVPersonalNodeHint.text = "id_choose_the_electrum_servers_you".localized
+        lblSPVbtcServer.text = "id_bitcoin_electrum_server".localized
+        lblSPVliquidServer.text = "id_liquid_electrum_server".localized
+        lblSPVliquidTestnetServer.text = "id_liquid_testnet_electrum_server".localized
+        lblSPVtestnetServer.text = "id_testnet_electrum_server".localized
+        lblElectrumGapLimit.text = "id_electrum_server_gap_limit".localized
+        fieldSPVbtcServer.placeholder = "id_server_ip_and_port_ipport".localized
+        fieldSPVliquidServer.placeholder = "id_server_ip_and_port_ipport".localized
+        fieldSPVtestnetServer.placeholder = "id_server_ip_and_port_ipport".localized
+        lblElectrumTls.text = "id_enable_tls".localized
+        lblTxCheckTitle.text = "id_spv_verification".localized
+        lblTxCheckHint.text = "id_verify_your_bitcoin".localized
+        lblMultiTitle.text = "id_multiserver_validation".localized
+        lblMultiHint.text = "id_double_check_spv_with_other".localized
         lblDescElectrumGapLimit.text = "id_number_of_consecutive_empty".localized
-        btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
-        btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+        btnCancel.setTitle("id_cancel".localized, for: .normal)
+        btnSave.setTitle("id_save".localized, for: .normal)
         fieldSPVbtcServer.placeholder = GdkSettings.btcElectrumSrvDefaultEndPoint
         fieldSPVliquidServer.placeholder = GdkSettings.liquidElectrumSrvDefaultEndPoint
         fieldSPVtestnetServer.placeholder = GdkSettings.testnetElectrumSrvDefaultEndPoint
@@ -182,6 +189,8 @@ class WalletSettingsViewController: KeyboardViewController {
         [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblDiscountFeesHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach { $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
+        btnLang.backgroundColor = UIColor.gGreenMatrix()
+        btnLang.cornerRadius = 4.0
     }
 
     @objc func donePressed() {
@@ -270,11 +279,19 @@ class WalletSettingsViewController: KeyboardViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    @IBAction func btnLang(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LangSelectViewController") as? LangSelectViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: true, completion: nil)
+        }
+    }
+
     @IBAction func btnSave(_ sender: Any) {
         let socks5 = fieldProxyIp.text ?? ""
         if switchProxy.isOn && socks5.isEmpty {
-            showAlert(title: NSLocalizedString("id_warning", comment: ""),
-                      message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
+            showAlert(title: "id_warning".localized,
+                      message: "id_socks5_proxy_and_port_must_be".localized)
             return
         }
         let gdkSettings = AppSettings.shared.gdkSettings

@@ -141,9 +141,9 @@ class ContactUsViewController: KeyboardViewController {
         startAnimating()
         UIPasteboard.general.string = self.request.logs
         stopAnimating()
-        DropAlert().warning(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+        DropAlert().warning(message: "id_copied_to_clipboard".localized, delay: 2.0)
     }
-    
+
     @IBAction func btnSubmit(_ sender: Any) {
         request.email = emailField.text
         request.message = messageTextView.text

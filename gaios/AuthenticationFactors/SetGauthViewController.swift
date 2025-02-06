@@ -27,14 +27,14 @@ class SetGauthViewController: UIViewController {
               let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         gauthData = twoFactorConfig.gauth.data
         guard let secret = twoFactorConfig.gauthSecret() else {
-            DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
+            DropAlert().error(message: "id_operation_failure".localized)
             return
         }
         secretLabel.text = secret
         qrCodeImageView.image = QRImageGenerator.imageForTextWhite(text: gauthData!, frame: qrCodeImageView.frame)
-        nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
-        subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_with_an", comment: "")
-        warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
+        nextButton.setTitle("id_get_code".localized, for: .normal)
+        subtitleLabel.text = "id_scan_the_qr_code_with_an".localized
+        warningLabel.text = "id_the_recovery_key_below_will_not".localized
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primary)
         lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
@@ -62,7 +62,7 @@ class SetGauthViewController: UIViewController {
 
     func copyToClipboard() {
         UIPasteboard.general.string = secretLabel.text
-        DropAlert().info(message: NSLocalizedString("id_copy_to_clipboard", comment: ""))
+        DropAlert().info(message: "id_copy_to_clipboard".localized)
     }
 
     func updateConnection(_ notification: Notification) {

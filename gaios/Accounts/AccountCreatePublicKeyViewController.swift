@@ -30,10 +30,10 @@ class AccountCreatePublicKeyViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_enter_your_xpub", comment: "")
-        lblHint.text = NSLocalizedString("id_use_an_xpub_for_which_you_own", comment: "")
-        lblKeyHint.text = NSLocalizedString("id_xpub", comment: "")
-        lblErrorKey.text = NSLocalizedString("id_invalid_xpub", comment: "")
+        lblTitle.text = "id_enter_your_xpub".localized
+        lblHint.text = "id_use_an_xpub_for_which_you_own".localized
+        lblKeyHint.text = "id_xpub".localized
+        lblErrorKey.text = "id_invalid_xpub".localized
     }
 
     func setStyle() {

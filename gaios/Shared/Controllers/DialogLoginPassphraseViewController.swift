@@ -43,15 +43,15 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
 
     func setContent() {
 
-        lblTitle.text = NSLocalizedString("id_login_with_bip39_passphrase", comment: "")
-        let hint = NSLocalizedString("id_bip39_passphrase", comment: "")
+        lblTitle.text = "id_login_with_bip39_passphrase".localized
+        let hint = "id_bip39_passphrase".localized
         fieldPassphrase.attributedPlaceholder = NSAttributedString(string: hint, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        lblHint1.text = NSLocalizedString("id_different_passphrases_generate", comment: "")
-        btnLearn.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
-        lblAskTitle.text = NSLocalizedString("id_always_ask", comment: "")
-        lblAskHint.text = NSLocalizedString("id_you_will_be_asked_to_enter_your", comment: "")
-        btnClear.setTitle(NSLocalizedString("id_clear", comment: ""), for: .normal)
-        btnConfirm.setTitle(NSLocalizedString("id_ok", comment: ""), for: .normal)
+        lblHint1.text = "id_different_passphrases_generate".localized
+        btnLearn.setTitle("id_learn_more".localized, for: .normal)
+        lblAskTitle.text = "id_always_ask".localized
+        lblAskHint.text = "id_you_will_be_asked_to_enter_your".localized
+        btnClear.setTitle("id_clear".localized, for: .normal)
+        btnConfirm.setTitle("id_ok".localized, for: .normal)
     }
 
     func setStyle() {

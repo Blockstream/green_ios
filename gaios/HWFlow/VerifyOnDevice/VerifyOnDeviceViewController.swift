@@ -137,6 +137,6 @@ class VerifyOnDeviceViewController: UIViewController {
 
     @IBAction func btnCopy(_ sender: Any) {
         UIPasteboard.general.string = viewModel.address
-        DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard".localized, comment: ""), delay: 2.0)
+        DropAlert().info(message: "id_address_copied_to_clipboard".localized, delay: 2.0)
     }
 }

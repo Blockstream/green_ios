@@ -36,7 +36,7 @@ class RecoveryVerifyViewController: UIViewController {
         updatePageControl()
         reload()
 
-        lblTitle.text = NSLocalizedString("id_recovery_phrase_check", comment: "")
+        lblTitle.text = "id_recovery_phrase_check".localized
         updateHint()
 
         buttonsArray.forEach {
@@ -106,7 +106,7 @@ class RecoveryVerifyViewController: UIViewController {
                 updatePageControl()
             }
         } else {
-            DropAlert().warning(message: NSLocalizedString("id_wrong_choice_check_your", comment: ""), delay: 4)
+            DropAlert().warning(message: "id_wrong_choice_check_your".localized, delay: 4)
             navigationController?.popViewController(animated: true)
         }
     }

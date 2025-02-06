@@ -56,7 +56,7 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return headerView(
-            txt: NSLocalizedString(viewModel.sections[section].rawValue, comment: ""),
+            txt: viewModel.sections[section].rawValue.localized,
             img: viewModel.sections[section].icon
         )
     }
@@ -75,7 +75,7 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
                 cell.configure(viewModel: vm, onCopy: { item in
                     if !item.isEmpty {
                         UIPasteboard.general.string = item
-                        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+                        DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 2.0)
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                     }
                 }, onQR: {[weak self] item in

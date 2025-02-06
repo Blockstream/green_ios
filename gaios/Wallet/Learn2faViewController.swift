@@ -35,29 +35,29 @@ class Learn2faViewController: UIViewController {
     func setContent() {
         title = ""
         if isDisputeActive {
-            lblTitle.text = NSLocalizedString("id_2fa_dispute_in_progress", comment: "")
-            lblResetTitle.text = NSLocalizedString("id_your_wallet_is_locked_under_2fa", comment: "")
-            lblResetHint.text = NSLocalizedString("id_the_1_year_2fa_reset_process", comment: "")
-            lblHowtoTitle.text = NSLocalizedString("id_how_to_stop_this_reset", comment: "")
-            lblHowtoHint.text = NSLocalizedString("id_if_you_are_the_rightful_owner", comment: "")
-            btnCancelReset.setTitle(NSLocalizedString("id_cancel_2fa_reset", comment: ""), for: .normal)
-            lblPermanentTitle.text = NSLocalizedString("id_undo_2fa_dispute", comment: "")
-            lblPermanentHint.text = NSLocalizedString("id_if_you_initiated_the_2fa_reset", comment: "")
+            lblTitle.text = "id_2fa_dispute_in_progress".localized
+            lblResetTitle.text = "id_your_wallet_is_locked_under_2fa".localized
+            lblResetHint.text = "id_the_1_year_2fa_reset_process".localized
+            lblHowtoTitle.text = "id_how_to_stop_this_reset".localized
+            lblHowtoHint.text = "id_if_you_are_the_rightful_owner".localized
+            btnCancelReset.setTitle("id_cancel_2fa_reset".localized, for: .normal)
+            lblPermanentTitle.text = "id_undo_2fa_dispute".localized
+            lblPermanentHint.text = "id_if_you_initiated_the_2fa_reset".localized
             // when in dispute, use the button to undo a dispute
-            btnUndoReset.setTitle(NSLocalizedString("id_undo_2fa_dispute", comment: ""), for: .normal)
+            btnUndoReset.setTitle("id_undo_2fa_dispute".localized, for: .normal)
             return
         }
         let resetDaysRemaining = session?.twoFactorConfig?.twofactorReset.daysRemaining
-        lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
-        lblResetTitle.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining ?? 0)
-        lblResetHint.text = NSLocalizedString("id_the_waiting_period_is_necessary", comment: "")
-        lblHowtoTitle.text = NSLocalizedString("id_how_to_stop_this_reset", comment: "")
-        lblHowtoHint.text = String(format: NSLocalizedString("id_if_you_have_access_to_a", comment: ""), resetDaysRemaining ?? 0)
-        btnCancelReset.setTitle(NSLocalizedString("id_cancel_2fa_reset", comment: ""), for: .normal)
-        lblPermanentTitle.text = NSLocalizedString("id_permanently_block_this_wallet", comment: "")
-        lblPermanentHint.text = NSLocalizedString("id_if_you_did_not_request_the", comment: "")
+        lblTitle.text = "id_2fa_reset_in_progress".localized
+        lblResetTitle.text = String(format: "id_your_wallet_is_locked_for_a".localized, resetDaysRemaining ?? 0)
+        lblResetHint.text = "id_the_waiting_period_is_necessary".localized
+        lblHowtoTitle.text = "id_how_to_stop_this_reset".localized
+        lblHowtoHint.text = String(format: "id_if_you_have_access_to_a".localized, resetDaysRemaining ?? 0)
+        btnCancelReset.setTitle("id_cancel_2fa_reset".localized, for: .normal)
+        lblPermanentTitle.text = "id_permanently_block_this_wallet".localized
+        lblPermanentHint.text = "id_if_you_did_not_request_the".localized
         // when not in dispute, use the button to dispute
-        btnUndoReset.setTitle(NSLocalizedString("id_dispute_twofactor_reset", comment: ""), for: .normal)
+        btnUndoReset.setTitle("id_dispute_twofactor_reset".localized, for: .normal)
         btnUndoReset?.titleLabel?.lineBreakMode = NSLineBreakMode.byWordWrapping
         btnUndoReset?.titleLabel?.textAlignment = .center
     }
@@ -79,7 +79,7 @@ class Learn2faViewController: UIViewController {
                 }
             } catch {
                 self.stopAnimating()
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
+                self.showAlert(title: "id_error".localized, message: "id_cancel_twofactor_reset".localized)
             }
         }
     }
@@ -99,7 +99,7 @@ class Learn2faViewController: UIViewController {
                 }
             } catch {
                 self.stopAnimating()
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
+                self.showAlert(title: "id_error".localized, message: "id_dispute_twofactor_reset".localized)
             }
         }
     }
@@ -119,7 +119,7 @@ class Learn2faViewController: UIViewController {
                 }
             } catch {
                 self.stopAnimating()
-                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
+                self.showAlert(title: "id_error".localized, message: "id_undo_2fa_dispute".localized)
             }
         }
     }
@@ -129,12 +129,12 @@ class Learn2faViewController: UIViewController {
     }
 
     @IBAction func BtnUndoReset(_ sender: Any) {
-        let alertTitle = isDisputeActive ? NSLocalizedString("id_undo_2fa_dispute", comment: "") : NSLocalizedString("id_dispute_twofactor_reset", comment: "")
+        let alertTitle = isDisputeActive ? "id_undo_2fa_dispute".localized : "id_dispute_twofactor_reset".localized
         let alertMsg = isDisputeActive ? "Provide the email you previously used to dispute" : ""
         let alert = UIAlertController(title: alertTitle, message: alertMsg, preferredStyle: .alert)
-        alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_email", comment: "") }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
+        alert.addTextField { (textField) in textField.placeholder = "id_email".localized }
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: "id_next".localized, style: .default) { _ in
             let email = alert.textFields![0].text!
             if self.isDisputeActive {
                 self.undoReset(email: email)

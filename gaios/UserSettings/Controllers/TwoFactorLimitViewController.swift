@@ -47,8 +47,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_twofactor_threshold", comment: "")
-        nextButton.setTitle(NSLocalizedString("id_set_twofactor_threshold", comment: ""), for: .normal)
+        title = "id_twofactor_threshold".localized
+        nextButton.setTitle("id_set_twofactor_threshold".localized, for: .normal)
         nextButton.addTarget(self, action: #selector(nextClick), for: .touchUpInside)
         limitTextField.becomeFirstResponder()
         limitTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
@@ -72,13 +72,13 @@ class TwoFactorLimitViewController: KeyboardViewController {
         isFiat = limits.isFiat
         if limits.isFiat {
             let (amount, denom) = Balance.fromFiat(limits.fiat ?? "0")?.toValue() ?? ("", "")
-            descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
+            descriptionLabel.text = String(format: "id_your_twofactor_threshold_is_s".localized, "\(amount) \(denom)")
         } else {
             let denom = denomination.rawValue
             let value: String? = limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)
 //            let assetId = session.gdkNetwork.getFeeAsset()
 //            let (amount, _) = Balance.fromDenomination(value ?? "0", assetId: assetId)?.toFiat() ?? ("", "")
-            descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(value ?? "0") \(denom)")
+            descriptionLabel.text = String(format: "id_your_twofactor_threshold_is_s".localized, "\(value ?? "0") \(denom)")
         }
         refresh()
     }

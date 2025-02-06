@@ -26,7 +26,7 @@ class ShowMnemonicsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_recovery_phrase", comment: "")
+        title = "id_recovery_phrase".localized
         lblHint.text = "id_the_recovery_phrase_can_be_used".localized
         let isHW = AccountsRepository.shared.current?.isHW ?? false
         let derivedAccount = AccountsRepository.shared.current?.getDerivedLightningAccount()

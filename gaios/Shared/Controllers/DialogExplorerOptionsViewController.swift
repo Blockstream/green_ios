@@ -31,9 +31,9 @@ class DialogExplorerOptionsViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_view_in_explorer", comment: "")
-        btnConfidential.setTitle(NSLocalizedString("id_confidential", comment: ""), for: .normal)
-        btnNonConfidential.setTitle(NSLocalizedString("id_non_confidential", comment: ""), for: .normal)
+        lblTitle.text = "id_view_in_explorer".localized
+        btnConfidential.setTitle("id_confidential".localized, for: .normal)
+        btnNonConfidential.setTitle("id_non_confidential".localized, for: .normal)
     }
 
     func setStyle() {

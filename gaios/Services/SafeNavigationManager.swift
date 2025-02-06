@@ -42,7 +42,7 @@ class SafeNavigationManager {
                     break
                 case .copy:
                     UIPasteboard.general.string = url.absoluteString
-                    DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
+                    DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
             }

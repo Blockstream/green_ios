@@ -107,14 +107,14 @@ extension MultisigSettingsViewController {
 
     func showRecoveryTransactions() {
         let enabled = viewModel.settings.notifications?.emailOutgoing ?? false
-        let alert = UIAlertController(title: NSLocalizedString("id_recovery_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_enable", comment: ""), style: enabled ? .destructive : .default) { [self] _ in
+        let alert = UIAlertController(title: "id_recovery_transaction_emails".localized, message: "", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "id_enable".localized, style: enabled ? .destructive : .default) { [self] _ in
             Task { try? await viewModel.enableRecoveryTransactions(true) }
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_disable", comment: ""), style: !enabled ? .destructive : .default) { _ in
+        alert.addAction(UIAlertAction(title: "id_disable".localized, style: !enabled ? .destructive : .default) { _ in
             Task { try? await self.viewModel.enableRecoveryTransactions(false) }
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
 }

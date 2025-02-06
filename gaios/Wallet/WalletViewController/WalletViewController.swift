@@ -286,9 +286,9 @@ class WalletViewController: UIViewController {
     }
 
     func setContent() {
-        lblWelcomeTitle.text = NSLocalizedString("id_welcome_to_your_wallet", comment: "")
-        lblWelcomeHint.text = NSLocalizedString("id_create_your_first_account_to", comment: "")
-        btnWelcomeCreate.setTitle(NSLocalizedString("id_create_account", comment: ""), for: .normal)
+        lblWelcomeTitle.text = "id_welcome_to_your_wallet".localized
+        lblWelcomeHint.text = "id_create_your_first_account_to".localized
+        btnWelcomeCreate.setTitle("id_create_account".localized, for: .normal)
         btnSend.setTitle("id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
         // Sweep is only supported in watch-only for btc multisig wallets
@@ -853,7 +853,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch WalletSection(rawValue: section) {
         case .transaction:
-            return headerView(NSLocalizedString("id_latest_transactions", comment: ""))
+            return headerView("id_latest_transactions".localized)
         default:
             return nil
         }
@@ -1006,7 +1006,7 @@ extension WalletViewController {
             lblNoTransactions.font = UIFont.systemFont(ofSize: 14, weight: .regular)
             lblNoTransactions.textColor = UIColor.gGrayTxt()
             lblNoTransactions.numberOfLines = 0
-            lblNoTransactions.text = NSLocalizedString("id_your_transactions_will_be_shown", comment: "")
+            lblNoTransactions.text = "id_your_transactions_will_be_shown".localized
             lblNoTransactions.translatesAutoresizingMaskIntoConstraints = false
             section.addSubview(lblNoTransactions)
 
