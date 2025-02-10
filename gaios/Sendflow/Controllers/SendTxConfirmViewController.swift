@@ -437,8 +437,12 @@ class SendTxConfirmViewController: UIViewController {
 
     func exportPsbt() {
         Task {
-            try await viewModel.exportPsbt()
-            presentQRUnlockSignDialogViewController()
+            do {
+                try await viewModel.exportPsbt()
+                presentQRUnlockSignDialogViewController()
+            } catch {
+                presentSendFailViewController(error)
+            }
         }
     }
 
@@ -448,7 +452,7 @@ class SendTxConfirmViewController: UIViewController {
                 startLoader(message: "id_sending".localized)
                 if viewModel.isLightning {
                     presentLTConfirmingViewController()
-                } else if viewModel.hasHW && !viewModel.enableExportPsbt() {
+                } else if viewModel.hasHW && viewModel.signedPsbt == nil {
                     presentSendHWConfirmViewController()
                 }
                 let res = try await self.viewModel.send()
@@ -498,9 +502,7 @@ class SendTxConfirmViewController: UIViewController {
     }
 
     @IBAction func btnSignViaQr(_ sender: Any) {
-        if viewModel.signedPsbt == nil {
-            exportPsbt()
-        }
+        exportPsbt()
     }
 }
 

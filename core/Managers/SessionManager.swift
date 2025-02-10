@@ -624,7 +624,7 @@ public class SessionManager {
     }
     
     public func getPsbt(tx: Transaction) async throws -> String? {
-        let res = try await wrap(fun: session?.signPsbt, params: tx.details)
+        let res = try await wrap(fun: session?.PsbtFromJSON, params: tx.details)
         let result = res["result"] as? [String: Any]
         return result?["psbt"] as? String
     }
@@ -636,7 +636,7 @@ public class SessionManager {
     }
 
     public func psbtGetDetails(params: PsbtGetDetailParams) async throws -> Transaction {
-        let res = try await wrap(fun: session?.signPsbt, params: params.toDict() ?? [:])
+        let res = try await wrap(fun: session?.PsbtGetDetails, params: params.toDict() ?? [:])
         let result = res["result"] as? [String: Any]
         return Transaction(result ?? [:], subaccount: nil)
     }

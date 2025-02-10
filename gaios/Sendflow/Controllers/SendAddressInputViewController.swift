@@ -40,7 +40,7 @@ class SendAddressInputViewController: KeyboardViewController {
         if let text = viewModel.input {
             addressTextView.text = text
             reload()
-            Task { [weak self] in await self?.validate(text: text) }
+            Task { [weak self] in await self?.validate() }
         }
 
     }
@@ -124,16 +124,18 @@ class SendAddressInputViewController: KeyboardViewController {
     @IBAction func btnPaste(_ sender: Any) {
         if let text = UIPasteboard.general.string {
             addressTextView.text = text
+            viewModel.input = text
             reload()
-            Task { [weak self] in await self?.validate(text: text) }
+            Task { [weak self] in await self?.validate() }
         }
     }
 
     @IBAction func btnPasteSmall(_ sender: Any) {
         if let text = UIPasteboard.general.string {
             addressTextView.text = text
+            viewModel.input = text
             reload()
-            Task { [weak self] in await self?.validate(text: text) }
+            Task { [weak self] in await self?.validate() }
         }
     }
 
@@ -146,20 +148,24 @@ class SendAddressInputViewController: KeyboardViewController {
 
     @IBAction func btnNext(_ sender: Any) {
         if let text = addressTextView.text {
-            Task { [weak self] in await self?.validate(text: text) }
+            viewModel.input = text
+            Task { [weak self] in await self?.validate() }
         }
     }
 
-    func validate(text: String) async {
-        do {
-            btnNext.setStyle(.primaryDisabled)
-            viewModel.input = text
-            try await viewModel.parse()
-            try await viewModel.loadSubaccountBalance()
+    func validate() async {
+        btnNext.setStyle(.primaryDisabled)
+        let res = await Task.detached {
+            try await self.viewModel.parse()
+            try await self.viewModel.loadSubaccountBalance()
+            
+        }.result
+        switch res {
+        case .success():
             enableError(false)
             btnNext.setStyle(.primary)
             next()
-        } catch {
+        case .failure(let error):
             enableError(true, text: error.description())
         }
     }
@@ -361,10 +367,16 @@ extension SendAddressInputViewController: UITextViewDelegate {
 
 extension SendAddressInputViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
-        addressTextView.text = value.result
+        var input = value.result
+        if let psbt = value.bcur?.psbt {
+            viewModel.txType = .psbt
+            input = psbt
+        }
+        addressTextView.text = input
+        viewModel.input = input
         reload()
         Task { [weak self] in
-            await self?.validate(text: value.result ?? "")
+            await self?.validate()
         }
     }
     func didStop() {

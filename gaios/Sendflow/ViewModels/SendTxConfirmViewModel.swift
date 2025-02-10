@@ -25,6 +25,7 @@ class SendTxConfirmViewModel {
     var unsignedPsbt: String?
     var signedPsbt: String?
     var bcurUnsignedPsbt: BcurEncodedData?
+    var importSignedPsbt = false
     
     var isWithdraw: Bool {
         return withdrawData != nil
@@ -51,6 +52,7 @@ class SendTxConfirmViewModel {
         self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletManager.current?.account.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
         self.unsignedPsbt = unsignedPsbt
         self.signedPsbt = signedPsbt
+        self.importSignedPsbt = signedPsbt != nil
     }
 
     var isLightning: Bool { subaccount?.networkType == .lightning }
@@ -117,7 +119,7 @@ class SendTxConfirmViewModel {
         transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
     }
     func enableExportPsbt() -> Bool {
-        wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep
+        wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
     }
     func needExportPsbt() -> Bool {
         wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
