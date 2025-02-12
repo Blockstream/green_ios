@@ -1,9 +1,10 @@
 [main]
 host = https://www.transifex.com
 
-[blockstream-green.localizablestrings]
+[o:blockstream:p:blockstream-green:r:localizablestrings]
 file_filter = translations/blockstream-green.localizablestrings/<lang>.strings
 source_file = Localizable.strings
 source_lang = en
-type = STRINGS
-
+type          = STRINGS
+minimum_perc  = 0
+resource_name = Localizable.strings

@@ -52,13 +52,19 @@ check_command iconv
 
 # --- Build virtualenv
 export LC_CTYPE="en_US.UTF-8"
-python3 -m virtualenv venv
+python3 -m venv venv
 source venv/bin/activate
-pip install transifex-client lxml
+pip install lxml==5.1.0
+
+# --- Install transifex client
+if [ ! -f tx ]; then
+	curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
+fi
 
 # --- Fetch transifex
 export TG_TOKEN=${TOKEN}
-tx pull -f -a -s
+./tx pull -f -a
+./tx pull -f -s
 
 function copy_translations {
   lang=$1
@@ -92,5 +98,6 @@ copy_translations 'zh' 'zh'
 copy_translations 'cs' 'cs'
 copy_translations 'ro' 'ro'
 
+rm Localizable.strings
 rm -rf translations
 deactivate

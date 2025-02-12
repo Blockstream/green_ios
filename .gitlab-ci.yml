@@ -23,6 +23,24 @@ test_format:
     - fastlane run swiftlint
 
 # BUILD
+build_strings:
+  stage: build
+  when: manual
+  artifacts:
+    name: "green-ios-strings-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - translations
+  tags:
+    - osx
+  variables:
+    TX_TOKEN: $TX_TOKEN
+  script:
+    - ./tools/transifex.sh -t ${TX_TOKEN}
+    - mkdir translations
+    - cp -rf gaios/*.lproj translations
+    - rm -rf translations/Base.lproj
 
 build_unsigned_debug:
   stage: build
