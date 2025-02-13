@@ -3,10 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [4.1.6] - 2025-02-11
+## [Unreleased]
 
 ### Added
 - Language preference in App Settings
+
+### Changed
+- Update translations 
+
+## [4.1.6] - 2025-02-11
 
 ### Changed
 - Update GDK to 0.74.3

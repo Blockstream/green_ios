@@ -548,7 +548,7 @@
 "id_for_more_information_read_more" = "For more information, Read More";
 "id_for_most_users" = "For most users";
 "id_format_is_not_supported_or_no" = "Format is not supported or no data was found.";
-"id_from" = "FROM";
+"id_from" = "From";
 "id_fully_airgapped_with_qr" = "Fully air-gapped with QR";
 "id_funding_transaction_id" = "Funding Transaction ID";
 "id_funds_received" = "Funds Received!";
@@ -1334,7 +1334,7 @@
 "id_time_s" = "Time: %@";
 "id_tip_we_recommend_you_enable" = "Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you'll have to wait at least one year until the 2FA expires.";
 "id_tip_you_can_use_the" = "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.";
-"id_to" = "TO";
+"id_to" = "To";
 "id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don't move funds often enough.";
 "id_to_show_balances_and" = "to show balances and transactions on Liquid accounts up to 10x faster at every login, and it's necessary to use Liquid singlesig accounts.";
