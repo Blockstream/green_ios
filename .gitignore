@@ -11,3 +11,4 @@ dist
 breez_sdk
 .env
 gaios.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+fastlane/.env.default
