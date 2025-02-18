@@ -50,23 +50,23 @@ public class BleLedgerConnection: HWConnectionProtocol {
         public func description() -> String? {
             switch code {
             case .SW_OK:
-                nil
+                return nil
             case .SW_INS_NOT_SUPPORTED:
-                "Command not supported"
+                return "Command not supported"
             case .SW_WRONG_P1_P2:
-                "Wrong package"
+                return "Wrong package"
             case .SW_INCORRECT_P1_P2:
-                "Incorrect package"
+                return "Incorrect package"
             case .SW_RECONNECT:
-                "Reconnection required"
+                return "Reconnection required"
             case .SW_INVALID_STATUS:
-                "Invalid status"
+                return "Invalid status"
             case .SW_REJECTED:
-                "Transaction was rejected by user"
+                return "Transaction was rejected by user"
             case .SW_INVALID_PKG:
-                "Invalid package"
+                return "Invalid package"
             case .SW_ABORT:
-                "Aborted operation"
+                return "Aborted operation"
             }
         }
     }

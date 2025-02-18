@@ -221,13 +221,13 @@ class DialogFeedbackViewController: KeyboardViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
-        var request = ZendeskErrorRequest(shareLogs: false, type: .feedback)
-        request.email = emailField.text
-        request.message = messageTextView.text
         Task {
             startAnimating()
-            let res = await Task.detached(priority: .background) {
-                try await ZendeskSdk.shared.submitNewTicket(req: request)
+            let res = await Task.detached(priority: .background) { [weak self] in
+                var request = ZendeskErrorRequest(shareLogs: false, type: .feedback)
+                request.email = await self?.emailField.text
+                request.message = await self?.messageTextView.text
+                _ = try await ZendeskSdk.shared.submitNewTicket(req: request)
             }.result
             stopAnimating()
             switch res {

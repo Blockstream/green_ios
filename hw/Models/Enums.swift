@@ -15,9 +15,12 @@ public enum JadeFmwPath: String, CaseIterable, Codable {
 extension JadeFmwPath {
     static func from(_ jadeBoardType: JadeBoardType) -> JadeFmwPath {
         switch jadeBoardType {
-        case .v1: JadeFmwPath.v1
-        case .v1_1: JadeFmwPath.v1_1
-        case .v2: JadeFmwPath.v2
+        case .v1:
+            return JadeFmwPath.v1
+        case .v1_1:
+            return JadeFmwPath.v1_1
+        case .v2:
+            return JadeFmwPath.v2
         }
     }
 }
