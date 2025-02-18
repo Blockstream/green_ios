@@ -2,17 +2,23 @@ stages:
     - format
     - build
     - sign
+    - distribute_qa
+    - upload
     - deploy
-    - gcloud
-    - test
-    - store
 
 # FORMAT
 
+.setup_env:
+  before_script:
+    - export LC_ALL=en_US.UTF-8
+    - export LANG=en_US.UTF-8
+    - ruby --version && gem --version && fastlane --version
+
 test_format:
   stage: format
+  extends: .setup_env
   tags:
-    - osx
+    - mini
   script:
     - fastlane run swiftlint
 
@@ -21,6 +27,7 @@ test_format:
 build_unsigned_debug:
   stage: build
   when: manual
+  extends: .setup_env
   tags:
     - mini
   variables:
@@ -30,8 +37,48 @@ build_unsigned_debug:
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_unsigned_debug
 
+development:
+  stage: build
+  extends: .setup_env
+  tags:
+    - osx-m1
+  artifacts:
+    name: "green-ios-development-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - dev
+  variables:
+    GDK_COMMIT: latest
+  script:
+    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
+    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
+    - fastlane dev_release
+
+production:
+  stage: build
+  when: manual
+  extends: .setup_env
+  tags:
+    - osx-m1
+  artifacts:
+    name: "green-ios-production-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - prod
+  variables:
+    GDK_COMMIT: latest
+  script:
+    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
+    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
+    - ruby --version && gem --version && fastlane --version
+    - fastlane prod_release
+
 build_dev_release:
   stage: build
+  when: manual
+  extends: .setup_env
   tags:
     - mini
   artifacts:
@@ -50,6 +97,7 @@ build_dev_release:
 build_prod_release:
   stage: build
   when: manual
+  extends: .setup_env
   tags:
     - mini
   artifacts:
@@ -99,10 +147,18 @@ sign_prod_release:
   after_script:
     - rm -rf prod/Green.xcarchive
 
-# DEPLOY
+# UPLOAD
+.distribute: &distribute
+  - ./tools/distribute.sh --app **/*.ipa --dest dev --url $LINK
+  - echo "$LINK/index.html" | tee -a link | qrencode -t UTF8 && cat link
 
-deploy_dev_release:
-  stage: deploy
+.upload_countly: &upload_countly
+  - mkdir tmp && unzip ./**/*.app.dSYM.zip -d tmp
+  - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
+  - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
+
+distribute_dev:
+  stage: distribute_qa
   needs: ["sign_dev_release"]
   tags:
     - osxsigner
@@ -115,17 +171,33 @@ deploy_dev_release:
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
   script:
-    - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
-    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
-    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
-    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
-    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url $LINK
-    - echo "$LINK/index.html"
-    - echo "$LINK/index.html" | qrencode -t UTF8
+    - *upload_countly
+    - *distribute
+  
+distribute_development:
+  stage: distribute_qa
+  needs: ["development"]
+  tags:
+    - osxsigner
+  artifacts:
+    name: "green-ios-development-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - dev
+  variables:
+    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
+    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
+  script:
+    - *upload_countly
+    - *distribute
 
-deploy_prod_release:
-  stage: deploy
+distribute_prod:
+  stage: distribute_qa
+  needs: 
   needs: ["sign_prod_release"]
   tags:
     - osxsigner
@@ -138,21 +210,36 @@ deploy_prod_release:
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
   script:
-    - mkdir tmp && unzip ./prod/Green.app.dSYM.zip -d tmp
-    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
-    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
-    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
-    - ./tools/distribute.sh --app prod/Green.ipa --dest prod --url $LINK
-    - echo "$LINK/index.html"
-    - echo "$LINK/index.html" | qrencode -t UTF8
+    - *upload_countly
+    - *distribute
+
+distribute_production:
+  stage: distribute_qa
+  needs: ["production"]
+  tags:
+    - osxsigner
+  artifacts:
+    name: "green-ios-production-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - prod
+  variables:
+    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
+    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
+  script:
+    - *upload_countly
+    - *distribute
 
 # STORE
 
 upload_apple_store:
   when: manual
-  stage: store
-  needs: ["deploy_prod_release"]
+  stage: deploy
+  needs: ["cp_gcloud_prod"]
   tags:
     - osxsigner
   artifacts:
@@ -164,54 +251,62 @@ upload_apple_store:
   script:
     - fastlane upload_apple_store
 
-# TESTS
-
-ui_tests:
-  stage: test
-  tags:
-    - osx
-  when: manual
-  needs: ["build_unsigned_debug"]
-  before_script:
-    - xcrun simctl boot "iPhone 11"
-    - xcrun simctl privacy "iPhone 11" grant all io.blockstream.green
-  script:
-    - cd $CI_PROJECT_DIR
-    - export LC_ALL=en_US.UTF-8
-    - export LANG=en_US.UTF-8
-    - ./tools/fetch_gdk_binaries.sh --simulator
-    - fastlane ui_tests
-  after_script:
-    - xcrun simctl shutdown "iPhone 11"
 
 # GCLOUD
 
+.cp_gcloud: &cp_gcloud
+    - echo gs://$URLPATH
+    - TMPF=$(mktemp) || exit 1
+    - echo $GCLOUD_PUSH_KEY > $TMPF
+    - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
+    - gcloud auth activate-service-account --key-file=$TMPF
+    - gsutil cp -r $CI_PROJECT_DIR/$FOLDER gs://$URLPATH
+    - echo "https://storage.googleapis.com/$URLPATH/index.html"
+
 cp_gcloud_dev:
   image: blockstream/gcloud-docker-tf:1.1.7
-  needs: ["deploy_dev_release"]
+  needs: ["distribute_dev"]
   tags:
     - ga
-  stage: gcloud
+  stage: upload
+  variables:
+    FOLDER: "dev"
+    URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
   script:
-    - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev
-    - TMPF=$(mktemp) || exit 1
-    - echo $GCLOUD_PUSH_KEY > $TMPF
-    - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
-    - gcloud auth activate-service-account --key-file=$TMPF
-    - gsutil cp -r $CI_PROJECT_DIR/dev gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev
-    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev/index.html"
-
+    - *cp_gcloud
+  
 cp_gcloud_prod:
   image: blockstream/gcloud-docker-tf:1.1.7
-  needs: ["deploy_prod_release"]
+  needs: ["distribute_prod"]
   tags:
     - ga
-  stage: gcloud
+  stage: upload
+  variables:
+    FOLDER: "prod"
+    URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
   script:
-    - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod
-    - TMPF=$(mktemp) || exit 1
-    - echo $GCLOUD_PUSH_KEY > $TMPF
-    - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
-    - gcloud auth activate-service-account --key-file=$TMPF
-    - gsutil cp -r $CI_PROJECT_DIR/prod gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod
-    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod/index.html"
+    - *cp_gcloud
+
+cp_gcloud_development:
+  image: blockstream/gcloud-docker-tf:1.1.7
+  needs: ["distribute_development"]
+  tags:
+    - ga
+  stage: upload
+  variables:
+    FOLDER: "dev"
+    URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
+  script:
+    - *cp_gcloud
+
+cp_gcloud_production:
+  image: blockstream/gcloud-docker-tf:1.1.7
+  needs: ["distribute_production"]
+  tags:
+    - ga
+  stage: upload
+  variables:
+    FOLDER: "prod"
+    URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
+  script:
+    - *cp_gcloud
