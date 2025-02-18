@@ -44,13 +44,14 @@ class AccountAssetCell: UITableViewCell {
         imgLigh.isHidden = !model.account.gdkNetwork.lightning
 
         let satoshi = model.balance.first?.value ?? 0
+        [lblAmount, lblFiat].forEach { $0.isHidden = true }
         if let balance = Balance.fromSatoshi(satoshi, assetId: model.asset.assetId)?.toValue() {
             lblAmount.text = "\(balance.0) \(balance.1)"
+            lblAmount.isHidden = !model.showBalance
         }
         if let balance = Balance.fromSatoshi(satoshi, assetId: model.asset.assetId)?.toFiat() {
             lblFiat.text = "\(balance.0) \(balance.1)"
+            lblFiat.isHidden = !model.showBalance
         }
-        lblAmount.isHidden = !model.showBalance
-        lblFiat.isHidden = !model.showBalance
     }
 }
