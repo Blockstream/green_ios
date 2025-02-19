@@ -16,7 +16,7 @@ extension Transaction {
         if type == .redeposit {
             return [feeAsset: -1 * Int64(fee ?? 0)]
         } else {
-            // remove L-BTC asset only if fee on outgoing transactions
+            // remove LBTC asset only if fee on outgoing transactions
             if type == .some(.outgoing) || type == .some(.mixed) {
                 return amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(fee ?? 0)) })
             }
@@ -28,7 +28,7 @@ extension Transaction {
         if type == .some(.redeposit) {
             return [:]
         } else if isLiquid {
-            // remove L-BTC asset only if fee on outgoing transactions
+            // remove LBTC asset only if fee on outgoing transactions
             if type == .some(.outgoing) || type == .some(.mixed) {
                 return amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee ?? 0)) })
             }

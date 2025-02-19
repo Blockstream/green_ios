@@ -653,8 +653,8 @@
 "id_install_version_s" = "Installaltion de la version: %@?";
 "id_instant" = "Instantané";
 "id_insufficient_funds" = "Fonds insuffisants";
-"id_insufficient_lbtc_for_fees" = "Nombre de L-BTC insuffisant pour les frais";
-"id_insufficient_lbtc_to_send_a" = "Il manque des L-BTC pour procéder à la transaction. Dans Liquid, les L-BTC sont nécessaires pour payer les frais de transaction. Générer une adresse pour recevoir des L-BTC";
+"id_insufficient_lbtc_for_fees" = "Nombre de LBTC insuffisant pour les frais";
+"id_insufficient_lbtc_to_send_a" = "Il manque des LBTC pour procéder à la transaction. Dans Liquid, les LBTC sont nécessaires pour payer les frais de transaction. Générer une adresse pour recevoir des LBTC";
 "id_invalid_address" = "Adresse invalide";
 "id_invalid_amount" = "Montant invalide";
 "id_invalid_asset_id" = "Invalide actif ID";
@@ -704,7 +704,7 @@
 "id_last_ping_1d_ms" = "Dernier ping : %1$d ms";
 "id_later" = "PLUS TARD";
 "id_latest_transactions" = "Dernières transactions";
-"id_lbtc_has_no_issuer_and_is" = "Le L-BTC n'a pas d'émetteur et est créé sur le réseau via un peg-in.";
+"id_lbtc_has_no_issuer_and_is" = "Le LBTC n'a pas d'émetteur et est créé sur le réseau via un peg-in.";
 "id_learn_more" = "En savoir plus";
 "id_learn_more_about_amp_the_assets" = "En savoir plus sur la AMP, les actifs et votre éligibilité";
 "id_learn_more_about_s" = "En savoir plus sur %@.";
@@ -1465,7 +1465,7 @@
 "id_warning_there_is_already_a" = "AVERTISSEMENT: il existe déjà une demande de réinitialisation du deuxième facteur d'authentification pour votre portefeuille. Si vous faites une demande avec une nouvelle adresse email, votre portefeuille sera considéré comme contesté et probablement bloqué de manière permanente.";
 "id_warning_wallet_locked_by" = "ATTENTION : portefeuille verrouillé suite à une contestation sur le deuxième facteur. Contactez le support pour plus d'informations.";
 "id_warning_watchonly_credentials" = "Avertissement : Les identifiants de surveillance seulement seront enregistrés sur votre appareil.";
-"id_warning_you_need_a_positive" = "Attention! Vous devez avoir un solde positif de L-BTC pour pouvoir envoyer des transactions.";
+"id_warning_you_need_a_positive" = "Attention! Vous devez avoir un solde positif de LBTC pour pouvoir envoyer des transactions.";
 "id_watchonly" = "Watch-only";
 "id_watchonly_credentials" = "Informations d'identification du mode lecture seule";
 "id_watchonly_details" = "Détails du mode lecture seule";

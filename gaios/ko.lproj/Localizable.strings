@@ -653,8 +653,8 @@
 "id_install_version_s" = "%@? 버전 설치하기";
 "id_instant" = "즉시";
 "id_insufficient_funds" = "자산 부족";
-"id_insufficient_lbtc_for_fees" = "수수료를 지불할 L-BTC가 부족합니다";
-"id_insufficient_lbtc_to_send_a" = "L-BTC가 부족하여 거래를 전송할 수 없습니다. Liquid에서는 거래 수수료 결제 시 L-BTC가 사용됩니다. L-BTC를 받을 주소를 생성하세요.";
+"id_insufficient_lbtc_for_fees" = "수수료를 지불할 LBTC가 부족합니다";
+"id_insufficient_lbtc_to_send_a" = "LBTC가 부족하여 거래를 전송할 수 없습니다. Liquid에서는 거래 수수료 결제 시 LBTC가 사용됩니다. LBTC를 받을 주소를 생성하세요.";
 "id_invalid_address" = "유효하지 않은 주소";
 "id_invalid_amount" = "유효하지 않은 액수";
 "id_invalid_asset_id" = "잘못된 자산 ID";
@@ -704,7 +704,7 @@
 "id_last_ping_1d_ms" = "마지막 핑 : %1$d ms";
 "id_later" = "나중에";
 "id_latest_transactions" = "최근 거래";
-"id_lbtc_has_no_issuer_and_is" = "L-BTC는 발행자가 없고 페그인을 통해 네트워크에서 생성됩니다.";
+"id_lbtc_has_no_issuer_and_is" = "LBTC는 발행자가 없고 페그인을 통해 네트워크에서 생성됩니다.";
 "id_learn_more" = "더 보기";
 "id_learn_more_about_amp_the_assets" = "AMP, 자산 및 자격에 대해 자세히 알아보기";
 "id_learn_more_about_s" = "%@에 대해 더 알아보기.";
@@ -1465,7 +1465,7 @@
 "id_warning_there_is_already_a" = "경고 : 지갑에 대한 2FA 초기화 요청 기록이 있습니다. 새로운 이메일 주소로 지금 요청하시면 지갑은 이의 신청 상태로 전환되고 영구적으로 사용할 수 없게 될 수 있습니다.";
 "id_warning_wallet_locked_by" = "경고 : 지갑은 이중 보안 이의 신청으로 잠금 상태입니다. 자세한 내용은 고객 센터로 문의 바랍니다.";
 "id_warning_watchonly_credentials" = "경고 : 보기 전용 자격 증명이 사용자 기기에 저장됩니다.";
-"id_warning_you_need_a_positive" = "경고! L-BTC 잔액이 남아있어야 거래를 보낼 수 있습니다.";
+"id_warning_you_need_a_positive" = "경고! LBTC 잔액이 남아있어야 거래를 보낼 수 있습니다.";
 "id_watchonly" = "보기 전용";
 "id_watchonly_credentials" = "시계 전용 자격증명";
 "id_watchonly_details" = "시계 전용 세부사항";

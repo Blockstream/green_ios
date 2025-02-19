@@ -103,7 +103,7 @@ class TransactionCellModel {
         if tx.type == .redeposit {
             return [feeAsset: -1 * Int64(tx.fee ?? 0)]
         } else if tx.isLiquid {
-            // remove L-BTC asset only if fee on outgoing transactions
+            // remove LBTC asset only if fee on outgoing transactions
             if tx.type == .some(.outgoing) || tx.type == .some(.mixed) {
                 return tx.amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(tx.fee ?? 0)) })
             }

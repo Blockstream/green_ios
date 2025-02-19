@@ -653,8 +653,8 @@
 "id_install_version_s" = "Install version: %@?";
 "id_instant" = "Instant";
 "id_insufficient_funds" = "Insufficient funds";
-"id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
-"id_insufficient_lbtc_to_send_a" = "Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC";
+"id_insufficient_lbtc_for_fees" = "Insufficient LBTC for fees";
+"id_insufficient_lbtc_to_send_a" = "Insufficient LBTC to send a transaction. In Liquid, LBTC are needed to pay transaction fees. Generate an address to receive LBTC";
 "id_invalid_address" = "Invalid address";
 "id_invalid_amount" = "Invalid amount";
 "id_invalid_asset_id" = "Invalid Asset ID";
@@ -704,7 +704,7 @@
 "id_last_ping_1d_ms" = "Last ping: %1$d ms";
 "id_later" = "LATER";
 "id_latest_transactions" = "Latest transactions";
-"id_lbtc_has_no_issuer_and_is" = "L-BTC has no issuer and is instead created on the network via a peg-in.";
+"id_lbtc_has_no_issuer_and_is" = "LBTC has no issuer and is instead created on the network via a peg-in.";
 "id_learn_more" = "Learn more";
 "id_learn_more_about_amp_the_assets" = "Learn more about AMP, the assets and your eligibility";
 "id_learn_more_about_s" = "Learn more about %@.";
@@ -1465,7 +1465,7 @@
 "id_warning_there_is_already_a" = "WARNING: There is already a request to reset Two-Factor authentication for your wallet. If you now request with a new email address, your wallet will become disputed and likely permanently unavailable to you.";
 "id_warning_wallet_locked_by" = "WARNING: Wallet locked by Two-Factor dispute. Contact support for more information.";
 "id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
-"id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
+"id_warning_you_need_a_positive" = "Warning! You need a positive LBTC balance to be able to send transactions.";
 "id_watchonly" = "Watch-only";
 "id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";

@@ -55,9 +55,9 @@ public enum DenominationType: String, CodingKey {
     case Sats = "sats"
 
     public static let denominationsBTC: [DenominationType: String] = [ .BTC: "BTC", .MilliBTC: "mBTC", .MicroBTC: "µBTC", .Bits: "bits", .Sats: "sats"]
-    public static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "L-mBTC", .MicroBTC: "L-µBTC", .Bits: "L-bits", .Sats: "L-sats"]
+    public static let denominationsLBTC: [DenominationType: String] = [ .BTC: "LBTC", .MilliBTC: "LmBTC", .MicroBTC: "LµBTC", .Bits: "Lbits", .Sats: "Lsats"]
     public static let denominationsTEST: [DenominationType: String] = [ .BTC: "TEST", .MilliBTC: "mTEST", .MicroBTC: "µTEST", .Bits: "bTEST", .Sats: "sTEST"]
-    public static let denominationsLTEST: [DenominationType: String] = [ .BTC: "L-TEST", .MilliBTC: "L-mTEST", .MicroBTC: "L-µTEST", .Bits: "L-bTEST", .Sats: "L-sTEST"]
+    public static let denominationsLTEST: [DenominationType: String] = [ .BTC: "LTEST", .MilliBTC: "LmTEST", .MicroBTC: "LµTEST", .Bits: "LbTEST", .Sats: "LsTEST"]
 
     public static func denominations(for gdkNetwork: GdkNetwork) -> [DenominationType: String] {
         if gdkNetwork.liquid && gdkNetwork.mainnet {

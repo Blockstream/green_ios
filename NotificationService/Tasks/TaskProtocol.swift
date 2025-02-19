@@ -28,7 +28,7 @@ extension TaskProtocol {
         }
         logger.info("displayPushNotification threadIdentifier \(threadIdentifier ?? "", privacy: .public)")
 
-        bestAttemptContent.title = title //.localized
+        bestAttemptContent.title = NSLocalizedString(title, comment: "")
         contentHandler(bestAttemptContent)
     }
 }

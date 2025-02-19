@@ -653,8 +653,8 @@
 "id_install_version_s" = "Instalovat verzi: %@?";
 "id_instant" = "Okamžité";
 "id_insufficient_funds" = "Nedostatek finančních prostředků";
-"id_insufficient_lbtc_for_fees" = "Nedostatečný L-BTC pro poplatky";
-"id_insufficient_lbtc_to_send_a" = "Nedostatečný L-BTC k odeslání transakce. V Liquid jsou L-BTC k placení transakčních poplatků. Vygenerujte adresu pro příjem L-BTC";
+"id_insufficient_lbtc_for_fees" = "Nedostatečný LBTC pro poplatky";
+"id_insufficient_lbtc_to_send_a" = "Nedostatečný LBTC k odeslání transakce. V Liquid jsou LBTC k placení transakčních poplatků. Vygenerujte adresu pro příjem LBTC";
 "id_invalid_address" = "Neplatná adresa";
 "id_invalid_amount" = "Neplatná částka";
 "id_invalid_asset_id" = "Neplatné ID aktiva";
@@ -704,7 +704,7 @@
 "id_last_ping_1d_ms" = "Poslední ping: %1$d ms";
 "id_later" = "POZDĚJI";
 "id_latest_transactions" = "Poslední transakce";
-"id_lbtc_has_no_issuer_and_is" = "L-BTC nemá vydavatele a je místo toho vytvořen v síti pomocí peg-in.";
+"id_lbtc_has_no_issuer_and_is" = "LBTC nemá vydavatele a je místo toho vytvořen v síti pomocí peg-in.";
 "id_learn_more" = "Zjistit více";
 "id_learn_more_about_amp_the_assets" = "Další informace o AMP, aktivech a vaší způsobilosti";
 "id_learn_more_about_s" = "Dozvědět se víc o %@.";
@@ -1465,7 +1465,7 @@
 "id_warning_there_is_already_a" = "VAROVÁNÍ: Již existuje požadavek na resetování 2-Faktorové autentizace vaší peněženky. Pokud nyní požádáte o novou e-mailovou adresu, vaše peněženka bude sporná a pravděpodobně nebude trvale k dispozici.";
 "id_warning_wallet_locked_by" = "VAROVÁNÍ: Peněženka je uzamčena 2-Faktorovým sporem. Pro více informací kontaktujte podporu.";
 "id_warning_watchonly_credentials" = "Varování: Vaše údaje pro režim Pouze-pro-sledování budou uložena do vašeho zařízení";
-"id_warning_you_need_a_positive" = "Varování! Abyste mohli odesílat transakce, potřebujete kladný zůstatek L-BTC.";
+"id_warning_you_need_a_positive" = "Varování! Abyste mohli odesílat transakce, potřebujete kladný zůstatek LBTC.";
 "id_watchonly" = "Pouze-pro-sledování";
 "id_watchonly_credentials" = "Přístupové údaje pouze pro sledování";
 "id_watchonly_details" = "Pouze pro sledování - podrobnosti";
