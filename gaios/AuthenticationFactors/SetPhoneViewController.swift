@@ -219,7 +219,8 @@ class SetPhoneViewController: KeyboardViewController {
         Task {
             do {
                 let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone, isSmsBackup: isSmsBackup)
-                try await session.changeSettingsTwoFactor(method: method, config: config)
+                let params = ChangeSettingsTwoFactorParams(method: method, config: config)
+                try await session.changeSettingsTwoFactor(params)
                 _ = try await session.loadTwoFactorConfig()
                 await MainActor.run {
                     self.stopAnimating()

@@ -419,7 +419,8 @@ public class SessionManager {
     }
 
     public func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
-        try self.session?.refreshAssets(params: ["icons": icons, "assets": assets, "refresh": refresh])
+        let params: [String: Bool] = ["icons": icons, "assets": assets, "refresh": refresh]
+        try self.session?.refreshAssets(params: params)
     }
 
     public func getReceiveAddress(subaccount: UInt32) async throws -> Address {
@@ -432,10 +433,10 @@ public class SessionManager {
         return res["result"] as? [String: Int64] ?? [:]
     }
 
-    public func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) async throws {
+    public func changeSettingsTwoFactor(_ params: ChangeSettingsTwoFactorParams) async throws {
         do {
-            log("changeSettingsTwoFactor", ["method": method.rawValue, "config": config.toDict() ?? [:]])
-            let res = try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:])
+            log("changeSettingsTwoFactor", params.toDict() ?? [:])
+            let res = try self.session?.changeSettingsTwoFactor(method: params.method.rawValue, details: params.config.toDict() ?? [:])
             if let res = try await resolve(res) {
                 log("changeSettingsTwoFactor", res)
             }
@@ -445,8 +446,8 @@ public class SessionManager {
         }
     }
 
-    public func updateSubaccount(subaccount: UInt32, hidden: Bool) async throws {
-        _ = try await wrap(fun: self.session?.updateSubaccount, params: ["subaccount": subaccount, "hidden": hidden])
+    public func updateSubaccount(_ params: UpdateSubaccountParams) async throws {
+        _ = try await wrap(fun: self.session?.updateSubaccount, params: params.toDict() ?? [:])
     }
 
     public func createSubaccount(_ details: CreateSubaccountParams) async throws -> WalletItem {
@@ -455,8 +456,8 @@ public class SessionManager {
         return wallet
     }
 
-    public func renameSubaccount(subaccount: UInt32, newName: String) async throws {
-        _ = try await wrap(fun: self.session?.updateSubaccount, params: ["subaccount": subaccount, "name": newName])
+    public func renameSubaccount(_ params: UpdateSubaccountParams) async throws {
+        _ = try await wrap(fun: self.session?.updateSubaccount, params: params.toDict() ?? [:])
     }
 
     public func changeSettings(settings: Settings) async throws -> Settings? {
@@ -557,7 +558,7 @@ public class SessionManager {
             let subaccounts = try await self.subaccounts(true)
             if let first = subaccounts.filter({ $0.pointer == 0 }).first,
                first.isSinglesig && !(first.bip44Discovered ?? false) {
-                _ = try await self.updateSubaccount(subaccount: 0, hidden: true)
+                _ = try await self.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
             }
             return !subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty
         } catch { throw LoginError.connectionFailed() }
@@ -565,18 +566,18 @@ public class SessionManager {
 
     public func networkConnect() async {
         try? await reconnectionTasks.add {
-            let hint = ["tor_hint": "connect", "hint": "connect"]
-            self.log("reconnectHint", hint)
-            try? self.session?.reconnectHint(hint: hint)
+            let hint = ReconnectHintParams(torHint: "connect", hint: "connect")
+            self.log("reconnectHint", hint.toDict() ?? [:])
+            try? self.session?.reconnectHint(hint: hint.toDict() ?? [:])
         }
     }
 
     public func networkDisconnect() async {
         paused = true
         try? await reconnectionTasks.add {
-            let hint = ["tor_hint": "disconnect", "hint": "disconnect"]
-            self.log("reconnectHint", hint)
-            try? self.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
+            let hint = ReconnectHintParams(torHint: "disconnect", hint: "disconnect")
+            self.log("reconnectHint", hint.toDict() ?? [:])
+            try? self.session?.reconnectHint(hint: hint.toDict() ?? [:])
         }
     }
 

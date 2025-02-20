@@ -15,7 +15,6 @@ public func secureRandomData(count: Int) -> Data? {
     return nil
 }
 
-
 public extension Dictionary {
 
     func stringify() -> String? {
@@ -24,5 +23,4 @@ public extension Dictionary {
         }
         return nil
     }
- 
 }

@@ -27,7 +27,8 @@ class RecoveryTransactionsViewModel {
 
     func setEmail(session: SessionManager, email: String, isSetRecovery: Bool) async throws {
         let config = TwoFactorConfigItem(enabled: isSetRecovery ? false : true, confirmed: true, data: email)
-        try await session.changeSettingsTwoFactor(method: .email, config: config)
+        let params = ChangeSettingsTwoFactorParams(method: .email, config: config)
+        try await session.changeSettingsTwoFactor(params)
         _ = try await session.loadTwoFactorConfig()
     }
 }

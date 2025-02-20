@@ -41,7 +41,8 @@ class TwoFactorSettingsViewModel {
 
     func disable(session: SessionManager, type: TwoFactorType) async throws {
         let config = TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
-        try await session.changeSettingsTwoFactor(method: type, config: config)
+        let params = ChangeSettingsTwoFactorParams(method: type, config: config)
+        try await session.changeSettingsTwoFactor(params)
         try await session.loadTwoFactorConfig()
     }
 
@@ -59,19 +60,22 @@ class TwoFactorSettingsViewModel {
 
     func setEmail(session: SessionManager, email: String, isSetRecovery: Bool) async throws {
         let config = TwoFactorConfigItem(enabled: isSetRecovery ? false : true, confirmed: true, data: email)
-        try await session.changeSettingsTwoFactor(method: .email, config: config)
+        let params = ChangeSettingsTwoFactorParams(method: .email, config: config)
+        try await session.changeSettingsTwoFactor(params)
         try await session.loadTwoFactorConfig()
     }
 
     func setPhoneSms(session: SessionManager, countryCode: String, phone: String, sms: Bool) async throws {
         let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
-        try await session.changeSettingsTwoFactor(method: sms ? .sms : .phone, config: config)
+        let params = ChangeSettingsTwoFactorParams(method: sms ? .sms : .phone, config: config)
+        try await session.changeSettingsTwoFactor(params)
         try await session.loadTwoFactorConfig()
     }
 
     func setGauth(session: SessionManager, gauth: String) async throws {
         let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
-        try await session.changeSettingsTwoFactor(method: .gauth, config: config)
+        let params = ChangeSettingsTwoFactorParams(method: .gauth, config: config)
+        try await session.changeSettingsTwoFactor(params)
         try await session.loadTwoFactorConfig()
     }
 }

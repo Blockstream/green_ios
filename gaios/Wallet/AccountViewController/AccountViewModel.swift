@@ -159,7 +159,8 @@ class AccountViewModel {
         guard let session = wm?.sessions[account.gdkNetwork.network] else {
             return
         }
-        try await session.updateSubaccount(subaccount: account.pointer, hidden: true)
+        let params = UpdateSubaccountParams(subaccount: account.pointer, hidden: true)
+        try await session.updateSubaccount(params)
         account = try await wm?.subaccount(account: account)
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }
@@ -173,7 +174,8 @@ class AccountViewModel {
         guard let session = wm?.sessions[account.gdkNetwork.network] else {
             return
         }
-        try await session.renameSubaccount(subaccount: account.pointer, newName: name)
+        let params = UpdateSubaccountParams(subaccount: account.pointer, name: name)
+        try await session.renameSubaccount(params)
         account = try await wm?.subaccount(account: account)
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }

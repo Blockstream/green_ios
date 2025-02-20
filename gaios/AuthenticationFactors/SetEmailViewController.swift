@@ -72,7 +72,8 @@ class SetEmailViewController: KeyboardViewController {
         Task {
             do {
                 let config = TwoFactorConfigItem(enabled: self.isSetRecovery ? false : true, confirmed: true, data: text)
-                try await session.changeSettingsTwoFactor(method: .email, config: config)
+                let params = ChangeSettingsTwoFactorParams(method: .email, config: config)
+                try await session.changeSettingsTwoFactor(params)
                 try await session.loadTwoFactorConfig()
                 self.navigationController?.popViewController(animated: true)
             } catch {

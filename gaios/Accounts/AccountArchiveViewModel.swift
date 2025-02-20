@@ -23,7 +23,8 @@ class AccountArchiveViewModel {
 
     func unarchiveSubaccount(_ subaccount: WalletItem) async throws {
         guard let session = WalletManager.current?.sessions[subaccount.gdkNetwork.network] else { return }
-        try? await session.updateSubaccount(subaccount: subaccount.pointer, hidden: false)
+        let params = UpdateSubaccountParams(subaccount: subaccount.pointer, hidden: false)
+        try? await session.updateSubaccount(params)
         try? await loadSubaccounts()
     }
 }

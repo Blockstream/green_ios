@@ -96,7 +96,8 @@ class SetGauthViewController: UIViewController {
         Task {
             do {
                 let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
-                try await session.changeSettingsTwoFactor(method: .gauth, config: config)
+                let params = ChangeSettingsTwoFactorParams(method: .gauth, config: config)
+                try await session.changeSettingsTwoFactor(params)
                 try await self.session.loadTwoFactorConfig()
                 self.navigationController?.popViewController(animated: true)
             } catch {

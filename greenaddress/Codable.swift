@@ -7,12 +7,15 @@ public extension Encodable {
     }
 
     func toDict() -> [String: Any]? {
-        let data = try? encoded()
-        return try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        if let data = try? encoded() {
+            return try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
+        }
+        return nil
     }
 
     func stringify() -> String? {
-        if let data = try? JSONSerialization.data(withJSONObject: self.toDict() ?? [:], options: .fragmentsAllowed) {
+        if let dict = self.toDict(),
+            let data = try? JSONSerialization.data(withJSONObject: dict, options: .fragmentsAllowed) {
             return String(data: data, encoding: .utf8)
         }
         return nil
@@ -22,8 +25,10 @@ public extension Encodable {
 public extension Decodable {
 
     static func from(_ dict: [AnyHashable: Any]) -> Decodable? {
-        let data = try? JSONSerialization.data(withJSONObject: dict, options: [])
-        let json = try? JSONDecoder().decode(self, from: data ?? Data())
-        return json
+        if let data = try? JSONSerialization.data(withJSONObject: dict, options: []),
+           let json = try? JSONDecoder().decode(self, from: data) {
+            return json
+        }
+        return nil
     }
 }

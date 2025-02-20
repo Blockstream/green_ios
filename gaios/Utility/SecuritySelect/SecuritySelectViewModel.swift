@@ -189,7 +189,8 @@ class SecuritySelectViewModel {
         let subaccounts = try await session.subaccounts(true)
         let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
         if !used {
-            try await session.updateSubaccount(subaccount: 0, hidden: true)
+            let params = UpdateSubaccountParams(subaccount: 0, hidden: true)
+            try await session.updateSubaccount(params)
         }
         _ = try await wm.subaccounts()
     }
@@ -214,7 +215,8 @@ class SecuritySelectViewModel {
         let unfunded = items.filter { $0.1 == 0 }.map { $0.0 }.first
         if let unfunded = unfunded {
             // automatically unarchive it
-            try await session.updateSubaccount(subaccount: unfunded.pointer, hidden: false)
+            let params = UpdateSubaccountParams(subaccount: unfunded.pointer, hidden: false)
+            try await session.updateSubaccount(params)
             return try await session.subaccount(unfunded.pointer)
         }
         let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
@@ -225,7 +227,8 @@ class SecuritySelectViewModel {
                     if create {
                         try? await session.createSubaccount(params)
                     } else {
-                        try? await session.updateSubaccount(subaccount: funded.pointer, hidden: false)
+                        let params = UpdateSubaccountParams(subaccount: funded.pointer, hidden: false)
+                        try? await session.updateSubaccount(params)
                         try? await session.subaccount(funded.pointer)
                     }
                 }

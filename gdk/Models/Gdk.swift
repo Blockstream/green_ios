@@ -318,7 +318,7 @@ public struct ResolveCodeData: Codable {
         case method
         case action
     }
-    let attemptsRemaining: Int64?
+    let attemptsRemaining: Int?
     let status: String?
     let name: String?
     let method: String?
@@ -541,6 +541,48 @@ public struct SignPsbtParams: Codable {
         self.blindingNonces = blindingNonces
     }
 }
+
+public struct UpdateSubaccountParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case subaccount
+        case name
+        case hidden
+    }
+    public let subaccount: UInt32
+    public let name: String?
+    public let hidden: Bool?
+    public init(subaccount: UInt32, name: String? = nil, hidden: Bool? = nil) {
+        self.subaccount = subaccount
+        self.name = name
+        self.hidden = hidden
+    }
+}
+
+public struct ChangeSettingsTwoFactorParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case method
+        case config
+    }
+    public let method: TwoFactorType
+    public let config: TwoFactorConfigItem
+    public init(method: TwoFactorType, config: TwoFactorConfigItem) {
+        self.method = method
+        self.config = config
+    }
+}
+public struct ReconnectHintParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case torHint = "tor_hint"
+        case hint
+    }
+    public let torHint: String?
+    public let hint: String?
+    public init(torHint: String?, hint: String?) {
+        self.torHint = torHint
+        self.hint = hint
+    }
+}
+
 
 public struct SignPsbtResult: Codable {
     enum CodingKeys: String, CodingKey {

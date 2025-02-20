@@ -144,7 +144,7 @@ class TwoFactorAuthViewController: KeyboardViewController {
         if let attemptsRemaining = attemptsRemaining {
             lblAttempts.text = String(format: "id_attempts_remaining_d".localized, attemptsRemaining)
             lblAttempts.isHidden = false
-        } else if let failure = failure {
+        } else if failure {
             lblAttempts.text = "id_invalid_twofactor_code".localized
             lblAttempts.isHidden = false
         }
