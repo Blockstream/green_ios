@@ -38,7 +38,8 @@ class TwoFactorAuthViewController: KeyboardViewController {
 
     var methodEnum: TwoFactorType?
     var commontitle = ""
-    var attemptsRemaining = 0
+    var attemptsRemaining: Int?
+    var failure: Bool = false
 
     var enable2faCallMethod = false
 
@@ -139,7 +140,14 @@ class TwoFactorAuthViewController: KeyboardViewController {
     }
 
     func updateAttempts() {
-        lblAttempts.text =  String(format: "id_attempts_remaining_d".localized, attemptsRemaining)
+        lblAttempts.isHidden = true
+        if let attemptsRemaining = attemptsRemaining {
+            lblAttempts.text = String(format: "id_attempts_remaining_d".localized, attemptsRemaining)
+            lblAttempts.isHidden = false
+        } else if let failure = failure {
+            lblAttempts.text = "id_invalid_twofactor_code".localized
+            lblAttempts.isHidden = false
+        }
     }
 
     func fill() {

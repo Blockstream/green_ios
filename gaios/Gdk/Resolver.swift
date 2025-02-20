@@ -45,17 +45,17 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
 
     private var textContinuation: CheckedContinuation<String, Error>?
 
-    public func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase) async throws -> String {
+    public func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase, failure: Bool) async throws -> String {
         DispatchQueue.main.async {
             UIApplication.topViewController()?.stopAnimating()
         }
         return try await withCheckedThrowingContinuation { continuation in
             textContinuation = continuation
-            codeCustomDialog(method, attemptsRemaining: attemptsRemaining, enable2faCallMethod: enable2faCallMethod, network: network)
+            codeCustomDialog(method, attemptsRemaining: attemptsRemaining, enable2faCallMethod: enable2faCallMethod, network: network, failure: failure)
         }
     }
 
-    public func codeCustomDialog(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase) {
+    public func codeCustomDialog(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase, failure: Bool) {
         let methodDesc: String
         var methodEnum: TwoFactorType?
         if method == TwoFactorType.email.rawValue {
@@ -77,8 +77,9 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
 
         vc.methodEnum = methodEnum
         vc.commontitle = String(format: "id_please_provide_your_1s_code".localized, methodDesc.localized)
-        vc.attemptsRemaining = attemptsRemaining ?? 3
+        vc.attemptsRemaining = attemptsRemaining
         vc.enable2faCallMethod = enable2faCallMethod
+        vc.failure = failure
 
         vc.onCancel = { [weak self] in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {

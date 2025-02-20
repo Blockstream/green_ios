@@ -4,7 +4,7 @@ import greenaddress
 import hw
 
 public protocol PopupResolverDelegate: AnyObject {
-    func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase) async throws -> String
+    func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase, failure: Bool) async throws -> String
     func method(_ methods: [String]) async throws -> String
 }
 
@@ -38,6 +38,7 @@ public class GDKResolver {
     let hwDelegate: HwResolverDelegate?
     let hwDevice: HWProtocol?
     let gdkSession: GDKSession?
+    var prevResolveCode: [String: Any]? = nil
 
     public init(_ twoFactorCall: TwoFactorCall?,
                 gdkSession: GDKSession?,
@@ -117,17 +118,26 @@ public class GDKResolver {
                 }
                 let code = try await self.popupDelegate?.code(
                     resolveCode?.method ?? "",
-                    attemptsRemaining: Int(resolveCode?.attemptsRemaining ?? 3),
+                    attemptsRemaining: resolveCode?.attemptsRemaining,
                     enable2faCallMethod: enable2faCallMethod,
-                    network: network
+                    network: network,
+                    failure: prevResolveCodeMethod() == "gauth"
                 )
 
                 try await self.waitConnection()
                 try self.twoFactorCall?.resolveCode(code: code)
             }
+            prevResolveCode = res
         default:
             break
         }
+    }
+
+    func prevResolveCodeMethod() -> String? {
+        if let prevResolveCode = prevResolveCode, let prevResolveCode = ResolveCodeData.from(prevResolveCode) as? ResolveCodeData {
+            return prevResolveCode.method
+        }
+        return nil
     }
 
     func waitConnection() async throws {
