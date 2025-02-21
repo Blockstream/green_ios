@@ -192,6 +192,14 @@ platform :ios do
         }
       }
     )
+    resign(
+      ipa: "./dev/Green.ipa",
+      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
+      provisioning_profile: {
+        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/aca2f9e9-b91a-4d52-a484-a8dcdc0423e3.mobileprovision",
+        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/d4e9c171-bb09-49e5-97cc-fd23abceeff4.mobileprovision"
+      }
+    )
   end
 
   desc "Sign prod release"
@@ -223,6 +231,15 @@ platform :ios do
         }
       }
     )
+    resign(
+      ipa: "./prod/Green.ipa",
+      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
+      provisioning_profile: {
+        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/4d77aeda-c66b-4e3b-ae12-a63caf942b94.mobileprovision",
+        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/660c3b5b-778f-4d53-80ed-a48ca740ed34.mobileprovision"
+      }
+    )
+
   end
 
   desc "Upload apple store"
@@ -231,6 +248,7 @@ platform :ios do
       apple_id: '1402243590',
       itc_provider: 'D9W37S9468',
       ipa: "prod/Green.ipa",
+      username: ENV['FASTLANE_USER'],
       skip_waiting_for_build_processing: true
     )
   end

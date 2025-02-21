@@ -167,7 +167,7 @@ sign_prod_release:
 
 # UPLOAD
 .distribute: &distribute
-  - ./tools/distribute.sh --app **/*.ipa --dest dev --url $LINK
+  - ./tools/distribute.sh --app **/*.ipa --dest $FOLDER --url $LINK
   - echo "$LINK/index.html" | tee -a link | qrencode -t UTF8 && cat link
 
 .upload_countly: &upload_countly
@@ -189,6 +189,7 @@ distribute_dev:
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    FOLDER: "dev"
     LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
   script:
     - *upload_countly
@@ -208,6 +209,7 @@ distribute_development:
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    FOLDER: "dev"
     LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
   script:
     - *upload_countly
@@ -228,6 +230,7 @@ distribute_prod:
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    FOLDER: "prod"
     LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
   script:
     - *upload_countly
@@ -247,6 +250,7 @@ distribute_production:
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    FOLDER: "prod"
     LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
   script:
     - *upload_countly
@@ -254,14 +258,29 @@ distribute_production:
 
 # STORE
 
-upload_apple_store:
+upload_apple_store_prod:
   when: manual
   stage: deploy
-  needs: ["cp_gcloud_prod"]
+  needs: ["distribute_prod"]
   tags:
     - osxsigner
   artifacts:
     name: "green-ios-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - prod
+  script:
+    - fastlane upload_apple_store
+
+upload_apple_store_production:
+  when: manual
+  stage: deploy
+  needs: ["distribute_production"]
+  tags:
+    - osx-m1
+  artifacts:
+    name: "green-ios-production-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
     when: on_success
     paths:

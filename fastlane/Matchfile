@@ -1,5 +1,0 @@
-git_url()
-storage_mode("git")
-type("adhoc") # The default type, can be: appstore, adhoc, enterprise or development
-app_identifier(["io.blockstream.greendev", "io.blockstream.greendev.NotificationService"])
-username() # Your Apple Developer Portal username
