@@ -5442,7 +5442,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.6;
+				MARKETING_VERSION = 4.1.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -5487,7 +5487,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.6;
+				MARKETING_VERSION = 4.1.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6212,7 +6212,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = "gaios/gaiosRelease.entitlements";
+				CODE_SIGN_ENTITLEMENTS = gaios/gaiosRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -6557,7 +6557,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.6;
+				MARKETING_VERSION = 4.1.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
