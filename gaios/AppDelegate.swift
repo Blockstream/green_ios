@@ -72,14 +72,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = AppNotifications.shared
         AppNotifications.shared.registerForFcmPushNotifications()
 
+        // run account migration
+        MigratorManager.shared.migrate()
+    
         // Open first page
         AccountNavigator.goFirstPage()
-
-        // run account migration
-        Task {
-            await MigratorManager.shared.migrate()
-        }
-
         return true
     }
 

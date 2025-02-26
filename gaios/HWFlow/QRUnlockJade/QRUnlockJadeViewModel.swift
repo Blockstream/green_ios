@@ -98,9 +98,9 @@ class QRUnlockJadeViewModel {
         let encrypt = EncryptWithPinParams(pin: password, credentials: credentials)
         let encrypted = try await session.encryptWithPin(encrypt)
         if enableBio {
-            try AuthenticationTypeHandler.addBiometry(pinData: encrypted.pinData, extraData: password, forNetwork: account.keychain)
+            try AuthenticationTypeHandler.setKeyBiometric(pinData: encrypted.pinData, extraData: password, for: account.keychain)
         } else {
-            try AuthenticationTypeHandler.addPIN(pinData: encrypted.pinData, forNetwork: account.keychain)
+            try AuthenticationTypeHandler.setKeyPin(pinData: encrypted.pinData, for: account.keychain)
         }
     }
 

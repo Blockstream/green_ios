@@ -43,7 +43,7 @@ class ShowMnemonicsViewController: UIViewController {
                     if !showBip85 {
                         throw GaError.GenericError("No export mnemonic from HW")
                     } else if let derivedAccount = derivedAccount {
-                        self.lightningMnemonic = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain).mnemonic
+                        self.lightningMnemonic = try AuthenticationTypeHandler.getKeyLightning(for: derivedAccount.keychain).mnemonic
                     }
                 } else {
                     self.credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "")

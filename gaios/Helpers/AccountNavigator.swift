@@ -93,7 +93,7 @@ class AccountNavigator {
     @MainActor
     static func goFirstPage() {
         let nv = UINavigationController()
-        if AccountsRepository.shared.accounts.isEmpty || MigratorManager.shared.firstInitialization {
+        if AccountsRepository.shared.accounts.isEmpty {
             let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
             nv.setViewControllers([onboard!], animated: true)
         } else {

@@ -79,7 +79,7 @@ class NotificationService: UNNotificationServiceExtension {
                         return
                     }
                     logger.info("Using lightning account \(lightningAccount.name, privacy: .public)")
-                    let credentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: lightningAccount.keychain)
+                    let credentials = try AuthenticationTypeHandler.getKeyLightning(for: lightningAccount.keychain)
                     logger.info("Breez SDK is not connected, connecting....")
                     if let breezSdk = try await self?.breezSDKConnector.register(credentials: credentials, listener: currentTask) {
                         logger.info("Breez SDK connected successfully")

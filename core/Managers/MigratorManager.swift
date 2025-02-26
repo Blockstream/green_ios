@@ -10,38 +10,40 @@ public class MigratorManager {
     public static let shared = MigratorManager()
     private var appDataVersion: Int {
         get {
-            let version = UserDefaults.standard.integer(forKey: MigrationFlag.appDataVersion.rawValue)
-            if version == 0 {
-                return 2
-            }
-            return version
+            UserDefaults.standard.integer(forKey: MigrationFlag.appDataVersion.rawValue)
         }
         set {
             UserDefaults.standard.set(newValue, forKey: MigrationFlag.appDataVersion.rawValue)
         }
     }
-    public var firstInitialization: Bool {
+    private var firstInitialization: Bool {
         get { !UserDefaults.standard.bool(forKey: MigrationFlag.firstInitialization.rawValue) }
         set { UserDefaults.standard.set(newValue, forKey: MigrationFlag.firstInitialization.rawValue) }
     }
 
-    public func migrate() async {
+    public func migrate() {
         if firstInitialization {
             // first installation or app upgrade from app version < v3.5.5
-            await clean()
-            migrateWallets()
+            if AccountsRepository.shared.accounts.isEmpty {
+                migrateWallets()
+            }
             firstInitialization = true
+            appDataVersion = 3
             return
         }
-        if appDataVersion < 1 {
+        if appDataVersion == 0 {
             // upgrade from app < v4.0.0
             migrateDatadir()
         }
-        if appDataVersion < 2 {
+        if appDataVersion == 1 {
             // upgrade from app < v4.0.25
             updateKeychainPolicy()
         }
-        appDataVersion = 2
+        // upgrade from app < v4.1.7
+        if appDataVersion < 3 {
+            updateBiometricPolicy()
+        }
+        appDataVersion = 3
     }
 
     private func migrateDatadir() { // from "4.0.0"
@@ -72,17 +74,6 @@ public class MigratorManager {
         AccountsRepository.shared.accounts = accounts
     }
 
-    private func clean() async {
-        for network in ["mainnet", "testnet", "liquid"] {
-            if !UserDefaults.standard.bool(forKey: network + "FirstInitialization") {
-                _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, forNetwork: network)
-                _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: network)
-                UserDefaults.standard.set(true, forKey: network + "FirstInitialization")
-            }
-        }
-        await AccountsRepository.shared.removeAll()
-    }
-
     func updateKeychainPolicy() { // from  "4.0.25"
         let keychainStorage = AccountsRepository.shared.storage
         var query = keychainStorage.query.merging(
@@ -95,5 +86,13 @@ public class MigratorManager {
             return
         }
         try? keychainStorage.write(data)
+    }
+
+    func updateBiometricPolicy() { // from  "4.1.7"
+        for account in AccountsRepository.shared.accounts {
+            if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
+                _ = try? AuthenticationTypeHandler.getAuthKeyBiometricPrivateKey(network: account.keychain)
+            }
+        }
     }
 }

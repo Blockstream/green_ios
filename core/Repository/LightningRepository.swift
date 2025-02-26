@@ -6,11 +6,11 @@ public class LightningRepository {
     public static let shared = LightningRepository()
 
     public func get(for id: String) -> AppGreenlightCredentials? {
-        return try? AuthenticationTypeHandler.getCertLightning(forNetwork: id)
+        return try? AuthenticationTypeHandler.getCertLightning(for: id)
     }
 
     public func add(for id: String, credentials: AppGreenlightCredentials) {
-        try? AuthenticationTypeHandler.addCertLightning(forNetwork: id, credentials: credentials)
+        try? AuthenticationTypeHandler.setCertLightning(credentials: credentials, for: id)
     }
 
     public func upsert(for id: String, credentials: AppGreenlightCredentials) {
@@ -21,6 +21,6 @@ public class LightningRepository {
     }
 
     public func remove(for id: String) {
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthCertLightning, forNetwork: id)
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthCertLightning, for: id)
     }
 }

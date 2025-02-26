@@ -49,6 +49,7 @@ public class AuthenticationTypeHandler {
         case AuthKeyWOPassword = "com.blockstream.green.auth_key_wathonly_password"
         case AuthCertLightning = "com.blockstream.green.auth_key_lightning"
         case AuthKeyLightning = "com.blockstream.green.auth_key_credentials"
+        case AuthKeyPrivate = "com.blockstream.green.auth_key_private"
     }
 
     static let PrivateKeyPathSize = 32
@@ -128,9 +129,34 @@ public class AuthenticationTypeHandler {
         return access!
     }
 
+    static func removeAuthKeyBiometricPrivateKey(network: String) throws {
+        let label = "AuthKeyBiometricPrivateKey\(network)"
+        if removeAuth(method: .AuthKeyPrivate, for: label) == false {
+            throw AuthError.SecurityError("Bio key not found")
+        }
+    }
+    static func setAuthKeyBiometricPrivateKey(network: String, value: String) throws {
+        let label = "AuthKeyBiometricPrivateKey\(network)"
+        try set(method: .AuthKeyPrivate, data: [label: value], forNetwork: label)
+    }
+
+    static func getAuthKeyBiometricPrivateKey(network: String) throws -> String {
+        let label = "AuthKeyBiometricPrivateKey\(network)"
+        let res = try? get_(method: .AuthKeyPrivate, forNetwork: label)
+        if let value = res?[label] as? String {
+            return value
+        }
+        // migration from legacy local userdefaults
+        if let privateKey = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey\(network)") {
+            // overwrite value on UserDefault with appgroup
+            try? setAuthKeyBiometricPrivateKey(network: network, value: privateKey)
+            return privateKey
+        }
+        throw AuthError.SecurityError("Bio key not found")
+    }
+
     static func generateBiometricPrivateKey(network: String) throws {
         let acl = try getACL()
-
         let privateKeyLabel = AuthKeyBiometricPrivateKeyPathPrefix + String.random(length: PrivateKeyPathSize) + network
         let params: [CFString: Any] = [kSecAttrKeyType: ECCKeyType,
                                        kSecAttrKeySizeInBits: ECCKeySizeInBits,
@@ -138,25 +164,22 @@ public class AuthenticationTypeHandler {
                                        kSecPrivateKeyAttrs: [kSecAttrLabel: privateKeyLabel,
                                                              kSecAttrAccessControl: acl,
                                                              kSecAttrIsPermanent: true]]
-
         var error: Unmanaged<CFError>?
         _ = SecKeyCreateRandomKey(params as CFDictionary, &error)
         guard error == nil else {
             throw AuthError.SecurityError(describeSecurityError(error!.takeRetainedValue()))
         }
-
-        UserDefaults.standard.set(privateKeyLabel, forKey: "AuthKeyBiometricPrivateKey" + network)
+        try setAuthKeyBiometricPrivateKey(network: network, value: privateKeyLabel)
     }
 
     fileprivate static func getPrivateKey(forNetwork: String) throws -> SecKey {
-        let privateKeyLabel = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
-        guard privateKeyLabel != nil else {
+        guard let privateKeyLabel = try? getAuthKeyBiometricPrivateKey(network: forNetwork) else {
             throw AuthError.ServiceNotAvailable("Operation failed: Key not found.")
         }
         let q: [CFString: Any] = [kSecClass: kSecClassKey,
                                   kSecAttrKeyType: ECCKeyType,
                                   kSecAttrKeySizeInBits: ECCKeySizeInBits,
-                                  kSecAttrLabel: privateKeyLabel!,
+                                  kSecAttrLabel: privateKeyLabel,
                                   kSecReturnRef: true,
                                   kSecUseOperationPrompt: "Unlock Green"]
 
@@ -228,7 +251,7 @@ public class AuthenticationTypeHandler {
         } else if version == 1 {
             q[kSecAttrAccessGroup] = Bundle.main.appGroup
             switch method {
-            case .AuthKeyBiometric:
+            case .AuthKeyBiometric, .AuthKeyPrivate:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
             case .AuthKeyLightning, .AuthCertLightning:
                 q[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlock
@@ -293,12 +316,6 @@ public class AuthenticationTypeHandler {
         return data
     }
 
-    public static func getAuth(method: AuthType, forNetwork: String) throws -> PinData {
-        let pinData = try get(method: method, toDecrypt: method == .AuthKeyBiometric, forNetwork: forNetwork)
-        let jsonData = try JSONSerialization.data(withJSONObject: pinData)
-        return try JSONDecoder().decode(PinData.self, from: jsonData)
-    }
-
     public static func findAuth(method: AuthType, forNetwork: String) -> Bool {
         do {
             _ = try get_(method: method, forNetwork: forNetwork)
@@ -309,69 +326,81 @@ public class AuthenticationTypeHandler {
     }
 
     public static func removePrivateKey(forNetwork: String) throws {
-        let privateKeyLabel = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
-        guard privateKeyLabel != nil else {
+        guard let privateKeyLabel = try? getAuthKeyBiometricPrivateKey(network: forNetwork) else {
             throw AuthError.ServiceNotAvailable("Operation failed: Key not found.")
         }
         let q: [CFString: Any] = [kSecClass: kSecClassKey,
                                   kSecAttrKeyType: ECCKeyType,
                                   kSecAttrKeySizeInBits: ECCKeySizeInBits,
-                                  kSecAttrLabel: privateKeyLabel!,
+                                  kSecAttrLabel: privateKeyLabel,
                                   kSecReturnRef: true]
         let status = callWrapper(fun: SecItemDelete(q as CFDictionary))
         if status != errSecSuccess {
             throw AuthError.KeychainError(status)
         }
+        try removeAuthKeyBiometricPrivateKey(network: forNetwork)
     }
 
-    public static func removeAuth(method: AuthType, forNetwork: String) -> Bool {
-        let q0 = queryForData(method: method, forNetwork: forNetwork, version: 0)
+    public static func removeAuth(method: AuthType, for label: String) -> Bool {
+        let q0 = queryForData(method: method, forNetwork: label, version: 0)
         _ = callWrapper(fun: SecItemDelete(q0 as CFDictionary)) == errSecSuccess
-        let q1 = queryForData(method: method, forNetwork: forNetwork, version: 1)
+        let q1 = queryForData(method: method, forNetwork: label, version: 1)
         return callWrapper(fun: SecItemDelete(q1 as CFDictionary)) == errSecSuccess
     }
 
-    public static func addPIN(pinData: PinData, forNetwork: String) throws {
-        try set(method: .AuthKeyPIN, data: pinData.toDict() ?? [:], forNetwork: forNetwork)
-    }
-
-    public static func addWatchonlyMultisig(password: String, forNetwork: String) throws {
-        try set(method: .AuthKeyWOPassword, data: [:], forNetwork: forNetwork)
-    }
-
-    public static func addAuthKeyLightning(credentials: Credentials, forNetwork: String) throws {
-        try set(method: .AuthKeyLightning, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
-    }
-
-    public static func getAuthKeyLightning(forNetwork: String) throws -> Credentials {
-        let data = try get(method: AuthType.AuthKeyLightning, toDecrypt: false, forNetwork: forNetwork)
-        guard let credentials = Credentials.from(data) as? Credentials else {
-            throw AuthError.SecurityError("Invalid credentials")
+    private static func setAuth<T: Codable>(method: AuthType, data: T, for label: String) throws {
+        if let data = data.toDict() {
+            try set(method: method, data: data, forNetwork: label)
+            return
         }
-        return credentials
+        throw AuthError.SecurityError("Invalid auth")
     }
 
-    public static func addBiometry(pinData: PinData, extraData: String, forNetwork: String) throws {
-        let authKeyBiometricPrivateKey = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
-        if authKeyBiometricPrivateKey == nil {
-            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: forNetwork)
+    public static func getAuth<T: Codable>(method: AuthType, for label: String) throws -> T {
+        let data = try get(method: method, toDecrypt: method == .AuthKeyBiometric, forNetwork: label)
+        if let res = T.from(data) as? T {
+            return res
         }
-        let encrypted = try encrypt(plaintext: extraData, forNetwork: forNetwork)
+        throw AuthError.SecurityError("Invalid auth")
+    }
+
+    // Set methods
+    public static func setKeyPin(pinData: PinData, for label: String) throws {
+        try AuthenticationTypeHandler.setAuth(method: .AuthKeyPIN, data: pinData, for: label)
+    }
+    public static func setKeyWO(pinData: PinData, for label: String) throws {
+        try AuthenticationTypeHandler.setAuth(method: .AuthKeyPIN, data: pinData, for: label)
+    }
+    public static func setKeyLightning(credentials: Credentials, for label: String) throws {
+        try AuthenticationTypeHandler.setAuth(method: .AuthKeyLightning, data: credentials, for: label)
+    }
+    public static func setKeyBiometric(pinData: PinData, extraData: String, for label: String) throws {
+        if (try? getAuthKeyBiometricPrivateKey(network: label)) == nil {
+            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: label)
+        }
+        let encrypted = try encrypt(plaintext: extraData, forNetwork: label)
         var pindata = pinData
         pindata.encryptedBiometric = encrypted
-        try set(method: .AuthKeyBiometric, data: pindata.toDict() ?? [:], forNetwork: forNetwork)
+        try setAuth(method: .AuthKeyBiometric, data: pindata, for: label)
+    }
+    public static func setCertLightning(credentials: AppGreenlightCredentials, for label: String) throws {
+        try setAuth(method: .AuthCertLightning, data: credentials, for: label)
     }
 
-    public static func addCertLightning(forNetwork: String, credentials: AppGreenlightCredentials) throws {
-        try set(method: .AuthCertLightning, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
+    // Get methods
+    public static func getCertLightning(for label: String) throws -> AppGreenlightCredentials {
+        try getAuth(method: AuthType.AuthCertLightning, for: label)
     }
-
-    public static func getCertLightning(forNetwork: String) throws -> AppGreenlightCredentials {
-        let type = AuthType.AuthCertLightning
-        let data = try get(method: type, toDecrypt: false, forNetwork: forNetwork)
-        guard let credentials = AppGreenlightCredentials.from(data) as? AppGreenlightCredentials else {
-            throw AuthError.SecurityError("Invalid credentials")
-        }
-        return credentials
+    public static func getKeyPin(for label: String) throws -> PinData {
+        try getAuth(method: AuthType.AuthKeyPIN, for: label)
+    }
+    public static func getKeyWO(for label: String) throws -> PinData {
+        try getAuth(method: AuthType.AuthKeyPIN, for: label)
+    }
+    public static func getKeyLightning(for label: String) throws -> Credentials {
+        try getAuth(method: AuthType.AuthKeyLightning, for: label)
+    }
+    public static func getKeyBiometric(for label: String) throws -> PinData {
+        try getAuth(method: AuthType.AuthKeyBiometric, for: label)
     }
 }

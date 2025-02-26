@@ -112,7 +112,7 @@ class JadeManager {
         walletManager.hwProtocol = jade
         var derivedCredentials: Credentials?
         if let derivedAccount = account.getDerivedLightningAccount() {
-            derivedCredentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: derivedAccount.keychain)
+            derivedCredentials = try AuthenticationTypeHandler.getKeyLightning(for: derivedAccount.keychain)
         }
         try await walletManager.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
         walletManager.account.efusemac = version.efusemac

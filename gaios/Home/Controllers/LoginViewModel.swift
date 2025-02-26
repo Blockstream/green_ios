@@ -82,7 +82,7 @@ class LoginViewModel {
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = await HwPopupResolver()
         try await auth()
-        let credentials = try AuthenticationTypeHandler.getAuthKeyLightning(forNetwork: account.keychain)
+        let credentials = try AuthenticationTypeHandler.getKeyLightning(for: account.keychain)
         _ = try await wm.login(credentials: credentials, lightningCredentials: credentials, parentWalletId: account.walletIdentifier)
         AccountsRepository.shared.current = account
     }
