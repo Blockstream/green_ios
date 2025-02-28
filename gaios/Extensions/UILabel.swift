@@ -11,6 +11,7 @@ enum LabelStyle {
     case txtSmaller
     case txtSmallerBold
     case txtCard
+    case txtSectionHeader
     case err
     case sectionTitle
     case fieldBigger
@@ -49,6 +50,9 @@ extension UILabel {
         case .txtCard:
             textColor = UIColor.gW40()
             font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        case .txtSectionHeader:
+            font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
+            textColor = UIColor.gGrayTxt()
         case .err:
             textColor = UIColor.customDestructiveRed()
             font = UIFont.systemFont(ofSize: 12.0, weight: .regular)

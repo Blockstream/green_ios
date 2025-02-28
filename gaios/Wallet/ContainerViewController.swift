@@ -25,10 +25,14 @@ class ContainerViewController: UIViewController {
 
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let walletViewModel = walletViewModel {
-            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletViewController") as? WalletViewController {
-                vc.viewModel = walletViewModel
-                nv.setViewControllers([vc], animated: false)
-            }
+            let vc = WalletTabBarViewController(walletViewModel: walletViewModel)
+            nv.setViewControllers([vc], animated: false)
+            nv.navigationBar.topItem?.title = ""
+
+//            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletViewController") as? WalletViewController {
+//                vc.viewModel = walletViewModel
+//                nv.setViewControllers([vc], animated: false)
+//            }
         }
         if let accountViewModel = accountViewModel {
             if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {

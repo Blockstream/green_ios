@@ -30,9 +30,9 @@ class BalanceCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         lblBalanceTitle.text = "id_total_balance".localized
-        lblBalanceTitle.font = .systemFont(ofSize: 18.0, weight: .bold)
         btnExchange.setImage(UIImage(named: "ic_coins_exchange")?.maskWithColor(color: .white.withAlphaComponent(0.4)), for: .normal)
         lblLoadingAssets.text = "id_loading_assets".localized
+        [lblBalanceTitle, lblBalanceFiat].forEach { $0?.setStyle(.txtSectionHeader) }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

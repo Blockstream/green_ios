@@ -158,6 +158,18 @@
 		344915F22A0CE29C00D35818 /* ReceiveAddressCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */; };
 		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
 		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
+		344D57C52D71AA48009725A3 /* WalletTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */; };
+		344D57C72D71AA5D009725A3 /* WalletTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57C62D71AA59009725A3 /* WalletTabBar.swift */; };
+		344D57C92D71ABFE009725A3 /* WalletTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57C82D71ABF5009725A3 /* WalletTabs.swift */; };
+		344D57CC2D71B5B5009725A3 /* WalletTabs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 344D57CB2D71B5B5009725A3 /* WalletTabs.storyboard */; };
+		344D57CF2D71B5E7009725A3 /* TransactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57CE2D71B5E7009725A3 /* TransactViewController.swift */; };
+		344D57D12D71B6A4009725A3 /* SecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57D02D71B6A4009725A3 /* SecurityViewController.swift */; };
+		344D57D52D71B6F1009725A3 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57D42D71B6F1009725A3 /* SettingsViewController.swift */; };
+		344D57DB2D71BF72009725A3 /* TabHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57D92D71BF72009725A3 /* TabHeaderCell.swift */; };
+		344D57DC2D71BF72009725A3 /* TabHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344D57DA2D71BF72009725A3 /* TabHeaderCell.xib */; };
+		344D57DE2D71D06F009725A3 /* TransactActionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344D57DD2D71D06F009725A3 /* TransactActionsCell.xib */; };
+		344D57E02D71D088009725A3 /* TransactActionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57DF2D71D088009725A3 /* TransactActionsCell.swift */; };
+		344D57E22D71E385009725A3 /* TransactActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57E12D71E37C009725A3 /* TransactActions.swift */; };
 		344EF1BF2C10522A00689D63 /* TxDetailsTotalsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344EF1BE2C10522A00689D63 /* TxDetailsTotalsCell.xib */; };
 		344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF1C02C10525300689D63 /* TxDetailsTotalsCell.swift */; };
 		344EF1C32C10528700689D63 /* TxDetailsTotalsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF1C22C10528700689D63 /* TxDetailsTotalsCellModel.swift */; };
@@ -1055,6 +1067,18 @@
 		344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAddressCellModel.swift; sourceTree = "<group>"; };
 		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
 		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
+		344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTabBarViewController.swift; sourceTree = "<group>"; };
+		344D57C62D71AA59009725A3 /* WalletTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTabBar.swift; sourceTree = "<group>"; };
+		344D57C82D71ABF5009725A3 /* WalletTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTabs.swift; sourceTree = "<group>"; };
+		344D57CB2D71B5B5009725A3 /* WalletTabs.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = WalletTabs.storyboard; sourceTree = "<group>"; };
+		344D57CE2D71B5E7009725A3 /* TransactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactViewController.swift; sourceTree = "<group>"; };
+		344D57D02D71B6A4009725A3 /* SecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewController.swift; sourceTree = "<group>"; };
+		344D57D42D71B6F1009725A3 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		344D57D92D71BF72009725A3 /* TabHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabHeaderCell.swift; sourceTree = "<group>"; };
+		344D57DA2D71BF72009725A3 /* TabHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TabHeaderCell.xib; sourceTree = "<group>"; };
+		344D57DD2D71D06F009725A3 /* TransactActionsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TransactActionsCell.xib; sourceTree = "<group>"; };
+		344D57DF2D71D088009725A3 /* TransactActionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactActionsCell.swift; sourceTree = "<group>"; };
+		344D57E12D71E37C009725A3 /* TransactActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactActions.swift; sourceTree = "<group>"; };
 		344EF1BE2C10522A00689D63 /* TxDetailsTotalsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsTotalsCell.xib; sourceTree = "<group>"; };
 		344EF1C02C10525300689D63 /* TxDetailsTotalsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsTotalsCell.swift; sourceTree = "<group>"; };
 		344EF1C22C10528700689D63 /* TxDetailsTotalsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxDetailsTotalsCellModel.swift; sourceTree = "<group>"; };
@@ -2194,6 +2218,65 @@
 				344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */,
 				344915EB2A0CE26700D35818 /* ReceiveAddressCell.swift */,
 				344915EC2A0CE26700D35818 /* ReceiveAddressCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		344D57C32D71A9EB009725A3 /* WalletTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */,
+				344D57C62D71AA59009725A3 /* WalletTabBar.swift */,
+				344D57CA2D71B52D009725A3 /* Tabs */,
+			);
+			path = WalletTabBar;
+			sourceTree = "<group>";
+		};
+		344D57CA2D71B52D009725A3 /* Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				344D57D62D71BF20009725A3 /* Cells */,
+				344D57C82D71ABF5009725A3 /* WalletTabs.swift */,
+				344D57CB2D71B5B5009725A3 /* WalletTabs.storyboard */,
+				344D57D32D71B6D2009725A3 /* Settings */,
+				344D57D22D71B6C2009725A3 /* Security */,
+				344D57CD2D71B5CC009725A3 /* Transact */,
+			);
+			path = Tabs;
+			sourceTree = "<group>";
+		};
+		344D57CD2D71B5CC009725A3 /* Transact */ = {
+			isa = PBXGroup;
+			children = (
+				344D57CE2D71B5E7009725A3 /* TransactViewController.swift */,
+			);
+			path = Transact;
+			sourceTree = "<group>";
+		};
+		344D57D22D71B6C2009725A3 /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				344D57D02D71B6A4009725A3 /* SecurityViewController.swift */,
+			);
+			path = Security;
+			sourceTree = "<group>";
+		};
+		344D57D32D71B6D2009725A3 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				344D57D42D71B6F1009725A3 /* SettingsViewController.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		344D57D62D71BF20009725A3 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				344D57D92D71BF72009725A3 /* TabHeaderCell.swift */,
+				344D57DA2D71BF72009725A3 /* TabHeaderCell.xib */,
+				344D57E12D71E37C009725A3 /* TransactActions.swift */,
+				344D57DF2D71D088009725A3 /* TransactActionsCell.swift */,
+				344D57DD2D71D06F009725A3 /* TransactActionsCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -3338,6 +3421,7 @@
 				6D97046C2344141E00839598 /* ModalPresentation */,
 				6D8099D923021CF50069A69F /* Menu */,
 				3420470D291B913E00EDE945 /* Utility */,
+				344D57C32D71A9EB009725A3 /* WalletTabBar */,
 				81A3B53F2244AE9A0091B6BC /* Wallet */,
 				34128F9C27391A99002E19F5 /* Receive */,
 				6D56C76D235E162A00E4F990 /* Accounts */,
@@ -4349,6 +4433,7 @@
 				3419B44C2BEE302500492198 /* ReEnable2faAccountCell.xib in Resources */,
 				3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */,
 				34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */,
+				344D57DC2D71BF72009725A3 /* TabHeaderCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
 				344EF1BF2C10522A00689D63 /* TxDetailsTotalsCell.xib in Resources */,
 				34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */,
@@ -4397,6 +4482,7 @@
 				3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */,
 				34DDD0A9260A486300020380 /* Shared.storyboard in Resources */,
 				342896902BCD1C2A0042F144 /* SingleLabelView.xib in Resources */,
+				344D57DE2D71D06F009725A3 /* TransactActionsCell.xib in Resources */,
 				34FE20182A1CADC200301746 /* DialogDetailCell.xib in Resources */,
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
 				81E56A532C2476870012A5A3 /* QRUnlockFlow.storyboard in Resources */,
@@ -4415,6 +4501,7 @@
 				344471C22C478DBD0051957E /* DialogGroupListCell.xib in Resources */,
 				3487657529D43B2A0059D05F /* Illustration Checklist.riv in Resources */,
 				345FC46929ED4D83009FCF43 /* WOTypeCell.xib in Resources */,
+				344D57CC2D71B5B5009725A3 /* WalletTabs.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4565,6 +4652,7 @@
 				81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */,
 				34955C0A2B67B34B0056DE90 /* HowToSecureViewController.swift in Sources */,
 				34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */,
+				344D57CF2D71B5E7009725A3 /* TransactViewController.swift in Sources */,
 				34465BA12D082EF7002E5033 /* GenuineCheckEndViewController.swift in Sources */,
 				6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */,
 				8173B8F22AB1B10C00C15C85 /* DialogViewController.swift in Sources */,
@@ -4767,12 +4855,15 @@
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
+				344D57D52D71B6F1009725A3 /* SettingsViewController.swift in Sources */,
 				8162A1C92B500CF70065D9EB /* UIImageView.swift in Sources */,
 				342875132D551F94003FB5AE /* LangCellModel.swift in Sources */,
 				81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */,
 				81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */,
 				81A773032A80FD1100C9FC5C /* LTSweepCell.swift in Sources */,
 				34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */,
+				344D57E22D71E385009725A3 /* TransactActions.swift in Sources */,
+				34CED82A2A9F330600DD0683 /* LTShortcutViewController.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */,
 				81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */,
@@ -4802,6 +4893,7 @@
 				34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */,
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
+				344D57D12D71B6A4009725A3 /* SecurityViewController.swift in Sources */,
 				3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */,
 				34FE20142A1CA98000301746 /* DialogNodeViewModel.swift in Sources */,
 				3448B5CB29D47647008D5746 /* DialogScanViewController.swift in Sources */,
@@ -4817,10 +4909,12 @@
 				3423C6E727C380DD001D9E2C /* DialogMnemonicLengthViewController.swift in Sources */,
 				3457F4AE292397A600EF33B5 /* DialogListViewModel.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView.swift in Sources */,
+				344D57C72D71AA5D009725A3 /* WalletTabBar.swift in Sources */,
 				81EA2DCF2B21F3E600A1F924 /* LoginViewModel.swift in Sources */,
 				819F1AEC2A0E6CAB00ECF999 /* PolicyCellType.swift in Sources */,
 				3497936D25F8B18C0029ECB1 /* RotationAnimation.swift in Sources */,
 				347B7C282C3281260016A5C0 /* PromoCellModel.swift in Sources */,
+				344D57E02D71D088009725A3 /* TransactActionsCell.swift in Sources */,
 				345402E42A1E42F2002CB598 /* DialogDenominationViewModel.swift in Sources */,
 				8177EE042B6C82E500C2271C /* Resolver.swift in Sources */,
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
@@ -4840,6 +4934,7 @@
 				34A75B61292B697A007995D7 /* OnBoardInfoViewController.swift in Sources */,
 				34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */,
 				34560B8329BA257E007E916F /* SetupJadeViewController.swift in Sources */,
+				344D57C92D71ABFE009725A3 /* WalletTabs.swift in Sources */,
 				34F568982A828D330081BF0C /* LTRecoverFundsAddressCell.swift in Sources */,
 				3499656229E5A2620092B5BD /* DialogAboutViewController.swift in Sources */,
 				812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */,
@@ -4855,6 +4950,7 @@
 				34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				346EB2782BE8BB3A0043139F /* SendFeeCell.swift in Sources */,
+				344D57C52D71AA48009725A3 /* WalletTabBarViewController.swift in Sources */,
 				818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */,
 				34D648002C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift in Sources */,
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
@@ -4909,6 +5005,7 @@
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */,
 				34A883B22BA85F50004A1826 /* TxDetailsInfoCellModel.swift in Sources */,
+				344D57DB2D71BF72009725A3 /* TabHeaderCell.swift in Sources */,
 				3470646B2A42C1710096313C /* RecoveryTransactionsViewModel.swift in Sources */,
 				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
 				3457F4B529239F2400EF33B5 /* DialogListCellModel.swift in Sources */,

@@ -179,6 +179,9 @@ extension UIColor {
     class func gGrayCamera() -> UIColor {
         return UIColor(named: "gGrayCamera")!
     }
+    class func gGrayCardBorder() -> UIColor {
+        return UIColor(named: "gGrayCardBorder")!
+    }
 }
 
 extension UIColor {

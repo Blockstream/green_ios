@@ -15,7 +15,7 @@ class TransactionCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
         progressBar.cornerRadius = 5.0
         progressBar.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
