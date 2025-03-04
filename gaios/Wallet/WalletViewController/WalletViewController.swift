@@ -170,6 +170,7 @@ class WalletViewController: UIViewController {
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.viewModel.registerNotifications()
+            self.afterRestore()
         }
     }
 

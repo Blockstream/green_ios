@@ -396,7 +396,6 @@ public class WalletManager {
         }
         logger.info("WM loadRegistry")
         try? await self.loadRegistry()
-        logger.info("WM login end")
     }
 
     public var bitcoinSinglesigNetwork: NetworkSecurityCase { mainnet ? .bitcoinSS : .testnetSS }
