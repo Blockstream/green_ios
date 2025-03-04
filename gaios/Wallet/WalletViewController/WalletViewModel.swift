@@ -311,11 +311,23 @@ class WalletViewModel {
     }
 
     func registerNotifications() {
-        if subaccounts.filter({ $0.networkType == .lightning }).isEmpty {
+        guard let lightningSession = self.wm?.lightningSession,
+        lightningSession.logged else {
             return
         }
-        DispatchQueue.main.async {
-            AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared)
+        DispatchQueue.main.async { [weak self] in
+            AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared) {
+                Task.detached(priority: .background) { [weak self] in
+                    let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
+                    if let token = defaults?.string(forKey: "token"),
+                       let xpubHashId = self?.wm?.account.xpubHashId {
+                        lightningSession.registerNotification(token: token, xpubHashId: xpubHashId)
+                        if lightningSession.lightBridge?.lspInformation == nil {
+                            _ = lightningSession.lightBridge?.updateLspInformation()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -328,7 +340,7 @@ class WalletViewModel {
         }
         return true
     }
-    
+
     func isSweepEnabled() -> Bool {
         if watchOnly {
             let notMultisigBitcoinNetworks = subaccounts.filter { $0.networkType.singlesig || $0.networkType.liquid }

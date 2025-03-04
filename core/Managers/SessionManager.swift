@@ -24,6 +24,7 @@ public class SessionManager {
     public var blockHeight: UInt32 = 0
     public var popupResolver: PopupResolverDelegate? = nil
     public var hwInterfaceResolver: HwInterfaceResolver? = nil
+    public var loginData: LoginUserResult? = nil
 
     public var connected = false
     public var logged = false
@@ -236,14 +237,16 @@ public class SessionManager {
     public func loginUser(_ params: Credentials, restore: Bool) async throws -> LoginUserResult {
         try await connect()
         let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserSW, params: params)
-        try await onLogin(res)
+        loginData = res
+        logged = true
         return res
     }
 
     public func loginUser(_ params: HWDevice, restore: Bool) async throws -> LoginUserResult {
         try await connect()
         let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserHW, params: params)
-        try await onLogin(res)
+        loginData = res
+        logged = true
         return res
     }
 
@@ -254,13 +257,6 @@ public class SessionManager {
             return try await loginUser(hw, restore: restore)
         } else {
             throw GaError.GenericError("No login method specified")
-        }
-    }
-
-    private func onLogin(_ data: LoginUserResult) async throws {
-        logged = true
-        if self.gdkNetwork.multisig {
-            // try await self.loadTwoFactorConfig()
         }
     }
 

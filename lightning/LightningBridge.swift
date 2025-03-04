@@ -13,6 +13,9 @@ public class LightningBridge {
     private var network: Network { testnet ? .testnet : .bitcoin }
     private var environment: EnvironmentType { testnet ? .staging : .production }
 
+    public var nodeInfo: NodeState?
+    public var lspInformation: LspInformation?
+
     static var CREDENTIALS: GreenlightCredentials? {
         if let cert = Bundle.main.greenlightDeviceCert,
            let key = Bundle.main.greenlightDeviceKey {
@@ -63,7 +66,6 @@ public class LightningBridge {
             appGreenlightCredentials = AppGreenlightCredentials(gc: credentials)
         }
         _ = updateNodeInfo()
-        _ = updateLspInformation()
     }
 
     public func stop() throws {
@@ -73,15 +75,16 @@ public class LightningBridge {
 
     public func updateLspInformation() -> LspInformation? {
         if let id = try? breezSdk?.lspId() {
-            return try? breezSdk?.fetchLspInfo(lspId: id)
+            lspInformation = try? breezSdk?.fetchLspInfo(lspId: id)
+            return lspInformation
         }
         return nil
     }
 
     public func updateNodeInfo() -> NodeState? {
-        let res = try? breezSdk?.nodeInfo()
-        print ("NodeInfo: \(res.debugDescription)")
-        return res
+        nodeInfo = try? breezSdk?.nodeInfo()
+        print ("NodeInfo: \(nodeInfo.debugDescription)")
+        return nodeInfo
     }
 
     public func balance() -> UInt64? {

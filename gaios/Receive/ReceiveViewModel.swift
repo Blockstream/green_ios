@@ -102,14 +102,11 @@ class ReceiveViewModel {
 
     var amountCellModel: AmountCellModel {
         let nodeState = account.lightningSession?.nodeState
-        let lspInfo = account.lightningSession?.lspInfo
         return AmountCellModel(satoshi: satoshi,
                                maxLimit: nodeState?.maxReceivableSatoshi,
                                isFiat: isFiat,
                                inputDenomination: inputDenomination,
                                gdkNetwork: account.session?.gdkNetwork,
-                               nodeState: nodeState,
-                               lspInfo: lspInfo,
                                breezSdk: account.lightningSession?.lightBridge,
                                scope: .ltReceive
         )
@@ -175,7 +172,6 @@ class ReceiveViewModel {
 
     var addressCellModel: ReceiveAddressCellModel {
         let nodeState = account.lightningSession?.nodeState
-        let lspInfo = account.lightningSession?.lspInfo
         return ReceiveAddressCellModel(text: text,
                                        type: type,
                                        swapInfo: swap,
@@ -183,7 +179,6 @@ class ReceiveViewModel {
                                        maxLimit: nodeState?.maxReceivableSatoshi,
                                        inputDenomination: inputDenomination,
                                        nodeState: nodeState,
-                                       lspInfo: lspInfo,
                                        breezSdk: account.lightningSession?.lightBridge,
                                        textNoURI: textNoURI,
                                        isLightning: account.gdkNetwork.lightning

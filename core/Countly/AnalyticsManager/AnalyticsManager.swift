@@ -190,7 +190,7 @@ public class AnalyticsManager {
         config.deviceID = analyticsUUID
         config.features = [.crashReporting]
         config.enablePerformanceMonitoring = true
-        config.enableDebug = true
+        config.enableDebug = false
         config.requiresConsent = true
         config.enableRemoteConfig = true
         if let threshold = eventSendThreshold {

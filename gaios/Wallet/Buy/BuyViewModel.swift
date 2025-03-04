@@ -58,14 +58,11 @@ class BuyViewModel {
 
     var amountCellModel: AmountCellModel {
         let nodeState = account.lightningSession?.nodeState
-        let lspInfo = account.lightningSession?.lspInfo
         return AmountCellModel(satoshi: satoshi,
                                maxLimit: nodeState?.maxReceivableSatoshi,
                                isFiat: isFiat,
                                inputDenomination: inputDenomination,
                                gdkNetwork: account.session?.gdkNetwork,
-                               nodeState: nodeState,
-                               lspInfo: lspInfo,
                                breezSdk: account.lightningSession?.lightBridge,
                                scope: .buyBtc,
                                network: account.session?.networkType,

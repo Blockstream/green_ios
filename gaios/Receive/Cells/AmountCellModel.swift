@@ -15,8 +15,6 @@ struct AmountCellModel {
     var isFiat: Bool
     var inputDenomination: gdk.DenominationType
     var gdkNetwork: gdk.GdkNetwork?
-    var nodeState: NodeState?
-    var lspInfo: LspInformation?
     var breezSdk: LightningBridge?
     var scope: AmountCellScope
 
@@ -140,7 +138,7 @@ struct AmountCellModel {
         guard let satoshi = satoshi else {
             return .disabled
         }
-        guard let lspInfo = lspInfo, let nodeState = nodeState else {
+        guard let lspInformation = breezSdk?.lspInformation, let nodeState = breezSdk?.nodeInfo else {
             return .disconnected
         }
         if satoshi >= nodeState.maxReceivableSatoshi {

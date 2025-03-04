@@ -242,13 +242,6 @@ public class WalletManager {
         let removeDatadir = !existDatadir
         let res = try await session.loginUser(credentials: credentials, hw: nil, restore: fullRestore)
         self.account.lightningWalletHashId = res.walletHashId
-        if session.logged {
-            let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
-            if let token = defaults?.string(forKey: "token"),
-                let xpubHashId = parentWalletId?.xpubHashId {
-                session.registerNotification(token: token, xpubHashId: xpubHashId)
-            }
-        }
         if session.logged && (fullRestore || !existDatadir) {
             let isFunded = try? await session.discovery()
             if !(isFunded ?? false) && removeDatadir {
@@ -383,21 +376,22 @@ public class WalletManager {
         await failureSessionsError.reset()
         let sessions = self.sessions.values.filter { !$0.logged }
         logger.info("WM login start: \(sessions.count) sessions")
-        await withTaskGroup(of: Void.self) { group -> () in
+        await withTaskGroup(of: Void.self) { group in
             for session in sessions {
-                group.addTask { try? await loginTask(session) }
-            }
-            for await _ in group {
+                group.addTask(priority: .high) { try? await loginTask(session) }
             }
         }
         logger.info("WM login end: \(self.activeSessions.count) sessions")
         if self.activeSessions.count == 0 {
             throw LoginError.failed()
         }
+        logger.info("WM subaccounts")
         _ = try await self.subaccounts()
         if fullRestore {
+            logger.info("WM syncSettings")
             try? await self.syncSettings()
         }
+        logger.info("WM loadRegistry")
         try? await self.loadRegistry()
     }
 

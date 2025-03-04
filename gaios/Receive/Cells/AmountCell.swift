@@ -222,7 +222,7 @@ class AmountCell: UITableViewCell {
             }
             btnFeeInfo.setStyle(.underline(txt: "read more".localized, color: .white))
         case .tooHigh:
-            let amount = Int64(model.nodeState?.maxReceivableSatoshi ?? 0)
+            let amount = Int64(model.breezSdk?.nodeInfo?.maxReceivableSatoshi ?? 0)
             let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             errorState(text: text)
         case .tooLow:
@@ -233,6 +233,7 @@ class AmountCell: UITableViewCell {
             disableState()
         case .disconnected:
             let text = "No LSP connected".localized
+            errorState(text: text)
         case .invalidBuy:
             lblInfo.text = model.message(.invalidBuy) ?? ""
             lblInfo.isHidden = !model.showMessage

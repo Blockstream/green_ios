@@ -13,7 +13,6 @@ struct ReceiveAddressCellModel {
     var maxLimit: UInt64?
     var inputDenomination: DenominationType
     var nodeState: NodeState?
-    var lspInfo: LspInformation?
     var breezSdk: LightningBridge?
     var textNoURI: String?
     let isLightning: Bool

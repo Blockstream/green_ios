@@ -9,13 +9,13 @@ import hw
 public class LightningSessionManager: SessionManager {
 
     public var lightBridge: LightningBridge?
-    public var nodeState: NodeState?
-    public var lspInfo: LspInformation?
     public var accountId: String?
     public var isRestoredNode: Bool?
 
     public var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
     public var workingDir: URL? { lightBridge?.workingDir }
+    public var nodeState: NodeState? { lightBridge?.nodeInfo }
+    public var lspInfo: LspInformation? { lightBridge?.lspInformation }
 
     public var logger = Logger(
         subsystem: Bundle.main.bundleIdentifier!,
@@ -27,7 +27,6 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func disconnect() async throws {
-        logger.info("lightning disconnect")
         logged = false
         connected = false
         paused = false
@@ -93,17 +92,18 @@ public class LightningSessionManager: SessionManager {
         isRestoredNode = false
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
+            logger.info("lightning connectToGreenlight with \(restore)")
             try await connectToGreenlight(credentials: params, checkCredentials: restore)
             isRestoredNode = restore
         } catch {
+            logger.info("lightning connectToGreenlight")
             try await connectToGreenlight(credentials: params)
         }
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
         }
         logged = true
-        nodeState = lightBridge?.updateNodeInfo()
-        lspInfo = lightBridge?.updateLspInformation()
+        loginData = res
         return res
     }
 

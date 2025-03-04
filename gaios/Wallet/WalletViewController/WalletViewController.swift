@@ -169,6 +169,7 @@ class WalletViewController: UIViewController {
         welcomeLayerVisibility()
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.viewModel.registerNotifications()
             self.afterRestore()
         }
     }
@@ -541,7 +542,6 @@ class WalletViewController: UIViewController {
                 }
             }
         }
-        viewModel.registerNotifications()
     }
 
     func showArchived() {

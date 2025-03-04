@@ -115,12 +115,6 @@ class SecuritySelectViewModel {
             await session.removeDatadir(credentials: credentials)
             let _ = try await session.loginUser(credentials: credentials, hw: nil, restore: true)
             let _ = try await wm.subaccounts()
-
-            let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
-            if let token = defaults?.string(forKey: "token"),
-               let xpubHashId = wm.account.xpubHashId {
-                session.registerNotification(token: token, xpubHashId: xpubHashId)
-            }
             if Bundle.main.debug {
                 // try await wm.setCloseToAddress()
             }
