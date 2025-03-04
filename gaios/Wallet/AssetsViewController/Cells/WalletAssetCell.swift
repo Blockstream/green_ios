@@ -12,7 +12,12 @@ class WalletAssetCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
+        lblAsset.setStyle(.titleCard)
+        lblBalance1.setStyle(.txt)
+        lblBalance1.font = .boldSystemFont(ofSize: 14)
+        lblBalance1.textColor = UIColor.gGreenMatrix()
+        lblBalance2.setStyle(.txtCard)
     }
 
     func configure(model: WalletAssetCellModel, hideBalance: Bool) {
@@ -20,7 +25,7 @@ class WalletAssetCell: UITableViewCell {
         self.lblBalance1.text = model.value ?? ""
         self.lblBalance2.text = model.fiat ?? " - "
         if hideBalance == true {
-            self.lblBalance1.attributedText = Common.obfuscate(color: .white, size: 14, length: 5)
+            self.lblBalance1.attributedText = Common.obfuscate(color: UIColor.gGreenMatrix(), size: 14, length: 5)
             self.lblBalance2.attributedText = Common.obfuscate(color: .lightGray, size: 12, length: 5)
         }
         self.imgView?.image = model.icon

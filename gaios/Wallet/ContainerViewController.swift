@@ -10,7 +10,7 @@ class ContainerViewController: UIViewController {
     private var requests: Int = 0
 
     var accountViewModel: AccountViewModel?
-    var walletViewModel: WalletViewModel?
+    var walletModel: WalletModel?
     let nv = UINavigationController()
 
     @IBOutlet weak var networkView: UIView!
@@ -24,8 +24,8 @@ class ContainerViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view
 
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let walletViewModel = walletViewModel {
-            let vc = WalletTabBarViewController(walletViewModel: walletViewModel)
+        if let walletModel = walletModel {
+            let vc = WalletTabBarViewController(walletModel: walletModel)
             nv.setViewControllers([vc], animated: false)
             nv.navigationBar.topItem?.title = ""
 

@@ -18,20 +18,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func setupAppearance() {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
-            appearance.backgroundColor = UIColor.customTitaniumDark()
+            appearance.backgroundColor = UIColor.gBlackBg()
             appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-            appearance.shadowImage = UIImage.imageWithColor(color: UIColor.customTitaniumDark())
+            appearance.shadowImage = UIImage.imageWithColor(color: UIColor.gBlackBg())
             appearance.backgroundImage = UIImage()
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
             UINavigationBar.appearance().isTranslucent = false
         }
-        UINavigationBar.appearance().barTintColor = UIColor.customTitaniumDark()
+        UINavigationBar.appearance().barTintColor = UIColor.gBlackBg()
         UINavigationBar.appearance().tintColor = UIColor.white
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         UINavigationBar.appearance().isTranslucent = false
         UITextField.appearance().keyboardAppearance = .dark
-        UITextField.appearance().tintColor = UIColor.customMatrixGreen()
+        UITextField.appearance().tintColor = UIColor.white
         // To hide the bottom line of the navigation bar.
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
         UINavigationBar.appearance().shadowImage = UIImage()

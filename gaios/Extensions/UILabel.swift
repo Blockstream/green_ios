@@ -48,7 +48,7 @@ extension UILabel {
             textColor = .white
             font = UIFont.systemFont(ofSize: 12.0, weight: .bold)
         case .txtCard:
-            textColor = UIColor.gW40()
+            textColor = UIColor.gGrayTxt()
             font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         case .txtSectionHeader:
             font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
@@ -57,7 +57,7 @@ extension UILabel {
             textColor = UIColor.customDestructiveRed()
             font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         case .sectionTitle:
-            textColor = UIColor.gW40()
+            textColor = UIColor.gGrayTxt()
             font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         case .fieldBigger:
             textColor = .white

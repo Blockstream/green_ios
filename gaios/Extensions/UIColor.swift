@@ -182,6 +182,9 @@ extension UIColor {
     class func gGrayCardBorder() -> UIColor {
         return UIColor(named: "gGrayCardBorder")!
     }
+    class func gGrayTabBar() -> UIColor {
+        return UIColor(named: "gGrayCardBorder")!
+    }
 }
 
 extension UIColor {

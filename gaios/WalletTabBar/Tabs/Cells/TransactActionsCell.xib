@@ -18,17 +18,17 @@
                 <rect key="frame" x="0.0" y="0.0" width="342" height="104"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="OwY-D3-BjX">
+                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="OwY-D3-BjX">
                         <rect key="frame" x="25" y="0.0" width="292" height="96"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ejr-Df-AiR">
-                                <rect key="frame" x="0.0" y="0.0" width="94" height="96"/>
+                                <rect key="frame" x="0.0" y="0.0" width="92.666666666666671" height="96"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="GmF-hf-gFE">
-                                        <rect key="frame" x="23.333333333333332" y="25" width="47.333333333333343" height="46"/>
+                                        <rect key="frame" x="22.666666666666661" y="25" width="47.333333333333343" height="46"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_receive" translatesAutoresizingMaskIntoConstraints="NO" id="gsN-pv-gvN">
-                                                <rect key="frame" x="11.666666666666664" y="0.0" width="24" height="24"/>
+                                                <rect key="frame" x="11.666666666666671" y="0.0" width="24" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="24" id="6Ne-l2-xyL"/>
                                                     <constraint firstAttribute="height" constant="24" id="BMr-ya-xT7"/>
@@ -50,10 +50,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nve-iG-oTu">
-                                <rect key="frame" x="99" y="0.0" width="94" height="96"/>
+                                <rect key="frame" x="99.666666666666657" y="0.0" width="92.666666666666657" height="96"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="8gG-H6-gAq">
-                                        <rect key="frame" x="19.666666666666654" y="25" width="54.666666666666657" height="46"/>
+                                        <rect key="frame" x="18.999999999999982" y="25" width="54.666666666666657" height="46"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_receive" translatesAutoresizingMaskIntoConstraints="NO" id="LlW-LT-0RG">
                                                 <rect key="frame" x="15.333333333333343" y="0.0" width="24" height="24"/>
@@ -78,13 +78,13 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SDF-sC-Saf">
-                                <rect key="frame" x="198" y="0.0" width="94" height="96"/>
+                                <rect key="frame" x="199.33333333333334" y="0.0" width="92.666666666666657" height="96"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="qqa-ds-M1r">
-                                        <rect key="frame" x="12" y="25" width="70" height="46"/>
+                                        <rect key="frame" x="11.333333333333314" y="25" width="70" height="46"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_receive" translatesAutoresizingMaskIntoConstraints="NO" id="xL7-H0-yOe">
-                                                <rect key="frame" x="23" y="0.0" width="24" height="24"/>
+                                                <rect key="frame" x="23.000000000000028" y="0.0" width="24" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="24" id="dN2-4V-wzO"/>
                                                     <constraint firstAttribute="width" constant="24" id="r1u-xc-dg0"/>

@@ -53,7 +53,7 @@ class BalanceCell: UITableViewCell {
         btnExchange.isHidden = hideBtnExchange
 
         let assetsCount = model?.cachedBalance.nonZeroAmounts().count ?? 0
-        assetsBox.isHidden = assetsCount < 2
+        assetsBox.isHidden = true // assetsCount < 2
 
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
         let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assetsCount), attributes: uLineAttr)

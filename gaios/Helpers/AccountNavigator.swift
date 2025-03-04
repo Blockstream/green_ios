@@ -40,11 +40,11 @@ class AccountNavigator {
         Task {
             let isLightning = account.isDerivedLightning
             let accountViewModel = isLightning ? await accountViewModel(account: account) : nil
-            let walletViewModel = !isLightning ? WalletViewModel() : nil
+            let walletModel = !isLightning ? WalletModel() : nil
             await MainActor.run {
                 if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
                     vc.accountViewModel = accountViewModel
-                    vc.walletViewModel = walletViewModel
+                    vc.walletModel = walletModel
                     let appDelegate = UIApplication.shared.delegate
                     appDelegate?.window??.rootViewController = vc
                     vc.stopLoader()
