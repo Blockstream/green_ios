@@ -92,11 +92,11 @@ public class LightningSessionManager: SessionManager {
         isRestoredNode = false
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
-            logger.info("lightning connectToGreenlight with \(restore)")
+            logger.info("WM lightning connectToGreenlight with \(restore)")
             try await connectToGreenlight(credentials: params, checkCredentials: restore)
             isRestoredNode = restore
         } catch {
-            logger.info("lightning connectToGreenlight")
+            logger.info("WM lightning connectToGreenlight")
             try await connectToGreenlight(credentials: params)
         }
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
