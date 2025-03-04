@@ -202,20 +202,26 @@ extension UIView {
         }
     }
 }
-extension UIImage {
-    func withBadge(iconColor: UIColor, badgeColor: UIColor = .red) -> UIImage {
-        let render = UIGraphicsImageRenderer(size: size)
-        return render.image { _ in
-            let iconTintedImage = withRenderingMode(.alwaysTemplate)
-            iconColor.setFill()
-            iconTintedImage.draw(at: .zero)
-            let badgeSize = CGSize(width: 6, height: 6)
-            let badgeOrigin = CGPoint(x: size.width - badgeSize.width, y: 0)
-            let badgeRect = CGRect(origin: badgeOrigin, size: badgeSize)
-            let badgePath = UIBezierPath(ovalIn: badgeRect)
-            badgeColor.setFill()
-            badgePath.fill()
-        }
-        .withRenderingMode(.alwaysOriginal)
+
+public extension UIView {
+
+    func pressAnimate(_ completionBlock: @escaping () -> Void) {
+        isUserInteractionEnabled = false
+        UIView.animate(withDuration: 0.1,
+                       delay: 0,
+                       options: .curveEaseIn,
+                       animations: {[weak self] in
+            self?.alpha = 0.0
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.05,
+                           delay: 0,
+                           options: .curveEaseOut,
+                           animations: {[weak self] in
+                self?.alpha = 1.0
+            }, completion: {[weak self] _ in
+                self?.isUserInteractionEnabled = true
+                completionBlock()
+            })
+        })
     }
 }

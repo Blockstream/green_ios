@@ -577,7 +577,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .transaction:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
-                cell.configure(model: viewModel.txCellModels[indexPath.row], hideBalance: hideBalance)
+                cell.configure(model: viewModel.txCellModels[indexPath.row], hideBalance: hideBalance, onTap: nil)
                 cell.selectionStyle = .none
                 return cell
             }

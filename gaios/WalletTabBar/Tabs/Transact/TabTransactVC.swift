@@ -60,6 +60,18 @@ class TabTransactVC: TabViewController {
     func send() {
         sendScreen(walletModel)
     }
+    func onTxTap(_ indexPath: IndexPath) {
+        let tx = walletModel.txCellModels[indexPath.row].tx
+        if tx.isLightningSwap ?? false {
+            if tx.isInProgressSwap ?? false {
+                DropAlert().warning(message: "id_swap_is_in_progress".localized)
+            } else {
+                txScreen(tx)
+            }
+        } else {
+            txScreen(tx)
+        }
+    }
 }
 extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
 
@@ -120,7 +132,9 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .transactions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
-                cell.configure(model: walletModel.txCellModels[indexPath.row], hideBalance: walletModel.hideBalance)
+                cell.configure(model: walletModel.txCellModels[indexPath.row], hideBalance: walletModel.hideBalance, onTap: {[weak self] in
+                    self?.onTxTap(indexPath)
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -185,18 +199,6 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch TabTransactSection(rawValue: indexPath.section) {
-        case .transactions:
-            let tx = walletModel.txCellModels[indexPath.row].tx
-            if tx.isLightningSwap ?? false {
-                if tx.isInProgressSwap ?? false {
-                    DropAlert().warning(message: "id_swap_is_in_progress".localized)
-                } else {
-                    txScreen(tx)
-                }
-            } else {
-                txScreen(tx)
-            }
-            tableView.deselectRow(at: indexPath, animated: false)
         default:
             break
         }

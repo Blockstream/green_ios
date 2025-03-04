@@ -53,12 +53,19 @@ class TransactActionsCell: UITableViewCell {
         lblReceive.text = TransactActions.receive.name
     }
     @objc func didTapBuy() {
-        onBuy?()
+        controlBuy.pressAnimate { [weak self] in
+            self?.onBuy?()
+        }
+
     }
     @objc func didTapSend() {
-        onSend?()
+        controlSend.pressAnimate { [weak self] in
+            self?.onSend?()
+        }
     }
     @objc func didTapReceive() {
-        onReceive?()
+        controlReceive.pressAnimate { [weak self] in
+            self?.onReceive?()
+        }
     }
 }

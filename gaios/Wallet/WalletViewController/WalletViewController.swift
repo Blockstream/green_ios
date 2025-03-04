@@ -767,8 +767,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             } else {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout0Cell", for: indexPath) as? PromoLayout0Cell {
-                    cell.configure(model, onAction: {
-                        [weak self] in
+                    cell.configure(model, onAction: { [weak self] in
                         self?.onPromo(promo: model.promo, source: model.source)
                     }, onDismiss: { [weak self] in
                         self?.promoDismiss()
@@ -779,7 +778,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .transaction:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
-                cell.configure(model: viewModel.txCellModels[indexPath.row], hideBalance: hideBalance)
+                cell.configure(model: viewModel.txCellModels[indexPath.row], hideBalance: hideBalance, onTap: nil)
                 cell.selectionStyle = .none
                 return cell
             }

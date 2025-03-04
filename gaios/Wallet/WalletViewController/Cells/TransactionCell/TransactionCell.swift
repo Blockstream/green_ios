@@ -13,11 +13,15 @@ class TransactionCell: UITableViewCell {
 
     class var identifier: String { return String(describing: self) }
 
+    var onTap: (() -> Void)?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.setStyle(CardStyle.defaultStyle)
         progressBar.cornerRadius = 5.0
         progressBar.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTap))
+        bg.addGestureRecognizer(tap)
     }
 
     deinit {
@@ -35,7 +39,7 @@ class TransactionCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(model: TransactionCellModel, hideBalance: Bool) {
+    func configure(model: TransactionCellModel, hideBalance: Bool, onTap: (() -> Void)?) {
         self.imgView.image = model.icon
 
         var txtCache = ""
@@ -81,6 +85,7 @@ class TransactionCell: UITableViewCell {
             progressLoop()
         }
         activity.isHidden = true
+        self.onTap = onTap
     }
 
     func progressLoop() {
@@ -101,4 +106,9 @@ class TransactionCell: UITableViewCell {
         }
     }
 
+    @objc func didTap() {
+        bg.pressAnimate { [weak self] in
+            self?.onTap?()
+        }
+    }
 }
