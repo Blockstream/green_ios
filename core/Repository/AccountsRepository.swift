@@ -3,15 +3,12 @@ import gdk
 
 public class AccountsRepository {
 
-    let attrAccount = "AccountsManager_Account"
-    let attrService = "AccountsManager_Service"
+    static let attrAccount = "AccountsManager_Account"
+    static let attrServicev0 = "AccountsManager_Service"
+    static let attrServicev1 = "AccountsManager_Service_v1"
 
     public static let shared = AccountsRepository()
-    let storage: KeychainStorage
-
-    public init() {
-        storage = KeychainStorage(account: attrAccount, service: attrService)
-    }
+    let storage = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev1)
 
     // List of saved accounts with cache
     private var accountsCached: [Account]?
@@ -53,6 +50,10 @@ public class AccountsRepository {
     // Filtered account list of hardware wallets
     public var hwAccounts: [Account] { accounts.filter { $0.isHW } }
     public var hwVisibleAccounts: [Account] { hwAccounts.filter { !($0.hidden ?? true) } }
+    
+    public func cleanCache() {
+        accountsCached = nil
+    }
 
     public func get(for id: String) -> Account? {
         ephAccounts.filter({ $0.id == id }).first ??

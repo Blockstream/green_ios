@@ -8,6 +8,7 @@ public enum MigrationFlag: String {
 public class MigratorManager {
 
     public static let shared = MigratorManager()
+    let lastMigration = 4
     private var appDataVersion: Int {
         get {
             UserDefaults.standard.integer(forKey: MigrationFlag.appDataVersion.rawValue)
@@ -28,8 +29,6 @@ public class MigratorManager {
                 migrateWallets()
             }
             firstInitialization = true
-            appDataVersion = 3
-            return
         }
         if appDataVersion == 0 {
             // upgrade from app < v4.0.0
@@ -37,13 +36,17 @@ public class MigratorManager {
         }
         if appDataVersion == 1 {
             // upgrade from app < v4.0.25
-            updateKeychainPolicy()
+            try? updateKeychainAccessGroup()
         }
         // upgrade from app < v4.1.7
         if appDataVersion < 3 {
             updateBiometricPolicy()
         }
-        appDataVersion = 3
+        if appDataVersion < 4 {
+            // upgrade from app < v4.1.7
+            try? updateKeychainAccessible()
+        }
+        appDataVersion = lastMigration
     }
 
     private func migrateDatadir() { // from "4.0.0"
@@ -74,25 +77,36 @@ public class MigratorManager {
         AccountsRepository.shared.accounts = accounts
     }
 
-    func updateKeychainPolicy() { // from  "4.0.25"
-        let keychainStorage = AccountsRepository.shared.storage
-        var query = keychainStorage.query.merging(
-            [kSecMatchLimit as String: kSecMatchLimitOne, kSecReturnData as String: kCFBooleanTrue ?? true],
-            uniquingKeysWith: {_, new in new})
-        query.removeValue(forKey: kSecAttrAccessGroup as String)
-        var retrivedData: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &retrivedData)
-        guard status == errSecSuccess, let data = retrivedData as? Data else {
-            return
+    func updateKeychainAccessGroup() throws { // from  "4.0.25"
+        let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
+        let query = [
+            // without kSecAttrAccessible & kSecAttrAccessGroup
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: keychainStoragev0.attrAccount,
+            kSecAttrService as String: keychainStoragev0.attrService] as [String: Any]
+        if let data = try keychainStoragev0.read(query) {
+            try AccountsRepository.shared.storage.write(data)
         }
-        try? keychainStorage.write(data)
+        AccountsRepository.shared.cleanCache()
+    }
+
+    func updateKeychainAccessible() throws { // from "4.1.0"
+        let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
+        let query = [
+            // without kSecAttrAccessible
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: keychainStoragev0.attrAccount,
+            kSecAttrService as String: keychainStoragev0.attrService,
+            kSecAttrAccessGroup as String: Bundle.main.appGroup] as [String: Any]
+        if let data = try keychainStoragev0.read(query) {
+            try AccountsRepository.shared.storage.write(data)
+        }
+        AccountsRepository.shared.cleanCache()
     }
 
     func updateBiometricPolicy() { // from  "4.1.7"
-        for account in AccountsRepository.shared.accounts {
-            if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
-                _ = try? AuthenticationTypeHandler.getAuthKeyBiometricPrivateKey(network: account.keychain)
-            }
+        for account in AccountsRepository.shared.accounts where AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
+            _ = try? AuthenticationTypeHandler.getAuthKeyBiometricPrivateKey(network: account.keychain)
         }
     }
 }

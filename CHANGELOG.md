@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improved notifications translations
 - Persist wallet list across app reinstallation
 - Reduce login time
+- Improved background lightning payments
 
 ## [4.1.7] - 2025-02-21
 

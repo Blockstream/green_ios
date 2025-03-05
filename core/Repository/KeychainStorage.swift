@@ -1,6 +1,8 @@
 import Foundation
 import gdk
 import greenaddress
+import LocalAuthentication
+import Security
 
 public class KeychainStorage {
 
@@ -15,47 +17,52 @@ public class KeychainStorage {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: attrAccount,
             kSecAttrService as String: attrService,
-            kSecAttrAccessGroup as String: Bundle.main.appGroup]
+            kSecAttrAccessGroup as String: Bundle.main.appGroup,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock]
     }
 
-    func removeAll() throws {
-        let query = query.merging(
-            [kSecMatchLimit as String: kSecMatchLimitOne, kSecReturnData as String: kCFBooleanTrue ?? true],
-            uniquingKeysWith: {_, new in new})
+    func removeAll(_ query: [String: Any]? = nil) throws {
+        let query = (query ?? self.query)
         let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess else {
-            throw GaError.GenericError()
+        try KeychainStorage.throwOSStatus(status)
+    }
+
+    private static func throwOSStatus(_ err: OSStatus) throws {
+        guard err == errSecSuccess else {
+            let text = SecCopyErrorMessageString(err, nil) ?? "" as CFString
+            logger.error("Operation failed: \(err) \(text, privacy: .public))")
+            throw NSError(domain: NSOSStatusErrorDomain, code: Int(err), userInfo: nil)
         }
     }
 
-    func write(_ data: Data) throws {
-        let query = query.merging(
-            [kSecValueData as String: data],
-            uniquingKeysWith: {_, new in new})
-        var status = SecItemAdd(query as CFDictionary, nil)
-        if status == errSecDuplicateItem {
-            status = SecItemDelete(query as CFDictionary)
-            status = SecItemAdd(query as CFDictionary, nil)
-        }
-        guard status == errSecSuccess else {
-            let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
-            print("Operation failed: \(status) \(text))")
-            throw GaError.GenericError()
-        }
-    }
-
-    func read() throws -> Data {
-        let query = query.merging(
+    func write(_ data: Data, from query: [String: Any]? = nil) throws {
+        let query = (query ?? self.query)
+        let queryRead = query.merging(
             [kSecMatchLimit as String: kSecMatchLimitOne, kSecReturnData as String: kCFBooleanTrue ?? true],
             uniquingKeysWith: {_, new in new})
         var retrivedData: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &retrivedData)
-        guard status == errSecSuccess else {
-            let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
-            print("Operation failed: \(status) \(text))")
-            throw GaError.GenericError()
+        let status = SecItemCopyMatching(queryRead as CFDictionary, &retrivedData)
+        switch status {
+        case errSecSuccess:
+            let newAttributes = [kSecValueData as String: data]
+            let status = SecItemUpdate(query as CFDictionary, newAttributes as CFDictionary)
+            try KeychainStorage.throwOSStatus(status)
+        case errSecItemNotFound:
+            var queryWrite = query
+            queryWrite[kSecValueData as String] = data
+            let status = SecItemAdd(queryWrite as CFDictionary, nil)
+            try KeychainStorage.throwOSStatus(status)
+        default:
+            try KeychainStorage.throwOSStatus(status)
         }
-        guard let data = retrivedData as? Data else { throw GaError.GenericError() }
-        return data
+    }
+
+    func read(_ query: [String: Any]? = nil) throws -> Data? {
+        let query = (query ?? self.query).merging(
+            [kSecMatchLimit as String: kSecMatchLimitOne, kSecReturnData as String: kCFBooleanTrue ?? true], uniquingKeysWith: {_, new in new})
+        var retrivedData: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &retrivedData)
+        try KeychainStorage.throwOSStatus(status)
+        return retrivedData as? Data
     }
 }
