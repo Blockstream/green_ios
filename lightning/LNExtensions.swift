@@ -120,3 +120,26 @@ extension BreezEvent {
         }
     }
 }
+extension ReverseSwapStatus {
+    public func description() -> String {
+        switch self {
+        case ReverseSwapStatus.`initial`: return "initial"
+        case ReverseSwapStatus.`inProgress`: return "inProgress"
+        case ReverseSwapStatus.`cancelled`: return "cancelled"
+        case ReverseSwapStatus.`completedSeen`: return "completedSeen"
+        case ReverseSwapStatus.`completedConfirmed`: return "completedConfirmed"
+        }
+    }
+}
+extension SwapStatus {
+    public func description() -> String {
+        switch self {
+        case SwapStatus.`initial`: return "initial"
+        case SwapStatus.`waitingConfirmation`: return "waitingConfirmation"
+        case SwapStatus.`redeemable`: return "redeemable"
+        case SwapStatus.`redeemed`: return "redeemed"
+        case SwapStatus.`refundable`: return "refundable"
+        case SwapStatus.`completed`: return "completed"
+        }
+    }
+}

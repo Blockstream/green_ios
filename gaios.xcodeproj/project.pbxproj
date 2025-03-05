@@ -608,6 +608,7 @@
 		817A0B3D2A41BE6100E2F80D /* HWConnectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B3C2A41BE6100E2F80D /* HWConnectionProtocol.swift */; };
 		817A0B3F2A41C8E200E2F80D /* JadeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B3E2A41C8E200E2F80D /* JadeMessage.swift */; };
 		817A0B412A41D48700E2F80D /* BleLedgerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B402A41D48600E2F80D /* BleLedgerManager.swift */; };
+		8180B2492D2D742A008FFFD0 /* SwapUpdateTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8180B2482D2D742A008FFFD0 /* SwapUpdateTask.swift */; };
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		8183BECC2C41991D0020FD11 /* GreenGDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8183BECB2C41991D0020FD11 /* GreenGDK.swift */; };
@@ -1515,6 +1516,7 @@
 		817A0B3C2A41BE6100E2F80D /* HWConnectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWConnectionProtocol.swift; sourceTree = "<group>"; };
 		817A0B3E2A41C8E200E2F80D /* JadeMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JadeMessage.swift; sourceTree = "<group>"; };
 		817A0B402A41D48600E2F80D /* BleLedgerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedgerManager.swift; sourceTree = "<group>"; };
+		8180B2482D2D742A008FFFD0 /* SwapUpdateTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapUpdateTask.swift; sourceTree = "<group>"; };
 		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		8183BECB2C41991D0020FD11 /* GreenGDK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenGDK.swift; path = libgdk/share/gdk/GreenGDK.swift; sourceTree = SOURCE_ROOT; };
@@ -3593,6 +3595,7 @@
 			isa = PBXGroup;
 			children = (
 				8177ED482B6C567100C2271C /* PaymentReceiverTask.swift */,
+				8180B2482D2D742A008FFFD0 /* SwapUpdateTask.swift */,
 				81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */,
 				81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */,
 			);
@@ -5021,6 +5024,7 @@
 				81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */,
 				81F8AC572BC5A4A4002E384D /* ConfirmTransactionTask.swift in Sources */,
 				816E9BD82BC48011008DBFA7 /* BreezSDKConnector.swift in Sources */,
+				8180B2492D2D742A008FFFD0 /* SwapUpdateTask.swift in Sources */,
 				81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

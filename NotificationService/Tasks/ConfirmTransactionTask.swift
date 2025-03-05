@@ -15,7 +15,7 @@ class ConfirmTransactionTask: TaskProtocol {
     internal var bestAttemptContent: UNMutableNotificationContent?
     internal var dismiss: (() -> Void)?
     internal var bitcoinAddress: String? = nil
-    
+
     var TAG: String { return String(describing: self) }
     let SWAP_TX_CONFIRMED_NOTIFICATION_FAILURE_TITLE = "Open the app to complete swap"
     let SWAP_TX_CONFIRMED_NOTIFICATION_TITLE = "Swap confirmed"
@@ -31,21 +31,25 @@ class ConfirmTransactionTask: TaskProtocol {
         if let address = self.bitcoinAddress {
             switch e {
             case .reverseSwapUpdated(details: let revSwapInfo):
-                logger.info("Received reverse swap updated event: \(revSwapInfo.id), current address: \(address) status: \(revSwapInfo.status.hashValue)")
-                if case .completedSeen = revSwapInfo.status, case  .completedConfirmed = revSwapInfo.status {
+                logger.info("\(self.TAG, privacy: .public): Received reverse swap updated event: \(revSwapInfo.id, privacy: .public), current address: \(address) status: \(revSwapInfo.status.description(), privacy: .public)")
+                if .completedSeen == revSwapInfo.status, .completedConfirmed == revSwapInfo.status {
                     self.notifySuccess()
+                    self.dismiss?()
                 }
-                self.dismiss?()
             case .swapUpdated(details: let swapInfo):
-                logger.info("Received swap updated event: \(swapInfo.bitcoinAddress), current address: \(address) status: \(swapInfo.status.hashValue)")
+                logger.info("\(self.TAG, privacy: .public): Received swap updated event: \(swapInfo.bitcoinAddress, privacy: .public), current address: \(address, privacy: .public) status: \(swapInfo.status.description(), privacy: .public)")
                 
                 if address == swapInfo.bitcoinAddress {
                     if (swapInfo.paidMsat > 0) {
-                        logger.info("Swap address \(swapInfo.bitcoinAddress) redeemed succesfully")
+                        logger.info("\(self.TAG, privacy: .public): Swap address \(swapInfo.bitcoinAddress, privacy: .public) redeemed succesfully")
                         self.notifySuccess()
+                        self.dismiss?()
                     }
                 }
-                self.dismiss?()
+            case .invoicePaid(details: let details):
+                logger.info("\(self.TAG, privacy: .public): Received payment. Bolt11: \(details.bolt11, privacy: .public)\nPayment Hash:\(details.paymentHash, privacy: .public)")
+            case .synced:
+                logger.info("\(self.TAG, privacy: .public): Received synced event")
             default:
                 break
             }
@@ -57,39 +61,37 @@ class ConfirmTransactionTask: TaskProtocol {
             let addressTxsConfirmedRequest = try JSONDecoder().decode(AddressTxsConfirmedRequest.self, from: self.payload.data(using: .utf8)!)
             bitcoinAddress = addressTxsConfirmedRequest.address
         } catch let e {
-            self.onShutdown()
-            logger.error("Failed to decode payload: \(e, privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): Failed to decode payload: \(e, privacy: .public)")
             throw e
         }
 
         guard let address = bitcoinAddress else {
-            logger.error("Address not in payload")
-            self.onShutdown()
+            logger.error("\(self.TAG, privacy: .public): Address not in payload")
             throw NotificationError.InvalidNotification
         }
 
         do {
             try breezSDK.redeemSwap(swapAddress: address)
-            logger.info("Found swap for \(address, privacy: .public)")
+            logger.info("\(self.TAG, privacy: .public): Found swap for \(address, privacy: .public)")
             self.dismiss?()
             return
         } catch let e {
-            logger.error("Failed to redeem swap: \(e, privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): Failed to redeem swap: \(e, privacy: .public)")
         }
         
         do {
             try breezSDK.claimReverseSwap(lockupAddress: address)
-            logger.info("Found reverse swap for \(address, privacy: .public)")
+            logger.info("\(self.TAG, privacy: .public): Found reverse swap for \(address, privacy: .public)")
         } catch let e {
-            logger.error("Failed to process reverse swap: \(e, privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): Failed to process reverse swap: \(e, privacy: .public)")
         }
     }
 
-    func notifySuccess() {
-        self.displayPushNotification(title: SWAP_TX_CONFIRMED_NOTIFICATION_TITLE, threadIdentifier: TAG)
+    func notifySuccess() { // silent notification
+        //self.displayPushNotification(title: SWAP_TX_CONFIRMED_NOTIFICATION_TITLE, threadIdentifier: TAG)
     }
 
-    func onShutdown() {
-        self.displayPushNotification(title: SWAP_TX_CONFIRMED_NOTIFICATION_FAILURE_TITLE, threadIdentifier: TAG)
+    func onShutdown() { // silent notification
+        //self.displayPushNotification(title: SWAP_TX_CONFIRMED_NOTIFICATION_FAILURE_TITLE, threadIdentifier: TAG)
     }
 }

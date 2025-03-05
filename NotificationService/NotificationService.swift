@@ -17,6 +17,7 @@ struct LnurlInvoiceMessage: Codable {
 public enum LightningNotificationType: String, Codable {
     case addressTxsConfirmed = "address_txs_confirmed"
     case paymentReceived = "payment_received"
+    case swapUpdated = "swap_updated"
 }
 
 public struct LightningNotification: Codable {
@@ -43,52 +44,52 @@ class NotificationService: UNNotificationServiceExtension {
     private var bestAttemptContent: UNMutableNotificationContent? = nil
     private var currentTask: TaskProtocol? = nil
     private var breezSDKConnector = BreezSDKConnector()
+    private var TAG: String { return String(describing: self) }
 
     override func didReceive(
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-        logger.info("Notification received: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
+            logger.info("\(self.TAG, privacy: .public): Notification received: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-
         let userInfo = bestAttemptContent?.userInfo
         guard let notification = LightningNotification.from(userInfo ?? [:]) as? LightningNotification else {
-            logger.error("Invalid notification")
+            logger.info("\(self.TAG, privacy: .public): Invalid notification")
             if let content = bestAttemptContent {
                 contentHandler(content)
             }
             return
         }
-
         if let currentTask = self.getTaskFromNotification(notification: notification) {
             self.currentTask = currentTask
             Task.detached(priority: .high) { @MainActor [weak self] in
+                let TAG = self?.TAG ?? ""
                 do {
                     guard let xpub = notification.appData else {
-                        logger.error("Invalid xpub: \(self?.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
+                        logger.error("\(TAG, privacy: .public): Invalid xpub: \(self?.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
                         throw NotificationError.InvalidNotification
                     }
-                    logger.info("xpub: \(xpub, privacy: .public)")
+                    logger.info("\(TAG, privacy: .public): xpub: \(xpub, privacy: .public)")
                     guard let lightningAccount = self?.getLightningAccount(xpub: xpub) else {
                         guard let account = self?.getAccount(xpub: xpub) else {
-                            logger.error("Wallet not found")
-                            throw NotificationError.WalletNotFound
+                            logger.error("\(TAG, privacy: .public): Wallet not found")
+                            return
                         }
-                        logger.info("Using account \(account.name, privacy: .public)")
+                        logger.error("\(TAG, privacy: .public): Wallet not lightning found: \(account.name, privacy: .public)")
                         currentTask.onShutdown()
                         return
                     }
-                    logger.info("Using lightning account \(lightningAccount.name, privacy: .public)")
+                    logger.info("\(TAG, privacy: .public): Using lightning wallet \(lightningAccount.name, privacy: .public)")
+                    logger.info("\(TAG, privacy: .public): Breez SDK is not connected, connecting....")
                     let credentials = try AuthenticationTypeHandler.getKeyLightning(for: lightningAccount.keychain)
-                    logger.info("Breez SDK is not connected, connecting....")
                     if let breezSdk = try await self?.breezSDKConnector.register(credentials: credentials, listener: currentTask) {
-                        logger.info("Breez SDK connected successfully")
+                        logger.info("\(TAG, privacy: .public): Breez SDK connected successfully")
                         try currentTask.start(breezSDK: breezSdk)
                     }
                 } catch {
-                    logger.error("Breez SDK connection failed \(error.description() ?? "", privacy: .public)")
-                    self?.shutdown()
+                    logger.error("\(TAG, privacy: .public): Breez SDK connection failed \(error.description() ?? "", privacy: .public)")
                     self?.currentTask?.onShutdown()
+                    self?.shutdown()
                 }
             }
         }
@@ -112,18 +113,21 @@ class NotificationService: UNNotificationServiceExtension {
     func getTaskFromNotification(notification: LightningNotification) -> TaskProtocol? {
         switch(notification.notificationType) {
         case .addressTxsConfirmed:
-            logger.info("creating task for tx received")
+            logger.info("\(self.TAG, privacy: .public): creating task for tx received")
             return ConfirmTransactionTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
         case .paymentReceived:
-            logger.info("creating task for payment received")
+            logger.info("\(self.TAG, privacy: .public): creating task for payment received")
             return PaymentReceiverTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
+        case .swapUpdated:
+            logger.info("\(self.TAG, privacy: .public): creating task for swap update")
+            return SwapUpdateTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
         default:
             return nil
         }
     }
 
     override func serviceExtensionTimeWillExpire() {
-        logger.error("serviceExtensionTimeWillExpire()")
+        logger.info("\(self.TAG, privacy: .public): serviceExtensionTimeWillExpire()")
 
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
@@ -134,9 +138,9 @@ class NotificationService: UNNotificationServiceExtension {
 
     private func shutdown() -> Void {
         Task.detached(priority: .high) { @MainActor [weak self] in
-            logger.info("shutting down...")
+            logger.info("\(self?.TAG ?? "", privacy: .public): shutting down...")
             await self?.breezSDKConnector.unregister()
-            logger.info("task unregistered")
+            logger.info("\(self?.TAG ?? "", privacy: .public): task unregistered")
         }
     }
 }

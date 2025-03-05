@@ -34,12 +34,12 @@ class PaymentReceiverTask: TaskProtocol {
             let existingPayment = try breezSDK.paymentByHash(hash: request.payment_hash)
             if existingPayment != nil {
                 self.receivedPayment = existingPayment
-                logger.info("Found payment for hash \(request.payment_hash, privacy: .public)")
+                logger.info("\(self.TAG, privacy: .public): Found payment for hash \(request.payment_hash, privacy: .public)")
                 self.onShutdown()
                 self.dismiss?()
             }
         } catch let e {
-            logger.error("Failed to call start of receive payment notification: \(e, privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): Failed to call start of receive payment notification: \(e, privacy: .public)")
             throw NotificationError.Failed
         }
     }
@@ -52,12 +52,12 @@ class PaymentReceiverTask: TaskProtocol {
     func onEvent(e: BreezEvent) {
         switch e {
         case .invoicePaid(details: let details):
-            self.logger.info("Received payment. Bolt11: \(details.bolt11, privacy: .public)\nPayment Hash:\(details.paymentHash, privacy: .public)")
+            self.logger.info("\(self.TAG, privacy: .public): Received payment. Bolt11: \(details.bolt11, privacy: .public)\nPayment Hash:\(details.paymentHash, privacy: .public)")
             receivedPayment = details.payment
         case .synced:
-            logger.info("Received synced event")
+            logger.info("\(self.TAG, privacy: .public): Received synced event")
             if self.receivedPayment != nil {
-                logger.info("Received synced event and receivedPayment != nil")
+                logger.info("\(self.TAG, privacy: .public): Received synced event and receivedPayment != nil")
                 self.onShutdown()
                 self.dismiss?()
             }
