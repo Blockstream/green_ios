@@ -123,8 +123,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
                                hideBalance: walletModel.hideBalance,
                                hideBtnExchange: true,
                                onHide: {[weak self] value in
-                    self?.walletModel.hideBalance = value
-                    self?.reloadSections([.transactions], animated: false)
+                    self?.walletTab.onHide(value)
                 },
                                onAssets: {}, onConvert: {}, onExchange: {})
                 cell.selectionStyle = .none

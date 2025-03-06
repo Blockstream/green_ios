@@ -15,7 +15,7 @@ class WalletAssetCell: UITableViewCell {
         bg.setStyle(CardStyle.defaultStyle)
         lblAsset.setStyle(.titleCard)
         lblBalance1.setStyle(.txt)
-        lblBalance1.font = .boldSystemFont(ofSize: 14)
+        lblBalance1.setStyle(.txtBold)
         lblBalance1.textColor = UIColor.gGreenMatrix()
         lblBalance2.setStyle(.txtCard)
     }

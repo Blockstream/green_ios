@@ -464,6 +464,13 @@
 		34ED47042AD4259F000086D4 /* SupportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED47032AD4259F000086D4 /* SupportManager.swift */; };
 		34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */; };
 		34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */; };
+		34F0EC2B2D783E140017C276 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 34F0EC2A2D783E140017C276 /* DGCharts */; };
+		34F0EC2D2D783ED70017C276 /* price_chart_mock.json in Resources */ = {isa = PBXBuildFile; fileRef = 34F0EC2C2D783ED70017C276 /* price_chart_mock.json */; };
+		34F0EC2F2D783EE70017C276 /* PriceChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0EC2E2D783EE70017C276 /* PriceChartModel.swift */; };
+		34F0EC312D78402E0017C276 /* PriceChartCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F0EC302D78402E0017C276 /* PriceChartCell.xib */; };
+		34F0EC352D7840830017C276 /* PriceChartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0EC342D7840830017C276 /* PriceChartCell.swift */; };
+		34F0EC372D784B2B0017C276 /* PriceChartCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0EC362D784B220017C276 /* PriceChartCellModel.swift */; };
+		34F0EC3A2D79A73F0017C276 /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0EC392D79A73F0017C276 /* Api.swift */; };
 		34F164EF29E84B3800FE5B64 /* DialogDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F164EE29E84B3800FE5B64 /* DialogDeleteViewController.swift */; };
 		34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F51A7D2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift */; };
 		34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F51A7E2A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib */; };
@@ -1397,6 +1404,12 @@
 		34ED47032AD4259F000086D4 /* SupportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportManager.swift; sourceTree = "<group>"; };
 		34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCardCell.swift; sourceTree = "<group>"; };
 		34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AlertCardCell.xib; sourceTree = "<group>"; };
+		34F0EC2C2D783ED70017C276 /* price_chart_mock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = price_chart_mock.json; sourceTree = "<group>"; };
+		34F0EC2E2D783EE70017C276 /* PriceChartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartModel.swift; sourceTree = "<group>"; };
+		34F0EC302D78402E0017C276 /* PriceChartCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PriceChartCell.xib; sourceTree = "<group>"; };
+		34F0EC342D7840830017C276 /* PriceChartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartCell.swift; sourceTree = "<group>"; };
+		34F0EC362D784B220017C276 /* PriceChartCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartCellModel.swift; sourceTree = "<group>"; };
+		34F0EC392D79A73F0017C276 /* Api.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Api.swift; sourceTree = "<group>"; };
 		34F164EE29E84B3800FE5B64 /* DialogDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDeleteViewController.swift; sourceTree = "<group>"; };
 		34F51A7D2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressAuthLoaderCell.swift; sourceTree = "<group>"; };
 		34F51A7E2A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddressAuthLoaderCell.xib; sourceTree = "<group>"; };
@@ -1701,6 +1714,7 @@
 			files = (
 				8114888E2B785A27004C7AB6 /* FirebaseMessaging in Frameworks */,
 				81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */,
+				34F0EC2B2D783E140017C276 /* DGCharts in Frameworks */,
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
 				8173B8EC2AB19DB800C15C85 /* ZendeskSupportSDK in Frameworks */,
 				8177ED8E2B6C688C00C2271C /* core.framework in Frameworks */,
@@ -2286,6 +2300,9 @@
 				344D57E12D71E37C009725A3 /* TransactActions.swift */,
 				344D57DF2D71D088009725A3 /* TransactActionsCell.swift */,
 				344D57DD2D71D06F009725A3 /* TransactActionsCell.xib */,
+				34F0EC342D7840830017C276 /* PriceChartCell.swift */,
+				34F0EC362D784B220017C276 /* PriceChartCellModel.swift */,
+				34F0EC302D78402E0017C276 /* PriceChartCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -2293,6 +2310,8 @@
 		344D57E32D758D0A009725A3 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				34F0EC2C2D783ED70017C276 /* price_chart_mock.json */,
+				34F0EC2E2D783EE70017C276 /* PriceChartModel.swift */,
 				344D57E42D758D52009725A3 /* TabHomeVC.swift */,
 			);
 			path = Home;
@@ -2859,6 +2878,7 @@
 			isa = PBXGroup;
 			children = (
 				3469A2452887D23700B2F640 /* StoreReviewManager.swift */,
+				34F0EC392D79A73F0017C276 /* Api.swift */,
 				3440B7D92D5666A500B1478D /* LangHelper.swift */,
 				340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */,
 				3487653629D337150059D05F /* OnBoardManager.swift */,
@@ -4114,6 +4134,7 @@
 				81B2350E2A6A8BCD00B8FF5D /* Countly */,
 				8173B8EB2AB19DB800C15C85 /* ZendeskSupportSDK */,
 				8114888D2B785A27004C7AB6 /* FirebaseMessaging */,
+				34F0EC2A2D783E140017C276 /* DGCharts */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -4367,6 +4388,7 @@
 				817A0B2F2A3CC52500E2F80D /* XCRemoteSwiftPackageReference "Semaphore" */,
 				8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */,
 				8114888C2B785A25004C7AB6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				34F0EC292D783E140017C276 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -4422,6 +4444,7 @@
 				345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */,
 				81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
+				34F0EC2D2D783ED70017C276 /* price_chart_mock.json in Resources */,
 				3487657F29D43B2A0059D05F /* animation_03_jade_v1.riv in Resources */,
 				347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
@@ -4493,6 +4516,7 @@
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
 				34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */,
 				8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */,
+				34F0EC312D78402E0017C276 /* PriceChartCell.xib in Resources */,
 				34B385D629B888610097220B /* HWFlow.storyboard in Resources */,
 				344915EE2A0CE26700D35818 /* ReceiveAddressCell.xib in Resources */,
 				344915DF2A090CA800D35818 /* LTInboundCell.xib in Resources */,
@@ -4860,6 +4884,7 @@
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */,
 				812528D02B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift in Sources */,
+				34F0EC372D784B2B0017C276 /* PriceChartCellModel.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				81A591A129157B1E001D1A65 /* MultisigSettingsCell.swift in Sources */,
 				34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */,
@@ -4940,6 +4965,7 @@
 				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
 				81004E31292B6E1D001C2E4D /* MnemonicViewModel.swift in Sources */,
 				344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */,
+				34F0EC2F2D783EE70017C276 /* PriceChartModel.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
 				3415862329EE9A29005002D9 /* WOLoginViewController.swift in Sources */,
 				34D97FF42CABD99100F71FE3 /* PromoManager.swift in Sources */,
@@ -5023,6 +5049,7 @@
 				3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */,
 				34955C102B67B7560056DE90 /* HowToSecureCell.swift in Sources */,
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
+				34F0EC352D7840830017C276 /* PriceChartCell.swift in Sources */,
 				3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */,
 				34A883B22BA85F50004A1826 /* TxDetailsInfoCellModel.swift in Sources */,
 				344D57DB2D71BF72009725A3 /* TabHeaderCell.swift in Sources */,
@@ -5039,6 +5066,7 @@
 				34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */,
 				81332CC32D55082D00F3520D /* Gdk.swift in Sources */,
 				34019C2928D35F3F00E64BEE /* DrawerBarItem.swift in Sources */,
+				34F0EC3A2D79A73F0017C276 /* Api.swift in Sources */,
 				3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */,
 				34B0D0032CE2553100A90080 /* ActionsSheetViewController.swift in Sources */,
 				34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */,
@@ -6867,6 +6895,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		34F0EC292D783E140017C276 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
 		8114888C2B785A25004C7AB6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -6934,6 +6970,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		34F0EC2A2D783E140017C276 /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34F0EC292D783E140017C276 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
+		};
 		8114888D2B785A27004C7AB6 /* FirebaseMessaging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8114888C2B785A25004C7AB6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

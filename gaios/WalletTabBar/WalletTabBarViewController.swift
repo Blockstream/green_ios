@@ -205,6 +205,7 @@ class WalletTabBarViewController: UITabBarController {
             try? await self?.walletModel.loadBalances()
             _ = try? await self?.walletModel.getTransactions(restart: true)
             await self?.walletModel.reloadPromoCards()
+            try await Api.shared.fetch()
             await self?.updateTabs([.home, .transact])
         }
     }
@@ -218,14 +219,19 @@ class WalletTabBarViewController: UITabBarController {
     func updateTab(_ tab: WalletTab) {
         switch tab {
         case .home:
-            tabHomeVC.reloadSections([.balance, .assets, .promo], animated: false)
+            tabHomeVC.tableView?.reloadData()
         case .transact:
-            tabTransactVC.reloadSections([.balance], animated: false)
+            tabTransactVC.tableView?.reloadData()
         case .security:
             break
         case .settings:
             break
         }
+    }
+
+    func onHide(_ value: Bool) {
+        walletModel.hideBalance = value
+        updateTabs([.home, .transact])
     }
 }
 

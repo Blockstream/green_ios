@@ -3,6 +3,8 @@ class TabHomeVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView?
 
+    var timeFrame: ChartTimeFrame = .week
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
@@ -13,9 +15,12 @@ class TabHomeVC: TabViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadSections([.balance], animated: false)
-    }
+        reloadSections([.balance, .assets], animated: false)
 
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
     func setContent() {
         tableView?.refreshControl = UIRefreshControl()
         tableView?.refreshControl!.tintColor = UIColor.white
@@ -23,7 +28,7 @@ class TabHomeVC: TabViewController {
     }
 
     func register() {
-        ["TabHeaderCell", "BalanceCell", "WalletAssetCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell"].forEach {
+        ["TabHeaderCell", "BalanceCell", "WalletAssetCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell", "PriceChartCell"].forEach {
             tableView?.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -36,6 +41,7 @@ class TabHomeVC: TabViewController {
 
     @MainActor
     func reloadSections(_ sections: [TabHomeSection], animated: Bool) {
+        print( " ------------> \(IndexSet(sections.map { $0.rawValue }))" )
         if animated {
             tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
         } else {
@@ -49,6 +55,10 @@ class TabHomeVC: TabViewController {
 //        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
 //            self.tableView.refreshControl?.endRefreshing()
 //        }
+    }
+
+    func buy() {
+        buyScreen(walletModel)
     }
 }
 
@@ -91,6 +101,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             return 1
         case .assets:
             return walletModel.walletAssetCellModels.count
+        case .chart:
+            return 1
         case .promo:
             return walletModel.promoCardCellModel.count
         default:
@@ -115,8 +127,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                                hideBalance: walletModel.hideBalance,
                                hideBtnExchange: true,
                                onHide: {[weak self] value in
-                    self?.walletModel.hideBalance = value
-                    self?.reloadSections([.assets], animated: false)
+                    self?.walletTab.onHide(value)
                 },
                                onAssets: {}, onConvert: {}, onExchange: { })
                 cell.selectionStyle = .none
@@ -128,8 +139,19 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case .promo:
+        case .chart:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PriceChartCell.identifier, for: indexPath) as? PriceChartCell {
 
+                cell.configure(PriceChartCellModel(priceChartModel: Api.shared.priceCache), timeFrame: timeFrame, onBuy: {[weak self] in
+                    self?.buy()
+                }, onNewFrame: {[weak self] timeFrame in
+                    self?.timeFrame = timeFrame
+                    self?.reloadSections([.chart], animated: false)
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .promo:
             let cellModel = walletModel.promoCardCellModel[indexPath.row]
             if cellModel.promo.layout_small == 2 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout2Cell", for: indexPath) as? PromoLayout2Cell {
@@ -172,7 +194,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch TabHomeSection(rawValue: section) {
-        case .assets:
+        case .assets, .chart:
             return sectionHeaderH
         default:
             return 0.1
@@ -201,6 +223,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         switch TabHomeSection(rawValue: section) {
         case .assets:
             return sectionHeader("Assets".localized)
+        case .chart:
+            return sectionHeader("Bitcoin Price".localized)
         default:
             return nil
         }
@@ -216,13 +240,12 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch TabHomeSection(rawValue: indexPath.section) {
         default:
-            return nil // indexPath
+            return nil
         }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch TabHomeSection(rawValue: indexPath.section) {
-
         default:
             break
         }
