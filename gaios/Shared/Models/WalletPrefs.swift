@@ -2,7 +2,7 @@ import UIKit
 import core
 
 enum WalletPrefs: Int, CaseIterable {
-    case settings
+//    case settings
     case createAccount
     case logout
     case denominations
@@ -30,8 +30,8 @@ enum WalletPrefs: Int, CaseIterable {
 
     var name: String {
         switch self {
-        case .settings:
-            return "id_settings".localized
+//        case .settings:
+//            return "id_settings".localized
         case .createAccount:
             return "id_add_new_account".localized
         case .logout:
@@ -51,8 +51,8 @@ enum WalletPrefs: Int, CaseIterable {
 
     var icon: UIImage {
         switch self {
-        case .settings:
-            return UIImage(named: "ic_dialog_gear_six")!
+//        case .settings:
+//            return UIImage(named: "ic_dialog_gear_six")!
         case .createAccount:
             return UIImage(named: "ic_dialog_simple_plus")!
         case .logout:
@@ -72,7 +72,7 @@ enum WalletPrefs: Int, CaseIterable {
 
     static func getPrefs() -> [WalletPrefs] {
         let isWatchOnly = AccountsRepository.shared.current?.isWatchonly ?? false
-        let prefs: [WalletPrefs] = isWatchOnly ? [ .settings, .logout ] : [ .createAccount, .settings, .logout ]
+        let prefs: [WalletPrefs] = isWatchOnly ? [ /*.settings,*/ .logout ] : [ .createAccount, /*.settings,*/ .logout ]
         return prefs
     }
     static func getItems() -> [DialogListCellModel] {
@@ -90,13 +90,13 @@ enum WalletPrefs: Int, CaseIterable {
         if AccountsRepository.shared.current?.isWatchonly == true {
             return ([0: Sections.wallet.name,
                      1: Sections.session.name],
-                    [0: [.contact, .denominations, .settings],
+                    [0: [.contact, .denominations/*, .settings*/],
                      1: [.refresh, .logout]])
         }
         return ([0: Sections.wallet.name,
                  1: Sections.account.name,
                  2: Sections.session.name],
-                [0: [.contact, .rename, .denominations, .settings],
+                [0: [.contact, .rename, .denominations /*, .settings */],
                  1: (showArchive ? [.createAccount, .archive] : [.createAccount]),
                  2: [.refresh, .logout]])
     }

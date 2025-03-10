@@ -34,7 +34,7 @@ class WalletTabBarViewController: UITabBarController {
         UIView.animate(withDuration: 0.7) {
             self.view.alpha = 1
         }
-        setDrawer()
+        loadNavigationBtns()
         setTabBar()
     }
 
@@ -90,7 +90,7 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
-    func setDrawer() {
+    func loadNavigationBtns() {
         guard let walletModel else { return }
         drawerItem.configure(img: walletModel.headerIcon, onTap: {[weak self] () in
             self?.switchNetwork()
@@ -103,6 +103,23 @@ class WalletTabBarViewController: UITabBarController {
         let widthConstraint = NSLayoutConstraint(item: drawerItem, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredWidth)
         let heightConstraint = NSLayoutConstraint(item: drawerItem, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredHeight)
         drawerItem.addConstraints([widthConstraint, heightConstraint])
+
+        // setup right menu bar: settings
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
+        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+    }
+
+    @objc func settingsBtnTapped(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogGroupListViewController") as? DialogGroupListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogGroupListViewModel(title: "Wallet Preferences".localized, type: .walletPrefs, dataSource: WalletPrefs.getGroupItems())
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
     }
 
     func setTabBar() {
@@ -233,6 +250,56 @@ class WalletTabBarViewController: UITabBarController {
         walletModel.hideBalance = value
         updateTabs([.home, .transact])
     }
+
+    func showContactSupport() {
+        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = ZendeskErrorRequest(shareLogs: true)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func userLogout() {
+        // userWillLogout = true
+//        self.presentedViewController?.dismiss(animated: true, completion: {
+            if AppSettings.shared.gdkSettings?.tor ?? false {
+                self.startLoader(message: "id_logout".localized)
+            }
+            Task {
+                let account = self.walletModel.wm?.account
+                if account?.isHW ?? false {
+                    try? await BleViewModel.shared.disconnect()
+                }
+                await WalletManager.current?.disconnect()
+                WalletsRepository.shared.delete(for: account?.id ?? "")
+                AccountNavigator.goLogout(account: nil)
+                self.stopLoader()
+            }
+//        })
+    }
+
+    func showDenominationExchange() {
+        AnalyticsManager.shared.preferredUnits(account: AccountsRepository.shared.current)
+
+        let ltFlow = UIStoryboard(name: "DenominationExchangeFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "DenominationExchangeViewController") as? DenominationExchangeViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func rename() {
+        let account = AccountsRepository.shared.current
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
+            vc.delegate = self
+            vc.index = nil
+            vc.prefill = account?.name ?? ""
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
 }
 
 extension WalletTabBarViewController: UITabBarControllerDelegate {
@@ -332,5 +399,57 @@ extension WalletTabBarViewController: DialogAboutViewControllerDelegate {
             vc.request = ZendeskErrorRequest(shareLogs: true)
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+}
+extension WalletTabBarViewController: DialogGroupListViewControllerDelegate {
+    func didSelectIndexPath(_ indexPath: IndexPath, with type: DialogGroupType) {
+        switch type {
+        case .walletPrefs:
+            if let item = WalletPrefs.getSelected(indexPath) {
+                switch item {
+                case .createAccount:
+                    AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
+//                    createAccount()
+                case .logout:
+                    userLogout()
+                case .denominations:
+                    showDenominationExchange()
+                case .rename:
+                    rename()
+                case .refresh:
+//                    tableView.beginRefreshing()
+//                    reload(discovery: true)
+                    break
+                case .archive:
+//                    showArchived()
+                    break
+                case .contact:
+                    showContactSupport()
+                }
+            }
+        }
+    }
+}
+extension WalletTabBarViewController: DenominationExchangeViewControllerDelegate {
+    func onDenominationExchangeSave() {
+        Task.detached { [weak self] in
+            try? await self?.walletModel.loadBalances()
+            _ = try? await self?.walletModel.getTransactions(restart: true)
+            await self?.updateTabs([.home, .transact])
+        }
+    }
+}
+extension WalletTabBarViewController: DialogRenameViewControllerDelegate {
+
+    func didRename(name: String, index: String?) {
+        if var account = AccountsRepository.shared.current {
+            account.name = name
+            WalletManager.current?.account = account
+            // AccountsRepository.shared.upsert(account)
+            AnalyticsManager.shared.renameWallet()
+            drawerItem.refresh()
+        }
+    }
+    func didCancel() {
     }
 }

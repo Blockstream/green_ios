@@ -1095,16 +1095,16 @@ extension WalletViewController: DialogGroupListViewControllerDelegate {
         case .walletPrefs:
             if let item = WalletPrefs.getSelected(indexPath) {
                 switch item {
-                case .settings:
-                    let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-                    let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
-                    if let nvc = nvc as? UINavigationController {
-                        if let vc = nvc.viewControllers.first as? UserSettingsViewController {
-                            vc.delegate = self
-                            nvc.modalPresentationStyle = .fullScreen
-                            present(nvc, animated: true, completion: nil)
-                        }
-                    }
+//                case .settings:
+//                    let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+//                    let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+//                    if let nvc = nvc as? UINavigationController {
+//                        if let vc = nvc.viewControllers.first as? UserSettingsViewController {
+//                            vc.delegate = self
+//                            nvc.modalPresentationStyle = .fullScreen
+//                            present(nvc, animated: true, completion: nil)
+//                        }
+//                    }
                 case .createAccount:
                     AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
                     createAccount()
