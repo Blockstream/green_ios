@@ -19,6 +19,7 @@ class ContainerViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor.gBlackBg()
         networkToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         self.networkView.isHidden = true
         view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view

@@ -1206,7 +1206,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="kqH-JR-dUI"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="vmq-E5-XHS" firstAttribute="leading" secondItem="kqH-JR-dUI" secondAttribute="leading" id="FeZ-O4-eM2"/>
                             <constraint firstItem="kqH-JR-dUI" firstAttribute="top" secondItem="vmq-E5-XHS" secondAttribute="top" id="HI3-2e-Hhe"/>
@@ -1349,7 +1349,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="mCA-tT-t9b"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="FUH-6u-iOg" firstAttribute="centerX" secondItem="mCA-tT-t9b" secondAttribute="centerX" id="3Zy-Jy-zuI"/>
                             <constraint firstItem="och-8d-uuJ" firstAttribute="top" secondItem="eNb-v4-U5H" secondAttribute="bottom" constant="14" id="3o4-Jy-3da"/>
@@ -1595,7 +1595,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="mtm-xd-iuy"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="mtm-xd-iuy" firstAttribute="trailing" secondItem="70O-7C-z20" secondAttribute="trailing" id="8Ol-Uy-0cf"/>
                             <constraint firstItem="70O-7C-z20" firstAttribute="top" secondItem="mtm-xd-iuy" secondAttribute="top" id="8SQ-rz-laA"/>
@@ -1694,7 +1694,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Xp6-kx-V21"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="W1G-BK-xCX" firstAttribute="centerY" secondItem="Xp6-kx-V21" secondAttribute="centerY" id="1Kr-xm-rYw"/>
                             <constraint firstItem="3Xm-TH-bd8" firstAttribute="leading" secondItem="Xp6-kx-V21" secondAttribute="leading" id="2nF-Tk-84j"/>
@@ -1759,7 +1759,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xWQ-N7-9Hc"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="fFe-fW-eUe" firstAttribute="top" secondItem="oel-CZ-JXk" secondAttribute="bottom" constant="20" id="2aD-AN-HpA"/>
                             <constraint firstItem="oel-CZ-JXk" firstAttribute="leading" secondItem="xWQ-N7-9Hc" secondAttribute="leading" constant="25" id="2i7-Ek-lgt"/>
@@ -1813,7 +1813,7 @@
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gBlackBg">
-            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

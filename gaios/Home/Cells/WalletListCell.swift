@@ -34,7 +34,7 @@ class WalletListCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 7.0
+        bg.setStyle(CardStyle.defaultStyle)
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressed))
         let longPressOverviewRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressedOverview))

@@ -353,6 +353,7 @@
                                         </constraints>
                                     </view>
                                 </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="xve-Bs-3md" secondAttribute="bottom" id="4rs-co-y8d"/>
                                     <constraint firstItem="xve-Bs-3md" firstAttribute="top" secondItem="QXV-px-ZKh" secondAttribute="top" id="IjN-7J-BSr"/>
@@ -378,7 +379,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="M6r-d5-0KO"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="M6r-d5-0KO" firstAttribute="trailing" secondItem="vYB-gN-r9q" secondAttribute="trailing" constant="25" id="0mw-X1-r0R"/>
                             <constraint firstItem="vYB-gN-r9q" firstAttribute="leading" secondItem="M6r-d5-0KO" secondAttribute="leading" constant="25" id="243-fv-hpl"/>
@@ -432,8 +433,8 @@
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumDark">
-            <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="gBlackBg">
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayElement">
             <color red="0.17254901960784313" green="0.20000000000000001" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

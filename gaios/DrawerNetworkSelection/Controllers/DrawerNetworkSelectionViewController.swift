@@ -56,6 +56,8 @@ class DrawerNetworkSelectionViewController: UIViewController {
     }
 
     func setStyle() {
+        view.backgroundColor = UIColor.gBlackBg()
+        tableView.backgroundColor = UIColor.gBlackBg()
         newWalletView.cornerRadius = 5.0
     }
 
@@ -253,13 +255,11 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
 extension DrawerNetworkSelectionViewController {
     func headerView(_ txt: String) -> UIView {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-        section.backgroundColor = UIColor.customTitaniumDark()
+        section.backgroundColor = .clear
         let title = UILabel(frame: .zero)
-        title.font = .systemFont(ofSize: 14.0, weight: .semibold)
         title.text = txt
-        title.textColor = UIColor.customGrayLight()
         title.numberOfLines = 0
-
+        title.setStyle(.txtSectionHeader)
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
 

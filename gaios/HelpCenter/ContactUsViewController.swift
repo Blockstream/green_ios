@@ -32,7 +32,7 @@ class ContactUsViewController: KeyboardViewController {
     @IBOutlet weak var lblModalTitle: UILabel!
     @IBOutlet weak var torCheckbox: UIView!
     @IBOutlet weak var btnCopy: UIButton!
-    
+
     var request: ZendeskErrorRequest!
 
     var imgUnchecked: UIImage {

@@ -173,6 +173,7 @@ class LoginViewController: UIViewController {
     }
 
     func setStyle() {
+        view.backgroundColor = UIColor.gBlackBg()
         btnWalletLock.setStyle(.primary)
         alertCard.layer.cornerRadius = 6.0
         attemptsBg.layer.cornerRadius = 5.0
