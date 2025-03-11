@@ -92,7 +92,7 @@ class WalletModel {
     }
 
     func loadBalances() async throws {
-        let balances = try await wm?.balances(subaccounts: self.subaccounts)
+        let balances = try await wm?.balances(subaccounts: wm?.subaccounts ?? [])
         let cachedBalance = AssetAmountList(balances ?? [:])
         self.accountCellModels = subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
         self.cachedBalance = cachedBalance
@@ -122,7 +122,7 @@ class WalletModel {
         }
         fetchingTxs = true
         do {
-            let txs = try await wm?.transactions(subaccounts: subaccounts, first: (restart == true) ? 0 : cachedTransactions.count) ?? []
+            let txs = try await wm?.transactions(subaccounts: wm?.subaccounts ?? [], first: (restart == true) ? 0 : cachedTransactions.count) ?? []
             if txs.count == 0 || txs.sorted(by: >) == cachedTransactions.suffix(txs.count) {
                 fetchingTxs = false
                 return false

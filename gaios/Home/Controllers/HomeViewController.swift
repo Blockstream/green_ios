@@ -72,7 +72,7 @@ class HomeViewController: UIViewController {
 
     func setStyle() {
         tableView.backgroundColor = UIColor.gBlackBg()
-        newWalletView.cornerRadius = 5.0
+        newWalletView.setStyle(CardStyle.defaultStyle)
     }
 
     func updateUI() {
@@ -183,9 +183,11 @@ class HomeViewController: UIViewController {
     }
 
     @IBAction func btnNewWallet(_ sender: Any) {
-        let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "GetStartedOnBoardViewController") as? GetStartedOnBoardViewController {
-            navigationController?.pushViewController(vc, animated: true)
+        newWalletView.pressAnimate {
+            let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "GetStartedOnBoardViewController") as? GetStartedOnBoardViewController {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 
@@ -238,8 +240,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let model = promoCardCellModel[indexPath.row]
             if model.promo.layout_small == 2 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout2Cell", for: indexPath) as? PromoLayout2Cell {
-                    cell.configure(model, onAction: {
-                        [weak self] in
+                    cell.configure(model, onAction: {[weak self] in
                         self?.onPromo(model.promo)
                     }, onDismiss: { [weak self] in
                         self?.promoDismiss()
@@ -250,8 +251,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             } else if model.promo.layout_small == 1 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout1Cell", for: indexPath) as? PromoLayout1Cell {
-                    cell.configure(model, onAction: {
-                        [weak self] in
+                    cell.configure(model, onAction: {[weak self] in
                         self?.onPromo(model.promo)
                     }, onDismiss: { [weak self] in
                         self?.promoDismiss()
@@ -262,8 +262,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             } else {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout0Cell", for: indexPath) as? PromoLayout0Cell {
-                    cell.configure(model, onAction: {
-                        [weak self] in
+                    cell.configure(model, onAction: {[weak self] in
                         self?.onPromo(model.promo)
                     }, onDismiss: { [weak self] in
                         self?.promoDismiss()

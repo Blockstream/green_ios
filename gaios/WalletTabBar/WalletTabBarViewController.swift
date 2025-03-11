@@ -29,20 +29,19 @@ class WalletTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.alpha = 0
-        UIView.animate(withDuration: 0.7) {
-            self.view.alpha = 1
-        }
         loadNavigationBtns()
         setTabBar()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        view.alpha = 0
+        UIView.animate(withDuration: 1.0) {
+            self.view.alpha = 1
+        }
+        drawerIcon(true)
 //        if userWillLogout == true { return }
-        reload()
+        reload {}
 
         EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
@@ -157,22 +156,22 @@ class WalletTabBarViewController: UITabBarController {
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
         case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
-            reload()
+            reload {}
         case .Block:
             if walletModel.cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
-                reload()
+                reload {}
             }
         case .AssetsUpdated:
-            reload()
+            reload {}
         case .Network:
             if let details = details as? [String: Any],
                let connection = Connection.from(details) as? Connection {
                 if connection.connected {
-                    reload()
+                    reload {}
                 }
             }
         case .Settings, .Ticker, .TwoFactorReset:
-            reload()
+            reload {}
 //        case .bip21Scheme:
 //            if URLSchemeManager.shared.isValid {
 //                if let bip21 = URLSchemeManager.shared.bip21 {
@@ -190,14 +189,14 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
-    func reload(_ discovery: Bool = false) {
-//        if walletModel.paused {
-//            return
-//        }
-//        if isReloading {
-//            return
-//        }
-//        isReloading = true
+    func reload(_ discovery: Bool = false, completion: @escaping () -> Void ) {
+        if walletModel.paused {
+            return
+        }
+        if isReloading {
+            return
+        }
+        isReloading = true
 //        Task.detached() { [weak self] in
 //            await self?.walletModel.loadSubaccounts(discovery: discovery)
 //            await self?.reloadSections([.account], animated: true)
@@ -224,6 +223,10 @@ class WalletTabBarViewController: UITabBarController {
             await self?.walletModel.reloadPromoCards()
             try await Api.shared.fetch()
             await self?.updateTabs([.home, .transact])
+            await MainActor.run { [weak self] in
+                self?.isReloading = false
+            }
+            completion()
         }
     }
 

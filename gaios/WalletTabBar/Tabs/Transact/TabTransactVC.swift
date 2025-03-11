@@ -19,6 +19,7 @@ class TabTransactVC: TabViewController {
     }
 
     func setContent() {
+        tableView?.prefetchDataSource = self
         tableView?.refreshControl = UIRefreshControl()
         tableView?.refreshControl!.tintColor = UIColor.white
         tableView?.refreshControl!.addTarget(self, action: #selector(pull(_:)), for: .valueChanged)
@@ -32,8 +33,10 @@ class TabTransactVC: TabViewController {
     }
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {[weak self] in
-            self?.tableView?.refreshControl?.endRefreshing()
+        walletTab.reload(false) {
+            DispatchQueue.main.async {[weak self] in
+                self?.tableView?.refreshControl?.endRefreshing()
+            }
         }
     }
 

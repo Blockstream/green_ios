@@ -557,7 +557,7 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnab
         if avc != nil {
             navigationController?.popToViewController(ofClass: AccountViewController.self)
         } else {
-            navigationController?.popToViewController(ofClass: WalletViewController.self)
+            navigationController?.popToViewController(ofClass: WalletTabBarViewController.self)
         }
     }
 

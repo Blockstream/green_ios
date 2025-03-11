@@ -58,7 +58,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     func setStyle() {
         view.backgroundColor = UIColor.gBlackBg()
         tableView.backgroundColor = UIColor.gBlackBg()
-        newWalletView.cornerRadius = 5.0
+        newWalletView.setStyle(CardStyle.defaultStyle)
     }
 
     func getAccountFromTableView(_ indexPath: IndexPath) -> Account? {
@@ -102,8 +102,10 @@ class DrawerNetworkSelectionViewController: UIViewController {
         }
     }
     @IBAction func btnAddWallet(_ sender: Any) {
-        delegate?.didSelectAddWallet()
-        self.dismiss(animated: true, completion: nil)
+        newWalletView.pressAnimate {
+            self.delegate?.didSelectAddWallet()
+            self.dismiss(animated: true, completion: nil)
+        }
     }
 
     @IBAction func btnAbout(_ sender: Any) {

@@ -155,19 +155,25 @@ class WalletListCell: UITableViewCell {
 
     @IBAction func btnTap(_ sender: Any) {
         if let indexPath = indexPath {
-            onTap?(indexPath)
+            bg.pressAnimate {
+                self.onTap?(indexPath)
+            }
         }
     }
 
     @IBAction func onTapOverview(_ sender: Any) {
         if let indexPath = indexPath {
-            onTapOverview?(indexPath)
+            bg.pressAnimate {
+                self.onTapOverview?(indexPath)
+            }
         }
     }
 
     @IBAction func btnTapLightShort(_ sender: Any) {
         if let indexPath = indexPath {
-            onTapLightShort?(indexPath)
+            bg.pressAnimate {
+                self.onTapLightShort?(indexPath)
+            }
         }
     }
 }
