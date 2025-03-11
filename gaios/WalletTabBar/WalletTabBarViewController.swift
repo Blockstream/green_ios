@@ -31,7 +31,9 @@ class WalletTabBarViewController: UITabBarController {
         super.viewDidLoad()
         loadNavigationBtns()
         setTabBar()
-        Task.detached { [weak self] in await self?.reload() }
+        Task.detached { [weak self] in
+            await self?.walletModel.registerNotifications()
+            await self?.reload() }
     }
 
     override func viewWillAppear(_ animated: Bool) {
