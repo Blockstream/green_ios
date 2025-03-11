@@ -80,11 +80,15 @@ class StartOnBoardViewController: UIViewController {
 
         switch OnBoardManager.shared.flowType {
         case .add:
-            let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                vc.pinFlow = .create
+                vc.viewModel = SetPinViewModel(credentials: nil, testnet: OnBoardManager.shared.chainType == .testnet ? true : false)
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .restore:
-            let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .watchonly:
             break
         }

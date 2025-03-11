@@ -1,26 +1,29 @@
 import Foundation
 import core
 import gdk
+import greenaddress
 
 class SetPinViewModel {
 
-    var credentials: Credentials
+    var credentials: Credentials?
     var testnet: Bool
     var restoredAccount: Account?
 
-    init(credentials: Credentials, testnet: Bool, restoredAccount: Account? = nil) {
+    init(credentials: Credentials?, testnet: Bool, restoredAccount: Account? = nil) {
         self.credentials = credentials
         self.testnet = testnet
         self.restoredAccount = restoredAccount
     }
 
     func getXpubHashId(session: SessionManager) async throws -> String? {
+        guard let credentials = credentials else { fatalError("Invalid credentials") }
         try await session.connect()
-        let walletId = try session.walletIdentifier(credentials: self.credentials)
+        let walletId = try session.walletIdentifier(credentials: credentials)
         return walletId?.xpubHashId
     }
 
     func restore(pin: String) async throws {
+        guard let credentials = credentials else { fatalError("Invalid credentials") }
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let defaultAccount = restoredAccount ?? Account(name: name, network: mainNetwork)
@@ -29,9 +32,9 @@ class SetPinViewModel {
         wm.hwInterfaceResolver = await HwPopupResolver()
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)
-        let lightningCredentials = try wm.deriveLightningCredentials(from: self.credentials)
+        let lightningCredentials = try wm.deriveLightningCredentials(from: credentials)
         let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
-        try await wm.login(credentials: self.credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
+        try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
         wm.account.attempts = 0
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)
@@ -70,11 +73,14 @@ class SetPinViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = await HwPopupResolver()
+        let mnemonic = try generateMnemonic12()
+        let credentials = Credentials(mnemonic: mnemonic)
         try await wm.create(credentials)
         try await wm.account.addPin(session: wm.prominentSession!, pin: pin, credentials: credentials)
     }
 
     func setup(pin: String) async throws {
+        guard let credentials = credentials else { fatalError("Invalid credentials") }
         guard let wm = WalletManager.current,
             let session = wm.prominentSession
         else { throw LoginError.failed() }
