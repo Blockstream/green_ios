@@ -206,8 +206,10 @@ public class WalletManager {
         try await btcSession.register(credentials: credentials)
         let loginData = try await btcSession.loginUser(credentials, restore: false)
         account.xpubHashId = loginData.xpubHashId
+        account.walletHashId = loginData.walletHashId
         AccountsRepository.shared.current = self.account
         try await btcSession.updateSubaccount(UpdateSubaccountParams(subaccount: 0,  hidden: true))
+        _ = try await btcSession.createSubaccount(CreateSubaccountParams(name: "", type: .segWit))
         _ = try await self.subaccounts()
         try? await self.loadRegistry()
     }
