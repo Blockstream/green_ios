@@ -31,6 +31,7 @@ class WalletTabBarViewController: UITabBarController {
         super.viewDidLoad()
         loadNavigationBtns()
         setTabBar()
+        Task.detached { [weak self] in await self?.reload() }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -40,8 +41,6 @@ class WalletTabBarViewController: UITabBarController {
             self.view.alpha = 1
         }
         drawerIcon(true)
-//        if userWillLogout == true { return }
-        reload {}
 
         EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
@@ -156,22 +155,22 @@ class WalletTabBarViewController: UITabBarController {
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
         case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
-            reload {}
+            Task.detached { [weak self] in await self?.reload() }
         case .Block:
             if walletModel.cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
-                reload {}
+                Task.detached { [weak self] in await self?.reload() }
             }
         case .AssetsUpdated:
-            reload {}
+            Task.detached { [weak self] in await self?.reload() }
         case .Network:
             if let details = details as? [String: Any],
                let connection = Connection.from(details) as? Connection {
                 if connection.connected {
-                    reload {}
+                    Task.detached { [weak self] in await self?.reload() }
                 }
             }
         case .Settings, .Ticker, .TwoFactorReset:
-            reload {}
+            Task.detached { [weak self] in await self?.reload() }
 //        case .bip21Scheme:
 //            if URLSchemeManager.shared.isValid {
 //                if let bip21 = URLSchemeManager.shared.bip21 {
@@ -189,7 +188,7 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
-    func reload(_ discovery: Bool = false, completion: @escaping () -> Void ) {
+    func reload(_ discovery: Bool = false) async {
         if walletModel.paused {
             return
         }
@@ -197,45 +196,24 @@ class WalletTabBarViewController: UITabBarController {
             return
         }
         isReloading = true
-//        Task.detached() { [weak self] in
-//            await self?.walletModel.loadSubaccounts(discovery: discovery)
-//            await self?.reloadSections([.account], animated: true)
-//            try? await self?.viewModel.loadBalances()
-//            await self?.reloadSections([.account, .balance, .card], animated: true)
-//            await self?.viewModel.reloadAlertCards()
-//            await self?.reloadSections([.card], animated: true)
-//            await self?.viewModel.reloadPromoCards()
-//            await self?.reloadSections([.promo], animated: false)
-//            try? await self?.viewModel.loadTransactions(max: 20)
-//            await self?.reloadSections([.transaction], animated: false)
-//            await MainActor.run { [weak self] in
-//                self?.isReloading = false
-//            }
-//            await self?.emptiedAccountEvent()
-//        }
-//        Task.detached() { [weak self] in
-//            try? await self?.viewModel.wm?.refreshIfNeeded()
-//        }
-        Task.detached { [weak self] in
-            await self?.walletModel.loadSubaccounts(discovery: discovery)
-            try? await self?.walletModel.loadBalances()
-            _ = try? await self?.walletModel.getTransactions(restart: true)
-            await self?.walletModel.reloadPromoCards()
-            try await Api.shared.fetch()
-            await self?.updateTabs([.home, .transact])
-            await MainActor.run { [weak self] in
-                self?.isReloading = false
-            }
-            completion()
-        }
+        await self.walletModel.loadSubaccounts(discovery: discovery)
+        try? await self.walletModel.loadBalances()
+        self.updateTabs([.home, .transact])
+        _ = try? await self.walletModel.loadTransactions()
+        self.updateTabs([.home, .transact])
+        //await self?.walletModel.reloadPromoCards()
+        try? await Api.shared.fetch()
+        isReloading = false
     }
 
+    @MainActor
     func updateTabs(_ tabs: [WalletTab]) {
         tabs.forEach {
             updateTab($0)
         }
     }
 
+    @MainActor
     func updateTab(_ tab: WalletTab) {
         switch tab {
         case .home:
@@ -249,6 +227,7 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
+    @MainActor
     func onHide(_ value: Bool) {
         walletModel.hideBalance = value
         updateTabs([.home, .transact])
@@ -437,7 +416,7 @@ extension WalletTabBarViewController: DenominationExchangeViewControllerDelegate
     func onDenominationExchangeSave() {
         Task.detached { [weak self] in
             try? await self?.walletModel.loadBalances()
-            _ = try? await self?.walletModel.getTransactions(restart: true)
+            try? await self?.walletModel.loadTransactions()
             await self?.updateTabs([.home, .transact])
         }
     }

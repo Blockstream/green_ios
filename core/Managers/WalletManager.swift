@@ -396,6 +396,7 @@ public class WalletManager {
             logger.info("WM syncSettings")
             try? await self.syncSettings()
         }
+        _ = try? await self.prominentSession?.loadSettings()
         logger.info("WM loadRegistry")
         try? await self.loadRegistry()
     }
@@ -554,6 +555,21 @@ public class WalletManager {
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: UInt32(first))
+                    let page = txs?.list.map { Transaction($0.details, subaccount: subaccount.hashValue) }
+                    return page ?? []
+                }
+            }
+            return try await group.reduce(into: [Transaction]()) { partial, res in
+                partial += res
+            }.sorted()
+        }
+    }
+
+    public func transactionsAll(subaccounts: [WalletItem]) async throws -> [Transaction] {
+        return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
+            for subaccount in subaccounts {
+                group.addTask {
+                    let txs = try await subaccount.session?.transactionsAll(subaccount: subaccount.pointer)
                     let page = txs?.list.map { Transaction($0.details, subaccount: subaccount.hashValue) }
                     return page ?? []
                 }

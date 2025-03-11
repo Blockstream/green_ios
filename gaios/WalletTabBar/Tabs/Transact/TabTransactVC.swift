@@ -33,8 +33,9 @@ class TabTransactVC: TabViewController {
     }
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
-        walletTab.reload(false) {
-            DispatchQueue.main.async {[weak self] in
+        Task.detached { [weak self] in
+            await self?.walletTab.reload()
+            await MainActor.run { [weak self] in
                 self?.tableView?.refreshControl?.endRefreshing()
             }
         }
@@ -265,17 +266,13 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         let filteredIndexPaths = indexPaths.filter { $0.section == TabTransactSection.transactions.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
-        if walletModel.page > 0 && row > (walletModel.txCellModels.count - 3) {
-            Task.detached { [weak self] in
-                await self?.getTransactions()
-            }
+        if row > (walletModel.txCellModels.count - 3) {
+            getTransactions()
         }
     }
 
-    func getTransactions() async {
-        let refresh = try? await walletModel.getTransactions(restart: false, max: nil)
-        if refresh ?? true {
-            reloadSections([.transactions], animated: false)
-        }
+    func getTransactions() {
+        walletModel.getTransactions()
+        reloadSections([.transactions], animated: false)
     }
 }

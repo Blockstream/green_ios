@@ -115,7 +115,23 @@ class WalletModel {
 //        self.isTxLoading = false
 //    }
 
-    func getTransactions(restart: Bool = true, max: Int? = nil) async throws -> Bool {
+    func loadTransactions() async throws {
+        if fetchingTxs {
+            return
+        }
+        fetchingTxs = true
+        let txs = try await wm?.transactionsAll(subaccounts: subaccounts) ?? []
+        cachedTransactions = txs.sorted(by: >)
+        getTransactions()
+        fetchingTxs = false
+    }
+
+    func getTransactions() {
+        txCellModels = cachedTransactions.prefix(upTo: txCellModels.count + 30)
+            .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
+            .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
+    }
+    func getTransactions_(restart: Bool = true, max: Int? = nil) async throws -> Bool {
 
         if fetchingTxs {
             return false
@@ -157,26 +173,6 @@ class WalletModel {
             return session.blockHeight
         }
         return 0
-    }
-
-    func sumBalances(_ subaccounts: [WalletItem]) -> Int64 {
-        var total: Int64 = 0
-        for subacc in subaccounts {
-            let satoshi = subacc.satoshi?[subacc.gdkNetwork.getFeeAsset()] ?? 0
-            if let converted = Balance.fromSatoshi(satoshi, assetId: subacc.gdkNetwork.getFeeAsset()) {
-                total += converted.satoshi
-            }
-        }
-        return total
-    }
-
-    func rotateBalanceDisplayMode() async throws {
-        var isBTC = false
-        if let session = self.session, let settings = session.settings {
-            isBTC = settings.denomination == .BTC
-        }
-        balanceDisplayMode = balanceDisplayMode.next(isBTC)
-        try await loadBalances()
     }
 
     func loadDisputeCards() -> [AlertCardType] {

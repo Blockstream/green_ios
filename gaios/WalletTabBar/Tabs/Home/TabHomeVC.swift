@@ -35,8 +35,9 @@ class TabHomeVC: TabViewController {
     }
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
-        walletTab.reload(false) {
-            DispatchQueue.main.async {[weak self] in
+        Task.detached { [weak self] in
+            await self?.walletTab.reload()
+            await MainActor.run { [weak self] in
                 self?.tableView?.refreshControl?.endRefreshing()
             }
         }

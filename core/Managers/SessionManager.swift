@@ -172,12 +172,23 @@ public class SessionManager {
     }
 
     public func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
-        let params = ["subaccount": subaccount,"first": first, "count": 30]
+        let params = ["subaccount": subaccount, "first": first, "count": 30]
         let res = try await wrap(fun: self.session?.getTransactions, params: params)
         let result = res["result"] as? [String: Any]
         let dict = result?["transactions"] as? [[String: Any]]
         let list = dict?.map { Transaction($0) }
         return Transactions(list: list ?? [])
+    }
+
+    public func transactionsAll(subaccount: UInt32) async throws -> Transactions {
+        var list = [Transaction]()
+        var txsIsEmpty = false
+        repeat {
+            let txs = try await transactions(subaccount: subaccount, first: UInt32(list.count))
+            list += txs.list
+            txsIsEmpty = txs.list.isEmpty
+        } while !txsIsEmpty
+        return Transactions(list: list)
     }
 
     public func subaccount(_ pointer: UInt32) async throws -> WalletItem? {
@@ -203,7 +214,6 @@ public class SessionManager {
         let addressees = ValidateAddresseesParams(addressees: [addressee], network: network?.network ?? networkType.network)
         return try await self.wrapper(fun: self.session?.validate, params: addressees)
     }
-    
 
     @discardableResult
     public func loadTwoFactorConfig() async throws -> TwoFactorConfig? {
@@ -261,7 +271,7 @@ public class SessionManager {
     }
 
     typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
-    
+
     func log(
         _ funcName: String,
         _ params: [String: Any]
@@ -278,7 +288,7 @@ public class SessionManager {
             logger.info("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
         }
     }
-    
+
     func logError(_ funcName: String, error: Error) {
         if let error = error as? TwoFactorCallError {
             switch error {
@@ -304,7 +314,6 @@ public class SessionManager {
             logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
         }
     }
-    
 
     func wrap(
         fun: GdkFunc?,
