@@ -560,6 +560,7 @@
 		8150EE212BB72C4000E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE222BB72C5400E70A12 /* greenlight_device_cert.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */; };
 		8152772729F9B52F00853EA1 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8152772629F9B52F00853EA1 /* UIApplication.swift */; };
+		815312FB2D81E5EE00A63E63 /* QuoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815312FA2D81E5E800A63E63 /* QuoteViewController.swift */; };
 		8153AD292CECB7600030CE8F /* Meld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153AD282CECB75B0030CE8F /* Meld.swift */; };
 		8153AD2B2CEF21FA0030CE8F /* CreateAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */; };
 		8153AD2D2CEF24880030CE8F /* CreateAccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */; };
@@ -1521,6 +1522,7 @@
 		8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_key.txt; sourceTree = "<group>"; };
 		8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_cert.txt; sourceTree = "<group>"; };
 		8152772629F9B52F00853EA1 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
+		815312FA2D81E5E800A63E63 /* QuoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteViewController.swift; sourceTree = "<group>"; };
 		8153AD282CECB75B0030CE8F /* Meld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meld.swift; sourceTree = "<group>"; };
 		8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCell.swift; sourceTree = "<group>"; };
 		8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CreateAccountCell.xib; sourceTree = "<group>"; };
@@ -2659,6 +2661,7 @@
 				8153AD282CECB75B0030CE8F /* Meld.swift */,
 				34742D342CE491180064F327 /* BuyViewModel.swift */,
 				34742D322CE491080064F327 /* BuyViewController.swift */,
+				815312FA2D81E5E800A63E63 /* QuoteViewController.swift */,
 				34742D362CE4923B0064F327 /* BuyFlow.storyboard */,
 			);
 			path = Buy;
@@ -3515,6 +3518,7 @@
 				6D8099D923021CF50069A69F /* Menu */,
 				3420470D291B913E00EDE945 /* Utility */,
 				344D57C32D71A9EB009725A3 /* WalletTabBar */,
+				34742D2F2CE490C50064F327 /* Buy */,
 				81A3B53F2244AE9A0091B6BC /* Wallet */,
 				34128F9C27391A99002E19F5 /* Receive */,
 				6D56C76D235E162A00E4F990 /* Accounts */,
@@ -3929,7 +3933,6 @@
 		81A3B53F2244AE9A0091B6BC /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
-				34742D2F2CE490C50064F327 /* Buy */,
 				34B0CFFF2CE2552300A90080 /* ActionsSheet */,
 				346C725F2C466D3800E698E1 /* Promo */,
 				34ABBD7B2BF4A17C0049CC76 /* ReEnable2fa */,
@@ -5057,6 +5060,7 @@
 				343FDF592D01CF5600EF59CC /* AmountCell.swift in Sources */,
 				81E56A6B2C2476950012A5A3 /* QRUnlockJadeViewController.swift in Sources */,
 				34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */,
+				815312FB2D81E5EE00A63E63 /* QuoteViewController.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				346EB2782BE8BB3A0043139F /* SendFeeCell.swift in Sources */,
 				344D57C52D71AA48009725A3 /* WalletTabBarViewController.swift in Sources */,

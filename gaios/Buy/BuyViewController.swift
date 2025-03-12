@@ -16,7 +16,7 @@ enum ActionSide {
     case buy
     case sell
 }
-class BuyViewController: KeyboardViewController {
+class BuyViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnNext: UIButton!
@@ -26,6 +26,7 @@ class BuyViewController: KeyboardViewController {
     @IBOutlet weak var tableViewBottom: NSLayoutConstraint!
     private var headerH: CGFloat = 36.0
     var viewModel: BuyViewModel!
+    @IBOutlet weak var nextBottom: NSLayoutConstraint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,24 +35,11 @@ class BuyViewController: KeyboardViewController {
         setContent()
         setStyle()
 
-        reload()
-
         sideControl.isHidden = true
 
+        reload()
+        updateResponder()
         AnalyticsManager.shared.buyInitiate(account: viewModel.wm.account)
-        Task { [weak self] in await self?.asyncLoad() }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
     }
 
     func updateResponder() {
@@ -64,30 +52,29 @@ class BuyViewController: KeyboardViewController {
         }
     }
 
-    override func keyboardWillShow(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
-        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        self.tableViewBottom.constant =  keyboardFrame.height - 100
-            scrollToBottom()
+    @objc func keyboardWillShow(notification: Notification) {
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+            self.nextBottom.constant = keyboardFrame.height
+        })
     }
-
-    func scrollToBottom() {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-            let point = CGPoint(x: 0, y: self.tableView.contentSize.height + self.tableView.contentInset.bottom - self.tableView.frame.height)
-            if point.y >= 0 {
-                self.tableView.setContentOffset(point, animated: true)
-            }
-        }
-    }
+/*
     override func keyboardWillHide(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
-        tableViewBottom.constant = 10.0
+        //super.keyboardWillShow(notification: notification)
+        //tableViewBottom.constant = 10.0
+        //UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+        //    self.nextBottom.constant = 20.0
+        //})
     }
-
+*/
     func register() {
-        ["ReceiveAssetCell", "AssetToBuyCell", "AmountCell", "CreateAccountCell"].forEach {
+        ["ReceiveAssetCell", "AssetToBuyCell", "AmountCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil)
     }
 
     func setContent() {
@@ -105,6 +92,7 @@ class BuyViewController: KeyboardViewController {
     func setStyle() {
         btnNext.setStyle(.primary)
         lblClaim.setStyle(.txtCard)
+        btnNext.setStyle(.primaryGray)
         sideControl.setTitleTextAttributes (
             [NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
         sideControl.setTitleTextAttributes (
@@ -112,15 +100,7 @@ class BuyViewController: KeyboardViewController {
     }
 
     var sections: [BuySection] {
-        return [.asset, .account, .amount]
-    }
-
-    func asyncLoad() async {
-        try? await viewModel.load()
-        await MainActor.run { tableView.reloadData {
-            self.updateResponder()
-        }
-        }
+        return [.account, .amount]
     }
 
     @MainActor
@@ -178,12 +158,10 @@ class BuyViewController: KeyboardViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        Task.detached { [weak self] in
-            let url = try await self?.viewModel.buy()
-            await MainActor.run { [weak self] in
-                AnalyticsManager.shared.buyRedirect(account: self?.viewModel.wm.account)
-                SafeNavigationManager.shared.navigate(url, exitApp: true)
-            }
+        let storyboard = UIStoryboard(name: "BuyFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "QuoteViewController") as? QuoteViewController {
+            vc.viewModel = viewModel
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
@@ -343,7 +321,6 @@ extension BuyViewController: AmountCellDelegate {
         viewModel.isFiat = isFiat
         tableView.beginUpdates()
         tableView.endUpdates()
-        scrollToBottom()
     }
     func stateDidChange(_ state: AmountCellState) {
         viewModel.state = state

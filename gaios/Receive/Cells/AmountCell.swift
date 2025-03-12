@@ -53,13 +53,20 @@ class AmountCell: UITableViewCell {
         infoPanel.cornerRadius = 5.0
         lblAmount.setStyle(.txtCard)
         lblAsset.setStyle(.txtBigger)
-        lblMoreInfo.text = "For more information,".localized
-        btnFeeInfo.setStyle(.underline(txt: "read more".localized, color: .white))
         [lblToReceiveTitle, lblToReceiveHint].forEach {
             $0?.setStyle(.sectionTitle)
+            $0?.text = ""
         }
         lblToReceiveTitle.text = "id_amount_to_receive".localized
+        lblMoreInfo.text = "For more information,".localized
+        btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .white))
         lblToReceiveHint.text = ""
+        lblInfo.text = ""
+        lblAmount.text = ""
+        lblMoreInfo.isHidden = true
+        btnFeeInfo.isHidden = true
+        lblToReceiveTitle.isHidden = true
+        lblToReceiveHint.isHidden = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -77,9 +84,6 @@ class AmountCell: UITableViewCell {
             state = .disabled
         }
         triggerTextChange()
-        if model.scope == .buyBtc {
-            textField.addDoneButtonToKeyboard(myAction: #selector(self.textField.resignFirstResponder))
-        }
     }
 
     func reload() {

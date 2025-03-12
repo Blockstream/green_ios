@@ -39,6 +39,8 @@ class BuyViewModel {
     var assetCellModel: ReceiveAssetCellModel? {
         return ReceiveAssetCellModel(assetId: asset, account: account)
     }
+    
+    var countryCode: String { Locale.current.regionCode ?? "US" }
 
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
@@ -82,18 +84,38 @@ class BuyViewModel {
             showBalance: false)
     }
 
-    func load() async throws {
-        swapInfo = try? wm.lightningSession?.lightBridge?.receiveOnchain()
+    func quote() async throws -> [MeldQuoteItem] {
+        let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset)
+        let params = MeldQuoteParams(
+            destinationCurrencyCode: "BTC",
+            countryCode: countryCode,
+            sourceAmount: balance?.fiat ?? "200",
+            sourceCurrencyCode: balance?.fiatCurrency ?? "USD",
+            paymentMethodType: "CARD")
+        return try await meld.quote(params)
     }
 
-    func buy() async throws -> String {
-        let pointer = account.pointer
-        let address = try await account.session?.getReceiveAddress(subaccount: pointer)
-        let ticker = wm.info(for: asset).ticker
+    func widget(quote: MeldQuoteItem) async throws -> String {
         let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset)
+        let address = try await account.session?.getReceiveAddress(subaccount: account.pointer)
         guard let address = address?.address else {
            throw GaError.GenericError("Invalid address")
         }
-        return meld.buyUrl(walletAddressLocked: address, destinationCurrencyCodeLocked: ticker ?? "BTC", sourceAmount: balance?.fiat ?? "200", sourceCurrencyCode: balance?.fiatCurrency ?? "USD")
+        let sessionParams = MeldSessionParams(
+            serviceProvider: quote.serviceProvider,
+            countryCode: countryCode,
+            destinationCurrencyCode: "BTC",
+            lockFields: ["destinationCurrencyCode",
+                         "walletAddress",
+                         "sourceCurrencyCode"],
+            paymentMethodType: "CARD",
+            //redirectUrl: "",
+            sourceAmount: balance?.fiat ?? "200",
+            sourceCurrencyCode: balance?.fiatCurrency ?? "USD",
+            walletAddress: address)
+        let params = MeldWidgetParams(
+            sessionData: sessionParams,
+            sessionType: MeldTransactionType.BUY.rawValue)
+        return try await meld.widget(params)
     }
 }
