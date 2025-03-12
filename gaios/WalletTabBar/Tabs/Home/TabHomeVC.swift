@@ -206,9 +206,11 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch TabHomeSection(rawValue: section) {
-        case .header:
+        case .assets:
+            if walletModel.walletAssetCellModels.count == 0 {
+                return footerH
+            }
             return 0.1
-            // return headerH
         default:
             return 0.1
         }
@@ -235,6 +237,11 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch TabHomeSection(rawValue: section) {
+        case .assets:
+            if walletModel.walletAssetCellModels.count == 0 {
+                return sectionFooter("You don’t have any transactions yet.".localized)
+            }
+            return nil
         default:
             return nil
         }
@@ -278,6 +285,29 @@ extension TabHomeVC {
             title.centerYAnchor.constraint(equalTo: section.centerYAnchor, constant: 10.0),
             title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: 20)
+        ])
+
+        return section
+    }
+    func sectionFooter(_ txt: String) -> UIView {
+
+        guard let tView = tableView else { return UIView(frame: .zero) }
+        let section = UIView(frame: CGRect(x: 0, y: 0, width: tView.frame.width, height: sectionHeaderH))
+        section.backgroundColor = UIColor.clear
+        let title = UILabel(frame: .zero)
+        title.setStyle(.txtCard)
+        title.text = txt
+        title.textColor = UIColor.gGrayTxt()
+        title.numberOfLines = 0
+        title.textAlignment = .center
+
+        title.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(title)
+
+        NSLayoutConstraint.activate([
+            title.centerYAnchor.constraint(equalTo: section.centerYAnchor, constant: 0.0),
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
+            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -25)
         ])
 
         return section
