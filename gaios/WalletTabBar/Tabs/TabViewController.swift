@@ -85,4 +85,12 @@ extension TabViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    func accountsScreen(assetInfo: AssetInfo?, models: [AccountCellModel], hideBalance: Bool) {
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
+            vc.viewModel = DialogAccountsViewModel(assetInfo: assetInfo, accountCellModels: models, hideBalance: hideBalance)
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
 }

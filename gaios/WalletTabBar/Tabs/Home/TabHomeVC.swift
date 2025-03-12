@@ -1,4 +1,5 @@
 import UIKit
+import core
 class TabHomeVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView?
@@ -241,6 +242,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch TabHomeSection(rawValue: indexPath.section) {
+        case .assets:
+            return indexPath
         default:
             return nil
         }
@@ -248,6 +251,9 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch TabHomeSection(rawValue: indexPath.section) {
+        case .assets:
+            let model = walletModel.walletAssetCellModels[indexPath.row]
+            accountsScreen(assetInfo: WalletManager.current?.info(for: model.assetId), models: walletModel.accountCellModelsBy(model.assetId), hideBalance: walletModel.hideBalance)
         default:
             break
         }

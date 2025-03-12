@@ -453,6 +453,10 @@
 		34D7613A2A3892ED00DE57F5 /* DialogExchangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D761392A3892ED00DE57F5 /* DialogExchangeViewController.swift */; };
 		34D7613C2A38935200DE57F5 /* DialogExchangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */; };
 		34D97FF42CABD99100F71FE3 /* PromoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D97FF32CABD99100F71FE3 /* PromoManager.swift */; };
+		34DA78A62D807F3F0022FBB1 /* DialogAccountsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78A52D807F3F0022FBB1 /* DialogAccountsViewController.swift */; };
+		34DA78A82D8089730022FBB1 /* DialogAccountsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78A72D8089730022FBB1 /* DialogAccountsViewModel.swift */; };
+		34DA78AD2D8098E40022FBB1 /* DialogAccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34DA78AC2D8098E40022FBB1 /* DialogAccountCell.xib */; };
+		34DA78AF2D8098FF0022FBB1 /* DialogAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */; };
 		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
@@ -1388,6 +1392,10 @@
 		34D761392A3892ED00DE57F5 /* DialogExchangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExchangeViewController.swift; sourceTree = "<group>"; };
 		34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExchangeViewModel.swift; sourceTree = "<group>"; };
 		34D97FF32CABD99100F71FE3 /* PromoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoManager.swift; sourceTree = "<group>"; };
+		34DA78A52D807F3F0022FBB1 /* DialogAccountsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountsViewController.swift; sourceTree = "<group>"; };
+		34DA78A72D8089730022FBB1 /* DialogAccountsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountsViewModel.swift; sourceTree = "<group>"; };
+		34DA78AC2D8098E40022FBB1 /* DialogAccountCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialogAccountCell.xib; sourceTree = "<group>"; };
+		34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountCell.swift; sourceTree = "<group>"; };
 		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
@@ -2248,6 +2256,7 @@
 				344D57FA2D75C33A009725A3 /* WalletModel.swift */,
 				344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */,
 				344D57C62D71AA59009725A3 /* WalletTabBar.swift */,
+				34DA78A42D807F130022FBB1 /* DialogAccounts */,
 				344D57CA2D71B52D009725A3 /* Tabs */,
 			);
 			path = WalletTabBar;
@@ -3178,6 +3187,25 @@
 				34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */,
 			);
 			path = DenominationExchangeFlow;
+			sourceTree = "<group>";
+		};
+		34DA78A42D807F130022FBB1 /* DialogAccounts */ = {
+			isa = PBXGroup;
+			children = (
+				34DA78A92D80984B0022FBB1 /* DialogAccountCell */,
+				34DA78A52D807F3F0022FBB1 /* DialogAccountsViewController.swift */,
+				34DA78A72D8089730022FBB1 /* DialogAccountsViewModel.swift */,
+			);
+			path = DialogAccounts;
+			sourceTree = "<group>";
+		};
+		34DA78A92D80984B0022FBB1 /* DialogAccountCell */ = {
+			isa = PBXGroup;
+			children = (
+				34DA78AC2D8098E40022FBB1 /* DialogAccountCell.xib */,
+				34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */,
+			);
+			path = DialogAccountCell;
 			sourceTree = "<group>";
 		};
 		34DBF1792A442F4D00066479 /* MagnifyQRViewController */ = {
@@ -4513,6 +4541,7 @@
 				34F57FF72BA1EA0000DCB076 /* TxDetails.storyboard in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
+				34DA78AD2D8098E40022FBB1 /* DialogAccountCell.xib in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
 				34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */,
 				8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */,
@@ -4847,6 +4876,7 @@
 				3447553A290A5BB100B9C1AF /* AccountCell.swift in Sources */,
 				34465BA32D082FDA002E5033 /* GenuineCheckEndViewModel.swift in Sources */,
 				345402E82A1E43D5002CB598 /* DialogDenominationCell.swift in Sources */,
+				34DA78AF2D8098FF0022FBB1 /* DialogAccountCell.swift in Sources */,
 				347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */,
 				34F164EF29E84B3800FE5B64 /* DialogDeleteViewController.swift in Sources */,
 				3497937125F8B18C0029ECB1 /* ProgressShapeLayer.swift in Sources */,
@@ -4891,6 +4921,7 @@
 				816F0AF423E4713600569A5D /* UIViewController.swift in Sources */,
 				3423C6E927C39B38001D9E2C /* AccountCreatePublicKeyViewController.swift in Sources */,
 				81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */,
+				34DA78A82D8089730022FBB1 /* DialogAccountsViewModel.swift in Sources */,
 				34D7613A2A3892ED00DE57F5 /* DialogExchangeViewController.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
@@ -4930,6 +4961,7 @@
 				34560B7A29B9D590007E916F /* JadeWaitViewModel.swift in Sources */,
 				34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */,
 				34F980A8291400C700C12D48 /* AccountViewController.swift in Sources */,
+				34DA78A62D807F3F0022FBB1 /* DialogAccountsViewController.swift in Sources */,
 				345402F72A20A6A7002CB598 /* LTAuthViewController.swift in Sources */,
 				34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */,
 				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,

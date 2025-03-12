@@ -383,4 +383,10 @@ class WalletModel {
         }
         return false
     }
+
+    func accountCellModelsBy(_ assetId: String) -> [AccountCellModel] {
+        accountCellModels.filter {
+            $0.account.hasAsset(assetId)
+        }
+    }
 }
