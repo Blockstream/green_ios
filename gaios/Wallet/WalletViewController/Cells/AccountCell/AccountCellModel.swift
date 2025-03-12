@@ -9,8 +9,10 @@ struct AccountCellModel {
     var lblType: String { account.type.path.uppercased() }
     var hasTxs: Bool { account.hasTxs }
     var networkType: NetworkSecurityCase { account.networkType }
+    var assetId: String? = nil
+
     var balanceStr: String? {
-        let assetId = account.gdkNetwork.getFeeAsset()
+        let assetId = assetId ?? account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi, let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, denom) = converted.toValue()
             return "\(amount) \(denom)"
@@ -18,7 +20,7 @@ struct AccountCellModel {
         return nil
     }
     var fiatStr: String? {
-        let assetId = account.gdkNetwork.getFeeAsset()
+        let assetId = assetId ?? account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi, let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, denom) = converted.toFiat()
             return "\(amount) \(denom)"

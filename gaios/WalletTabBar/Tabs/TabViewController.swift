@@ -45,7 +45,7 @@ extension TabViewController {
     func buyScreen(_ walletModel: WalletModel) {
         let storyboard = UIStoryboard(name: "BuyFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyViewController") as? BuyViewController {
-            guard let model = walletModel.accountCellModels[safe: 0] else { return }
+            guard let model = walletModel.accountCellModelsBy(nil)[safe: 0] else { return }
             var account: WalletItem? = model.account
             if account?.networkType.liquid ?? false {
                 account = walletModel.wm?.bitcoinSubaccounts.first
@@ -57,7 +57,7 @@ extension TabViewController {
         }
     }
     func sendScreen(_ walletModel: WalletModel) {
-        guard let model = walletModel.accountCellModels[safe: 0] else { return }
+        guard let model = walletModel.accountCellModelsBy(nil)[safe: 0] else { return }
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
             preferredAccount: model.account,
@@ -79,16 +79,16 @@ extension TabViewController {
     func receiveScreen(_ walletModel: WalletModel) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            guard let model = walletModel.accountCellModels[safe: 0] else { return }
+            guard let model = walletModel.accountCellModelsBy(nil)[safe: 0] else { return }
             vc.viewModel = ReceiveViewModel(account: model.account,
                                             accounts: walletModel.subaccounts)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func accountsScreen(assetInfo: AssetInfo?, models: [AccountCellModel], hideBalance: Bool) {
+    func accountsScreen(model: DialogAccountsViewModel) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = DialogAccountsViewModel(assetInfo: assetInfo, accountCellModels: models, hideBalance: hideBalance)
+            vc.viewModel = model
             vc.modalPresentationStyle = .overFullScreen
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }

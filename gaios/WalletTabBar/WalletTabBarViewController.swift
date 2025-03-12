@@ -198,10 +198,11 @@ class WalletTabBarViewController: UITabBarController {
             return
         }
         isReloading = true
-        await self.walletModel.loadSubaccounts(discovery: discovery)
-        try? await self.walletModel.loadBalances()
+        try? await self.walletModel.fetchBalances(discovery: discovery)
+        self.walletModel.reloadBalances()
         self.updateTabs([.home, .transact])
-        _ = try? await self.walletModel.loadTransactions()
+        _ = try? await self.walletModel.fetchTransactions()
+        self.walletModel.reloadTransactions()
         self.updateTabs([.home, .transact])
         //await self?.walletModel.reloadPromoCards()
         try? await Api.shared.fetch()
@@ -417,8 +418,8 @@ extension WalletTabBarViewController: DialogGroupListViewControllerDelegate {
 extension WalletTabBarViewController: DenominationExchangeViewControllerDelegate {
     func onDenominationExchangeSave() {
         Task.detached { [weak self] in
-            try? await self?.walletModel.loadBalances()
-            try? await self?.walletModel.loadTransactions()
+            //try? await self?.walletModel.loadBalances()
+            //try? await self?.walletModel.loadTransactions()
             await self?.updateTabs([.home, .transact])
         }
     }

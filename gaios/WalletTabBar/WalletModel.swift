@@ -30,10 +30,6 @@ class WalletModel {
     var preselectAccount: ((Int) -> Void)?
 
     /// cell models
-    var accountCellModels = [AccountCellModel]()
-    var accountLightningCellModels: AccountCellModel? {
-        accountCellModels.filter { $0.networkType == .lightning }.first
-    }
     var txCellModels = [TransactionCellModel]()
     var balanceCellModel: BalanceCellModel?
     var alertCardCellModel = [AlertCardCellModel]()
@@ -71,16 +67,6 @@ class WalletModel {
         }
     }
 
-    func loadSubaccounts(discovery: Bool = false) async {
-        _ = try? await wm?.subaccounts(discovery)
-        self.accountCellModels = self.subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
-    }
-
-    func selectSubaccount(_ newAccount: WalletItem? = nil) {
-        if let idx = self.accountCellModels.firstIndex(where: {$0.account == newAccount}) {
-            self.preselectAccount?(idx)
-        }
-    }
 
     func getAssetId() -> String {
         let lSubs: [WalletItem] = subaccounts.filter { $0.gdkNetwork.liquid == true }
@@ -91,42 +77,35 @@ class WalletModel {
         }
     }
 
-    func loadBalances() async throws {
-        let balances = try await wm?.balances(subaccounts: wm?.subaccounts ?? [])
-        let cachedBalance = AssetAmountList(balances ?? [:])
-        self.accountCellModels = subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
-        self.cachedBalance = cachedBalance
-        let satoshi = cachedBalance.satoshi()
+    func fetchBalances(discovery: Bool) async throws {
+        let subaccounts = try await wm?.subaccounts(discovery)
+        let balances = try await wm?.balances(subaccounts: subaccounts ?? [])
+        self.cachedBalance = AssetAmountList(balances ?? [:])
+    }
+
+    func reloadBalances() {
+        guard let satoshi = cachedBalance?.satoshi(),
+                let cachedBalance = self.cachedBalance else {
+            balanceCellModel = nil
+            return
+        }
         balanceCellModel = BalanceCellModel(satoshi: satoshi,
                                             cachedBalance: cachedBalance,
                                             mode: self.balanceDisplayMode,
                                             assetId: self.getAssetId())
-        self.welcomeLayerVisibility?()
-        self.callAnalytics()
     }
 
-//    func loadTransactions(max: Int? = nil) async throws {
-//        isTxLoading = true
-//        let txs = try await wm?.transactions(subaccounts: self.subaccounts)
-//        self.cachedTransactions = Array(txs?.sorted(by: >).prefix(max ?? txs?.count ?? 0) ?? [])
-//        self.txCellModels = self.cachedTransactions
-//                    .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
-//                    .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
-//        self.isTxLoading = false
-//    }
-
-    func loadTransactions() async throws {
+    func fetchTransactions() async throws {
         if fetchingTxs {
             return
         }
         fetchingTxs = true
         let txs = try await wm?.transactionsAll(subaccounts: subaccounts) ?? []
         cachedTransactions = txs.sorted(by: >)
-        getTransactions()
         fetchingTxs = false
     }
 
-    func getTransactions() {
+    func reloadTransactions() {
         txCellModels = cachedTransactions.prefix(upTo: txCellModels.count + 30)
             .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
             .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
@@ -273,16 +252,10 @@ class WalletModel {
     }
 
     func reload() async {
-        await loadSubaccounts()
-        try? await loadBalances()
-//        try? await loadTransactions(max: 20)
-    }
-
-    func onCreateAccount(_ wallet: WalletItem) {
-        analyticsDone = false
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-            self.selectSubaccount(wallet)
-        }
+        try? await fetchBalances(discovery: false)
+        reloadBalances()
+        try? await fetchTransactions()
+        reloadTransactions()
     }
 
     func reconnectHW(_ network: String) async throws {
@@ -392,9 +365,15 @@ class WalletModel {
         return false
     }
 
-    func accountCellModelsBy(_ assetId: String) -> [AccountCellModel] {
-        accountCellModels.filter {
-            $0.account.hasAsset(assetId)
+    func accountCellModelsBy(_ assetId: String?) -> [AccountCellModel] {
+        var accountCellModels = [AccountCellModel]()
+        for subaccount in subaccounts {
+            let assetId = assetId ?? subaccount.gdkNetwork.policyAsset ?? "btc"
+            if subaccount.hasAsset(assetId) {
+                let satoshi = subaccount.satoshi?[assetId] ?? 0
+                accountCellModels += [AccountCellModel(account: subaccount, satoshi: satoshi, assetId: assetId)]
+            }
         }
+        return accountCellModels
     }
 }

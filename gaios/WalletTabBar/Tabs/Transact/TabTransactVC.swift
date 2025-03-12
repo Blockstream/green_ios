@@ -272,7 +272,7 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
     }
 
     func getTransactions() {
-        walletModel.getTransactions()
+        walletModel.reloadTransactions()
         reloadSections([.transactions], animated: false)
     }
 }

@@ -261,7 +261,11 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         switch TabHomeSection(rawValue: indexPath.section) {
         case .assets:
             let model = walletModel.walletAssetCellModels[indexPath.row]
-            accountsScreen(assetInfo: WalletManager.current?.info(for: model.assetId), models: walletModel.accountCellModelsBy(model.assetId), hideBalance: walletModel.hideBalance)
+            let dialogModel = DialogAccountsViewModel(
+                assetInfo: WalletManager.current?.info(for: model.assetId),
+                accountCellModels: walletModel.accountCellModelsBy(model.assetId),
+                hideBalance: walletModel.hideBalance)
+            accountsScreen(model: dialogModel)
         default:
             break
         }
