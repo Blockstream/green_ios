@@ -45,7 +45,6 @@ class TabHomeVC: TabViewController {
 
     @MainActor
     func reloadSections(_ sections: [TabHomeSection], animated: Bool) {
-        print( " ------------> \(IndexSet(sections.map { $0.rawValue }))" )
         if animated {
             tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
         } else {

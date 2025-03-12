@@ -106,7 +106,11 @@ class WalletModel {
     }
 
     func reloadTransactions() {
-        txCellModels = cachedTransactions.prefix(upTo: txCellModels.count + 30)
+        var next = txCellModels.count + 30
+        if next > cachedTransactions.count {
+            next = cachedTransactions.count
+        }
+        txCellModels = cachedTransactions.prefix(upTo: next)
             .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
             .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
     }
@@ -130,6 +134,7 @@ class WalletModel {
                 page += 1
             }
             cachedTransactions += txs
+            print("------------B> \(cachedTransactions.count)")
             cachedTransactions = Array((cachedTransactions)
                 .sorted(by: >)
                 .prefix(max ?? cachedTransactions.count))
