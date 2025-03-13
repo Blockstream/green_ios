@@ -39,7 +39,7 @@ class SecuritySelectViewModel {
         if !extended {
             list = [.NativeSegwit, .Lightning, .TwoFAProtected]
         }
-        if !AppSettings.shared.experimental || wm.testnet {
+        if wm.testnet {
             list.removeAll(where: { $0 == .Lightning })
         }
         return list
