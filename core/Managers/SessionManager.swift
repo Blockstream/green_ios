@@ -287,25 +287,25 @@ public class SessionManager {
         if let error = error as? TwoFactorCallError {
             switch error {
             case .failure(let txt):
-                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
+                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
             case .cancel(let txt):
-                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
+                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
             }
         } else if let error = error as? GaError {
             switch error {
             case .GenericError(let txt):
-                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public)")
+                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
             case .ReconnectError(let txt):
-                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             case .SessionLost(let txt):
-                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             case .TimeoutError(let txt):
-                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             case .NotAuthorizedError(let txt):
-                logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             }
         } else {
-            logger.error("GDK \(self.networkType.rawValue) \(funcName, privacy: .public) \(error, privacy: .public)")
+            logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
         }
     }
     
@@ -441,7 +441,7 @@ public class SessionManager {
                 log("changeSettingsTwoFactor", res)
             }
         } catch {
-            logger.error("GDK \(self.networkType.rawValue) \("changeSettingsTwoFactor") \(error)")
+            logger.error("GDK \(self.networkType.rawValue, privacy: .public) \("changeSettingsTwoFactor") \(error)")
             throw error
         }
     }
