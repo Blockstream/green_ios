@@ -21,6 +21,8 @@
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
 		20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20516D032693969B00BA1F4C /* DialogWalletRename.swift */; };
 		20516D062698A2C600BA1F4C /* EditWalletUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20516D052698A2C600BA1F4C /* EditWalletUITests.swift */; };
+		209632632D8420C700FC716D /* QuoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209632612D8420C700FC716D /* QuoteCell.swift */; };
+		209632642D8420C700FC716D /* QuoteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 209632622D8420C700FC716D /* QuoteCell.xib */; };
 		20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */; };
 		34019C2728D35F2400E64BEE /* DrawerBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34019C2628D35F2400E64BEE /* DrawerBarItem.xib */; };
 		34019C2928D35F3F00E64BEE /* DrawerBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34019C2828D35F3F00E64BEE /* DrawerBarItem.swift */; };
@@ -954,6 +956,8 @@
 		206D7A38252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		207C121823303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		209632612D8420C700FC716D /* QuoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteCell.swift; sourceTree = "<group>"; };
+		209632622D8420C700FC716D /* QuoteCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QuoteCell.xib; sourceTree = "<group>"; };
 		20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicAuthViewController.swift; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34019C2628D35F2400E64BEE /* DrawerBarItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DrawerBarItem.xib; sourceTree = "<group>"; };
@@ -2680,6 +2684,8 @@
 		34742D3A2CE4AB0B0064F327 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				209632612D8420C700FC716D /* QuoteCell.swift */,
+				209632622D8420C700FC716D /* QuoteCell.xib */,
 				8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */,
 				8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */,
 				34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */,
@@ -4524,6 +4530,7 @@
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				34742D372CE4923B0064F327 /* BuyFlow.storyboard in Resources */,
+				209632642D8420C700FC716D /* QuoteCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				340ACC8A2D4B72E200CEB4F7 /* jadeplus_3.riv in Resources */,
 				340ACC8B2D4B72E200CEB4F7 /* jadeplus_1.riv in Resources */,
@@ -4835,6 +4842,7 @@
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
 				344471C42C478DD00051957E /* DialogGroupListCell.swift in Sources */,
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
+				209632632D8420C700FC716D /* QuoteCell.swift in Sources */,
 				34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */,
 				343BC9472AA7012B00F0FEE5 /* GreenPIckerViewController.swift in Sources */,
 				34F57FF92BA1EA0000DCB076 /* TxDetailsViewController.swift in Sources */,
