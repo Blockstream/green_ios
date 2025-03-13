@@ -7,7 +7,6 @@ class WalletTabBarViewController: UITabBarController {
     var walletModel: WalletModel!
     private var sIdx: Int = 0
     private var userWillLogout = false
-    private var cachedAccount: WalletItem?
     private var notificationObservers: [NSObjectProtocol] = []
     private var isReloading = false
 

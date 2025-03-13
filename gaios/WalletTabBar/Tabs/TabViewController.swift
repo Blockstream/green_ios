@@ -45,22 +45,16 @@ extension TabViewController {
     func buyScreen(_ walletModel: WalletModel) {
         let storyboard = UIStoryboard(name: "BuyFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyViewController") as? BuyViewController {
-            guard let model = walletModel.accountCellModelsBy(nil)[safe: 0] else { return }
-            var account: WalletItem? = model.account
-            if account?.networkType.liquid ?? false {
-                account = walletModel.wm?.bitcoinSubaccounts.first
-            }
-            if let account {
+            if let account = walletModel.wm?.bitcoinSubaccounts.first {
                 vc.viewModel = BuyViewModel(account: account, side: .buy)
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
     }
     func sendScreen(_ walletModel: WalletModel) {
-        guard let model = walletModel.accountCellModelsBy(nil)[safe: 0] else { return }
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
-            preferredAccount: model.account,
+            preferredAccount: walletModel.wm?.bitcoinSubaccounts.first,
             txType: walletModel.isSweepEnabled() ? .sweep : .transaction)
 
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -79,10 +73,11 @@ extension TabViewController {
     func receiveScreen(_ walletModel: WalletModel) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            guard let model = walletModel.accountCellModelsBy(nil)[safe: 0] else { return }
-            vc.viewModel = ReceiveViewModel(account: model.account,
-                                            accounts: walletModel.subaccounts)
-            navigationController?.pushViewController(vc, animated: true)
+            if let subaccount = walletModel.wm?.bitcoinSubaccounts.first {
+                vc.viewModel = ReceiveViewModel(account: subaccount,
+                                                accounts: walletModel.subaccounts)
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
     func accountsScreen(model: DialogAccountsViewModel) {
