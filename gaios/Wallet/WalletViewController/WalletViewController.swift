@@ -506,14 +506,6 @@ class WalletViewController: UIViewController {
         }
     }
 
-    func showExperimental() {
-        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-        }
-    }
-
     func showDenominationExchange() {
         AnalyticsManager.shared.preferredUnits(account: AccountsRepository.shared.current)
 
@@ -678,7 +670,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     self?.accountDetail(model: self?.viewModel.accountCellModels[indexPath.row])
                 }, onCopy: nil,
                                onShield: onShield,
-                               onExperiental: {[weak self] in self?.showExperimental()}
+                               onExperiental: { }
                 )
                 cell.selectionStyle = .none
                 return cell

@@ -218,20 +218,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                     }
                 }
             } else {
-                if policy == .Lightning {
-                    if viewModel.hasLightning() {
-                        UINotificationFeedbackGenerator().notificationOccurred(.error)
-                        return
-                    }
-                    let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-                    if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
-                        vc.delegate = self
-                        vc.modalPresentationStyle = .overFullScreen
-                        self.present(vc, animated: false, completion: nil)
-                    }
-                } else {
-                    accountCreate(policy)
-                }
+                accountCreate(policy)
             }
         default:
             break
@@ -253,13 +240,14 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         Task {
             do {
                 let wallet = try await viewModel.create(policy: policy, params: nil)
+                self.stopLoader()
                 if let wallet = wallet {
                     self.didCreatedWallet(wallet)
                 }
             } catch {
+                self.stopLoader()
                 self.showError(error)
             }
-            self.stopLoader()
         }
     }
 
@@ -479,11 +467,5 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
         createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
-    }
-}
-
-extension SecuritySelectViewController: LTExperimentalViewControllerDelegate {
-    func onDone() {
-        accountCreate(.Lightning)
     }
 }

@@ -31,7 +31,6 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var ltExperimental: UIView!
     @IBOutlet weak var lblLtEXperimental: UILabel!
     @IBOutlet weak var lblLtExpBg: UIView!
-    @IBOutlet weak var ltIconExp: UIImageView!
     @IBOutlet weak var btnExperimental: UIButton!
     @IBOutlet weak var iconLeading: NSLayoutConstraint!
 
@@ -143,8 +142,7 @@ class AccountCell: UITableViewCell {
         imgMS.image = backgroundIcon(network: network)
 
         ltExperimental.isHidden = !model.networkType.lightning
-        lblLtEXperimental.text = "id_experimental".localized
-        ltIconExp.image = UIImage(named: "ic_lightning_info")?.maskWithColor(color: .white)
+        lblLtEXperimental.text = "Beta".localized
         lblLtExpBg.layer.cornerRadius = 4.0
 
         [bg, effectView, btnShield].forEach {

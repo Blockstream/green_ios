@@ -386,14 +386,6 @@ class AccountViewController: UIViewController {
         }
     }
 
-    func showExperimental() {
-        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-        }
-    }
-
     func handleShortcut(isOn: Bool) {
         Task { [weak self] in
             if isOn {
@@ -553,7 +545,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                                onSelect: nil,
                                onCopy: onCopy,
                                onShield: nil,
-                               onExperiental: {[weak self] in self?.showExperimental()})
+                               onExperiental: {})
                 cell.selectionStyle = .none
                 return cell
             }
