@@ -88,7 +88,7 @@ extension QuoteViewController: UITableViewDelegate, UITableViewDataSource {
         }
         let cell = UITableViewCell(style: .value1, reuseIdentifier: "MeldQuoteViewCell")
         cell.textLabel?.text = String(format: "\(quote.serviceProvider) (%.2f)", quote.customerScore)
-        cell.detailTextLabel?.text = String(quote.exchangeRate)
+        cell.detailTextLabel?.text = String(quote.destinationAmount)
         cell.selectionStyle = .none
         return cell
     }

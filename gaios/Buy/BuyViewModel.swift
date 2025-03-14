@@ -96,7 +96,9 @@ class BuyViewModel {
     }
 
     func widget(quote: MeldQuoteItem) async throws -> String {
-        let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset)
+        guard let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset), let fiat = balance.fiat else {
+            throw GaError.GenericError("Invalid amount")
+        }
         let address = try await account.session?.getReceiveAddress(subaccount: account.pointer)
         guard let address = address?.address else {
            throw GaError.GenericError("Invalid address")
@@ -110,8 +112,8 @@ class BuyViewModel {
                          "sourceCurrencyCode"],
             paymentMethodType: "CARD",
             //redirectUrl: "",
-            sourceAmount: balance?.fiat ?? "200",
-            sourceCurrencyCode: balance?.fiatCurrency ?? "USD",
+            sourceAmount: fiat,
+            sourceCurrencyCode: balance.fiatCurrency,
             walletAddress: address)
         let params = MeldWidgetParams(
             sessionData: sessionParams,
