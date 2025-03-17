@@ -144,6 +144,19 @@ class WalletTabBarViewController: UITabBarController {
         self.setViewControllers(viewControllers, animated: false)
     }
 
+    func setSecurityState(_ state: SecurityState) {
+        walletModel.securityState = state
+        // to persist in defaults?
+        switch state {
+        case .normal:
+            tabSecurityVC.tabBarItem = WalletTab.security.tabItem
+        case .alerted:
+            let img = WalletTab.security.tabItem.image
+            tabSecurityVC.tabBarItem.image = img?.withBadge(iconColor: UIColor.gGrayTxt(), badgeColor: .red)
+            tabSecurityVC.tabBarItem.selectedImage = img?.withBadge(iconColor: .white, badgeColor: .red)
+        }
+    }
+
     @objc func switchNetwork() {
         let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
@@ -419,8 +432,8 @@ extension WalletTabBarViewController: DialogGroupListViewControllerDelegate {
 extension WalletTabBarViewController: DenominationExchangeViewControllerDelegate {
     func onDenominationExchangeSave() {
         Task.detached { [weak self] in
-            //try? await self?.walletModel.loadBalances()
-            //try? await self?.walletModel.loadTransactions()
+            // try? await self?.walletModel.loadBalances()
+            // try? await self?.walletModel.loadTransactions()
             await self?.updateTabs([.home, .transact])
         }
     }

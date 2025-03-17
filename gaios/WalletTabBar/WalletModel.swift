@@ -5,6 +5,10 @@ import greenaddress
 import hw
 import core
 
+enum SecurityState {
+    case normal
+    case alerted
+}
 class WalletModel {
 
     var wm: WalletManager? { WalletManager.current }
@@ -58,6 +62,7 @@ class WalletModel {
 
     var page = 0
     var fetchingTxs = false
+    var securityState = SecurityState.alerted
 
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
@@ -133,7 +138,6 @@ class WalletModel {
                 page += 1
             }
             cachedTransactions += txs
-            print("------------B> \(cachedTransactions.count)")
             cachedTransactions = Array((cachedTransactions)
                 .sorted(by: >)
                 .prefix(max ?? cachedTransactions.count))
