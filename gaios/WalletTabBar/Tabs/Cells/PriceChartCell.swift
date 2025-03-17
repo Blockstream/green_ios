@@ -32,7 +32,8 @@ class PriceChartCell: UITableViewCell {
         bg.setStyle(CardStyle.defaultStyle)
         btnBuy.setStyle(.primary)
         btnBuy.setTitle("Buy Now".localized, for: .normal)
-        btnBuy.tintColor = .black
+        btnBuy.setTitleColor(UIColor.gBlackBg(), for: .normal)
+        btnBuy.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .medium)
         [btnW, btnM, btnY, btnYTD, btnAll].forEach {
             $0?.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
             $0?.setTitleColor(UIColor.gGrayTxt(), for: .normal)
@@ -96,7 +97,7 @@ class PriceChartCell: UITableViewCell {
         lblQuote.text = ""
         iconGain.image = UIImage()
 
-        lblQuote.text = "$\(list.last?.value ?? 0)"
+        lblQuote.text = "$\(String(format: "%.2f", list.last?.value ?? 0.0))"
         if let last = list.last?.value, let first = list.first?.value, first > 0 {
             let ratio = ((last / first) - 1) * 100
             let sign = ratio > 0 ? "+" : ""

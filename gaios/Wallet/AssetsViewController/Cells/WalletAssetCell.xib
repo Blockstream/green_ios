@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -22,29 +22,29 @@
                         <rect key="frame" x="25" y="5" width="304" height="92"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="kYV-l5-c29">
-                                <rect key="frame" x="20" y="29" width="34" height="34"/>
+                                <rect key="frame" x="24" y="31" width="30" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="34" id="2Ng-04-KO3"/>
-                                    <constraint firstAttribute="width" constant="34" id="Cv4-YB-p2b"/>
+                                    <constraint firstAttribute="height" constant="30" id="2Ng-04-KO3"/>
+                                    <constraint firstAttribute="width" constant="30" id="Cv4-YB-p2b"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tiD-WM-kgf">
-                                <rect key="frame" x="74" y="37.666666666666664" width="59.666666666666657" height="17"/>
+                                <rect key="frame" x="70" y="37.666666666666664" width="59.666666666666657" height="17"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="LJi-RA-Q5K">
-                                <rect key="frame" x="153.66666666666663" y="16" width="130.33333333333337" height="60"/>
+                                <rect key="frame" x="149.66666666666663" y="16" width="134.33333333333337" height="60"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" text="lbl_balance_1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9XV-wS-qIW">
-                                        <rect key="frame" x="40.999999999999993" y="0.0" width="89.333333333333314" height="42.666666666666664"/>
+                                        <rect key="frame" x="44.999999999999993" y="0.0" width="89.333333333333314" height="42.666666666666664"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="lbl_balance_2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ePb-14-cf5">
-                                        <rect key="frame" x="51.333333333333343" y="45.666666666666671" width="79" height="14.333333333333336"/>
+                                        <rect key="frame" x="55.333333333333343" y="45.666666666666671" width="79" height="14.333333333333336"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <color key="textColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -55,9 +55,9 @@
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstItem="tiD-WM-kgf" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="4tW-JO-t1p"/>
-                            <constraint firstItem="tiD-WM-kgf" firstAttribute="leading" secondItem="kYV-l5-c29" secondAttribute="trailing" constant="20" id="FO7-iz-FX5"/>
+                            <constraint firstItem="tiD-WM-kgf" firstAttribute="leading" secondItem="kYV-l5-c29" secondAttribute="trailing" constant="16" id="FO7-iz-FX5"/>
                             <constraint firstAttribute="trailing" secondItem="LJi-RA-Q5K" secondAttribute="trailing" constant="20" id="OAQ-uo-rQA"/>
-                            <constraint firstItem="kYV-l5-c29" firstAttribute="leading" secondItem="QNX-w7-Hb8" secondAttribute="leading" constant="20" id="U4R-Jd-p1i"/>
+                            <constraint firstItem="kYV-l5-c29" firstAttribute="leading" secondItem="QNX-w7-Hb8" secondAttribute="leading" constant="24" id="U4R-Jd-p1i"/>
                             <constraint firstItem="LJi-RA-Q5K" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="Yxy-DK-gly"/>
                             <constraint firstItem="kYV-l5-c29" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="cw8-AL-7zT"/>
                             <constraint firstItem="LJi-RA-Q5K" firstAttribute="top" secondItem="QNX-w7-Hb8" secondAttribute="top" constant="16" id="kXO-mj-kbY"/>
@@ -88,10 +88,10 @@
     <resources>
         <image name="ntw_btc" width="60" height="61"/>
         <namedColor name="gBlackBg">
-            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

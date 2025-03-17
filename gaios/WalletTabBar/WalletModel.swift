@@ -67,7 +67,6 @@ class WalletModel {
         }
     }
 
-
     func getAssetId() -> String {
         let lSubs: [WalletItem] = subaccounts.filter { $0.gdkNetwork.liquid == true }
         if lSubs.count == subaccounts.count && lSubs.count > 0 {
@@ -380,5 +379,14 @@ class WalletModel {
             }
         }
         return accountCellModels
+    }
+
+    func rotateBalanceDisplayMode() async throws {
+        var isBTC = false
+        if let session = self.session, let settings = session.settings {
+            isBTC = settings.denomination == .BTC
+        }
+        balanceDisplayMode = balanceDisplayMode.next(isBTC)
+        reloadBalances()
     }
 }

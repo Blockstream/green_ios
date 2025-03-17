@@ -204,8 +204,9 @@ class WalletTabBarViewController: UITabBarController {
         _ = try? await self.walletModel.fetchTransactions()
         self.walletModel.reloadTransactions()
         self.updateTabs([.home, .transact])
-        //await self?.walletModel.reloadPromoCards()
+        // await self?.walletModel.reloadPromoCards()
         try? await Api.shared.fetch()
+        self.updateTabs([.home])
         isReloading = false
     }
 
