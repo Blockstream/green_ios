@@ -167,6 +167,16 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
+    func walletsMenu() {
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletsViewController") as? DialogWalletsViewController {
+//            vc.delegate = self
+            vc.viewModel = DialogWalletsViewModel(accounts: AccountsRepository.shared.swAccounts)
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
+
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
         case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:

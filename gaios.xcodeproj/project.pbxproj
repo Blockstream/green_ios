@@ -457,6 +457,10 @@
 		34DA78A82D8089730022FBB1 /* DialogAccountsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78A72D8089730022FBB1 /* DialogAccountsViewModel.swift */; };
 		34DA78AD2D8098E40022FBB1 /* DialogAccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34DA78AC2D8098E40022FBB1 /* DialogAccountCell.xib */; };
 		34DA78AF2D8098FF0022FBB1 /* DialogAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */; };
+		34DA78F12D8971E50022FBB1 /* DialogWalletsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78F02D8971E50022FBB1 /* DialogWalletsViewController.swift */; };
+		34DA78F32D8971F90022FBB1 /* DialogWalletsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78F22D8971F90022FBB1 /* DialogWalletsViewModel.swift */; };
+		34DA78F52D8972150022FBB1 /* DialogWalletsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34DA78F42D8972150022FBB1 /* DialogWalletsCell.xib */; };
+		34DA78F72D8972490022FBB1 /* DialogWalletsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78F62D8972490022FBB1 /* DialogWalletsCell.swift */; };
 		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
@@ -1396,6 +1400,10 @@
 		34DA78A72D8089730022FBB1 /* DialogAccountsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountsViewModel.swift; sourceTree = "<group>"; };
 		34DA78AC2D8098E40022FBB1 /* DialogAccountCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialogAccountCell.xib; sourceTree = "<group>"; };
 		34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountCell.swift; sourceTree = "<group>"; };
+		34DA78F02D8971E50022FBB1 /* DialogWalletsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletsViewController.swift; sourceTree = "<group>"; };
+		34DA78F22D8971F90022FBB1 /* DialogWalletsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletsViewModel.swift; sourceTree = "<group>"; };
+		34DA78F42D8972150022FBB1 /* DialogWalletsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DialogWalletsCell.xib; path = gaios/WalletTabBar/DialogWallets/DialogWalletsCell/DialogWalletsCell.xib; sourceTree = SOURCE_ROOT; };
+		34DA78F62D8972490022FBB1 /* DialogWalletsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletsCell.swift; sourceTree = "<group>"; };
 		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
@@ -2256,6 +2264,7 @@
 				344D57FA2D75C33A009725A3 /* WalletModel.swift */,
 				344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */,
 				344D57C62D71AA59009725A3 /* WalletTabBar.swift */,
+				34DA78EE2D8971A00022FBB1 /* DialogWallets */,
 				34DA78A42D807F130022FBB1 /* DialogAccounts */,
 				344D57CA2D71B52D009725A3 /* Tabs */,
 			);
@@ -3206,6 +3215,25 @@
 				34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */,
 			);
 			path = DialogAccountCell;
+			sourceTree = "<group>";
+		};
+		34DA78EE2D8971A00022FBB1 /* DialogWallets */ = {
+			isa = PBXGroup;
+			children = (
+				34DA78EF2D8971B60022FBB1 /* DialogWalletsCell */,
+				34DA78F02D8971E50022FBB1 /* DialogWalletsViewController.swift */,
+				34DA78F22D8971F90022FBB1 /* DialogWalletsViewModel.swift */,
+			);
+			path = DialogWallets;
+			sourceTree = "<group>";
+		};
+		34DA78EF2D8971B60022FBB1 /* DialogWalletsCell */ = {
+			isa = PBXGroup;
+			children = (
+				34DA78F62D8972490022FBB1 /* DialogWalletsCell.swift */,
+				34DA78F42D8972150022FBB1 /* DialogWalletsCell.xib */,
+			);
+			path = DialogWalletsCell;
 			sourceTree = "<group>";
 		};
 		34DBF1792A442F4D00066479 /* MagnifyQRViewController */ = {
@@ -4536,6 +4564,7 @@
 				34A883AC2BA85F10004A1826 /* TxDetailsInfoCell.xib in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				346EB26F2BE8BB1A0043139F /* SendTitleView.xib in Resources */,
+				34DA78F52D8972150022FBB1 /* DialogWalletsCell.xib in Resources */,
 				3415CB152A67DBB700B66882 /* AddressAuthHeader.xib in Resources */,
 				8153AD2D2CEF24880030CE8F /* CreateAccountCell.xib in Resources */,
 				34F57FF72BA1EA0000DCB076 /* TxDetails.storyboard in Resources */,
@@ -4725,6 +4754,7 @@
 				344D57CF2D71B5E7009725A3 /* TabTransactVC.swift in Sources */,
 				34465BA12D082EF7002E5033 /* GenuineCheckEndViewController.swift in Sources */,
 				6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */,
+				34DA78F72D8972490022FBB1 /* DialogWalletsCell.swift in Sources */,
 				8173B8F22AB1B10C00C15C85 /* DialogViewController.swift in Sources */,
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
 				344D57E52D758D52009725A3 /* TabHomeVC.swift in Sources */,
@@ -4741,6 +4771,7 @@
 				345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */,
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
 				34465B9B2D075785002E5033 /* GenuineCheckDialogViewController.swift in Sources */,
+				34DA78F32D8971F90022FBB1 /* DialogWalletsViewModel.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
 				3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
@@ -4895,6 +4926,7 @@
 				34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */,
 				8189230429F67F5500551824 /* WOViewModel.swift in Sources */,
 				818BA7152A2F913C00DFB03A /* CentralManager.swift in Sources */,
+				34DA78F12D8971E50022FBB1 /* DialogWalletsViewController.swift in Sources */,
 				34F980AA2914286300C12D48 /* AccountViewModel.swift in Sources */,
 				342F9812293518C6005876A8 /* Enable2faPrefs.swift in Sources */,
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,

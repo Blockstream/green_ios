@@ -116,7 +116,9 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Transact".localized)
+                cell.configure(title: "Transact".localized, onTap: {[weak self] in
+                    self?.walletTab.walletsMenu()
+                })
                 cell.selectionStyle = .none
                 return cell
             }
