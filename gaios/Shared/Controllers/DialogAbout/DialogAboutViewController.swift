@@ -72,8 +72,10 @@ class DialogAboutViewController: KeyboardViewController {
         cardView.subviews.forEach {
             $0.subviews.forEach { view in
                 if let logo = view as? UIImageView {
-                    logo.isUserInteractionEnabled = true
-                    logo.addGestureRecognizer(tap)
+                    if Bundle.main.dev {
+                        logo.isUserInteractionEnabled = true
+                        logo.addGestureRecognizer(tap)
+                    }
                 }
             }
         }
@@ -293,6 +295,9 @@ extension DialogAboutViewController: DialogListViewControllerDelegate {
         case .promos:
             PromoManager.shared.clearDismissed()
             PromoManager.shared.resetVideoCache()
+        case .cleanup:
+            MigratorManager.shared.removeAll()
+            DropAlert().success(message: "Wallet list deleted")
         case .none:
             break
         }

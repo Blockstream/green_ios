@@ -34,7 +34,7 @@ public class MigratorManager {
             // upgrade from app < v4.0.0
             migrateDatadir()
         }
-        if appDataVersion == 1 {
+        if appDataVersion <= 1 {
             // upgrade from app < v4.0.25
             try? updateKeychainAccessGroup()
         }
@@ -108,5 +108,20 @@ public class MigratorManager {
         for account in AccountsRepository.shared.accounts where AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
             _ = try? AuthenticationTypeHandler.getAuthKeyBiometricPrivateKey(network: account.keychain)
         }
+    }
+
+    public func removeAll() {
+        let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
+        var query = [
+            // without kSecAttrAccessible & kSecAttrAccessGroup
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: keychainStoragev0.attrAccount,
+            kSecAttrService as String: keychainStoragev0.attrService] as [String: Any]
+        try? keychainStoragev0.removeAll(query)
+        query[kSecAttrAccessGroup as String] = Bundle.main.appGroup
+        try? keychainStoragev0.removeAll(query)
+        let keychainStoragev1 = AccountsRepository.shared.storage
+        try? keychainStoragev1.removeAll()
+        AccountsRepository.shared.cleanCache()
     }
 }
