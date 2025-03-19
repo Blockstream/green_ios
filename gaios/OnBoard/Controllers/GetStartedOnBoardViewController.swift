@@ -9,18 +9,20 @@ class GetStartedOnBoardViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var btnCheckTerms: CheckButton!
     @IBOutlet weak var btnGetStarted: UIButton!
+
+    @IBOutlet weak var btnCreate: UIButton!
+    @IBOutlet weak var btnConnectJade: UIButton!
+    @IBOutlet weak var btnRestore: UIButton!
+
     @IBOutlet weak var btnAppSettings: UIButton!
     @IBOutlet weak var labelAgree: UILabel!
 
     var actionToButton: ActionToButton?
 
-    let mash = UIImageView(image: UIImage(named: "il_mash")!)
-
-    let strIAgree = "id_i_agree_to_the_terms_of_service".localized
-    let strTerms = "id_terms_of_service".localized
-    let strPrivacy = "id_privacy_policy".localized
+    let strIAgree = "By using Blockstream Green, you agree to the Terms & Conditions and Privacy Policy.".localized
+    let strTerms = "Terms & Conditions".localized
+    let strPrivacy = "Privacy Policy".localized
 
     var acceptedTerms: Bool {
         get { UserDefaults.standard.bool(forKey: AppStorageConstants.acceptedTerms.rawValue) == true }
@@ -30,20 +32,9 @@ class GetStartedOnBoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        mash.alpha = 0.6
-        view.insertSubview(mash, at: 0)
-        mash.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            mash.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            mash.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            mash.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
-            mash.heightAnchor.constraint(equalToConstant: view.frame.height / 1.8)
-        ])
-
+        btnGetStarted.isHidden = true
         setContent()
         setStyle()
-        updateUI()
     }
 
     @objc func back(sender: UIBarButtonItem) {
@@ -55,6 +46,9 @@ class GetStartedOnBoardViewController: UIViewController {
         lblHint.text = "id_everything_you_need_to_take".localized
         btnGetStarted.setTitle("id_get_started".localized, for: .normal)
         btnAppSettings.setTitle("id_app_settings".localized, for: .normal)
+
+        btnCreate.setTitle("Create a new Wallet".localized, for: .normal)
+        btnConnectJade.setTitle("Connect Jade".localized, for: .normal)
     }
 
     func setStyle() {
@@ -82,20 +76,13 @@ class GetStartedOnBoardViewController: UIViewController {
         labelAgree.attributedText = attrStr
         labelAgree.isUserInteractionEnabled = true
         labelAgree.lineBreakMode = .byWordWrapping
+        labelAgree.textAlignment = .center
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(onTap(_:)))
         tapGesture.numberOfTouchesRequired = 1
         labelAgree.addGestureRecognizer(tapGesture)
-    }
-
-    func updateUI() {
-        btnCheckTerms.isSelected = acceptedTerms
-        btnGetStarted.isEnabled = acceptedTerms
-
-        if acceptedTerms {
-            btnGetStarted.setStyle(.primary)
-        } else {
-            btnGetStarted.setStyle(.primaryDisabled)
-        }
+        btnCreate.setStyle(.primary)
+        btnConnectJade.setStyle(.outlined)
+        btnRestore.setStyle(.underline(txt: "Restore Existing Wallet".localized, color: UIColor.gGreenMatrix()))
     }
 
     @objc func onTap(_ gesture: UITapGestureRecognizer) {
@@ -134,15 +121,19 @@ class GetStartedOnBoardViewController: UIViewController {
         }
     }
 
-    @IBAction func btnCheckTerms(_ sender: Any) {
-        acceptedTerms = btnCheckTerms.isSelected
-        updateUI()
-    }
-
     @IBAction func btnGetStarted(_ sender: Any) {
         onNext(.getStarted)
     }
 
+    @IBAction func btnCreate(_ sender: Any) {
+        let onBoardFlow = UIStoryboard(name: "OnBoard", bundle: nil)
+        let vc = onBoardFlow.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController")
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    @IBAction func btnConnect(_ sender: Any) {
+    }
+    @IBAction func btnRestore(_ sender: Any) {
+    }
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {

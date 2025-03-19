@@ -316,6 +316,10 @@
 		3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6A290AE28000122628 /* BalanceCell.swift */; };
 		3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6C290AE28700122628 /* BalanceCellModel.swift */; };
 		3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6E290BCB2500122628 /* AccountCellModel.swift */; };
+		348A70E12D89DA7700490B55 /* OnBoardAppAccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A70E02D89DA7700490B55 /* OnBoardAppAccessViewController.swift */; };
+		348A70E32D89DA8C00490B55 /* OnBoardAppPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A70E22D89DA8C00490B55 /* OnBoardAppPinViewController.swift */; };
+		348A71062D8AE02C00490B55 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A71052D8AE02C00490B55 /* WelcomeView.swift */; };
+		348A710A2D8AE05800490B55 /* WelcomeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A71092D8AE05800490B55 /* WelcomeView.xib */; };
 		348AD31C2BFCAAAF00F560C8 /* ReEnable2faSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348AD31B2BFCAAAF00F560C8 /* ReEnable2faSuccessViewController.swift */; };
 		348AD31E2BFDF86900F560C8 /* SendFeeInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348AD31D2BFDF86900F560C8 /* SendFeeInfoViewController.swift */; };
 		3491C9922912B3670063C055 /* AssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491C9912912B3670063C055 /* AssetsViewController.swift */; };
@@ -1257,6 +1261,10 @@
 		3488FC6A290AE28000122628 /* BalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCell.swift; sourceTree = "<group>"; };
 		3488FC6C290AE28700122628 /* BalanceCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCellModel.swift; sourceTree = "<group>"; };
 		3488FC6E290BCB2500122628 /* AccountCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountCellModel.swift; sourceTree = "<group>"; };
+		348A70E02D89DA7700490B55 /* OnBoardAppAccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardAppAccessViewController.swift; sourceTree = "<group>"; };
+		348A70E22D89DA8C00490B55 /* OnBoardAppPinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardAppPinViewController.swift; sourceTree = "<group>"; };
+		348A71052D8AE02C00490B55 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		348A71092D8AE05800490B55 /* WelcomeView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeView.xib; sourceTree = "<group>"; };
 		348AD31B2BFCAAAF00F560C8 /* ReEnable2faSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReEnable2faSuccessViewController.swift; sourceTree = "<group>"; };
 		348AD31D2BFDF86900F560C8 /* SendFeeInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendFeeInfoViewController.swift; sourceTree = "<group>"; };
 		3491C9912912B3670063C055 /* AssetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewController.swift; sourceTree = "<group>"; };
@@ -2280,6 +2288,8 @@
 				344D57C82D71ABF5009725A3 /* WalletTab.swift */,
 				344D57FC2D75E751009725A3 /* TabViewController.swift */,
 				344D57CB2D71B5B5009725A3 /* WalletTab.storyboard */,
+				348A71052D8AE02C00490B55 /* WelcomeView.swift */,
+				348A71092D8AE05800490B55 /* WelcomeView.xib */,
 				344D57E32D758D0A009725A3 /* Home */,
 				344D57CD2D71B5CC009725A3 /* Transact */,
 				344D57D22D71B6C2009725A3 /* Security */,
@@ -2797,6 +2807,8 @@
 				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
 				345ED1F329C088DC00BD9071 /* GetStartedOnBoardViewController.swift */,
 				3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */,
+				348A70E02D89DA7700490B55 /* OnBoardAppAccessViewController.swift */,
+				348A70E22D89DA8C00490B55 /* OnBoardAppPinViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -4502,6 +4514,7 @@
 				342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */,
 				345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */,
 				81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */,
+				348A710A2D8AE05800490B55 /* WelcomeView.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				34F0EC2D2D783ED70017C276 /* price_chart_mock.json in Resources */,
 				3487657F29D43B2A0059D05F /* animation_03_jade_v1.riv in Resources */,
@@ -4710,6 +4723,7 @@
 				81C3014D2BBFFB1100A16A84 /* BleJadeManager.swift in Sources */,
 				346EB2852BE8BB480043139F /* SendFailViewController.swift in Sources */,
 				812528CE2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift in Sources */,
+				348A70E12D89DA7700490B55 /* OnBoardAppAccessViewController.swift in Sources */,
 				3472798F2CD3888600A272D2 /* DebugPrefs.swift in Sources */,
 				3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */,
 				3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */,
@@ -4830,6 +4844,7 @@
 				344915F02A0CE27F00D35818 /* ReceiveAssetCellModel.swift in Sources */,
 				3428750C2D551D31003FB5AE /* LangSelectViewModel.swift in Sources */,
 				344471C62C478F7C0051957E /* DialogGroupListCellModel.swift in Sources */,
+				348A70E32D89DA8C00490B55 /* OnBoardAppPinViewController.swift in Sources */,
 				346EB2772BE8BB3A0043139F /* SendFeeCellModel.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */,
@@ -4999,6 +5014,7 @@
 				34DA78A62D807F3F0022FBB1 /* DialogAccountsViewController.swift in Sources */,
 				345402F72A20A6A7002CB598 /* LTAuthViewController.swift in Sources */,
 				34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */,
+				348A71062D8AE02C00490B55 /* WelcomeView.swift in Sources */,
 				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,
 				34BC63632D0979BA001CC38F /* PromoLayout1Cell.swift in Sources */,
 				34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */,

@@ -9,11 +9,13 @@ class WalletTabBarViewController: UITabBarController {
     private var userWillLogout = false
     private var notificationObservers: [NSObjectProtocol] = []
     private var isReloading = false
-
+    let wView = WelcomeView()
     let tabHomeVC = WalletTab.tabHomeVC()
     let tabTransactVC = WalletTab.tabTransactVC()
     let tabSecurityVC = WalletTab.tabSecurityVC()
     let tabSettingsVC = WalletTab.tabSettingsVC()
+
+    var showWelcomeView: Bool = true
 
     private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletTabBarViewController.self, options: nil)![0] as? DrawerBarItem)!)
 
@@ -65,6 +67,15 @@ class WalletTabBarViewController: UITabBarController {
 //                URLSchemeManager.shared.url = nil
 //            }
 //        }
+//        self.parent?.view.addSubview(wView)
+
+        if showWelcomeView, let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
+            view.addSubview(wView)
+            wView.frame = view.frame
+            wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
+                self?.wView.removeFromSuperview()
+            })
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
