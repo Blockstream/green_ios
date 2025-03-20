@@ -119,10 +119,15 @@ public struct Account: Codable, Equatable {
             AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: keychain)
         }
     }
+    public var hasBioCredentials: Bool {
+        get {
+            AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: keychain)
+        }
+    }
 
     public var hasPin: Bool {
         get {
-            return hasManualPin || hasBioPin
+            return hasManualPin || hasBioPin || hasBioCredentials
         }
     }
 

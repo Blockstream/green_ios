@@ -47,17 +47,24 @@ class LoginViewModel {
         if !bip39passphrase.isNilOrEmpty {
             account = updateEphemeralAccount(from: credentials)
         }
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        wm.popupResolver = await PopupResolver()
-        wm.hwInterfaceResolver = await HwPopupResolver()
-        let lightningCredentials = Credentials(mnemonic: try wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: bip39passphrase)
-        let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
-        try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
-        account = wm.account
+        let wallet = try await loginWithCredentials(credentials: credentials)
+        account = wallet.account
         if withPIN != nil {
             account.attempts = 0
         }
         AccountsRepository.shared.current = account
+    }
+
+    func loginWithCredentials(credentials: Credentials) async throws -> WalletManager {
+        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        wm.popupResolver = await PopupResolver()
+        wm.hwInterfaceResolver = await HwPopupResolver()
+        let lightningCredentials = Credentials(mnemonic: try wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: credentials.bip39Passphrase)
+        let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
+        try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
+        account = wm.account
+        AccountsRepository.shared.current = account
+        return wm
     }
 
     fileprivate func updateEphemeralAccount(from credentials: Credentials) -> Account {

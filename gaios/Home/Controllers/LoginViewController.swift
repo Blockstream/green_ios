@@ -194,16 +194,20 @@ class LoginViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if account.askEphemeral ?? false {
-            loginWithPassphrase(isAlwaysAsk: account.askEphemeral ?? false)
-        } else if account.hasBioPin {
-            loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
-        } else {
-            if !AuthenticationTypeHandler.supportsPasscodeAuthentication() {
-                showAlert(title: "id_error".localized, message: "id_set_up_a_passcode_for_your_ios".localized)
+        reload()
+        Task { [weak self] in
+            if self?.account.askEphemeral ?? false {
+                self?.loginWithPassphrase(isAlwaysAsk: self?.account.askEphemeral ?? false)
+            } else if self?.account.hasBioPin ?? false {
+                await self?.login(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+            } else if self?.account.hasBioCredentials ?? false {
+                await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: nil)
+            } else {
+                if !AuthenticationTypeHandler.supportsPasscodeAuthentication() {
+                    self?.showAlert(title: "id_error".localized, message: "id_set_up_a_passcode_for_your_ios".localized)
+                }
             }
         }
-        reload()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -272,16 +276,26 @@ class LoginViewController: UIViewController {
         self.reloadPin()
     }
 
-    fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
+    @MainActor
+    fileprivate func login(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) async {
         AnalyticsManager.shared.loginWalletStart()
         self.startLoader(message: "id_logging_in".localized)
-        Task.detached() { [weak self] in
-            do {
+        let account = viewModel.account
+        let task = Task.detached() { [weak self] in
+            if usingAuth == .AuthKeyWoBioCredentials {
+                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+                _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
+            } else if usingAuth == .AuthKeyBiometric {
+                try await self?.viewModel.loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: bip39passphrase)
+            } else {
                 try await self?.viewModel.loginWithPin(usingAuth: usingAuth, withPIN: withPIN, bip39passphrase: bip39passphrase)
-                await self?.success(withPIN: withPIN != nil)
-            } catch {
-                await self?.failure(error: error, enableFailingCounter: true)
             }
+        }
+        switch await task.result {
+        case .success(_):
+            success(withPIN: withPIN != nil)
+        case .failure(let error):
+            failure(error: error, enableFailingCounter: true)
         }
     }
 
@@ -400,9 +414,12 @@ class LoginViewController: UIViewController {
                             bip39passphrase: bip39passphare)
             return
         }
-        loginWithPin(usingAuth: .AuthKeyPIN,
-                     withPIN: pinCode,
-                     bip39passphrase: bip39passphare)
+        Task { [weak self] in
+            await self?.login(
+                usingAuth: .AuthKeyPIN,
+                withPIN: self?.pinCode,
+                bip39passphrase: self?.bip39passphare)
+        }
     }
 
     func reloadPin() {
@@ -533,7 +550,9 @@ extension LoginViewController: DialogPassphraseViewControllerDelegate {
         bip39passphare = passphrase
         viewModel.updateAccountAskEphemeral(alwaysAsk)
         if account.hasBioPin {
-            loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
+            Task { [weak self] in
+                await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: passphrase)
+            }
         }
     }
 }

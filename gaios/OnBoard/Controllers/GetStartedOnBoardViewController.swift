@@ -1,58 +1,60 @@
 import UIKit
 import core
+import gdk
+import greenaddress
 
 class GetStartedOnBoardViewController: UIViewController {
-
+    
     enum ActionToButton {
         case create
         case connect
         case restore
     }
-
+    
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnGetStarted: UIButton!
-
+    
     @IBOutlet weak var btnCreate: UIButton!
     @IBOutlet weak var btnConnectJade: UIButton!
     @IBOutlet weak var btnRestore: UIButton!
-
+    
     @IBOutlet weak var btnAppSettings: UIButton!
     @IBOutlet weak var labelAgree: UILabel!
-
+    
     var actionToButton: ActionToButton?
-
+    
     let strIAgree = "By using Blockstream Green, you agree to the Terms & Conditions and Privacy Policy.".localized
     let strTerms = "Terms & Conditions".localized
     let strPrivacy = "Privacy Policy".localized
-
+    
     var acceptedTerms: Bool {
         get { UserDefaults.standard.bool(forKey: AppStorageConstants.acceptedTerms.rawValue) == true }
         set { UserDefaults.standard.set(newValue, forKey: AppStorageConstants.acceptedTerms.rawValue) }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         btnGetStarted.isHidden = true
         setContent()
         setStyle()
     }
-
+    
     @objc func back(sender: UIBarButtonItem) {
         navigationController?.popViewController(animated: true)
     }
-
+    
     func setContent() {
         lblTitle.text = "id_simple__secure_selfcustody".localized
         lblHint.text = "id_everything_you_need_to_take".localized
         btnGetStarted.setTitle("id_get_started".localized, for: .normal)
         btnAppSettings.setTitle("id_app_settings".localized, for: .normal)
-
+        
         btnCreate.setTitle("Create a new Wallet".localized, for: .normal)
         btnConnectJade.setTitle("Connect Jade".localized, for: .normal)
     }
-
+    
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 30.0, weight: .bold)
         lblTitle.textColor = .white
@@ -61,7 +63,7 @@ class GetStartedOnBoardViewController: UIViewController {
         btnGetStarted.setStyle(.primary)
         btnAppSettings.setStyle(.inline)
         btnAppSettings.setTitleColor(.white, for: .normal)
-
+        
         let pStyle = NSMutableParagraphStyle()
         pStyle.lineSpacing = 7.0
         let gAttr: [NSAttributedString.Key: Any] = [
@@ -86,7 +88,7 @@ class GetStartedOnBoardViewController: UIViewController {
         btnConnectJade.setStyle(.outlined)
         btnRestore.setStyle(.underline(txt: "Restore Existing Wallet".localized, color: UIColor.gGreenMatrix()))
     }
-
+    
     @objc func onTap(_ gesture: UITapGestureRecognizer) {
         guard let text = labelAgree.text else { return }
         let rangeTerms = (text.lowercased() as NSString).range(of: strTerms.lowercased())
@@ -97,14 +99,14 @@ class GetStartedOnBoardViewController: UIViewController {
             navigate(ExternalUrls.aboutPrivacyPolicy)
         }
     }
-
+    
     func navigate(_ url: URL) {
         SafeNavigationManager.shared.navigate(url)
     }
-
+    
     func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-
+        
         switch OnBoardManager.shared.flowType {
         case .add:
             if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
@@ -119,8 +121,49 @@ class GetStartedOnBoardViewController: UIViewController {
         }
     }
 
-    func tryNext(_ action: ActionToButton) {
+    func createWallet() async throws -> WalletManager {
+        let account = try await createAccount()
+        _ = try await createCredentials(account: account)
+        let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+        let wallet = WalletsRepository.shared.getOrAdd(for: account)
+        try await wallet.create(credentials)
+        return wallet
+    }
 
+    func createAccount() async throws -> Account {
+        let testnet = OnBoardManager.shared.chainType == .testnet ? true : false
+        let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
+        let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+        return Account(name: name, network: mainNetwork)
+    }
+
+    func createCredentials(account: Account) async throws -> Credentials {
+        let mnemonic = try generateMnemonic12()
+        let credentials = Credentials(mnemonic: mnemonic)
+        try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoBioCredentials, credentials: credentials, for: account.keychain)
+        return credentials
+    }
+
+    func create() async {
+        startLoader()
+        let task = Task.detached() { [weak self] in
+            try await self?.createWallet()
+        }
+        switch await task.result {
+        case .success(let wallet):
+            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "Container") as? ContainerViewController {
+                vc.walletModel = WalletModel()
+                let appDelegate = UIApplication.shared.delegate
+                appDelegate?.window??.rootViewController = vc
+                vc.stopLoader()
+            }
+        case .failure(let err):
+            showError(err.description()?.localized ?? "Failed")
+        }
+    }
+
+    func tryNext(_ action: ActionToButton) {
         if AnalyticsManager.shared.consent == .notDetermined {
             actionToButton = action
 
@@ -135,6 +178,7 @@ class GetStartedOnBoardViewController: UIViewController {
         switch action {
         case .create:
             OnBoardManager.shared.flowType = .add
+            Task { await self.create() }
         case .connect:
             let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
             if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
