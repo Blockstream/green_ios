@@ -236,7 +236,7 @@ class SetPinViewController: UIViewController {
                 do {
                     try await self.viewModel.create(pin: pin)
                     self.stopLoader()
-                    AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
+                    AccountNavigator.goLogged(account: AccountsRepository.shared.current!, isFirstLoad: true)
                 } catch {
                     self.stopLoader()
                     self.failure(error)

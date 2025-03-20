@@ -35,12 +35,13 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func goLogged(account: Account) {
+    static func goLogged(account: Account, isFirstLoad: Bool = false) {
         AccountsRepository.shared.current = account
         Task {
             let isLightning = account.isDerivedLightning
             let accountViewModel = isLightning ? await accountViewModel(account: account) : nil
             let walletModel = !isLightning ? WalletModel() : nil
+            walletModel?.isFirstLoad = isFirstLoad
             await MainActor.run {
                 if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
                     vc.accountViewModel = accountViewModel

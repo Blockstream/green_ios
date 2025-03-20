@@ -46,6 +46,9 @@ class OnBoardAppAccessViewController: UIViewController {
 
     @IBAction func btnFace(_ sender: Any) {
         viewFace.pressAnimate {
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
         }
     }
 

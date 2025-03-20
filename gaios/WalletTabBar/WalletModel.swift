@@ -50,7 +50,7 @@ class WalletModel {
     var balanceDisplayMode: BalanceDisplayMode = .denom
 
     var analyticsDone = false
-
+    var isFirstLoad = false
     var hideBalance: Bool {
         get {
             return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)

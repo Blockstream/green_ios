@@ -15,8 +15,6 @@ class WalletTabBarViewController: UITabBarController {
     let tabSecurityVC = WalletTab.tabSecurityVC()
     let tabSettingsVC = WalletTab.tabSettingsVC()
 
-    var showWelcomeView: Bool = true
-
     private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletTabBarViewController.self, options: nil)![0] as? DrawerBarItem)!)
 
     init(walletModel: WalletModel) {
@@ -69,7 +67,7 @@ class WalletTabBarViewController: UITabBarController {
 //        }
 //        self.parent?.view.addSubview(wView)
 
-        if showWelcomeView, let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
+        if walletModel.isFirstLoad, let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
             view.addSubview(wView)
             wView.frame = view.frame
             wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
