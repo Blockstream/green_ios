@@ -249,18 +249,19 @@ class LoginViewController: UIViewController {
         }
     }
 
-    fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
+    @MainActor
+    fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) async {
         self.startLoader(message: "id_logging_in".localized)
-        Task.detached() { [weak self] in
-            do {
-                let credentials = try await self?.viewModel.decryptCredentials(usingAuth: usingAuth, withPIN: withPIN)
-                if var credentials = credentials {
-                    credentials.bip39Passphrase = bip39passphrase
-                    await self?.successDecrypt(credentials)
-                }
-            } catch {
-                await self?.failure(error: error, enableFailingCounter: false)
-            }
+        let viewModel = self.viewModel!
+        let task = Task() {
+            return try await viewModel.decryptCredentials(usingAuth: usingAuth, withPIN: withPIN)
+        }
+        switch await task.result {
+        case .success(var credentials):
+            credentials.bip39Passphrase = bip39passphrase
+            successDecrypt(credentials)
+        case .failure(let error):
+            failure(error: error, enableFailingCounter: false)
         }
     }
 
@@ -408,17 +409,18 @@ class LoginViewController: UIViewController {
         guard pinCode.count == 6 else {
             return
         }
-        if emergencyRestore {
-            decryptMnemonic(usingAuth: .AuthKeyPIN,
-                            withPIN: pinCode,
-                            bip39passphrase: bip39passphare)
-            return
-        }
         Task { [weak self] in
-            await self?.login(
-                usingAuth: .AuthKeyPIN,
-                withPIN: self?.pinCode,
-                bip39passphrase: self?.bip39passphare)
+            if self?.emergencyRestore ?? false {
+                await self?.decryptMnemonic(
+                    usingAuth: .AuthKeyPIN,
+                    withPIN: self?.pinCode,
+                    bip39passphrase: self?.bip39passphare)
+            } else {
+                await self?.login(
+                    usingAuth: .AuthKeyPIN,
+                    withPIN: self?.pinCode,
+                    bip39passphrase: self?.bip39passphare)
+            }
         }
     }
 
@@ -465,7 +467,9 @@ class LoginViewController: UIViewController {
             self.emergencyRestore = true
             self.reload()
             if self.account.hasBioPin {
-                self.decryptMnemonic(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+                Task() { [weak self] in
+                    await self?.decryptMnemonic(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+                }
             }
         })
         self.present(alert, animated: true, completion: nil)

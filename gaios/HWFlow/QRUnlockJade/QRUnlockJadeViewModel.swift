@@ -96,6 +96,7 @@ class QRUnlockJadeViewModel {
     }
 
     func login() async throws {
+        AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain)
         let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyWoBioCredentials : .AuthKeyWoCredentials

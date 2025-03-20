@@ -119,6 +119,7 @@ public struct Account: Codable, Equatable {
             AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: keychain)
         }
     }
+
     public var hasBioCredentials: Bool {
         get {
             AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: keychain)
@@ -127,7 +128,7 @@ public struct Account: Codable, Equatable {
 
     public var hasPin: Bool {
         get {
-            return hasManualPin || hasBioPin || hasBioCredentials
+            return hasManualPin || hasBioPin
         }
     }
 

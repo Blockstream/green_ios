@@ -29,13 +29,16 @@ class LoginViewModel {
     }
 
     func decryptCredentials(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?) async throws -> Credentials {
-        let session = SessionManager(account.gdkNetwork)
         let pinData = try AuthenticationTypeHandler.getPinData(method: usingAuth, for: account.keychain)
-        let pin = withPIN ?? pinData.plaintextBiometric
-        let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
-        try await session.connect()
-        let credentials = try await session.decryptWithPin(decryptData)
-        return credentials
+        if !pinData.encryptedData.isEmpty {
+            // need decrypt with pin server
+            let pin = withPIN ?? pinData.plaintextBiometric
+            let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
+            let session = SessionManager(account.gdkNetwork)
+            try await session.connect()
+            return try await session.decryptWithPin(decryptData)
+        }
+        return Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
     }
 
     func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) async throws {

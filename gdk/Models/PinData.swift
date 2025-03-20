@@ -13,4 +13,11 @@ public struct PinData: Codable {
     public let salt: String
     public var encryptedBiometric: String?
     public var plaintextBiometric: String?
+    public init(encryptedData: String, pinIdentifier: String, salt: String, encryptedBiometric: String?, plaintextBiometric: String?) {
+        self.encryptedData = encryptedData
+        self.pinIdentifier = pinIdentifier
+        self.salt = salt
+        self.encryptedBiometric = encryptedBiometric
+        self.plaintextBiometric = plaintextBiometric
+    }
 }

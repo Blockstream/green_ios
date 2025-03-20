@@ -125,7 +125,9 @@ class GetStartedOnBoardViewController: UIViewController {
     func createWallet() async throws -> WalletManager {
         let account = try await createAccount()
         _ = try await createCredentials(account: account)
-        let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+        //let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials,  for: account.keychain)
+        let pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyBiometric, for: account.keychain)
+        let credentials = Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
         let wallet = WalletsRepository.shared.getOrAdd(for: account)
         try await wallet.create(credentials)
         return wallet
@@ -141,7 +143,9 @@ class GetStartedOnBoardViewController: UIViewController {
     func createCredentials(account: Account) async throws -> Credentials {
         let mnemonic = try generateMnemonic12()
         let credentials = Credentials(mnemonic: mnemonic)
-        try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoBioCredentials, credentials: credentials, for: account.keychain)
+        //try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoBioCredentials, credentials: credentials, for: account.keychain)
+        let PinData = PinData(encryptedData: "", pinIdentifier: UUID().uuidString, salt: "", encryptedBiometric: nil, plaintextBiometric: nil)
+        try? AuthenticationTypeHandler.setPinData(method: .AuthKeyBiometric, pinData: PinData, extraData: mnemonic, for: account.keychain)
         return credentials
     }
 
@@ -151,7 +155,7 @@ class GetStartedOnBoardViewController: UIViewController {
             try await self?.createWallet()
         }
         switch await task.result {
-        case .success(let wallet):
+        case .success(_):
             stopLoader()
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "Container") as? ContainerViewController {
@@ -160,13 +164,12 @@ class GetStartedOnBoardViewController: UIViewController {
                 let appDelegate = UIApplication.shared.delegate
                 appDelegate?.window??.rootViewController = vc
             }
-        case .failure(let err):
+        case .failure(_):
             stopLoader()
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
-//            showError(err.description()?.localized ?? "Failed")
         }
     }
 
