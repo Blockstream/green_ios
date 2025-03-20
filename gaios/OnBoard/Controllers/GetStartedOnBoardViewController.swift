@@ -4,7 +4,9 @@ import core
 class GetStartedOnBoardViewController: UIViewController {
 
     enum ActionToButton {
-        case getStarted
+        case create
+        case connect
+        case restore
     }
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -100,7 +102,24 @@ class GetStartedOnBoardViewController: UIViewController {
         SafeNavigationManager.shared.navigate(url)
     }
 
-    func onNext(_ action: ActionToButton) {
+    func next() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+
+        switch OnBoardManager.shared.flowType {
+        case .add:
+            if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .restore:
+            if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .watchonly:
+            break
+        }
+    }
+
+    func tryNext(_ action: ActionToButton) {
 
         if AnalyticsManager.shared.consent == .notDetermined {
             actionToButton = action
@@ -114,26 +133,52 @@ class GetStartedOnBoardViewController: UIViewController {
             return
         }
         switch action {
-        case .getStarted:
-            let onBoardFlow = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = onBoardFlow.instantiateViewController(withIdentifier: "HowToSecureViewController")
-            navigationController?.pushViewController(vc, animated: true)
+        case .create:
+            OnBoardManager.shared.flowType = .add
+        case .connect:
+            let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
+                navigationController?.pushViewController(vc, animated: true)
+                AnalyticsManager.shared.hwwWallet()
+            }
+            return
+        case .restore:
+            OnBoardManager.shared.flowType = .restore
+        }
+        let testnetAvailable = AppSettings.shared.testnet
+        if testnetAvailable {
+            selectNetwork()
+        } else {
+            next()
+        }
+    }
+
+    func selectNetwork() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "id_select_network".localized, type: .networkPrefs, items: NetworkPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 
     @IBAction func btnGetStarted(_ sender: Any) {
-        onNext(.getStarted)
+        // onNext(.getStarted)
     }
 
     @IBAction func btnCreate(_ sender: Any) {
-        let onBoardFlow = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = onBoardFlow.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        tryNext(.create)
     }
+
     @IBAction func btnConnect(_ sender: Any) {
+        tryNext(.connect)
     }
+
     @IBAction func btnRestore(_ sender: Any) {
+        tryNext(.restore)
     }
+
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
@@ -149,8 +194,24 @@ extension GetStartedOnBoardViewController: DialogCountlyViewControllerDelegate {
             break
         case .denied, .authorized:
             if let actionToButton = actionToButton {
-                onNext(actionToButton)
+                tryNext(actionToButton)
             }
+        }
+    }
+}
+extension GetStartedOnBoardViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch NetworkPrefs(rawValue: index) {
+        case .mainnet:
+            OnBoardManager.shared.chainType = .mainnet
+            next()
+        case .testnet:
+            OnBoardManager.shared.chainType = .testnet
+            next()
+        case .none:
+            break
         }
     }
 }

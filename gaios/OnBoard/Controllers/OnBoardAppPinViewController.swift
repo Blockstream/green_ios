@@ -36,7 +36,12 @@ class OnBoardAppPinViewController: UIViewController {
     }
 
     @IBAction func btnPin(_ sender: Any) {
-
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+            vc.pinFlow = .create
+            vc.viewModel = SetPinViewModel(credentials: nil, testnet: OnBoardManager.shared.chainType == .testnet ? true : false)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnMore(_ sender: Any) {
