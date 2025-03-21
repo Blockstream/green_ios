@@ -324,17 +324,17 @@ extension QRUnlockJadeViewController: QRCodeReaderDelegate {
 extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate {
     func onTap(_ action: QRUnlockSuccessAlertAction) {
         guard let credentials = credentials else { return }
-        switch action {
-        case .bio:
-            startLoader(message: "id_logging_in".localized)
-            Task {
-                do {
-                    try await vm.exportXpub(enableBio: true, credentials: credentials)
-                    try await vm.login()
-                    success(account: vm.account)
-                } catch {
-                    failure(error, account: vm.account)
-                }
+        startLoader(message: "id_logging_in".localized)
+        Task {
+            let task = Task.detached { [weak self] in
+                try await self?.vm.exportXpub(enableBio: action == .bio, credentials: credentials)
+                try await self?.vm.login()
+            }
+            switch await task.result {
+            case .success(_):
+                success(account: vm.account)
+            case .failure(let error):
+                failure(error, account: vm.account)
             }
         }
     }

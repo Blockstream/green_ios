@@ -471,7 +471,7 @@ public class SessionManager {
        let result = res["result"] as? [String: Any]
         return result?["unspent_outputs"] as? [String: [[String: Any]]] ?? [:]
     }
-    
+
     public func getUtxos(_ params: GetUnspentOutputsParams) async throws -> GetUnspentOutputsResult {
         return try await wrapper(fun: self.session?.getUnspentOutputs, params: params)
     }

@@ -8,6 +8,7 @@ protocol QRUnlockSuccessAlertViewControllerDelegate: AnyObject {
 
 enum QRUnlockSuccessAlertAction {
     case bio
+    case none
 }
 
 class QRUnlockSuccessAlertViewController: UIViewController {
@@ -19,6 +20,8 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnBio: UIButton!
     @IBOutlet weak var imgBio: UIImageView!
+    
+    
 
     weak var delegate: QRUnlockSuccessAlertViewControllerDelegate?
 
@@ -39,7 +42,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
             lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "Touch ID")
         } else {
             imgBio.image = UIImage(named: "ic_airgap_biometrics")!
-            btnBio.setTitle("id_touchface_id_not_available", for: .normal)
+            btnBio.setTitle("id_touchface_id_not_available".localized, for: .normal)
             lblTitle.text = "id_success".localized
         }
     }
@@ -76,6 +79,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
         })
     }
     @IBAction func btnBio(_ sender: Any) {
-        dismiss(.bio)
+        let action: QRUnlockSuccessAlertAction = AuthenticationTypeHandler.biometryType != nil ? .bio : .none
+        dismiss(action)
     }
 }

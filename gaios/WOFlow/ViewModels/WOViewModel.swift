@@ -50,29 +50,29 @@ class WOViewModel {
     }
 
     func setupSinglesig(for account: Account, enableBio: Bool, credentials: Credentials) async throws {
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        let session = wm.prominentSession!
-        let password = enableBio ? String.random(length: 14) : ""
-        try await session.connect()
-        let encrypt = EncryptWithPinParams(pin: password, credentials: credentials)
-        let encrypted = try await session.encryptWithPin(encrypt)
-        if enableBio {
-            try AuthenticationTypeHandler.setKeyBiometric(pinData: encrypted.pinData, extraData: password, for: account.keychain)
-        } else {
-            try AuthenticationTypeHandler.setKeyPin(pinData: encrypted.pinData, for: account.keychain)
-        }
+        let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyWoBioCredentials : .AuthKeyWoCredentials
+        try AuthenticationTypeHandler.setCredentials(method: method, credentials: credentials, for: account.keychain)
     }
 
     func loginSinglesig(for account: Account) async throws {
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        let session = wm.prominentSession!
-        let bioEnabled = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
         AnalyticsManager.shared.loginWalletStart()
-        let data = try account.auth(bioEnabled ? .AuthKeyBiometric : .AuthKeyPIN)
-        try await session.connect()
-        let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
-        let credentials = try await session.decryptWithPin(decrypt)
-        try await wm.loginWatchonly(credentials: credentials)
+        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain)
+        let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyWoBioCredentials : .AuthKeyWoCredentials
+        let existCredentials = AuthenticationTypeHandler.findAuth(method: method, forNetwork: account.keychain)
+        if existCredentials {
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: method, for: account.keychain)
+            try await wm.loginWatchonly(credentials: credentials)
+        } else {
+            let session = wm.prominentSession!
+            let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
+            let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN
+            let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
+            try await session.connect()
+            let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
+            let credentials = try await session.decryptWithPin(decrypt)
+            try await wm.loginWatchonly(credentials: credentials)
+        }
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
     }
 }

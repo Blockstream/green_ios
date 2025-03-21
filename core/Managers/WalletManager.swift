@@ -597,7 +597,7 @@ public class WalletManager {
             _ = try? await session.changeSettings(settings: settings)
         }
         let keychain = "\(account.keychain)-lightning-shortcut"
-        try AuthenticationTypeHandler.setKeyLightning(credentials: credentials, for: keychain)
+        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: credentials, for: keychain)
     }
 
     public func removeLightningShortcut() async throws {
@@ -621,7 +621,7 @@ public class WalletManager {
     public func unregisterLightning()  async throws {
         // unregister lightning webhook
         let keychain = account.isDerivedLightning ? account.keychain : account.getDerivedLightningAccount()?.keychain ?? ""
-        let derivedCredentials = try AuthenticationTypeHandler.getKeyLightning(for: keychain)
+        let derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: keychain)
         if let session = lightningSession, !session.logged {
             try await session.smartLogin(
                 credentials: derivedCredentials,

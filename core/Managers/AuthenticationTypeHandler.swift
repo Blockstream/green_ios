@@ -2,7 +2,6 @@ import Foundation
 import LocalAuthentication
 import Security
 import gdk
-import core
 import lightning
 
 public class AuthenticationTypeHandler {
@@ -44,12 +43,13 @@ public class AuthenticationTypeHandler {
     }
 
     public enum AuthType: String {
-        case AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
-        case AuthKeyPIN = "com.blockstream.green.auth_key_pin"
-        case AuthKeyWOPassword = "com.blockstream.green.auth_key_wathonly_password"
-        case AuthCertLightning = "com.blockstream.green.auth_key_lightning"
-        case AuthKeyLightning = "com.blockstream.green.auth_key_credentials"
-        case AuthKeyPrivate = "com.blockstream.green.auth_key_private"
+        case AuthKeyBiometric = "com.blockstream.green.auth_key_biometric" // for PinData
+        case AuthKeyPIN = "com.blockstream.green.auth_key_pin" // for PinData
+        case AuthCertLightning = "com.blockstream.green.auth_key_lightning" // for lightning certs
+        case AuthKeyPrivate = "com.blockstream.green.auth_key_private" // for biometric private key
+        case AuthKeyLightning = "com.blockstream.green.auth_key_credentials" // for lightning credentials
+        case AuthKeyWoCredentials = "com.blockstream.green.auth_key_wo_credentials" // for wathonly credentials
+        case AuthKeyWoBioCredentials = "com.blockstream.green.auth_key_wo_bio_credentials" // for wathonly credentials with bio auth
     }
 
     static let PrivateKeyPathSize = 32
@@ -176,13 +176,15 @@ public class AuthenticationTypeHandler {
         guard let privateKeyLabel = try? getAuthKeyBiometricPrivateKey(network: forNetwork) else {
             throw AuthError.ServiceNotAvailable("Operation failed: Key not found.")
         }
-        let q: [CFString: Any] = [kSecClass: kSecClassKey,
-                                  kSecAttrKeyType: ECCKeyType,
-                                  kSecAttrKeySizeInBits: ECCKeySizeInBits,
-                                  kSecAttrLabel: privateKeyLabel,
-                                  kSecReturnRef: true,
-                                  kSecUseOperationPrompt: "Unlock Green"]
-
+        let context = LAContext()
+        context.localizedReason = "Unlock Green"
+        let q: [CFString: Any] = [
+            kSecClass: kSecClassKey,
+            kSecAttrKeyType: ECCKeyType,
+            kSecAttrKeySizeInBits: ECCKeySizeInBits,
+            kSecAttrLabel: privateKeyLabel,
+            kSecReturnRef: true,
+            kSecUseAuthenticationContext: context]
         var privateKey: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &privateKey))
         guard status == errSecSuccess else {
@@ -241,7 +243,7 @@ public class AuthenticationTypeHandler {
         return (encrypted! as Data).base64EncodedString()
     }
 
-    fileprivate static func queryFor(method: AuthType, forNetwork: String, version: Int) -> [CFString: Any] {
+    fileprivate static func queryForWrite(method: AuthType, forNetwork: String, version: Int) -> [CFString: Any] {
         var q: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: method.rawValue,
@@ -255,26 +257,66 @@ public class AuthenticationTypeHandler {
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
             case .AuthKeyLightning, .AuthCertLightning:
                 q[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlock
-            case .AuthKeyPIN, .AuthKeyWOPassword:
+            case .AuthKeyPIN, .AuthKeyWoCredentials:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
+            case .AuthKeyWoBioCredentials:
+                let access = SecAccessControlCreateWithFlags(
+                    nil, // Use the default allocator.
+                    kSecAttrAccessibleWhenUnlocked, // the item isn’t eligible for the iCloud keychain and won’t be included if the user restores a device backup to a new device.
+                    .userPresence, // request biometric authentication, or to fall back on the device passcode, whenever the item is later read from the keychain.
+                    nil) // Ignore any error.
+                let context = LAContext()
+                context.touchIDAuthenticationAllowableReuseDuration = 10
+                q[kSecAttrAccessControl] = access
+                q[kSecUseAuthenticationUI] = kSecUseAuthenticationUI
             }
         }
         return q
     }
 
-    fileprivate static func queryForData(method: AuthType, forNetwork: String, version: Int) -> [CFString: Any] {
-        return queryFor(method: method, forNetwork: forNetwork, version: version)
-                        .merging([kSecReturnData: kCFBooleanTrue ?? true]) { (current, _) in current }
+    fileprivate static func queryForRead(method: AuthType, forNetwork: String, version: Int) -> [CFString: Any] {
+        var q: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: method.rawValue,
+            kSecAttrAccount: forNetwork,
+            kSecReturnData: kCFBooleanTrue ?? true]
+        if version == 1 {
+            q[kSecAttrAccessGroup] = Bundle.main.appGroup
+            if method == .AuthKeyWoBioCredentials {
+                let context = LAContext()
+                context.localizedReason = "Access your mnemonic on the keychain"
+                context.touchIDAuthenticationAllowableReuseDuration = 10
+                q[kSecUseAuthenticationContext] = context
+            }
+        }
+        return q
+    }
+
+    fileprivate static func queryForExist(method: AuthType, forNetwork: String, version: Int) -> [CFString: Any] {
+        var q: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: method.rawValue,
+            kSecAttrAccount: forNetwork,
+            kSecReturnData: kCFBooleanTrue ?? true]
+        if version == 1 {
+            q[kSecAttrAccessGroup] = Bundle.main.appGroup
+            if method == .AuthKeyWoBioCredentials {
+                let context = LAContext()
+                context.interactionNotAllowed = true
+                q[kSecUseAuthenticationContext] = context
+            }
+        }
+        return q
     }
 
     fileprivate static func set(method: AuthType, data: [String: Any], forNetwork: String) throws {
-        if !supportsPasscodeAuthentication() {
+        if [AuthType.AuthKeyBiometric, AuthType.AuthKeyWoBioCredentials].contains(method) && !supportsPasscodeAuthentication() {
             throw AuthError.PasscodeNotSet
         }
         guard let data = try? JSONSerialization.data(withJSONObject: data) else {
             throw AuthError.ServiceNotAvailable("Operation failed: Invalid json on serialization.")
         }
-        let q = queryFor(method: method, forNetwork: forNetwork, version: 1)
+        let q = queryForWrite(method: method, forNetwork: forNetwork, version: 1)
         let qAdd = q.merging([kSecValueData: data]) { (current, _) in current }
         var status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         if status == errSecDuplicateItem {
@@ -287,7 +329,7 @@ public class AuthenticationTypeHandler {
     }
 
     fileprivate static func get_(method: AuthType, forNetwork: String, version: Int = 1) throws -> [String: Any] {
-        let q = queryForData(method: method, forNetwork: forNetwork, version: version)
+        let q = queryForRead(method: method, forNetwork: forNetwork, version: version)
         var result: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &result))
         guard status == errSecSuccess, result != nil, let resultData = result as? Data else {
@@ -316,12 +358,26 @@ public class AuthenticationTypeHandler {
         return data
     }
 
+    fileprivate static func exist_(method: AuthType, forNetwork: String, version: Int = 1) throws {
+        let q = queryForExist(method: method, forNetwork: forNetwork, version: version)
+        var result: CFTypeRef?
+        let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &result))
+        if status != errSecSuccess && status != errSecInteractionNotAllowed {
+            throw AuthError.KeychainError(status)
+        }
+    }
+
     public static func findAuth(method: AuthType, forNetwork: String) -> Bool {
         do {
-            _ = try get_(method: method, forNetwork: forNetwork)
+            try exist_(method: method, forNetwork: forNetwork)
             return true
         } catch {
-            return (try? get_(method: method, forNetwork: forNetwork, version: 0)) != nil
+            do {
+                try exist_(method: method, forNetwork: forNetwork, version: 0)
+                return true
+            } catch {
+                return false
+            }
         }
     }
 
@@ -342,9 +398,9 @@ public class AuthenticationTypeHandler {
     }
 
     public static func removeAuth(method: AuthType, for label: String) -> Bool {
-        let q0 = queryForData(method: method, forNetwork: label, version: 0)
+        let q0 = queryForWrite(method: method, forNetwork: label, version: 0)
         _ = callWrapper(fun: SecItemDelete(q0 as CFDictionary)) == errSecSuccess
-        let q1 = queryForData(method: method, forNetwork: label, version: 1)
+        let q1 = queryForWrite(method: method, forNetwork: label, version: 1)
         return callWrapper(fun: SecItemDelete(q1 as CFDictionary)) == errSecSuccess
     }
 
@@ -356,7 +412,7 @@ public class AuthenticationTypeHandler {
         throw AuthError.SecurityError("Invalid auth")
     }
 
-    public static func getAuth<T: Codable>(method: AuthType, for label: String) throws -> T {
+    private static func getAuth<T: Codable>(method: AuthType, for label: String) throws -> T {
         let data = try get(method: method, toDecrypt: method == .AuthKeyBiometric, forNetwork: label)
         if let res = T.from(data) as? T {
             return res
@@ -365,42 +421,47 @@ public class AuthenticationTypeHandler {
     }
 
     // Set methods
-    public static func setKeyPin(pinData: PinData, for label: String) throws {
-        try AuthenticationTypeHandler.setAuth(method: .AuthKeyPIN, data: pinData, for: label)
-    }
-    public static func setKeyWO(pinData: PinData, for label: String) throws {
-        try AuthenticationTypeHandler.setAuth(method: .AuthKeyPIN, data: pinData, for: label)
-    }
-    public static func setKeyLightning(credentials: Credentials, for label: String) throws {
-        try AuthenticationTypeHandler.setAuth(method: .AuthKeyLightning, data: credentials, for: label)
-    }
-    public static func setKeyBiometric(pinData: PinData, extraData: String, for label: String) throws {
-        if (try? getAuthKeyBiometricPrivateKey(network: label)) == nil {
-            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: label)
+    public static func setPinData(method: AuthType, pinData: PinData, extraData: String?, for label: String) throws {
+        guard [AuthType.AuthKeyPIN, AuthType.AuthKeyBiometric].contains(method) else {
+            throw AuthError.SecurityError("Invalid method")
         }
-        let encrypted = try encrypt(plaintext: extraData, forNetwork: label)
-        var pindata = pinData
-        pindata.encryptedBiometric = encrypted
-        try setAuth(method: .AuthKeyBiometric, data: pindata, for: label)
+        var pinData = pinData
+        if method == .AuthKeyBiometric {
+            if (try? getAuthKeyBiometricPrivateKey(network: label)) == nil {
+                try AuthenticationTypeHandler.generateBiometricPrivateKey(network: label)
+            }
+            let encrypted = try encrypt(plaintext: extraData ?? "", forNetwork: label)
+            pinData.encryptedBiometric = encrypted
+        }
+        try AuthenticationTypeHandler.setAuth(method: method, data: pinData, for: label)
+    }
+
+    public static func setCredentials(method: AuthType, credentials: Credentials, for label: String) throws {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
+            throw AuthError.SecurityError("Invalid method")
+        }
+        try AuthenticationTypeHandler.setAuth(method: method, data: credentials, for: label)
     }
     public static func setCertLightning(credentials: AppGreenlightCredentials, for label: String) throws {
         try setAuth(method: .AuthCertLightning, data: credentials, for: label)
     }
 
     // Get methods
+    public static func getPinData(method: AuthType, for label: String) throws -> PinData {
+        guard [AuthType.AuthKeyPIN, AuthType.AuthKeyBiometric].contains(method) else {
+            throw AuthError.SecurityError("Invalid method")
+        }
+        return try getAuth(method: method, for: label)
+    }
+    public static func getCredentials(method: AuthType, for label: String) throws -> Credentials {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
+            throw AuthError.SecurityError("Invalid method")
+        }
+        return try getAuth(method: method, for: label)
+    }
     public static func getCertLightning(for label: String) throws -> AppGreenlightCredentials {
         try getAuth(method: AuthType.AuthCertLightning, for: label)
     }
-    public static func getKeyPin(for label: String) throws -> PinData {
-        try getAuth(method: AuthType.AuthKeyPIN, for: label)
-    }
-    public static func getKeyWO(for label: String) throws -> PinData {
-        try getAuth(method: AuthType.AuthKeyPIN, for: label)
-    }
-    public static func getKeyLightning(for label: String) throws -> Credentials {
-        try getAuth(method: AuthType.AuthKeyLightning, for: label)
-    }
-    public static func getKeyBiometric(for label: String) throws -> PinData {
-        try getAuth(method: AuthType.AuthKeyBiometric, for: label)
-    }
 }
+
+

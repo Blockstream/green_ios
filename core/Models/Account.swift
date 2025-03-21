@@ -126,10 +126,6 @@ public struct Account: Codable, Equatable {
         }
     }
 
-    public func auth(_ method: AuthenticationTypeHandler.AuthType) throws -> PinData {
-        return try AuthenticationTypeHandler.getAuth(method: method, for: keychain)
-    }
-
     public var icon: UIImage {
         get {
             switch network {
@@ -178,13 +174,13 @@ public struct Account: Codable, Equatable {
         let password = String.random(length: 14)
         let params = EncryptWithPinParams(pin: password, credentials: credentials)
         let encrypted = try await session.encryptWithPin(params)
-        try AuthenticationTypeHandler.setKeyBiometric(pinData: encrypted.pinData, extraData: password, for: keychain)
+        try AuthenticationTypeHandler.setPinData(method: .AuthKeyBiometric, pinData: encrypted.pinData, extraData: password, for: keychain)
     }
 
     public func addPin(session: SessionManager, pin: String, credentials: Credentials) async throws {
         let params = EncryptWithPinParams(pin: pin, credentials: Credentials(mnemonic: credentials.mnemonic, password: credentials.password))
         let encrypted = try await session.encryptWithPin(params)
-        try AuthenticationTypeHandler.setKeyPin(pinData: encrypted.pinData, for: keychain)
+        try AuthenticationTypeHandler.setPinData(method: .AuthKeyPIN, pinData: encrypted.pinData, extraData: nil, for: keychain)
     }
 
     public var gdkNetwork: GdkNetwork { networkType.gdkNetwork }

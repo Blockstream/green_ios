@@ -30,7 +30,7 @@ class LoginViewModel {
 
     func decryptCredentials(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?) async throws -> Credentials {
         let session = SessionManager(account.gdkNetwork)
-        let pinData = try self.account.auth(usingAuth)
+        let pinData = try AuthenticationTypeHandler.getPinData(method: usingAuth, for: account.keychain)
         let pin = withPIN ?? pinData.plaintextBiometric
         let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
         try await session.connect()
