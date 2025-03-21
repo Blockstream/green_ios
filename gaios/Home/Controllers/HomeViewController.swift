@@ -87,16 +87,6 @@ class HomeViewController: UIViewController {
     }
 
     func walletDelete(_ index: String) {
-        if let account = AccountsRepository.shared.get(for: index), account.isDerivedLightning {
-            let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "LTRemoveShortcutViewController") as? LTRemoveShortcutViewController {
-                vc.modalPresentationStyle = .overFullScreen
-                vc.delegate = self
-                vc.index = index
-                present(vc, animated: false, completion: nil)
-            }
-            return
-        }
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDeleteViewController") as? DialogDeleteViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -145,37 +135,14 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func onTapLightShort(_ indexPath: IndexPath) {
-        if let account = getAccountFromTableView(indexPath) {
-            if let lightning = account.getDerivedLightningAccount() {
-                goAccount(account: lightning)
-            }
-        }
-    }
-
     func onTapLongPressOverview(_ indexPath: IndexPath, cell: UITableViewCell) {
         if let account = getAccountFromTableView(indexPath) {
             popover(for: cell, account: account)
         }
     }
 
-    func onTapLongPressLightShort(_ indexPath: IndexPath, cell: UITableViewCell) {
-        if let account = getAccountFromTableView(indexPath) {
-            if let lightning = account.getDerivedLightningAccount() {
-                popover(for: cell, account: lightning)
-            }
-        }
-    }
-
     func isOverviewSelected(_ account: Account) -> Bool {
         WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-    }
-
-    func isLightningSelected(_ account: Account) -> Bool {
-        if let account = account.getDerivedLightningAccount() {
-            return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-        }
-        return false
     }
 
     func onPromo(_ promo: Promo) {
@@ -323,15 +290,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: isLightningSelected(account),
                                indexPath: indexPath,
                                onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
-                               onLongpressOverview: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
-                               onLongpressLightShort: { [weak self] indexPath in self?.onTapLongPressLightShort(indexPath, cell: cell) },
-                               onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
-                )
+                               onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -340,13 +301,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: isLightningSelected(account),
                                indexPath: indexPath,
                                onLongpress: nil,
-                               onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
-                )
+                               onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -356,15 +313,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(
                     item: account,
                     isOverviewSelected: isOverviewSelected(account),
-                    isLightningSelected: isLightningSelected(account),
                     indexPath: indexPath,
                     onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
-                    onLongpressOverview: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
-                    onLongpressLightShort: { [weak self] indexPath in self?.onTapLongPressLightShort(indexPath, cell: cell) },
-                    onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                    onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                    onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
-                )
+                    onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -381,13 +332,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuHomeViewController") as? PopoverMenuHomeViewController {
             popover.delegate = self
             popover.index = account.id
-            popover.isDerivedLightning = account.isDerivedLightning
-
-            if account.isDerivedLightning {
-                popover.menuOptions = [.delete]
-            } else {
-                popover.menuOptions = [.edit, .delete]
-            }
+            popover.isDerivedLightning = false
+            popover.menuOptions = [.edit, .delete]
             popover.modalPresentationStyle = .popover
             let popoverPresentationController = popover.popoverPresentationController
             popoverPresentationController?.backgroundColor = UIColor.customModalDark()
@@ -529,26 +475,6 @@ extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteVi
         }
     }
     func didCancel() {
-    }
-}
-
-extension HomeViewController: LTRemoveShortcutViewControllerDelegate {
-    func onCancel() {
-        //
-    }
-    func onRemove(_ index: String?) {
-        if let index = index, let account = AccountsRepository.shared.get(for: index), account.isDerivedLightning {
-            Task {
-                self.startLoader()
-                await AccountsRepository.shared.remove(account)
-                await MainActor.run {
-                    self.stopLoader()
-                    AnalyticsManager.shared.deleteWallet()
-                    tableView.reloadData()
-                }
-            }
-            return
-        }
     }
 }
 

@@ -422,9 +422,6 @@
 		34CD348E2C7D981B00018824 /* VerifyOnDevice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */; };
 		34CD34912C7D98CF00018824 /* VerifyOnDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */; };
 		34CD34932C7D98E700018824 /* VerifyOnDeviceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */; };
-		34CED8262A9F2FC500DD0683 /* LTShortcutFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34CED8252A9F2FC500DD0683 /* LTShortcutFlow.storyboard */; };
-		34CED82A2A9F330600DD0683 /* LTShortcutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CED8292A9F330600DD0683 /* LTShortcutViewController.swift */; };
-		34CED82D2A9F3BC000DD0683 /* LTShortcutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CED82C2A9F3BC000DD0683 /* LTShortcutViewModel.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34CF91D92A31BE8200498B08 /* RecoveryTransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CF91D82A31BE8200498B08 /* RecoveryTransactionsViewController.swift */; };
 		34D330442863485E009CDBB3 /* DialogWatchOnlySetUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */; };
@@ -1338,9 +1335,6 @@
 		34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VerifyOnDevice.storyboard; sourceTree = "<group>"; };
 		34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewController.swift; sourceTree = "<group>"; };
 		34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewModel.swift; sourceTree = "<group>"; };
-		34CED8252A9F2FC500DD0683 /* LTShortcutFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LTShortcutFlow.storyboard; sourceTree = "<group>"; };
-		34CED8292A9F330600DD0683 /* LTShortcutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTShortcutViewController.swift; sourceTree = "<group>"; };
-		34CED82C2A9F3BC000DD0683 /* LTShortcutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTShortcutViewModel.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34CF91D82A31BE8200498B08 /* RecoveryTransactionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryTransactionsViewController.swift; sourceTree = "<group>"; };
 		34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWatchOnlySetUp.swift; sourceTree = "<group>"; };
@@ -2995,7 +2989,6 @@
 		34C8585229F900AE004A3F83 /* LTFlow */ = {
 			isa = PBXGroup;
 			children = (
-				34CED8252A9F2FC500DD0683 /* LTShortcutFlow.storyboard */,
 				34C8585529F9012C004A3F83 /* LTFlow.storyboard */,
 				34C8585329F90102004A3F83 /* Controllers */,
 			);
@@ -3005,7 +2998,6 @@
 		34C8585329F90102004A3F83 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				34CED82B2A9F3B9900DD0683 /* LTShortcut */,
 				81F5C98A2ADD4581004B020A /* LTWithdraw */,
 				34F568952A828CC00081BF0C /* LTRecoverFunds */,
 				3445498E29FBF7D9006725D2 /* LTSuccessViewController.swift */,
@@ -3045,15 +3037,6 @@
 				34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */,
 			);
 			path = VerifyOnDevice;
-			sourceTree = "<group>";
-		};
-		34CED82B2A9F3B9900DD0683 /* LTShortcut */ = {
-			isa = PBXGroup;
-			children = (
-				34CED8292A9F330600DD0683 /* LTShortcutViewController.swift */,
-				34CED82C2A9F3BC000DD0683 /* LTShortcutViewModel.swift */,
-			);
-			path = LTShortcut;
 			sourceTree = "<group>";
 		};
 		34D51B672A77937F00C0AF12 /* Views */ = {
@@ -4418,7 +4401,6 @@
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
 				81E56A532C2476870012A5A3 /* QRUnlockFlow.storyboard in Resources */,
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
-				34CED8262A9F2FC500DD0683 /* LTShortcutFlow.storyboard in Resources */,
 				3445499429FBFC8F006725D2 /* LTNoteCell.xib in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				3415CB0E2A67BFE500B66882 /* AddressAuthCell.xib in Resources */,
@@ -4611,7 +4593,6 @@
 				81E56A672C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift in Sources */,
 				34287B772A8385820065471F /* AlertViewModel.swift in Sources */,
 				3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */,
-				34CED82D2A9F3BC000DD0683 /* LTShortcutViewModel.swift in Sources */,
 				344915DE2A090CA800D35818 /* LTInboundCell.swift in Sources */,
 				34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */,
 				344915E52A0BA27100D35818 /* LTSuccessViewModel.swift in Sources */,
@@ -4792,7 +4773,6 @@
 				81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */,
 				81A773032A80FD1100C9FC5C /* LTSweepCell.swift in Sources */,
 				34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */,
-				34CED82A2A9F330600DD0683 /* LTShortcutViewController.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */,
 				81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */,

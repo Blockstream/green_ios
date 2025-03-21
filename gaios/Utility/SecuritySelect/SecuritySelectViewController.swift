@@ -392,47 +392,12 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
                         try await viewModel.addSWShortcutLightning()
                     }
                     self.stopLoader()
-                    self.showLTShortcutViewController(account: account)
+                    self.navigationController?.popViewController(animated: true)
+                    self.delegate?.didCreatedWallet(wallet)
                 } catch {
                     self.stopLoader()
                     self.showError(error)
                 }
-            }
-        }
-    }
-
-    @MainActor
-    func showLTShortcutViewController(account: Account) {
-        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController {
-            vc.vm = LTShortcutViewModel(account: account, action: .addFromCreate)
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-}
-
-extension SecuritySelectViewController: LTShortcutViewControllerDelegate {
-    @MainActor
-    func onTap(_ action: LTShortcutUserAction) {
-        switch action {
-        case .learnMore:
-            if let url = URL(string: viewModel.linkMore) {
-                if UIApplication.shared.canOpenURL(url) {
-                    SafeNavigationManager.shared.navigate(url)
-                }
-            }
-        case .done:
-            self.navigationController?.popViewController(animated: true)
-            if let wallet = walletCreated {
-                self.delegate?.didCreatedWallet(wallet)
-            }
-        case .remove:
-            self.stopLoader()
-            self.navigationController?.popViewController(animated: true)
-            if let wallet = walletCreated {
-                self.delegate?.didCreatedWallet(wallet)
             }
         }
     }

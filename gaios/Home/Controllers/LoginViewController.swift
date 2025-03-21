@@ -9,7 +9,6 @@ class LoginViewController: UIViewController {
 
     @IBOutlet weak var cardEnterPin: UIView!
     @IBOutlet weak var cardWalletLock: UIView!
-    @IBOutlet weak var cardLoginShortcut: UIView!
     @IBOutlet weak var btnsStack: UIStackView!
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -28,7 +27,6 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var lblWalletLockHint1: UILabel!
     @IBOutlet weak var lblWalletLockHint2: UILabel!
     @IBOutlet weak var btnWalletLock: UIButton!
-    @IBOutlet weak var btnLoginShortcut: UIButton!
 
     @IBOutlet weak var alertCard: UIView!
     @IBOutlet weak var alertTitle: UILabel!
@@ -61,7 +59,6 @@ class LoginViewController: UIViewController {
 
     private var showLockPage: Bool {
         !emergencyRestore &&
-        !account.isDerivedLightning &&
         (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
     }
 
@@ -139,7 +136,6 @@ class LoginViewController: UIViewController {
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         menuButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        menuButton.isHidden = account.isDerivedLightning
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
 
@@ -165,7 +161,7 @@ class LoginViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = account.isDerivedLightning ? "id_lightning_shortcut".localized : "id_enter_pin".localized
+        lblTitle.text = "id_enter_pin".localized
         lblWalletLockHint1.text = "\("id_youve_entered_an_invalid_pin".localized)\n\("id_youll_need_your_recovery_phrase".localized)"
         lblWalletLockHint2.isHidden = true
         btnWalletLock.setTitle("id_restore_with_recovery_phrase".localized, for: .normal)
@@ -173,13 +169,11 @@ class LoginViewController: UIViewController {
         cancelButton.setTitle("id_cancel".localized, for: .normal)
         lblPassphrase.text = "id_bip39_passphrase_login".localized
         emergencyButton.setTitle("id_emergency_recovery_phrase".localized, for: .normal)
-        btnLoginShortcut.setTitle("id_login_with_biometrics".localized, for: .normal)
         passphraseView.isHidden = true
     }
 
     func setStyle() {
         btnWalletLock.setStyle(.primary)
-        btnLoginShortcut.setStyle(.primary)
         alertCard.layer.cornerRadius = 6.0
         attemptsBg.layer.cornerRadius = 5.0
         attemptsBg.backgroundColor = UIColor.gRedWarn()
@@ -201,8 +195,6 @@ class LoginViewController: UIViewController {
         super.viewDidAppear(animated)
         if account.askEphemeral ?? false {
             loginWithPassphrase(isAlwaysAsk: account.askEphemeral ?? false)
-        } else if account.isDerivedLightning {
-            loginWithLightningShortcut()
         } else if account.hasBioPin {
             loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
         } else {
@@ -277,19 +269,6 @@ class LoginViewController: UIViewController {
         }
         self.pinCode = ""
         self.reloadPin()
-    }
-
-    fileprivate func loginWithLightningShortcut() {
-        AnalyticsManager.shared.loginWalletStart()
-        self.startLoader(message: "id_logging_in".localized)
-        Task.detached() { [weak self] in
-            do {
-                try await self?.viewModel.loginWithLightningShortcut()
-                await self?.success(withPIN: false)
-            } catch {
-                await self?.failure(error: error, enableFailingCounter: true)
-            }
-        }
     }
 
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
@@ -387,13 +366,6 @@ class LoginViewController: UIViewController {
     }
 
     func reload() {
-        if account.isDerivedLightning {
-            [cardEnterPin, cardWalletLock, btnsStack].forEach {
-                $0?.isHidden = true
-            }
-            cardLoginShortcut.isHidden = false
-            return
-        }
         let showLockPage = !emergencyRestore && (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
         cardEnterPin.isHidden = showLockPage
         lblTitle.isHidden = showLockPage
@@ -444,10 +416,6 @@ class LoginViewController: UIViewController {
 
     @objc func back(sender: UIBarButtonItem) {
         navigationController?.popViewController(animated: true)
-    }
-
-    @IBAction func clickLoginLightningShortcut(_ sender: Any) {
-        loginWithLightningShortcut()
     }
 
     func walletDelete() {

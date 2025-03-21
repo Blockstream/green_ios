@@ -251,6 +251,9 @@ public class WalletManager {
                 }
             }
         }
+        if fullRestore && session.logged {
+            try await addLightningShortcut(credentials: credentials)
+        }
     }
 
     public func loginSession(

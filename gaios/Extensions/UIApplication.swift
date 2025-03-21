@@ -14,4 +14,17 @@ extension UIApplication {
         }
         return controller
     }
+
+    static let notificationSettingsURLString: String? = {
+        if #available(iOS 16, *) {
+            return UIApplication.openNotificationSettingsURLString
+        }
+        if #available(iOS 15.4, *) {
+            return UIApplicationOpenNotificationSettingsURLString
+        }
+        if #available(iOS 8.0, *) {
+            return UIApplication.openSettingsURLString
+        }
+        return nil
+    }()
 }

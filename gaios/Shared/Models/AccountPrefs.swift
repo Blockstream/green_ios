@@ -8,7 +8,7 @@ enum AccountPrefs {
     case enhanceSecurity
     case nodeInfo
     case remove
-    case shortcut(state: Bool?)
+    case background
     case logout
     case settings
 
@@ -24,8 +24,8 @@ enum AccountPrefs {
             return "id_enhance_security".localized
         case .nodeInfo:
             return "id_node_info".localized
-        case .shortcut:
-            return "id_lightning_shortcut".localized
+        case .background:
+            return "Enable background payment".localized
         case .logout:
             return "id_logout".localized
         case .settings:
@@ -35,8 +35,8 @@ enum AccountPrefs {
 
     var hint: String? {
         switch self {
-        case .shortcut:
-            return "Quickly access your funds on Lightning, separately from the rest of the accounts."
+        case .background:
+            return "You can receive payment as long as your device connected to the internet"
         default:
             return nil
         }
@@ -54,7 +54,7 @@ enum AccountPrefs {
             return UIImage(named: "ic_lightning_plain")!
         case .remove:
             return UIImage(named: "ic_dialog_arrow_down")!
-        case .shortcut:
+        case .background:
             return UIImage(named: "ic_lightning_shortcut_mini")!
         case .logout:
             return UIImage(named: "ic_logout")!
@@ -62,24 +62,11 @@ enum AccountPrefs {
             return UIImage(named: "ic_dialog_gear_six")!
         }
     }
-    var switchState: Bool? {
-        switch self {
-        case .shortcut(let state):
-            return state
-        default:
-            return nil
-        }
-    }
     static func getPrefs(isEphemeral: Bool,
                          isHW: Bool,
-                         isLightning: Bool,
-                         isLightningShortcut: Bool,
-                         switchState: Bool? = nil) -> [AccountPrefs] {
+                         isLightning: Bool) async -> [AccountPrefs] {
         var prefs: [AccountPrefs] = []
-        if isLightningShortcut {
-            prefs.append(.settings)
-            prefs.append(.logout)
-        } else if !isLightning {
+        if !isLightning {
             prefs.append(.rename)
             if let subaccount = WalletManager.current?.subaccounts,
                subaccount.filter({ !$0.hidden }).count > 1 {
@@ -88,29 +75,40 @@ enum AccountPrefs {
         } else {
             prefs.append(.nodeInfo)
             prefs.append(.remove)
-            if !isEphemeral && !isHW {
-                prefs.append(.shortcut(state: switchState))
+            if !(await AccountPrefs.authorizeStatus()) {
+                prefs.append(.background)
             }
         }
         return prefs
     }
 
+    static func authorizeStatus() async -> Bool {
+        await withCheckedContinuation { continuation in
+            let center = UNUserNotificationCenter.current()
+            center.getNotificationSettings { (settings) in
+                if(settings.authorizationStatus == .authorized) {
+                    continuation.resume(with: .success(true))
+                    print("Push notification is enabled")
+                } else {
+                    continuation.resume(with: .success(false))
+                    print("Push notification is not enabled")
+                }
+            }
+        }
+    }
+
     static func getItems(isEphemeral: Bool,
                          isHW: Bool,
-                         isLightning: Bool,
-                         isLightningShortcut: Bool,
-                         switchState: Bool?) -> [DialogListCellModel] {
+                         isLightning: Bool) async -> [DialogListCellModel] {
 
-        return AccountPrefs.getPrefs(
+        return await AccountPrefs.getPrefs(
             isEphemeral: isEphemeral,
             isHW: isHW,
-            isLightning: isLightning,
-            isLightningShortcut: isLightningShortcut,
-            switchState: switchState).map {
+            isLightning: isLightning).map {
             DialogListCellModel(type: .list,
                                 icon: $0.icon,
                                 title: $0.name,
                                 hint: $0.hint,
-                                switchState: $0.switchState) }
+                                switchState: $0 == .background ? false : nil) }
     }
 }

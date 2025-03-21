@@ -201,22 +201,18 @@ class AccountViewModel {
                                 type: .refund)
     }
 
-    func accountSettingsPrefs() -> [AccountPrefs] {
-        AccountPrefs.getPrefs(
+    func accountSettingsPrefs() async -> [AccountPrefs] {
+        await AccountPrefs.getPrefs(
             isEphemeral: wm?.account.isEphemeral ?? false || wm?.account.hidden ?? false,
             isHW: wm?.account.isHW ?? false,
-            isLightning: isLightning,
-            isLightningShortcut: isLightningShortcut,
-            switchState: wm?.existDerivedLightning() ?? false)
+            isLightning: isLightning)
     }
 
-    func accountSettingsCell() -> [DialogListCellModel] {
-        AccountPrefs.getItems(
+    func accountSettingsCell() async -> [DialogListCellModel] {
+        await AccountPrefs.getItems(
             isEphemeral: wm?.account.isEphemeral ?? false || wm?.account.hidden ?? false,
             isHW: wm?.account.isHW ?? false,
-            isLightning: isLightning,
-            isLightningShortcut: isLightningShortcut,
-            switchState: wm?.existDerivedLightning() ?? false)
+            isLightning: isLightning)
     }
 
     func existLightningShortcut() -> Bool {
@@ -245,7 +241,7 @@ class AccountViewModel {
         UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!
         .maskWithColor(color: .white)
     }
-    
+
     func isSendEnabled() async -> Bool {
         if watchOnly {
             let credentials = try? await wm?.prominentSession?.getCredentials(password: "")

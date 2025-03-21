@@ -42,6 +42,7 @@ class AccountViewController: UIViewController {
 
     weak var delegate: AccountViewControllerDelegate?
     var viewModel: AccountViewModel!
+    var settingsPrefs: [AccountPrefs]?
 
     private var sIdx: Int = 0
     private var notificationObservers: [NSObjectProtocol] = []
@@ -259,13 +260,24 @@ class AccountViewController: UIViewController {
 
     // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
+        Task {
+            settingsPrefs = await viewModel.accountSettingsPrefs()
+            let settings = await viewModel.accountSettingsCell()
+            let model = DialogListViewModel(
+                title: "Account Preferences",
+                type: .accountPrefs,
+                items: settings)
+            await MainActor.run {
+                presentDialogListViewController(model: model)
+            }
+        }
+    }
+
+    func presentDialogListViewController(model: DialogListViewModel) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel =  DialogListViewModel(
-                title: "Account Preferences",
-                type: .accountPrefs,
-                items: viewModel.accountSettingsCell())
+            vc.viewModel = model
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -380,28 +392,6 @@ class AccountViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNodeViewController") as? DialogNodeViewController {
             vc.viewModel = DialogNodeViewModel(lightningSession: lightningSession)
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func handleShortcut(isOn: Bool) {
-        Task { [weak self] in
-            if isOn {
-                try? await self?.viewModel.addLightningShortcut()
-            }
-            self?.presentLTShortcutViewController(isOn: isOn)
-        }
-    }
-
-    @MainActor
-    func presentLTShortcutViewController(isOn: Bool) {
-        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController,
-            let account = WalletManager.current?.account {
-            vc.vm = LTShortcutViewModel(account: account,
-                                        action: isOn ? .addFromAccount : .remove)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
@@ -821,32 +811,16 @@ extension AccountViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {
         switch type {
         case .accountPrefs:
-            if let item = viewModel.accountSettingsPrefs()[safe: index] {
-                switch item {
-                case .shortcut:
-                    if isOn == false {
-                        let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-                        if let vc = storyboard.instantiateViewController(withIdentifier: "LTRemoveShortcutViewController") as? LTRemoveShortcutViewController {
-                            vc.modalPresentationStyle = .overFullScreen
-                            vc.delegate = self
-                            // rvc.account = account
-                            present(vc, animated: false, completion: nil)
-                        }
-                    } else {
-                        handleShortcut(isOn: isOn)
+            let item = settingsPrefs?[safe: index]
+            switch item {
+            case .background:
+                if let notificationSettings = UIApplication.notificationSettingsURLString, let urlNotificationSettings = URL(string: notificationSettings) {
+                    if UIApplication.shared.canOpenURL(urlNotificationSettings) {
+                        UIApplication.shared.open(urlNotificationSettings)
                     }
-                default:
-                    break
                 }
-            } else {
-                switch index {
-                case 0:
-                    presentNodeInfo()
-                case 1:
-                    removeSubaccount()
-                default:
-                    break
-                }
+            default:
+                break
             }
         default:
             break
@@ -856,7 +830,7 @@ extension AccountViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .accountPrefs:
-            if let item = viewModel.accountSettingsPrefs()[safe: index] {
+            if let item = settingsPrefs?[safe: index] {
                 switch item {
                 case .rename:
                     renameDialog()
@@ -868,7 +842,7 @@ extension AccountViewController: DialogListViewControllerDelegate {
                     presentNodeInfo()
                 case .remove:
                     removeSubaccount()
-                case .shortcut:
+                case .background:
                     break
                 case .logout:
                     logout()
@@ -1009,20 +983,6 @@ extension AccountViewController: AlertViewControllerDelegate {
     }
 }
 
-extension AccountViewController: LTShortcutViewControllerDelegate {
-    func onTap(_ action: LTShortcutUserAction) {
-        switch action {
-        case .learnMore:
-            print("learnMore")
-        case .done:
-            print("Done")
-        case .remove:
-            print("Remove")
-            Task { try? await viewModel.removeLightningShortcut() }
-        }
-    }
-}
-
 extension AccountViewController: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         if let presented = presented as? DrawerNetworkSelectionViewController {
@@ -1110,15 +1070,6 @@ extension AccountViewController: UserSettingsViewControllerDelegate {
 
     func refresh() {
         reload()
-    }
-}
-
-extension AccountViewController: LTRemoveShortcutViewControllerDelegate {
-    func onCancel() {
-        //
-    }
-    func onRemove(_ index: String?) {
-        handleShortcut(isOn: false)
     }
 }
 

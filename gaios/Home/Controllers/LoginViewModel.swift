@@ -76,17 +76,6 @@ class LoginViewModel {
         return newAccount
     }
 
-    func loginWithLightningShortcut() async throws {
-        AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        wm.popupResolver = await PopupResolver()
-        wm.hwInterfaceResolver = await HwPopupResolver()
-        try await auth()
-        let credentials = try AuthenticationTypeHandler.getKeyLightning(for: account.keychain)
-        _ = try await wm.login(credentials: credentials, lightningCredentials: credentials, parentWalletId: account.walletIdentifier)
-        AccountsRepository.shared.current = account
-    }
-
     func updateAccountName(_ name: String) {
         account.name = name
         AccountsRepository.shared.upsert(account)

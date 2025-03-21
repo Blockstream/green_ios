@@ -170,7 +170,6 @@ class WalletViewController: UIViewController {
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.viewModel.registerNotifications()
-            self.afterRestore()
         }
     }
 
@@ -514,25 +513,6 @@ class WalletViewController: UIViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             self.present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func afterRestore() {
-        if OnBoardParams.shared.restoreSuccess == true {
-            OnBoardParams.shared.restoreSuccess = false
-            if viewModel.needShortcut() {
-                Task { try? await viewModel.addSWDerivedLightning() }
-
-                let storyboard = UIStoryboard(name: "LTShortcutFlow", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "LTShortcutViewController") as? LTShortcutViewController, let account = WalletManager.current?.account {
-                    vc.vm = LTShortcutViewModel(account: account,
-                                                action: .addFromAccount)
-                    vc.delegate = self
-                    vc.modalPresentationStyle = .overFullScreen
-                    present(vc, animated: false, completion: nil)
-                    return
-                }
-            }
         }
     }
 
@@ -1220,11 +1200,6 @@ extension WalletViewController: DenominationExchangeViewControllerDelegate {
             try? await self.viewModel.loadTransactions(max: 20)
             reloadSections([.transaction], animated: true)
         }
-    }
-}
-extension WalletViewController: LTShortcutViewControllerDelegate {
-    func onTap(_ action: LTShortcutUserAction) {
-        // permission requested
     }
 }
 extension WalletViewController: ActionsSheetViewControllerDelegate {
