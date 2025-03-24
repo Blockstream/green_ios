@@ -68,6 +68,7 @@ class WalletTabBarViewController: UITabBarController {
 //        self.parent?.view.addSubview(wView)
 
         if walletModel.isFirstLoad, let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
+            walletModel.isFirstLoad = false
             view.addSubview(wView)
             wView.frame = view.frame
             wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
