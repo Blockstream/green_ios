@@ -66,12 +66,8 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
 
     func getAccount(xpub: String) -> Account? {
         let accounts = AccountsRepository.shared.accounts
-        let lightningShortcutsAccounts = accounts
-                .compactMap { $0.getDerivedLightningAccount() }
-                .filter { $0.xpubHashId == xpub }
-        let mainAccounts = accounts
-                .filter { $0.xpubHashId == xpub }
-        return lightningShortcutsAccounts.first ?? mainAccounts.first
+        let mainAccounts = accounts.filter { $0.xpubHashId == xpub }
+        return mainAccounts.first
     }
 }
 
