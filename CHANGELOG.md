@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Persist wallet list across app reinstallation
 - Reduce login time
 - Improved background lightning payments
+- Bump GDK to 0.75.1
 
 ## [4.1.7] - 2025-02-21
 
