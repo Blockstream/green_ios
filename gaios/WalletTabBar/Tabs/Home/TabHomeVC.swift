@@ -152,7 +152,9 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         case .chart:
             if let cell = tableView.dequeueReusableCell(withIdentifier: PriceChartCell.identifier, for: indexPath) as? PriceChartCell {
 
-                cell.configure(PriceChartCellModel(priceChartModel: Api.shared.priceCache), timeFrame: timeFrame, onBuy: {[weak self] in
+                cell.configure(PriceChartCellModel(priceChartModel: Api.shared.priceCache,
+                                                   currency: Api.shared.currency,
+                                                   isReloading: walletTab.isReloading), timeFrame: timeFrame, onBuy: {[weak self] in
                     self?.buy()
                 }, onNewFrame: {[weak self] timeFrame in
                     self?.timeFrame = timeFrame

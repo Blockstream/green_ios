@@ -8,7 +8,7 @@ class WalletTabBarViewController: UITabBarController {
     private var sIdx: Int = 0
     private var userWillLogout = false
     private var notificationObservers: [NSObjectProtocol] = []
-    private var isReloading = false
+    var isReloading = false
     let wView = WelcomeView()
     let tabHomeVC = WalletTab.tabHomeVC()
     let tabTransactVC = WalletTab.tabTransactVC()
@@ -237,9 +237,17 @@ class WalletTabBarViewController: UITabBarController {
         self.walletModel.reloadTransactions()
         self.updateTabs([.home, .transact])
         // await self?.walletModel.reloadPromoCards()
-        try? await Api.shared.fetch()
+
+        try? await refreshChart()
         self.updateTabs([.home])
         isReloading = false
+    }
+
+    func refreshChart() async throws {
+        try? await Api.shared.fetch(currency: (walletModel.currency ?? "USD").lowercased())
+        if Api.shared.priceCache == nil {
+            try? await Api.shared.fetch(currency: "USD".lowercased())
+        }
     }
 
     @MainActor

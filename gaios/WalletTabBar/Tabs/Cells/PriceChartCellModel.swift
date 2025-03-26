@@ -2,7 +2,7 @@ enum ChartTimeFrame {
     case week
     case month
     case year
-    case ytd
+//    case ytd
     case all
 
     var name: String {
@@ -13,8 +13,8 @@ enum ChartTimeFrame {
             return "1M".localized
         case .year:
             return "1Y".localized
-        case .ytd:
-            return "YTD".localized
+//        case .ytd:
+//            return "YTD".localized
         case .all:
             return "ALL".localized
         }
@@ -22,4 +22,6 @@ enum ChartTimeFrame {
 }
 struct PriceChartCellModel {
     let priceChartModel: PriceChartModel?
+    let currency: String?
+    let isReloading: Bool?
 }

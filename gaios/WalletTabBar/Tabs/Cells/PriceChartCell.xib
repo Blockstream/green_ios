@@ -88,11 +88,20 @@
                                     <constraint firstAttribute="height" constant="80" id="qRG-oD-s8I"/>
                                 </constraints>
                             </view>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="ebk-eU-EjO">
+                                <rect key="frame" x="141" y="102" width="20" height="20"/>
+                            </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cbF-P2-Ucr">
+                                <rect key="frame" x="44" y="103" width="214" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PXa-da-8GR">
                                 <rect key="frame" x="24" y="167" width="244" height="22"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GBq-YU-zch">
-                                        <rect key="frame" x="0.0" y="0.0" width="44.666666666666664" height="22"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="57.333333333333336" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_w">
@@ -103,7 +112,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UEA-hz-lDE">
-                                        <rect key="frame" x="49.666666666666671" y="0.0" width="45" height="22"/>
+                                        <rect key="frame" x="62.333333333333329" y="0.0" width="57.333333333333329" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_m">
@@ -114,7 +123,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rd0-NL-d8D" userLabel="btnY">
-                                        <rect key="frame" x="99.666666666666657" y="0.0" width="44.666666666666657" height="22"/>
+                                        <rect key="frame" x="124.66666666666666" y="0.0" width="57" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_y">
@@ -124,8 +133,8 @@
                                             <action selector="btnY:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="f3C-Pe-AkP"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y45-tb-X41">
-                                        <rect key="frame" x="149.33333333333334" y="0.0" width="45" height="22"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y45-tb-X41">
+                                        <rect key="frame" x="184.33333333333334" y="0.0" width="0.0" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_ytd">
@@ -136,7 +145,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fKm-nH-PIa">
-                                        <rect key="frame" x="199.33333333333334" y="0.0" width="44.666666666666657" height="22"/>
+                                        <rect key="frame" x="186.66666666666666" y="0.0" width="57.333333333333343" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_all">
@@ -170,17 +179,22 @@
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="1yQ-3p-xPZ" secondAttribute="trailing" constant="24" id="0sl-HG-cJV"/>
+                            <constraint firstItem="cbF-P2-Ucr" firstAttribute="leading" secondItem="eTU-1G-cGf" secondAttribute="leading" constant="20" id="6wg-Rl-XIn"/>
+                            <constraint firstItem="cbF-P2-Ucr" firstAttribute="trailing" secondItem="eTU-1G-cGf" secondAttribute="trailing" constant="-20" id="Eth-W1-gq3"/>
                             <constraint firstItem="PXa-da-8GR" firstAttribute="leading" secondItem="1yQ-3p-xPZ" secondAttribute="leading" id="GcY-7Z-QSe"/>
                             <constraint firstItem="1yQ-3p-xPZ" firstAttribute="top" secondItem="PXa-da-8GR" secondAttribute="bottom" constant="13" id="H95-zf-XQD"/>
                             <constraint firstItem="PXa-da-8GR" firstAttribute="trailing" secondItem="1yQ-3p-xPZ" secondAttribute="trailing" id="Pq5-2n-dfk"/>
+                            <constraint firstItem="cbF-P2-Ucr" firstAttribute="centerY" secondItem="eTU-1G-cGf" secondAttribute="centerY" id="QiA-Ca-PVz"/>
                             <constraint firstAttribute="trailing" secondItem="zlK-r1-5f7" secondAttribute="trailing" id="RoA-cE-4We"/>
                             <constraint firstAttribute="trailing" secondItem="eTU-1G-cGf" secondAttribute="trailing" constant="14" id="TGH-Pf-8T6"/>
                             <constraint firstAttribute="bottom" secondItem="1yQ-3p-xPZ" secondAttribute="bottom" constant="24" id="Weu-iP-TfA"/>
+                            <constraint firstItem="ebk-eU-EjO" firstAttribute="centerY" secondItem="eTU-1G-cGf" secondAttribute="centerY" id="Wt8-kP-UDm"/>
                             <constraint firstItem="eTU-1G-cGf" firstAttribute="top" secondItem="zlK-r1-5f7" secondAttribute="bottom" id="Yjh-ju-hVj"/>
                             <constraint firstItem="1yQ-3p-xPZ" firstAttribute="leading" secondItem="1Aa-06-Dht" secondAttribute="leading" constant="24" id="c51-b6-ZX3"/>
                             <constraint firstItem="eTU-1G-cGf" firstAttribute="leading" secondItem="1Aa-06-Dht" secondAttribute="leading" constant="24" id="d56-0M-jln"/>
                             <constraint firstItem="PXa-da-8GR" firstAttribute="top" secondItem="eTU-1G-cGf" secondAttribute="bottom" constant="15" id="s1E-X7-542"/>
                             <constraint firstItem="zlK-r1-5f7" firstAttribute="top" secondItem="1Aa-06-Dht" secondAttribute="top" id="tgO-X0-44V"/>
+                            <constraint firstItem="ebk-eU-EjO" firstAttribute="centerX" secondItem="eTU-1G-cGf" secondAttribute="centerX" id="wrq-fL-r2x"/>
                             <constraint firstItem="zlK-r1-5f7" firstAttribute="leading" secondItem="1Aa-06-Dht" secondAttribute="leading" id="za0-NB-iCo"/>
                         </constraints>
                     </view>
@@ -207,7 +221,9 @@
                 <outlet property="iconGain" destination="TOy-lg-Miu" id="B4m-QE-CiY"/>
                 <outlet property="lblAsset" destination="tcM-yi-pEY" id="KSQ-pv-o95"/>
                 <outlet property="lblGain" destination="hcb-fg-JwK" id="bWS-7n-qtc"/>
+                <outlet property="lblNoData" destination="cbF-P2-Ucr" id="NDQ-eg-YNf"/>
                 <outlet property="lblQuote" destination="bjc-Pa-ccr" id="fwW-Sc-qvN"/>
+                <outlet property="loader" destination="ebk-eU-EjO" id="DND-Rr-ghq"/>
             </connections>
             <point key="canvasLocation" x="65.648854961832058" y="-42.605633802816904"/>
         </tableViewCell>

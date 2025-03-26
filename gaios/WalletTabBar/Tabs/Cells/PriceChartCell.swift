@@ -17,15 +17,24 @@ class PriceChartCell: UITableViewCell {
     @IBOutlet weak var lblGain: UILabel!
     @IBOutlet weak var iconGain: UIImageView!
     @IBOutlet weak var lblQuote: UILabel!
+    @IBOutlet weak var lblNoData: UILabel!
 
     @IBOutlet weak var chartView: LineChartView!
     var model: PriceChartCellModel?
+    var isReloading: Bool = false
     var onBuy: (() -> Void)?
     var onNewFrame: ((ChartTimeFrame) -> Void)?
 
     var timeFrame: ChartTimeFrame = .week
+    @IBOutlet weak var loader: UIActivityIndicatorView!
 
     class var identifier: String { return String(describing: self) }
+
+    override func prepareForReuse() {
+        lblGain.text = ""
+        lblQuote.text = ""
+        iconGain.image = nil
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -43,12 +52,14 @@ class PriceChartCell: UITableViewCell {
         btnW.setTitle(ChartTimeFrame.week.name, for: .normal)
         btnM.setTitle(ChartTimeFrame.month.name, for: .normal)
         btnY.setTitle(ChartTimeFrame.year.name, for: .normal)
-        btnYTD.setTitle(ChartTimeFrame.ytd.name, for: .normal)
+//        btnYTD.setTitle(ChartTimeFrame.ytd.name, for: .normal)
         btnAll.setTitle(ChartTimeFrame.all.name, for: .normal)
         lblAsset.setStyle(.txtBigger)
         lblGain.setStyle(.txtBold)
         lblGain.textColor = UIColor.gGreenMatrix()
         lblQuote.setStyle(.txt)
+        lblNoData.setStyle(.txtSmaller)
+        lblNoData.text = "No data available, try later".localized
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -66,11 +77,14 @@ class PriceChartCell: UITableViewCell {
         updateBtn(btn: btnW, isSelected: timeFrame == .week)
         updateBtn(btn: btnM, isSelected: timeFrame == .month)
         updateBtn(btn: btnY, isSelected: timeFrame == .year)
-        updateBtn(btn: btnYTD, isSelected: timeFrame == .ytd)
+//        updateBtn(btn: btnYTD, isSelected: timeFrame == .ytd)
         updateBtn(btn: btnAll, isSelected: timeFrame == .all)
         iconAsset.image = UIImage(named: "ntw_btc")
         lblAsset.text = "Bitcoin"
+        isReloading = model.isReloading == true
         chart()
+        loader.isHidden = !isReloading
+        loader.startAnimating()
     }
 
     func updateBtn(btn: UIButton, isSelected: Bool) {
@@ -78,31 +92,32 @@ class PriceChartCell: UITableViewCell {
         btn.backgroundColor = isSelected ? UIColor.gGrayCardBorder() : UIColor.clear
     }
     func chart() {
-        guard let model = model?.priceChartModel else { return }
-        var list = model.list
-
-        switch timeFrame {
-        case .week:
-            list = list.suffix(7)
-        case .month:
-            list = list.suffix(30)
-        case .year:
-            break
-        case .ytd:
-            break
-        case .all:
-            break
-        }
+        var list: [ChartPoint] = []
         lblGain.text = ""
         lblQuote.text = ""
         iconGain.image = UIImage()
 
-        lblQuote.text = "$\(String(format: "%.2f", list.last?.value ?? 0.0))"
-        if let last = list.last?.value, let first = list.first?.value, first > 0 {
-            let ratio = ((last / first) - 1) * 100
-            let sign = ratio > 0 ? "+" : ""
-            lblGain.text = "\(sign)\(String(format: "%.2f", ratio))%"
-            iconGain.image = UIImage(named: "ic_chart_up")
+        if let model = model?.priceChartModel {
+            list = model.list
+            switch timeFrame {
+            case .week:
+                list = list.suffix(7)
+            case .month:
+                list = list.suffix(30)
+            case .year:
+                list = list.suffix(365)
+            // case .ytd:
+                // break
+            case .all:
+                list = list.suffix(365 * 5)
+            }
+            lblQuote.text = "\(String(format: "%.2f", list.last?.value ?? 0.0))\(model.currency)"
+            if let last = list.last?.value, let first = list.first?.value, first > 0 {
+                let ratio = ((last / first) - 1) * 100
+                let sign = ratio > 0 ? "+" : ""
+                lblGain.text = "\(sign)\(String(format: "%.2f", ratio))%"
+                iconGain.image = UIImage(named: "ic_chart_up")
+            }
         }
 
         let values: [ChartDataEntry] = list.map {
@@ -134,17 +149,23 @@ class PriceChartCell: UITableViewCell {
         chartView.doubleTapToZoomEnabled = false
         chartView.dragEnabled = false
         chartView.highlightPerTapEnabled = false
-
         chartView.extraRightOffset = 10
-        let values2: [ChartDataEntry] = [ChartDataEntry(x: list.last!.ts, y: list.last!.value, icon: UIImage(named: "ic_chart_point"))]
+        chartView.noDataText = ""
+        lblNoData.isHidden = isReloading || !values.isEmpty
+        var data: LineChartData?
+        if values.count > 0 {
+            data = LineChartData(dataSets: [set1])
+        }
+        if let last = list.last {
+            let values2: [ChartDataEntry] = [ChartDataEntry(x: last.ts, y: last.value, icon: UIImage(named: "ic_chart_point"))]
 
-        let set2 = LineChartDataSet(entries: values2, label: "Data")
-        set2.drawValuesEnabled = false
-        set2.drawCirclesEnabled = true
-        set2.circleRadius = 0
-        set2.circleColors = [UIColor.gGreenMatrix()]
-        let data = LineChartData(dataSets: [set1, set2])
-
+            let set2 = LineChartDataSet(entries: values2, label: "Data")
+            set2.drawValuesEnabled = false
+            set2.drawCirclesEnabled = true
+            set2.circleRadius = 0
+            set2.circleColors = [UIColor.gGreenMatrix()]
+            data = LineChartData(dataSets: [set1, set2])
+        }
         chartView.data = data
     }
 
@@ -158,7 +179,7 @@ class PriceChartCell: UITableViewCell {
         onNewFrame?(.year)
     }
     @IBAction func btnYTD(_ sender: Any) {
-        onNewFrame?(.ytd)
+//        onNewFrame?(.ytd)
     }
     @IBAction func btnAll(_ sender: Any) {
         onNewFrame?(.all)

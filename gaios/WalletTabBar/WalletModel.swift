@@ -13,6 +13,7 @@ class WalletModel {
 
     var wm: WalletManager? { WalletManager.current }
     var session: SessionManager? { wm?.prominentSession }
+    var settings: Settings? { session?.settings }
     var paused: Bool { !(wm?.activeSessions.filter { $0.value.paused }.isEmpty ?? false) }
     var isTxLoading = true // on init is always true
     var isBalanceLoading = true
@@ -63,7 +64,12 @@ class WalletModel {
     var page = 0
     var fetchingTxs = false
     var securityState = SecurityState.alerted
-
+    var currency: String? {
+        if let settings = settings {
+            return settings.pricing["currency"]
+        }
+        return nil
+    }
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
         if let promo = PromoManager.shared.promoCellModels(.walletOverview).first?.promo,
