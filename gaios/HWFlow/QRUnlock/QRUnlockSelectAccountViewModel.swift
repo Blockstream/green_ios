@@ -26,7 +26,7 @@ class QRUnlockSelectAccountViewModel {
         if !extended {
             list = [.NativeSegwit, .Lightning, .TwoFAProtected]
         }
-        if WalletManager.current?.testnet ?? false {
+        if !AppSettings.shared.experimental || WalletManager.current?.testnet ?? false {
             list.removeAll(where: { $0 == .Lightning })
         }
         return list

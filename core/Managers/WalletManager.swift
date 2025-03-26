@@ -227,6 +227,9 @@ public class WalletManager {
         fullRestore: Bool = false,
         parentWalletId: WalletIdentifier?)
     async throws {
+        if !AppSettings.shared.experimental {
+            return
+        }
         let walletId = try session.walletIdentifier(credentials: credentials)
         var existDatadir = session.existDatadir(walletHashId: walletId?.walletHashId ?? "")
         if session.networkType.lightning && !existDatadir {
