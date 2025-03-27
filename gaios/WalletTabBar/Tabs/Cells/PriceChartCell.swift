@@ -111,12 +111,18 @@ class PriceChartCell: UITableViewCell {
             case .all:
                 list = list.suffix(365 * 5)
             }
-            lblQuote.text = "\(String(format: "%.2f", list.last?.value ?? 0.0))\(model.currency)"
+            lblQuote.text = "\(String(format: "%.2f", list.last?.value ?? 0.0)) \(model.currency)"
             if let last = list.last?.value, let first = list.first?.value, first > 0 {
                 let ratio = ((last / first) - 1) * 100
                 let sign = ratio > 0 ? "+" : ""
                 lblGain.text = "\(sign)\(String(format: "%.2f", ratio))%"
-                iconGain.image = UIImage(named: "ic_chart_up")
+                if ratio >= 0 {
+                    iconGain.image = UIImage(named: "ic_chart_up")?.maskWithColor(color: UIColor.gGreenMatrix())
+                    lblGain.textColor = .gGreenMatrix()
+                } else {
+                    iconGain.image = UIImage(named: "ic_chart_down")?.maskWithColor(color: UIColor.gRedTx())
+                    lblGain.textColor = .gRedTx()
+                }
             }
         }
 
