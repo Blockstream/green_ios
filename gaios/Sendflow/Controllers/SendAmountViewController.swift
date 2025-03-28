@@ -338,7 +338,7 @@ class SendAmountViewController: KeyboardViewController {
             infoView.isHidden = false
         } else {
             btnNextEnabled = false
-            if viewModel.createTx.satoshi != nil || viewModel.createTx.sendAll || viewModel.createTx.txType == .sweep || viewModel.createTx.txType == .redepositExpiredUtxos {
+            if viewModel.createTx.satoshi ?? 0 > 0 || viewModel.createTx.sendAll || viewModel.createTx.txType == .sweep || viewModel.createTx.txType == .redepositExpiredUtxos {
                 btnNextEnabled = true
             }
             lblError.text = ""

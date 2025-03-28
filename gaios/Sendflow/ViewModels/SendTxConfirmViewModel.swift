@@ -161,7 +161,7 @@ class SendTxConfirmViewModel {
         }
         bcurUnsignedPsbt = res
     }
-    
+
     func sendPsbt() async throws -> SendTransactionSuccess {
         guard let session = session else {
             throw TransactionError.invalid(localizedDescription: "Invalid session")

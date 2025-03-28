@@ -36,6 +36,11 @@ class SendAmountViewModel {
     }
 
     var error: String? {
+        if transaction?.txType == .transaction {
+            if !sendAll && (createTx.satoshi ?? 0 == 0) {
+                return nil
+            }
+        }
         if let error = transaction?.error, !error.isEmpty {
             return error
         }
@@ -277,6 +282,8 @@ class SendAmountViewModel {
         case .transaction, .psbt:
             if createTx.sendAll && createTx.satoshi == nil {
                 createTx.satoshi = 0
+            } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0){
+                return tx
             }
             if let addressee = createTx.addressee {
                 tx.addressees = [addressee]
