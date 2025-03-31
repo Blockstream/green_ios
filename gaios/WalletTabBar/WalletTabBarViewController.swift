@@ -32,7 +32,7 @@ class WalletTabBarViewController: UITabBarController {
         setTabBar()
         Task.detached { [weak self] in
             await self?.walletModel.registerNotifications()
-            await self?.reload() }
+            await self?.reload(discovery: false, chartUpdate: true) }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -189,22 +189,22 @@ class WalletTabBarViewController: UITabBarController {
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
         case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
-            Task.detached { [weak self] in await self?.reload() }
+            Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
         case .Block:
             if walletModel.cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
-                Task.detached { [weak self] in await self?.reload() }
+                Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
             }
         case .AssetsUpdated:
-            Task.detached { [weak self] in await self?.reload() }
+            Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
         case .Network:
             if let details = details as? [String: Any],
                let connection = Connection.from(details) as? Connection {
                 if connection.connected {
-                    Task.detached { [weak self] in await self?.reload() }
+                    Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
                 }
             }
         case .Settings, .Ticker, .TwoFactorReset:
-            Task.detached { [weak self] in await self?.reload() }
+            Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
 //        case .bip21Scheme:
 //            if URLSchemeManager.shared.isValid {
 //                if let bip21 = URLSchemeManager.shared.bip21 {
@@ -222,7 +222,7 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
-    func reload(_ discovery: Bool = false) async {
+    func reload(discovery: Bool, chartUpdate: Bool) async {
         if walletModel.paused {
             return
         }
@@ -237,9 +237,10 @@ class WalletTabBarViewController: UITabBarController {
         self.walletModel.reloadTransactions()
         self.updateTabs([.home, .transact])
         // await self?.walletModel.reloadPromoCards()
-
-        try? await refreshChart()
-        self.updateTabs([.home])
+        if chartUpdate {
+            try? await refreshChart()
+            self.updateTabs([.home])
+        }
         isReloading = false
     }
 

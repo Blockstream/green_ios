@@ -36,7 +36,7 @@ class TabHomeVC: TabViewController {
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
         Task.detached { [weak self] in
-            await self?.walletTab.reload()
+            await self?.walletTab.reload(discovery: false, chartUpdate: true)
             await MainActor.run { [weak self] in
                 self?.tableView?.refreshControl?.endRefreshing()
             }
@@ -158,7 +158,6 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                     self?.buy()
                 }, onNewFrame: {[weak self] timeFrame in
                     self?.timeFrame = timeFrame
-                    self?.reloadSections([.chart], animated: false)
                 })
                 cell.selectionStyle = .none
                 return cell

@@ -74,11 +74,7 @@ class PriceChartCell: UITableViewCell {
         self.timeFrame = timeFrame
         self.onBuy = onBuy
         self.onNewFrame = onNewFrame
-        updateBtn(btn: btnW, isSelected: timeFrame == .week)
-        updateBtn(btn: btnM, isSelected: timeFrame == .month)
-        updateBtn(btn: btnY, isSelected: timeFrame == .year)
-//        updateBtn(btn: btnYTD, isSelected: timeFrame == .ytd)
-        updateBtn(btn: btnAll, isSelected: timeFrame == .all)
+
         iconAsset.image = UIImage(named: "ntw_btc")
         lblAsset.text = "Bitcoin"
         isReloading = model.isReloading == true
@@ -92,6 +88,11 @@ class PriceChartCell: UITableViewCell {
         btn.backgroundColor = isSelected ? UIColor.gGrayCardBorder() : UIColor.clear
     }
     func chart() {
+        updateBtn(btn: btnW, isSelected: self.timeFrame == .week)
+        updateBtn(btn: btnM, isSelected: self.timeFrame == .month)
+        updateBtn(btn: btnY, isSelected: self.timeFrame == .year)
+//        updateBtn(btn: btnYTD, isSelected: self.timeFrame == .ytd)
+        updateBtn(btn: btnAll, isSelected: self.timeFrame == .all)
         var list: [ChartPoint] = []
         lblGain.text = ""
         lblQuote.text = ""
@@ -175,20 +176,28 @@ class PriceChartCell: UITableViewCell {
         chartView.data = data
     }
 
+    func change(_ timeframe: ChartTimeFrame) {
+        self.timeFrame = timeframe
+        chart()
+    }
     @IBAction func btnW(_ sender: Any) {
         onNewFrame?(.week)
+        change(.week)
     }
     @IBAction func btnM(_ sender: Any) {
         onNewFrame?(.month)
+        change(.month)
     }
     @IBAction func btnY(_ sender: Any) {
         onNewFrame?(.year)
+        change(.year)
     }
     @IBAction func btnYTD(_ sender: Any) {
 //        onNewFrame?(.ytd)
     }
     @IBAction func btnAll(_ sender: Any) {
         onNewFrame?(.all)
+        change(.all)
     }
 
     @IBAction func btnBuy(_ sender: Any) {

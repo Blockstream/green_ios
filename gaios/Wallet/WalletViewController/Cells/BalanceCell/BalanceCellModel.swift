@@ -43,10 +43,16 @@ class BalanceCellModel {
 
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId)?.toDenom() {
             valueToDenom = "\(balance.0) \(balance.1)"
+            if satoshi == 0 {
+                valueToDenom = "0 \(balance.1)"
+            }
         }
 
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId)?.toFiat() {
             valueToFiat = "\(balance.0) \(balance.1)"
+            if satoshi == 0 {
+                valueToFiat = "0 \(balance.1)"
+            }
         }
 
         switch mode {
