@@ -97,8 +97,8 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "io.blockstream.greendev" => "match AppStore io.blockstream.green",
-          "io.blockstream.greendev.NotificationService" => "match AppStore io.blockstream.green.NotificationService"
+          "io.blockstream.green" => "match AppStore io.blockstream.green",
+          "io.blockstream.green.NotificationService" => "match AppStore io.blockstream.green.NotificationService"
         }
       }
     )
