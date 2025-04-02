@@ -1,4 +1,5 @@
 enum ChartTimeFrame {
+    case day
     case week
     case month
     case year
@@ -7,6 +8,8 @@ enum ChartTimeFrame {
 
     var name: String {
         switch self {
+        case .day:
+            return "1D".localized
         case .week:
             return "1W".localized
         case .month:

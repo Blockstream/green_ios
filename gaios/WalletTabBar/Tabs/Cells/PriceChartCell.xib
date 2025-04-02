@@ -100,8 +100,19 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PXa-da-8GR">
                                 <rect key="frame" x="24" y="167" width="244" height="22"/>
                                 <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3p-PD-X0w" userLabel="BtnD">
+                                        <rect key="frame" x="0.0" y="0.0" width="44.666666666666664" height="22"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="btn_d">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="btnD:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="dOm-mA-mdu"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GBq-YU-zch">
-                                        <rect key="frame" x="0.0" y="0.0" width="57.333333333333336" height="22"/>
+                                        <rect key="frame" x="49.666666666666671" y="0.0" width="45" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_w">
@@ -112,7 +123,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UEA-hz-lDE">
-                                        <rect key="frame" x="62.333333333333329" y="0.0" width="57.333333333333329" height="22"/>
+                                        <rect key="frame" x="99.666666666666657" y="0.0" width="44.666666666666657" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_m">
@@ -123,7 +134,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rd0-NL-d8D" userLabel="btnY">
-                                        <rect key="frame" x="124.66666666666666" y="0.0" width="57" height="22"/>
+                                        <rect key="frame" x="149.33333333333334" y="0.0" width="45" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_y">
@@ -134,7 +145,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y45-tb-X41">
-                                        <rect key="frame" x="184.33333333333334" y="0.0" width="0.0" height="22"/>
+                                        <rect key="frame" x="196.66666666666666" y="0.0" width="0.0" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_ytd">
@@ -145,7 +156,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fKm-nH-PIa">
-                                        <rect key="frame" x="186.66666666666666" y="0.0" width="57.333333333333343" height="22"/>
+                                        <rect key="frame" x="199.33333333333334" y="0.0" width="44.666666666666657" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="btn_all">
@@ -212,6 +223,7 @@
                 <outlet property="bg" destination="1Aa-06-Dht" id="vWt-JO-2pg"/>
                 <outlet property="btnAll" destination="fKm-nH-PIa" id="POY-sS-4c3"/>
                 <outlet property="btnBuy" destination="1yQ-3p-xPZ" id="9ej-Bx-cwK"/>
+                <outlet property="btnD" destination="A3p-PD-X0w" id="dbK-4x-fbF"/>
                 <outlet property="btnM" destination="UEA-hz-lDE" id="Rkh-WK-fzG"/>
                 <outlet property="btnW" destination="GBq-YU-zch" id="FKM-Xe-L8i"/>
                 <outlet property="btnY" destination="rd0-NL-d8D" id="t2m-FU-8NP"/>
@@ -241,7 +253,7 @@
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="tertiaryLabelColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29803921570000003" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

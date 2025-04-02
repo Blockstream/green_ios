@@ -479,7 +479,6 @@
 		34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */; };
 		34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */; };
 		34F0EC2B2D783E140017C276 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 34F0EC2A2D783E140017C276 /* DGCharts */; };
-		34F0EC2D2D783ED70017C276 /* price_chart_mock.json in Resources */ = {isa = PBXBuildFile; fileRef = 34F0EC2C2D783ED70017C276 /* price_chart_mock.json */; };
 		34F0EC2F2D783EE70017C276 /* PriceChartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0EC2E2D783EE70017C276 /* PriceChartModel.swift */; };
 		34F0EC312D78402E0017C276 /* PriceChartCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F0EC302D78402E0017C276 /* PriceChartCell.xib */; };
 		34F0EC352D7840830017C276 /* PriceChartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0EC342D7840830017C276 /* PriceChartCell.swift */; };
@@ -1433,7 +1432,6 @@
 		34ED47032AD4259F000086D4 /* SupportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportManager.swift; sourceTree = "<group>"; };
 		34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCardCell.swift; sourceTree = "<group>"; };
 		34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AlertCardCell.xib; sourceTree = "<group>"; };
-		34F0EC2C2D783ED70017C276 /* price_chart_mock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = price_chart_mock.json; sourceTree = "<group>"; };
 		34F0EC2E2D783EE70017C276 /* PriceChartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartModel.swift; sourceTree = "<group>"; };
 		34F0EC302D78402E0017C276 /* PriceChartCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PriceChartCell.xib; sourceTree = "<group>"; };
 		34F0EC342D7840830017C276 /* PriceChartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartCell.swift; sourceTree = "<group>"; };
@@ -2344,7 +2342,6 @@
 		344D57E32D758D0A009725A3 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				34F0EC2C2D783ED70017C276 /* price_chart_mock.json */,
 				34F0EC2E2D783EE70017C276 /* PriceChartModel.swift */,
 				344D57E42D758D52009725A3 /* TabHomeVC.swift */,
 			);
@@ -4522,7 +4519,6 @@
 				81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */,
 				348A710A2D8AE05800490B55 /* WelcomeView.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
-				34F0EC2D2D783ED70017C276 /* price_chart_mock.json in Resources */,
 				3487657F29D43B2A0059D05F /* animation_03_jade_v1.riv in Resources */,
 				347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,

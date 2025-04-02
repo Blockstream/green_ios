@@ -6,6 +6,7 @@ class PriceChartCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var btnBuy: UIButton!
 
+    @IBOutlet weak var btnD: UIButton!
     @IBOutlet weak var btnW: UIButton!
     @IBOutlet weak var btnM: UIButton!
     @IBOutlet weak var btnY: UIButton!
@@ -43,12 +44,13 @@ class PriceChartCell: UITableViewCell {
         btnBuy.setTitle("Buy Now".localized, for: .normal)
         btnBuy.setTitleColor(UIColor.gBlackBg(), for: .normal)
         btnBuy.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .medium)
-        [btnW, btnM, btnY, btnYTD, btnAll].forEach {
+        [btnD, btnW, btnM, btnY, btnYTD, btnAll].forEach {
             $0?.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
             $0?.setTitleColor(UIColor.gGrayTxt(), for: .normal)
             $0?.layer.cornerRadius = 11.0
             $0?.backgroundColor = UIColor.clear
         }
+        btnD.setTitle(ChartTimeFrame.day.name, for: .normal)
         btnW.setTitle(ChartTimeFrame.week.name, for: .normal)
         btnM.setTitle(ChartTimeFrame.month.name, for: .normal)
         btnY.setTitle(ChartTimeFrame.year.name, for: .normal)
@@ -88,6 +90,7 @@ class PriceChartCell: UITableViewCell {
         btn.backgroundColor = isSelected ? UIColor.gGrayCardBorder() : UIColor.clear
     }
     func chart() {
+        updateBtn(btn: btnD, isSelected: self.timeFrame == .day)
         updateBtn(btn: btnW, isSelected: self.timeFrame == .week)
         updateBtn(btn: btnM, isSelected: self.timeFrame == .month)
         updateBtn(btn: btnY, isSelected: self.timeFrame == .year)
@@ -99,20 +102,29 @@ class PriceChartCell: UITableViewCell {
         iconGain.image = UIImage()
 
         if let model = model?.priceChartModel {
-            list = model.list
-            switch timeFrame {
-            case .week:
-                list = list.suffix(7)
-            case .month:
-                list = list.suffix(30)
-            case .year:
-                list = list.suffix(365)
-            // case .ytd:
-                // break
-            case .all:
-                list = list.suffix(365 * 5)
+            if timeFrame == .day {
+                // API returns last 2 days of hourly prices
+                list = model.dayData
+                list = list.suffix(24)
+            } else {
+                list = model.fullData
+                switch timeFrame {
+                case .week:
+                    list = list.suffix(7)
+                case .month:
+                    list = list.suffix(30)
+                case .year:
+                    list = list.suffix(365)
+                // case .ytd:
+                    // break
+                case .all:
+                    list = list.suffix(365 * 5)
+                default:
+                    break
+                }
             }
-            lblQuote.text = "\(String(format: "%.2f", list.last?.value ?? 0.0)) \(model.currency)"
+
+            lblQuote.text = "\(String(format: "%.2f", list.last?.value ?? 0.0)) \(model.currency)".uppercased()
             if let last = list.last?.value, let first = list.first?.value, first > 0 {
                 let ratio = ((last / first) - 1) * 100
                 let sign = ratio > 0 ? "+" : ""
@@ -180,6 +192,12 @@ class PriceChartCell: UITableViewCell {
         self.timeFrame = timeframe
         chart()
     }
+
+    @IBAction func btnD(_ sender: Any) {
+        onNewFrame?(.day)
+        change(.day)
+    }
+    
     @IBAction func btnW(_ sender: Any) {
         onNewFrame?(.week)
         change(.week)

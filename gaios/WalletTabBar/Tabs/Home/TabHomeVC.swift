@@ -4,7 +4,7 @@ class TabHomeVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView?
 
-    var timeFrame: ChartTimeFrame = .week
+    var timeFrame: ChartTimeFrame = .day
 
     override func viewDidLoad() {
         super.viewDidLoad()
