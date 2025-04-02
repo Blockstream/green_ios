@@ -6,17 +6,16 @@ enum BrowserAction {
     case close
 }
 
-class BrowserViewController: UIViewController {
-
+class BrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     @IBOutlet weak var btnClose: UIButton!
     @IBOutlet weak var layoutView: UIView!
+    private var webView: WKWebView?
 
     var url: URL?
     var onClose: (() -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.alpha = 0.0
     }
 
@@ -29,9 +28,12 @@ class BrowserViewController: UIViewController {
 
         if let url = url {
             let frame = CGRect(x: 0.0, y: 0.0, width: layoutView.frame.size.width, height: layoutView.frame.size.height)
-            let webView = WKWebView(frame: frame, configuration: webViewConfiguration)
-            self.layoutView.addSubview(webView)
-            webView.load(URLRequest(url: url))
+            webView = WKWebView(frame: frame, configuration: webViewConfiguration)
+            webView?.uiDelegate = self
+            if let webView = webView {
+                self.layoutView.addSubview(webView)
+            }
+            webView?.load(URLRequest(url: url))
         }
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
@@ -56,5 +58,21 @@ class BrowserViewController: UIViewController {
 
     @IBAction func btnClose(_ sender: Any) {
         dismiss(.close)
+    }
+
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil {
+            webView.load(URLRequest(url: navigationAction.request.url!))
+            //UIApplication.shared.open(navigationAction.request.url!, options: [:])
+        }
+        return nil
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+
+    override var prefersStatusBarHidden: Bool {
+        return true
     }
 }
