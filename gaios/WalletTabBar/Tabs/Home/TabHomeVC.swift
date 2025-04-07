@@ -16,12 +16,10 @@ class TabHomeVC: TabViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadSections([.balance, .assets], animated: false)
+        walletModel.reloadBackupCards()
+        tableView?.reloadData()
+    }
 
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
     func setContent() {
         tableView?.refreshControl = UIRefreshControl()
         tableView?.refreshControl!.tintColor = UIColor.white
@@ -29,7 +27,7 @@ class TabHomeVC: TabViewController {
     }
 
     func register() {
-        ["TabHeaderCell", "BalanceCell", "WalletAssetCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell", "PriceChartCell"].forEach {
+        ["TabHeaderCell", "BalanceCell", "AlertCardCell", "WalletAssetCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell", "PriceChartCell"].forEach {
             tableView?.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -46,7 +44,7 @@ class TabHomeVC: TabViewController {
     @MainActor
     func reloadSections(_ sections: [TabHomeSection], animated: Bool) {
         if animated {
-            tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+            tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .fade)
         } else {
             UIView.performWithoutAnimation {
                 tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
@@ -88,6 +86,13 @@ extension TabHomeVC { // navigation
             reloadSections([.promo], animated: true)
         }
     }
+    func backupAlertDismiss() {
+        Task {
+            BackupHelper.shared.addToDismissed(walletId: walletModel.wm?.account.id, position: .homeTab)
+            walletModel.reloadBackupCards()
+            reloadSections([.backup], animated: true)
+        }
+    }
 }
 extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
@@ -102,6 +107,10 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             return 1
         case .balance:
             return 1
+        case .backup:
+            return walletModel.backupCardCellModel.count
+        case .card:
+            return walletModel.alertCardCellModel.count
         case .assets:
             return walletModel.walletAssetCellModels.count
         case .chart:
@@ -140,6 +149,115 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                         await MainActor.run { self?.reloadSections([.balance], animated: false) }
                     }
                 }, onExchange: { })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .backup:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
+                let alertCard = walletModel.backupCardCellModel[indexPath.row]
+                switch alertCard.type {
+                case .backup:
+                    cell.configure(alertCard,
+                                   onLeft: {[weak self] in
+                        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+                        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+                            self?.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    },
+                                   onRight: nil,
+                                   onDismiss: { [weak self] in
+                                       self?.backupAlertDismiss()
+                                   })
+                default:
+                    break
+                }
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .card:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
+                let alertCard = walletModel.alertCardCellModel[indexPath.row]
+                switch alertCard.type {
+                case .reset(let msg), .dispute(let msg):
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: {[weak self] in
+//                        self?.twoFactorResetMessageScreen(msg: msg)
+                    }, onDismiss: nil)
+                case .reactivate:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .systemMessage(let msg):
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: {[weak self] in
+//                        self?.systemMessageScreen(msg: msg)
+                    },
+                                   onDismiss: nil)
+                case .fiatMissing:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .testnetNoValue:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .ephemeralWallet:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .remoteAlert(let remoteAlert):
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: {
+                                        if let link = remoteAlert.link, let url = URL(string: link) {
+                                            SafeNavigationManager.shared.navigate(url)
+                                        }
+                                    },
+                                   onDismiss: {[weak self] in
+//                        self?.remoteAlertDismiss()
+                    })
+                case .login(let network, let error):
+                    let handleAlertGesture: (() -> Void)? = { [weak self] in
+                        switch error {
+                        case LoginError.hostUnblindingDisabled(_):
+                            Task {
+//                                try? await self?.viewModel.reconnectHW(network)
+//                                await MainActor.run { self?.reload() }
+                            }
+                        default:
+                            break
+                        }
+                    }
+                    cell.configure(walletModel.alertCardCellModel[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: handleAlertGesture,
+                                   onDismiss: nil)
+                case .lightningMaintenance:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .lightningServiceDisruption:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .reEnable2fa:
+                    cell.configure(alertCard,
+                                   onLeft: nil,
+                                   onRight: {[weak self] in
+//                        self?.presentReEnable2fa()
+                    },
+                                   onDismiss: nil)
+                case .backup:
+                    break
+                }
                 cell.selectionStyle = .none
                 return cell
             }

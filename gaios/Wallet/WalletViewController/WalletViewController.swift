@@ -736,6 +736,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                         self?.presentReEnable2fa()
                     },
                                    onDismiss: nil)
+                case .backup:
+                    break
                 }
                 cell.selectionStyle = .none
                 return cell

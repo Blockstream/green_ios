@@ -18,36 +18,30 @@ class RecoveryCreateViewController: UIViewController {
     @IBOutlet weak var word5: UILabel!
     @IBOutlet weak var word6: UILabel!
 
-    var mnemonicLength: MnemonicLengthOption?
-
     lazy var arrayLabels: [UILabel] = [self.word1, self.word2, self.word3, self.word4, self.word5, self.word6]
 
-    private var mnemonicSize: Int {
-        return mnemonicLength?.rawValue ?? MnemonicSize._12.rawValue
-    }
+    private var mnemonicSize: Int = 0
+    private var mnemonic: [Substring]?
 
-    private var mnemonic: [Substring]!
+    var wm: WalletManager? { WalletManager.current }
+    var session: SessionManager? { wm?.prominentSession }
 
     private var pageCounter = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        mnemonicCreate()
-
         customBack()
         setContent()
         setStyle()
-        pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
 
-        view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.view
-        word1.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word1Lbl
-        word2.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word2Lbl
-        word3.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word3Lbl
-        word4.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word4Lbl
-        word5.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word5Lbl
-        word6.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word6Lbl
-        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.nextBtn
+        Task {
+            let credentials = try? await wm?.prominentSession?.getCredentials(password: "")
+            mnemonic = credentials?.mnemonic?.split(separator: " ")
+            mnemonicSize = (mnemonic ?? []).count
+            loadWords()
+            pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
+        }
     }
 
     func customBack() {
@@ -100,25 +94,19 @@ class RecoveryCreateViewController: UIViewController {
         loadWords()
     }
 
-    func mnemonicCreate() {
-        if mnemonicSize == MnemonicSize._24.rawValue {
-            mnemonic = try! generateMnemonic().split(separator: " ")
-        } else {
-            mnemonic = try! generateMnemonic12().split(separator: " ")
-        }
-    }
-
     func loadWords() {
-        pageControl.currentPage = pageCounter
+        if let mnemonic = mnemonic {
+            pageControl.currentPage = pageCounter
 
-        let start = pageCounter * Constants.wordsPerPage
-        let end = start + Constants.wordsPerPage
-        for index in start..<end {
-            let real = index+1
-            let formattedString = NSMutableAttributedString(string: String("\(real) \(mnemonic[index])"))
-            formattedString.setColor(color: UIColor.gGreenMatrix(), forText: String(format: "%d", real))
-            formattedString.setFont(font: UIFont.systemFont(ofSize: 16, weight: .semibold), stringValue: String(format: "%d", real))
-            arrayLabels[index % Constants.wordsPerPage].attributedText = formattedString
+            let start = pageCounter * Constants.wordsPerPage
+            let end = start + Constants.wordsPerPage
+            for index in start..<end {
+                let real = index+1
+                let formattedString = NSMutableAttributedString(string: String("\(real) \(mnemonic[index])"))
+                formattedString.setColor(color: UIColor.gGreenMatrix(), forText: String(format: "%d", real))
+                formattedString.setFont(font: UIFont.systemFont(ofSize: 16, weight: .semibold), stringValue: String(format: "%d", real))
+                arrayLabels[index % Constants.wordsPerPage].attributedText = formattedString
+            }
         }
     }
 

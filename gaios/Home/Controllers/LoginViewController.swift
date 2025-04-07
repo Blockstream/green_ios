@@ -306,7 +306,9 @@ class LoginViewController: UIViewController {
         AnalyticsManager.shared.loginWalletEnd(account: account,
                                                loginType: withPIN ? .pin : .biometrics)
         AnalyticsManager.shared.activeWalletStart()
-        _ = AccountNavigator.goLogged(account: account)
+
+        BackupHelper.shared.cleanDismissedCache(walletId: account.id)
+        AccountNavigator.goLogged(account: account)
     }
 
     @MainActor

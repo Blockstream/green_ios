@@ -13,7 +13,8 @@ public enum TransactionBaseType: UInt32 {
 }
 
 enum ReceiveSection: Int, CaseIterable {
-    case asset = 0
+    case backup
+    case asset
     case amount
     case address
     case infoReceiveAmount
@@ -57,13 +58,15 @@ class ReceiveViewController: KeyboardViewController {
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
 
         AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
-        reload()
+
         newAddress()
+        // always nag even after dismiss
+        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .receive)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        reload()
         invoicePaidToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.InvoicePaid.rawValue), object: nil, queue: .main, using: invoicePaid)
         newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
     }
@@ -76,6 +79,11 @@ class ReceiveViewController: KeyboardViewController {
         if let token = invoicePaidToken {
             NotificationCenter.default.removeObserver(token)
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        reloadSections([.backup], animated: false)
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -103,7 +111,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func register() {
-        ["ReceiveAssetCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell"].forEach {
+        ["AlertCardCell", "ReceiveAssetCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -137,9 +145,9 @@ class ReceiveViewController: KeyboardViewController {
                 return ReceiveSection.allCases
             }
         case .swap:
-            return [.asset, .address]
+            return [.backup, .asset, .address]
         case .address:
-            return [.asset, .address]
+            return [.backup, .asset, .address]
         }
     }
 
@@ -158,6 +166,7 @@ class ReceiveViewController: KeyboardViewController {
         btnVerify.isHidden = hideVerify
         btnOnChain.setTitle(viewModel.type == .bolt11 ? "id_show_onchain_address".localized : "id_show_lightning_invoice".localized, for: .normal)
         reloadNavigationBtns()
+        viewModel.reloadBackupCards()
         tableView.reloadData()
     }
 
@@ -294,7 +303,7 @@ class ReceiveViewController: KeyboardViewController {
 
     func onChangeReceiver() async {
         AnalyticsManager.shared.changeAsset(account: AccountsRepository.shared.current)
-        let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
+        _ = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
                 vc.viewModel = viewModel.getAssetExpandableSelectViewModel()
@@ -369,6 +378,21 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
+    @MainActor
+    func reloadSections(_ sections: [ReceiveSection], animated: Bool) {
+        if animated {
+            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .fade)
+        } else {
+            UIView.performWithoutAnimation {
+                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+            }
+        }
+    }
+    func backupAlertDismiss() {
+        BackupHelper.shared.addToDismissed(walletId: viewModel.wm.account.id, position: .receive)
+        viewModel.reloadBackupCards()
+        reloadSections([.backup], animated: true)
+    }
     @IBAction func btnShare(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
@@ -556,6 +580,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch sections[section] {
+        case ReceiveSection.backup:
+            return viewModel.backupCardCellModel.count
         case ReceiveSection.asset:
             return 1
         case ReceiveSection.address:
@@ -573,6 +599,28 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch sections[indexPath.section] {
+        case ReceiveSection.backup:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
+                let alertCard = viewModel.backupCardCellModel[indexPath.row]
+                switch alertCard.type {
+                case .backup:
+                    cell.configure(alertCard,
+                                   onLeft: {[weak self] in
+                        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+                        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+                            self?.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    },
+                                   onRight: nil,
+                                   onDismiss: { [weak self] in
+                        self?.backupAlertDismiss()
+                    })
+                default:
+                    break
+                }
+                cell.selectionStyle = .none
+                return cell
+            }
         case ReceiveSection.asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAssetCell") as? ReceiveAssetCell {
                 let model = viewModel.assetCellModel
@@ -649,6 +697,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch sections[section] {
+        case ReceiveSection.backup:
+            return nil
         case ReceiveSection.asset:
             return headerView("id_account__asset".localized)
         case ReceiveSection.address:

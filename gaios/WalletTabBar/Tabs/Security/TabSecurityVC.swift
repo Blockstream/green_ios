@@ -4,6 +4,11 @@ class TabSecurityVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView!
 
+    var backupCardCellModel = [AlertCardCellModel]()
+    var unlockCellModel: [PreferenceCellModel] {
+        [PreferenceCellModel(preferenceType: .faceID, state: .off),
+         PreferenceCellModel(preferenceType: .pin, state: .off)]
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
@@ -11,7 +16,15 @@ class TabSecurityVC: TabViewController {
         register()
         setContent()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadAlertCards()
+        tableView.reloadData()
+    }
     func setContent() {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
@@ -19,7 +32,7 @@ class TabSecurityVC: TabViewController {
     }
 
     func register() {
-        ["TabHeaderCell"].forEach {
+        ["TabHeaderCell", "SecurityLevelCell", "PreferenceCell", "AlertCardCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -28,6 +41,24 @@ class TabSecurityVC: TabViewController {
             self?.tableView.refreshControl?.endRefreshing()
         }
     }
+    @MainActor
+    func reloadSections(_ sections: [TabHomeSection], animated: Bool) {
+        if animated {
+            tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+        } else {
+            UIView.performWithoutAnimation {
+                tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+            }
+        }
+    }
+    func reloadAlertCards() {
+        var cards: [AlertCardType] = []
+        if BackupHelper.shared.needsBackup(walletId: walletModel.wm?.account.id) && BackupHelper.shared.isDismissed(walletId: walletModel.wm?.account.id, position: .securityTab) == false {
+            cards.append(.backup)
+        }
+        self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
+    }
+    func onCompare() {}
 }
 extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
@@ -40,6 +71,14 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         switch TabSecuritySection(rawValue: section) {
         case .header:
             return 1
+        case .level:
+            return 1
+        case .backup:
+            return backupCardCellModel.count
+        case .unlock:
+            return 2
+        case .recovery:
+            return 0
         default:
             return 0
         }
@@ -57,6 +96,51 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
+        case .level:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: SecurityLevelCell.identifier, for: indexPath) as? SecurityLevelCell {
+                cell.configure(onCompare: {[weak self] in
+                    self?.onCompare()
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .backup:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
+                let alertCard = backupCardCellModel[indexPath.row]
+                switch alertCard.type {
+                case .backup:
+                    cell.configure(alertCard,
+                                   onLeft: {[weak self] in
+                        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+                        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+                            self?.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    },
+                                   onRight: nil,
+                                   onDismiss: nil)
+                default:
+                    break
+                }
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .unlock:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PreferenceCell.identifier, for: indexPath) as? PreferenceCell {
+                let model = unlockCellModel[indexPath.row]
+                cell.configure(model: model,
+                               onTap: {[weak self] in
+                    switch model.type {
+                    case .faceID:
+                        break
+                    case .pin:
+                        break
+                    }
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .recovery:
+            break
         default:
             break
         }
@@ -66,6 +150,8 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch TabSecuritySection(rawValue: section) {
+        case .unlock:
+            return sectionHeaderH
         default:
             return 0.1
         }
@@ -91,6 +177,10 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
         switch TabSecuritySection(rawValue: section) {
+        case .unlock:
+            return sectionHeader("Unlock method".localized)
+//        case .recovery:
+//            return sectionHeader("Recovery method".localized)
         default:
             return nil
         }

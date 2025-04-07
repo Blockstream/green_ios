@@ -4,6 +4,8 @@ import gdk
 enum TabHomeSection: Int, CaseIterable {
     case header
     case balance
+    case backup
+    case card
     case assets
     case chart
     case promo
@@ -16,6 +18,10 @@ enum TabTransactSection: Int, CaseIterable {
 }
 enum TabSecuritySection: Int, CaseIterable {
     case header
+    case level
+    case backup
+    case unlock
+    case recovery
 }
 enum TabSettingsSection: Int, CaseIterable {
     case header

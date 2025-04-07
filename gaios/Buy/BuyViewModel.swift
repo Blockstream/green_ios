@@ -19,6 +19,8 @@ class BuyViewModel {
     var wm: WalletManager { WalletManager.current! }
     var swapInfo: SwapInfo?
     var side: ActionSide
+    var countryCode: String { Locale.current.regionCode ?? "US" }
+    var backupCardCellModel = [AlertCardCellModel]()
 
     init(account: WalletItem, side: ActionSide) {
         self.account = account
@@ -39,8 +41,6 @@ class BuyViewModel {
     var assetCellModel: ReceiveAssetCellModel? {
         return ReceiveAssetCellModel(assetId: asset, account: account)
     }
-    
-    var countryCode: String { Locale.current.regionCode ?? "US" }
 
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
@@ -119,5 +119,12 @@ class BuyViewModel {
             sessionData: sessionParams,
             sessionType: MeldTransactionType.BUY.rawValue)
         return try await meld.widget(params)
+    }
+    func reloadBackupCards() {
+        var cards: [AlertCardType] = []
+        if BackupHelper.shared.needsBackup(walletId: wm.account.id) && BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .buy) == false  {
+            cards.append(.backup)
+        }
+        self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
     }
 }

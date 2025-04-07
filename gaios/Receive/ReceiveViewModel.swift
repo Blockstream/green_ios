@@ -28,8 +28,8 @@ class ReceiveViewModel {
     var swap: SwapInfo?
     var inputDenomination: gdk.DenominationType = .Sats
     var state: AmountCellState = .disabled
-
     var wm: WalletManager { WalletManager.current! }
+    var backupCardCellModel = [AlertCardCellModel]()
 
     init(account: WalletItem, accounts: [WalletItem]) {
         self.account = account
@@ -240,5 +240,11 @@ class ReceiveViewModel {
         }
         return nil
     }
-
+    func reloadBackupCards() {
+        var cards: [AlertCardType] = []
+        if BackupHelper.shared.needsBackup(walletId: wm.account.id) && BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .receive) == false {
+            cards.append(.backup)
+        }
+        self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
+    }
 }

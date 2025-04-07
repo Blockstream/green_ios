@@ -32,7 +32,7 @@ class WalletTabBarViewController: UITabBarController {
         setTabBar()
         Task.detached { [weak self] in
             await self?.walletModel.registerNotifications()
-            await self?.reload(discovery: false, chartUpdate: true) }
+            await self?.reload(discovery: false, chartUpdate: false) }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -74,7 +74,10 @@ class WalletTabBarViewController: UITabBarController {
             wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
                 self?.wView.removeFromSuperview()
             })
+
+            BackupHelper.shared.addToBackupList(walletModel.wm?.account.id)
         }
+        setSecurityState(BackupHelper.shared.needsBackup(walletId: walletModel.wm?.account.id) ? .alerted : .normal)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -155,7 +158,6 @@ class WalletTabBarViewController: UITabBarController {
 
     func setSecurityState(_ state: SecurityState) {
         walletModel.securityState = state
-        // to persist in defaults?
         switch state {
         case .normal:
             tabSecurityVC.tabBarItem = WalletTab.security.tabItem
@@ -231,17 +233,18 @@ class WalletTabBarViewController: UITabBarController {
         }
         isReloading = true
         try? await self.walletModel.fetchBalances(discovery: discovery)
-        self.walletModel.reloadBalances()
-        self.updateTabs([.home, .transact])
         _ = try? await self.walletModel.fetchTransactions()
-        self.walletModel.reloadTransactions()
-        self.updateTabs([.home, .transact])
-        // await self?.walletModel.reloadPromoCards()
-        if chartUpdate {
+        await walletModel.reloadAlertCards()
+        if chartUpdate || Api.shared.currency != walletModel.currency?.lowercased() {
             try? await refreshChart()
-            self.updateTabs([.home])
         }
+        // await self?.walletModel.reloadPromoCards()
+        walletModel.reloadBalances()
+        walletModel.reloadTransactions()
+        walletModel.reloadBackupCards()
+
         isReloading = false
+        self.updateTabs([.home, .transact])
     }
 
     func refreshChart() async throws {

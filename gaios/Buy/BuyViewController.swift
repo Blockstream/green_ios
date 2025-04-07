@@ -8,6 +8,7 @@ import Combine
 import core
 
 enum BuySection: Int, CaseIterable {
+    case backup
     case asset
     case account
     case amount
@@ -37,9 +38,10 @@ class BuyViewController: UIViewController {
 
         sideControl.isHidden = true
 
-        reload()
-        updateResponder()
         AnalyticsManager.shared.buyInitiate(account: viewModel.wm.account)
+
+        // always nag even after dismiss
+        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .buy)
     }
 
     func updateResponder() {
@@ -50,6 +52,16 @@ class BuyViewController: UIViewController {
                 }
             }
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateResponder()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reload()
     }
 
     @objc func keyboardWillShow(notification: Notification) {
@@ -68,7 +80,7 @@ class BuyViewController: UIViewController {
     }
 */
     func register() {
-        ["ReceiveAssetCell", "AssetToBuyCell", "AmountCell"].forEach {
+        ["AlertCardCell", "ReceiveAssetCell", "AssetToBuyCell", "AmountCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         NotificationCenter.default.addObserver(self,
@@ -100,12 +112,23 @@ class BuyViewController: UIViewController {
     }
 
     var sections: [BuySection] {
-        return [.account, .amount]
+        return [.backup, .account, .amount]
+    }
+
+    @MainActor
+    func reloadSections(_ sections: [BuySection], animated: Bool) {
+        if animated {
+            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .fade)
+        } else {
+            UIView.performWithoutAnimation {
+                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+            }
+        }
     }
 
     @MainActor
     func reload() {
-        tableView.reloadData ()
+
         switch viewModel.side {
         case .buy:
             title = "Buy".localized
@@ -114,8 +137,15 @@ class BuyViewController: UIViewController {
             title = "Sell".localized
             btnNext.setTitle("Sell with meld.io".localized, for: .normal)
         }
+        
+        viewModel.reloadBackupCards()
+        tableView.reloadData()
     }
-
+    func backupAlertDismiss() {
+        BackupHelper.shared.addToDismissed(walletId: viewModel.wm.account.id, position: .buy)
+        viewModel.reloadBackupCards()
+        reloadSections([.backup], animated: true)
+    }
     func presentDialogInputDenominations() {
         let model = viewModel.dialogInputDenominationViewModel()
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
@@ -202,6 +232,8 @@ extension BuyViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch sections[section] {
+        case BuySection.backup:
+            return viewModel.backupCardCellModel.count
         case BuySection.asset:
             return 1
         case BuySection.account:
@@ -213,6 +245,28 @@ extension BuyViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch sections[indexPath.section] {
+        case BuySection.backup:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
+                let alertCard = viewModel.backupCardCellModel[indexPath.row]
+                switch alertCard.type {
+                case .backup:
+                    cell.configure(alertCard,
+                                   onLeft: {[weak self] in
+                        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+                        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+                            self?.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    },
+                                   onRight: nil,
+                                   onDismiss: { [weak self] in
+                        self?.backupAlertDismiss()
+                    })
+                default:
+                    break
+                }
+                cell.selectionStyle = .none
+                return cell
+            }
         case BuySection.asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetToBuyCell") as? AssetToBuyCell {
                 cell.configure(model: AssetToBuyCellModel(assetId: "btc"))
@@ -252,6 +306,8 @@ extension BuyViewController: UITableViewDelegate, UITableViewDataSource {
         switch sections[section] {
         case BuySection.asset, BuySection.account, BuySection.amount:
             return headerH
+        default:
+            return 0.1
         }
     }
 
@@ -265,6 +321,8 @@ extension BuyViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch sections[section] {
+        case BuySection.backup:
+            return nil
         case BuySection.asset:
             switch viewModel.side {
             case .buy:
@@ -324,7 +382,7 @@ extension BuyViewController: AmountCellDelegate {
     }
     func stateDidChange(_ state: AmountCellState) {
         viewModel.state = state
-        btnNext.isEnabled = viewModel.account != nil && viewModel.state == .valid && viewModel.satoshi != nil
+        btnNext.isEnabled = viewModel.state == .valid && viewModel.satoshi != nil
         btnNext.isUserInteractionEnabled = btnNext.isEnabled
         btnNext.setStyle( btnNext.isEnabled ? .primary : .primaryGray)
     }

@@ -37,6 +37,7 @@ class WalletModel {
     /// cell models
     var txCellModels = [TransactionCellModel]()
     var balanceCellModel: BalanceCellModel?
+    var backupCardCellModel = [AlertCardCellModel]()
     var alertCardCellModel = [AlertCardCellModel]()
     var promoCardCellModel = [PromoCellModel]()
 
@@ -70,6 +71,7 @@ class WalletModel {
         }
         return nil
     }
+
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
         if let promo = PromoManager.shared.promoCellModels(.walletOverview).first?.promo,
@@ -197,6 +199,15 @@ class WalletModel {
 
     func reloadPromoCards() async {
         promoCardCellModel = subaccounts.count == 0 ? [] : PromoManager.shared.promoCellModels(.walletOverview)
+    }
+
+    func reloadBackupCards() {
+        guard let wm = wm else { return }
+        var cards: [AlertCardType] = []
+        if BackupHelper.shared.needsBackup(walletId: wm.account.id) && BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .homeTab) == false && cachedBalance?.satoshi() ?? 0 > 0 {
+            cards.append(.backup)
+        }
+        self.backupCardCellModel = subaccounts.count == 0 ? [] : cards.map { AlertCardCellModel(type: $0) }
     }
 
     func reloadAlertCards() async {

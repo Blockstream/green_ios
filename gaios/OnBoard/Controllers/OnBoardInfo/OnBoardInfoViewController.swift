@@ -93,7 +93,7 @@ class OnBoardInfoViewController: UIViewController {
         OnBoardParams.shared.mnemonicSize = lenght.rawValue
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
-            vc.mnemonicLength = lenght
+//            vc.mnemonicLength = lenght
             navigationController?.pushViewController(vc, animated: true)
         }
     }

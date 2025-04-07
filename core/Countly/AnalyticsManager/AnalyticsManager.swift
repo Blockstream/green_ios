@@ -20,6 +20,7 @@ public enum AppStorageConstants: String {
     case hideBalance = "hide_balance"
     case acceptedTerms = "accepted_terms"
     case dismissedPromos = "dismissed_promos"
+    case walletsToBackup = "wallets_to_backuo"
 }
 
 public protocol AnalyticsManagerDelegate: AnyObject {

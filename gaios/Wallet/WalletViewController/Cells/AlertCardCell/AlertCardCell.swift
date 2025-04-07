@@ -15,6 +15,7 @@ enum AlertCardType {
     case lightningMaintenance
     case lightningServiceDisruption
     case reEnable2fa
+    case backup
 }
 
 class AlertCardCell: UITableViewCell {
@@ -24,7 +25,7 @@ class AlertCardCell: UITableViewCell {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnRight: UIButton!
     @IBOutlet weak var btnLeft: UIButton!
-    @IBOutlet weak var btnsContainer: UIView!
+    @IBOutlet weak var btnsContainer: UIStackView!
     @IBOutlet weak var iconWarn: UIImageView!
     @IBOutlet weak var btnDismiss: UIButton!
 
@@ -46,14 +47,23 @@ class AlertCardCell: UITableViewCell {
         btnLeft.isHidden = false
     }
 
+    func setStyle() {
+        bg.layer.cornerRadius = 5.0
+        [btnLeft, btnRight].forEach {
+            $0?.setStyle(.outlinedWhite)
+        }
+        btnLeft.backgroundColor = .white
+        btnLeft.setTitleColor(UIColor.gBlackBg(), for: .normal)
+        bg.borderWidth = 1
+        lblTitle.setStyle(.txtBigger)
+        lblHint.setStyle(.txtCard)
+    }
+
     func configure(_ model: AlertCardCellModel,
                    onLeft: (() -> Void)?,
                    onRight: (() -> Void)?,
                    onDismiss: (() -> Void)?
     ) {
-        self.backgroundColor = UIColor.customTitaniumDark()
-        bg.layer.cornerRadius = 6.0
-
         self.onLeft = onLeft
         self.onRight = onRight
         self.onDismiss = onDismiss
@@ -61,6 +71,13 @@ class AlertCardCell: UITableViewCell {
         btnsContainer.isHidden = false
         iconWarn.isHidden = true
         btnDismiss.isHidden = true
+
+        setStyle()
+
+        iconWarn.image = UIImage(named: "ic_card_warn_blue")
+        iconWarn.isHidden = false
+        bg.backgroundColor = UIColor.gWarnCardBgBlue()
+        bg.borderColor = UIColor.gWarnCardBorderBlue()
 
         switch model.type {
         case .reset(let message):
@@ -165,6 +182,15 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = "Some coins are no longer 2FA protected.".localized
             btnRight.setTitle("id_reenable_2fa".localized, for: .normal)
             btnLeft.isHidden = true
+        case .backup:
+            lblTitle.text = "Back Up Your Wallet Now".localized
+            lblHint.text = "Don't lose access to your funds.".localized
+            btnLeft.setTitle("Backup Now".localized, for: .normal)
+            btnRight.isHidden = true
+            btnDismiss.isHidden = onDismiss == nil
+            iconWarn.image = UIImage(named: "ic_card_warn")
+            bg.backgroundColor = UIColor.gWarnCardBg()
+            bg.borderColor = UIColor.gWarnCardBorder()
         }
     }
 

@@ -43,13 +43,6 @@ class RecoveryVerifyViewController: UIViewController {
             $0.setStyle(.outlinedWhite)
         }
 
-        view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.view
-        button0.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word0btn
-        button1.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word1btn
-        button2.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word2btn
-        button3.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word3btn
-        textLabel.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.quizLbl
-
         AnalyticsManager.shared.recordView(.recoveryCheck, sgmt: AnalyticsManager.shared.ntwSgmtUnified())
     }
 
@@ -112,20 +105,12 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func next() {
-        if OnBoardInfoViewController.flowType == .onboarding {
-            AnalyticsManager.shared.createWallet(account: AccountsRepository.shared.current)
-            let testnet = OnBoardManager.shared.chainType == .testnet
-            let mnemonic = self.mnemonic.joined(separator: " ")
-            let credentials = Credentials(mnemonic: mnemonic, password: "")
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet)
-                vc.pinFlow = .create
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
-        } else {
-            self.navigationController?.popToViewController(ofClass: AccountCreateRecoveryKeyViewController.self, animated: false)
-            OnBoardInfoViewController.delegate?.didNewRecoveryPhrase(self.mnemonic.joined(separator: " "))
+        if let accountId =  WalletManager.current?.account.id {
+            BackupHelper.shared.removeFromBackupList(accountId)
+        }
+        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "BackupSuccessViewController") as? BackupSuccessViewController {
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 
