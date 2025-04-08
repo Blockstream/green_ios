@@ -153,12 +153,12 @@ final class CheckButton: UIButton {
 extension UIButton {
 
     func setStyle(_ type: ButtonStyle) {
-        titleLabel?.font = UIFont.systemFont(ofSize: 13.0, weight: .semibold)
-        layer.cornerRadius = 4.0
+        titleLabel?.font = UIFont.systemFont(ofSize: 15.0, weight: .medium)
+        layer.cornerRadius = 8.0
         switch type {
         case .primary:
-            backgroundColor = UIColor.gGreenMatrix()
-            setTitleColor(.white, for: .normal)
+            backgroundColor = UIColor.gAccent()
+            setTitleColor(UIColor.gBlackBg(), for: .normal)
             isEnabled = true
         case .primaryGray:
             backgroundColor = UIColor.gW40()
@@ -170,10 +170,10 @@ extension UIButton {
             isEnabled = false
         case .outlined:
             backgroundColor = UIColor.clear
-            setTitleColor(UIColor.gGreenMatrix(), for: .normal)
-            tintColor = UIColor.gGreenMatrix()
+            setTitleColor(UIColor.gAccent(), for: .normal)
+            tintColor = UIColor.gAccent()
             layer.borderWidth = 1.0
-            layer.borderColor = UIColor.gGreenMatrix().cgColor
+            layer.borderColor = UIColor.gAccent().cgColor
             layer.cornerRadius = 5.0
         case .outlinedGray:
             backgroundColor = UIColor.clear
@@ -204,7 +204,7 @@ extension UIButton {
             isEnabled = false
         case .inline:
             backgroundColor = UIColor.clear
-            setTitleColor(UIColor.gGreenMatrix(), for: .normal)
+            setTitleColor(UIColor.gAccent(), for: .normal)
             isEnabled = true
         case .inlineGray:
             backgroundColor = UIColor.clear

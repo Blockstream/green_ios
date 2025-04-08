@@ -197,6 +197,9 @@ extension UIColor {
     class func gWarnCardBorderBlue() -> UIColor {
         return UIColor(named: "gWarnCardBorderBlue")!
     }
+    class func gAccent() -> UIColor {
+        return UIColor(named: "gAccent")!
+    }
 }
 
 extension UIColor {

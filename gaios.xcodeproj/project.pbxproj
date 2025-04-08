@@ -98,6 +98,7 @@
 		34287B772A8385820065471F /* AlertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34287B762A8385820065471F /* AlertViewModel.swift */; };
 		342896902BCD1C2A0042F144 /* SingleLabelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3428968F2BCD1C2A0042F144 /* SingleLabelView.xib */; };
 		342896922BCD1C390042F144 /* SingleLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342896912BCD1C390042F144 /* SingleLabelView.swift */; };
+		342C11012DA50FF200EC5209 /* SetupNewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342C11002DA50FE700EC5209 /* SetupNewViewController.swift */; };
 		342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 342F980B29351415005876A8 /* DialogEnable2faCell.xib */; };
 		342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980D29351444005876A8 /* DialogEnable2faCell.swift */; };
 		342F98102935145A005876A8 /* DialogEnable2faCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */; };
@@ -1039,6 +1040,7 @@
 		34287B762A8385820065471F /* AlertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModel.swift; sourceTree = "<group>"; };
 		3428968F2BCD1C2A0042F144 /* SingleLabelView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleLabelView.xib; sourceTree = "<group>"; };
 		342896912BCD1C390042F144 /* SingleLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleLabelView.swift; sourceTree = "<group>"; };
+		342C11002DA50FE700EC5209 /* SetupNewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupNewViewController.swift; sourceTree = "<group>"; };
 		342F980B29351415005876A8 /* DialogEnable2faCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DialogEnable2faCell.xib; path = gaios/Shared/Controllers/DialogList/Cells/DialogListCell/DialogEnable2faCell.xib; sourceTree = SOURCE_ROOT; };
 		342F980D29351444005876A8 /* DialogEnable2faCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogEnable2faCell.swift; sourceTree = "<group>"; };
 		342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DialogEnable2faCellModel.swift; path = gaios/Shared/Controllers/DialogList/Cells/DialogListCell/DialogEnable2faCellModel.swift; sourceTree = SOURCE_ROOT; };
@@ -2828,6 +2830,7 @@
 				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
 				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
 				345ED1F329C088DC00BD9071 /* GetStartedOnBoardViewController.swift */,
+				342C11002DA50FE700EC5209 /* SetupNewViewController.swift */,
 				3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */,
 				348A70E02D89DA7700490B55 /* OnBoardAppAccessViewController.swift */,
 				348A70E22D89DA8C00490B55 /* OnBoardAppPinViewController.swift */,
@@ -5176,6 +5179,7 @@
 				81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */,
 				3472798D2CD3788F00A272D2 /* Promo.swift in Sources */,
 				81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */,
+				342C11012DA50FF200EC5209 /* SetupNewViewController.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */,
 				34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */,

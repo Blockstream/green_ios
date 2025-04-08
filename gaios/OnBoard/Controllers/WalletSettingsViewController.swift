@@ -182,7 +182,7 @@ class WalletSettingsViewController: KeyboardViewController {
         [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach { $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
-        btnLang.backgroundColor = UIColor.gGreenMatrix()
+        btnLang.backgroundColor = UIColor.gAccent()
         btnLang.cornerRadius = 4.0
         cardMulti.isHidden = !Bundle.main.dev
     }

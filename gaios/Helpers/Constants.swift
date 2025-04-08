@@ -48,6 +48,7 @@ enum ExternalUrls {
     static let qrModeScanWithJade = URL(string: "https://blockstream.zendesk.com/hc/en-us/articles/28264425434265")!
     static let qrModeAirGapUsage = URL(string: "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage")!
     static let qrModeAirGapSupport = URL(string: "https://help.blockstream.com/hc/en-us/articles/20272957303577-Add-Jade-to-a-QR-supported-app")!
+    static let buyJadePlus = URL(string: "https://store.blockstream.com/products/jade-plus")!
 }
 
 enum RiveModel {
