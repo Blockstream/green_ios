@@ -46,12 +46,10 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
 
     func setStyle() {
         [lblSlide1Title, lblSlide2Title, lblSlide3Title, lblSlide4Title].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
-            $0?.textColor = .white
+            $0?.setStyle(.title)
         }
         [lblSlide1Hint, lblSlide2Hint, lblSlide3Hint, lblSlide4Hint].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
-            $0?.textColor = .white.withAlphaComponent(0.6)
+            $0?.setStyle(.subTitle)
         }
         btnConnectJade.setStyle(.primary)
         btnConnectOther.setStyle(.outlinedWhite)

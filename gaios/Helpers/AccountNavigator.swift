@@ -8,13 +8,13 @@ class AccountNavigator {
 
     @MainActor
     // open the account if just logged or redirect to login
-    static func goLogin(account: Account) {
+    static func goLogin(accountId: String) {
+        let account = AccountsRepository.shared.get(for: accountId)!
         let nv = UINavigationController()
         let vcHome: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
-
         if account.isDerivedLightning {
             vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
@@ -22,9 +22,9 @@ class AccountNavigator {
             vcWatch?.account = account
             nv.setViewControllers([vcHome!, vcWatch!], animated: true)
         } else if account.isHW {
-            vcConnect?.account = account
-            vcConnect?.bleViewModel = BleViewModel.shared
-            vcConnect?.scanViewModel = ScanViewModel()
+            vcConnect?.viewModel = ConnectViewModel(
+                account: account,
+                firstConnection: false)
             nv.setViewControllers([vcHome!, vcConnect!], animated: true)
         } else {
             vcLogin?.viewModel = LoginViewModel(account: account)
@@ -34,7 +34,8 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func goLogged(account: Account, isFirstLoad: Bool = false) {
+    static func goLogged(accountId: String, isFirstLoad: Bool = false) {
+        let account = AccountsRepository.shared.get(for: accountId)!
         AccountsRepository.shared.current = account
         Task {
             let isLightning = account.isDerivedLightning
@@ -52,24 +53,9 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func accountViewModel(account: Account) async -> AccountViewModel? {
-        guard let session = WalletManager.current?.lightningSession else {
-            return nil
-        }
-        guard let subaccount = try? await session.subaccount(0) else {
-            return nil
-        }
-        let balance = try? await session.getBalance(subaccount: 0, numConfs: 0)
-        let assetAmounts = AssetAmountList(balance ?? [:])
-        let accountCellModel = AccountCellModel(account: subaccount, satoshi: balance?.first?.value ?? 0)
-        let accountViewModel = AccountViewModel(model: accountCellModel, account: subaccount, cachedBalance: assetAmounts, cachedTransactions: [Transaction]())
-        return accountViewModel
-    }
-
-    @MainActor
-    static func goLogout(account: Account?) {
-        if let account = account {
-            goLogin(account: account)
+    static func goLogout(accountId: String?) {
+        if let accountId = accountId {
+            goLogin(accountId: accountId)
         } else {
             goHome()
         }
@@ -106,8 +92,7 @@ class AccountNavigator {
 
             let list = AccountsRepository.shared.accounts.filter { $0.hidden == false}
             if list.count == 1, let account = list.first, account.getDerivedLightningAccount() == nil {
-
-                goLogin(account: account)
+                goLogin(accountId: account.id)
                 return
             } else {
                 let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")

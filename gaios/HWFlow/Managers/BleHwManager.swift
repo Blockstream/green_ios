@@ -60,16 +60,16 @@ enum DeviceError: Error {
     case notlegacy_app
 }
 
-class BleViewModel {
-    static let shared = BleViewModel()
-    private let centralManager: CentralManager
+class BleHwManager {
+    static let shared = BleHwManager()
+    var centralManager: CentralManager
     var type: DeviceType = .Jade
     var jade: JadeManager?
     var ledger: BleLedgerManager?
+    var walletManager: WalletManager?
     var peripheralID: UUID? {
         didSet { setup() }
     }
-
     init(centralManager: CentralManager = CentralManager.shared) {
         self.centralManager = centralManager
     }
@@ -79,6 +79,25 @@ class BleViewModel {
             return centralManager.retrievePeripherals(withIdentifiers: [id]).first
         }
         return nil
+    }
+
+    var hwProtocol: HWProtocol? {
+        switch type {
+        case .Jade:
+            return jade?.jade
+        case .Ledger:
+            return ledger?.bleLedger
+        }
+    }
+    
+
+    func getHwProtocol() async throws -> HWDevice? {
+        switch type {
+        case .Jade:
+            return try await jade?.getHWDevice()
+        case .Ledger:
+            return try await ledger?.getHWDevice()
+        }
     }
 
     func setup() {
@@ -135,10 +154,10 @@ class BleViewModel {
         }
     }
 
-    func authenticating() async throws -> Bool {
+    func authenticating(testnet: Bool? = nil) async throws -> Bool {
         switch type {
         case .Jade:
-            return try await jade?.authenticating() ?? false
+            return try await jade?.authenticating(testnet: testnet) ?? false
         case .Ledger:
             return try await ledger?.authenticating() ?? false
         }
@@ -152,25 +171,47 @@ class BleViewModel {
             return false
         }
     }
-
-    func login(account: Account) async throws -> Account? {
-        var res: Account? = account
+    
+    func getMasterXpub(chain: String) async throws -> String? {
+        switch type {
+        case .Jade:
+            return try await jade?.getMasterXpub(chain: chain)
+        case .Ledger:
+            return try await ledger?.getMasterXpub()
+        }
+    }
+    
+    func login(account: Account) async throws -> WalletManager {
         AnalyticsManager.shared.loginWalletStart()
+        let walletManager = WalletsRepository.shared.getOrAdd(for: account)
+        let device = try await getHwProtocol()
+        walletManager.popupResolver = await PopupResolver()
+        walletManager.hwInterfaceResolver = HwPopupResolver()
+        walletManager.hwDevice = device
+        walletManager.hwProtocol = hwProtocol
+        var derivedCredentials: Credentials?
+        if let derivedAccount = account.getDerivedLightningAccount() {
+            derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: derivedAccount.keychain)
+        }
         do {
-            switch type {
-            case .Jade:
-                res = try await jade?.login(account: account)
-            case .Ledger:
-                res = try await ledger?.login(account: account)
+            if let masterXpub = try await getMasterXpub(chain: account.gdkNetwork.chain) {
+                try await walletManager.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: false)
             }
-            AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
-            AnalyticsManager.shared.activeWalletStart()
-            return res
         } catch {
             let text = toBleError(error, network: nil).localizedDescription
             AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: text)
             throw error
         }
+        switch type {
+        case .Jade:
+            walletManager.account.efusemac = jade?.version?.efusemac
+        case .Ledger:
+            break
+        }
+        self.walletManager = walletManager
+        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
+        AnalyticsManager.shared.activeWalletStart()
+        return walletManager
     }
 
     func validateAddress(account: WalletItem, address: Address) async throws -> Bool {

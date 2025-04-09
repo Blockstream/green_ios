@@ -9,7 +9,6 @@ class ContainerViewController: UIViewController {
     private var torToken: NSObjectProtocol?
     private var requests: Int = 0
 
-    var accountViewModel: AccountViewModel?
     var walletModel: WalletModel?
     let nv = UINavigationController()
 
@@ -29,17 +28,6 @@ class ContainerViewController: UIViewController {
             let vc = WalletTabBarViewController(walletModel: walletModel)
             nv.setViewControllers([vc], animated: false)
             nv.navigationBar.topItem?.title = ""
-
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletViewController") as? WalletViewController {
-//                vc.viewModel = walletViewModel
-//                nv.setViewControllers([vc], animated: false)
-//            }
-        }
-        if let accountViewModel = accountViewModel {
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
-                vc.viewModel = accountViewModel
-                nv.setViewControllers([vc], animated: false)
-            }
         }
         nv.view.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         nv.view.frame = containerView.bounds

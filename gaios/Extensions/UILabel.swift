@@ -19,14 +19,15 @@ enum LabelStyle {
 }
 
 extension UILabel {
+    
     func setStyle(_ type: LabelStyle) {
         switch type {
         case .title:
             textColor = .white
             font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
         case .subTitle:
-            textColor = .white
-            font = UIFont.systemFont(ofSize: 20.0, weight: .bold)
+            textColor = .white.withAlphaComponent(0.6)
+            font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         case .subTitle24:
             textColor = .white
             font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
@@ -37,7 +38,7 @@ extension UILabel {
             textColor = .white
             font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         case .txt:
-            textColor = .white
+            textColor = .white.withAlphaComponent(0.6)
             font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         case .txtBold:
             textColor = .white

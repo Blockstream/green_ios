@@ -109,8 +109,8 @@ class UserSettingsViewModel {
     }
     
     func showGenuineCheck() -> Bool {
-        if isHW && BleViewModel.shared.isConnected() {
-            if let version = BleViewModel.shared.jade?.version, version.boardType == .v2 {
+        if isHW && BleHwManager.shared.isConnected() {
+            if let version = BleHwManager.shared.jade?.version, version.boardType == .v2 {
                 return true
             }
         }

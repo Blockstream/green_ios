@@ -344,7 +344,7 @@ class AccountViewController: UIViewController {
             let account = AccountsRepository.shared.current
             await WalletManager.current?.disconnect()
             WalletsRepository.shared.delete(for: account?.id ?? "")
-            AccountNavigator.goLogout(account: nil)
+            AccountNavigator.goLogout(accountId: nil)
         }
     }
 
@@ -1021,9 +1021,9 @@ extension AccountViewController: DrawerNetworkSelectionDelegate {
         if account.id == viewModel.wm?.account.id {
             return
         } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            AccountNavigator.goLogged(account: account)
+            AccountNavigator.goLogged(accountId: account.id)
         } else {
-            AccountNavigator.goLogin(account: account)
+            AccountNavigator.goLogin(accountId: account.id)
         }
     }
 
@@ -1058,11 +1058,11 @@ extension AccountViewController: UserSettingsViewControllerDelegate {
             Task {
                 let account = self.viewModel.wm?.account
                 if account?.isHW ?? false {
-                    try? await BleViewModel.shared.disconnect()
+                    try? await BleHwManager.shared.disconnect()
                 }
                 await WalletManager.current?.disconnect()
                 WalletsRepository.shared.delete(for: account?.id ?? "")
-                AccountNavigator.goLogout(account: nil)
+                AccountNavigator.goLogout(accountId: nil)
                 self.stopLoader()
             }
         })

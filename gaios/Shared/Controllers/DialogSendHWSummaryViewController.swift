@@ -43,7 +43,7 @@ class DialogSendHWSummaryViewController: UIViewController {
         if isLedger {
             icWallet.image = UIImage(named: "ic_hww_ledger")
         } else {
-            let isV2 = BleViewModel.shared.jade?.version?.boardType == .v2
+            let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
             icWallet.image = JadeAsset.img(.load, isV2 ? .v2 : .v1)
         }
 

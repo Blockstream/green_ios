@@ -295,8 +295,8 @@ extension AnalyticsManager {
     public func hwwConnected(account: Account?) {
         let s = sessSgmt(account)
 
-        // s[AnalyticsManager.strFirmware] = BleViewModel.shared.jade?.version?.jadeVersion ?? ""
-        // s[AnalyticsManager.strModel] = BleViewModel.shared.jade?.version?.boardType ?? ""
+        // s[AnalyticsManager.strFirmware] = BleHwManager.shared.jade?.version?.jadeVersion ?? ""
+        // s[AnalyticsManager.strModel] = BleHwManager.shared.jade?.version?.boardType ?? ""
         recordEvent(.connectedHWW, sgmt: s)
     }
 

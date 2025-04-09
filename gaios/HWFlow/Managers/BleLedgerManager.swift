@@ -64,32 +64,8 @@ class BleLedgerManager {
         return true
     }
 
-    func login(account: Account) async throws -> Account {
-        let device: HWDevice = .defaultLedger()
-        let masterXpub = try await bleLedger.xpubs(network: account.gdkNetwork.chain, path: [])
-        let walletId = try? SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
-        var account = account
-        account.xpubHashId = walletId?.xpubHashId
-        account = normalizeAccount(account)
-        walletManager = WalletsRepository.shared.getOrAdd(for: account)
-        walletManager?.popupResolver = await PopupResolver()
-        walletManager?.hwInterfaceResolver = await HwPopupResolver()
-        walletManager?.hwDevice = device
-        walletManager?.hwProtocol = bleLedger
-        try await walletManager?.loginHW(lightningCredentials: nil, device: device, masterXpub: masterXpub, fullRestore: false)
-        AccountsRepository.shared.current = walletManager?.account
-        return account
-    }
-
-    func normalizeAccount(_ account: Account) -> Account {
-        // check existing previous account
-        let prevAccount = AccountsRepository.shared.hwAccounts.first { $0.isLedger == account.isLedger && $0.gdkNetwork == account.gdkNetwork && $0.xpubHashId == account.xpubHashId }
-        if var prevAccount = prevAccount {
-            prevAccount.name = account.name
-            prevAccount.hidden = account.hidden
-            return prevAccount
-        }
-        return account
+    func getHWDevice() async throws -> HWDevice {
+        return .defaultLedger()
     }
 
     func defaultAccount() async throws -> Account {

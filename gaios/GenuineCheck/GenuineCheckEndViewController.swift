@@ -25,17 +25,11 @@ class GenuineCheckEndViewController: UIViewController {
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnRetry: UIButton!
     @IBOutlet weak var lblInfo: UILabel!
-    @IBOutlet weak var progressView: UIView!
+    @IBOutlet weak var progressView: ProgressView!
     @IBOutlet weak var imageJade: UIImageView!
     
     var model: GenuineCheckEndViewModel!
     weak var delegate: GenuineCheckEndViewControllerDelegate?
-    
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -102,8 +96,9 @@ class GenuineCheckEndViewController: UIViewController {
     }
     
     func setStyle() {
-        lblTitle.setStyle(.subTitle24)
-        lblHint.setStyle(.txtCard)
+        lblTitle.setStyle(.title)
+        lblHint.setStyle(.subTitle)
+        lblInfo.setStyle(.subTitle)
         [btnSupport, btnContinue, btnRetry].forEach {
             $0?.setStyle(.primary)
         }
@@ -111,19 +106,7 @@ class GenuineCheckEndViewController: UIViewController {
             $0?.setStyle(.outlinedWhite)
             $0?.setTitleColor(.white, for: .normal)
         }
-        lblInfo.setStyle(.txtBigger)
-        
-        progressView.addSubview(loadingIndicator)
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor
-                .constraint(equalTo: progressView.centerXAnchor),
-            loadingIndicator.centerYAnchor
-                .constraint(equalTo: progressView.centerYAnchor),
-            loadingIndicator.widthAnchor
-                .constraint(equalToConstant: progressView.frame.width),
-            loadingIndicator.heightAnchor
-                .constraint(equalTo: progressView.widthAnchor)
-        ])
+        progressView.isAnimating = true
     }
     
     func dismiss(_ action: GenuineCheckEndAction) {
@@ -148,20 +131,8 @@ class GenuineCheckEndViewController: UIViewController {
         dismiss(.retry)
     }
     
-    @MainActor
-    func start() {
-        loadingIndicator.isAnimating = true
-    }
-    
-    @MainActor
-    func stop() {
-        loadingIndicator.isAnimating = false
-    }
-    
     func run() async {
-        start()
         await model.run()
-        stop()
         reload()
         if model.state == .exit {
             dismiss(.error(model.error))

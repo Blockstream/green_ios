@@ -131,7 +131,7 @@ class SendTxConfirmViewModel {
         }
         
         if wm?.hwDevice != nil {
-            let bleDevice = BleViewModel.shared
+            let bleDevice = BleHwManager.shared
             if !bleDevice.isConnected() {
                 try await bleDevice.connect()
                 _ = try await bleDevice.authenticating()
@@ -253,7 +253,7 @@ class SendTxConfirmViewModel {
         guard let subaccount = subaccount else {
             throw GaError.GenericError("Invalid subaccount".localized)
         }
-        return try await BleViewModel.shared.validateAddress(account: subaccount, address: address)
+        return try await BleHwManager.shared.validateAddress(account: subaccount, address: address)
     }
 
     func sendVerifyOnDeviceViewModel(_ address: Address) -> VerifyOnDeviceViewModel? {

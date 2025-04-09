@@ -262,11 +262,11 @@ class WalletTabBarViewController: UITabBarController {
             Task {
                 let account = self.walletModel.wm?.account
                 if account?.isHW ?? false {
-                    try? await BleViewModel.shared.disconnect()
+                    try? await BleHwManager.shared.disconnect()
                 }
                 await WalletManager.current?.disconnect()
                 WalletsRepository.shared.delete(for: account?.id ?? "")
-                AccountNavigator.goLogout(account: nil)
+                AccountNavigator.goLogout(accountId: nil)
                 self.stopLoader()
             }
 //        })
@@ -361,9 +361,9 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
         if account.id == walletModel.wm?.account.id ?? "" {
             return
         } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            AccountNavigator.goLogged(account: account)
+            AccountNavigator.goLogged(accountId: account.id)
         } else {
-            AccountNavigator.goLogin(account: account)
+            AccountNavigator.goLogin(accountId: account.id)
         }
     }
 

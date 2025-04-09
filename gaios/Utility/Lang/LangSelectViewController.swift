@@ -117,7 +117,7 @@ class LangSelectViewController: UIViewController {
     func reInit() {
         Task {
             if AccountsRepository.shared.current == nil {
-                AccountNavigator.goLogout(account: nil)
+                AccountNavigator.goLogout(accountId: nil)
                 return
             }
             if AppSettings.shared.gdkSettings?.tor ?? false {
@@ -126,11 +126,11 @@ class LangSelectViewController: UIViewController {
             Task {
                 let account = AccountsRepository.shared.current
                 if account?.isHW ?? false {
-                    try? await BleViewModel.shared.disconnect()
+                    try? await BleHwManager.shared.disconnect()
                 }
                 await WalletManager.current?.disconnect()
                 WalletsRepository.shared.delete(for: account?.id ?? "")
-                AccountNavigator.goLogout(account: nil)
+                AccountNavigator.goLogout(accountId: nil)
                 self.stopLoader()
             }
 

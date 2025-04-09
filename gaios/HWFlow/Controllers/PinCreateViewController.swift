@@ -11,20 +11,13 @@ class PinCreateViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblStepTitle: UILabel!
     @IBOutlet weak var lblStepHint: UILabel!
     @IBOutlet weak var lblWarn: UILabel!
-    @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var btnContinue: UIButton!
 
     var remember = false
     var testnet = false
-    var bleViewModel: BleViewModel?
+    var bleHwManager: BleHwManager?
     var scanViewModel: ScanViewModel?
     var account: Account?
-
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,11 +31,11 @@ class PinCreateViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        loadingIndicator.isAnimating = true
+        //loadingIndicator.isAnimating = true
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        stop()
+        //stop()
     }
 
     func setContent() {
@@ -57,75 +50,23 @@ class PinCreateViewController: HWFlowBaseViewController {
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
 
     func setStyle() {
-        [lblStepNumber].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .black)
-            $0?.textColor = UIColor.gGreenMatrix()
-        }
-        [lblStepTitle].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-            $0?.textColor = .white
-        }
-        [lblStepHint, lblWarn].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-            $0?.textColor = .white.withAlphaComponent(0.6)
-        }
+        lblStepNumber.setStyle(.subTitle)
+        lblStepTitle.setStyle(.title)
+        lblStepHint.setStyle(.subTitle)
+        lblWarn.setStyle(.subTitle)
         btnContinue.setStyle(.primary)
     }
 
-    func start() {
-        loaderPlaceholder.addSubview(loadingIndicator)
-
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor
-                .constraint(equalTo: loaderPlaceholder.centerXAnchor),
-            loadingIndicator.centerYAnchor
-                .constraint(equalTo: loaderPlaceholder.centerYAnchor),
-            loadingIndicator.widthAnchor
-                .constraint(equalToConstant: loaderPlaceholder.frame.width),
-            loadingIndicator.heightAnchor
-                .constraint(equalTo: loaderPlaceholder.widthAnchor)
-        ])
-
-        loadingIndicator.isAnimating = true
-        loadingIndicator.isHidden = false
-    }
-
-    func stop() {
-        loadingIndicator.isAnimating = false
-        loadingIndicator.isHidden = true
-    }
 
     @IBAction func continueBtnTapped(_ sender: Any) {
         btnContinue.isHidden = true
-        start()
-        Task {
-            do {
-                if !(bleViewModel?.isConnected() ?? false) {
-                    try await bleViewModel?.connect()
-                }
-                try await bleViewModel?.initialize(testnet: testnet)
-                if let account = try await bleViewModel?.defaultAccount() {
-                    self.account = try await bleViewModel?.login(account: account)
-                }
-                // check firmware
-                let res = try? await bleViewModel?.checkFirmware()
-                if let version = res?.0, let lastFirmware = res?.1 {
-                    onCheckFirmware(version: version, lastFirmware: lastFirmware)
-                    return
-                } else {
-                    next()
-                }
-            } catch {
-                onError(error)
-            }
-        }
     }
 
     @objc func setupBtnTapped() {
@@ -153,16 +94,16 @@ class PinCreateViewController: HWFlowBaseViewController {
         if let account = account {
             AccountsRepository.shared.current = account
             AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
-            _ = AccountNavigator.goLogged(account: account)
+            AccountNavigator.goLogged(accountId: account.id)
         }
     }
 
     @MainActor
     override func onError(_ err: Error) {
         btnContinue.isHidden = false
-        let txt = bleViewModel?.toBleError(err, network: nil).localizedDescription
+        let txt = bleHwManager?.toBleError(err, network: nil).localizedDescription
         showError(txt?.localized ?? "")
-        Task { try? await bleViewModel?.disconnect() }
+        Task { try? await bleHwManager?.disconnect() }
     }
 }
 
@@ -172,14 +113,14 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
         Task {
             do {
                 startLoader(message: "id_updating_firmware".localized)
-                let binary = try await bleViewModel?.fetchFirmware(firmware: firmware)
-                let hash = bleViewModel?.jade?.jade.sha256(binary ?? Data())
+                let binary = try await bleHwManager?.fetchFirmware(firmware: firmware)
+                let hash = bleHwManager?.jade?.jade.sha256(binary ?? Data())
                 let hashHex = hash?.hex.separated(by: " ", every: 8)
                 let text = progressLoaderMessage(title: "id_updating_firmware".localized,
                                                  subtitle: "Hash: \(hashHex ?? "")")
                 startLoader(message: text)
-                let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
-                try await bleViewModel?.disconnect()
+                let res = try await bleHwManager?.updateFirmware(firmware: firmware, binary: binary ?? Data())
+                try await bleHwManager?.disconnect()
                 try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
                 self.stopLoader()
                 await MainActor.run {
@@ -200,9 +141,6 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
     func connectViewController() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
-            vc.account = account
-            vc.bleViewModel = bleViewModel
-            vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

@@ -6,7 +6,7 @@ import RiveRuntime
 class Loader: UIView {
 
     let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.gAccent()], lineWidth: 2)
+        let progress = ProgressView()
         progress.translatesAutoresizingMaskIntoConstraints = false
         return progress
     }()

@@ -165,7 +165,7 @@ class WOLoginViewController: KeyboardViewController {
     @MainActor
     func success() {
         stopLoader()
-        AccountNavigator.goLogged(account: account)
+        AccountNavigator.goLogged(accountId: account.id)
         AnalyticsManager.shared.importWallet(account: account)
     }
 
@@ -205,7 +205,7 @@ extension WOLoginViewController: DialogRenameViewControllerDelegate, DialogDelet
     func didRename(name: String, index: String?) {
         account?.name = name
         if let account = self.account {
-            AccountsRepository.shared.current = account
+            AccountsRepository.shared.upsert(account)
             navigationItem.title = account.name
             AnalyticsManager.shared.renameWallet()
         }

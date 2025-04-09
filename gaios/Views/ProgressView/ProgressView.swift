@@ -2,25 +2,17 @@ import UIKit
 
 class ProgressView: UIView {
 
-    // MARK: - Initialization
-    init(frame: CGRect,
-         colors: [UIColor],
-         lineWidth: CGFloat
-    ) {
-        self.colors = colors
-        self.lineWidth = lineWidth
+    // MARK: - Properties
+    let colors: [UIColor] = [UIColor.gAccent()]
+    let lineWidth: CGFloat = 2
+    static let tag = 0x70726f6772657372
 
+    public override init(frame: CGRect) {
         super.init(frame: frame)
-
-        self.backgroundColor = .clear
     }
 
-    convenience init(colors: [UIColor], lineWidth: CGFloat) {
-        self.init(frame: .zero, colors: colors, lineWidth: lineWidth)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) is not supported")
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
 
     override func layoutSubviews() {
@@ -86,10 +78,6 @@ class ProgressView: UIView {
 
         self.layer.add(rotationAnimation, forKey: nil)
     }
-
-    // MARK: - Properties
-    let colors: [UIColor]
-    let lineWidth: CGFloat
 
     private lazy var shapeLayer: ProgressShapeLayer = {
         return ProgressShapeLayer(strokeColor: colors.first!, lineWidth: lineWidth)

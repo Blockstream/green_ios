@@ -146,7 +146,7 @@ class ScreenLocker {
         DispatchQueue.main.async {
             self.clear()
             let account = AccountsRepository.shared.current
-            AccountNavigator.goLogout(account: account)
+            AccountNavigator.goLogout(accountId: account?.id)
         }
     }
 

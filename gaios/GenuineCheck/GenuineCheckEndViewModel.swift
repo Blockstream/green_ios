@@ -11,12 +11,12 @@ enum GenuineCheckEndState {
 }
 class GenuineCheckEndViewModel {
 
-    let bleViewModel: BleViewModel
+    let BleHwManager: BleHwManager
     var state: GenuineCheckEndState
     var error: Error? = nil
 
-    init(bleViewModel: BleViewModel) {
-        self.bleViewModel = bleViewModel
+    init(BleHwManager: BleHwManager) {
+        self.BleHwManager = BleHwManager
         self.state = .progress
     }
 
@@ -83,7 +83,7 @@ class GenuineCheckEndViewModel {
     
     func run() async {
         do {
-            let validated = try await bleViewModel.jade?.genuineCheck()
+            let validated = try await BleHwManager.jade?.genuineCheck()
             state = validated ?? false ? .genuine : .notGenuine
         } catch {
             self.error = error

@@ -122,17 +122,17 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func goAccount(account: Account) {
-        if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            AccountNavigator.goLogged(account: account)
+    func goAccount(accountId: String) {
+        if let wm = WalletsRepository.shared.get(for: accountId), wm.logged {
+            AccountNavigator.goLogged(accountId: accountId)
         } else {
-            AccountNavigator.goLogin(account: account)
+            AccountNavigator.goLogin(accountId: accountId)
         }
     }
 
     func onTapOverview(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
-            goAccount(account: account)
+            goAccount(accountId: account.id)
         }
     }
 

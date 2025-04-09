@@ -1,5 +1,5 @@
 import Foundation
 
 struct GenuineCheckDialogViewModel {
-    let bleViewModel: BleViewModel?
+    let BleHwManager: BleHwManager?
 }

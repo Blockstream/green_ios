@@ -13,8 +13,8 @@ class JadeWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblStepHint: UILabel!
     @IBOutlet weak var lblLoading: UILabel!
     @IBOutlet weak var infoBox: UIView!
-    @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var animateView: UIView!
+    @IBOutlet weak var progressView: ProgressView!
     @IBOutlet weak var btnConnectWithQr: UIButton!
 
     let viewModel = JadeWaitViewModel()
@@ -23,15 +23,8 @@ class JadeWaitViewController: HWFlowBaseViewController {
     var timer: Timer?
     var idx = 0
 
-    private var activeToken, resignToken: NSObjectProtocol?
     private var selectedItem: ScanListItem?
     private var cancellables = Set<AnyCancellable>()
-
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,14 +37,11 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
-        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         timer = Timer.scheduledTimer(timeInterval: Constants.jadeAnimInterval, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         update()
         UIView.animate(withDuration: 0.3) {
             self.animateView.alpha = 1.0
         }
-        start()
         startScan()
         scanViewModel?.centralManager.eventPublisher
             .sink { [weak self] in
@@ -140,14 +130,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let token = activeToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        if let token = resignToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        stop()
         timer?.invalidate()
         stopScan()
         scanCancellable?.cancel()
@@ -198,7 +180,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
@@ -206,15 +188,12 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func setStyle() {
         infoBox.cornerRadius = 5.0
-        lblStepNumber.font = UIFont.systemFont(ofSize: 12.0, weight: .black)
-        lblStepTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblStepHint.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        lblLoading.font = UIFont.systemFont(ofSize: 12.0, weight: .bold)
-        lblStepNumber.textColor = UIColor.gGreenMatrix()
-        lblStepTitle.textColor = .white
-        lblStepHint.textColor = .white.withAlphaComponent(0.6)
-        lblLoading.textColor = .white
-        btnConnectWithQr.setStyle(.outlinedWhite)
+        lblStepNumber.setStyle(.subTitle)
+        lblStepTitle.setStyle(.title)
+        lblStepHint.setStyle(.subTitle)
+        lblLoading.setStyle(.subTitle)
+        btnConnectWithQr.setStyle(.inline)
+        progressView.isAnimating = true
     }
 
     @objc func setupBtnTapped() {
@@ -224,27 +203,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
         }
     }
 
-    func start() {
-        loaderPlaceholder.addSubview(loadingIndicator)
-
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor
-                .constraint(equalTo: loaderPlaceholder.centerXAnchor),
-            loadingIndicator.centerYAnchor
-                .constraint(equalTo: loaderPlaceholder.centerYAnchor),
-            loadingIndicator.widthAnchor
-                .constraint(equalToConstant: loaderPlaceholder.frame.width),
-            loadingIndicator.heightAnchor
-                .constraint(equalTo: loaderPlaceholder.widthAnchor)
-        ])
-
-        loadingIndicator.isAnimating = true
-    }
-
-    func stop() {
-        loadingIndicator.isAnimating = false
-    }
-
     func next() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ScanViewController") as? ScanViewController {
@@ -252,14 +210,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
             vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    func applicationDidBecomeActive(_ notification: Notification) {
-        start()
-    }
-
-    func applicationWillResignActive(_ notification: Notification) {
-        stop()
     }
 
     @IBAction func tapConnectWithQr(_ sender: Any) {
@@ -317,7 +267,7 @@ extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
 
     func login(credentials: gdk.Credentials) {
         if let account = AccountsRepository.shared.current {
-            AccountNavigator.goLogged(account: account)
+            AccountNavigator.goLogged(accountId: account.id)
         }
     }
 

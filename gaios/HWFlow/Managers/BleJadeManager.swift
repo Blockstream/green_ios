@@ -9,7 +9,6 @@ class JadeManager {
 
     let jade: Jade
     var pinServerSession: SessionManager?
-    var walletManager: WalletManager?
     var version: JadeVersionInfo?
     var hash: String?
     var warningPinShowed = false
@@ -73,6 +72,12 @@ class JadeManager {
         try await pinServerSession?.connect()
     }
 
+    func getMasterXpub(chain: String ) async throws -> String {
+        let version = try await version()
+        let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
+        return try await jade.xpubs(network: chain, path: [])
+    }
+
     func authenticating(testnet: Bool? = nil) async throws -> Bool {
         _ = try await jade.addEntropy()
         let version = try await version()
@@ -97,45 +102,14 @@ class JadeManager {
         }
     }
 
-    func login(account: Account, fullRestore: Bool = false) async throws -> Account {
-        let version = try await version()
-        let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
-        let masterXpub = try await jade.xpubs(network: account.gdkNetwork.chain, path: [])
-        let walletId = try? SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
-        var account = account
-        account.xpubHashId = walletId?.xpubHashId
-        account = normalizeAccount(account)
-        let walletManager = WalletsRepository.shared.getOrAdd(for: account)
-        walletManager.popupResolver = await PopupResolver()
-        walletManager.hwInterfaceResolver = await HwPopupResolver()
-        walletManager.hwDevice = device
-        walletManager.hwProtocol = jade
-        var derivedCredentials: Credentials?
-        if let derivedAccount = account.getDerivedLightningAccount() {
-            derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: derivedAccount.keychain)
-        }
-        try await walletManager.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
-        walletManager.account.efusemac = version.efusemac
-        account = walletManager.account
-        self.walletManager = walletManager
-        AccountsRepository.shared.current = account
-        return account
-    }
-
     func defaultNetwork() async throws -> NetworkSecurityCase {
         let version = try await version()
         return version.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS
     }
-
-    func normalizeAccount(_ account: Account) -> Account {
-        // check existing previous account
-        let prevAccount = AccountsRepository.shared.hwAccounts.first { $0.isJade == account.isJade && $0.gdkNetwork == account.gdkNetwork && $0.xpubHashId == account.xpubHashId }
-        if var prevAccount = prevAccount {
-            prevAccount.name = account.name
-            prevAccount.hidden = account.hidden
-            return prevAccount
-        }
-        return account
+    
+    func getHWDevice() async throws -> HWDevice {
+        let version = try await version()
+        return .defaultJade(fmwVersion: version.jadeVersion)
     }
 
     func defaultAccount() async throws -> Account {

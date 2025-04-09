@@ -346,7 +346,12 @@ public class AuthenticationTypeHandler {
         do {
             data = try get_(method: method, forNetwork: forNetwork)
         } catch {
-            data = try get_(method: method, forNetwork: forNetwork, version: 0)
+            if [AuthType.AuthKeyBiometric, AuthType.AuthKeyPIN, AuthType.AuthKeyPrivate].contains(method) {
+                data = try get_(method: method, forNetwork: forNetwork, version: 0)
+            }
+        }
+        if data.isEmpty {
+            throw AuthError.ServiceNotAvailable("Authentication method not found")
         }
         if toDecrypt {
             precondition(method == AuthType.AuthKeyBiometric)

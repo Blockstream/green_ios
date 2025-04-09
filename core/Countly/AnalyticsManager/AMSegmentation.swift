@@ -27,13 +27,13 @@ public extension AnalyticsManager {
         var s = ntwSgmtUnified()
         if account?.isJade ?? false {
             s[AnalyticsManager.strBrand] = "Blockstream"
-            s[AnalyticsManager.strFirmware] = "" // BleViewModel.shared.jade?.version?.jadeVersion ?? ""
-            s[AnalyticsManager.strModel] = "" // BleViewModel.shared.jade?.version?.boardType ?? ""
+            s[AnalyticsManager.strFirmware] = "" // BleHwManager.shared.jade?.version?.jadeVersion ?? ""
+            s[AnalyticsManager.strModel] = "" // BleHwManager.shared.jade?.version?.boardType ?? ""
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }
         if account?.isLedger ?? false {
             s[AnalyticsManager.strBrand] = "Ledger"
-            s[AnalyticsManager.strFirmware] = "" // BleViewModel.shared.ledger?.version ?? ""
+            s[AnalyticsManager.strFirmware] = "" // BleHwManager.shared.ledger?.version ?? ""
             s[AnalyticsManager.strModel] = "Ledger Nano X"
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }

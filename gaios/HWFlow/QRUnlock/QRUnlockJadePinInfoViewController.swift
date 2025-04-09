@@ -82,7 +82,7 @@ extension QRUnlockJadePinInfoViewController: QRUnlockJadeViewControllerDelegate 
 
     func login(credentials: gdk.Credentials) {
         if let account = AccountsRepository.shared.current {
-            AccountNavigator.goLogged(account: account)
+            AccountNavigator.goLogged(accountId: account.id)
         }
     }
 

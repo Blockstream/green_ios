@@ -183,7 +183,7 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckEndViewController") as? GenuineCheckEndViewController {
             vc.delegate = self
-            vc.model = GenuineCheckEndViewModel(bleViewModel: BleViewModel.shared)
+            vc.model = GenuineCheckEndViewModel(BleHwManager: BleHwManager.shared)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: true)
         }

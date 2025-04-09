@@ -69,7 +69,7 @@ class ReceiveViewModel {
         guard let address = address else {
             throw GaError.GenericError("Invalid address".localized)
         }
-        return try await BleViewModel.shared.validateAddress(account: account, address: address)
+        return try await BleHwManager.shared.validateAddress(account: account, address: address)
     }
 
     func receiveVerifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {

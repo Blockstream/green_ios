@@ -12,55 +12,144 @@ enum PairingState: Int {
     case paired
 }
 
+enum ConnectionState {
+    case watchonly
+    case wait
+    case scan
+    case connect
+    case auth(JadeVersionInfo?)
+    case login
+    case logged
+    case none
+    case error(Error?)
+    case firmware(String?)
+}
+
 class ConnectViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var loaderPlaceholder: UIView!
+    @IBOutlet weak var lblSubtitle: UILabel!
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var retryButton: UIButton!
+    @IBOutlet weak var progressView: ProgressView!
 
-    var account: Account!
-    var firstConnection: Bool = false
-    var bleViewModel: BleViewModel?
-    var scanViewModel: ScanViewModel?
+    var viewModel: ConnectViewModel!
 
-    private var activeToken, resignToken: NSObjectProtocol?
     private var pairingState: PairingState = .unknown
     private var selectedItem: ScanListItem?
-    private var scanCancellable: AnyCancellable?
-    private var cancellables = Set<AnyCancellable>()
-    private var genuineCheckContinuation: CheckedContinuation<Bool, Error>?
+    private var isJade: Bool { viewModel.isJade }
 
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
+    var state: ConnectionState = .none {
+        didSet {
+            DispatchQueue.main.async {
+                self.reload()
+            }
+        }
+    }
+
+    @MainActor
+    func reload() {
+        switch state {
+        case .watchonly:
+            progress("id_connecting".localized)
+            progressView.isHidden = false
+            retryButton.isHidden = true
+            progress("")
+        case .wait:
+            progressView.isHidden = true
+            retryButton.isHidden = false
+            retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
+            progress("")
+        case .scan:
+            progressView.isHidden = false
+            retryButton.isHidden = true
+            progress("id_looking_for_device".localized)
+        case .connect:
+            progressView.isHidden = false
+            retryButton.isHidden = true
+            progress("id_connecting".localized)
+        case .auth(let version):
+            progressView.isHidden = false
+            retryButton.isHidden = true
+            if !isJade {
+                progress("id_connect_your_ledger_to_use_it".localized)
+            } else if version?.jadeHasPin ?? false {
+                progress("id_unlock_jade_to_continue".localized)
+            } else {
+                progress("id_enter_and_confirm_a_unique_pin".localized)
+            }
+            updateImage(version)
+        case .login:
+            progressView.isHidden = false
+            retryButton.isHidden = true
+            progress("id_logging_in".localized)
+        case .none:
+            progressView.isHidden = true
+            retryButton.isHidden = true
+            progress("")
+            updateImage()
+        case .logged:
+            progressView.isHidden = false
+            AccountsRepository.shared.upsert(viewModel.account)
+            AccountNavigator.goLogged(accountId: viewModel.account.id)
+        case .error(let err):
+            progressView.isHidden = true
+            retryButton.isHidden = false
+            image.image = UIImage(named: "il_connection_fail")
+            if let err = err {
+                let txt = viewModel.bleHwManager.toBleError(err, network: nil).localizedDescription
+                lblSubtitle.text = txt.localized
+                logger.info("error: \(txt)")
+            }
+        case .firmware(let hash):
+            progressView.isHidden = false
+            let text = progressLoaderMessage(
+                title: "id_updating_firmware".localized,
+                subtitle: hash != nil ? "Hash: \(hash ?? "")" : "")
+            lblSubtitle.attributedText = text
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setContent()
         setStyle()
         loadNavigationBtns()
+        viewModel.updateState = { self.state = $0 }
+        viewModel.delegate = self
+        Task { [weak self] in
+            if self?.viewModel.account.hasBioCredentials ?? false {
+                await self?.loginBiometric()
+            } else {
+                await self?.startScan()
+            }
+        }
     }
 
     @MainActor
     func setContent() {
         updateImage()
         retryButton.isHidden = true
-        retryButton.setTitle("Retry".localized, for: .normal)
+        retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
+        lblTitle.text = viewModel.account.name
+        lblSubtitle.text = ""
+    }
+
+    func setStyle() {
+        lblTitle.setStyle(.title)
+        lblSubtitle.setStyle(.subTitle)
+        lblSubtitle.numberOfLines = 0
+        lblSubtitle.translatesAutoresizingMaskIntoConstraints = false
         retryButton.setStyle(.primary)
-        progress(firstConnection ? "id_logging_in".localized : "id_looking_for_device".localized)
     }
 
     func updateImage(_ version: JadeVersionInfo? = nil) {
-        if account.isJade {
-                if let version = version {
-                    image.image = JadeAsset.img(.select, version.boardType == .v2 ? .v2 : .v1)
-                } else {
-                   image.image = JadeAsset.img(.selectDual, nil)
-               }
+        if isJade {
+            if let version = version {
+                image.image = JadeAsset.img(.select, version.boardType == .v2 ? .v2 : .v1)
+            } else {
+                image.image = JadeAsset.img(.selectDual, nil)
+            }
         } else {
             image.image = UIImage(named: "il_ledger")
         }
@@ -73,85 +162,47 @@ class ConnectViewController: HWFlowBaseViewController {
         }
     }
 
-    func onScannedDevice(_ item: ScanListItem) {
+    func onScannedDevice(_ item: ScanListItem) async {
         pairingState = .unknown
-        Task {
-            do {
-                AnalyticsManager.shared.hwwConnect(account: account)
-                await scanViewModel?.stopScan()
-                bleViewModel?.type = item.type
-                bleViewModel?.peripheralID = item.identifier
-                // connection
-                if !firstConnection {
-                    progress("id_connecting".localized)
-                }
-                if !(bleViewModel?.isConnected() ?? false) {
-                    try await bleViewModel?.connect()
-                }
-                // ping if still connected and responding
-                try await bleViewModel?.ping()
-                if account.isJade {
-                    // only for jade, connect to pin server
-                    try await bleViewModel?.jade?.connectPinServer()
-                    let version = try await bleViewModel?.jade?.version()
-                    AnalyticsManager.shared.hwwConnected(account: account,
-                                                         fwVersion: version?.jadeVersion,
-                                                         model: "\(version?.boardType)")
-                    if version?.jadeHasPin ?? false {
-                        progress("id_unlock_jade_to_continue".localized)
-                    } else {
-                        progress("id_follow_the_instructions_on_jade".localized)
-                    }
-                    updateImage(version)
-                } else {
-                    let _ = try await bleViewModel?.ledger?.getLedgerNetwork()
-                    let version = try await bleViewModel?.ledger?.version()
-                    AnalyticsManager.shared.hwwConnected(account: account,
-                                                         fwVersion: version ?? "",
-                                                         model: "Ledger Nano X")
-                    progress("id_connect_your_ledger_to_use_it".localized)
-                }
-
-                for i in 0..<3 {
-                    if let res = try await bleViewModel?.authenticating(), res == true {
-                        break
-                    } else if i == 2 {
-                        throw HWError.Abort("Authentication failure")
-                    }
-                }
-
-                if bleViewModel?.type == .Jade {
-                    do {
-                        // check firmware
-                        let res = try await bleViewModel?.checkFirmware()
-                        if let version = res?.0, let lastFirmware = res?.1 {
-                            onCheckFirmware(version: version, lastFirmware: lastFirmware)
-                            return
-                        }
-                    } catch {
-                        print ("No new firmware found")
-                    }
-                }
-                progress("id_logging_in".localized)
-
-                let silent = try await bleViewModel?.jade?.silentMasterBlindingKey()
-
-                self.account = try await bleViewModel?.login(account: account)
-                onLogin(item)
-            } catch {
-                try? await bleViewModel?.disconnect()
-                onError(error)
+        AnalyticsManager.shared.hwwConnect(account: viewModel.account)
+        await viewModel.stopScan()
+        viewModel?.type = item.type
+        viewModel?.peripheralID = item.identifier
+        viewModel.account.uuid = item.identifier
+        if !viewModel.firstConnection {
+            state = .connect
+        }
+        let task = Task.detached { [weak self] in
+            if await self?.isJade ?? true {
+                try await self?.viewModel.loginJade()
+            } else {
+                try await self?.viewModel.loginLedger()
             }
         }
-    }
-
-    @MainActor
-    func onLogin(_ item: ScanListItem) {
-        print("account.uuid \(account.uuid?.description ?? "")")
-        print("peripheral.identifier \(item.identifier)")
-        account.uuid = item.identifier
-        AccountsRepository.shared.upsert(account)
-        AccountNavigator.goLogged(account: account)
+        switch await task.result {
+        case .success:
+            if !isJade {
+                state = .logged
+                return
+            }
+            // check firmware
+            let task = Task.detached { [weak self] in
+                try? await self?.viewModel.checkFirmware()
+            }
+            switch await task.result {
+            case .success(let res):
+                if let version = res?.0, let lastFirmware = res?.1 {
+                    onCheckFirmware(version: version, lastFirmware: lastFirmware)
+                } else {
+                    state = .logged
+                }
+            case .failure:
+                state = .logged
+            }
+        case .failure(let error):
+            try? await viewModel.bleHwManager.disconnect()
+            state = .error(error)
+        }
     }
 
     @MainActor
@@ -170,7 +221,7 @@ class ConnectViewController: HWFlowBaseViewController {
         // Troubleshoot
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_troubleshoot".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(troubleshootBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
@@ -181,84 +232,60 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     @IBAction func retryBtnTapped(_ sender: Any) {
+        setContent()
         Task {
-            await scanViewModel?.stopScan()
-            setContent()
-            startScan()
+            await stopScan()
+            await startScan()
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
-            DispatchQueue.main.async {
-                if self?.selectedItem != nil { return }
-                 if let item = self?.scanViewModel?.peripherals.filter({ $0.identifier == self?.account.uuid || $0.name == self?.account.name }).first {
-                    self?.selectedItem = item
-                    self?.onScannedDevice(item)
-                }
+    func loginBiometric() async {
+        let task = Task.detached { [weak self] in
+            try await self?.viewModel.loginJadeWatchonly()
+        }
+        switch await task.result {
+        case .success:
+            state = .logged
+        case .failure(let error):
+            state = .wait
+            switch error as? HWError {
+            case .Declined:
+                break
+            case .Disconnected(let error), .InvalidResponse(let error):
+                DropAlert().error(message: error.localized)
+            default:
+                DropAlert().error(message: error.description()?.localized ?? "id_login_failed".localized)
             }
-        })
-        scanViewModel?.centralManager.eventPublisher
-            .sink {
-                switch $0 {
-                case .didUpdateState(let state):
-                    switch state {
-                    case .poweredOn:
-                        DispatchQueue.main.async {
-                            self.progress(self.firstConnection ? "id_logging_in".localized : "id_looking_for_device".localized)
-                            self.startScan()
-                        }
-                    case .poweredOff:
-                        DispatchQueue.main.async {
-                            self.progress("id_enable_bluetooth".localized)
-                            self.stopScan()
-                        }
-                    default:
-                        break
-                    }
-                default:
-                    break
-                }
-            }
-            .store(in: &cancellables)
-        startScan()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
-        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        progressView.isAnimating = true
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let token = activeToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        if let token = resignToken {
-            NotificationCenter.default.removeObserver(token)
-        }
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
-        stopScan()
+        progressView.isAnimating = false
+        Task { [weak self] in
+            await self?.stopScan()
+        }
     }
 
     @MainActor
-    func startScan() {
-        Task {
-            selectedItem = nil
-            do {
-                try await scanViewModel?.scan(deviceType: self.account.isJade ? .Jade : .Ledger)
-                self.progress(firstConnection ? "id_logging_in".localized : "id_looking_for_device".localized)
-            } catch {
-                switch error {
-                case BluetoothError.bluetoothUnavailable:
-                    progress("id_enable_bluetooth".localized)
-                default:
-                    progress(error.localizedDescription)
-                }
-                showBleUnavailable()
+    func startScan() async {
+        state = .scan
+        selectedItem = nil
+        do {
+            try await viewModel.startScan(deviceType: self.isJade ? .Jade : .Ledger)
+        } catch {
+            switch error {
+            case BluetoothError.bluetoothUnavailable:
+                progress("id_enable_bluetooth".localized)
+            default:
+                progress(error.localizedDescription)
             }
         }
     }
@@ -283,110 +310,65 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     @MainActor
-    func stopScan() {
-        Task {
-            await scanViewModel?.stopScan()
-            scanCancellable?.cancel()
-            cancellables.forEach { $0.cancel() }
-        }
-    }
-
-    func applicationDidBecomeActive(_ notification: Notification) {
-        print("applicationDidBecomeActive")
-        pairingState = .paired
-        start()
-    }
-
-    func applicationWillResignActive(_ notification: Notification) {
-        print("applicationWillResignActive")
-        pairingState = .pairing
-        stop()
-    }
-
-    func setStyle() {
-        lblTitle.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
-        lblTitle.textColor = .white
+    func stopScan() async {
+        await viewModel.stopScan()
     }
 
     @MainActor
-    func start() {
-        loaderPlaceholder.addSubview(loadingIndicator)
-
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor
-                .constraint(equalTo: loaderPlaceholder.centerXAnchor),
-            loadingIndicator.centerYAnchor
-                .constraint(equalTo: loaderPlaceholder.centerYAnchor),
-            loadingIndicator.widthAnchor
-                .constraint(equalToConstant: loaderPlaceholder.frame.width),
-            loadingIndicator.heightAnchor
-                .constraint(equalTo: loaderPlaceholder.widthAnchor)
-        ])
-
-        loadingIndicator.isAnimating = true
-    }
-
-    @MainActor
-    func stop() {
-        loadingIndicator.isAnimating = false
-    }
-
     func progress(_ txt: String) {
         DispatchQueue.main.async { [weak self] in
-            self?.lblTitle.text = txt
+            self?.lblSubtitle.text = txt
         }
-    }
-
-    @MainActor
-    override func onError(_ err: Error) {
-        stop()
-        retryButton.isHidden = false
-        let txt = bleViewModel?.toBleError(err, network: nil).localizedDescription
-        lblTitle.text = txt?.localized ?? ""
-        image.image = UIImage(named: "il_connection_fail")
-        logger.info("error: \(txt ?? "")")
     }
 }
 
 extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
-    @MainActor
+
+    func formatText(title: String, subtitle: String) -> NSMutableAttributedString {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white
+        ]
+        let hashAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.customGrayLight(),
+            .font: UIFont.systemFont(ofSize: 16)
+        ]
+        let hint = "\n\n" + subtitle
+        let attributedTitleString = NSMutableAttributedString(string: title)
+        attributedTitleString.setAttributes(titleAttributes, for: title)
+        let attributedHintString = NSMutableAttributedString(string: hint)
+        attributedHintString.setAttributes(hashAttributes, for: hint)
+        attributedTitleString.append(attributedHintString)
+        return attributedTitleString
+    }
+
     func didUpdate(version: String, firmware: Firmware) {
         Task {
             do {
-                startLoader(message: "id_updating_firmware".localized)
-                let binary = try await bleViewModel?.fetchFirmware(firmware: firmware)
-                let hash = bleViewModel?.jade?.jade.sha256(binary ?? Data())
+                state = .firmware(nil)
+                let binary = try await viewModel.bleHwManager.fetchFirmware(firmware: firmware)
+                let hash = viewModel.bleHwManager.jade?.jade.sha256(binary)
                 let hashHex = hash?.hex.separated(by: " ", every: 8)
-                let text = progressLoaderMessage(title: "id_updating_firmware".localized,
-                                                 subtitle: "Hash: \(hashHex ?? "")")
-                startLoader(message: text)
-                let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
-                try await bleViewModel?.disconnect()
+                state = .firmware(hashHex)
+                let res = try await viewModel.bleHwManager.updateFirmware(firmware: firmware, binary: binary)
+                try await viewModel.bleHwManager.disconnect()
                 try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
+                await startScan()
                 await MainActor.run {
-                    self.stopLoader()
-                    if let res = res, res {
+                    if res {
                         DropAlert().success(message: "id_firmware_update_completed".localized)
-                        startScan()
                     } else {
                         DropAlert().error(message: "id_operation_failure".localized)
                     }
                 }
             } catch {
-                self.stopLoader()
-                onError(error)
+                state = .error(error)
             }
         }
     }
 
-    @MainActor
     func didSkip() {
         Task {
-            progress("id_logging_in".localized)
-            self.account = try await bleViewModel?.login(account: account)
-            if let item = selectedItem {
-                onLogin(item)
-            }
+            state = .logged
         }
     }
 }
@@ -394,5 +376,46 @@ extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
 extension ConnectViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
         // navigationController?.popViewController(animated: true)
+    }
+}
+extension ConnectViewController: ConnectViewModelDelegate {
+    func onScan(peripherals: [ScanListItem]) {
+        if self.selectedItem != nil { return }
+        if let item = peripherals.filter({ $0.identifier == self.viewModel.account.uuid || $0.name == self.viewModel.account.name }).first {
+            self.selectedItem = item
+            Task { [weak self] in
+                await self?.onScannedDevice(item)
+            }
+        }
+    }
+    
+    func onError(message: String) {
+        DropAlert().error(message: message.localized)
+    }
+    func onUpdateState(_ central: CBCentralManager) {
+        switch central.state {
+        case .poweredOn:
+            switch state {
+            case .watchonly:
+                break
+            default:
+                Task { [weak self] in
+                    await self?.startScan()
+                }
+            }
+        case .poweredOff:
+            switch state {
+            case .watchonly:
+                break
+            default:
+                progress("id_enable_bluetooth".localized)
+                showBleUnavailable()
+                Task { [weak self] in
+                    await self?.stopScan()
+                }
+            }
+        default:
+            break
+        }
     }
 }

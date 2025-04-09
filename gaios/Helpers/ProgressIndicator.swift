@@ -35,9 +35,9 @@ class ProgressIndicator: UIView {
 extension UIViewController {
     // Add custom progress indicator
 
-    @objc var progressIndicator: ProgressIndicator? {
+    @objc var progressIndicator: ProgressView? {
         get {
-            return UIApplication.shared.keyWindow?.viewWithTag(ProgressIndicator.tag) as? ProgressIndicator
+            return UIApplication.shared.keyWindow?.viewWithTag(ProgressView.tag) as? ProgressView
         }
     }
 
@@ -45,12 +45,10 @@ extension UIViewController {
     @objc func startAnimating(message: String = "") {
         if let window = UIApplication.shared.keyWindow {
             if progressIndicator == nil {
-                let progressIndicator = ProgressIndicator()
-                window.addSubview(progressIndicator)
+                let progressView = ProgressView()
+                window.addSubview(progressView)
             }
-            progressIndicator?.activateConstraints(in: window)
-            progressIndicator?.activityIndicator.startAnimating()
-            progressIndicator?.message = message
+            progressIndicator?.isAnimating = true
         }
     }
 
@@ -58,8 +56,8 @@ extension UIViewController {
     @objc func stopAnimating() {
         UIApplication.shared.windows.forEach { window in
             window.subviews.forEach { view in
-                if let pi = view.viewWithTag(ProgressIndicator.tag) as? ProgressIndicator {
-                    pi.activityIndicator.stopAnimating()
+                if let pi = view.viewWithTag(ProgressView.tag) as? ProgressView {
+                    pi.isAnimating = false
                     pi.removeFromSuperview()
                 }
             }

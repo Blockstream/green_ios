@@ -52,9 +52,9 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
             return
         }
         if let wm = WalletsRepository.shared.get(for: account), wm.logged {
-            AccountNavigator.goLogged(account: account)
+            AccountNavigator.goLogged(accountId: account.id)
         } else {
-            AccountNavigator.goLogin(account: account)
+            AccountNavigator.goLogin(accountId: account.id)
         }
          ()
     }

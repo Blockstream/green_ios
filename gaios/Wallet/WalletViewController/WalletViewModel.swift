@@ -244,11 +244,9 @@ class WalletViewModel {
 
     func reconnectHW(_ network: String) async throws {
         if let account = wm?.account {
-            if let jade = BleViewModel.shared.jade {
-                _ = try await jade.login(account: account, fullRestore: true)
-                _ = try await wm?.subaccounts()
-                await reload()
-            }
+            _ = try await BleHwManager.shared.login(account: account)
+            _ = try await wm?.subaccounts()
+            await reload()
         }
     }
 

@@ -242,6 +242,20 @@ EE5leHQ
                                     </label>
                                 </subviews>
                             </stackView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bTR-i5-pZE" customClass="ProgressView" customModule="gaios" customModuleProvider="target">
+                                <rect key="frame" x="184.66666666666666" y="456" width="24" height="24"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="6YV-MT-vaa"/>
+                                    <constraint firstAttribute="width" constant="24" id="LhV-Lb-ULP"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gyG-Oa-48q">
+                                <rect key="frame" x="30" y="488" width="333" height="20.333333333333314"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="tZe-lr-e94">
                                 <rect key="frame" x="25" y="508" width="343" height="290"/>
                                 <subviews>
@@ -317,27 +331,12 @@ EE5leHQ
                                     </button>
                                 </subviews>
                             </stackView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gyG-Oa-48q">
-                                <rect key="frame" x="30" y="767.66666666666663" width="333" height="20.333333333333371"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bTR-i5-pZE">
-                                <rect key="frame" x="161.66666666666666" y="677.66666666666663" width="70" height="70"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="70" id="6YV-MT-vaa"/>
-                                    <constraint firstAttribute="width" constant="70" id="LhV-Lb-ULP"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="JDQ-Md-dAc"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="JDQ-Md-dAc" firstAttribute="trailing" secondItem="tZe-lr-e94" secondAttribute="trailing" constant="25" id="1dy-NZ-KfI"/>
                             <constraint firstItem="tZe-lr-e94" firstAttribute="leading" secondItem="JDQ-Md-dAc" secondAttribute="leading" constant="25" id="1q5-vt-6sK"/>
-                            <constraint firstItem="JDQ-Md-dAc" firstAttribute="bottom" secondItem="gyG-Oa-48q" secondAttribute="bottom" constant="30" id="4tf-OZ-MAx"/>
                             <constraint firstItem="bTR-i5-pZE" firstAttribute="centerX" secondItem="JDQ-Md-dAc" secondAttribute="centerX" id="7Ls-Ej-jD4"/>
                             <constraint firstItem="MTs-Yu-pOI" firstAttribute="bottom" secondItem="1tO-d5-QlH" secondAttribute="bottom" id="BXY-7n-tUC"/>
                             <constraint firstItem="FPl-hx-lAR" firstAttribute="top" secondItem="1tO-d5-QlH" secondAttribute="bottom" constant="30" id="INa-1r-QWY"/>
@@ -345,11 +344,12 @@ EE5leHQ
                             <constraint firstItem="MTs-Yu-pOI" firstAttribute="centerX" secondItem="1tO-d5-QlH" secondAttribute="centerX" id="M31-MD-eJj"/>
                             <constraint firstItem="1tO-d5-QlH" firstAttribute="centerX" secondItem="JDQ-Md-dAc" secondAttribute="centerX" id="MfZ-uj-hc1"/>
                             <constraint firstItem="1tO-d5-QlH" firstAttribute="top" secondItem="JDQ-Md-dAc" secondAttribute="top" constant="80" id="O9A-cO-Ldf"/>
+                            <constraint firstItem="gyG-Oa-48q" firstAttribute="top" secondItem="bTR-i5-pZE" secondAttribute="bottom" constant="8" id="Q80-FI-gOe"/>
                             <constraint firstItem="JDQ-Md-dAc" firstAttribute="bottom" secondItem="tZe-lr-e94" secondAttribute="bottom" constant="20" id="QKa-wL-8K9"/>
-                            <constraint firstItem="gyG-Oa-48q" firstAttribute="top" secondItem="bTR-i5-pZE" secondAttribute="bottom" constant="20" id="XY2-df-BhK"/>
                             <constraint firstItem="MTs-Yu-pOI" firstAttribute="centerY" secondItem="1tO-d5-QlH" secondAttribute="centerY" id="h4D-GG-wMc"/>
                             <constraint firstItem="JDQ-Md-dAc" firstAttribute="trailing" secondItem="FPl-hx-lAR" secondAttribute="trailing" constant="25" id="hRr-vL-5xp"/>
                             <constraint firstItem="Pm1-kH-rAX" firstAttribute="trailing" secondItem="1tO-d5-QlH" secondAttribute="trailing" id="hhI-C0-Cf2"/>
+                            <constraint firstItem="bTR-i5-pZE" firstAttribute="top" secondItem="FPl-hx-lAR" secondAttribute="bottom" constant="16" id="hjh-QK-Puo"/>
                             <constraint firstItem="MTs-Yu-pOI" firstAttribute="top" secondItem="1tO-d5-QlH" secondAttribute="top" id="iPB-V4-6cF"/>
                             <constraint firstItem="JDQ-Md-dAc" firstAttribute="trailing" secondItem="gyG-Oa-48q" secondAttribute="trailing" constant="30" id="pIh-ND-4SG"/>
                             <constraint firstItem="FPl-hx-lAR" firstAttribute="leading" secondItem="JDQ-Md-dAc" secondAttribute="leading" constant="25" id="pOc-5d-YGX"/>
@@ -367,7 +367,7 @@ EE5leHQ
                         <outlet property="lblHint" destination="wle-QZ-cdE" id="dD0-Sb-fkf"/>
                         <outlet property="lblInfo" destination="gyG-Oa-48q" id="6Ag-0v-Mrq"/>
                         <outlet property="lblTitle" destination="6Aw-IS-Xm1" id="0Gx-5f-8NC"/>
-                        <outlet property="progressView" destination="bTR-i5-pZE" id="tVX-Cw-JUy"/>
+                        <outlet property="progressView" destination="bTR-i5-pZE" id="2qd-ri-K4H"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rif-fq-667" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -380,7 +380,7 @@ EE5leHQ
         <image name="ic_genuine_check_state_warn" width="64" height="64"/>
         <image name="il_check_addr_bg" width="331.33334350585938" height="184"/>
         <namedColor name="gBlackBg">
-            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

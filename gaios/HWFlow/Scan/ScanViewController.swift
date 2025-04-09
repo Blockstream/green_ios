@@ -19,7 +19,7 @@ class ScanViewController: HWFlowBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["JadeDeviceCell", "OtherDeviceCell"].forEach {
+        ["DeviceCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         if deviceType == .Jade {
@@ -109,7 +109,7 @@ class ScanViewController: HWFlowBaseViewController {
     }
 
     func setContent() {
-        title = "".localized
+        title = "Devices found".localized
         btnTroubleshoot.setTitle("id_troubleshoot".localized, for: .normal)
         btnConnectQr.setTitle("Connect via QR".localized, for: .normal)
         btnTroubleshoot.isHidden = deviceType != .Jade
@@ -124,7 +124,7 @@ class ScanViewController: HWFlowBaseViewController {
         AnalyticsManager.shared.hwwConnected(account: account)
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingSuccessViewController") as? PairingSuccessViewController {
-            vc.bleViewModel = BleViewModel.shared
+            vc.bleHwManager = BleHwManager.shared
             vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
@@ -133,7 +133,7 @@ class ScanViewController: HWFlowBaseViewController {
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
@@ -163,18 +163,10 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let peripheral = scanViewModel.peripherals[indexPath.row]
-        if peripheral.jade {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: JadeDeviceCell.identifier, for: indexPath) as? JadeDeviceCell {
-                cell.configure(text: peripheral.name)
-                cell.selectionStyle = .none
-                return cell
-            }
-        } else {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: OtherDeviceCell.identifier, for: indexPath) as? OtherDeviceCell {
-                cell.configure(text: peripheral.name)
-                cell.selectionStyle = .none
-                return cell
-            }
+        if let cell = tableView.dequeueReusableCell(withIdentifier: DeviceCell.identifier, for: indexPath) as? DeviceCell {
+            cell.configure(text: peripheral.name)
+            cell.selectionStyle = .none
+            return cell
         }
         return UITableViewCell()
     }
@@ -207,16 +199,16 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
         Task {
             do {
                 AnalyticsManager.shared.hwwConnect(account: account)
-                BleViewModel.shared.type = peripheral.type
-                BleViewModel.shared.peripheralID = peripheral.identifier
-                try await BleViewModel.shared.connect()
+                BleHwManager.shared.type = peripheral.type
+                BleHwManager.shared.peripheralID = peripheral.identifier
+                try await BleHwManager.shared.connect()
                 await MainActor.run {
                     self.stopAnimating()
                     self.next() }
             } catch {
                 await MainActor.run {
                     self.stopAnimating()
-                    let txt = BleViewModel.shared.toBleError(error, network: nil).localizedDescription
+                    let txt = BleHwManager.shared.toBleError(error, network: nil).localizedDescription
                     self.showError(txt.localized)
                 }
             }
@@ -260,7 +252,7 @@ extension ScanViewController: QRUnlockJadeViewControllerDelegate {
 
     func login(credentials: gdk.Credentials) {
         if let account = AccountsRepository.shared.current {
-            AccountNavigator.goLogged(account: account)
+            AccountNavigator.goLogged(accountId: account.id)
         }
     }
 
