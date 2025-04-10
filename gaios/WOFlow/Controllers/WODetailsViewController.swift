@@ -154,8 +154,10 @@ class WODetailsViewController: KeyboardViewController {
             do {
                 try await self.viewModel.setupSinglesig(for: account, enableBio: self.isBio, credentials: credentials)
                 try await self.viewModel.loginSinglesig(for: account)
+                self.stopLoader()
                 success(account: account)
             } catch {
+                self.stopLoader()
                 failure(error, account: account)
             }
         }

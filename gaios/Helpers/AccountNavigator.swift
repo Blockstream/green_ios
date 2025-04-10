@@ -30,8 +30,7 @@ class AccountNavigator {
             vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         }
-        let appDelegate = UIApplication.shared.delegate
-        appDelegate?.window??.rootViewController = nv
+        changeRoot(root: nv, animated: true)
     }
 
     @MainActor
@@ -46,9 +45,7 @@ class AccountNavigator {
                 if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
                     vc.accountViewModel = accountViewModel
                     vc.walletModel = walletModel
-                    let appDelegate = UIApplication.shared.delegate
-                    appDelegate?.window??.rootViewController = vc
-                    vc.stopLoader()
+                    changeRoot(root: vc)
                 }
             }
         }
@@ -87,8 +84,16 @@ class AccountNavigator {
         let nv = UINavigationController()
         let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         nv.setViewControllers([home!], animated: true)
-        let appDelegate = UIApplication.shared.delegate
-        appDelegate?.window??.rootViewController = nv
+        changeRoot(root: nv)
+    }
+
+    @MainActor
+    static func goTabBar() {
+        if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
+            vc.walletModel = WalletModel()
+            vc.walletModel?.isFirstLoad = true
+            changeRoot(root: vc)
+        }
     }
 
     @MainActor
@@ -109,8 +114,7 @@ class AccountNavigator {
                 nv.setViewControllers([home!], animated: true)
             }
         }
-        let appDelegate = UIApplication.shared.delegate
-        appDelegate?.window??.rootViewController = nv
+        changeRoot(root: nv)
     }
 
     static func goAddWallet(nv: UINavigationController?) {
@@ -126,5 +130,37 @@ class AccountNavigator {
     static func instantiateViewController<K>(storyboard: String, identifier: String) -> K? {
         let storyboard = UIStoryboard(name: storyboard, bundle: nil)
         return storyboard.instantiateViewController(withIdentifier: identifier) as? K
+    }
+
+    static func changeRoot(root: UIViewController, animated: Bool = true) {
+        let appDelegate = UIApplication.shared.delegate
+        if appDelegate?.window??.rootViewController == nil {
+            appDelegate?.window??.rootViewController = root
+            return
+        }
+        if animated {
+            ScreenLockWindow.shared.suspend()
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
+                appDelegate?.window??.rootViewController?.view.alpha = 0.0
+            }, completion: { (_) -> Void  in
+                UIApplication.shared.windows.forEach { window in
+                    window.subviews.forEach { view in
+                        if let loader = view.viewWithTag(Loader.tag) as? Loader {
+                            loader.stop()
+                            loader.removeFromSuperview()
+                        }
+                    }
+                }
+                appDelegate?.window??.rootViewController = root
+                appDelegate?.window??.rootViewController?.view.alpha = 0.0
+                UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+                    appDelegate?.window??.rootViewController?.view.alpha = 1.0
+                }, completion: {_ in
+                    ScreenLockWindow.shared.resume()
+                })
+            })
+        } else {
+            appDelegate?.window??.rootViewController = root
+        }
     }
 }

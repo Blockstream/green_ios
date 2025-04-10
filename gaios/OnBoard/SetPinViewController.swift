@@ -222,7 +222,6 @@ class SetPinViewController: UIViewController {
             Task {
                 do {
                     try await self.viewModel.restore(pin: pin)
-                    self.stopLoader()
                     AccountNavigator.goLogged(account: AccountsRepository.shared.current!)
                     OnBoardParams.shared.restoreSuccess = true
                 } catch {
@@ -235,7 +234,6 @@ class SetPinViewController: UIViewController {
             Task {
                 do {
                     try await self.viewModel.create(pin: pin)
-                    self.stopLoader()
                     AccountNavigator.goLogged(account: AccountsRepository.shared.current!, isFirstLoad: true)
                 } catch {
                     self.stopLoader()

@@ -33,4 +33,10 @@ class ScreenLockWindow: UIWindow {
         // or behind the root window.
         windowLevel = UIWindowLevelBackground
     }
+    func suspend() {
+        isHidden = true
+    }
+    func resume() {
+        isHidden = false
+    }
 }

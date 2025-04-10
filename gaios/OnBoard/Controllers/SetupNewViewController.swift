@@ -132,14 +132,7 @@ class SetupNewViewController: UIViewController {
         }
         switch await task.result {
         case .success:
-            stopLoader()
-            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "Container") as? ContainerViewController {
-                vc.walletModel = WalletModel()
-                vc.walletModel?.isFirstLoad = true
-                let appDelegate = UIApplication.shared.delegate
-                appDelegate?.window??.rootViewController = vc
-            }
+            AccountNavigator.goTabBar()
         case .failure:
             stopLoader()
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
