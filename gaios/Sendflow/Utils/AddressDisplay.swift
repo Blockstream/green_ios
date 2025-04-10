@@ -101,10 +101,10 @@ class AddressDisplay {
         if visibleAddress.count > 10 {
 
             attrS.addAttribute(NSAttributedString.Key.foregroundColor,
-                               value: UIColor.gGreenMatrix(),
+                               value: UIColor.gAccent(),
                                range: rangeH)
             attrS.addAttribute(NSAttributedString.Key.foregroundColor,
-                               value: UIColor.gGreenMatrix(),
+                               value: UIColor.gAccent(),
                                range: rangeT)
             attrS.addAttribute(NSAttributedString.Key.foregroundColor,
                                value: UIColor.clear,

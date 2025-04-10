@@ -19,15 +19,15 @@ class TabHeaderCell: UITableViewCell {
         lblTitle.setStyle(.subTitle)
         lblWallet.setStyle(.txtCard)
         iconBox.layer.cornerRadius = iconBox.frame.size.width / 2
-
-        walletsView.isHidden = true // hide for the moment
-        btnTap.isHidden = true // hide for the moment
+        iconBox.backgroundColor = UIColor.gAccent()
     }
 
-    func configure(title: String, onTap: (() -> Void)?) {
+    func configure(title: String, icon: UIImage, onTap: (() -> Void)?) {
+        let attrText = NSAttributedString(string: AccountsRepository.shared.current?.name ?? "", attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
         lblTitle.text = title
-        lblWallet.text = AccountsRepository.shared.current?.name ?? ""
+        lblWallet.attributedText = attrText
         self.onTap = onTap
+        self.icon.image = icon.maskWithColor(color: UIColor.gBlackBg())
     }
     @IBAction func btnTap(_ sender: Any) {
         walletsView.pressAnimate {

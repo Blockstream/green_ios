@@ -13,8 +13,6 @@ enum HomeSection: Int, CaseIterable {
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btnAbout: UIButton!
-    @IBOutlet weak var btnSettings: UIButton!
     @IBOutlet weak var newWalletView: UIView!
     @IBOutlet weak var lblNewWallet: UILabel!
 
@@ -36,9 +34,6 @@ class HomeViewController: UIViewController {
 
         setContent()
         setStyle()
-        updateUI()
-        view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
-        btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
 
         ["WalletListCell", "AlertCardCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
@@ -49,6 +44,7 @@ class HomeViewController: UIViewController {
         AnalyticsManager.shared.recordView(.home)
         AnalyticsManager.shared.appLoadingFinished()
         PromoManager.shared.delegate = self
+        loadNavigationBtns()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -62,11 +58,6 @@ class HomeViewController: UIViewController {
     }
 
     func setContent() {
-        btnSettings.setTitle("id_app_settings".localized, for: .normal)
-        btnSettings.setTitleColor(.lightGray, for: .normal)
-        btnAbout.setTitle("id_about".localized, for: .normal)
-        btnAbout.setImage(UIImage(named: "ic_about")!, for: .normal)
-        btnAbout.setTitleColor(.lightGray, for: .normal)
         lblNewWallet.text = "id_setup_a_new_wallet".localized
     }
 
@@ -75,7 +66,16 @@ class HomeViewController: UIViewController {
         newWalletView.setStyle(CardStyle.defaultStyle)
     }
 
-    func updateUI() {
+    func loadNavigationBtns() {
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
+        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+        let aboutBtn = UIButton(type: .system)
+        aboutBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        aboutBtn.setImage(UIImage(named: "ic_tab_security"), for: .normal)
+        aboutBtn.addTarget(self, action: #selector(aboutBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn), UIBarButtonItem(customView: aboutBtn)]
     }
 
     func remoteAlertDismiss() {
@@ -182,16 +182,13 @@ class HomeViewController: UIViewController {
         }
     }
 
-    @IBAction func btnNewWallet(_ sender: Any) {
-        newWalletView.pressAnimate {
-            let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "GetStartedOnBoardViewController") as? GetStartedOnBoardViewController {
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
+    @objc func settingsBtnTapped() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
-
-    @IBAction func btnAbout(_ sender: Any) {
+    @objc func aboutBtnTapped() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -199,11 +196,12 @@ class HomeViewController: UIViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-
-    @IBAction func btnSettings(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            navigationController?.pushViewController(vc, animated: true)
+    @IBAction func btnNewWallet(_ sender: Any) {
+        newWalletView.pressAnimate {
+            let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "GetStartedOnBoardViewController") as? GetStartedOnBoardViewController {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 }
@@ -405,13 +403,13 @@ extension HomeViewController {
         let title = UILabel(frame: .zero)
         title.text = txt
         title.numberOfLines = 0
-        title.setStyle(.txtSectionHeader)
+        title.setStyle(.txtBigger)
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
         NSLayoutConstraint.activate([
             title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 24),
-            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
+            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -25)
         ])
         return section
     }

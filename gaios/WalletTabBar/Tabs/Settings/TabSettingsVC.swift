@@ -51,8 +51,8 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
 
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Settings".localized, onTap: {[weak self] in
-                    self?.walletTab.walletsMenu()
+                cell.configure(title: "Settings".localized, icon: walletModel.headerIcon, onTap: {[weak self] in
+                    self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
                 return cell

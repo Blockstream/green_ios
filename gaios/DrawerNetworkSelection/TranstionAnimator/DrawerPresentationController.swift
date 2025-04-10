@@ -18,7 +18,7 @@ class DrawerPresentationController: UIPresentationController {
     }
 
     override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
-        return CGSize(width: parentSize.width * 0.80, height: parentSize.height)
+        return CGSize(width: parentSize.width, height: parentSize.height)
     }
 
     override func presentationTransitionWillBegin() {
@@ -55,7 +55,7 @@ class DrawerPresentationController: UIPresentationController {
 
     func configureBackground() {
         backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        backgroundView.backgroundColor = UIColor.gBlackBg()
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         let backgroundTap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         backgroundView.addGestureRecognizer(backgroundTap)

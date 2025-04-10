@@ -128,8 +128,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Home".localized, onTap: {[weak self] in
-                    self?.walletTab.walletsMenu()
+                cell.configure(title: "Home".localized, icon: walletModel.headerIcon, onTap: {[weak self] in
+                    self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
                 return cell

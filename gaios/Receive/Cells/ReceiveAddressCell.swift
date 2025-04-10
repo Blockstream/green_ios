@@ -31,14 +31,14 @@ class ReceiveAddressCell: UITableViewCell {
         bgCard.layer.cornerRadius = 5.0
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         qrFrame.addGestureRecognizer(longPressRecognizer)
-        lnBanner.backgroundColor = UIColor.gGreenMatrix()
+        lnBanner.backgroundColor = UIColor.gAccent()
         lnBanner.cornerRadius = 5.0
         lblInfo.setStyle(.txtCard)
         lblInfo.textColor = .black
         lnBannerBox.isHidden = true
         envelopeBorderView.backgroundColor = .clear
         envelopeBorderView.borderWidth = 5.0
-        envelopeBorderView.borderColor = UIColor.gGreenMatrix()
+        envelopeBorderView.borderColor = UIColor.gAccent()
         envelopeBorderView.cornerRadius = 20.0
         btnMagnify.setTitle("id_increase_qr_size".localized, for: .normal)
         btnCopyAddress.setTitle("id_copy_address".localized, for: .normal)
@@ -101,7 +101,7 @@ class ReceiveAddressCell: UITableViewCell {
             lnBannerBox.isHidden = false
             lblInfo.text = onChaininfo
             btnRefresh.isHidden = true
-            bgCard.borderColor = UIColor.gGreenMatrix()        }
+            bgCard.borderColor = UIColor.gAccent()        }
 
         self.onLongpress = onLongpress
     }

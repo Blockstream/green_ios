@@ -146,7 +146,7 @@ class PriceChartCell: UITableViewCell {
         let set1 = LineChartDataSet(entries: values, label: "Data")
 
         let gradientColors = [UIColor.clear.cgColor,
-                              UIColor.gGreenMatrix().withAlphaComponent(0.7).cgColor
+                              UIColor.gAccent().withAlphaComponent(0.7).cgColor
                               ]
         let gradient = CGGradient(colorsSpace: nil, colors: gradientColors as CFArray, locations: nil)!
 
@@ -155,11 +155,11 @@ class PriceChartCell: UITableViewCell {
         set1.drawFilledEnabled = true
         set1.drawCirclesEnabled = false
         set1.lineWidth = 2
-        set1.setColor(UIColor.gGreenMatrix())
+        set1.setColor(UIColor.gAccent())
         set1.drawValuesEnabled = false
         set1.mode = .cubicBezier
         chartView.drawBordersEnabled = false
-        chartView.borderColor = UIColor.gGreenMatrix()
+        chartView.borderColor = UIColor.gAccent()
         chartView.xAxis.enabled = false
         chartView.leftAxis.enabled = false
         chartView.rightAxis.enabled = false
@@ -182,7 +182,7 @@ class PriceChartCell: UITableViewCell {
             set2.drawValuesEnabled = false
             set2.drawCirclesEnabled = true
             set2.circleRadius = 0
-            set2.circleColors = [UIColor.gGreenMatrix()]
+            set2.circleColors = [UIColor.gAccent()]
             data = LineChartData(dataSets: [set1, set2])
         }
         chartView.data = data
@@ -197,7 +197,7 @@ class PriceChartCell: UITableViewCell {
         onNewFrame?(.day)
         change(.day)
     }
-    
+
     @IBAction func btnW(_ sender: Any) {
         onNewFrame?(.week)
         change(.week)

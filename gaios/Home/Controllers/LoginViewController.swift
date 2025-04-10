@@ -429,7 +429,7 @@ class LoginViewController: UIViewController {
     func reloadPin() {
         pinLabel?.enumerated().forEach {(index, label) in
             if index < pinCode.count {
-                label.textColor = UIColor.customMatrixGreen()
+                label.textColor = UIColor.gAccent()
             } else {
                 label.textColor = UIColor.black
             }

@@ -38,7 +38,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
         tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
 
-        view.accessibilityIdentifier = AccessibilityIdentifiers.DrawerMenuScreen.view
+        loadNavigationBtns()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -47,11 +47,6 @@ class DrawerNetworkSelectionViewController: UIViewController {
     }
 
     func setContent() {
-        btnSettings.setTitle("id_app_settings".localized, for: .normal)
-        btnSettings.setTitleColor(.lightGray, for: .normal)
-        btnAbout.setTitle("id_about".localized, for: .normal)
-        btnAbout.setImage(UIImage(named: "ic_about")!, for: .normal)
-        btnAbout.setTitleColor(.lightGray, for: .normal)
         lblNewWallet.text = "id_setup_a_new_wallet".localized
     }
 
@@ -59,6 +54,18 @@ class DrawerNetworkSelectionViewController: UIViewController {
         view.backgroundColor = UIColor.gBlackBg()
         tableView.backgroundColor = UIColor.gBlackBg()
         newWalletView.setStyle(CardStyle.defaultStyle)
+    }
+
+    func loadNavigationBtns() {
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
+//        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+        let aboutBtn = UIButton(type: .system)
+        aboutBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        aboutBtn.setImage(UIImage(named: "ic_tab_security"), for: .normal)
+//        aboutBtn.addTarget(self, action: #selector(aboutBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn), UIBarButtonItem(customView: aboutBtn)]
     }
 
     func getAccountFromTableView(_ indexPath: IndexPath) -> Account? {
@@ -114,6 +121,10 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     @IBAction func btnSettings(_ sender: Any) {
         delegate?.didSelectSettings()
+    }
+
+    @IBAction func btnClose(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
 }
 
@@ -261,14 +272,14 @@ extension DrawerNetworkSelectionViewController {
         let title = UILabel(frame: .zero)
         title.text = txt
         title.numberOfLines = 0
-        title.setStyle(.txtSectionHeader)
+        title.setStyle(.txtBigger)
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
 
         NSLayoutConstraint.activate([
             title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20),
-            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20)
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
+            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -25)
         ])
 
         return section

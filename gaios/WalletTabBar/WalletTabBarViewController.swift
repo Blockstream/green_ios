@@ -15,8 +15,6 @@ class WalletTabBarViewController: UITabBarController {
     let tabSecurityVC = WalletTab.tabSecurityVC()
     let tabSettingsVC = WalletTab.tabSettingsVC()
 
-    private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletTabBarViewController.self, options: nil)![0] as? DrawerBarItem)!)
-
     init(walletModel: WalletModel) {
         self.walletModel = walletModel
         super.init(nibName: nil, bundle: nil)
@@ -41,7 +39,6 @@ class WalletTabBarViewController: UITabBarController {
         UIView.animate(withDuration: 1.0) {
             self.view.alpha = 1
         }
-        drawerIcon(true)
 
         EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
@@ -86,35 +83,10 @@ class WalletTabBarViewController: UITabBarController {
             NotificationCenter.default.removeObserver(observer)
         }
         notificationObservers = []
-        drawerIcon(false)
-    }
-
-    func drawerIcon(_ show: Bool) {
-        if let bar = navigationController?.navigationBar {
-            if show {
-                let i = UIImageView(frame: CGRect(x: 0.0, y: bar.frame.height / 2.0 - 5.0, width: 7.0, height: 10.0))
-                i.image = UIImage(named: "ic_drawer")
-                i.tag = 999
-                bar.addSubview(i)
-            } else {
-                bar.subviews.forEach { if $0.tag == 999 { $0.removeFromSuperview()} }
-            }
-        }
     }
 
     func loadNavigationBtns() {
         guard let walletModel else { return }
-        drawerItem.configure(img: walletModel.headerIcon, onTap: {[weak self] () in
-            self?.switchNetwork()
-        })
-        let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
-        navigationItem.leftBarButtonItem = leftItem
-
-        let desiredWidth = 135.0
-        let desiredHeight = 35.0
-        let widthConstraint = NSLayoutConstraint(item: drawerItem, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredWidth)
-        let heightConstraint = NSLayoutConstraint(item: drawerItem, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredHeight)
-        drawerItem.addConstraints([widthConstraint, heightConstraint])
 
         // setup right menu bar: settings
         let settingsBtn = UIButton(type: .system)
@@ -175,16 +147,6 @@ class WalletTabBarViewController: UITabBarController {
             vc.modalPresentationStyle = .custom
             vc.delegate = self
             present(vc, animated: true, completion: nil)
-        }
-    }
-
-    func walletsMenu() {
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletsViewController") as? DialogWalletsViewController {
-//            vc.delegate = self
-            vc.viewModel = DialogWalletsViewModel(accounts: AccountsRepository.shared.swAccounts)
-            vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
 
@@ -477,7 +439,11 @@ extension WalletTabBarViewController: DialogRenameViewControllerDelegate {
             WalletManager.current?.account = account
             // AccountsRepository.shared.upsert(account)
             AnalyticsManager.shared.renameWallet()
-            drawerItem.refresh()
+            Task.detached { [weak self] in
+                // try? await self?.walletModel.loadBalances()
+                // try? await self?.walletModel.loadTransactions()
+                await self?.updateTabs([.home, .transact, .security, .settings])
+            }
         }
     }
     func didCancel() {
