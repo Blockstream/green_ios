@@ -11,7 +11,6 @@ protocol ConnectViewModelDelegate {
     func onUpdateState(_ central: CBCentralManager)
 }
 class ConnectViewModel: NSObject {
-    
     var account: Account
     var state: ConnectionState = .none
     var firstConnection: Bool = false
@@ -110,9 +109,6 @@ class ConnectViewModel: NSObject {
         // login
         updateState?(.login)
         let wm = try await bleHwManager.login(account: account)
-        if wm.bitcoinSubaccounts.isEmpty {
-            _ = try? await wm.bitcoinSinglesigSession?.createSubaccount(CreateSubaccountParams(name: "", type: .segWit))
-        }
         // export core descriptors for watchonly
         if firstConnection {
             let subaccounts = try await wm.subaccounts()

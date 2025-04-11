@@ -275,8 +275,8 @@ public class LightningSessionManager: SessionManager {
         }
     }
 
-    public override func discovery() async throws -> Bool {
-        return try await getBalance(subaccount: 0, numConfs: 0)["btc"] != 0
+    public override func discovery() async throws {
+        _ = try await getBalance(subaccount: 0, numConfs: 0)
     }
 
     public func createInvoice(satoshi: UInt64, description: String) async throws -> ReceivePaymentResponse? {

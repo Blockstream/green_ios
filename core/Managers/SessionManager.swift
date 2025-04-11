@@ -557,16 +557,20 @@ public class SessionManager {
         }
         return nil
     }
-
-    public func discovery() async throws -> Bool {
-        do {
-            let subaccounts = try await self.subaccounts(true)
-            if let first = subaccounts.filter({ $0.pointer == 0 }).first,
-               first.isSinglesig && !(first.bip44Discovered ?? false) {
-                _ = try await self.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
-            }
-            return !subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty
-        } catch { throw LoginError.connectionFailed() }
+    
+    public func discovery() async throws {
+        if !gdkNetwork.singlesig {
+            return
+        }
+        let subaccounts = try await subaccounts(true)
+        let subaccount = subaccounts.filter({ $0.pointer == 0 }).first
+        if let subaccount = subaccount, !(subaccount.bip44Discovered ?? false) {
+            _ = try await updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
+        }
+        let segWits = subaccounts.filter({ $0.type == .segWit })
+        if segWits.isEmpty {
+            _ = try await createSubaccount(CreateSubaccountParams(name: "", type: .segWit))
+        }
     }
 
     public func networkConnect() async {

@@ -232,30 +232,8 @@ public class WalletManager {
         if !AppSettings.shared.experimental {
             return
         }
-        let walletId = try session.walletIdentifier(credentials: credentials)
-        var existDatadir = session.existDatadir(walletHashId: walletId?.walletHashId ?? "")
-        if session.networkType.lightning && !existDatadir {
-            // Check legacy lightning dir using main credentials
-            existDatadir = session.existDatadir(walletHashId: parentWalletId?.walletHashId ?? "")
-        }
-        if !fullRestore && !existDatadir {
-            return
-        }
-        let removeDatadir = !existDatadir
         let res = try await session.loginUser(credentials: credentials, hw: nil, restore: fullRestore)
         self.account.lightningWalletHashId = res.walletHashId
-        if session.logged && (fullRestore || !existDatadir) {
-            let isFunded = try? await session.discovery()
-            if !(isFunded ?? false) && removeDatadir {
-                if session.isRestoredNode ?? false {
-                    return
-                }
-                try? await session.disconnect()
-                if let walletHashId = walletId?.walletHashId {
-                    await session.removeDatadir(walletHashId: walletHashId)
-                }
-            }
-        }
         if fullRestore && session.logged {
             try await addLightningShortcut(credentials: credentials)
         }
@@ -272,31 +250,13 @@ public class WalletManager {
             // disable liquid if is unsupported on hw
             return
         }
-        let walletId = {
-            if let credentials = credentials {
-                return try session.walletIdentifier(credentials: credentials)
-            } else if device != nil, let masterXpub = masterXpub {
-                return try session.walletIdentifier(masterXpub: masterXpub)
-            }
-            return nil
-        }
-        let walletHashId = try walletId()!.walletHashId
-        var existDatadir = session.existDatadir(walletHashId: walletHashId)
-        if !fullRestore && !existDatadir && session.gdkNetwork.network != prominentSession?.gdkNetwork.network {
-            return
-        }
-        let removeDatadir = !existDatadir && session.gdkNetwork.network != self.prominentNetwork.network
         let res = try await session.loginUser(credentials: credentials, hw: device, restore: fullRestore)
         if session.gdkNetwork.network == self.prominentNetwork.network {
             self.account.xpubHashId = res.xpubHashId
             self.account.walletHashId = res.walletHashId
         }
-        if session.logged && (fullRestore || !existDatadir) {
-            let isFunded = try? await session.discovery()
-            if !(isFunded ?? false) && removeDatadir {
-                try? await session.disconnect()
-                await session.removeDatadir(walletHashId: walletHashId)
-            }
+        if session.logged && fullRestore {
+            try? await session.discovery()
         }
     }
 
@@ -340,17 +300,7 @@ public class WalletManager {
         parentWalletId: WalletIdentifier?
     )
     async throws {
-        let walletId: ((_ session: SessionManager) throws -> WalletIdentifier?) = { session in
-            if let credentials = credentials {
-                return try session.walletIdentifier(credentials: credentials)
-            } else if device != nil, let masterXpub = masterXpub {
-                return try session.walletIdentifier(masterXpub: masterXpub)
-            }
-            return nil
-        }
-        guard let prominentSession = sessions[prominentNetwork.rawValue] else { fatalError() }
-        let existDatadir = try prominentSession.existDatadir(walletHashId: walletId(prominentSession)!.walletHashId)
-        let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir
+        let fullRestore = fullRestore || account.xpubHashId == nil
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
                 logger.info("WM login \(session.networkType.rawValue, privacy: .public) begin")
