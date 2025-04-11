@@ -7039,7 +7039,7 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = exactVersion;
-				version = 10.28.1;
+				version = 11.10.0;
 			};
 		};
 		81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */ = {
