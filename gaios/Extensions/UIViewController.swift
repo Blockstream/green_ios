@@ -130,3 +130,62 @@ extension UIViewController {
       }
     }
 }
+
+extension UIViewController {
+
+    var backgroundTag: Int { 12345 }
+
+    func getBackgroundView() -> UIView {
+        if let backgroundView = view.viewWithTag(backgroundTag) {
+            return backgroundView
+        } else {
+            let backgroundView = UIView()
+            backgroundView.tag = backgroundTag
+            backgroundView.backgroundColor = UIColor.gBlackBg().withAlphaComponent(0.8)
+            return backgroundView
+        }
+    }
+    func getProgressView() -> ProgressView {
+        if let progressView = getBackgroundView().viewWithTag(ProgressView.tag) as? ProgressView {
+            return progressView
+        } else {
+            let progressView = ProgressView()
+            progressView.tag = ProgressView.tag
+            NSLayoutConstraint.activate([
+                progressView.widthAnchor.constraint(equalToConstant: 24),
+                progressView.heightAnchor.constraint(equalToConstant: 24)
+            ])
+            return progressView
+        }
+    }
+
+    @MainActor
+    @objc func startAnimating(message: String = "") {
+        let backgroundView = getBackgroundView()
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backgroundView)
+        NSLayoutConstraint.activate([
+            backgroundView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            backgroundView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        let progressView = getProgressView()
+        progressView.isAnimating = true
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.addSubview(progressView)
+        NSLayoutConstraint.activate([
+            progressView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
+            progressView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor)
+        ])
+    }
+
+    @MainActor
+    @objc func stopAnimating() {
+        let backgroundView = getBackgroundView()
+        let progressView = getProgressView()
+        progressView.isAnimating = false
+        progressView.removeFromSuperview()
+        backgroundView.removeFromSuperview()
+    }
+}

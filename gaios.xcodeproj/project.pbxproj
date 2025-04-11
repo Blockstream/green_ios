@@ -533,13 +533,11 @@
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0983C523FC848C00289ACA /* HelpCell.swift */; };
 		6D0983F323FF033900289ACA /* DropAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0983F223FF033900289ACA /* DropAlert.swift */; };
-		6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D12C952236760A600A51F1F /* ProgressIndicator.xib */; };
 		6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D3A13E923A43B6200C69153 /* UITableViewCell.swift */; };
 		6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D56C771235E27F000E4F990 /* Accounts.storyboard */; };
 		6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D8099D723021CEF0069A69F /* PopoverMenu.storyboard */; };
 		6D97046E2344146300839598 /* ModalAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D97046D2344146300839598 /* ModalAnimator.swift */; };
 		6D970470234418A600839598 /* ModalPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D97046F234418A600839598 /* ModalPresentationController.swift */; };
-		6DAB5F97235A244B007637CF /* ProgressIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAB5F96235A244B007637CF /* ProgressIndicator.swift */; };
 		6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DD813B222BC58A7002DCC8B /* Assets.storyboard */; };
 		6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DF2DEE623F382F7005F16E9 /* Help.storyboard */; };
 		6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DF2DEE823F38314005F16E9 /* HelpViewController.swift */; };
@@ -1500,14 +1498,12 @@
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6D0983C523FC848C00289ACA /* HelpCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpCell.swift; sourceTree = "<group>"; };
 		6D0983F223FF033900289ACA /* DropAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropAlert.swift; sourceTree = "<group>"; };
-		6D12C952236760A600A51F1F /* ProgressIndicator.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicator.xib; sourceTree = "<group>"; };
 		6D2A613523302694008C518A /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		6D3A13E923A43B6200C69153 /* UITableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCell.swift; sourceTree = "<group>"; };
 		6D56C771235E27F000E4F990 /* Accounts.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Accounts.storyboard; sourceTree = "<group>"; };
 		6D8099D723021CEF0069A69F /* PopoverMenu.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopoverMenu.storyboard; sourceTree = "<group>"; };
 		6D97046D2344146300839598 /* ModalAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalAnimator.swift; sourceTree = "<group>"; };
 		6D97046F234418A600839598 /* ModalPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPresentationController.swift; sourceTree = "<group>"; };
-		6DAB5F96235A244B007637CF /* ProgressIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicator.swift; sourceTree = "<group>"; };
 		6DD813B222BC58A7002DCC8B /* Assets.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Assets.storyboard; sourceTree = "<group>"; };
 		6DF2DEE623F382F7005F16E9 /* Help.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Help.storyboard; sourceTree = "<group>"; };
 		6DF2DEE823F38314005F16E9 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
@@ -1850,8 +1846,6 @@
 				09309F19212F8D8700DE093B /* SearchTextField.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
-				6D12C952236760A600A51F1F /* ProgressIndicator.xib */,
-				6DAB5F96235A244B007637CF /* ProgressIndicator.swift */,
 				3484118B265E6113002D2202 /* Constants.swift */,
 				6D0983F223FF033900289ACA /* DropAlert.swift */,
 				34C9E10826B92F0B00200D2F /* DynamicTableView.swift */,
@@ -4525,7 +4519,6 @@
 			files = (
 				3487657B29D43B2A0059D05F /* Illustration Envelope.riv in Resources */,
 				8150EE202BB7293800E70A12 /* greenlight_device_cert.txt in Resources */,
-				6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */,
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				34C8E77729BF868500C84066 /* DeviceCell.xib in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
@@ -5049,7 +5042,6 @@
 				3457F4BD2924090400EF33B5 /* AssetExpandableSelectViewController.swift in Sources */,
 				346EB2722BE8BB290043139F /* AddressDisplay.swift in Sources */,
 				812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */,
-				6DAB5F97235A244B007637CF /* ProgressIndicator.swift in Sources */,
 				345FC46829ED4D83009FCF43 /* WOTypeCell.swift in Sources */,
 				34560B7A29B9D590007E916F /* JadeWaitViewModel.swift in Sources */,
 				34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */,

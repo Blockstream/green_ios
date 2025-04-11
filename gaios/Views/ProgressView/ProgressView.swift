@@ -5,7 +5,7 @@ class ProgressView: UIView {
     // MARK: - Properties
     let colors: [UIColor] = [UIColor.gAccent()]
     let lineWidth: CGFloat = 2
-    static let tag = 0x70726f6772657372
+    static let tag = 0x70726f6772657375
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
