@@ -158,7 +158,7 @@ class WalletTabBarViewController: UITabBarController {
         case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
             Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
         case .Block:
-            if walletModel.cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
+            if walletModel.existPendingTransaction() {
                 Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
             }
         case .AssetsUpdated:
@@ -198,8 +198,11 @@ class WalletTabBarViewController: UITabBarController {
         }
         isReloading = true
         try? await self.walletModel.fetchBalances(discovery: discovery)
-        _ = try? await self.walletModel.fetchTransactions()
-        await walletModel.reloadAlertCards()
+        walletModel.reloadBalances()
+        updateTabs([.home, .transact])
+        _ = try? await walletModel.fetchTransactions(reset: true)
+        walletModel.reloadTransactions()
+        updateTabs([.home, .transact])
         if chartUpdate || Api.shared.currency != walletModel.currency?.lowercased() {
             try? await refreshChart()
         }

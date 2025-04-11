@@ -25,7 +25,7 @@ class WalletModel {
     var headerIcon: UIImage { return UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white) }
 
     /// Cached data
-    var cachedTransactions = [Transaction]()
+    var cachedTransactions = [Int: [Transactions]]()
     var cachedBalance: AssetAmountList?
 
     /// if no accounts show the layer
@@ -62,7 +62,6 @@ class WalletModel {
         }
     }
 
-    var page = 0
     var fetchingTxs = false
     var securityState = SecurityState.alerted
     var currency: String? {
@@ -107,58 +106,49 @@ class WalletModel {
                                             assetId: self.getAssetId())
     }
 
-    func fetchTransactions() async throws {
-        if fetchingTxs {
+    func existPendingTransaction() -> Bool {
+        let list = cachedTransactions
+            .flatMap({$0.value })
+            .flatMap({$0.list})
+        for tx in list {
+            if tx.blockHeight == 0 {
+                return true
+            }
+        }
+        return false
+    }
+
+    func fetchTransactions(reset: Bool) async throws {
+        guard let wm = wm, !fetchingTxs else {
             return
         }
         fetchingTxs = true
-        let txs = try await wm?.transactionsAll(subaccounts: subaccounts) ?? []
-        cachedTransactions = txs.sorted(by: >)
+        let txs = try await wm.pagedTransactions(subaccounts: wm.subaccounts, of: reset ? 0 : pages)
+        for (account, pagetxs) in txs {
+            if reset {
+                cachedTransactions[account] = [pagetxs]
+            } else {
+                cachedTransactions[account] = (cachedTransactions[account] ?? []) + [pagetxs]
+            }
+        }
         fetchingTxs = false
     }
 
-    func reloadTransactions() {
-        var next = txCellModels.count + 30
-        if next > cachedTransactions.count {
-            next = cachedTransactions.count
-        }
-        txCellModels = cachedTransactions.prefix(upTo: next)
-            .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
-            .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
+    var pages: Int {
+        return self.cachedTransactions.mapValues({$0.count}).values.max() ?? 0
     }
-    func getTransactions_(restart: Bool = true, max: Int? = nil) async throws -> Bool {
 
-        if fetchingTxs {
-            return false
-        }
-        fetchingTxs = true
-        do {
-            let txs = try await wm?.transactions(subaccounts: wm?.subaccounts ?? [], first: (restart == true) ? 0 : cachedTransactions.count) ?? []
-            if txs.count == 0 || txs.sorted(by: >) == cachedTransactions.suffix(txs.count) {
-                fetchingTxs = false
-                return false
+    func reloadTransactions() {
+        let list = cachedTransactions
+            .flatMap({$0.value })
+            .flatMap({$0.list})
+            .sorted(by: >)
+            .prefix(pages * 30)
+        txCellModels = Array(list)
+            .map { tx in
+                let blockHeight = tx.isLiquid ? wm?.liquidBlockHeight() : wm?.bitcoinBlockHeight()
+                return TransactionCellModel(tx: tx, blockHeight: blockHeight ?? 0)
             }
-            if restart {
-                page = 0
-                cachedTransactions = []
-            }
-            if txs.count > 0 {
-                page += 1
-            }
-            cachedTransactions += txs
-            cachedTransactions = Array((cachedTransactions)
-                .sorted(by: >)
-                .prefix(max ?? cachedTransactions.count))
-            txCellModels = cachedTransactions
-                .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
-                .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
-            fetchingTxs = false
-            return true
-        } catch {
-            print(error)
-            fetchingTxs = false
-            return false
-        }
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {

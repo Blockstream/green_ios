@@ -273,13 +273,23 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         let filteredIndexPaths = indexPaths.filter { $0.section == TabTransactSection.transactions.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
-        if row > (walletModel.txCellModels.count - 3) {
-            getTransactions()
+        if row >= (walletModel.txCellModels.count - 1) && walletModel.txCellModels.count >= 30 {
+            Task { [weak self] in await self?.getTransactions() }
+        }
+
+    }
+
+    func getTransactions() async {
+        let task = Task.detached { [weak self] in
+            try await self?.walletModel.fetchTransactions(reset: false)
+        }
+        switch await task.result {
+        case .success:
+            walletModel.reloadTransactions()
+            reloadSections([.transactions], animated: false)
+        case .failure(let error):
+            print("Failed to fetch transactions: \(error)")
         }
     }
 
-    func getTransactions() {
-        walletModel.reloadTransactions()
-        reloadSections([.transactions], animated: false)
-    }
 }

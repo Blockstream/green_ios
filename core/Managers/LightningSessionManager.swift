@@ -322,10 +322,7 @@ public class LightningSessionManager: SessionManager {
         return Address.from(swapInfo: addr)
     }
 
-    public override func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
-        if first > 0 {
-            return Transactions(list: [])
-        }
+    public override func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
         // check valid breez api
         guard let lb = self.lightBridge else {
             return Transactions(list: [])
@@ -343,7 +340,9 @@ public class LightningSessionManager: SessionManager {
                 Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: false)
             }
         }
-        return Transactions(list: txs.sorted().reversed())
+        txs = txs.sorted().reversed()
+        txs = Array(txs.suffix(from: first).prefix(count))
+        return Transactions(list: txs)
     }
 
     public func closeChannels() throws {

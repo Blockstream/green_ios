@@ -482,11 +482,11 @@ public class WalletManager {
             }
     }
 
-    public func transactions(subaccounts: [WalletItem], first: Int = 0) async throws -> [Transaction] {
+    public func transactions(subaccounts: [WalletItem], first: Int = 0, count: Int? = nil) async throws -> [Transaction] {
         return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
-                    let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: UInt32(first))
+                    let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: first)
                     let page = txs?.list.map { Transaction($0.details, subaccount: subaccount.hashValue) }
                     return page ?? []
                 }
@@ -497,19 +497,27 @@ public class WalletManager {
         }
     }
 
-    public func transactionsAll(subaccounts: [WalletItem]) async throws -> [Transaction] {
-        return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
+    public func pagedTransactions(subaccounts: [WalletItem], of page: Int = 0) async throws -> [Int: Transactions] {
+        return try await withThrowingTaskGroup(of: (Int, Transactions).self, returning: [Int: Transactions].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
-                    let txs = try await subaccount.session?.transactionsAll(subaccount: subaccount.pointer)
-                    let page = txs?.list.map { Transaction($0.details, subaccount: subaccount.hashValue) }
-                    return page ?? []
+                    let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * 30, count: 30)
+                    let list = txs?.list.map { Transaction($0.details, subaccount: subaccount.hashValue) }
+                    return (subaccount.hashValue, Transactions(list: list ?? []))
                 }
             }
-            return try await group.reduce(into: [Transaction]()) { partial, res in
-                partial += res
-            }.sorted()
+            return try await group.reduce(into: [Int: Transactions]()) { partial, res in
+                partial[res.0] = res.1
+            }
         }
+    }
+
+    public func bitcoinBlockHeight() -> UInt32? {
+        return bitcoinSubaccounts.first?.session?.blockHeight
+    }
+
+    public func liquidBlockHeight() -> UInt32? {
+        return liquidSubaccounts.first?.session?.blockHeight
     }
 
     public func pause() async {

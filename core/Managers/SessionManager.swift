@@ -170,25 +170,13 @@ public class SessionManager {
             bcurResolver: bcurResolver)
         return try await rm.run()
     }
-
-    public func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
-        let params = ["subaccount": subaccount, "first": first, "count": 30]
+    public func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
+        let params = ["subaccount": subaccount, "first": UInt32(first), "count": UInt32(count)]
         let res = try await wrap(fun: self.session?.getTransactions, params: params)
         let result = res["result"] as? [String: Any]
         let dict = result?["transactions"] as? [[String: Any]]
         let list = dict?.map { Transaction($0) }
         return Transactions(list: list ?? [])
-    }
-
-    public func transactionsAll(subaccount: UInt32) async throws -> Transactions {
-        var list = [Transaction]()
-        var txsIsEmpty = false
-        repeat {
-            let txs = try await transactions(subaccount: subaccount, first: UInt32(list.count))
-            list += txs.list
-            txsIsEmpty = txs.list.isEmpty
-        } while !txsIsEmpty
-        return Transactions(list: list)
     }
 
     public func subaccount(_ pointer: UInt32) async throws -> WalletItem? {
