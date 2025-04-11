@@ -200,7 +200,7 @@ class WalletTabBarViewController: UITabBarController {
         if chartUpdate || Api.shared.currency != walletModel.currency?.lowercased() {
             try? await refreshChart()
         }
-        // await self?.walletModel.reloadPromoCards()
+        await walletModel.reloadPromoCards()
         walletModel.reloadBalances()
         walletModel.reloadTransactions()
         walletModel.reloadBackupCards()

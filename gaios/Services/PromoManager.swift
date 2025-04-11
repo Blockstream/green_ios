@@ -3,6 +3,7 @@ import core
 
 enum PromoScreen: String {
     case walletOverview = "WalletOverview"
+    case homeTab = "HomeTab"
     case home = "Home"
 }
 
@@ -52,7 +53,7 @@ class PromoManager {
             // remove associated video if present and not shared
             if let promo = promos?.filter({ $0.id == id }).first {
                 if let remotePath = promo.video_large, let url = URL(string: remotePath) {
-                    var fileName = url.lastPathComponent
+                    let fileName = url.lastPathComponent
                     let fm = FileManager.default
                     let cachesURL = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
                     let mediaURL = cachesURL.appendingPathComponent("media")
@@ -64,7 +65,7 @@ class PromoManager {
         }
     }
     func isSharingVideo(promoId: String, remotePath: String) -> Bool {
-        var dismissed = dismissedPromos()
+        let dismissed = dismissedPromos()
         let sharingPromos = promos?.filter({ $0.video_large == remotePath && $0.isVisible() == true && $0.id != promoId && dismissed.contains(promoId) })
         print("promodbg, sharing video promos: \(sharingPromos?.count ?? 0)")
         return sharingPromos?.count ?? 0 > 0
@@ -75,7 +76,7 @@ class PromoManager {
     }
     func mediaIsReady(_ promo: Promo) -> Bool {
         if let path = promo.video_large, let url = URL(string: path) {
-            var fileName = url.lastPathComponent
+            let fileName = url.lastPathComponent
             let fm = FileManager.default
             let cachesURL = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
             let mediaURL = cachesURL.appendingPathComponent("media")

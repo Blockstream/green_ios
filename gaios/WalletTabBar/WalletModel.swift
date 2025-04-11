@@ -74,8 +74,8 @@ class WalletModel {
 
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
-        if let promo = PromoManager.shared.promoCellModels(.walletOverview).first?.promo,
-        let source = PromoManager.shared.promoCellModels(.walletOverview).first?.source {
+        if let promo = PromoManager.shared.promoCellModels(.homeTab).first?.promo,
+           let source = PromoManager.shared.promoCellModels(.homeTab).first?.source {
             PromoManager.shared.promoView(promo: promo, source: source)
         }
     }
@@ -198,7 +198,7 @@ class WalletModel {
     }
 
     func reloadPromoCards() async {
-        promoCardCellModel = subaccounts.count == 0 ? [] : PromoManager.shared.promoCellModels(.walletOverview)
+        promoCardCellModel = subaccounts.count == 0 ? [] : PromoManager.shared.promoCellModels(.homeTab)
     }
 
     func reloadBackupCards() {
