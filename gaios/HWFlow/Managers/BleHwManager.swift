@@ -195,7 +195,15 @@ class BleHwManager {
         }
         do {
             if let masterXpub = try await getMasterXpub(chain: account.gdkNetwork.chain) {
-                try await walletManager.loginHW(lightningCredentials: derivedCredentials, device: device, masterXpub: masterXpub, fullRestore: false)
+                let walletId = try walletManager.prominentSession?.walletIdentifier(masterXpub: masterXpub)
+                try await walletManager.login(
+                   credentials: nil,
+                   lightningCredentials: derivedCredentials,
+                   device: device,
+                   masterXpub: masterXpub,
+                   fullRestore: false,
+                   parentWalletId: walletId
+                )
             }
         } catch {
             let text = toBleError(error, network: nil).localizedDescription

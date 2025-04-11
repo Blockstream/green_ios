@@ -34,7 +34,13 @@ class SetPinViewModel {
         try await checkWalletsJustRestored(wm: wm)
         let lightningCredentials = try wm.deriveLightningCredentials(from: credentials)
         let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
-        try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
+        try await wm.login(
+            credentials: credentials,
+            lightningCredentials: lightningCredentials,
+            device: nil,
+            masterXpub: nil,
+            fullRestore: true,
+            parentWalletId: walletIdentifier)
         wm.account.attempts = 0
         try await checkWalletMismatch(wm: wm)
         try await checkWalletsJustRestored(wm: wm)

@@ -334,21 +334,6 @@ class WalletModel {
         return true
     }
 
-    func addSWDerivedLightning() async throws {
-
-        guard wm?.lightningSubaccount != nil else {
-            return
-        }
-
-        guard let mainCredentials = try await wm?.prominentSession?.getCredentials(password: "") else {
-            return
-        }
-        guard let credentials = try? wm?.deriveLightningCredentials(from: mainCredentials) else {
-            return
-        }
-        try await wm?.addLightningShortcut(credentials: credentials)
-    }
-
     func registerNotifications() {
         guard let lightningSession = self.wm?.lightningSession,
         lightningSession.logged else {

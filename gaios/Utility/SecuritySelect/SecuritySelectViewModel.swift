@@ -113,7 +113,7 @@ class SecuritySelectViewModel {
             }
             let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
             await session.removeDatadir(credentials: credentials)
-            let _ = try await session.loginUser(credentials: credentials, hw: nil, restore: true)
+            let _ = try await session.loginUser(credentials: credentials, hw: nil)
             let _ = try await wm.subaccounts()
             if Bundle.main.debug {
                 // try await wm.setCloseToAddress()
@@ -179,7 +179,7 @@ class SecuritySelectViewModel {
 
     func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         try await session.register(credentials: credentials, hw: hw)
-        _ = try await session.loginUser(credentials: credentials, hw: hw, restore: false)
+        _ = try await session.loginUser(credentials: credentials, hw: hw)
         let subaccounts = try await session.subaccounts(true)
         let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
         if !used {

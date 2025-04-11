@@ -282,7 +282,7 @@ class LoginViewController: UIViewController {
         AnalyticsManager.shared.loginWalletStart()
         self.startLoader(message: "id_logging_in".localized)
         let account = viewModel.account
-        let task = Task.detached() { [weak self] in
+        let task = Task.detached { [weak self] in
             if usingAuth == .AuthKeyWoBioCredentials {
                 let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
                 _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
@@ -293,7 +293,7 @@ class LoginViewController: UIViewController {
             }
         }
         switch await task.result {
-        case .success(_):
+        case .success:
             success(withPIN: withPIN != nil)
         case .failure(let error):
             failure(error: error, enableFailingCounter: true)

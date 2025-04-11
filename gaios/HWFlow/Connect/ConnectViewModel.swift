@@ -168,16 +168,16 @@ class ConnectViewModel: NSObject {
         if let bitcoinDescriptors = bitcoinDescriptors {
             let credentials = Credentials(coreDescriptors: bitcoinDescriptors)
             try? await wm.bitcoinSinglesigSession?.connect()
-            _ = try? await wm.bitcoinSinglesigSession?.loginUser(credentials, restore: false)
+            _ = try? await wm.bitcoinSinglesigSession?.loginUser(credentials)
         }
         if let liquidDescriptors = liquidDescriptors {
             let credentials = Credentials(coreDescriptors: liquidDescriptors)
             try? await wm.liquidSinglesigSession?.connect()
-            _ = try? await wm.liquidSinglesigSession?.loginUser(credentials, restore: false)
+            _ = try? await wm.liquidSinglesigSession?.loginUser(credentials)
         }
         if let lightningCredentials = lightningCredentials {
             try? await wm.lightningSession?.connect()
-            _ = try? await wm.lightningSession?.loginUser(lightningCredentials, restore: false)
+            _ = try? await wm.lightningSession?.loginUser(lightningCredentials)
         }
         if bitcoinDescriptors == nil && liquidDescriptors == nil && lightningCredentials == nil {
             throw HWError.Abort("No valid credentials")

@@ -244,7 +244,7 @@ public class SessionManager {
         _ = try await wrap(fun: self.session?.loginUserSW, params: [:])
     }
 
-    public func loginUser(_ params: Credentials, restore: Bool) async throws -> LoginUserResult {
+    public func loginUser(_ params: Credentials) async throws -> LoginUserResult {
         try await connect()
         let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserSW, params: params)
         loginData = res
@@ -252,7 +252,7 @@ public class SessionManager {
         return res
     }
 
-    public func loginUser(_ params: HWDevice, restore: Bool) async throws -> LoginUserResult {
+    public func loginUser(_ params: HWDevice) async throws -> LoginUserResult {
         try await connect()
         let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserHW, params: params)
         loginData = res
@@ -260,11 +260,11 @@ public class SessionManager {
         return res
     }
 
-    public func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
+    public func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws -> LoginUserResult {
         if let credentials = credentials {
-            return try await loginUser(credentials, restore: restore)
+            return try await loginUser(credentials)
         } else if let hw = hw {
-            return try await loginUser(hw, restore: restore)
+            return try await loginUser(hw)
         } else {
             throw GaError.GenericError("No login method specified")
         }
@@ -557,14 +557,14 @@ public class SessionManager {
         }
         return nil
     }
-    
-    public func discovery() async throws {
+
+    public func discovery(refresh: Bool, updateHidden: Bool) async throws {
         if !gdkNetwork.singlesig {
             return
         }
-        let subaccounts = try await subaccounts(true)
+        let subaccounts = try await subaccounts(refresh)
         let subaccount = subaccounts.filter({ $0.pointer == 0 }).first
-        if let subaccount = subaccount, !(subaccount.bip44Discovered ?? false) {
+        if let subaccount = subaccount, !(subaccount.bip44Discovered ?? false) && !subaccount.hidden && subaccount.type == .segwitWrapped && updateHidden {
             _ = try await updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
         }
         let segWits = subaccounts.filter({ $0.type == .segWit })

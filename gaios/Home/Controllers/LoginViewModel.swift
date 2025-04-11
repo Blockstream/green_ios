@@ -62,9 +62,16 @@ class LoginViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = await HwPopupResolver()
-        let lightningCredentials = Credentials(mnemonic: try wm.getLightningMnemonic(credentials: credentials), bip39Passphrase: credentials.bip39Passphrase)
+        let lightningMnemonic = try wm.getLightningMnemonic(credentials: credentials)
+        let lightningCredentials = Credentials(mnemonic: lightningMnemonic, bip39Passphrase: credentials.bip39Passphrase)
         let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
-        try await wm.login(credentials: credentials, lightningCredentials: lightningCredentials, parentWalletId: walletIdentifier)
+        try await wm.login(
+            credentials: credentials,
+            lightningCredentials: lightningCredentials,
+            device: nil,
+            masterXpub: nil,
+            fullRestore: false,
+            parentWalletId: walletIdentifier)
         account = wm.account
         AccountsRepository.shared.current = account
         return wm

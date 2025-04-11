@@ -298,6 +298,13 @@ extension DialogAboutViewController: DialogListViewControllerDelegate {
         case .cleanup:
             MigratorManager.shared.removeAll()
             DropAlert().success(message: "Wallet list deleted")
+        case .watchonly:
+            AnalyticsManager.shared.woWallet()
+            let storyboard = UIStoryboard(name: "WOFlow", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "WOSelectViewController")
+            let nv = UINavigationController()
+            nv.setViewControllers([vc], animated: false)
+            AccountNavigator.changeRoot(root: nv)
         case .none:
             break
         }

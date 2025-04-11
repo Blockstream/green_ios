@@ -975,6 +975,20 @@
                                 <rect key="frame" x="0.0" y="505.5" width="414" height="356.5"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I0D-Jd-w90" userLabel="Btn Check Store">
+                                <rect key="frame" x="25" y="734" width="364" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="kWr-SJ-f0n"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="btn_retry_wo">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="retryWoBtnTapped:" destination="z5l-07-Xjx" eventType="touchUpInside" id="uZz-Xg-gDy"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DfU-5Q-yTk" userLabel="Btn Check Store">
                                 <rect key="frame" x="25" y="792" width="364" height="50"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1008,6 +1022,7 @@
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="zRp-Sz-Pb5" firstAttribute="centerY" secondItem="mHO-wb-71B" secondAttribute="centerY" id="0vl-Fy-A0P"/>
+                            <constraint firstItem="I0D-Jd-w90" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="25" id="6Ge-p6-5QI"/>
                             <constraint firstItem="DfU-5Q-yTk" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="25" id="7SP-ki-JsO"/>
                             <constraint firstItem="mHO-wb-71B" firstAttribute="trailing" secondItem="DfU-5Q-yTk" secondAttribute="trailing" constant="25" id="7qN-cc-Ln5"/>
                             <constraint firstItem="qcR-Dl-mGw" firstAttribute="top" secondItem="wtv-sR-89M" secondAttribute="bottom" id="8AP-ND-SkD"/>
@@ -1020,6 +1035,8 @@
                             <constraint firstItem="mHO-wb-71B" firstAttribute="bottom" secondItem="DfU-5Q-yTk" secondAttribute="bottom" constant="20" id="Q62-I1-bYB"/>
                             <constraint firstItem="mHO-wb-71B" firstAttribute="bottom" secondItem="qcR-Dl-mGw" secondAttribute="bottom" id="SiE-um-56h"/>
                             <constraint firstItem="XID-Nl-jGG" firstAttribute="top" secondItem="2tc-vf-hDa" secondAttribute="top" constant="48" id="Ucl-nm-8xd"/>
+                            <constraint firstItem="DfU-5Q-yTk" firstAttribute="top" secondItem="I0D-Jd-w90" secondAttribute="bottom" constant="8" id="WDo-TU-4Ua"/>
+                            <constraint firstItem="mHO-wb-71B" firstAttribute="trailing" secondItem="I0D-Jd-w90" secondAttribute="trailing" constant="25" id="YHG-V3-VSn"/>
                             <constraint firstItem="zRp-Sz-Pb5" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="25" id="l04-JS-4na"/>
                             <constraint firstItem="mHO-wb-71B" firstAttribute="trailing" secondItem="qcR-Dl-mGw" secondAttribute="trailing" id="lou-VO-XQw"/>
                             <constraint firstItem="qcR-Dl-mGw" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" id="nIo-L5-qo5"/>
@@ -1034,6 +1051,7 @@
                         <outlet property="lblTitle" destination="HMd-oB-RDe" id="6vk-ad-Y9A"/>
                         <outlet property="progressView" destination="wtv-sR-89M" id="WPI-4m-Jv3"/>
                         <outlet property="retryButton" destination="DfU-5Q-yTk" id="Q5g-t4-Sn5"/>
+                        <outlet property="retryWoButton" destination="I0D-Jd-w90" id="Du8-3b-gPc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="y2e-Od-E56" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

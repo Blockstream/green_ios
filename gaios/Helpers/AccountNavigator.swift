@@ -37,18 +37,13 @@ class AccountNavigator {
     static func goLogged(accountId: String, isFirstLoad: Bool = false) {
         let account = AccountsRepository.shared.get(for: accountId)!
         AccountsRepository.shared.current = account
-        Task {
-            let isLightning = account.isDerivedLightning
-            let accountViewModel = isLightning ? await accountViewModel(account: account) : nil
-            let walletModel = !isLightning ? WalletModel() : nil
-            walletModel?.isFirstLoad = isFirstLoad
-            await MainActor.run {
-                if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
-                    vc.accountViewModel = accountViewModel
-                    vc.walletModel = walletModel
-                    changeRoot(root: vc)
-                }
-            }
+        let isLightning = account.isDerivedLightning
+        let walletModel = !isLightning ? WalletModel() : nil
+        walletModel?.isFirstLoad = isFirstLoad
+        if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
+            vc.walletModel = walletModel
+            vc.walletModel?.isFirstLoad = true
+            changeRoot(root: vc)
         }
     }
 
@@ -71,15 +66,6 @@ class AccountNavigator {
         let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         nv.setViewControllers([home!], animated: true)
         changeRoot(root: nv)
-    }
-
-    @MainActor
-    static func goTabBar() {
-        if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
-            vc.walletModel = WalletModel()
-            vc.walletModel?.isFirstLoad = true
-            changeRoot(root: vc)
-        }
     }
 
     @MainActor

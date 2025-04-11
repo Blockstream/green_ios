@@ -138,8 +138,12 @@ class SetupNewViewController: UIViewController {
             try await self?.createWallet()
         }
         switch await task.result {
-        case .success:
-            AccountNavigator.goTabBar()
+        case .success(let wm):
+            stopLoader()
+            if let account = wm?.account {
+                AccountsRepository.shared.current = account
+                AccountNavigator.goLogged(accountId: account.id, isFirstLoad: true)
+            }
         case .failure:
             stopLoader()
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)

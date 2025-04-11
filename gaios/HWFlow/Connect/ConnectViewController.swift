@@ -31,6 +31,7 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblSubtitle: UILabel!
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var retryButton: UIButton!
+    @IBOutlet weak var retryWoButton: UIButton!
     @IBOutlet weak var progressView: ProgressView!
 
     var viewModel: ConnectViewModel!
@@ -38,11 +39,12 @@ class ConnectViewController: HWFlowBaseViewController {
     private var pairingState: PairingState = .unknown
     private var selectedItem: ScanListItem?
     private var isJade: Bool { viewModel.isJade }
+    private var hasBioCredentials: Bool { viewModel.account.hasBioCredentials }
 
     var state: ConnectionState = .none {
         didSet {
-            DispatchQueue.main.async {
-                self.reload()
+            DispatchQueue.main.async { [weak self] in
+                self?.reload()
             }
         }
     }
@@ -54,23 +56,28 @@ class ConnectViewController: HWFlowBaseViewController {
             progress("id_connecting".localized)
             progressView.isHidden = false
             retryButton.isHidden = true
+            retryWoButton.isHidden = true
             progress("")
         case .wait:
             progressView.isHidden = true
             retryButton.isHidden = false
             retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
+            retryWoButton.isHidden = !hasBioCredentials
             progress("")
         case .scan:
             progressView.isHidden = false
             retryButton.isHidden = true
+            retryWoButton.isHidden = true
             progress("id_looking_for_device".localized)
         case .connect:
             progressView.isHidden = false
             retryButton.isHidden = true
+            retryWoButton.isHidden = true
             progress("id_connecting".localized)
         case .auth(let version):
             progressView.isHidden = false
             retryButton.isHidden = true
+            retryWoButton.isHidden = true
             if !isJade {
                 progress("id_connect_your_ledger_to_use_it".localized)
             } else if version?.jadeHasPin ?? false {
@@ -82,10 +89,12 @@ class ConnectViewController: HWFlowBaseViewController {
         case .login:
             progressView.isHidden = false
             retryButton.isHidden = true
+            retryWoButton.isHidden = true
             progress("id_logging_in".localized)
         case .none:
             progressView.isHidden = true
             retryButton.isHidden = true
+            retryWoButton.isHidden = true
             progress("")
             updateImage()
         case .logged:
@@ -95,6 +104,7 @@ class ConnectViewController: HWFlowBaseViewController {
         case .error(let err):
             progressView.isHidden = true
             retryButton.isHidden = false
+            retryWoButton.isHidden = !hasBioCredentials
             image.image = UIImage(named: "il_connection_fail")
             if let err = err {
                 let txt = viewModel.bleHwManager.toBleError(err, network: nil).localizedDescription
@@ -118,7 +128,7 @@ class ConnectViewController: HWFlowBaseViewController {
         viewModel.updateState = { self.state = $0 }
         viewModel.delegate = self
         Task { [weak self] in
-            if self?.viewModel.account.hasBioCredentials ?? false {
+            if self?.hasBioCredentials ?? false {
                 await self?.loginBiometric()
             } else {
                 await self?.startScan()
@@ -130,7 +140,9 @@ class ConnectViewController: HWFlowBaseViewController {
     func setContent() {
         updateImage()
         retryButton.isHidden = true
+        retryWoButton.isHidden = true
         retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
+        retryWoButton.setTitle("id_watchonly_login".localized, for: .normal)
         lblTitle.text = viewModel.account.name
         lblSubtitle.text = ""
     }
@@ -141,6 +153,7 @@ class ConnectViewController: HWFlowBaseViewController {
         lblSubtitle.numberOfLines = 0
         lblSubtitle.translatesAutoresizingMaskIntoConstraints = false
         retryButton.setStyle(.primary)
+        retryWoButton.setStyle(.outlined)
     }
 
     func updateImage(_ version: JadeVersionInfo? = nil) {
@@ -231,6 +244,11 @@ class ConnectViewController: HWFlowBaseViewController {
         SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
+    @IBAction func retryWoBtnTapped(_ sender: Any) {
+        Task {
+            await loginBiometric()
+        }
+    }
     @IBAction func retryBtnTapped(_ sender: Any) {
         setContent()
         Task {
@@ -396,7 +414,7 @@ extension ConnectViewController: ConnectViewModelDelegate {
         switch central.state {
         case .poweredOn:
             switch state {
-            case .watchonly:
+            case .none, .wait, .watchonly:
                 break
             default:
                 Task { [weak self] in
@@ -405,7 +423,7 @@ extension ConnectViewController: ConnectViewModelDelegate {
             }
         case .poweredOff:
             switch state {
-            case .watchonly:
+            case .none, .wait, .watchonly:
                 break
             default:
                 progress("id_enable_bluetooth".localized)

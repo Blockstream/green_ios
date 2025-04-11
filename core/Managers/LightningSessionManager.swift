@@ -83,13 +83,12 @@ public class LightningSessionManager: SessionManager {
         logged = true
     }
 
-    public override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
+    public override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws -> LoginUserResult {
         guard let params = credentials else { throw LoginError.connectionFailed() }
         let walletId = try walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
-        _ = LightningRepository.shared.get(for: walletHashId)
-        isRestoredNode = false
+        let restore = LightningRepository.shared.get(for: walletHashId) != nil
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
             logger.info("lightning connectToGreenlight with \(restore)")
@@ -122,7 +121,7 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
-        _ = try await loginUser(credentials: credentials!, restore: false)
+        _ = try await loginUser(credentials: credentials!)
     }
 
     public override func walletIdentifier(credentials: Credentials) throws -> WalletIdentifier? {
@@ -275,8 +274,8 @@ public class LightningSessionManager: SessionManager {
         }
     }
 
-    public override func discovery() async throws {
-        _ = try await getBalance(subaccount: 0, numConfs: 0)
+    public override func discovery(refresh: Bool, updateHidden: Bool) async throws {
+        try await super.discovery(refresh: refresh, updateHidden: updateHidden)
     }
 
     public func createInvoice(satoshi: UInt64, description: String) async throws -> ReceivePaymentResponse? {
