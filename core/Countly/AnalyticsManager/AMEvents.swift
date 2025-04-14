@@ -55,7 +55,7 @@ public enum AnalyticsEventName: String {
     case promoOpen = "promo_open"
     case promoDismiss = "promo_dismiss"
     case promoAction = "promo_action"
-    
+
     case buyInitiate = "buy_initiate"
     case buyRedirect = "buy_redirect"
 }

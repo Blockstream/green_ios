@@ -157,6 +157,7 @@ class HomeViewController: UIViewController {
             let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
                 vc.promo = promo
+                vc.source = .home
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: false, completion: nil)
             }
