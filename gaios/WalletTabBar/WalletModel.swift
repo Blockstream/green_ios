@@ -204,7 +204,11 @@ class WalletModel {
     func reloadBackupCards() {
         guard let wm = wm else { return }
         var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: wm.account.id) && BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .homeTab) == false && cachedBalance?.satoshi() ?? 0 > 0 {
+        if BackupHelper.shared.needsBackup(walletId: wm.account.id) &&
+            BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .homeTab) == false &&
+            !wm.account.isWatchonly &&
+            !wm.account.isHW &&
+            cachedBalance?.satoshi() ?? 0 > 0 {
             cards.append(.backup)
         }
         self.backupCardCellModel = subaccounts.count == 0 ? [] : cards.map { AlertCardCellModel(type: $0) }
