@@ -13,6 +13,9 @@ class TabSecurityVC: TabViewController {
         [PreferenceCellModel(preferenceType: .genuineCheck, state: .unknown),
          PreferenceCellModel(preferenceType: .fwUpdate, state: .unknown)]
     }
+    var recoveryCellModel: [PreferenceCellModel] {
+        [PreferenceCellModel(preferenceType: .recoveryPhrase, state: .unknown)]
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
@@ -75,6 +78,12 @@ class TabSecurityVC: TabViewController {
             break
         case .fwUpdate:
             break
+        case .recoveryPhrase:
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {
+                vc.isSettingDisplay = true
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 }
@@ -98,7 +107,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         case .unlock:
             return 2
         case .recovery:
-            return 0
+            return walletModel.canShowMnemonic() ? 1 : 0
         default:
             return 0
         }
@@ -165,7 +174,15 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .recovery:
-            break
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PreferenceCell.identifier, for: indexPath) as? PreferenceCell {
+                let model = recoveryCellModel[indexPath.row]
+                cell.configure(model: model,
+                               onTap: {[weak self] in
+                    self?.onPreferenceCell(model.type)
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
         default:
             break
         }
@@ -181,6 +198,10 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             } else { return 0.1 }
         case .unlock:
             return sectionHeaderH
+        case .recovery:
+            if walletModel.canShowMnemonic() {
+                return sectionHeaderH
+            } else { return 0.1 }
         default:
             return 0.1
         }
@@ -212,8 +233,10 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             } else { return nil }
         case .unlock:
             return sectionHeader("Unlock method".localized)
-//        case .recovery:
-//            return sectionHeader("Recovery method".localized)
+        case .recovery:
+            if walletModel.canShowMnemonic() {
+                return sectionHeader("Recovery method".localized)
+            } else { return nil }
         default:
             return nil
         }

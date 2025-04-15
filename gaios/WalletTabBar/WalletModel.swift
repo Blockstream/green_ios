@@ -410,4 +410,8 @@ class WalletModel {
         balanceDisplayMode = balanceDisplayMode.next(isBTC)
         reloadBalances()
     }
+
+    func canShowMnemonic() -> Bool {
+        wm?.account.isHW == false && wm?.account.isWatchonly == false && wm?.account.isDerivedLightning == false
+    }
 }

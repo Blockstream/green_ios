@@ -1,5 +1,6 @@
 import UIKit
 import gdk
+import core
 
 enum TabHomeSection: Int, CaseIterable {
     case header
@@ -99,7 +100,24 @@ extension TabViewController {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCompareSecurityViewController") as? DialogCompareSecurityViewController {
             vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
+}
+extension TabViewController: DialogCompareSecurityViewControllerDelegate {
+    func onHardwareTap(_ action: CompareSecurityAction) {
+        switch action {
+        case .setupHardware:
+            let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
+                navigationController?.pushViewController(vc, animated: true)
+                AnalyticsManager.shared.hwwWallet()
+            }
+        case .buyJade:
+            SafeNavigationManager.shared.navigate( ExternalUrls.buyJadePlus )
+        case .none:
+            break
         }
     }
 }

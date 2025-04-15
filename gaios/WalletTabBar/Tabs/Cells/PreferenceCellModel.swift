@@ -11,6 +11,7 @@ enum PreferenceType {
     case pin
     case genuineCheck
     case fwUpdate
+    case recoveryPhrase
 }
 class PreferenceCellModel {
     var state: PreferenceCellState
@@ -34,6 +35,8 @@ class PreferenceCellModel {
             return "Genuine Check".localized
         case .fwUpdate:
             return "Firmware Update".localized
+        case .recoveryPhrase:
+            return "Manual Backup".localized
         }
     }
     var hint: String {
@@ -49,6 +52,8 @@ class PreferenceCellModel {
             return "ic_preference_genuine_check"
         case .fwUpdate:
             return "ic_preference_fw_update"
+        case .recoveryPhrase:
+            return "ic_preference_recovery_phrase"
         }
     }
 }

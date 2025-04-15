@@ -26,11 +26,12 @@ class WalletTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadNavigationBtns()
+//        loadNavigationBtns()
         setTabBar()
         Task.detached { [weak self] in
             await self?.walletModel.registerNotifications()
             await self?.reload(discovery: false, chartUpdate: false) }
+        delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -39,7 +40,7 @@ class WalletTabBarViewController: UITabBarController {
         UIView.animate(withDuration: 1.0) {
             self.view.alpha = 1
         }
-
+        navigationController?.isNavigationBarHidden = true
         EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
                                                                   object: nil,
@@ -83,18 +84,19 @@ class WalletTabBarViewController: UITabBarController {
             NotificationCenter.default.removeObserver(observer)
         }
         notificationObservers = []
+        navigationController?.isNavigationBarHidden = false
     }
 
-    func loadNavigationBtns() {
-        guard let walletModel else { return }
-
-        // setup right menu bar: settings
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
-        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
-    }
+//    func loadNavigationBtns() {
+//        guard let walletModel else { return }
+//
+//        // setup right menu bar: settings
+//        let settingsBtn = UIButton(type: .system)
+//        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+//        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
+//        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+//    }
 
     @objc func settingsBtnTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
@@ -302,11 +304,13 @@ extension WalletTabBarViewController: UITabBarControllerDelegate {
             return true
          }
 
-         if selectedIndex == 1 {
+         if selectedIndex == 3 {
              // return false for no action
 //             if let nv = parent as? UINavigationController {
 //                 nv.navigationBar.topItem?.title = "Transact"
 //             }
+             settingsBtnTapped(self)
+             return false
          }
 
         guard let fromView = selectedViewController?.view, let toView = viewController.view else {

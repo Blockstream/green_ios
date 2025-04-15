@@ -2,8 +2,13 @@ import Foundation
 import UIKit
 import gdk
 
+enum CompareSecurityAction {
+    case setupHardware
+    case buyJade
+    case none
+}
 protocol DialogCompareSecurityViewControllerDelegate: AnyObject {
-
+    func onHardwareTap(_ action: CompareSecurityAction)
 }
 
 class DialogCompareSecurityViewController: UIViewController {
@@ -14,12 +19,6 @@ class DialogCompareSecurityViewController: UIViewController {
     enum CtaType {
         case cta1
         case cta2
-    }
-    enum Action {
-        case setupMobile
-        case setupHardware
-        case restore
-        case buyJade
     }
 
     @IBOutlet weak var tappableBg: UIView!
@@ -78,11 +77,10 @@ class DialogCompareSecurityViewController: UIViewController {
     }
 
     @objc func didSwipe(gesture: UIGestureRecognizer) {
-
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
             case .down:
-                dismiss()
+                dismiss(.none)
             default:
                 break
             }
@@ -90,8 +88,7 @@ class DialogCompareSecurityViewController: UIViewController {
     }
 
     @objc func didTap(gesture: UIGestureRecognizer) {
-
-        dismiss()
+        dismiss(.none)
     }
 
     func setContent() {
@@ -105,8 +102,9 @@ class DialogCompareSecurityViewController: UIViewController {
             lblInfo1.text = "Ideal for small amounts of bitcoin".localized
             lblInfo2.text = "Convenient spending".localized
             lblInfo3.text = "Keys stored on mobile device".localized
-            btnCta1.setTitle("Setup Mobile Wallet".localized, for: .normal)
-            btnCta2.setStyle(.underline(txt: "Restore from backup".localized, color: UIColor.gAccent()))
+            btnCta1.setTitle("Selected".localized, for: .normal)
+            btnCta1.setStyle(.primaryDisabled)
+            btnCta2.isHidden = true
             icon.isHidden = false
             iconPlus.isHidden = true
         case .hardware:
@@ -117,6 +115,9 @@ class DialogCompareSecurityViewController: UIViewController {
             lblInfo3.text = "Keys stored on specialized device".localized
             btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
             btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
+            btnCta1.setStyle(.primary)
+            btnCta2.isHidden = false
+            btnCta2.setStyle(.outlined)
             icon.isHidden = true
             iconPlus.isHidden = false
         }
@@ -132,7 +133,6 @@ class DialogCompareSecurityViewController: UIViewController {
         lblInfo1.setStyle(.txt)
         lblInfo2.setStyle(.txt)
         lblInfo3.setStyle(.txt)
-        btnCta1.setStyle(.primary)
         segmentedControl.setStyle(SegmentedStyle.defaultStyle)
     }
 
@@ -157,14 +157,14 @@ class DialogCompareSecurityViewController: UIViewController {
         })
     }
 
-    func dismiss(_ walletItem: WalletItem? = nil) {
+    func dismiss(_ action: CompareSecurityAction) {
         anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
             self.view.layoutIfNeeded()
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
-//            self.delegate?.didSelectAccount(walletItem)
+            self.delegate?.onHardwareTap(action)
         })
     }
 
@@ -183,22 +183,20 @@ class DialogCompareSecurityViewController: UIViewController {
     @IBAction func btnCta1(_ sender: Any) {
         switch state {
         case .mobile:
-            // tryNext(.setupMobile)
+            // always disabled here
             break
         case .hardware:
-            // tryNext(.setupHardware)
-            break
+            dismiss(.setupHardware)
         }
     }
 
     @IBAction func btnCta2(_ sender: Any) {
         switch state {
         case .mobile:
-            // tryNext(.restore)
+            // hidden here
             break
         case .hardware:
-            // tryNext(.buyJade)
-            break
+            dismiss(.buyJade)
         }
     }
 }
