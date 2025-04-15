@@ -9,6 +9,10 @@ class TabSecurityVC: TabViewController {
         [PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true ? .on : .off),
          PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasPin == true ? .on : .off)]
     }
+    var jadeCellModel: [PreferenceCellModel] {
+        [PreferenceCellModel(preferenceType: .genuineCheck, state: .unknown),
+         PreferenceCellModel(preferenceType: .fwUpdate, state: .unknown)]
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
@@ -61,6 +65,18 @@ class TabSecurityVC: TabViewController {
     func onCompare() {
         securityCompareScreen()
     }
+    func onPreferenceCell(_ type: PreferenceType) {
+        switch type {
+        case .faceID:
+            break
+        case .pin:
+            break
+        case .genuineCheck:
+            break
+        case .fwUpdate:
+            break
+        }
+    }
 }
 extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
@@ -75,6 +91,8 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             return 1
         case .level:
             return 1
+        case .jade:
+            return walletModel.wm?.account.isJade ?? false ? 2 : 0
         case .backup:
             return backupCardCellModel.count
         case .unlock:
@@ -106,6 +124,16 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
+        case .jade:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PreferenceCell.identifier, for: indexPath) as? PreferenceCell {
+                let model = jadeCellModel[indexPath.row]
+                cell.configure(model: model,
+                               onTap: {[weak self] in
+                    self?.onPreferenceCell(model.type)
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
         case .backup:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
                 let alertCard = backupCardCellModel[indexPath.row]
@@ -131,12 +159,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 let model = unlockCellModel[indexPath.row]
                 cell.configure(model: model,
                                onTap: {[weak self] in
-                    switch model.type {
-                    case .faceID:
-                        break
-                    case .pin:
-                        break
-                    }
+                    self?.onPreferenceCell(model.type)
                 })
                 cell.selectionStyle = .none
                 return cell
@@ -152,6 +175,10 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch TabSecuritySection(rawValue: section) {
+        case .jade:
+            if walletModel.wm?.account.isJade ?? false {
+                return sectionHeaderH
+            } else { return 0.1 }
         case .unlock:
             return sectionHeaderH
         default:
@@ -179,6 +206,10 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
         switch TabSecuritySection(rawValue: section) {
+        case .jade:
+            if walletModel.wm?.account.isJade ?? false {
+                return sectionHeader("Your Jade".localized)
+            } else { return nil }
         case .unlock:
             return sectionHeader("Unlock method".localized)
 //        case .recovery:

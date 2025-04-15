@@ -4,10 +4,13 @@ import UIKit
 enum PreferenceCellState: String {
     case on = "ON"
     case off = "OFF"
+    case unknown
 }
 enum PreferenceType {
     case faceID
     case pin
+    case genuineCheck
+    case fwUpdate
 }
 class PreferenceCellModel {
     var state: PreferenceCellState
@@ -27,15 +30,14 @@ class PreferenceCellModel {
             return "FaceID".localized
         case .pin:
             return "PIN".localized
+        case .genuineCheck:
+            return "Genuine Check".localized
+        case .fwUpdate:
+            return "Firmware Update".localized
         }
     }
     var hint: String {
-        switch self.type {
-        case .faceID:
-            return ""
-        case .pin:
-            return ""
-        }
+        return ""
     }
     var icName: String {
         switch self.type {
@@ -43,6 +45,10 @@ class PreferenceCellModel {
             return "ic_onboard_mini_face"
         case .pin:
             return "ic_onboard_mini_pin"
+        case .genuineCheck:
+            return "ic_preference_genuine_check"
+        case .fwUpdate:
+            return "ic_preference_fw_update"
         }
     }
 }
