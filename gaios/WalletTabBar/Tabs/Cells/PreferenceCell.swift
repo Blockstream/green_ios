@@ -35,6 +35,7 @@ class PreferenceCell: UITableViewCell {
         self.lblTitle.text = model.title
         self.lblHint.text = model.hint
         self.lblState.text = model.state.rawValue
+        self.lblState.textColor = model.state == .on ? UIColor.gAccent() : UIColor.gGrayTxt()
     }
 
     @IBAction func btnOnTap(_ sender: Any) {

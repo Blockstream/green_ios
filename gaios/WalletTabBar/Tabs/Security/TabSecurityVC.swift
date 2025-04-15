@@ -6,8 +6,8 @@ class TabSecurityVC: TabViewController {
 
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
-        [PreferenceCellModel(preferenceType: .faceID, state: .off),
-         PreferenceCellModel(preferenceType: .pin, state: .off)]
+        [PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true ? .on : .off),
+         PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasPin == true ? .on : .off)]
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +58,9 @@ class TabSecurityVC: TabViewController {
         }
         self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
     }
-    func onCompare() {}
+    func onCompare() {
+        securityCompareScreen()
+    }
 }
 extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
@@ -98,7 +100,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .level:
             if let cell = tableView.dequeueReusableCell(withIdentifier: SecurityLevelCell.identifier, for: indexPath) as? SecurityLevelCell {
-                cell.configure(onCompare: {[weak self] in
+                cell.configure(isHW: walletModel.wm?.account.isHW == true, onCompare: {[weak self] in
                     self?.onCompare()
                 })
                 cell.selectionStyle = .none

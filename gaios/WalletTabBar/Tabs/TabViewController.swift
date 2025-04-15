@@ -94,4 +94,11 @@ extension TabViewController {
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
+    func securityCompareScreen() {
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCompareSecurityViewController") as? DialogCompareSecurityViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
 }

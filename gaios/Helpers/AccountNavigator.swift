@@ -118,13 +118,11 @@ class AccountNavigator {
     }
 
     static func goAddWallet(nv: UINavigationController?) {
-        nv?.popToRootViewController(animated: false)
-        nv?.dismiss(animated: false, completion: nil)
         let nv = UINavigationController()
         let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
         nv.setViewControllers([home!, onboard!], animated: true)
-        UIApplication.shared.delegate?.window??.rootViewController = nv
+        changeRoot(root: nv)
     }
 
     static func instantiateViewController<K>(storyboard: String, identifier: String) -> K? {

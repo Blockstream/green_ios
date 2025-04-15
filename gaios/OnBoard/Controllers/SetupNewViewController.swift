@@ -74,6 +74,7 @@ class SetupNewViewController: UIViewController {
         lblInfo2.setStyle(.txt)
         lblInfo3.setStyle(.txt)
         btnCta1.setStyle(.primary)
+        segmentedControl.setStyle(SegmentedStyle.defaultStyle)
     }
 
     func updateState() {

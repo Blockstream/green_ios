@@ -74,7 +74,7 @@ class RecoveryCreateViewController: UIViewController {
         let attributedText = NSMutableAttributedString.init(string: title)
         for str1 in strs {
             let range = (title.lowercased() as NSString).range(of: str1.lowercased())
-            attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.gGreenMatrix(), range: range)
+            attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.gAccent(), range: range)
             lblTitle.attributedText = attributedText
         }
 
@@ -103,7 +103,7 @@ class RecoveryCreateViewController: UIViewController {
             for index in start..<end {
                 let real = index+1
                 let formattedString = NSMutableAttributedString(string: String("\(real) \(mnemonic[index])"))
-                formattedString.setColor(color: UIColor.gGreenMatrix(), forText: String(format: "%d", real))
+                formattedString.setColor(color: UIColor.gAccent(), forText: String(format: "%d", real))
                 formattedString.setFont(font: UIFont.systemFont(ofSize: 16, weight: .semibold), stringValue: String(format: "%d", real))
                 arrayLabels[index % Constants.wordsPerPage].attributedText = formattedString
             }

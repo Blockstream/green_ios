@@ -154,7 +154,7 @@ extension UIButton {
 
     func setStyle(_ type: ButtonStyle) {
         titleLabel?.font = UIFont.systemFont(ofSize: 15.0, weight: .medium)
-        layer.cornerRadius = 8.0
+        cornerRadius = 8.0
         switch type {
         case .primary:
             backgroundColor = UIColor.gAccent()
@@ -174,33 +174,28 @@ extension UIButton {
             tintColor = UIColor.gAccent()
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.gAccent().cgColor
-            layer.cornerRadius = 5.0
         case .outlinedGray:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.white, for: .normal)
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.customGrayLight().cgColor
-            layer.cornerRadius = 5.0
         case .outlinedBlack:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.white, for: .normal)
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.black.cgColor
             setTitleColor(.black, for: .normal)
-            layer.cornerRadius = 5.0
         case .outlinedWhite:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.white, for: .normal)
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.white.cgColor
-            layer.cornerRadius = 5.0
             isEnabled = true
         case .outlinedWhiteDisabled:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.white.withAlphaComponent(0.4), for: .normal)
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
-            layer.cornerRadius = 5.0
             isEnabled = false
         case .inline:
             backgroundColor = UIColor.clear
@@ -220,27 +215,22 @@ extension UIButton {
             isEnabled = false
         case .destructive:
             backgroundColor = UIColor.customDestructiveRed()
-            cornerRadius = 5.0
             setTitleColor(.white, for: .normal)
         case .destructiveOutlined:
             backgroundColor = UIColor.clear
-            cornerRadius = 5.0
             setTitleColor(UIColor.customDestructiveRed(), for: .normal)
             borderWidth = 1.0
             borderColor = UIColor.customDestructiveRed()
         case .warnWhite:
             backgroundColor = .white
-            cornerRadius = 5.0
             setTitleColor(UIColor.gBlackBg(), for: .normal)
         case .warnRed:
             backgroundColor = .clear
-            cornerRadius = 5.0
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.white.cgColor
             setTitleColor(.white, for: .normal)
         case .qrEnlarge:
             backgroundColor = UIColor.gGrayBtn()
-            cornerRadius = 5.0
         case .underline(let txt, let color):
             backgroundColor = UIColor.clear
             let attr: [NSAttributedString.Key: Any] = [

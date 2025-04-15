@@ -191,8 +191,8 @@ class RecoveryVerifyViewController: UIViewController {
             } else {
                 attributedString.append(NSMutableAttributedString(string: "\(prefix) \(mnemonic[idx]) "))
             }
-            attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
-            attributedString.setColor(color: UIColor.customMatrixGreen(), forText: prefix)
+            attributedString.setColor(color: UIColor.gAccent(), forText: question)
+            attributedString.setColor(color: UIColor.gAccent(), forText: prefix)
         }
         textLabel.attributedText = attributedString
         updateHint()

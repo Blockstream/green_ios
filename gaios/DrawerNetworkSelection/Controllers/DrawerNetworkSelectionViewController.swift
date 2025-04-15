@@ -111,7 +111,6 @@ class DrawerNetworkSelectionViewController: UIViewController {
     @IBAction func btnAddWallet(_ sender: Any) {
         newWalletView.pressAnimate {
             self.delegate?.didSelectAddWallet()
-            self.dismiss(animated: true, completion: nil)
         }
     }
 

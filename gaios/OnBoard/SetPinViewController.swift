@@ -150,7 +150,7 @@ class SetPinViewController: UIViewController {
     func reload() {
         pinLabel?.enumerated().forEach {(index, label) in
             if index < pinCode.count {
-                label.textColor = UIColor.customMatrixGreen()
+                label.textColor = UIColor.gAccent()
             } else {
                 label.textColor = UIColor.black
             }
@@ -164,9 +164,7 @@ class SetPinViewController: UIViewController {
     }
 
     func nextSetEnabled(_ isEnabled: Bool) {
-        btnNext.backgroundColor = ( isEnabled ? UIColor.customMatrixGreen() : UIColor.customBtnOff())
-        btnNext.isEnabled = isEnabled
-        btnNext.setTitleColor(( isEnabled ? UIColor.white : UIColor.customGrayLight()), for: .normal)
+        btnNext.setStyle(isEnabled ? .primary : .primaryDisabled)
     }
 
     @objc func click(sender: UIButton) {
