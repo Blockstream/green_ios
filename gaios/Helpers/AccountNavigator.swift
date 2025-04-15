@@ -37,12 +37,10 @@ class AccountNavigator {
     static func goLogged(accountId: String, isFirstLoad: Bool = false) {
         let account = AccountsRepository.shared.get(for: accountId)!
         AccountsRepository.shared.current = account
-        let isLightning = account.isDerivedLightning
-        let walletModel = !isLightning ? WalletModel() : nil
-        walletModel?.isFirstLoad = isFirstLoad
+        let walletModel = WalletModel()
         if let vc: ContainerViewController = instantiateViewController(storyboard: "Wallet", identifier: "Container") {
             vc.walletModel = walletModel
-            vc.walletModel?.isFirstLoad = true
+            vc.walletModel?.isFirstLoad = isFirstLoad
             changeRoot(root: vc)
         }
     }
@@ -75,7 +73,6 @@ class AccountNavigator {
             let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
             nv.setViewControllers([onboard!], animated: true)
         } else {
-
             let list = AccountsRepository.shared.accounts.filter { $0.hidden == false}
             if list.count == 1, let account = list.first, account.getDerivedLightningAccount() == nil {
                 goLogin(accountId: account.id)
