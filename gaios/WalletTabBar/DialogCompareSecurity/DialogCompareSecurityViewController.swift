@@ -104,7 +104,8 @@ class DialogCompareSecurityViewController: UIViewController {
             lblInfo3.text = "Keys stored on mobile device".localized
             btnCta1.setTitle("Selected".localized, for: .normal)
             btnCta1.setStyle(.primaryDisabled)
-            btnCta2.isHidden = true
+            btnCta2.alpha = 0
+            btnCta2.isEnabled = false
             icon.isHidden = false
             iconPlus.isHidden = true
         case .hardware:
@@ -116,8 +117,9 @@ class DialogCompareSecurityViewController: UIViewController {
             btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
             btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
             btnCta1.setStyle(.primary)
-            btnCta2.isHidden = false
             btnCta2.setStyle(.outlined)
+            btnCta2.alpha = 1
+            btnCta2.isEnabled = true
             icon.isHidden = true
             iconPlus.isHidden = false
         }
