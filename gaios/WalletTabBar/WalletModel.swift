@@ -268,21 +268,6 @@ class WalletModel {
         ReEnable2faViewModel(expiredSubaccounts: expiredSubaccounts)
     }
 
-    func reload() async {
-        try? await fetchBalances(discovery: false)
-        reloadBalances()
-        try? await fetchTransactions()
-        reloadTransactions()
-    }
-
-    func reconnectHW(_ network: String) async throws {
-        if let account = wm?.account {
-            _ = try await BleHwManager.shared.login(account: account)
-            _ = try await wm?.subaccounts()
-            await reload()
-        }
-    }
-
     func callAnalytics() {
 
         if analyticsDone == true { return }

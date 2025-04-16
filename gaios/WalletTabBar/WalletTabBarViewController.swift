@@ -161,29 +161,10 @@ class WalletTabBarViewController: UITabBarController {
             if walletModel.existPendingTransaction() {
                 Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
             }
-        case .AssetsUpdated:
-            Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
-        case .Network:
-            if let details = details as? [String: Any],
-               let connection = Connection.from(details) as? Connection {
-                if connection.connected {
-                    Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
-                }
-            }
-        case .Settings, .Ticker, .TwoFactorReset:
-            Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
-//        case .bip21Scheme:
-//            if URLSchemeManager.shared.isValid {
-//                if let bip21 = URLSchemeManager.shared.bip21 {
-//                    let account = viewModel.accountCellModels[safe: sIdx]
-//                    let sendAddressInputViewModel = SendAddressInputViewModel(
-//                        input: bip21,
-//                        preferredAccount: account?.account,
-//                        txType: .transaction)
-//                    presentSendAddressInputViewController(sendAddressInputViewModel)
-//                    URLSchemeManager.shared.url = nil
-//                }
-//            }
+        case .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset:
+            walletModel.reloadBalances()
+            walletModel.reloadTransactions()
+            updateTabs([.home, .transact])
         default:
             break
         }
