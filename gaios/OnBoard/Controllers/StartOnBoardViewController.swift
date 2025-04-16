@@ -53,9 +53,9 @@ class StartOnBoardViewController: UIViewController {
 
         switch action {
         case .new:
-            OnBoardManager.shared.flowType = .add
+            OnboardViewModel.flowType = .add
         case .restore:
-            OnBoardManager.shared.flowType = .restore
+            OnboardViewModel.flowType = .restore
         }
         let testnetAvailable = AppSettings.shared.testnet
         if testnetAvailable {
@@ -78,11 +78,11 @@ class StartOnBoardViewController: UIViewController {
     func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
 
-        switch OnBoardManager.shared.flowType {
+        switch OnboardViewModel.flowType {
         case .add:
             if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                vc.pinFlow = .create
-                vc.viewModel = SetPinViewModel(credentials: nil, testnet: OnBoardManager.shared.chainType == .testnet ? true : false)
+                vc.pinFlow = OnboardViewModel.flowType == .add ? .create : .restore
+                vc.viewModel = OnboardViewModel()
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .restore:
@@ -111,10 +111,10 @@ extension StartOnBoardViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:
-            OnBoardManager.shared.chainType = .mainnet
+            OnboardViewModel.chainType = .mainnet
             next()
         case .testnet:
-            OnBoardManager.shared.chainType = .testnet
+            OnboardViewModel.chainType = .testnet
             next()
         case .none:
             break

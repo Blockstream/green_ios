@@ -499,11 +499,7 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func btnWalletLock(_ sender: Any) {
-        OnBoardManager.shared.flowType = .restore
-        OnBoardParams.shared = OnBoardParams(testnet: account.gdkNetwork.mainnet,
-                                             walletName: account.name,
-                                             accountId: account.id,
-                                             xpubHashId: account.xpubHashId)
+        OnboardViewModel.flowType = .restore
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
             vc.restoredAccount = account

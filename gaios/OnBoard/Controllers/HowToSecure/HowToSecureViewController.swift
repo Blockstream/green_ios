@@ -55,7 +55,7 @@ class HowToSecureViewController: UIViewController {
 
     @IBAction func btnWatchOnly(_ sender: Any) {
 
-        OnBoardManager.shared.flowType = .watchonly
+        OnboardViewModel.flowType = .watchonly
 
         let testnetAvailable = AppSettings.shared.testnet
         if testnetAvailable {
@@ -72,10 +72,10 @@ extension HowToSecureViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:
-            OnBoardManager.shared.chainType = .mainnet
+            OnboardViewModel.chainType = .mainnet
             next()
         case .testnet:
-            OnBoardManager.shared.chainType = .testnet
+            OnboardViewModel.chainType = .testnet
             next()
         case .none:
             break

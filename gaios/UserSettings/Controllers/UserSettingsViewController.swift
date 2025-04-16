@@ -133,14 +133,11 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .ChangePin:
-            Task {
-                let credentials = try? await viewModel.wm?.prominentSession?.getCredentials(password: "")
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                if let credentials = credentials, let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                    vc.pinFlow = .settings
-                    vc.viewModel = SetPinViewModel(credentials: credentials, testnet: self.viewModel.wm?.testnet ?? false)
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                vc.pinFlow = .settings
+                vc.viewModel = OnboardViewModel()
+                self.navigationController?.pushViewController(vc, animated: true)
             }
         case.LoginWithBiometrics:
             let vm = viewModel.getCellModel(at: indexPath)

@@ -32,6 +32,7 @@ class SetupNewViewController: UIViewController {
     @IBOutlet weak var btnCta2: UIButton!
 
     var state = State.mobile
+    var viewModel = OnboardViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,46 +97,19 @@ class SetupNewViewController: UIViewController {
 
     func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if OnBoardManager.shared.flowType == .add {
+        if OnboardViewModel.flowType == .add {
             Task { await self.create() }
-        } else if OnBoardManager.shared.flowType == .restore {
+        } else if OnboardViewModel.flowType == .restore {
             if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
     }
 
-    func createWallet() async throws -> WalletManager {
-        let account = try await createAccount()
-        _ = try await createCredentials(account: account)
-        // let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials,  for: account.keychain)
-        let pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyBiometric, for: account.keychain)
-        let credentials = Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
-        let wallet = WalletsRepository.shared.getOrAdd(for: account)
-        try await wallet.create(credentials)
-        return wallet
-    }
-
-    func createAccount() async throws -> Account {
-        let testnet = OnBoardManager.shared.chainType == .testnet ? true : false
-        let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
-        let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        return Account(name: name, network: mainNetwork)
-    }
-
-    func createCredentials(account: Account) async throws -> Credentials {
-        let mnemonic = try generateMnemonic12()
-        let credentials = Credentials(mnemonic: mnemonic)
-        // try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoBioCredentials, credentials: credentials, for: account.keychain)
-        let PinData = PinData(encryptedData: "", pinIdentifier: UUID().uuidString, salt: "", encryptedBiometric: nil, plaintextBiometric: nil)
-        try? AuthenticationTypeHandler.setPinData(method: .AuthKeyBiometric, pinData: PinData, extraData: mnemonic, for: account.keychain)
-        return credentials
-    }
-
     func create() async {
         startLoader()
         let task = Task.detached { [weak self] in
-            try await self?.createWallet()
+            try await self?.viewModel.createWallet(pin: nil)
         }
         switch await task.result {
         case .success(let wm):
@@ -157,7 +131,7 @@ class SetupNewViewController: UIViewController {
 
         switch action {
         case .setupMobile:
-            OnBoardManager.shared.flowType = .add
+            OnboardViewModel.flowType = .add
         case .setupHardware:
             let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
             if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
@@ -166,7 +140,7 @@ class SetupNewViewController: UIViewController {
             }
             return
         case .restore:
-            OnBoardManager.shared.flowType = .restore
+            OnboardViewModel.flowType = .restore
         case .buyJade:
             SafeNavigationManager.shared.navigate( ExternalUrls.buyJadePlus )
             return
@@ -226,10 +200,10 @@ extension SetupNewViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:
-            OnBoardManager.shared.chainType = .mainnet
+            OnboardViewModel.chainType = .mainnet
             next()
         case .testnet:
-            OnBoardManager.shared.chainType = .testnet
+            OnboardViewModel.chainType = .testnet
             next()
         case .none:
             break

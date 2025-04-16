@@ -3,7 +3,7 @@ import RiveRuntime
 import core
 
 enum Constants {
-    static let mnemonicSizeDefault = MnemonicSize._12.rawValue
+    static let mnemonicSizeDefault = 12
     static let wordsPerPage = 6
     static let wordsPerQuiz = 4
     static let electrumPrefix = "electrum-"

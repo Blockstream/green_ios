@@ -11,19 +11,16 @@ enum MnemonicActionType {
 class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     @IBOutlet weak var doneButton: UIButton!
-
     @IBOutlet weak var mnemonicWords: UICollectionView!
     @IBOutlet weak var segmentMnemonicSize: UISegmentedControl!
     @IBOutlet weak var header: UIView!
     @IBOutlet weak var lblTitle: UILabel!
 
+    var viewModel = OnboardViewModel()
     let WL = getBIP39WordList()
 
     var suggestions: KeyboardSuggestions?
     var mnemonic = [String](repeating: String(), count: 27)
-
-    var viewModel = MnemonicViewModel()
-
     var currIndexPath: IndexPath?
     var mnemonicActionType: MnemonicActionType = .recoverWallet
     var restoredAccount: Account?
@@ -34,13 +31,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         super.viewDidLoad()
 
         title = ""
-        updateLblTitle()
-        switch mnemonicActionType {
-        case .recoverWallet:
-            doneButton.setTitle("id_continue".localized, for: .normal)
-        case .addSubaccount:
-            doneButton.setTitle("id_continue".localized, for: .normal)
-        }
+        lblTitle.text = "id_enter_your_recovery_phrase".localized
+        doneButton.setTitle("id_continue".localized, for: .normal)
 
         mnemonicWords.delegate = self
         mnemonicWords.dataSource = self
@@ -49,34 +41,19 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         createSuggestionView()
         updateNavigationItem()
         setStyle()
-
-//        passwordProtectedView.isHidden = mnemonicActionType == .addSubaccount
-        view.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.view
-        lblTitle.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.titleLbl
-        doneButton.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.doneBtn
     }
 
     func setStyle() {
         if mnemonicActionType == .addSubaccount {
             segmentMnemonicSize.removeSegment(at: 2, animated: false)
         }
-        if #available(iOS 13.0, *) {
-            segmentMnemonicSize.backgroundColor = UIColor.clear
-            segmentMnemonicSize.layer.borderColor = UIColor.customMatrixGreen().cgColor
-            segmentMnemonicSize.selectedSegmentTintColor = UIColor.customMatrixGreen()
-             let titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.customMatrixGreen()]
-            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes, for: .normal)
-             let titleTextAttributes1 = [NSAttributedString.Key.foregroundColor: UIColor.white]
-            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes1, for: .selected)
-         } else {
-             segmentMnemonicSize.tintColor = UIColor.customMatrixGreen()
-             segmentMnemonicSize.layer.borderWidth = 1
-             segmentMnemonicSize.layer.borderColor = UIColor.customMatrixGreen().cgColor
-             let titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.customMatrixGreen()]
-            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes, for: .normal)
-             let titleTextAttributes1 = [NSAttributedString.Key.foregroundColor: UIColor.white]
-            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes1, for: .selected)
-       }
+        segmentMnemonicSize.backgroundColor = UIColor.clear
+        segmentMnemonicSize.layer.borderColor = UIColor.gAccent().cgColor
+        segmentMnemonicSize.selectedSegmentTintColor = UIColor.gAccent()
+        let titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.gAccent()]
+        segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes, for: .normal)
+        let titleTextAttributes1 = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes1, for: .selected)
     }
 
     func updateNavigationItem() {
@@ -104,14 +81,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
-
-            switch mnemonicActionType {
-            case .recoverWallet:
-                AnalyticsManager.shared.scanQr(account: nil,
-                                               screen: .onBoardRecovery)
-            case .addSubaccount:
-                break
-            }
+            AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardRecovery)
         }
     }
 
@@ -123,17 +93,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         mnemonicWords.scrollIndicatorInsets = contentInset
     }
 
-    func updateLblTitle() {
-        lblTitle.text = "id_enter_your_recovery_phrase".localized
-    }
-
     func updateDoneButton(_ enable: Bool) {
         doneButton.isEnabled = enable
-        if enable {
-            doneButton.setStyle(.primary)
-        } else {
-            doneButton.setStyle(.primaryDisabled)
-        }
+        doneButton.setStyle(enable ? .primary : .primaryDisabled)
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -173,7 +135,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }
     }
 
-    func getMnemonicString(completition: @escaping (String?, String?) -> Void) {
+    func restoreDialog() {
         if self.itemsCount() == 27 {
             let alert = UIAlertController(title: "id_encryption_passphrase".localized, message: "id_please_provide_your_passphrase".localized, preferredStyle: .alert)
             alert.addTextField { textField in
@@ -181,17 +143,26 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                 textField.isSecureTextEntry = true
             }
             alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { (_: UIAlertAction) in
-                completition(nil, nil)
+                let mnemonic = self.mnemonic.prefix(upTo: 24).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                Task { [weak self] in
+                    await self?.restoreWallet(mnemonic: mnemonic, password: nil)
+                }
             })
             alert.addAction(UIAlertAction(title: "id_next".localized, style: .default) { (_: UIAlertAction) in
                 let textField = alert.textFields![0]
-                completition(self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!)
+                let mnemonic = self.mnemonic.prefix(upTo: 27).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                Task { [weak self] in await
+                    self?.restoreWallet(mnemonic: mnemonic, password: textField.text!)
+                }
             })
             DispatchQueue.main.async {
                 self.present(alert, animated: true, completion: nil)
             }
         } else {
-            completition(mnemonic.prefix(upTo: 24).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), String())
+            let mnemonic = mnemonic.prefix(upTo: 24).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            Task { [weak self] in
+                await self?.restoreWallet(mnemonic: mnemonic, password: nil)
+            }
         }
     }
 
@@ -205,59 +176,63 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         self.suggestions!.isHidden = words.isEmpty
     }
 
-    func showLoginError(_ err: Error) {
-        self.stopLoader()
-        switch err {
-        case LoginError.walletMismatch:
-            showError("Wallet mismatch".localized)
-        case LoginError.failed:
-            showError("id_login_failed".localized)
-        case LoginError.walletNotFound:
-            showError("id_wallet_not_found".localized)
-        case LoginError.walletsJustRestored:
-            showError("id_wallet_already_restored".localized)
-        case LoginError.invalidMnemonic:
-            showError("id_invalid_recovery_phrase".localized)
-            page += 1
-            AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardParams.shared, page: self.page)
-        case LoginError.connectionFailed:
-            showError("id_connection_failed".localized)
-        case TwoFactorCallError.cancel(localizedDescription: let desc), TwoFactorCallError.failure(localizedDescription: let desc):
-            showError(desc)
-        default:
-            showError(err.localizedDescription)
+    func restoreWallet(mnemonic: String, password: String?) async {
+        startLoader()
+        let task = Task.detached { [weak self] in
+            let credentials = Credentials(mnemonic: mnemonic, password: password)
+            OnboardViewModel.credentials = credentials
+            return try await self?.viewModel.restoreWallet(credentials: credentials, pin: nil)
         }
-    }
-
-    func addSubaccount() {
-        getMnemonicString() { (mnemonic, password) in
-            guard let mnemonic = mnemonic else { return }
-            Task {
-                do {
-                    try await self.viewModel.validateMnemonic(mnemonic)
-                    self.dismiss(animated: true)
-                    let phrase = self.mnemonic.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-                    self.delegate?.didExistingRecoveryPhrase(phrase)
-                } catch { self.showLoginError(error) }
+        switch await task.result {
+        case .success(let wm):
+            stopLoader()
+            if let account = wm?.account {
+                AccountsRepository.shared.current = account
+                AccountNavigator.goLogged(accountId: account.id, isFirstLoad: false)
             }
-        }
-    }
-
-    func restoreWallet() {
-        let testnet = OnBoardManager.shared.chainType == .testnet
-        getMnemonicString() { (mnemonic, password) in
-            guard let mnemonic = mnemonic else { return }
-            Task {
-                do {
-                    try await self.viewModel.validateMnemonic(mnemonic)
-                    let credentials = Credentials(mnemonic: mnemonic, password: password)
-                    let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                    if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                        vc.pinFlow = .restore
-                        vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet, restoredAccount: self.restoredAccount)
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
-                } catch { self.showLoginError(error) }
+        case .failure(let err):
+            stopLoader()
+            switch err as? AuthenticationTypeHandler.AuthError {
+            case .some:
+                OnboardViewModel.flowType = .restore
+                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
+                    navigationController?.pushViewController(vc, animated: true)
+                }
+                return
+            default:
+                break
+            }
+            switch err as? LoginError {
+            case .walletMismatch:
+                showError("Wallet mismatch".localized)
+                return
+            case .failed:
+                showError("id_login_failed".localized)
+                return
+            case .walletNotFound:
+                showError("id_wallet_not_found".localized)
+                return
+            case .walletsJustRestored:
+                showError("id_wallet_already_restored".localized)
+                return
+            case .invalidMnemonic:
+                showError("id_invalid_recovery_phrase".localized)
+                page += 1
+                AnalyticsManager.shared.recoveryPhraseCheckFailed(page: self.page)
+                return
+            case .connectionFailed:
+                showError("id_connection_failed".localized)
+                return
+            default:
+                break
+            }
+            switch err as? TwoFactorCallError {
+            case .cancel(localizedDescription: let desc),
+                    .failure(localizedDescription: let desc):
+                showError(desc)
+            default:
+                showError(err.localizedDescription)
             }
         }
     }
@@ -265,9 +240,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     @IBAction func doneButtonClicked(_ sender: Any) {
         switch self.mnemonicActionType {
         case .recoverWallet:
-            restoreWallet()
+            restoreDialog()
         case .addSubaccount:
-            addSubaccount()
+            break//addSubaccount()
         }
     }
 

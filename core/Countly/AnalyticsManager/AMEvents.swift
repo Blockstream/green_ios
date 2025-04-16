@@ -223,7 +223,7 @@ extension AnalyticsManager {
         endEvent(.failedTransaction, sgmt: s)
     }
 
-    public func recoveryPhraseCheckFailed(onBoardParams: OnBoardParams?, page: Int) {
+    public func recoveryPhraseCheckFailed(page: Int) {
         let sgmt = [AnalyticsManager.strPage: "\(page)" ]
         recordEvent(.failedRecoveryPhraseCheck, sgmt: sgmt)
     }

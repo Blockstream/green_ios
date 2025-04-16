@@ -111,7 +111,7 @@ extension WOSelectViewController: DialogListViewControllerDelegate {
     }
 
     func selectNetwork(singlesig: Bool) {
-        let testnet = OnBoardManager.shared.chainType == .testnet
+        let testnet = OnboardViewModel.chainType == .testnet
         networks = getNetworks(singlesig: singlesig, testnet: testnet)
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {

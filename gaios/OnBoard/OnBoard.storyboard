@@ -1293,7 +1293,7 @@
                                                     <rect key="frame" x="6.0000000000000018" y="10" width="20.666666666666671" height="20"/>
                                                     <color key="backgroundColor" name="customTitaniumDark"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" name="customMatrixGreen"/>
+                                                    <color key="textColor" name="gAccent"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="o8e-G5-fYf">
