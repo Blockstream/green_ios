@@ -72,8 +72,9 @@ class WalletTabBarViewController: UITabBarController {
             wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
                 self?.wView.removeFromSuperview()
             })
-
-            BackupHelper.shared.addToBackupList(walletModel.wm?.account.id)
+            if let wm = walletModel.wm, !wm.account.isHW && !wm.account.isWatchonly {
+                BackupHelper.shared.addToBackupList(walletModel.wm?.account.id)
+            }
         }
         setSecurityState(BackupHelper.shared.needsBackup(walletId: walletModel.wm?.account.id) ? .alerted : .normal)
     }

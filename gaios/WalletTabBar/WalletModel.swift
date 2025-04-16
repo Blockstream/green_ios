@@ -206,8 +206,6 @@ class WalletModel {
         var cards: [AlertCardType] = []
         if BackupHelper.shared.needsBackup(walletId: wm.account.id) &&
             BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .homeTab) == false &&
-            !wm.account.isWatchonly &&
-            !wm.account.isHW &&
             cachedBalance?.satoshi() ?? 0 > 0 {
             cards.append(.backup)
         }
