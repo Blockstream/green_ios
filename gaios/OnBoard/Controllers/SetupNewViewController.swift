@@ -21,6 +21,8 @@ class SetupNewViewController: UIViewController {
     @IBOutlet weak var fadeView: UIView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
+    @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var iconPlus: UIImageView!
     @IBOutlet weak var lblHint1: UILabel!
     @IBOutlet weak var lblHint2: UILabel!
     @IBOutlet weak var lblInfo1: UILabel!
@@ -54,6 +56,8 @@ class SetupNewViewController: UIViewController {
             lblInfo3.text = "Keys stored on mobile device".localized
             btnCta1.setTitle("Setup Mobile Wallet".localized, for: .normal)
             btnCta2.setStyle(.underline(txt: "Restore from backup".localized, color: UIColor.gAccent()))
+            icon.isHidden = false
+            iconPlus.isHidden = true
         case .hardware:
             lblHint1.text = "Security Level: 2".localized
             lblHint2.text = "Hardware".localized
@@ -62,6 +66,8 @@ class SetupNewViewController: UIViewController {
             lblInfo3.text = "Keys stored on specialized device".localized
             btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
             btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
+            icon.isHidden = true
+            iconPlus.isHidden = false
         }
     }
 
