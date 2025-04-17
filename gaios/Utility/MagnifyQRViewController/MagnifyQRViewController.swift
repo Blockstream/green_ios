@@ -15,7 +15,6 @@ class MagnifyQRViewController: UIViewController {
     @IBOutlet weak var btnClose: UIButton!
     @IBOutlet weak var btnNavClose: UIButton!
     @IBOutlet weak var navView: UIView!
-    
     @IBOutlet weak var plainTxt: UILabel!
     @IBOutlet weak var groupedTxt: UITextView!
 
@@ -101,13 +100,12 @@ class MagnifyQRViewController: UIViewController {
         btnClose.setStyle(.primary)
         if isMnemonic {
             btnClose.setStyle(.outlined)
-            btnClose.setTitleColor(.black, for: .normal)
         }
         btnNavClose.setImage(UIImage(named: "cancel")!.maskWithColor(color: .black), for: .normal)
         plainTxt.lineBreakMode = .byTruncatingTail
         plainTxt.textColor = .black
-        warnIcon1.image = UIImage(named: "ic_info_home")!.withTintColor(UIColor.gGreenMatrix())
-        warnIcon2.image = UIImage(named: "ic_info_warn")!.withTintColor(UIColor.gGreenMatrix())
+        warnIcon1.image = UIImage(named: "ic_info_home")!.withTintColor(UIColor.gAccent())
+        warnIcon2.image = UIImage(named: "ic_info_warn")!.withTintColor(UIColor.gAccent())
         [lblMnemonicTitle, warnTitle1, warnTitle2].forEach {
             $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .medium)
             $0?.textColor = .black

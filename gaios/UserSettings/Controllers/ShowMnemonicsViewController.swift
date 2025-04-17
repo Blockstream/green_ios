@@ -6,6 +6,8 @@ import core
 
 class ShowMnemonicsViewController: UIViewController {
 
+    @IBOutlet weak var lblInfo: UILabel!
+    @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var btnShowQR: UIButton!
@@ -26,12 +28,12 @@ class ShowMnemonicsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "id_recovery_phrase".localized
-        lblHint.text = "id_the_recovery_phrase_can_be_used".localized
+
+        setContent()
+        setStyle()
         let isHW = AccountsRepository.shared.current?.isHW ?? false
         let derivedAccount = AccountsRepository.shared.current?.getDerivedLightningAccount()
-        btnShowQR.setStyle(.outlined)
-        btnShowQR.setTitleColor(.white, for: .normal)
+        btnShowQR.setStyle(.primary)
         btnShowQR.setTitle("id_show_qr_code".localized, for: .normal)
         Task {
             do {
@@ -60,7 +62,18 @@ class ShowMnemonicsViewController: UIViewController {
             }
         }
     }
-
+    func setContent() {
+        // title = "id_recovery_phrase".localized
+        lblInfo.text = "RECOVERY METHOD".localized
+        lblTitle.text = "Recovery Phrase Check".localized
+        lblHint.text = "Make sure to be in a private and safe space".localized
+    }
+    func setStyle() {
+        lblInfo.setStyle(.txtSmaller)
+        lblTitle.setStyle(.subTitle24)
+        lblHint.setStyle(.txtCard)
+        btnShowQR.setStyle(.primary)
+    }
     func magnifyQR() {
         let stb = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
@@ -114,8 +127,8 @@ extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionVie
 
 extension ShowMnemonicsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.bounds.width - 20.0) / 3.0
-        let height = 70.0
+        let width = (collectionView.bounds.width) / 3.0
+        let height = 50.0
 
         return CGSize(width: width, height: height)
     }

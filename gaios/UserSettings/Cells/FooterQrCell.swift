@@ -27,8 +27,7 @@ class FooterQrCell: UICollectionReusableView {
             lblQrInfo.text = "id_the_qr_code_does_not_include".localized
             lblPassphraseTitle.text = "id_bip39_passphrase".localized
             lblPassphraseValue.text = bip39Passphrase ?? ""
-            btnLearn.setTitle("id_learn_more".localized, for: .normal)
-            btnLearn.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+            btnLearn.setStyle(.underline(txt: "id_learn_more".localized, color: UIColor.gAccent()))
         }
         bip85View.isHidden = true
     }

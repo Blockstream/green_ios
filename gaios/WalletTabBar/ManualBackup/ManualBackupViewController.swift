@@ -16,6 +16,7 @@ class ManualBackupViewController: UIViewController {
         setContent()
         setStyle()
         title = "Back Up Your Wallet".localized
+        navigationItem.backButtonTitle = "id_back".localized
     }
 
     func setContent() {
