@@ -304,6 +304,7 @@
 		3483D09B29FBDB0B00C85106 /* LTInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3483D09A29FBDB0B00C85106 /* LTInfoCellModel.swift */; };
 		348401F52DAD3F0700A91C65 /* DialogCompareSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348401F42DAD3EF600A91C65 /* DialogCompareSecurityViewController.swift */; };
 		348401F72DAE322100A91C65 /* UISegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348401F62DAE321D00A91C65 /* UISegmentedControl.swift */; };
+		348401FF2DB0FD9600A91C65 /* ManualBackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348401FE2DB0FD8A00A91C65 /* ManualBackupViewController.swift */; };
 		3484118C265E6113002D2202 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484118B265E6113002D2202 /* Constants.swift */; };
 		3486AD7227CFC5060013D8FF /* AssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD7127CFC5060013D8FF /* AssetsList.swift */; };
 		3487653729D337150059D05F /* OnBoardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487653629D337150059D05F /* OnBoardManager.swift */; };
@@ -1256,6 +1257,7 @@
 		3483D09A29FBDB0B00C85106 /* LTInfoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTInfoCellModel.swift; sourceTree = "<group>"; };
 		348401F42DAD3EF600A91C65 /* DialogCompareSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCompareSecurityViewController.swift; sourceTree = "<group>"; };
 		348401F62DAE321D00A91C65 /* UISegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControl.swift; sourceTree = "<group>"; };
+		348401FE2DB0FD8A00A91C65 /* ManualBackupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupViewController.swift; sourceTree = "<group>"; };
 		3484118B265E6113002D2202 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		3486AD7127CFC5060013D8FF /* AssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsList.swift; sourceTree = "<group>"; };
 		3487653629D337150059D05F /* OnBoardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardManager.swift; sourceTree = "<group>"; };
@@ -2285,11 +2287,12 @@
 		344D57C32D71A9EB009725A3 /* WalletTabBar */ = {
 			isa = PBXGroup;
 			children = (
+				348401F32DAD1D8300A91C65 /* DialogCompareSecurity */,
+				34DA78A42D807F130022FBB1 /* DialogAccounts */,
+				348401FD2DB0F9C200A91C65 /* ManualBackup */,
 				344D57FA2D75C33A009725A3 /* WalletModel.swift */,
 				344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */,
 				344D57C62D71AA59009725A3 /* WalletTabBar.swift */,
-				34DA78A42D807F130022FBB1 /* DialogAccounts */,
-				348401F32DAD1D8300A91C65 /* DialogCompareSecurity */,
 				344D57CA2D71B52D009725A3 /* Tabs */,
 			);
 			path = WalletTabBar;
@@ -2749,6 +2752,14 @@
 				348401F42DAD3EF600A91C65 /* DialogCompareSecurityViewController.swift */,
 			);
 			path = DialogCompareSecurity;
+			sourceTree = "<group>";
+		};
+		348401FD2DB0F9C200A91C65 /* ManualBackup */ = {
+			isa = PBXGroup;
+			children = (
+				348401FE2DB0FD8A00A91C65 /* ManualBackupViewController.swift */,
+			);
+			path = ManualBackup;
 			sourceTree = "<group>";
 		};
 		3488FC66290AE23F00122628 /* AccountCell */ = {
@@ -4855,6 +4866,7 @@
 				34F5689A2A828D490081BF0C /* LTRecoverFundsAmountCell.swift in Sources */,
 				81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */,
 				344915F02A0CE27F00D35818 /* ReceiveAssetCellModel.swift in Sources */,
+				348401FF2DB0FD9600A91C65 /* ManualBackupViewController.swift in Sources */,
 				3428750C2D551D31003FB5AE /* LangSelectViewModel.swift in Sources */,
 				344471C62C478F7C0051957E /* DialogGroupListCellModel.swift in Sources */,
 				348A70E32D89DA8C00490B55 /* OnBoardAppPinViewController.swift in Sources */,

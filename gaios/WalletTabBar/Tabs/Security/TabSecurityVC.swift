@@ -79,9 +79,8 @@ class TabSecurityVC: TabViewController {
         case .fwUpdate:
             break
         case .recoveryPhrase:
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {
-                vc.isSettingDisplay = true
+            let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ManualBackupViewController") as? ManualBackupViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
