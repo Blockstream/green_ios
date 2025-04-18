@@ -420,10 +420,10 @@
                                                                         </constraints>
                                                                     </view>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="UW3-TE-avW">
-                                                                        <rect key="frame" x="25" y="290.66666666666663" width="343" height="80"/>
+                                                                        <rect key="frame" x="50" y="290.66666666666663" width="293" height="80"/>
                                                                         <subviews>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="2uw-t8-RKC">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="343" height="20"/>
+                                                                                <rect key="frame" x="0.0" y="0.0" width="293" height="20"/>
                                                                                 <subviews>
                                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_setup_new_list_1" translatesAutoresizingMaskIntoConstraints="NO" id="LY2-Px-7Da">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
@@ -433,7 +433,7 @@
                                                                                         </constraints>
                                                                                     </imageView>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info_1" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4P9-A8-dXl">
-                                                                                        <rect key="frame" x="30" y="0.0" width="313" height="20"/>
+                                                                                        <rect key="frame" x="30" y="0.0" width="263" height="20"/>
                                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <nil key="highlightedColor"/>
@@ -441,7 +441,7 @@
                                                                                 </subviews>
                                                                             </stackView>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="2Og-C1-V8r">
-                                                                                <rect key="frame" x="0.0" y="30" width="343" height="20"/>
+                                                                                <rect key="frame" x="0.0" y="30" width="293" height="20"/>
                                                                                 <subviews>
                                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_setup_new_list_2" translatesAutoresizingMaskIntoConstraints="NO" id="xmX-RJ-Ztq">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
@@ -451,7 +451,7 @@
                                                                                         </constraints>
                                                                                     </imageView>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info_2" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dwr-Sr-E8e">
-                                                                                        <rect key="frame" x="30" y="0.0" width="313" height="20"/>
+                                                                                        <rect key="frame" x="30" y="0.0" width="263" height="20"/>
                                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <nil key="highlightedColor"/>
@@ -459,7 +459,7 @@
                                                                                 </subviews>
                                                                             </stackView>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="qei-jq-Qbq">
-                                                                                <rect key="frame" x="0.0" y="60" width="343" height="20"/>
+                                                                                <rect key="frame" x="0.0" y="60" width="293" height="20"/>
                                                                                 <subviews>
                                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_setup_new_list_3" translatesAutoresizingMaskIntoConstraints="NO" id="VhZ-9z-UEL">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
@@ -469,7 +469,7 @@
                                                                                         </constraints>
                                                                                     </imageView>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info_3" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fzj-55-h5k">
-                                                                                        <rect key="frame" x="30" y="0.0" width="313" height="20"/>
+                                                                                        <rect key="frame" x="30" y="0.0" width="263" height="20"/>
                                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <nil key="highlightedColor"/>
@@ -514,7 +514,7 @@
                                                                 </subviews>
                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="trailing" secondItem="UW3-TE-avW" secondAttribute="trailing" constant="25" id="4qL-O0-sn8"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="UW3-TE-avW" secondAttribute="trailing" constant="50" id="4qL-O0-sn8"/>
                                                                     <constraint firstAttribute="bottom" secondItem="g0h-Fi-L0S" secondAttribute="bottom" constant="10" id="E4M-8w-z9q"/>
                                                                     <constraint firstItem="Om1-2M-lJx" firstAttribute="leading" secondItem="rkk-XZ-u3A" secondAttribute="leading" constant="25" id="Lgp-rW-OfV"/>
                                                                     <constraint firstAttribute="trailing" secondItem="g0h-Fi-L0S" secondAttribute="trailing" constant="25" id="PQi-Ea-N2t"/>
@@ -526,7 +526,7 @@
                                                                     <constraint firstItem="g0h-Fi-L0S" firstAttribute="top" secondItem="UW3-TE-avW" secondAttribute="bottom" constant="50" id="iXX-CV-kbQ"/>
                                                                     <constraint firstAttribute="trailing" secondItem="VaF-FD-P2v" secondAttribute="trailing" constant="25" id="m7z-iX-qZe"/>
                                                                     <constraint firstAttribute="trailing" secondItem="Om1-2M-lJx" secondAttribute="trailing" constant="25" id="pVt-gW-cSG"/>
-                                                                    <constraint firstItem="UW3-TE-avW" firstAttribute="leading" secondItem="rkk-XZ-u3A" secondAttribute="leading" constant="25" id="zgV-7f-6at"/>
+                                                                    <constraint firstItem="UW3-TE-avW" firstAttribute="leading" secondItem="rkk-XZ-u3A" secondAttribute="leading" constant="50" id="zgV-7f-6at"/>
                                                                 </constraints>
                                                             </view>
                                                         </subviews>
@@ -831,8 +831,8 @@
         <image name="ic_manual_backup" width="36.333332061767578" height="33.333332061767578"/>
         <image name="ic_onboard_app_pin" width="96.333335876464844" height="96.333335876464844"/>
         <image name="ic_setup_new_list_1" width="20" height="20"/>
-        <image name="ic_setup_new_list_2" width="15.333333015441895" height="15.666666984558105"/>
-        <image name="ic_setup_new_list_3" width="16.666666030883789" height="16.666666030883789"/>
+        <image name="ic_setup_new_list_2" width="20" height="20"/>
+        <image name="ic_setup_new_list_3" width="20" height="20"/>
         <image name="ic_shield_setup_new" width="24.333333969116211" height="25"/>
         <image name="ic_shield_setup_new_hw" width="42.333332061767578" height="52"/>
         <namedColor name="gAccent">

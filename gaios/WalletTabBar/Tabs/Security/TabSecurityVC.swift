@@ -6,8 +6,12 @@ class TabSecurityVC: TabViewController {
 
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
-        [PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true ? .on : .off),
-         PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasPin == true ? .on : .off)]
+        var list = [PreferenceCellModel]()
+        list.append(PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true ? .on : .off))
+        if walletModel.wm?.account.isHW != true {
+            list.append(PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasPin == true ? .on : .off))
+        }
+        return list
     }
     var jadeCellModel: [PreferenceCellModel] {
         [PreferenceCellModel(preferenceType: .genuineCheck, state: .unknown),
@@ -112,7 +116,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         case .backup:
             return backupCardCellModel.count
         case .unlock:
-            return 2
+            return unlockCellModel.count
         case .recovery:
             return walletModel.canShowMnemonic() ? 1 : 0
         default:

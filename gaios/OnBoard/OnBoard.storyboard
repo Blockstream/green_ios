@@ -2128,10 +2128,10 @@
                                                         </constraints>
                                                     </view>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="SOV-SJ-gnk">
-                                                        <rect key="frame" x="25" y="120.66666666666666" width="325" height="80"/>
+                                                        <rect key="frame" x="50" y="120.66666666666666" width="275" height="80"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="wpL-by-7Kl">
-                                                                <rect key="frame" x="0.0" y="0.0" width="325" height="20"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="275" height="20"/>
                                                                 <subviews>
                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_setup_new_list_1" translatesAutoresizingMaskIntoConstraints="NO" id="9dK-bl-5Cd">
                                                                         <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
@@ -2141,7 +2141,7 @@
                                                                         </constraints>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info_1" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uoq-GR-6cA">
-                                                                        <rect key="frame" x="30" y="0.0" width="295" height="20"/>
+                                                                        <rect key="frame" x="30" y="0.0" width="245" height="20"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
@@ -2149,7 +2149,7 @@
                                                                 </subviews>
                                                             </stackView>
                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="To8-lH-c8R">
-                                                                <rect key="frame" x="0.0" y="30" width="325" height="20"/>
+                                                                <rect key="frame" x="0.0" y="30" width="275" height="20"/>
                                                                 <subviews>
                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_setup_new_list_2" translatesAutoresizingMaskIntoConstraints="NO" id="mtj-92-luD">
                                                                         <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
@@ -2159,7 +2159,7 @@
                                                                         </constraints>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info_2" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pFB-NV-CSA">
-                                                                        <rect key="frame" x="30" y="0.0" width="295" height="20"/>
+                                                                        <rect key="frame" x="30" y="0.0" width="245" height="20"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
@@ -2167,7 +2167,7 @@
                                                                 </subviews>
                                                             </stackView>
                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="28w-zV-6c5">
-                                                                <rect key="frame" x="0.0" y="60" width="325" height="20"/>
+                                                                <rect key="frame" x="0.0" y="60" width="275" height="20"/>
                                                                 <subviews>
                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_setup_new_list_3" translatesAutoresizingMaskIntoConstraints="NO" id="DA0-qV-N4h">
                                                                         <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
@@ -2177,7 +2177,7 @@
                                                                         </constraints>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_info_3" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RGu-dS-Xq5">
-                                                                        <rect key="frame" x="30" y="0.0" width="295" height="20"/>
+                                                                        <rect key="frame" x="30" y="0.0" width="245" height="20"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
@@ -2222,14 +2222,14 @@
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="trailing" secondItem="SOV-SJ-gnk" secondAttribute="trailing" constant="25" id="1Hw-CG-gOl"/>
+                                                    <constraint firstAttribute="trailing" secondItem="SOV-SJ-gnk" secondAttribute="trailing" constant="50" id="1Hw-CG-gOl"/>
                                                     <constraint firstAttribute="bottom" secondItem="MNp-6u-NvZ" secondAttribute="bottom" constant="25" id="9Tn-rg-mjk"/>
                                                     <constraint firstItem="d4l-Oo-I6o" firstAttribute="leading" secondItem="icx-AT-OcH" secondAttribute="leading" constant="25" id="FYx-r8-EAF"/>
                                                     <constraint firstItem="SOV-SJ-gnk" firstAttribute="top" secondItem="d4l-Oo-I6o" secondAttribute="bottom" constant="20" id="TZM-40-JZY"/>
                                                     <constraint firstAttribute="trailing" secondItem="MNp-6u-NvZ" secondAttribute="trailing" constant="25" id="bk0-dz-Hdc"/>
                                                     <constraint firstItem="MNp-6u-NvZ" firstAttribute="leading" secondItem="icx-AT-OcH" secondAttribute="leading" constant="25" id="gaH-Gy-va0"/>
                                                     <constraint firstAttribute="trailing" secondItem="d4l-Oo-I6o" secondAttribute="trailing" constant="25" id="hbM-zi-g00"/>
-                                                    <constraint firstItem="SOV-SJ-gnk" firstAttribute="leading" secondItem="icx-AT-OcH" secondAttribute="leading" constant="25" id="kjJ-uR-dsb"/>
+                                                    <constraint firstItem="SOV-SJ-gnk" firstAttribute="leading" secondItem="icx-AT-OcH" secondAttribute="leading" constant="50" id="kjJ-uR-dsb"/>
                                                     <constraint firstItem="d4l-Oo-I6o" firstAttribute="top" secondItem="icx-AT-OcH" secondAttribute="top" id="t4g-Wo-HVC"/>
                                                 </constraints>
                                             </view>
@@ -2310,8 +2310,8 @@
         <image name="ic_proxy" width="60" height="60"/>
         <image name="ic_setttings_experimental" width="24" height="24"/>
         <image name="ic_setup_new_list_1" width="20" height="20"/>
-        <image name="ic_setup_new_list_2" width="15.333333015441895" height="15.666666984558105"/>
-        <image name="ic_setup_new_list_3" width="16.666666030883789" height="16.666666030883789"/>
+        <image name="ic_setup_new_list_2" width="20" height="20"/>
+        <image name="ic_setup_new_list_3" width="20" height="20"/>
         <image name="ic_shield_setup_new" width="24.333333969116211" height="25"/>
         <image name="ic_shield_setup_new_hw" width="42.333332061767578" height="52"/>
         <image name="ic_tor" width="60" height="60"/>

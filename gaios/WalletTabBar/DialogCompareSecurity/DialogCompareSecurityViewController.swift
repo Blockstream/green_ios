@@ -115,9 +115,8 @@ class DialogCompareSecurityViewController: UIViewController {
             lblInfo2.text = "Mitigates common attacks risks".localized
             lblInfo3.text = "Keys stored on specialized device".localized
             btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
-            btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
             btnCta1.setStyle(.primary)
-            btnCta2.setStyle(.outlined)
+            btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
             btnCta2.alpha = 1
             btnCta2.isEnabled = true
             icon.isHidden = true
