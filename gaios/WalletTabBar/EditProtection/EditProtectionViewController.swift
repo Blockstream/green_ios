@@ -112,7 +112,7 @@ class EditProtectionViewController: UIViewController {
             }
         }
         switch await task.result {
-        case .success(_):
+        case .success:
             if enable {
                 DropAlert().success(message: "id_biometric_login_is_disabled".localized)
             } else {
@@ -146,6 +146,6 @@ class EditProtectionViewController: UIViewController {
     }
 
     func disableBiometricAuthentication() async throws {
-        try WalletManager.current?.account.removeBioKeychainData()
+        try? WalletManager.current?.account.removeBioKeychainData()
     }
 }
