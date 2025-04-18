@@ -18,6 +18,7 @@ class OnboardViewModel {
     static var flowType: OnBoardingFlowType = .add
     static var chainType: OnBoardingChainType = .mainnet
     static var credentials: Credentials?
+    static var restoreAccountId: String?
 
     func getBIP39WordList(_ mnemonic: String) -> [String] {
         greenaddress.getBIP39WordList()
@@ -89,6 +90,12 @@ class OnboardViewModel {
             fullRestore: true,
             parentWalletId: walletIdentifier)
         AnalyticsManager.shared.importWallet(account: wallet.account)
+        if let restoreAccountId = OnboardViewModel.restoreAccountId {
+            if let account = AccountsRepository.shared.get(for: restoreAccountId) {
+                wallet.account.name = account.name
+                await AccountsRepository.shared.remove(account)
+            }
+        }
         return wallet
     }
 

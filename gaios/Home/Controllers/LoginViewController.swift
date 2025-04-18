@@ -498,6 +498,7 @@ class LoginViewController: UIViewController {
 
     @IBAction func btnWalletLock(_ sender: Any) {
         OnboardViewModel.flowType = .restore
+        OnboardViewModel.restoreAccountId = account.id
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
             navigationController?.pushViewController(vc, animated: true)
