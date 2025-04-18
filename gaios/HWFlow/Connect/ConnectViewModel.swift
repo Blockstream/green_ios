@@ -110,7 +110,7 @@ class ConnectViewModel: NSObject {
         updateState?(.login)
         let wm = try await bleHwManager.login(account: account)
         // export core descriptors for watchonly
-        if firstConnection {
+        if firstConnection && wm.activeMultisigSessions.isEmpty {
             let subaccounts = try await wm.subaccounts()
             let descriptors = subaccounts
                 .filter({ !$0.hidden })
@@ -150,7 +150,7 @@ class ConnectViewModel: NSObject {
         updateState?(.login)
         _ = try await bleHwManager.login(account: account)
     }
-    
+
     func loginJadeWatchonly() async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
