@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 enum EditProtectionType {
     case pin
@@ -80,6 +81,71 @@ class EditProtectionViewController: UIViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
+        guard let protectionType = protectionType,
+              let protectionAction = protectionAction else {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        switch protectionType {
+        case .pin:
+            pushSetPinViewController()
+        case .faceID, .touchID:
+            Task { [weak self] in
+                switch protectionAction {
+                case .enable:
+                    await self?.changeBiometricAuthentication(enable: false)
+                case .disable:
+                    await self?.changeBiometricAuthentication(enable: true)
+                case .change:
+                    break
+                }
+            }
+        }
+    }
 
+    func changeBiometricAuthentication(enable: Bool) async {
+        let task = Task.detached { [weak self] in
+            if enable {
+                try await self?.disableBiometricAuthentication()
+            } else {
+                try await self?.enableBiometricAuthentication()
+            }
+        }
+        switch await task.result {
+        case .success(_):
+            if enable {
+                DropAlert().success(message: "id_biometric_login_is_disabled".localized)
+            } else {
+                DropAlert().success(message: "id_biometric_login_is_enabled".localized)
+            }
+            navigationController?.popViewController(animated: true)
+        case .failure(let err):
+            DropAlert().success(message: err.description()?.localized ?? "id_operation_failure")
+        }
+    }
+
+    func pushSetPinViewController() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+            vc.pinFlow = .settings
+            vc.viewModel = OnboardViewModel()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func enableBiometricAuthentication() async throws {
+        if let wm = WalletManager.current,
+           let session = wm.prominentSession {
+            let credentials = try await session.getCredentials(password: "")
+            if let credentials = credentials {
+                try await wm.account.addBiometrics(session: session, credentials: credentials)
+                return
+            }
+        }
+        throw LoginError.failed("")
+    }
+
+    func disableBiometricAuthentication() async throws {
+        try WalletManager.current?.account.removeBioKeychainData()
     }
 }

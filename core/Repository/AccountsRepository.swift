@@ -93,7 +93,7 @@ public class AccountsRepository {
             // full wallet deletion
             try? await wm.removeLightning()
             account.removePinKeychainData()
-            account.removeBioKeychainData()
+            try? account.removeBioKeychainData()
         }
         accounts.removeAll(where: { $0.id == account.id})
     }

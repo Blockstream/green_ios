@@ -156,9 +156,9 @@ public struct Account: Codable, Equatable {
         }
     }
 
-    public func removeBioKeychainData() {
+    public func removeBioKeychainData() throws {
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, for: keychain)
-        try? AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
+        try AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
         UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + keychain)
     }
 

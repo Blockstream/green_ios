@@ -314,7 +314,7 @@ extension UserSettingsViewController {
 
     private func disableBioAuth() {
         onAuthRemoval { [weak self] in
-            self?.account?.removeBioKeychainData()
+            try? self?.account?.removeBioKeychainData()
             self?.viewModel.load()
         }
     }
@@ -343,7 +343,7 @@ extension UserSettingsViewController {
             self.navigationController?.popViewController(animated: true)
         })
         alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
-            self.account?.removeBioKeychainData()
+            try? self.account?.removeBioKeychainData()
             self.navigationController?.popViewController(animated: true)
         })
         DispatchQueue.main.async {

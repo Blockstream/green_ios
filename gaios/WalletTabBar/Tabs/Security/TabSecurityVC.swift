@@ -9,7 +9,7 @@ class TabSecurityVC: TabViewController {
         var list = [PreferenceCellModel]()
         list.append(PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true ? .on : .off))
         if walletModel.wm?.account.isHW != true {
-            list.append(PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasPin == true ? .on : .off))
+            list.append(PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasManualPin == true ? .on : .off))
         }
         return list
     }
@@ -26,10 +26,6 @@ class TabSecurityVC: TabViewController {
 
         register()
         setContent()
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

@@ -174,7 +174,7 @@ class BiometricLoginViewController: UIViewController {
         let alert = UIAlertController(title: "id_warning".localized, message: text, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in })
         alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
-            self.account.removeBioKeychainData()
+            try? self.account.removeBioKeychainData()
         })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
