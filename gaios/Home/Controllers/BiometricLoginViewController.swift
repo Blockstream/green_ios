@@ -37,8 +37,8 @@ class BiometricLoginViewController: UIViewController {
         subtitleLabel.text = "Try Face ID again or enter your PIN to unlock your wallet.".localized
         pinButton.setTitle("Type PIN".localized, for: .normal)
         biometricButton.setTitle("", for: .normal)
-        let attrText = NSAttributedString(string: account.name, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
-        walletLabel.attributedText = attrText
+        let walletTap = UITapGestureRecognizer(target: self, action: #selector(switchNetwork))
+        walletBox.addGestureRecognizer(walletTap)
     }
 
     func setStyle() {
@@ -51,6 +51,8 @@ class BiometricLoginViewController: UIViewController {
         walletImageBox.backgroundColor = UIColor.gAccent()
         let iconName = account.networkType.testnet ? "ic_wallet_testnet" : "ic_wallet"
         walletImage.image = UIImage(named: iconName)?.maskWithColor(color: UIColor.gBlackBg())
+        let attrText = NSAttributedString(string: account.name, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
+        walletLabel.attributedText = attrText
     }
 
     @objc func switchNetwork() {
