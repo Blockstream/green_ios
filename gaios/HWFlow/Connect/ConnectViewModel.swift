@@ -5,7 +5,7 @@ import gdk
 import hw
 import AsyncBluetooth
 
-protocol ConnectViewModelDelegate {
+protocol ConnectViewModelDelegate: AnyObject {
     func onScan(peripherals: [ScanListItem])
     func onError(message: String)
     func onUpdateState(_ central: CBCentralManager)
@@ -15,7 +15,7 @@ class ConnectViewModel: NSObject {
     var state: ConnectionState = .none
     var firstConnection: Bool = false
     var isJade: Bool { account.isJade }
-    var updateState: ((ConnectionState)->())? = nil
+    var updateState: ((ConnectionState)->())?
     var peripherals: [ScanListItem] = []
     let bleHwManager = BleHwManager.shared
     var delegate: ConnectViewModelDelegate?
@@ -43,7 +43,7 @@ class ConnectViewModel: NSObject {
         super.init()
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
     }
-    
+
     func startScan(deviceType: DeviceType) async throws {
         if bleHwManager.centralManager.isScanning {
             return
@@ -58,7 +58,7 @@ class ConnectViewModel: NSObject {
             self.addPeripheral(scanData.peripheral, for: deviceType)
         }
     }
-    
+
     func addPeripheral(_ peripheral: Peripheral, for deviceType: DeviceType) {
         let identifier = peripheral.identifier
         let name = peripheral.name ?? ""
@@ -71,18 +71,18 @@ class ConnectViewModel: NSObject {
             delegate?.onScan(peripherals: peripherals)
         }
     }
-    
+
     func stopScan() async {
         if bleHwManager.centralManager.isScanning {
             await bleHwManager.centralManager.stopScan()
         }
         peripherals.removeAll()
     }
-    
+
     func peripheral(_ peripheralID: UUID) -> Peripheral? {
         bleHwManager.centralManager.retrievePeripherals(withIdentifiers: [peripheralID]).first
     }
-    
+
     func loginJade() async throws {
         updateState?(.connect)
         if !bleHwManager.isConnected() {
@@ -120,11 +120,11 @@ class ConnectViewModel: NSObject {
             _ = try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoBioCredentials, credentials: credentials, for: account.keychain)
         }
     }
-    
+
     func checkFirmware() async throws-> (JadeVersionInfo?, Firmware?) {
         try await bleHwManager.checkFirmware()
     }
-    
+
     func loginLedger() async throws {
         updateState?(.connect)
         if !bleHwManager.isConnected() {
