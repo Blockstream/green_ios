@@ -104,6 +104,12 @@ class EditProtectionViewController: UIViewController {
     }
 
     func changeBiometricAuthentication(enable: Bool) async {
+        if !enable && (WalletManager.current?.account.hasManualPin ?? false) {
+            showAlert(
+                title: "id_biometrics_authentication".localized,
+                message: "Please enable PIN authentication before disabling" + (protectionType == .faceID ? "Face ID" : "Touch ID"))
+            return
+        }
         let task = Task.detached { [weak self] in
             if enable {
                 try await self?.disableBiometricAuthentication()
