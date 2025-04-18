@@ -68,12 +68,20 @@ class TabSecurityVC: TabViewController {
     func onCompare() {
         securityCompareScreen()
     }
-    func onPreferenceCell(_ type: PreferenceType) {
-        switch type {
+    func editProtection(type: EditProtectionType, action: EditProtectionAction) {
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "EditProtectionViewController") as? EditProtectionViewController {
+            vc.protectionType = type
+            vc.protectionAction = action
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    func onPreferenceCell(_ model: PreferenceCellModel) {
+        switch model.type {
         case .faceID:
-            break
+            editProtection(type: .faceID, action: model.state == .on ? .disable : .enable)
         case .pin:
-            break
+            editProtection(type: .pin, action: model.state == .on ? .change : .enable)
         case .genuineCheck:
             break
         case .fwUpdate:
@@ -137,7 +145,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 let model = jadeCellModel[indexPath.row]
                 cell.configure(model: model,
                                onTap: {[weak self] in
-                    self?.onPreferenceCell(model.type)
+                    self?.onPreferenceCell(model)
                 })
                 cell.selectionStyle = .none
                 return cell
@@ -167,7 +175,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 let model = unlockCellModel[indexPath.row]
                 cell.configure(model: model,
                                onTap: {[weak self] in
-                    self?.onPreferenceCell(model.type)
+                    self?.onPreferenceCell(model)
                 })
                 cell.selectionStyle = .none
                 return cell
@@ -177,7 +185,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 let model = recoveryCellModel[indexPath.row]
                 cell.configure(model: model,
                                onTap: {[weak self] in
-                    self?.onPreferenceCell(model.type)
+                    self?.onPreferenceCell(model)
                 })
                 cell.selectionStyle = .none
                 return cell

@@ -305,6 +305,7 @@
 		348401F52DAD3F0700A91C65 /* DialogCompareSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348401F42DAD3EF600A91C65 /* DialogCompareSecurityViewController.swift */; };
 		348401F72DAE322100A91C65 /* UISegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348401F62DAE321D00A91C65 /* UISegmentedControl.swift */; };
 		348401FF2DB0FD9600A91C65 /* ManualBackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348401FE2DB0FD8A00A91C65 /* ManualBackupViewController.swift */; };
+		348402022DB21ECD00A91C65 /* EditProtectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348402012DB21EC100A91C65 /* EditProtectionViewController.swift */; };
 		3484118C265E6113002D2202 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484118B265E6113002D2202 /* Constants.swift */; };
 		3486AD7227CFC5060013D8FF /* AssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD7127CFC5060013D8FF /* AssetsList.swift */; };
 		3487653729D337150059D05F /* OnBoardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487653629D337150059D05F /* OnBoardManager.swift */; };
@@ -1258,6 +1259,7 @@
 		348401F42DAD3EF600A91C65 /* DialogCompareSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCompareSecurityViewController.swift; sourceTree = "<group>"; };
 		348401F62DAE321D00A91C65 /* UISegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControl.swift; sourceTree = "<group>"; };
 		348401FE2DB0FD8A00A91C65 /* ManualBackupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupViewController.swift; sourceTree = "<group>"; };
+		348402012DB21EC100A91C65 /* EditProtectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProtectionViewController.swift; sourceTree = "<group>"; };
 		3484118B265E6113002D2202 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		3486AD7127CFC5060013D8FF /* AssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsList.swift; sourceTree = "<group>"; };
 		3487653629D337150059D05F /* OnBoardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardManager.swift; sourceTree = "<group>"; };
@@ -2287,6 +2289,7 @@
 		344D57C32D71A9EB009725A3 /* WalletTabBar */ = {
 			isa = PBXGroup;
 			children = (
+				348402002DB21B9700A91C65 /* EditProtection */,
 				348401F32DAD1D8300A91C65 /* DialogCompareSecurity */,
 				34DA78A42D807F130022FBB1 /* DialogAccounts */,
 				348401FD2DB0F9C200A91C65 /* ManualBackup */,
@@ -2760,6 +2763,14 @@
 				348401FE2DB0FD8A00A91C65 /* ManualBackupViewController.swift */,
 			);
 			path = ManualBackup;
+			sourceTree = "<group>";
+		};
+		348402002DB21B9700A91C65 /* EditProtection */ = {
+			isa = PBXGroup;
+			children = (
+				348402012DB21EC100A91C65 /* EditProtectionViewController.swift */,
+			);
+			path = EditProtection;
 			sourceTree = "<group>";
 		};
 		3488FC66290AE23F00122628 /* AccountCell */ = {
@@ -5075,6 +5086,7 @@
 				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
 				81004E31292B6E1D001C2E4D /* MnemonicViewModel.swift in Sources */,
 				344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */,
+				348402022DB21ECD00A91C65 /* EditProtectionViewController.swift in Sources */,
 				34F0EC2F2D783EE70017C276 /* PriceChartModel.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
 				3415862329EE9A29005002D9 /* WOLoginViewController.swift in Sources */,
