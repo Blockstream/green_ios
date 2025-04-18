@@ -21,8 +21,8 @@ class BiometricLoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setContent()
         setStyle()
+        setContent()
         setNavigation()
         AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(account))
     }
@@ -35,15 +35,19 @@ class BiometricLoginViewController: UIViewController {
     func setContent() {
         titleLabel.text = "Hello".localized
         subtitleLabel.text = "Try Face ID again or enter your PIN to unlock your wallet.".localized
-        pinButton.setTitle("Type PIN".localized, for: .normal)
+        let attrTitle = NSAttributedString(string: "Type PIN".localized, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
+        pinButton.setAttributedTitle(attrTitle, for: .normal)
         biometricButton.setTitle("", for: .normal)
         let walletTap = UITapGestureRecognizer(target: self, action: #selector(switchNetwork))
         walletBox.addGestureRecognizer(walletTap)
+        let attrText = NSAttributedString(string: account.name, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
+        walletLabel.attributedText = attrText
+        pinButton.isHidden = !account.hasManualPin
     }
 
     func setStyle() {
         view.backgroundColor = UIColor.gBlackBg()
-        pinButton.setStyle(.outlined)
+        pinButton.setStyle(.inline)
         titleLabel.setStyle(.title)
         subtitleLabel.setStyle(.subTitle)
         walletLabel.setStyle(.txtCard)
@@ -51,8 +55,6 @@ class BiometricLoginViewController: UIViewController {
         walletImageBox.backgroundColor = UIColor.gAccent()
         let iconName = account.networkType.testnet ? "ic_wallet_testnet" : "ic_wallet"
         walletImage.image = UIImage(named: iconName)?.maskWithColor(color: UIColor.gBlackBg())
-        let attrText = NSAttributedString(string: account.name, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
-        walletLabel.attributedText = attrText
     }
 
     @objc func switchNetwork() {
@@ -70,13 +72,13 @@ class BiometricLoginViewController: UIViewController {
     }
 
     @IBAction func pinButtonTap(_ sender: Any) {
-        let nv = UINavigationController()
         let storyboard = UIStoryboard(name: "Home", bundle: nil)
         let vcLogin = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
         if let vcLogin = vcLogin {
-            nv.pushViewController(vcLogin, animated: false)
+            vcLogin.viewModel = viewModel
+            vcLogin.viewModel.disableBiometricLogin = true
+            navigationController?.pushViewController(vcLogin, animated: true)
         }
-        AccountNavigator.changeRoot(root: nv)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -120,7 +122,7 @@ class BiometricLoginViewController: UIViewController {
             failure(error: error, enableFailingCounter: true)
         }
     }
-    
+
     @MainActor
     func success() {
         self.startLoader(message: "id_loading_wallet".localized)
@@ -188,14 +190,14 @@ extension BiometricLoginViewController: UIViewControllerTransitioningDelegate {
         return ModalPresentationController(presentedViewController: presented, presenting: presenting)
     }
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if presented as? DrawerNetworkSelectionViewController != nil {
+        if presented is DrawerNetworkSelectionViewController {
             return DrawerAnimator(isPresenting: true)
         } else {
             return ModalAnimator(isPresenting: true)
         }
     }
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if dismissed as? DrawerNetworkSelectionViewController != nil {
+        if dismissed is DrawerNetworkSelectionViewController {
             return DrawerAnimator(isPresenting: false)
         } else {
             return ModalAnimator(isPresenting: false)

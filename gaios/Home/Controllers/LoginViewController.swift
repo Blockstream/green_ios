@@ -6,28 +6,28 @@ import gdk
 import greenaddress
 
 class LoginViewController: UIViewController {
-
+    
     @IBOutlet weak var cardEnterPin: UIView!
     @IBOutlet weak var cardWalletLock: UIView!
     @IBOutlet weak var btnsStack: UIStackView!
-
+    
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var attempts: UILabel!
     @IBOutlet weak var connectionSettingsButton: UIButton!
     @IBOutlet weak var emergencyButton: UIButton!
     @IBOutlet weak var attemptsView: UIView!
     @IBOutlet weak var attemptsBg: UIView!
-
+    
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet var keyButton: [UIButton]?
     @IBOutlet var pinLabel: [UILabel]?
     let menuButton = UIButton(type: .system)
-
+    
     @IBOutlet weak var lblWalletLockHint1: UILabel!
     @IBOutlet weak var lblWalletLockHint2: UILabel!
     @IBOutlet weak var btnWalletLock: UIButton!
-
+    
     @IBOutlet weak var alertCard: UIView!
     @IBOutlet weak var alertTitle: UILabel!
     @IBOutlet weak var alertHint: UILabel!
@@ -35,9 +35,9 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var alertBtnDismiss: UIButton!
     @IBOutlet weak var alertBtnRight: UIButton!
     @IBOutlet weak var alertBtnsContainer: UIView!
-
+    
     var viewModel: LoginViewModel!
-
+    
     private var account: Account { viewModel.account }
     private var remoteAlert: RemoteAlert?
     private var pinCode = ""
@@ -47,21 +47,21 @@ class LoginViewController: UIViewController {
             emergencyButton.isHidden = !emergencyRestore
         }
     }
-
+    
     @IBOutlet weak var passphraseView: UIStackView!
     @IBOutlet weak var lblPassphrase: UILabel!
-
+    
     var bip39passphare: String? {
         didSet {
             passphraseView.isHidden = bip39passphare?.isEmpty ?? true
         }
     }
-
+    
     private var showLockPage: Bool {
         !emergencyRestore &&
         (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
     }
-
+    
     @IBAction func tap1(_ sender: Any) {
         tapNumber("1")
     }
@@ -104,12 +104,12 @@ class LoginViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setContent()
         setStyle()
         setNavigation()
         setRemoteAlert()
-
+        
         view.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.view
         navigationItem.leftBarButtonItem?.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.backBtn
         menuButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.menuBtn
@@ -118,10 +118,10 @@ class LoginViewController: UIViewController {
         keyButton![2].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn3
         attempts.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.attemptsLbl
         connectionSettingsButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.settingsBtn
-
+        
         AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
-
+    
     func setNavigation() {
         navigationItem.title = account.name
         navigationItem.setHidesBackButton(true, animated: false)
@@ -138,7 +138,7 @@ class LoginViewController: UIViewController {
         menuButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
-
+    
     func setRemoteAlert() {
         alertCard.isHidden = true
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkType]).first
@@ -159,7 +159,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
     func setContent() {
         lblTitle.text = "id_enter_pin".localized
         lblWalletLockHint1.text = "\("id_youve_entered_an_invalid_pin".localized)\n\("id_youll_need_your_recovery_phrase".localized)"
@@ -171,7 +171,7 @@ class LoginViewController: UIViewController {
         emergencyButton.setTitle("id_emergency_recovery_phrase".localized, for: .normal)
         passphraseView.isHidden = true
     }
-
+    
     func setStyle() {
         view.backgroundColor = UIColor.gBlackBg()
         btnWalletLock.setStyle(.primary)
@@ -184,28 +184,36 @@ class LoginViewController: UIViewController {
         emergencyButton.setImage(UIImage(named: "ic_x_circle")!.maskWithColor(color: .white), for: .normal)
         emergencyButton.cornerRadius = 5.0
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         updateAttemptsLabel()
         reloadPin()
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reload()
-        Task { [weak self] in
-            if self?.account.askEphemeral ?? false {
+        autologin(passphrase: nil)
+    }
+
+    func autologin(passphrase: String?) {
+        if account.askEphemeral ?? false {
+            Task { [weak self] in
                 self?.loginWithPassphrase(isAlwaysAsk: self?.account.askEphemeral ?? false)
-            } else if self?.account.hasBioPin ?? false {
-                await self?.login(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
-            } else if self?.account.hasBioCredentials ?? false {
-                await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: nil)
-            } else {
-                if !AuthenticationTypeHandler.supportsPasscodeAuthentication() {
-                    self?.showAlert(title: "id_error".localized, message: "id_set_up_a_passcode_for_your_ios".localized)
-                }
+            }
+        } else if !viewModel.disableBiometricLogin && account.hasBioPin {
+            Task { [weak self] in
+                await self?.login(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
+            }
+        } else if !viewModel.disableBiometricLogin && account.hasBioCredentials {
+            Task { [weak self] in
+                await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: passphrase)
+            }
+        } else {
+            if !AuthenticationTypeHandler.supportsPasscodeAuthentication() {
+                showAlert(title: "id_error".localized, message: "id_set_up_a_passcode_for_your_ios".localized)
             }
         }
     }
@@ -552,9 +560,7 @@ extension LoginViewController: DialogPassphraseViewControllerDelegate {
         bip39passphare = passphrase
         viewModel.updateAccountAskEphemeral(alwaysAsk)
         if account.hasBioPin {
-            Task { [weak self] in
-                await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: passphrase)
-            }
+            autologin(passphrase: passphrase)
         }
     }
 }

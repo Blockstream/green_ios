@@ -6,8 +6,11 @@ import core
 class LoginViewModel {
 
     var account: Account
-    init(account: Account) {
+    var disableBiometricLogin: Bool = false
+
+    init(account: Account, disableBiometricLogin: Bool = false) {
         self.account = account
+        self.disableBiometricLogin = disableBiometricLogin
     }
 
     func auth() async throws {
