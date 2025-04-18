@@ -6,28 +6,22 @@ import gdk
 import greenaddress
 
 class LoginViewController: UIViewController {
-    
     @IBOutlet weak var cardEnterPin: UIView!
     @IBOutlet weak var cardWalletLock: UIView!
     @IBOutlet weak var btnsStack: UIStackView!
-    
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var attempts: UILabel!
     @IBOutlet weak var connectionSettingsButton: UIButton!
     @IBOutlet weak var emergencyButton: UIButton!
     @IBOutlet weak var attemptsView: UIView!
     @IBOutlet weak var attemptsBg: UIView!
-    
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet var keyButton: [UIButton]?
     @IBOutlet var pinLabel: [UILabel]?
-    let menuButton = UIButton(type: .system)
-    
     @IBOutlet weak var lblWalletLockHint1: UILabel!
     @IBOutlet weak var lblWalletLockHint2: UILabel!
     @IBOutlet weak var btnWalletLock: UIButton!
-    
     @IBOutlet weak var alertCard: UIView!
     @IBOutlet weak var alertTitle: UILabel!
     @IBOutlet weak var alertHint: UILabel!
@@ -36,8 +30,9 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var alertBtnRight: UIButton!
     @IBOutlet weak var alertBtnsContainer: UIView!
     
+    let menuButton = UIButton(type: .system)
     var viewModel: LoginViewModel!
-    
+
     private var account: Account { viewModel.account }
     private var remoteAlert: RemoteAlert?
     private var pinCode = ""
@@ -47,21 +42,19 @@ class LoginViewController: UIViewController {
             emergencyButton.isHidden = !emergencyRestore
         }
     }
-    
+
     @IBOutlet weak var passphraseView: UIStackView!
     @IBOutlet weak var lblPassphrase: UILabel!
-    
+
     var bip39passphare: String? {
         didSet {
             passphraseView.isHidden = bip39passphare?.isEmpty ?? true
         }
     }
-    
     private var showLockPage: Bool {
         !emergencyRestore &&
         (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
     }
-    
     @IBAction func tap1(_ sender: Any) {
         tapNumber("1")
     }
@@ -104,12 +97,10 @@ class LoginViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setContent()
         setStyle()
         setNavigation()
         setRemoteAlert()
-        
         view.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.view
         navigationItem.leftBarButtonItem?.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.backBtn
         menuButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.menuBtn
@@ -118,10 +109,9 @@ class LoginViewController: UIViewController {
         keyButton![2].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn3
         attempts.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.attemptsLbl
         connectionSettingsButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.settingsBtn
-        
         AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
-    
+
     func setNavigation() {
         navigationItem.title = account.name
         navigationItem.setHidesBackButton(true, animated: false)
@@ -138,7 +128,7 @@ class LoginViewController: UIViewController {
         menuButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
-    
+
     func setRemoteAlert() {
         alertCard.isHidden = true
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkType]).first
@@ -510,7 +500,6 @@ class LoginViewController: UIViewController {
         OnboardViewModel.flowType = .restore
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
-            vc.restoredAccount = account
             navigationController?.pushViewController(vc, animated: true)
         }
     }

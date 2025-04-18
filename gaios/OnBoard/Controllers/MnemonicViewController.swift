@@ -23,7 +23,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     var mnemonic = [String](repeating: String(), count: 27)
     var currIndexPath: IndexPath?
     var mnemonicActionType: MnemonicActionType = .recoverWallet
-    var restoredAccount: Account?
     var page = 0 // analytics, mnemonic fails counter
     weak var delegate: AccountCreateRecoveryKeyDelegate?
 

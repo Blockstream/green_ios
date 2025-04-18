@@ -355,7 +355,7 @@
                                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                                                                                 <state key="normal" title="btn_action_right">
-                                                                                                    <color key="titleColor" name="customMatrixGreen"/>
+                                                                                                    <color key="titleColor" name="gAccent"/>
                                                                                                 </state>
                                                                                                 <connections>
                                                                                                     <action selector="alertLink:" destination="jB1-8d-0nD" eventType="touchUpInside" id="Fbv-29-s1t"/>
@@ -364,7 +364,7 @@
                                                                                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="If5-Ce-LiI">
                                                                                                 <rect key="frame" x="29" y="6.5" width="105" height="31"/>
                                                                                                 <state key="normal" title="btn_action_left">
-                                                                                                    <color key="titleColor" name="customMatrixGreen"/>
+                                                                                                    <color key="titleColor" name="gAccent"/>
                                                                                                 </state>
                                                                                             </button>
                                                                                         </subviews>
@@ -856,6 +856,9 @@
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gAccent">
+            <color red="0.0" green="0.73725490196078436" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gBlackBg">
             <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

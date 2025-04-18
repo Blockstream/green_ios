@@ -48,14 +48,6 @@ class OnboardViewModel {
         }
     }
 
-    func checkWalletMismatch(wm: WalletManager, restoredAccount: Account) async throws {
-        // Avoid to restore an different wallet if restoredAccount is defined
-        //let xpub = try await getXpubHashId(session: wm.prominentSession!, credentials:  )
-        //if let xpubHashId = restoredAccount.xpubHashId, xpubHashId != xpub {
-        //    throw LoginError.walletMismatch()
-        //}
-    }
-
     func addPinData(wallet: WalletManager, credentials: Credentials, pin: String) async throws -> Credentials {
         guard let session = wallet.prominentSession else {
             throw LoginError.connectionFailed("")
