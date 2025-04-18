@@ -13,12 +13,10 @@ class AccountNavigator {
         let nv = UINavigationController()
         let vcHome: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
+        let vcBiometricLogin: BiometricLoginViewController? = instantiateViewController(storyboard: "Home", identifier: "BiometricLoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
-        if account.isDerivedLightning {
-            vcLogin?.viewModel = LoginViewModel(account: account)
-            nv.setViewControllers([vcHome!, vcLogin!], animated: true)
-        } else if account.isWatchonly {
+        if account.isWatchonly {
             vcWatch?.account = account
             nv.setViewControllers([vcHome!, vcWatch!], animated: true)
         } else if account.isHW {
@@ -26,6 +24,9 @@ class AccountNavigator {
                 account: account,
                 firstConnection: false)
             nv.setViewControllers([vcHome!, vcConnect!], animated: true)
+        } else if account.hasBioPin || account.hasBioCredentials {
+            vcBiometricLogin?.viewModel = LoginViewModel(account: account)
+            nv.setViewControllers([vcBiometricLogin!], animated: true)
         } else {
             vcLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)

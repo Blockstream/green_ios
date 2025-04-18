@@ -189,3 +189,10 @@ extension UIViewController {
         backgroundView.removeFromSuperview()
     }
 }
+
+extension UIViewController {
+    static func instantiateViewController<K>(storyboard: String, identifier: String) -> K? {
+        let storyboard = UIStoryboard(name: storyboard, bundle: nil)
+        return storyboard.instantiateViewController(withIdentifier: identifier) as? K
+    }
+}

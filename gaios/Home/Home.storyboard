@@ -714,15 +714,142 @@
             </objects>
             <point key="canvasLocation" x="4394" y="167"/>
         </scene>
+        <!--Biometric Login View Controller-->
+        <scene sceneID="Dje-8S-dYO">
+            <objects>
+                <viewController storyboardIdentifier="BiometricLoginViewController" id="1wu-hP-iXL" customClass="BiometricLoginViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Cyd-sE-vxe">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="ic_logo_blockstream" translatesAutoresizingMaskIntoConstraints="NO" id="7S5-nF-fE9">
+                                <rect key="frame" x="129.5" y="102" width="155" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="uFZ-ug-CdU"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_slide_1_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LgE-Az-NNa">
+                                <rect key="frame" x="44" y="180" width="326" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_slide_1_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s37-ex-eSY">
+                                <rect key="frame" x="44" y="216.5" width="326" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JgN-l4-FxD">
+                                <rect key="frame" x="147" y="596" width="120.5" height="110"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="login_faceid"/>
+                                <connections>
+                                    <action selector="biometricButtonTap:" destination="1wu-hP-iXL" eventType="touchUpInside" id="Pk9-Uy-CiB"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5KZ-i0-L4V" userLabel="Btn Check Store">
+                                <rect key="frame" x="25" y="706" width="364" height="56"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="KqN-a0-feW"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="Type PIN">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="pinButtonTap:" destination="1wu-hP-iXL" eventType="touchUpInside" id="qKG-Fv-6Yc"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lI4-rq-2S0">
+                                <rect key="frame" x="300" y="43" width="101.5" height="54"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_wallet" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ngr-y9-Iti">
+                                        <rect key="frame" x="0.0" y="18" width="63.5" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="838-DG-VTY">
+                                        <rect key="frame" x="73.5" y="13" width="28" height="28"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_dialog_sweep_wallet" translatesAutoresizingMaskIntoConstraints="NO" id="Jpj-wS-m8q">
+                                                <rect key="frame" x="6.5" y="6.5" width="15" height="15"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="15" id="rAB-kZ-dBg"/>
+                                                    <constraint firstAttribute="width" constant="15" id="yMg-yO-hN2"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" name="gGrayTxt"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="28" id="41k-KJ-oXK"/>
+                                            <constraint firstAttribute="height" constant="28" id="Hir-i2-d0V"/>
+                                            <constraint firstItem="Jpj-wS-m8q" firstAttribute="centerX" secondItem="838-DG-VTY" secondAttribute="centerX" id="VCK-Hk-DS6"/>
+                                            <constraint firstItem="Jpj-wS-m8q" firstAttribute="centerY" secondItem="838-DG-VTY" secondAttribute="centerY" id="lJI-RQ-GuL"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="838-DG-VTY" firstAttribute="centerY" secondItem="lI4-rq-2S0" secondAttribute="centerY" id="CAm-q7-R8U"/>
+                                    <constraint firstAttribute="trailing" secondItem="838-DG-VTY" secondAttribute="trailing" id="NtO-Es-DFz"/>
+                                    <constraint firstItem="838-DG-VTY" firstAttribute="leading" secondItem="ngr-y9-Iti" secondAttribute="trailing" constant="10" id="Q6O-FB-pp5"/>
+                                    <constraint firstItem="ngr-y9-Iti" firstAttribute="centerY" secondItem="lI4-rq-2S0" secondAttribute="centerY" id="Xe2-Uj-HDa"/>
+                                    <constraint firstAttribute="height" constant="54" id="ggZ-Gv-0YI"/>
+                                    <constraint firstItem="ngr-y9-Iti" firstAttribute="leading" secondItem="lI4-rq-2S0" secondAttribute="leading" id="oXW-Ez-EXI"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="gtZ-af-bd2"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="LgE-Az-NNa" firstAttribute="centerX" secondItem="gtZ-af-bd2" secondAttribute="centerX" id="0El-OP-X9E"/>
+                            <constraint firstItem="7S5-nF-fE9" firstAttribute="top" secondItem="gtZ-af-bd2" secondAttribute="top" constant="54" id="1qe-k7-cIe"/>
+                            <constraint firstItem="gtZ-af-bd2" firstAttribute="top" secondItem="lI4-rq-2S0" secondAttribute="top" constant="5" id="ASm-Mr-YMJ"/>
+                            <constraint firstItem="gtZ-af-bd2" firstAttribute="trailing" secondItem="lI4-rq-2S0" secondAttribute="trailing" constant="12.666666666666515" id="CHX-cj-hxD"/>
+                            <constraint firstItem="gtZ-af-bd2" firstAttribute="trailing" secondItem="LgE-Az-NNa" secondAttribute="trailing" constant="44" id="D06-NU-jRq"/>
+                            <constraint firstItem="gtZ-af-bd2" firstAttribute="bottom" secondItem="5KZ-i0-L4V" secondAttribute="bottom" constant="100" id="H3D-3M-SUB"/>
+                            <constraint firstItem="5KZ-i0-L4V" firstAttribute="top" secondItem="JgN-l4-FxD" secondAttribute="bottom" id="MUn-Xp-Vij"/>
+                            <constraint firstItem="LgE-Az-NNa" firstAttribute="leading" secondItem="gtZ-af-bd2" secondAttribute="leading" constant="44" id="W1W-Hh-kr5"/>
+                            <constraint firstItem="LgE-Az-NNa" firstAttribute="top" secondItem="7S5-nF-fE9" secondAttribute="bottom" constant="44" id="Xki-Eh-6BM"/>
+                            <constraint firstItem="s37-ex-eSY" firstAttribute="leading" secondItem="gtZ-af-bd2" secondAttribute="leading" constant="44" id="cbK-Xx-UGT"/>
+                            <constraint firstItem="gtZ-af-bd2" firstAttribute="trailing" secondItem="s37-ex-eSY" secondAttribute="trailing" constant="44" id="dTe-ud-ZZW"/>
+                            <constraint firstItem="5KZ-i0-L4V" firstAttribute="leading" secondItem="gtZ-af-bd2" secondAttribute="leading" constant="25" id="h4o-QR-4ZS"/>
+                            <constraint firstItem="s37-ex-eSY" firstAttribute="centerX" secondItem="gtZ-af-bd2" secondAttribute="centerX" id="i9s-iP-Nfg"/>
+                            <constraint firstItem="7S5-nF-fE9" firstAttribute="centerX" secondItem="gtZ-af-bd2" secondAttribute="centerX" id="k2V-gi-7Ym"/>
+                            <constraint firstItem="s37-ex-eSY" firstAttribute="top" secondItem="LgE-Az-NNa" secondAttribute="bottom" constant="16" id="uT8-qw-ftw"/>
+                            <constraint firstItem="JgN-l4-FxD" firstAttribute="centerX" secondItem="gtZ-af-bd2" secondAttribute="centerX" id="wnF-dU-OSn"/>
+                            <constraint firstItem="gtZ-af-bd2" firstAttribute="trailing" secondItem="5KZ-i0-L4V" secondAttribute="trailing" constant="25" id="xL2-2E-Pbo"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="biometricButton" destination="JgN-l4-FxD" id="H1q-0z-kFc"/>
+                        <outlet property="pinButton" destination="5KZ-i0-L4V" id="aGF-aE-FQz"/>
+                        <outlet property="subtitleLabel" destination="s37-ex-eSY" id="sqz-WM-cx0"/>
+                        <outlet property="titleLabel" destination="LgE-Az-NNa" id="qcJ-NE-BTR"/>
+                        <outlet property="walletBox" destination="lI4-rq-2S0" id="pcM-9M-Zzt"/>
+                        <outlet property="walletImage" destination="Jpj-wS-m8q" id="q6x-DD-Yno"/>
+                        <outlet property="walletImageBox" destination="838-DG-VTY" id="KQx-hW-Ghg"/>
+                        <outlet property="walletLabel" destination="ngr-y9-Iti" id="lD2-S6-ET2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="g6Z-7m-5BG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5179.7101449275369" y="164.73214285714286"/>
+        </scene>
     </scenes>
     <resources>
         <image name="cancel" width="14" height="14"/>
         <image name="erase" width="25" height="25"/>
         <image name="ic_alert_warn" width="30" height="27"/>
+        <image name="ic_dialog_sweep_wallet" width="24" height="24"/>
         <image name="ic_logo_blockstream" width="155" height="34.5"/>
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
         <image name="ic_wallet_disclose" width="7.5" height="11.5"/>
         <image name="ic_x_circle" width="20" height="20"/>
+        <image name="login_faceid" width="96.5" height="96"/>
         <image name="logo_big" width="90" height="110"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -735,6 +862,9 @@
         </namedColor>
         <namedColor name="gGrayCard">
             <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGrayTxt">
+            <color red="0.62745098039215685" green="0.62745098039215685" blue="0.62745098039215685" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

@@ -546,6 +546,7 @@
 		8114888E2B785A27004C7AB6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 8114888D2B785A27004C7AB6 /* FirebaseMessaging */; };
 		81196E9D2B739F7900537A6E /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81196E9C2B739F7900537A6E /* CBOR.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
+		81226F7F2DB24B4E00086EB8 /* BiometricLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81226F7E2DB24B4300086EB8 /* BiometricLoginViewController.swift */; };
 		812528CE2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812528CD2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift */; };
 		812528D02B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812528CF2B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift */; };
 		8127DB1C2AFF7396002489AC /* ScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8127DB1B2AFF7396002489AC /* ScanResult.swift */; };
@@ -1516,6 +1517,7 @@
 		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkSettings.swift; sourceTree = "<group>"; };
 		81205D6821C3B7EB005180CF /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
+		81226F7E2DB24B4300086EB8 /* BiometricLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLoginViewController.swift; sourceTree = "<group>"; };
 		8124524125D6B0DD00537238 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		812528CD2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoverFundsSummaryCell.swift; sourceTree = "<group>"; };
 		812528CF2B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoveryFundsErrorCell.swift; sourceTree = "<group>"; };
@@ -2961,6 +2963,7 @@
 		34AB8BAD26036766009C930A /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				81226F7E2DB24B4300086EB8 /* BiometricLoginViewController.swift */,
 				347FD0B025FFA98300BB3FAB /* HomeViewController.swift */,
 				34CEFD9D260202010098536C /* LoginViewController.swift */,
 				81EA2DCE2B21F3E500A1F924 /* LoginViewModel.swift */,
@@ -5136,6 +5139,7 @@
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				344EF1C32C10528700689D63 /* TxDetailsTotalsCellModel.swift in Sources */,
 				34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */,
+				81226F7F2DB24B4E00086EB8 /* BiometricLoginViewController.swift in Sources */,
 				34287B752A83855B0065471F /* AlertViewController.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
 				3419B4532BF340AB00492198 /* ReEnable2faViewModel.swift in Sources */,
