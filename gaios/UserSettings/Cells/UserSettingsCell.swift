@@ -23,7 +23,7 @@ class UserSettingsCell: UITableViewCell {
     }
 
     var viewModel: UserSettingsCellModel? {
-        didSet {
+        didSet { 
             lblTitle.text = viewModel?.title
             lblHint.text = viewModel?.subtitle
             disclosure.isHidden = !(viewModel?.disclosure ?? false)

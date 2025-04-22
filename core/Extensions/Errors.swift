@@ -32,8 +32,8 @@ extension Error {
         }
         if let loginError = self as? LoginError {
             switch loginError {
-            case LoginError.connectionFailed:
-                return "id_connection_failed"
+            case LoginError.connectionFailed(let txt):
+                return txt ?? "id_connection_failed"
             case LoginError.failed:
                 return "id_login_failed"
             case LoginError.walletNotFound:
