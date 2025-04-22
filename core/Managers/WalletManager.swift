@@ -219,9 +219,14 @@ public class WalletManager {
             throw GaError.GenericError("disable liquid if is unsupported on hw")
         }
         // verify session
-        if session.networkType == .lightning && credentials == nil {
-            logger.info("no credentials found for lightning")
-            return
+        if session.networkType == .lightning {
+            if !AppSettings.shared.experimental || testnet {
+                logger.info("lightning no available")
+                return
+            } else if credentials == nil {
+                logger.info("no credentials found for lightning")
+                return
+            }
         } else if session.networkType != .lightning && (credentials == nil && device == nil) {
             throw GaError.GenericError("no credentials found for \(session.networkType.rawValue)")
         }

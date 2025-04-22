@@ -22,9 +22,9 @@ public class SessionManager {
     public var session: GDKSession?
     public var gdkNetwork: GdkNetwork
     public var blockHeight: UInt32 = 0
-    public var popupResolver: PopupResolverDelegate? = nil
-    public var hwInterfaceResolver: HwInterfaceResolver? = nil
-    public var loginData: LoginUserResult? = nil
+    public var popupResolver: PopupResolverDelegate?
+    public var hwInterfaceResolver: HwInterfaceResolver?
+    public var loginData: LoginUserResult?
 
     public var connected = false
     public var logged = false
