@@ -49,7 +49,7 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
             $0?.setStyle(.title)
         }
         [lblSlide1Hint, lblSlide2Hint, lblSlide3Hint, lblSlide4Hint].forEach {
-            $0?.setStyle(.subTitle)
+            $0?.setStyle(.txt)
         }
         btnConnectJade.setStyle(.primary)
         btnConnectOther.setStyle(.outlinedWhite)

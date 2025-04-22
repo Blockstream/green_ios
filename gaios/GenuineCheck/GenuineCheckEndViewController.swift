@@ -97,8 +97,8 @@ class GenuineCheckEndViewController: UIViewController {
     
     func setStyle() {
         lblTitle.setStyle(.title)
-        lblHint.setStyle(.subTitle)
-        lblInfo.setStyle(.subTitle)
+        lblHint.setStyle(.txt)
+        lblInfo.setStyle(.txt)
         [btnSupport, btnContinue, btnRetry].forEach {
             $0?.setStyle(.primary)
         }

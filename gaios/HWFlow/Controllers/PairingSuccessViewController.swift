@@ -45,7 +45,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     
     func setStyle() {
         lblTitle.setStyle(.title)
-        lblHint.setStyle(.subTitle)
+        lblHint.setStyle(.txt)
         btnContinue.setStyle(.primary)
         btnAppSettings.setStyle(.inline)
         btnAppSettings.setTitleColor(.white.withAlphaComponent(0.6), for: .normal)

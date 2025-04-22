@@ -93,7 +93,7 @@ class GenuineCheckDialogViewController: UIViewController {
     func setStyle() {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
-        lblTitle.setStyle(.subTitle)
+        lblTitle.setStyle(.title)
         lblHint.setStyle(.txtCard)
         btnNext.setStyle(.primary)
         lblInfo.setStyle(.txtCard)

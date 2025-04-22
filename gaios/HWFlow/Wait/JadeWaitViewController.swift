@@ -188,10 +188,10 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func setStyle() {
         infoBox.cornerRadius = 5.0
-        lblStepNumber.setStyle(.subTitle)
+        lblStepNumber.setStyle(.txt)
         lblStepTitle.setStyle(.title)
-        lblStepHint.setStyle(.subTitle)
-        lblLoading.setStyle(.subTitle)
+        lblStepHint.setStyle(.txt)
+        lblLoading.setStyle(.txt)
         btnConnectWithQr.setStyle(.inline)
         progressView.isAnimating = true
     }

@@ -49,7 +49,7 @@ class BiometricLoginViewController: UIViewController {
         view.backgroundColor = UIColor.gBlackBg()
         pinButton.setStyle(.inline)
         titleLabel.setStyle(.title)
-        subtitleLabel.setStyle(.subTitle)
+        subtitleLabel.setStyle(.txt)
         walletLabel.setStyle(.txtCard)
         walletImageBox.layer.cornerRadius = walletImageBox.frame.size.width / 2
         walletImageBox.backgroundColor = UIColor.gAccent()

@@ -124,7 +124,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
 
     func setStyle() {
         lblTitle.setStyle(.title)
-        lblHint.setStyle(.subTitle)
+        lblHint.setStyle(.txt)
     }
 
     func next() {

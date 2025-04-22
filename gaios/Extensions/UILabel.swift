@@ -26,8 +26,8 @@ extension UILabel {
             textColor = .white
             font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
         case .subTitle:
-            textColor = .white.withAlphaComponent(0.6)
-            font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+            textColor = .white
+            font = UIFont.systemFont(ofSize: 20.0, weight: .semibold)
         case .subTitle24:
             textColor = .white
             font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
