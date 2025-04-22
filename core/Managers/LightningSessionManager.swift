@@ -187,7 +187,7 @@ public class LightningSessionManager: SessionManager {
                 let msg = error.description() ?? "id_operation_failure"
                 throw TransactionError.failure(localizedDescription: msg, paymentHash: invoice.paymentHash)
             }
-        case .lnUrlPay(let data):
+        case .lnUrlPay(let data, let bip353Address):
             let res = try lightBridge?.payLnUrl(requestData: data, amount: satoshi ?? 0, comment: comment, useTrampoline: true)
             switch res {
             case .endpointSuccess(let data):
@@ -255,7 +255,7 @@ public class LightningSessionManager: SessionManager {
                 tx.error = error
             }
             return tx
-        case .lnUrlPay(let requestData):
+        case .lnUrlPay(let requestData, let bip353Address):
             let sendableSatoshi = requestData.sendableSatoshi(userSatoshi: UInt64(userInputSatoshi)) ?? 0
             var tx = tx
             var addressee = Addressee.fromRequestData(requestData, input: address, satoshi: sendableSatoshi)
@@ -287,7 +287,7 @@ public class LightningSessionManager: SessionManager {
             throw GaError.GenericError()
         }
         switch inputType {
-        case .bitcoinAddress(_):
+        case .bitcoinAddress:
             // let addr = Addressee.from(address: address.address, satoshi: Int64(address.amountSat ?? 0), assetId: nil)
             // return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
             return ValidateAddresseesResult(isValid: false, errors: ["id_invalid_address"], addressees: [])
@@ -304,13 +304,13 @@ public class LightningSessionManager: SessionManager {
             }
             let addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-        case .lnUrlPay(let data):
+        case .lnUrlPay(let data, let bip353Address):
             let addr = Addressee.fromRequestData(data, input: input, satoshi: nil)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-        case .lnUrlAuth(_), .lnUrlWithdraw(_):
+        case .lnUrlAuth, .lnUrlWithdraw:
             let addr = Addressee.from(address: input, satoshi: nil, assetId: nil)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-        case .nodeId(_), .url(_), .lnUrlError(_):
+        case .nodeId, .url, .lnUrlError:
             return ValidateAddresseesResult(isValid: false, errors: ["Unsupported"], addressees: [])
         }
     }
@@ -368,11 +368,11 @@ extension LightningSessionManager: EventListener {
             DispatchQueue.main.async {
                 self.post(event: .InvoicePaid, object: data)
             }
-        case .paymentSucceed(let details):
+        case .paymentSucceed:
             DispatchQueue.main.async {
                 self.post(event: .PaymentSucceed)
             }
-        case .paymentFailed(_):
+        case .paymentFailed:
             DispatchQueue.main.async {
                 self.post(event: .PaymentFailed)
             }
