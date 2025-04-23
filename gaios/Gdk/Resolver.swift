@@ -93,9 +93,6 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
                 appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(returning: code)
-            DispatchQueue.main.async {
-                UIApplication.topViewController()?.startAnimating()
-            }
         }
         vc.onEnable2faCall = { [weak self] in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
@@ -155,9 +152,6 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
                 appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(returning: tfType.rawValue)
-            DispatchQueue.main.async {
-                UIApplication.topViewController()?.startAnimating()
-            }
         }
 
         DispatchQueue.main.async {
