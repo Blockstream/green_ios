@@ -78,10 +78,12 @@ class GenuineCheckEndViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        progressView.isAnimating = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        progressView.isAnimating = false
     }
     
     func setContent() {
