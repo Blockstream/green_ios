@@ -26,21 +26,15 @@ class WalletTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-//        loadNavigationBtns()
         setTabBar()
+        setupNotifications()
+        walletModel.registerNotifications()
         Task.detached { [weak self] in
-            await self?.walletModel.registerNotifications()
+            // refresh tabs content on load
             await self?.reload(discovery: false, chartUpdate: false) }
-        delegate = self
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        view.alpha = 0
-        UIView.animate(withDuration: 1.0) {
-            self.view.alpha = 1
-        }
-        navigationController?.isNavigationBarHidden = true
+    func setupNotifications() {
         EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
                                                                   object: nil,
@@ -52,52 +46,46 @@ class WalletTabBarViewController: UITabBarController {
             })
             notificationObservers.append(observer)
         }
+    }
 
-//        if URLSchemeManager.shared.isValid {
-//            if let bip21 = URLSchemeManager.shared.bip21 {
-//                let sendAddressInputViewModel = SendAddressInputViewModel(
-//                    input: bip21,
-//                    preferredAccount: nil,
-//                    txType: .transaction)
-//                presentSendAddressInputViewController(sendAddressInputViewModel)
-//                URLSchemeManager.shared.url = nil
-//            }
-//        }
-//        self.parent?.view.addSubview(wView)
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        view.alpha = 0
+        UIView.animate(withDuration: 1.0) {
+            self.view.alpha = 1
+        }
+        navigationController?.isNavigationBarHidden = true
         if walletModel.isFirstLoad, let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
             walletModel.isFirstLoad = false
+            // load welcome dialog
             view.addSubview(wView)
             wView.frame = view.frame
             wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
                 self?.wView.removeFromSuperview()
             })
+            // load backup alert
             if let wm = walletModel.wm, !wm.account.isHW && !wm.account.isWatchonly {
                 BackupHelper.shared.addToBackupList(walletModel.wm?.account.id)
             }
         }
         setSecurityState(BackupHelper.shared.needsBackup(walletId: walletModel.wm?.account.id) ? .alerted : .normal)
+        // reload tabs content on appear
+        walletModel.reloadBalances()
+        walletModel.reloadTransactions()
+        updateTabs([.home, .transact])
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        navigationController?.isNavigationBarHidden = false
+    }
+
+    deinit {
         notificationObservers.forEach { observer in
             NotificationCenter.default.removeObserver(observer)
         }
         notificationObservers = []
-        navigationController?.isNavigationBarHidden = false
     }
-
-//    func loadNavigationBtns() {
-//        guard let walletModel else { return }
-//
-//        // setup right menu bar: settings
-//        let settingsBtn = UIButton(type: .system)
-//        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-//        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
-//        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
-//    }
 
     @objc func settingsBtnTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
@@ -129,6 +117,7 @@ class WalletTabBarViewController: UITabBarController {
 
         let viewControllers = [tabHomeVC, tabTransactVC, tabSecurityVC, tabSettingsVC]
         self.setViewControllers(viewControllers, animated: false)
+        delegate = self
     }
 
     func setSecurityState(_ state: SecurityState) {
@@ -188,8 +177,6 @@ class WalletTabBarViewController: UITabBarController {
             try? await refreshChart()
         }
         await walletModel.reloadPromoCards()
-        walletModel.reloadBalances()
-        walletModel.reloadTransactions()
         walletModel.reloadBackupCards()
 
         isReloading = false
