@@ -549,16 +549,7 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnab
                 isSendAll: viewModel.sendAll,
                 account: viewModel.wm?.account,
                 walletItem: viewModel.subaccount)
-        popViewController()
-    }
-
-    func popViewController() {
-        let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first
-        if avc != nil {
-            navigationController?.popToViewController(ofClass: AccountViewController.self)
-        } else {
-            navigationController?.popToViewController(ofClass: WalletTabBarViewController.self)
-        }
+        navigationController?.popToViewController(ofClass: WalletTabBarViewController.self)
     }
 
     func onShare() {
