@@ -51,13 +51,21 @@ class TabViewController: UIViewController {
 }
 extension TabViewController {
     func buyScreen(_ walletModel: WalletModel) {
-        let storyboard = UIStoryboard(name: "BuyFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "BuyViewController") as? BuyViewController {
-            if let account = walletModel.wm?.bitcoinSubaccounts.first {
-                vc.viewModel = BuyViewModel(account: account, side: .buy)
+        let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
+            if let accounts = walletModel.wm?.bitcoinSubaccounts, let account = walletModel.wm?.bitcoinSubaccounts.first {
+                vc.viewModel = BuyBTCViewModel(account: account, accounts: accounts, hideBalance: walletModel.hideBalance)
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
+
+//        let storyboard = UIStoryboard(name: "BuyFlow", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "BuyViewController") as? BuyViewController {
+//            if let account = walletModel.wm?.bitcoinSubaccounts.first {
+//                vc.viewModel = BuyViewModel(account: account, side: .buy)
+//                navigationController?.pushViewController(vc, animated: true)
+//            }
+//        }
     }
     func sendScreen(_ walletModel: WalletModel) {
         let sendAddressInputViewModel = SendAddressInputViewModel(

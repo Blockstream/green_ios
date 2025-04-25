@@ -69,9 +69,11 @@ struct Meld {
         let res = try await Meld.call(url: url, data: data)
         let response = try JSONDecoder().decode(MeldQuoteResponse.self, from: res)
         if let message = response.message {
+            print("--------> err")
             throw GaError.GenericError(message)
         }
         let quotes = response.quotes
+        print("--------> quotes")
         return quotes.sorted { $0.destinationAmount < $1.destinationAmount }
     }
 

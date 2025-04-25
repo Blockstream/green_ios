@@ -3,6 +3,9 @@ struct Country {
     let name: String
     let dialCode: Int
     var dialCodeString: String { "+\(dialCode)" }
+    var flag: String {
+        "\(code.uppercased())-flag"
+    }
     init(_ code: String, _ name: String, _ dialCode: Int) {
         self.code = code
         self.name = name

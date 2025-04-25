@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "MS-flag.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

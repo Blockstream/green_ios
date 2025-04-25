@@ -76,8 +76,8 @@ class DialogAccountsViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = viewModel?.seetInfo?.name ?? ""
-        lblInfo.text = "Your Bitcoin total balance is the sum of the balances across these accounts.".localized
+        lblTitle.text = viewModel?.title
+        lblInfo.text = viewModel?.hint
     }
 
     func setStyle() {
@@ -128,6 +128,7 @@ extension DialogAccountsViewController: UITableViewDelegate, UITableViewDataSour
         if let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell, let model = viewModel?.accountCellModels[indexPath.row] {
 
             cell.configure(model: model,
+                           isSelectable: viewModel?.isSelectable ?? false,
                            hideBalance: viewModel?.hideBalance ?? false,
                            onTap: {[weak self] in
                 self?.dismiss(model.account)

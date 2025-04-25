@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "PN-flag.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

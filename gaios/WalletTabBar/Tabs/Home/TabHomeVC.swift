@@ -388,6 +388,9 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         case .assets:
             let model = walletModel.walletAssetCellModels[indexPath.row]
             let dialogModel = DialogAccountsViewModel(
+                title: WalletManager.current?.info(for: model.assetId).name ?? "",
+                hint: "Your Bitcoin total balance is the sum of the balances across these accounts.".localized,
+                isSelectable: false,
                 assetInfo: WalletManager.current?.info(for: model.assetId),
                 accountCellModels: walletModel.accountCellModelsBy(model.assetId),
                 hideBalance: walletModel.hideBalance)

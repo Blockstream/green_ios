@@ -167,6 +167,7 @@ extension UIButton {
         case .primaryDisabled:
             backgroundColor = UIColor.customBtnOff()
             setTitleColor(UIColor.customGrayLight(), for: .normal)
+            tintColor = UIColor.customGrayLight()
             isEnabled = false
         case .outlined:
             backgroundColor = UIColor.clear

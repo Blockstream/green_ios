@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ZW-flag.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

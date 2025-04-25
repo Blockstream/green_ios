@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "JM-flag.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

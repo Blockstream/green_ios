@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "NF-flag.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "CI-flag.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -12,6 +12,7 @@ class DialogAccountCell: UITableViewCell {
 
     private var hideBalance: Bool = false
     private var isLast: Bool = false
+    var isSelectable: Bool = false
     private var onTap: (() -> Void)?
 
     static var identifier: String { return String(describing: self) }
@@ -41,10 +42,12 @@ class DialogAccountCell: UITableViewCell {
     }
 
     func configure(model: AccountCellModel,
+                   isSelectable: Bool,
                    hideBalance: Bool,
                    onTap: (() -> Void)?
     ) {
         self.hideBalance = hideBalance
+        self.isSelectable = isSelectable
         self.onTap = onTap
 
         lblType.text = model.lblType
@@ -79,6 +82,10 @@ class DialogAccountCell: UITableViewCell {
     }
 
     @IBAction func btnTap(_ sender: Any) {
-        onTap?()
+        if isSelectable {
+            bg.pressAnimate {
+                self.onTap?()
+            }
+        }
     }
 }
