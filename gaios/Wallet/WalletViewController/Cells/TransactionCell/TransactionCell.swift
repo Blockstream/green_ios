@@ -8,8 +8,6 @@ class TransactionCell: UITableViewCell {
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var innerStack: UIStackView!
     @IBOutlet weak var activity: UIActivityIndicatorView!
-    @IBOutlet weak var progressBar: UIProgressView!
-    private var timer: Timer?
 
     class var identifier: String { return String(describing: self) }
 
@@ -17,26 +15,14 @@ class TransactionCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.setStyle(CardStyle.defaultStyle)
-        progressBar.cornerRadius = 5.0
-        progressBar.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTap))
+        bg.setStyle(CardStyle.defaultStyle)
         bg.addGestureRecognizer(tap)
-    }
-
-    deinit {
-        timer?.invalidate()
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         innerStack.subviews.forEach { $0.removeFromSuperview() }
-        progressBar.progress = 0
-        timer?.invalidate()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
     }
 
     func configure(model: TransactionCellModel, hideBalance: Bool, onTap: (() -> Void)?) {
@@ -80,23 +66,8 @@ class TransactionCell: UITableViewCell {
             }
         }
 
-        progressBar.progress = model.statusUI().progress ?? 0
-        if model.statusUI().style == .unconfirmed || model.statusUI().style == .swapInProgress {
-            progressLoop()
-        }
         activity.isHidden = true
         self.onTap = onTap
-    }
-
-    func progressLoop() {
-        var i: Float = 0
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { timer in
-            DispatchQueue.main.async {
-                self.progressBar.progress = i.truncatingRemainder(dividingBy: 100) / 100
-                i += 1
-            }
-        }
     }
 
     func addStackRow(_ model: MultiLabelViewModel) {
