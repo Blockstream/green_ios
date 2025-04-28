@@ -139,9 +139,9 @@ class BuyBTCViewModel {
             sessionType: MeldTransactionType.BUY.rawValue)
         return try await meld.widget(params)
     }
-    func verifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
+    func verifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
         guard let addressStr = address?.address else { return nil }
-        return VerifyOnDeviceViewModel(isLedger: false,
+        return HWDialogVerifyOnDeviceViewModel(isLedger: false,
                                        address: addressStr,
                                        isRedeposit: false,
                                        isDismissible: false)

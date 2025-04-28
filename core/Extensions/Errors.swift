@@ -15,12 +15,14 @@ extension Error {
             switch hwError {
             case HWError.Abort(let txt), HWError.Declined(let txt):
                 return txt
-            case HWError.Disconnected(let txt):
+            case HWError.Disconnected(_):
                 return "id_disconnect"
-            case .URLError(_):
+            case .URLError:
                 return "id_invalid_url"
-            case .InvalidResponse(_):
+            case .InvalidResponse:
                 return "Invalid Response"
+            case .NoNewFirmwareFound:
+                return "Firmware up to date"
             }
         }
         if let swError = self as? BleLedgerConnection.SWError {

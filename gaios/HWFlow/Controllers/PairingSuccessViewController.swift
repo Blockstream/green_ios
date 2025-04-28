@@ -118,7 +118,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         let txt = BleHwManager.shared.toBleError(err, network: nil).localizedDescription
         self.showError(txt.localized)
     }
-    
+
     @MainActor
     func onJadeConnected(jadeHasPin: Bool) {
         let testnetAvailable = AppSettings.shared.testnet
@@ -132,21 +132,22 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             self.pushConnectViewController(firstConnection: false)
         }
     }
-    
+
     @MainActor
     func pushConnectViewController(firstConnection: Bool, testnet: Bool? = nil) {
         Task {
             var account = try? await bleHwManager.defaultAccount()
             try? await bleHwManager.disconnect()
-            if let testnet = testnet {
-                account?.networkType = testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
+            if let testnet = testnet, testnet {
+                account?.networkType = NetworkSecurityCase.testnetSS
             }
             await MainActor.run {
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
                 if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController, let account = account {
                     vc.viewModel = ConnectViewModel(
                         account: account,
-                        firstConnection: true
+                        firstConnection: true,
+                        storeConnection: true
                     )
                     self.navigationController?.pushViewController(vc, animated: true)
                 }

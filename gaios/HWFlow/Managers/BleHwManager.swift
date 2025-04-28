@@ -89,7 +89,6 @@ class BleHwManager {
             return ledger?.bleLedger
         }
     }
-    
 
     func getHwProtocol() async throws -> HWDevice? {
         switch type {
@@ -133,6 +132,10 @@ class BleHwManager {
         return !peripherals.filter { peripheral?.identifier == $0.identifier }.isEmpty
     }
 
+    func isLogged() -> Bool {
+        walletManager?.logged ?? false
+    }
+
     func disconnect() async throws {
         switch type {
         case .Jade:
@@ -171,7 +174,7 @@ class BleHwManager {
             return false
         }
     }
-    
+
     func getMasterXpub(chain: String) async throws -> String? {
         switch type {
         case .Jade:
@@ -180,10 +183,10 @@ class BleHwManager {
             return try await ledger?.getMasterXpub()
         }
     }
-    
+
     func login(account: Account) async throws -> WalletManager {
         AnalyticsManager.shared.loginWalletStart()
-        let walletManager = WalletsRepository.shared.getOrAdd(for: account)
+        let walletManager = WalletManager(account: account, prominentNetwork: account.networkType)
         let device = try await getHwProtocol()
         walletManager.popupResolver = await PopupResolver()
         walletManager.hwInterfaceResolver = HwPopupResolver()

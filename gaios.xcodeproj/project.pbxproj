@@ -460,7 +460,6 @@
 		34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9E10826B92F0B00200D2F /* DynamicTableView.swift */; };
 		34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */; };
 		34CBA41F270AE23800C85B05 /* Overview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CBA41E270AE23800C85B05 /* Overview.swift */; };
-		34CD348E2C7D981B00018824 /* VerifyOnDevice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */; };
 		34CD34912C7D98CF00018824 /* VerifyOnDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */; };
 		34CD34932C7D98E700018824 /* VerifyOnDeviceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
@@ -577,6 +576,8 @@
 		812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */; };
 		812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */; };
 		81332CC32D55082D00F3520D /* Gdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81332CC22D55082900F3520D /* Gdk.swift */; };
+		8135873D2DBFCC460000116B /* HWDialogConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8135873C2DBFCC400000116B /* HWDialogConnectViewController.swift */; };
+		8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8135873E2DBFCC8C0000116B /* HWDialogs.storyboard */; };
 		813872962A04AF450092CFD2 /* LNExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813872952A04AF450092CFD2 /* LNExtensions.swift */; };
 		81430C0D2C85D2A000C57B3E /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81430C0C2C85D2A000C57B3E /* Enums.swift */; };
 		8150EE1B2BB721B700E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
@@ -1430,7 +1431,6 @@
 		34C9E10826B92F0B00200D2F /* DynamicTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTableView.swift; sourceTree = "<group>"; };
 		34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogLoginPassphraseViewController.swift; sourceTree = "<group>"; };
 		34CBA41E270AE23800C85B05 /* Overview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overview.swift; sourceTree = "<group>"; };
-		34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VerifyOnDevice.storyboard; sourceTree = "<group>"; };
 		34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewController.swift; sourceTree = "<group>"; };
 		34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewModel.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -1568,6 +1568,8 @@
 		812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsCell.swift; sourceTree = "<group>"; };
 		812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsCellModel.swift; sourceTree = "<group>"; };
 		81332CC22D55082900F3520D /* Gdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gdk.swift; sourceTree = "<group>"; };
+		8135873C2DBFCC400000116B /* HWDialogConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWDialogConnectViewController.swift; sourceTree = "<group>"; };
+		8135873E2DBFCC8C0000116B /* HWDialogs.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HWDialogs.storyboard; sourceTree = "<group>"; };
 		813872932A0480E20092CFD2 /* LightningSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningSessionManager.swift; sourceTree = "<group>"; };
 		813872952A04AF450092CFD2 /* LNExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNExtensions.swift; sourceTree = "<group>"; };
 		81430C0C2C85D2A000C57B3E /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
@@ -3183,6 +3185,7 @@
 		34B385D429B8882A0097220B /* HWFlow */ = {
 			isa = PBXGroup;
 			children = (
+				8135873B2DBFCC310000116B /* Dialogs */,
 				81B0DDBB2DA5D33200B036FB /* Managers */,
 				81E56A5F2C2476950012A5A3 /* QRUnlockJade */,
 				81E56A5C2C2476950012A5A3 /* QRUnlock */,
@@ -3191,10 +3194,8 @@
 				818BA70D2A2F8FF300DFB03A /* Scan */,
 				817A0B422A43008B00E2F80D /* Setup */,
 				34B385D729B888A70097220B /* Controllers */,
-				34CD348F2C7D987800018824 /* VerifyOnDevice */,
 				34B385D529B888610097220B /* HWFlow.storyboard */,
 				34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */,
-				34CD348D2C7D981B00018824 /* VerifyOnDevice.storyboard */,
 				81E56A522C2476870012A5A3 /* QRUnlockFlow.storyboard */,
 			);
 			path = HWFlow;
@@ -3316,15 +3317,6 @@
 				34C978A7268DC14D0061264D /* Extensions.swift */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		34CD348F2C7D987800018824 /* VerifyOnDevice */ = {
-			isa = PBXGroup;
-			children = (
-				34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */,
-				34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */,
-			);
-			path = VerifyOnDevice;
 			sourceTree = "<group>";
 		};
 		34D51B672A77937F00C0AF12 /* Views */ = {
@@ -3758,6 +3750,17 @@
 				6D0983C523FC848C00289ACA /* HelpCell.swift */,
 			);
 			path = TableViewCells;
+			sourceTree = "<group>";
+		};
+		8135873B2DBFCC310000116B /* Dialogs */ = {
+			isa = PBXGroup;
+			children = (
+				8135873E2DBFCC8C0000116B /* HWDialogs.storyboard */,
+				8135873C2DBFCC400000116B /* HWDialogConnectViewController.swift */,
+				34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */,
+				34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */,
+			);
+			path = Dialogs;
 			sourceTree = "<group>";
 		};
 		81387E5D2452066500A63C1D /* Ledger */ = {
@@ -4624,8 +4627,8 @@
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
 				3487657C29D43B2A0059D05F /* animation_04_jade_v1.riv in Resources */,
 				3499655829E569D60092B5BD /* animation_01_jade_v1.riv in Resources */,
-				34CD348E2C7D981B00018824 /* VerifyOnDevice.storyboard in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
+				8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */,
 				34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */,
 				81C2F2042B879B1C000845EA /* GoogleService-Prod-Info.plist in Resources */,
 				34D761342A384EF800DE57F5 /* DenominationExchangeFlow.storyboard in Resources */,
@@ -4895,6 +4898,7 @@
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,
+				8135873D2DBFCC460000116B /* HWDialogConnectViewController.swift in Sources */,
 				8173B8EE2AB19DCD00C15C85 /* ZendeskSdk.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				3491C9922912B3670063C055 /* AssetsViewController.swift in Sources */,

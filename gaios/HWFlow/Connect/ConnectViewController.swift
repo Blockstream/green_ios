@@ -6,12 +6,6 @@ import gdk
 import hw
 import core
 
-enum PairingState: Int {
-    case unknown
-    case pairing
-    case paired
-}
-
 enum ConnectionState {
     case watchonly
     case wait
@@ -36,10 +30,9 @@ class ConnectViewController: HWFlowBaseViewController {
 
     var viewModel: ConnectViewModel!
 
-    private var pairingState: PairingState = .unknown
     private var selectedItem: ScanListItem?
     private var isJade: Bool { viewModel.isJade }
-    private var hasBioCredentials: Bool { viewModel.account.hasBioCredentials }
+    private var hasCredentials: Bool { viewModel.account.hasWoBioCredentials || viewModel.account.hasWoCredentials }
 
     var state: ConnectionState = .none {
         didSet {
@@ -62,7 +55,7 @@ class ConnectViewController: HWFlowBaseViewController {
             progressView.isHidden = true
             retryButton.isHidden = false
             retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
-            retryWoButton.isHidden = !hasBioCredentials
+            retryWoButton.isHidden = !hasCredentials
             progress("")
         case .scan:
             progressView.isHidden = false
@@ -104,7 +97,7 @@ class ConnectViewController: HWFlowBaseViewController {
         case .error(let err):
             progressView.isHidden = true
             retryButton.isHidden = false
-            retryWoButton.isHidden = !hasBioCredentials
+            retryWoButton.isHidden = !hasCredentials
             image.image = UIImage(named: "il_connection_fail")
             if let err = err {
                 let txt = viewModel.bleHwManager.toBleError(err, network: nil).localizedDescription
@@ -128,7 +121,7 @@ class ConnectViewController: HWFlowBaseViewController {
         viewModel.updateState = { self.state = $0 }
         viewModel.delegate = self
         Task { [weak self] in
-            if self?.hasBioCredentials ?? false {
+            if self?.hasCredentials ?? false {
                 await self?.loginBiometric()
             } else {
                 await self?.startScan()
@@ -176,7 +169,6 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     func onScannedDevice(_ item: ScanListItem) async {
-        pairingState = .unknown
         AnalyticsManager.shared.hwwConnect(account: viewModel.account)
         await viewModel.stopScan()
         viewModel?.type = item.type
@@ -186,6 +178,7 @@ class ConnectViewController: HWFlowBaseViewController {
             state = .connect
         }
         let task = Task.detached { [weak self] in
+            try await self?.viewModel.connect()
             if await self?.isJade ?? true {
                 try await self?.viewModel.loginJade()
             } else {
@@ -341,24 +334,6 @@ class ConnectViewController: HWFlowBaseViewController {
 }
 
 extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
-
-    func formatText(title: String, subtitle: String) -> NSMutableAttributedString {
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.white
-        ]
-        let hashAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.customGrayLight(),
-            .font: UIFont.systemFont(ofSize: 16)
-        ]
-        let hint = "\n\n" + subtitle
-        let attributedTitleString = NSMutableAttributedString(string: title)
-        attributedTitleString.setAttributes(titleAttributes, for: title)
-        let attributedHintString = NSMutableAttributedString(string: hint)
-        attributedHintString.setAttributes(hashAttributes, for: hint)
-        attributedTitleString.append(attributedHintString)
-        return attributedTitleString
-    }
-
     func didUpdate(version: String, firmware: Firmware) {
         Task {
             do {
@@ -406,7 +381,6 @@ extension ConnectViewController: ConnectViewModelDelegate {
             }
         }
     }
-    
     func onError(message: String) {
         DropAlert().error(message: message.localized)
     }
@@ -414,23 +388,27 @@ extension ConnectViewController: ConnectViewModelDelegate {
         switch central.state {
         case .poweredOn:
             switch state {
-            case .none, .wait, .watchonly:
-                break
-            default:
-                Task { [weak self] in
-                    await self?.startScan()
+            case .scan:
+                if !viewModel.isScanning {
+                    Task { [weak self] in
+                        await self?.startScan()
+                    }
                 }
+            default:
+                break
             }
         case .poweredOff:
             switch state {
-            case .none, .wait, .watchonly:
-                break
-            default:
-                progress("id_enable_bluetooth".localized)
-                showBleUnavailable()
-                Task { [weak self] in
-                    await self?.stopScan()
+            case .scan:
+                if !viewModel.isScanning {
+                    progress("id_enable_bluetooth".localized)
+                    showBleUnavailable()
+                    Task { [weak self] in
+                        await self?.stopScan()
+                    }
                 }
+            default:
+                break
             }
         default:
             break

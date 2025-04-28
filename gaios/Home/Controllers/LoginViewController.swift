@@ -197,7 +197,7 @@ class LoginViewController: UIViewController {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
             }
-        } else if !viewModel.disableBiometricLogin && account.hasBioCredentials {
+        } else if !viewModel.disableBiometricLogin && account.hasWoBioCredentials {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: passphrase)
             }

@@ -22,9 +22,10 @@ class AccountNavigator {
         } else if account.isHW {
             vcConnect?.viewModel = ConnectViewModel(
                 account: account,
-                firstConnection: false)
+                firstConnection: false,
+                storeConnection: true)
             nv.setViewControllers([vcHome!, vcConnect!], animated: true)
-        } else if account.hasBioPin || account.hasBioCredentials {
+        } else if account.hasBioPin || account.hasWoBioCredentials || account.hasWoCredentials {
             vcBiometricLogin?.viewModel = LoginViewModel(account: account)
             nv.setViewControllers([vcBiometricLogin!], animated: true)
         } else {

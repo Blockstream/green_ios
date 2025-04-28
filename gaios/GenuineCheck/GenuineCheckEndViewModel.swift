@@ -80,7 +80,7 @@ class GenuineCheckEndViewModel {
     var lblInfo: String {
         return "id_confirm_on_your_device".localized
     }
-    
+
     func run() async {
         do {
             let validated = try await BleHwManager.jade?.genuineCheck()

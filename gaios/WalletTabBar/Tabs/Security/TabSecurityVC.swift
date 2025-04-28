@@ -1,13 +1,16 @@
 import UIKit
+import hw
+import core
 
 class TabSecurityVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    private var completion: (()->())?
 
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
         var list = [PreferenceCellModel]()
-        list.append(PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasBioCredentials == true ? .on : .off))
+        list.append(PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true ? .on : .off))
         if walletModel.wm?.account.isHW != true {
             list.append(PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasManualPin == true ? .on : .off))
         }
@@ -79,19 +82,169 @@ class TabSecurityVC: TabViewController {
     func onPreferenceCell(_ model: PreferenceCellModel) {
         switch model.type {
         case .faceID:
-            editProtection(type: .faceID, action: model.state == .on ? .disable : .enable)
+            if walletModel.wm?.account.isHW ?? false {
+                DropAlert().error(message: "Toggle is not supported with Hardware Wallet")
+            } else {
+                editProtection(type: .faceID, action: model.state == .on ? .disable : .enable)
+            }
         case .pin:
             editProtection(type: .pin, action: model.state == .on ? .change : .enable)
         case .genuineCheck:
-            break
+            onGenuineCheck()
         case .fwUpdate:
-            break
+            onFwUpdate()
         case .recoveryPhrase:
             let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "ManualBackupViewController") as? ManualBackupViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
+    }
+    func onGenuineCheck() {
+        completion = { [weak self] in
+            Task { [weak self] in
+                self?.startLoader()
+                let version = try? await BleHwManager.shared.jade?.version()
+                self?.stopLoader()
+                if version?.boardType == .v2 {
+                    self?.presentGenuineCheckEndViewController()
+                } else {
+                    DropAlert().error(message: "Genuine check not available")
+                }
+            }
+        }
+        if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
+            connected()
+        } else {
+            presentConnectViewController(authentication: false)
+        }
+    }
+    func onFwUpdate() {
+        completion = {
+            Task { [weak self] in
+                self?.startLoader()
+                await self?.checkFirmware()
+                self?.stopLoader()
+            }
+        }
+        if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
+            connected()
+        } else {
+            presentConnectViewController(authentication: false)
+        }
+    }
+    func checkFirmware() async {
+        let task = Task.detached {
+            try await BleHwManager.shared.checkFirmware()
+        }
+        switch await task.result {
+        case .success(let res):
+            if let version = res.0, let lastFirmware = res.1 {
+                presentUpdateFirmwareViewController(version: version, lastFirmware: lastFirmware)
+            } else {
+                DropAlert().error(message: "Firmware update failed")
+            }
+        case .failure(let err):
+            switch err as? HWError {
+            case .some(HWError.NoNewFirmwareFound(_)):
+                DropAlert().success(message: "Firmware up to date")
+            default:
+                DropAlert().error(message: err.description()?.localized ?? "id_operation_failure")
+            }
+        }
+    }
+
+    @MainActor
+    func presentGenuineCheckEndViewController() {
+        let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckEndViewController") as? GenuineCheckEndViewController {
+            vc.delegate = self
+            vc.model = GenuineCheckEndViewModel(BleHwManager: BleHwManager.shared)
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: true)
+        }
+    }
+
+    @MainActor
+    func presentConnectViewController(authentication: Bool) {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogConnectViewController") as? HWDialogConnectViewController {
+            vc.delegate = self
+            vc.authentication = authentication
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func presentUpdateFirmwareViewController(version: JadeVersionInfo, lastFirmware: Firmware) {
+        let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as? UpdateFirmwareViewController {
+            vc.firmware = lastFirmware
+            vc.version = version.jadeVersion
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func presentDialogErrorViewController(error: Error) {
+        let request = ZendeskErrorRequest(
+            error: error.description()?.localized ?? "",
+            network: .bitcoinSS,
+            shareLogs: true,
+            screenName: "FailedGenuineCheck")
+        if AppSettings.shared.gdkSettings?.tor ?? false {
+            self.showOpenSupportUrl(request)
+            return
+        }
+        if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
+            .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = request
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: true, completion: nil)
+        }
+    }
+}
+
+extension TabSecurityVC: UpdateFirmwareViewControllerDelegate {
+    func didUpdate(version: String, firmware: Firmware) {
+        completion = {
+            Task { [weak self] in
+                await self?.upgrade(version: version, firmware: firmware)
+            }
+        }
+        presentConnectViewController(authentication: true)
+    }
+    func upgrade(version: String, firmware: Firmware) async {
+        let task = Task.detached { [weak self] in
+            await self?.startLoader(message: "id_fetching_new_firmware".localized)
+            let binary = try await BleHwManager.shared.fetchFirmware(firmware: firmware)
+            let hash = BleHwManager.shared.jade?.jade.sha256(binary)
+            let hashHex = hash?.hex.separated(by: " ", every: 8)
+            await self?.startLoader(message: "id_updating_firmware".localized + "\n\n\(hashHex ?? "")")
+            let res = try await BleHwManager.shared.updateFirmware(firmware: firmware, binary: binary)
+            try await BleHwManager.shared.disconnect()
+            try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
+            return res
+        }
+        switch await task.result {
+        case .success(let updated):
+            stopLoader()
+            if updated {
+                DropAlert().success(message: "id_firmware_update_completed".localized)
+            } else {
+                DropAlert().error(message: "id_operation_failure".localized)
+            }
+        case .failure(let err):
+            stopLoader()
+            showError(err.description()?.localized ?? "id_operation_failure".localized)
+        }
+    }
+
+    func didSkip() {
+        print("Jade update skip")
     }
 }
 extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
@@ -291,5 +444,39 @@ extension TabSecurityVC {
         ])
 
         return section
+    }
+}
+
+extension TabSecurityVC: HWDialogConnectViewControllerDelegate {
+    func connected() {
+        completion?()
+    }
+
+    func logged() {
+        completion?()
+    }
+
+    func cancel() {
+        // nothing
+    }
+
+    func failure(err: Error) {
+        showError(err)
+    }
+}
+
+extension TabSecurityVC: GenuineCheckEndViewControllerDelegate {
+    func onTap(_ action: GenuineCheckEndAction) {
+        switch action {
+        case .cancel, .continue, .diy:
+            tableView.reloadData()
+        case .retry:
+            presentGenuineCheckEndViewController()
+        case .support:
+            presentDialogErrorViewController(error: HWError.Abort(""))
+        case .error(let err):
+            let message = err?.description()?.localized
+            showError(message ?? "id_operation_failure".localized)
+        }
     }
 }

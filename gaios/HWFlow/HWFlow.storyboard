@@ -674,7 +674,6 @@
                     <connections>
                         <outlet property="lblHint" destination="IXR-wp-kiG" id="dZA-C0-jT2"/>
                         <outlet property="lblTitle" destination="QF3-2I-o4k" id="QOH-oX-kZ1"/>
-                        <outlet property="loaderPlaceholder" destination="8d2-NO-5c6" id="Acj-gS-Egf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CwR-gJ-3qf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

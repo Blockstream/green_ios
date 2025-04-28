@@ -18,7 +18,13 @@ class SendTxConfirmViewModel {
     var wm: WalletManager? { WalletManager.current }
     var denominationType: DenominationType
     var isFiat = false
-    var session: SessionManager? { subaccount?.session }
+    var session: SessionManager? {
+        guard let subaccount = subaccount else { return nil }
+        if BleHwManager.shared.isConnected() {
+            return BleHwManager.shared.walletManager?.getSession(for: subaccount)
+        }
+        return WalletManager.current?.getSession(for: subaccount)
+    }
     var sendTransaction: SendTransactionSuccess?
     var error: Error?
     var txType: TxType
@@ -26,14 +32,9 @@ class SendTxConfirmViewModel {
     var signedPsbt: String?
     var bcurUnsignedPsbt: BcurEncodedData?
     var importSignedPsbt = false
-    
-    var isWithdraw: Bool {
-        return withdrawData != nil
-    }
+    var isWithdraw: Bool { withdrawData != nil }
     var withdrawData: LnUrlWithdrawRequestData?
-    var hasWithdrawNote: Bool {
-        return withdrawNote != nil && withdrawNote != ""
-    }
+    var hasWithdrawNote: Bool { withdrawNote != nil && withdrawNote != "" }
     var withdrawNote: String? {
         guard let withdrawData = withdrawData else { return nil }
         return withdrawData.defaultDescription
@@ -121,6 +122,9 @@ class SendTxConfirmViewModel {
     func enableExportPsbt() -> Bool {
         wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
     }
+    func needConnectHw() -> Bool {
+        (wm?.account.isHW ?? false) && (!BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged())
+    }
     func needExportPsbt() -> Bool {
         wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
     }
@@ -128,14 +132,6 @@ class SendTxConfirmViewModel {
         guard let session = session,
               var tx = transaction else {
             throw TransactionError.invalid(localizedDescription: "Invalid transaction")
-        }
-        
-        if wm?.hwDevice != nil {
-            let bleDevice = BleHwManager.shared
-            if !bleDevice.isConnected() {
-                try await bleDevice.connect()
-                _ = try await bleDevice.authenticating()
-            }
         }
         if isLiquid {
             tx = try await session.blindTransaction(tx: tx)
@@ -256,10 +252,10 @@ class SendTxConfirmViewModel {
         return try await BleHwManager.shared.validateAddress(account: subaccount, address: address)
     }
 
-    func sendVerifyOnDeviceViewModel(_ address: Address) -> VerifyOnDeviceViewModel? {
-        guard let _ = subaccount, let address = address.address else { return nil }
+    func sendVerifyOnDeviceViewModel(_ address: Address) -> HWDialogVerifyOnDeviceViewModel? {
+        guard let address = address.address else { return nil }
         let account = AccountsRepository.shared.current
-        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
+        return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
                                        address: address,
                                        isRedeposit: true,
                                        isDismissible: false)

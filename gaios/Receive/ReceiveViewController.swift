@@ -41,7 +41,7 @@ class ReceiveViewController: KeyboardViewController {
     private var loading = true
     private var keyboardVisible = false
     var viewModel: ReceiveViewModel!
-    weak var verifyOnDeviceViewController: VerifyOnDeviceViewController?
+    weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
 
     var hideVerify: Bool {
         return !(viewModel.wm.account.isJade && !viewModel.wm.account.isWatchonly && !viewModel.account.isLightning)
@@ -207,7 +207,7 @@ class ReceiveViewController: KeyboardViewController {
             do {
                 try await viewModel?.newAddress()
             } catch {
-                await self?.failure(error)
+                await self?.error(error)
             }
             await MainActor.run { [weak self] in self?.loading = false }
             await self?.reload()
@@ -215,7 +215,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @MainActor
-    func failure(_ err: Error) {
+    func error(_ err: Error) {
          guard let msg = err.description() else {
             return
         }
@@ -232,9 +232,19 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @MainActor
-    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) {
-        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
+    func presentConnectViewController() {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogConnectViewController") as? HWDialogConnectViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func presentVerifyOnDeviceViewController(viewModel: HWDialogVerifyOnDeviceViewModel) {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogVerifyOnDeviceViewController") as? HWDialogVerifyOnDeviceViewController {
             vc.viewModel = viewModel
             verifyOnDeviceViewController = vc
             vc.modalPresentationStyle = .overFullScreen
@@ -414,25 +424,35 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @IBAction func btnVerify(_ sender: Any) {
+        if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
+            logged()
+        } else {
+            presentConnectViewController()
+        }
+    }
+
+    func verifyAddress() async {
         AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: viewModel.account)
         if let vm = viewModel.receiveVerifyOnDeviceViewModel() {
             presentVerifyOnDeviceViewController(viewModel: vm)
         }
-        Task {
-            do {
-                let res = try await viewModel.validateHW()
-                await MainActor.run {
-                    verifyOnDeviceViewController?.dismiss()
-                    if res {
-                        DropAlert().success(message: "id_the_address_is_valid".localized)
-                    } else {
-                        DropAlert().error(message: "id_the_addresses_dont_match".localized)
-                    }
-                }
-            } catch {
-                verifyOnDeviceViewController?.dismiss()
-                DropAlert().error(message: error.description()?.localized ?? "")
+        let task = Task.detached { [weak self] in
+            try await self?.viewModel.validateHW()
+        }
+        switch await task.result {
+        case .success(let success):
+            verifyOnDeviceViewController?.dismiss()
+            switch success {
+            case .some(true):
+                DropAlert().success(message: "id_the_address_is_valid".localized)
+            case .none:
+                DropAlert().error(message: "id_operation_failure".localized)
+            case .some(false):
+                DropAlert().error(message: "id_the_addresses_dont_match".localized)
             }
+        case .failure(let error):
+            verifyOnDeviceViewController?.dismiss()
+            DropAlert().error(message: error.description()?.localized ?? "")
         }
     }
 
@@ -804,5 +824,23 @@ extension ReceiveViewController: DialogInputDenominationViewControllerDelegate {
         viewModel.isFiat = false
         viewModel?.inputDenomination = denomination
         tableView.reloadData()
+    }
+}
+extension ReceiveViewController: HWDialogConnectViewControllerDelegate {
+    func connected() {
+    }
+    
+    func logged() {
+        Task { [weak self] in
+            await self?.verifyAddress()
+        }
+    }
+    
+    func cancel() {
+        error(HWError.Abort("id_cancel"))
+    }
+
+    func failure(err: Error) {
+        error(err)
     }
 }

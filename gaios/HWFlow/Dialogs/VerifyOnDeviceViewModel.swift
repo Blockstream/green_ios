@@ -2,7 +2,7 @@ import Foundation
 import gdk
 import core
 
-struct VerifyOnDeviceViewModel {
+struct HWDialogVerifyOnDeviceViewModel {
 
     var isLedger = false
     var address: String

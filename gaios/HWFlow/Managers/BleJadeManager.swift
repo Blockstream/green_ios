@@ -63,10 +63,12 @@ class JadeManager {
     }
 
     func connectPinServer(testnet: Bool? = nil) async throws {
-        let version = try await version()
-        let isTestnet = (testnet == true && version.jadeNetworks == "ALL") || version.jadeNetworks == "TEST"
-        let networkType: NetworkSecurityCase = isTestnet ? .testnetSS : .bitcoinSS
         if pinServerSession == nil {
+            if version == nil {
+                _ = try await version()
+            }
+            let isTestnet = (testnet == true && version?.jadeNetworks == "ALL") || version?.jadeNetworks == "TEST"
+            let networkType: NetworkSecurityCase = isTestnet ? .testnetSS : .bitcoinSS
             pinServerSession = SessionManager(networkType.gdkNetwork)
         }
         try await pinServerSession?.connect()
@@ -74,7 +76,7 @@ class JadeManager {
 
     func getMasterXpub(chain: String ) async throws -> String {
         let version = try await version()
-        let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
+        let _: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
         return try await jade.xpubs(network: chain, path: [])
     }
 
@@ -106,7 +108,7 @@ class JadeManager {
         let version = try await version()
         return version.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS
     }
-    
+
     func getHWDevice() async throws -> HWDevice {
         let version = try await version()
         return .defaultJade(fmwVersion: version.jadeVersion)
@@ -317,6 +319,7 @@ extension JadeManager: JadeGdkRequest {
     }
 
     func httpRequest(params: [String: Any]) async -> [String: Any]? {
+        try? await connectPinServer()
         return self.pinServerSession?.httpRequest(params: params)
     }
 }

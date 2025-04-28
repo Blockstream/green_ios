@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class VerifyOnDeviceViewController: UIViewController {
+class HWDialogVerifyOnDeviceViewController: UIViewController {
 
     @IBOutlet weak var tappableBg: UIView!
     @IBOutlet weak var handle: UIView!
@@ -19,7 +19,7 @@ class VerifyOnDeviceViewController: UIViewController {
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var imgTopPadding: NSLayoutConstraint!
 
-    var viewModel: VerifyOnDeviceViewModel!
+    var viewModel: HWDialogVerifyOnDeviceViewModel!
 
     lazy var blurredView: UIView = {
         let containerView = UIView()

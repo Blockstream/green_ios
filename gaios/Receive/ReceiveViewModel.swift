@@ -72,10 +72,10 @@ class ReceiveViewModel {
         return try await BleHwManager.shared.validateAddress(account: account, address: address)
     }
 
-    func receiveVerifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
+    func receiveVerifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
         guard let address = address?.address else { return nil }
         let account = AccountsRepository.shared.current
-        return VerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
+        return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
                                        address: address,
                                        isRedeposit: false,
                                        isDismissible: false)

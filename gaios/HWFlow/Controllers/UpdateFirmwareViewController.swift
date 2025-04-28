@@ -71,21 +71,23 @@ class UpdateFirmwareViewController: UIViewController {
         btnSkip.isHidden = isRequired
     }
 
-    func dismiss() {
+    func dismiss(completion: (() -> Void)? = nil) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
-            self.dismiss(animated: false, completion: nil)
+            self.dismiss(animated: false, completion: completion)
         })
     }
 
     @IBAction func btnUpdate(_ sender: Any) {
-        delegate?.didUpdate(version: version, firmware: firmware)
-        dismiss()
+        dismiss {
+            self.delegate?.didUpdate(version: self.version, firmware: self.firmware)
+        }
     }
 
     @IBAction func btnSkip(_ sender: Any) {
-        delegate?.didSkip()
-        dismiss()
+        dismiss {
+            self.delegate?.didSkip()
+        }
     }
 }

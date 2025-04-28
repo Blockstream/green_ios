@@ -61,7 +61,7 @@ class SendTxConfirmViewController: UIViewController {
     private let iconW: CGFloat = 36.0
 
     var viewModel: SendTxConfirmViewModel!
-    weak var verifyOnDeviceViewController: VerifyOnDeviceViewController?
+    weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -201,9 +201,9 @@ class SendTxConfirmViewController: UIViewController {
     }
 
     @MainActor
-    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) async {
-        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
+    func presentVerifyOnDeviceViewController(viewModel: HWDialogVerifyOnDeviceViewModel) async {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogVerifyOnDeviceViewController") as? HWDialogVerifyOnDeviceViewController {
             vc.viewModel = viewModel
             verifyOnDeviceViewController = vc
             vc.modalPresentationStyle = .overFullScreen
@@ -446,35 +446,40 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
+    @MainActor
     func send() {
-        Task {
-            do {
-                startLoader(message: "id_sending".localized)
-                if viewModel.isLightning {
-                    presentLTConfirmingViewController()
-                } else if viewModel.hasHW && viewModel.signedPsbt == nil {
-                    presentSendHWConfirmViewController()
+        Task { [weak self] in
+            await self?.send_()
+        }
+    }
+
+    @MainActor
+    func send_() async {
+        if viewModel.isLightning {
+            presentLTConfirmingViewController()
+        } else if viewModel.hasHW && viewModel.signedPsbt == nil {
+            presentSendHWConfirmViewController()
+        } else {
+            startLoader(message: "id_sending".localized)
+        }
+        let task = Task.detached {
+            try await self.viewModel.send()
+        }
+        switch await task.result {
+        case .success(let success):
+            stopLoader()
+            dismiss(animated: true, completion: {
+                if self.viewModel.txType == .redepositExpiredUtxos {
+                    self.presentReEnable2faSuccessViewController()
+                } else {
+                    self.presentSendSuccessViewController(success)
                 }
-                let res = try await self.viewModel.send()
-                stopLoader()
-                await MainActor.run {
-                    dismiss(animated: true, completion: {
-                        if self.viewModel.txType == .redepositExpiredUtxos {
-                            self.presentReEnable2faSuccessViewController()
-                        } else {
-                            self.presentSendSuccessViewController(res)
-                        }
-                    })
-                }
-            } catch {
-                stopLoader()
-                await MainActor.run {
-                    squareSliderView.reset()
-                    dismiss(animated: true, completion: {
-                        self.presentSendFailViewController(error)
-                    })
-                }
-            }
+            })
+        case .failure(let err):
+            squareSliderView.reset()
+            dismiss(animated: true, completion: {
+                self.presentSendFailViewController(err)
+            })
         }
     }
 
@@ -527,7 +532,9 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
             if viewModel.isWithdraw {
                 widthdraw()
             } else {
-                if viewModel.needExportPsbt() {
+                if viewModel.needConnectHw() {
+                    presentConnectViewController()
+                } else if viewModel.needExportPsbt() {
                     exportPsbt()
                 } else {
                     send()
@@ -538,6 +545,34 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
                 viewModel.signedPsbt = nil
             }
         }
+    }
+
+    @MainActor
+    func presentConnectViewController() {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogConnectViewController") as? HWDialogConnectViewController {
+            vc.delegate = self
+            vc.authentication = true
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+}
+extension SendTxConfirmViewController: HWDialogConnectViewControllerDelegate {
+    func connected() {
+        // nothing
+    }
+    
+    func logged() {
+        send()
+    }
+    
+    func cancel() {
+        // nothing
+    }
+    
+    func failure(err: Error) {
+        onSupport(error: err)
     }
 }
 
@@ -577,7 +612,9 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnab
 
 extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func onAgain() {
-        if viewModel.needExportPsbt() {
+        if viewModel.needConnectHw() {
+            presentConnectViewController()
+        } else if viewModel.needExportPsbt() {
             exportPsbt()
         } else {
             send()

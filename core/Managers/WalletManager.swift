@@ -47,6 +47,8 @@ public class WalletManager {
     // Mainnet / testnet networks
     let mainnet: Bool
 
+    var isWatchonly: Bool = false
+
     public var isHW: Bool { account.isHW }
 
     public var account: Account {
@@ -143,6 +145,14 @@ public class WalletManager {
         sessions[networkName] = SessionManager(network.gdkNetwork)
     }
 
+    public func getSession(for network: NetworkSecurityCase) -> SessionManager? {
+        sessions[network.network]
+    }
+
+    public func getSession(for subaccount: WalletItem) -> SessionManager? {
+        getSession(for: subaccount.networkType)
+    }
+
     public func addLightningSession(for network: NetworkSecurityCase) {
         let session = LightningSessionManager(network.gdkNetwork)
         session.accountId = account.id
@@ -199,12 +209,44 @@ public class WalletManager {
             parentWalletId: walletIdentifier)
     }
 
+    public func logiHwWatchonly(
+        credentials: Credentials,
+        lightningCredentials: Credentials?
+    ) async throws {
+        let bitcoinDescriptors = credentials.coreDescriptors?.filter({ !$0.hasPrefix("ct")})
+        let liquidDescriptors = credentials.coreDescriptors?.filter({ $0.hasPrefix("ct")})
+        if let bitcoinDescriptors = bitcoinDescriptors {
+            let credentials = Credentials(coreDescriptors: bitcoinDescriptors)
+            try? await bitcoinSinglesigSession?.connect()
+            _ = try? await bitcoinSinglesigSession?.loginUser(credentials)
+        }
+        if let liquidDescriptors = liquidDescriptors {
+            let credentials = Credentials(coreDescriptors: liquidDescriptors)
+            try? await liquidSinglesigSession?.connect()
+            _ = try? await liquidSinglesigSession?.loginUser(credentials)
+        }
+        if let lightningCredentials = lightningCredentials {
+            try? await lightningSession?.connect()
+            _ = try? await lightningSession?.loginUser(lightningCredentials)
+        }
+        if bitcoinDescriptors == nil && liquidDescriptors == nil && lightningCredentials == nil {
+            throw HWError.Abort("No valid credentials")
+        }
+        if activeSessions.isEmpty {
+            throw HWError.Disconnected("id_you_are_not_connected")
+        }
+        _ = try await subaccounts()
+        try? await loadRegistry()
+        isWatchonly = true
+    }
+
     public func loginWatchonly(credentials: Credentials) async throws {
         guard let session = prominentSession else { fatalError() }
         try await loginSession(session: session, credentials: credentials, device: nil, masterXpub: nil, fullRestore: false)
         AccountsRepository.shared.current = self.account
         _ = try await self.subaccounts()
         try? await self.loadRegistry()
+        isWatchonly = true
     }
 
     public func loginSession(
@@ -425,7 +467,11 @@ public class WalletManager {
 
     public func loadRegistry() async throws {
         try await registry.cache(provider: self)
-        Task { try await registry.refreshIfNeeded(provider: self) }
+        Task.detached { [weak self] in
+            if let self = self {
+                try await self.registry.refreshIfNeeded(provider: self)
+            }
+        }
     }
 
     public func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {

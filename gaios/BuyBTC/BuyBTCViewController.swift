@@ -58,7 +58,7 @@ class BuyBTCViewController: KeyboardViewController {
     var quotes = [MeldQuoteItem]()
     var selectedIndex = 0
     var providerState: ProviderState = .hidden
-    weak var verifyOnDeviceViewController: VerifyOnDeviceViewController?
+    weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -332,9 +332,9 @@ class BuyBTCViewController: KeyboardViewController {
         await verifyOnDeviceViewController?.dismissAsync(animated: true)
     }
     @MainActor
-    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) async {
+    func presentVerifyOnDeviceViewController(viewModel: HWDialogVerifyOnDeviceViewModel) async {
         let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogVerifyOnDeviceViewController") as? HWDialogVerifyOnDeviceViewController {
             vc.viewModel = viewModel
             verifyOnDeviceViewController = vc
             vc.modalPresentationStyle = .overFullScreen

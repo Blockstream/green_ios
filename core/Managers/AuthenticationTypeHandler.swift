@@ -263,7 +263,7 @@ public class AuthenticationTypeHandler {
                 let access = SecAccessControlCreateWithFlags(
                     nil, // Use the default allocator.
                     kSecAttrAccessibleWhenUnlocked, // the item isn’t eligible for the iCloud keychain and won’t be included if the user restores a device backup to a new device.
-                    .userPresence, // request biometric authentication, or to fall back on the device passcode, whenever the item is later read from the keychain.
+                    .biometryAny, // request biometric authentication, or to fall back on the device passcode, whenever the item is later read from the keychain.
                     nil) // Ignore any error.
                 let context = LAContext()
                 context.touchIDAuthenticationAllowableReuseDuration = 10

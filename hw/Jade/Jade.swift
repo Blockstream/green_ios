@@ -403,7 +403,7 @@ extension Jade {
                 return fmw
             }
         }
-        throw HWError.Abort("No newer firmware found")
+        throw HWError.NoNewFirmwareFound("")
     }
 
     public func getBinary(_ verInfo: JadeVersionInfo, _ fmw: Firmware) async throws -> Data {

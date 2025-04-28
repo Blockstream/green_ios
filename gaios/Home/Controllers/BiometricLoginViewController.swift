@@ -87,13 +87,17 @@ class BiometricLoginViewController: UIViewController {
     }
 
     func autologin() {
-        if account.hasBioPin {
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyBiometric)
             }
-        } else if account.hasBioCredentials {
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyWoBioCredentials)
+            }
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
+            Task { [weak self] in
+                await self?.login(usingAuth: .AuthKeyWoCredentials)
             }
         } else {
             if !AuthenticationTypeHandler.supportsPasscodeAuthentication() {
@@ -108,11 +112,17 @@ class BiometricLoginViewController: UIViewController {
         self.startLoader(message: "id_logging_in".localized)
         let account = viewModel.account
         let task = Task.detached { [weak self] in
-            if usingAuth == .AuthKeyWoBioCredentials {
+            switch usingAuth {
+            case .AuthKeyWoBioCredentials:
                 let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
                 _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
-            } else if usingAuth == .AuthKeyBiometric {
+            case .AuthKeyWoCredentials:
+                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+                _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
+            case .AuthKeyBiometric:
                 try await self?.viewModel.loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+            default:
+                break
             }
         }
         switch await task.result {
